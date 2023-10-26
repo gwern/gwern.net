@@ -100,7 +100,7 @@
         <a class="logo" rel="home me contents" href="/index" title="Homepage: categorized list of articles index">
           <svg class="logo-image" viewBox="0 0 64 75" alt="Gwern.net Site Logo (a Fraktur blackletter capital G)"><use href="/static/img/logo/logo-smooth.svg#logo" /></svg>
         </a>
-        <div class="sidebar-links">
+        <div class="sidebar-links" title="Links about this website">
         <a class="icon-not site  link-page link-annotated" href="/about"                 title="Site ideals, source, content, traffic, examples, license" rel="author">Site</a>
         <a class="icon-not me    link-page link-annotated" href="/me"                    title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on" rel="author">Me</a>
         <a class="icon-not new   link-page link-annotated" href="/changelog"             title="Changelog of what's new or updated">Changes</a>
@@ -115,7 +115,7 @@
       </header>
 
       <article> $if(index)$ $else$
-        <div class="markdownBody" id="page-metadata">
+        <div class="markdownBody" id="page-metadata" title="Page Metadata">
           $if(description)$
             <div class="page-description" title="Short description of page."><p>$description$</p></div>$endif$
             $if(tagsHTML)$ $tagsHTML$ $endif$
@@ -135,7 +135,7 @@
         $body$
 
         $if(index)$ $else$
-        <noscript><div id="noscript-warning-footer" class="admonition error"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the link-bibliography require JS enabled to load.]</p></div></noscript>
+        <noscript><div id="noscript-warning-footer" class="admonition error" title="Warning to NoScript Users"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the link-bibliography require JS enabled to load.]</p></div></noscript>
         $if(backlinksYes)$<section id="backlinks-section" class="level1">
           <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
           <a id="backlinks" href="/metadata/annotation/backlink/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[Backlinks]</a>
@@ -151,7 +151,7 @@
           $endif$
         </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
-        <nav id="navigation">
+        <nav id="navigation" title="Website Navigation: Top of Page/Previous Page/Next Page">
           <a id="navigation-previous" class="link-page-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
             ><svg><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
           <a id="navigation-center" class="link-page-not" title="Return to top of current page" href="#top"
@@ -176,7 +176,7 @@
 
       </article>
 
-      <div id="footer-decoration-container">
+      <div id="footer-decoration-container" title="Home Page">
         <a rel="home me contents" title="Gwern.net homepage" class="footer-logo" href="/index">​</a>
       </div>
     </main>

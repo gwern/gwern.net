@@ -45,7 +45,7 @@ quoteDBPath, quotePath :: FilePath
 quoteDBPath = "metadata/quotes.hs"
 quotePath   = "metadata/today-quote.html"
 quoted :: Snippet -> String
-quoted (quote,attribution,_) = "<div class=\"epigraph quote-of-the-day\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
+quoted (quote,attribution,_) = "<div class=\"epigraph quote-of-the-day\" title=\"Quote Of The Day\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
                                (if null attribution then "" else "\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++
                                "</blockquote>\n</div>"
 
@@ -53,7 +53,7 @@ siteDBPath, sitePath :: FilePath
 siteDBPath = "metadata/sites.hs"
 sitePath   = "metadata/today-site.html"
 sited :: Snippet -> String
-sited (site,name,_) = "<div class=\"site-of-the-day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
+sited (site,name,_) = "<div class=\"site-of-the-day\" title=\"Blogroll: Site Of the Day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
 
 readTTDB :: FilePath -> IO TTDB
 readTTDB path = do exists <- doesFileExist path
@@ -109,7 +109,8 @@ type AotD = [String]
 annotated :: ArchiveMetadata -> IORef Integer -> String -> String
 annotated a n url = Unsafe.unsafePerformIO $ do
   lnk <- localizeLink a n $ linkIcon $ Link ("", ["include-annotation-partial", "link-annotated", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
-  let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $ Pandoc nullMeta [Div ("", ["annotation-of-the-day"], []) [BlockQuote [Para [lnk]]]]
+  let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $
+        Pandoc nullMeta [Div ("", ["annotation-of-the-day"], [("title","Annotated Link Of The Day")]) [BlockQuote [Para [lnk]]]]
   case htmlE of
     Left err   -> error ("XOfTheDay.hs: annotated: failed to properly Pandoc-parse today's annotation-of-the-day? error:" ++ show err ++ " : " ++ show url)
     Right html -> return $ T.unpack html
