@@ -775,6 +775,92 @@ function updateFootnoteTargeting() {
 }
 
 
+/*************/
+/* DROP CAPS */
+/*************/
+
+GW.graphicalDropCaps = {
+	dropCapTypes: [
+		"dropcat"
+	]
+};
+
+/***************************************************************************/
+/*	Returns URL of a random graphical drop-cap of the given type and letter,
+	appropriate for the current mode and the viewport’s device pixel ratio.
+ */
+function randomDropCapURL(dropCapType, letter) {
+	let mode = DarkMode.computedMode();
+	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+
+	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter}-%R-small-${scale}x.png`);
+	let dropCapURL = versionedAssetURL(dropCapPathname);
+
+	return dropCapURL;
+}
+
+/******************************************************/
+/*	Enables graphical drop-caps in the given container.
+ */
+function enableGraphicalDropCapsInContainer(container) {
+	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		let dropCapType = dropCapTypeOf(dropCapBlock);
+		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
+			return;
+
+		//	Designate as graphical drop-cap.
+		dropCapBlock.classList.add("graphical-drop-cap");
+
+		//	Determine initial letter.
+		let firstLetter = dropCapBlock.firstTextNode.textContent.slice(0, 1);
+
+		//	Separate first letter from rest of text content.
+		dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(1);
+		dropCapBlock.insertBefore(newElement("SPAN", {
+			class: "hidden-first-letter",
+		}, {
+			innerHTML: firstLetter
+		}), dropCapBlock.firstChild);
+
+		//	Select a drop-cap.
+		let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
+
+		//	Inject the drop-cap image element.
+		let dropCapImage = newElement("IMG", {
+			class: "drop-cap figure-not",
+			src: dropCapURL.pathname + dropCapURL.search
+		});
+		dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
+	});
+}
+
+/**************************************************************************/
+/*	Activates mode-dependent dynamic swapping of graphical drop-caps in the
+	given container.
+ */
+function activateDynamicGraphicalDropCapsInContainer(container) {
+	container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		let dropCapType = dropCapTypeOf(dropCapBlock);
+		if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
+			return;
+
+		let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
+		if (firstLetter == null)
+			return;
+
+		let dropCapImage = dropCapBlock.querySelector("img.drop-cap");
+		if (dropCapImage == null)
+			return;
+
+		//	Add event handler to switch image when mode changes.
+		GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
+			let dropCapUrl = randomDropCapURL(dropCapType, firstLetter);
+			dropCapImage.src = dropCapUrl.pathname + dropCapUrl.search;
+		});
+	});
+}
+
+
 /******************************/
 /* GENERAL ACTIVITY INDICATOR */
 /******************************/

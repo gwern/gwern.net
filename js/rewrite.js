@@ -1907,66 +1907,37 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /* DROP CAPS */
 /*************/
 
-/***************************************************************************/
-/*	Returns URL of a random graphical drop-cap of the given type and letter,
-	appropriate for the current mode and the viewport’s device pixel ratio.
- */
-function randomDropCapURL(dropCapType, letter) {
-	let mode = DarkMode.computedMode();
-	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
-
-	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter}-%R-small-${scale}x.png`);
-	let dropCapURL = versionedAssetURL(dropCapPathname);
-
-	return dropCapURL;
-}
-
-/***********************/
-/*	Graphical drop-caps.
+/*************************************************************/
+/*	Graphical drop-caps (only on sufficiently wide viewports).
  */
 addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInfo) => {
     GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
 
-	let graphicalDropCapTypes = [
-		"dropcat"
-	];
+	//	No graphical drop-caps on smartphone-width screens.
+    if (GW.mediaQueries.mobileWidth.matches)
+        return;
 
-	eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
-		let dropCapType = dropCapTypeOf(dropCapBlock);
-		if (graphicalDropCapTypes.includes(dropCapType) == false)
-			return;
-
-		//	Designate as graphical drop-cap.
-		dropCapBlock.classList.add("graphical-drop-cap");
-
-		//	Determine initial letter.
-		let firstLetter = dropCapBlock.firstTextNode.textContent.slice(0, 1);
-
-		//	Separate first letter from rest of text content.
-		dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(1);
-		dropCapBlock.insertBefore(newElement("SPAN", {
-			class: "hidden-first-letter",
-		}, {
-			innerHTML: firstLetter
-		}), dropCapBlock.firstChild);
-
-		//	Select a drop-cap.
-		let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
-
-		//	Inject the drop-cap image element.
-		let dropCapImage = newElement("IMG", {
-			class: "drop-cap figure-not",
-			src: dropCapURL.pathname + dropCapURL.search
-		});
-		dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
-
-		//	Add event handler to switch image when mode changes.
-		GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
-			let newDropCapURL = randomDropCapURL(dropCapType, firstLetter);
-			dropCapImage.src = newDropCapURL.pathname + newDropCapURL.search;
-		});
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
+		enableGraphicalDropCapsInContainer(eventInfo.container);
 	});
 }, "rewrite", (info) => (info.document == document));
+
+/********************************************************************/
+/*	Activates mode-dependent dynamic swapping of graphical drop-caps.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCaps = (eventInfo) => {
+    GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
+
+	//	No graphical drop-caps on smartphone-width screens.
+    if (GW.mediaQueries.mobileWidth.matches)
+        return;
+
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
+		activateDynamicGraphicalDropCapsInContainer(eventInfo.container);
+	});
+}, "eventListeners", (info) => (info.document == document));
 
 /***********************************************************************/
 /*	Prevent blocks with drop caps from overlapping the block below them.
@@ -1974,12 +1945,15 @@ addContentLoadHandler(GW.contentLoadHandlers.enableGraphicalDropCaps = (eventInf
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
-    	let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
-        if (   nextBlock == null
-        	|| nextBlock.matches("section, blockquote, .list, .collapse, .list-heading"))
-			dropCapBlock.classList.add("overlap-not");
-    });
+	//	We use requestIdleCallback() to give the layout code time to run.
+	requestIdleCallback(() => {
+		eventInfo.container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+			let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
+			if (   nextBlock == null
+				|| nextBlock.matches("section, blockquote, .list, .collapse, .list-heading"))
+				dropCapBlock.classList.add("overlap-not");
+		});
+	});
 }, ">rewrite", (info) => (info.document == document));
 
 
