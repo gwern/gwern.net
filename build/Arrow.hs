@@ -94,7 +94,8 @@ addArrowClassInline link@(Link attr@(_,classes,_) inlines (url, title))
   | T.head url /= '#' = return link
   | otherwise = do
       refs <- ST.get
-      let newAttr = if S.member (T.tail url) refs &&
+      let newAttr = if url == "#top" || -- interesting special-case: the ID #top is required to exist at runtime, though it is nowhere at compile-time, and it is always at the top of the page before any elements, so we must special-case it & it always is 'before' any element linking to it, so it gets arrowUp.
+                       S.member (T.tail url) refs &&
                        -- WARNING: depending on the recursion pattern, it's possible to add *both*! We must check to avoid that:
                        arrowUp `notElem` classes && arrowDown `notElem` classes
                     then addClass arrowUp attr
@@ -152,4 +153,6 @@ testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pand
          [Para [Link ("", [arrowDown], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [arrowDown], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [arrowUp], []) [Str "link3"] ("#target", "")]])
       , ([Div ("", [], []) [Para [Link ("", [], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]],
          [Div ("", [], []) [Para [Link ("", [arrowDown], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
+      , ([Para [Link ("", [], []) [Str "simpleCase"] ("#top", "")]],
+         [Para [Link ("", [arrowUp], []) [Str "simpleCase"] ("#top", "")]])
       ]
