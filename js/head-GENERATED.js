@@ -3346,6 +3346,23 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 });
 
+/*******************************************************************************/
+/*	Run given callback on given container immediately and also at any later
+	time when block layout classes are updated in that container (e.g., <body>).
+ */
+function processContainerNowAndAfterBlockLayout(container, callback) {
+	//	Run immediately...
+	callback(container);
+
+	//	... and also add event listener for if block layout classes are updated.
+	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+		callback(container);
+	}, {
+		condition: (layoutEventInfo) => (   layoutEventInfo.container == container
+										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
+	});
+}
+
 /**********************************************/
 /*	Apply block spacing in the given container.
  */

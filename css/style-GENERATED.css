@@ -5271,6 +5271,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 /*┌──────────────────┐*/
+/*│ Drop-cap popups. │*/
+/*└──────────────────┘*/
+
+.popup-body.drop-cap p {
+	text-align: left;
+}
+
+/*┌──────────────────┐*/
 /*│ Footnote popups. │*/
 /*└──────────────────┘*/
 
