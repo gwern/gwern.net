@@ -557,6 +557,76 @@ Extracts = { ...Extracts,
     },
 };
 
+/*=----------------=*/
+/*= DROP-CAP LINKS =*/
+/*=----------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "DROP_CAP_LINK",     // Type name
+    "isDropCapLink",     // Type predicate function
+    null,                // Target classes to add
+    "dropCapForTarget",  // Pop-frame fill function
+    "drop-cap"           // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isDropCapLink: (target) => {
+        return target.classList.contains("link-drop-cap");
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    dropCapForTarget: (target) => {
+        GWLog("Extracts.dropCapForTarget", "extracts-content.js", 2);
+
+		let letter = target.dataset.letter;
+		let dropCapType = target.dataset.dropCapType;
+
+		return newDocument(
+			  `<p>A capital letter ${letter} drop-cap initial, from ‘${dropCapType}’ set; see `
+			+ `<a class="link-page" href="/dropcap#${dropCapType}">drop-caps page</a>`
+			+ ` for details.</p>`
+		)
+    },
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_DROP_CAP_LINK: (popup) => {
+        let target = popup.spawningTarget;
+
+        //  Mini title bar.
+        popup.classList.add("mini-title-bar");
+
+        return popup;
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_DROP_CAP_LINK: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_DROP_CAP_LINK", "extracts.js", 2);
+
+		//	Determine load location.
+        let target = popFrame.spawningTarget;
+		let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
+		let loadLocation = containingPopFrame
+						   ? containingPopFrame.spawningTarget
+						   : location;
+		
+		//	Fire events.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			container: popFrame.body,
+			document: popFrame.document,
+			loadLocation: new URL(loadLocation.href)
+		});
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			container: popFrame.body,
+			document: popFrame.document,
+			loadLocation: new URL(loadLocation.href),
+			flags: GW.contentDidInjectEventFlags.clickable
+		});
+    },
+};
+
 /*=-----------=*/
 /*= CITATIONS =*/
 /*=-----------=*/

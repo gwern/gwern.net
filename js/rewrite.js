@@ -1035,7 +1035,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "rewritePartialAnnotations",
             container: partialAnnotation,
-            document: eventInfo.document
+            document: eventInfo.document,
+            loadLocation: eventInfo.loadLocation
         });
     });
 }, "rewrite");

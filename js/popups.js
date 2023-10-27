@@ -28,6 +28,10 @@ Popups = {
 	/******************/
 	/*	Implementation.
 	 */
+
+	//	Used in: Popups.containingDocumentForTarget
+	rootDocument: document,
+
 	popupFadeTimer: false,
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
@@ -241,6 +245,11 @@ Popups = {
 			togglePageScrolling(true);
 		else
 			togglePageScrolling(false);
+	},
+
+	containingDocumentForTarget: (target) => {
+		let containingPopup = Popups.containingPopFrame(target);
+		return (containingPopup ? containingPopup.document : Popups.rootDocument);
 	},
 
 	allSpawnedPopFrames: () => {

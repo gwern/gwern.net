@@ -831,12 +831,27 @@ function enableGraphicalDropCapsInContainer(container) {
 		//	Select a drop-cap.
 		let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
 
-		//	Inject the drop-cap image element.
+		//	Inject the hyperlinked drop-cap image element.
 		let dropCapImage = newElement("IMG", {
 			class: "drop-cap figure-not",
 			src: dropCapURL.pathname + dropCapURL.search
 		});
-		dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
+		let dropCapImageLink = newElement("A", {
+			class: "link-page link-drop-cap",
+			href: "/dropcap#" + dropCapType,
+			"data-letter": firstLetter,
+			"data-drop-cap-type": dropCapType
+		});
+		let dropCapImageLinkWrapper = newElement("SPAN");
+		dropCapImageLinkWrapper.append(dropCapImageLink);
+		dropCapImageLink.append(dropCapImage);
+		dropCapBlock.insertBefore(dropCapImageLinkWrapper, dropCapBlock.firstChild);
+
+		//	Process the link to enable extract pop-frames.
+		Extracts.addTargetsWithin(dropCapImageLinkWrapper);
+
+		//	Unwrap temporary wrapper.
+		unwrap(dropCapImageLinkWrapper);
 	});
 }
 

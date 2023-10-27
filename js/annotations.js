@@ -54,8 +54,11 @@ Annotations = { ...Annotations,
 
 		if (   cachedAPIResponse
 			&& cachedAPIResponse != "LOADING_FAILED"
-			&& cachedAPIResponse instanceof DocumentFragment)
+			&& cachedAPIResponse instanceof DocumentFragment) {
 			return cachedAPIResponse;
+		} else {
+			return null;
+		}
 	},
 
     /*  Returns true iff a cached API response exists for the given link.

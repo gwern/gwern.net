@@ -831,12 +831,27 @@ function enableGraphicalDropCapsInContainer(container) {
 		//	Select a drop-cap.
 		let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
 
-		//	Inject the drop-cap image element.
+		//	Inject the hyperlinked drop-cap image element.
 		let dropCapImage = newElement("IMG", {
 			class: "drop-cap figure-not",
 			src: dropCapURL.pathname + dropCapURL.search
 		});
-		dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
+		let dropCapImageLink = newElement("A", {
+			class: "link-page link-drop-cap",
+			href: "/dropcap#" + dropCapType,
+			"data-letter": firstLetter,
+			"data-drop-cap-type": dropCapType
+		});
+		let dropCapImageLinkWrapper = newElement("SPAN");
+		dropCapImageLinkWrapper.append(dropCapImageLink);
+		dropCapImageLink.append(dropCapImage);
+		dropCapBlock.insertBefore(dropCapImageLinkWrapper, dropCapBlock.firstChild);
+
+		//	Process the link to enable extract pop-frames.
+		Extracts.addTargetsWithin(dropCapImageLinkWrapper);
+
+		//	Unwrap temporary wrapper.
+		unwrap(dropCapImageLinkWrapper);
 	});
 }
 
@@ -1691,6 +1706,10 @@ Popups = {
 	/******************/
 	/*	Implementation.
 	 */
+
+	//	Used in: Popups.containingDocumentForTarget
+	rootDocument: document,
+
 	popupFadeTimer: false,
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
@@ -1904,6 +1923,11 @@ Popups = {
 			togglePageScrolling(true);
 		else
 			togglePageScrolling(false);
+	},
+
+	containingDocumentForTarget: (target) => {
+		let containingPopup = Popups.containingPopFrame(target);
+		return (containingPopup ? containingPopup.document : Popups.rootDocument);
 	},
 
 	allSpawnedPopFrames: () => {
@@ -3912,7 +3936,7 @@ Popins = {
 	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
 		let containingPopin = Popins.containingPopFrame(target);
-		return (containingPopin ? containingPopin.body : Popins.rootDocument);
+		return (containingPopin ? containingPopin.document : Popins.rootDocument);
 	},
 
 	//	Called by: Popins.keyUp
@@ -4418,8 +4442,11 @@ Annotations = { ...Annotations,
 
 		if (   cachedAPIResponse
 			&& cachedAPIResponse != "LOADING_FAILED"
-			&& cachedAPIResponse instanceof DocumentFragment)
+			&& cachedAPIResponse instanceof DocumentFragment) {
 			return cachedAPIResponse;
+		} else {
+			return null;
+		}
 	},
 
     /*  Returns true iff a cached API response exists for the given link.
@@ -8606,9 +8633,9 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-annotation-partial", 
-        	"has-content", "link-self", "link-page", "has-icon", "uri",
-        	"arrow-up", "arrow-down", "spawns-popup", "spawns-popin",
-        	"has-indicator-hook");
+        	"has-content", "link-self", "link-annotated", "link-page", 
+        	"has-icon", "has-indicator-hook", "uri", "arrow-up", "arrow-down", 
+        	"spawns-popup", "spawns-popin");
 
         //  Attempt to fill the popup.
         if (Extracts.fillPopFrame(popFrame) == false)
@@ -9746,6 +9773,76 @@ Extracts = { ...Extracts,
 		default:
 			return newDocument(`<code>${targetPage}</code>`);
         }
+    },
+};
+
+/*=----------------=*/
+/*= DROP-CAP LINKS =*/
+/*=----------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "DROP_CAP_LINK",     // Type name
+    "isDropCapLink",     // Type predicate function
+    null,                // Target classes to add
+    "dropCapForTarget",  // Pop-frame fill function
+    "drop-cap"           // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isDropCapLink: (target) => {
+        return target.classList.contains("link-drop-cap");
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    dropCapForTarget: (target) => {
+        GWLog("Extracts.dropCapForTarget", "extracts-content.js", 2);
+
+		let letter = target.dataset.letter;
+		let dropCapType = target.dataset.dropCapType;
+
+		return newDocument(
+			  `<p>A capital letter ${letter} drop-cap initial, from ‘${dropCapType}’ set; see `
+			+ `<a class="link-page" href="/dropcap#${dropCapType}">drop-caps page</a>`
+			+ ` for details.</p>`
+		)
+    },
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_DROP_CAP_LINK: (popup) => {
+        let target = popup.spawningTarget;
+
+        //  Mini title bar.
+        popup.classList.add("mini-title-bar");
+
+        return popup;
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_DROP_CAP_LINK: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_DROP_CAP_LINK", "extracts.js", 2);
+
+		//	Determine load location.
+        let target = popFrame.spawningTarget;
+		let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
+		let loadLocation = containingPopFrame
+						   ? containingPopFrame.spawningTarget
+						   : location;
+		
+		//	Fire events.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			container: popFrame.body,
+			document: popFrame.document,
+			loadLocation: new URL(loadLocation.href)
+		});
+		GW.notificationCenter.fireEvent("GW.contentDidInject", {
+			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			container: popFrame.body,
+			document: popFrame.document,
+			loadLocation: new URL(loadLocation.href),
+			flags: GW.contentDidInjectEventFlags.clickable
+		});
     },
 };
 
@@ -12522,7 +12619,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "rewritePartialAnnotations",
             container: partialAnnotation,
-            document: eventInfo.document
+            document: eventInfo.document,
+            loadLocation: eventInfo.loadLocation
         });
     });
 }, "rewrite");

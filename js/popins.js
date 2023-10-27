@@ -144,7 +144,7 @@ Popins = {
 	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
 		let containingPopin = Popins.containingPopFrame(target);
-		return (containingPopin ? containingPopin.body : Popins.rootDocument);
+		return (containingPopin ? containingPopin.document : Popins.rootDocument);
 	},
 
 	//	Called by: Popins.keyUp
