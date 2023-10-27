@@ -2085,23 +2085,23 @@ del {
         }
     }
 
-    /*  Graphical drop-caps.
-     */
-    p.graphical-drop-cap::first-letter {
-        float: none !important;
-    }
-    p.graphical-drop-cap .hidden-first-letter {
-        display: inline-block;
-        width: 0;
-        overflow: hidden;
-    }
-    p.graphical-drop-cap img.drop-cap {
-        float: left;
-        display: block;
-        height: 9.4em;
-        margin: -0.25em -0.10em -0.95em -0.75em;
-        filter: none;
-    }
+	/*	Graphical drop-caps.
+	 */
+	p.graphical-drop-cap::first-letter {
+		float: none !important;
+	}
+	p.graphical-drop-cap .hidden-first-letter {
+		display: inline-block;
+		width: 0;
+		overflow: hidden;
+	}
+	p.graphical-drop-cap img.drop-cap {
+		float: left;
+		display: block;
+		height: 9.4em;
+		margin: 0 -0.10em -0.95em -0.75em;
+		filter: none;
+	}
 }
 
 
