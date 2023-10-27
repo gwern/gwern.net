@@ -1125,7 +1125,6 @@
     --GW-popups-video-vimeo-iframe-height: 278px;
     --GW-popups-audio-popup-min-height: 87px;
     --GW-popups-image-popup-min-size: 70px;
-    --GW-popups-drop-cap-popup-max-width: 480px;
 
     --GW-popins-popin-max-height: 75vh;
     --GW-popins-popin-min-height: 120px;
@@ -5274,10 +5273,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌──────────────────┐*/
 /*│ Drop-cap popups. │*/
 /*└──────────────────┘*/
-
-.popup.drop-cap {
-	max-width: var(--GW-popups-drop-cap-popup-max-width);
-}
 
 .popup-body.drop-cap p {
 	text-align: left;
