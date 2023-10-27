@@ -2099,7 +2099,7 @@ del {
 		float: left;
 		display: block;
 		height: 9.4em;
-		margin: -0.25em -0.10em -0.95em -0.75em;
+		margin: 0 -0.10em -0.95em -0.75em;
 		filter: none;
 	}
 }
