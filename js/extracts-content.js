@@ -583,10 +583,9 @@ Extracts = { ...Extracts,
 		let dropCapType = target.dataset.dropCapType;
 
 		return newDocument(
-			  `<p>A capital letter <strong>${letter}</strong> drop-cap initial, `
-			+ `from the ‘<strong>${dropCapType}</strong>’ set;<br> see `
-			+ `<a class="link-page" href="/dropcap#${dropCapType}">drop-caps page</a>`
-			+ ` for details.</p>`
+			  `<p>A capital letter <strong>${letter}</strong> drop-cap initial, from the `
+			+ `<a class="link-page" href="/dropcap#${dropCapType}"><strong>${dropCapType}</strong></a>`
+			+ ` drop-cap font.</p>`
 		)
     },
 
