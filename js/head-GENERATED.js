@@ -3297,8 +3297,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			if (   block.matches(".text-center, .margin-notes-block") != true
 				&& block.matches(".in-list") != true
 				&& block.closest("#footer, figcaption") == null
-				&& block.firstElementChild?.matches("span.smallcaps") != true
-				&& block.firstChild instanceof HTMLAnchorElement != true) {
+				&& block.firstElementChild?.matches("span.smallcaps") != true) {
 				let isFirstWithin = (block, containerSelector, options) => {
 					return (   blockContainerOf(block, options)?.matches(containerSelector) == true
 							&& previousBlockOf(block, options) == null);

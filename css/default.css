@@ -2102,6 +2102,12 @@ del {
 		margin: 0 -0.10em -0.95em -0.75em;
 		filter: none;
 	}
+	
+	@media all and (max-width: 1199px) {
+		p.graphical-drop-cap img.drop-cap {
+			margin-top: -0.25em;
+		}
+	}
 }
 
 
