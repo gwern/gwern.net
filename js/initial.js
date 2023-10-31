@@ -1270,18 +1270,14 @@ function isTodayHalloween() {
     let language = window.navigator.userLanguage || window.navigator.language;
     if ("en" == language.slice(0, 2)) { // match ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
         let now = new Date();
-        let month = now.getMonth() + 1; // getMonth() returns 0-11, so we add 1
-        let date = now.getDate(); // getDate() returns 1-31
-        let hour = now.getHours(); // getHours() returns 0-23
-        let formattedDate = (month < 10 ? '0' : '') + month + '-' + (date < 10 ? '0' : '') + date;
-
-
+        let date = now.toString().slice(4,10);
+        let hour = now.getHours();
         /*	It is a sin to celebrate Halloween while there is daylight; however,
         	calculating local sunset or local ambient light is too hard (where
         	would we even get that geolocation or light sensor data from‽), so
         	we will simply define ‘night’ as >=6PM and <6AM.
         */
-        return (formattedDate == "10-31" && hour >= 18) || (formattedDate == "11-01" && hour < 6);
+        return (date == "Oct 31" && hour >= 18) || (date == "Nov 01" && hour < 6);
     } else {
     	return false;
     }
@@ -1292,12 +1288,12 @@ function isTodayChristmas() {
 		return true;
 
     let now = new Date();
-    let date = (now.toISOString()).slice(5,10);
-    let hour =  now.getHours();
+    let date = now.toString().slice(4,10);
+    let hour = now.getHours();
     /*	Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in
-    	the evening, so again >5PM.
+    	the evening, so again >=6PM.
      */
-    return (date == "12-24" && hour > 17) || (date == "12-25")
+    return (date == "Dec 24" && hour >= 18) || (date == "Dec 25")
 }
 
 function applySpecialOccasionClasses() {
