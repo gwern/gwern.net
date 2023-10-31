@@ -2,7 +2,6 @@
 module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules) where
 
 import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, Text)
--- import Text.Pandoc (Inline(Link, Str))
 import Utils (isUniqueList, isUniqueKeys3, extension, isLocal, hasExtension, isHostOrArchive)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
@@ -43,7 +42,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
-                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org"]
+                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:

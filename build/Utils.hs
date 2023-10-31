@@ -481,6 +481,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3") -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'; 'et al' is handled by Pandoc already
          , ("([A-Z][a-z]+) &amp; ([A-Z][a-z]+), ([12][0-9][0-9][0-9])", "\\1 & \\2 \\3")
          , ("([A-Z][a-z]+) & ([A-Z][a-z]+), ([12][0-9][0-9][0-9])",     "\\1 & \\2 \\3")
+         , ("\\. Copyright.*[12][0-9][0-9][0-9] John .* Ltd\\.", ".") -- 'Copyright © 2013 John Wiley &amp; Sons, Ltd.'
          , ("<br />    <strong>([a-zA-Z]+)</strong><br /><p>", "<p><strong>\\1</strong>: ")
          , ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: ")
          , ("<jats:title>([a-zA-Z0-9_]+):</jats:title><jats:p>", "<p><strong>\\1</strong>: ")

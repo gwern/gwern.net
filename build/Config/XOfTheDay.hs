@@ -324,7 +324,7 @@ siteBlackList = isUniqueList [
           "www.universetoday.com", "www.uliwestphal.de", "www.uc.pt", "www.uaedreform.org", "www.u.arizona.edu",
           "www.typografie.info", "www.typical.me", "www.twitch.tv", "www.tug.org", "www.trfetzer.com",
           "www.topshelfrecords.com", "www.top500.org", "www.toothycat.net", "www.thisworddoesnotexist.com", "www.thestar.com",
-          "www.themtank.org", "www.themonthly.com.au", "www.themoneyillusion.com", "www.themantle.com", "www.theglobalist.com",
+          "www.themtank.org", "www.themonthly.com.au", "www.themoneyillusion.com", "www.theglobalist.com",
           "www.thedrive.com", "www.thedarkenlightenment.com", "www.texasmonthly.com", "www.templetons.com", "www.teamten.com",
           "www.tabnine.com", "www.surgehq.ai", "www.structuredprocrastination.com", "www.strongerbyscience.com", "www.strml.net",
           "www.stilldrinking.org", "www.stevepetersen.net", "www.steelypips.org", "www.stats.ox.ac.uk", "www.stateof.ai",

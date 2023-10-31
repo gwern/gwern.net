@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-10-24 12:31:09 gwern"
+# When:  Time-stamp: "2023-10-26 23:37:43 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -134,7 +134,7 @@ else
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"
                     ## everything successful, so return the filepath of the final result to our caller:
                     echo -n "doc/www/$DOMAIN/$HASH.html$ANCHOR"
-                    if $NO_PREVIEW;
+                    if [[ $NO_PREVIEW == 1 ]]
                     then # do nothing
                         true
                     else

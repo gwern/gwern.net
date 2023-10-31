@@ -61,6 +61,7 @@ convertInterwikiLinksInline _ x = x
 wpURLRewrites, wpURLRedirectRewrites :: T.Text -> T.Text
 wpURLRewrites ref
   | ref == ""                                          = error "Interwiki.wpURLRewrites called with empty string; this should never happen."
+  | "**" `T.isPrefixOf` ref                            = error "Interwiki.wpURLRewrites called with what looks like mistaken bolding/<strong> (a prefixed '**'); this should never happen and needs to be fixed in-place (it cannot be repaired by ignoring the '**' because the original formatting will still be broken)."
   | ref `elem` overrides'                              = ref
   | "'s" `T.isSuffixOf` ref || "’s" `T.isSuffixOf` ref = T.init $ T.init ref
   -- WP seems to not permit double or single quotation marks at the beginning of article titles, so we don't have to worry about whitelisting; any leading quotation mark means to strip the surrounding pair

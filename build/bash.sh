@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-26 09:24:10 gwern"
+# When:  Time-stamp: "2023-10-30 22:58:42 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -190,7 +190,7 @@ gwmv () {
             # 1. git mv the old filename to new
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
-            ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net/$(dirname $NEW)" # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
+            ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net$(dirname $NEW)" # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
             rsync --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
             # 2. gwsed old new
             gwsed "$OLD" "$NEW"

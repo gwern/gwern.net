@@ -266,7 +266,7 @@ generateDirectoryItems parent current ds =
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
-                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ init $ takeDirectory p) `T.append` "/' (ascending)")]]]]
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ tail $ takeDirectory p) `T.append` "/' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')

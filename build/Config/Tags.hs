@@ -118,7 +118,9 @@ tagsShort2LongRewrites = isUniqueKeys
    ("d+q", "d-q"), ("dasatinib", "d-q"), ("quercetin", "d-q"), ("dastinib", "d-q"), ("dasitinib", "d-q"),
    ("borderline-personality", "borderline"), ("borderline-disorder", "borderline"), ("borderline-personality-disorder", "borderline"),
    ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
-   ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning"), ("ai/scaing", "ai/scaling")]
+   ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning"), ("ai/scaing", "ai/scaling"),
+   ("dropcap", "design/typography/dropcap"), ("dropcaps", "design/typography/dropcap"), ("drop-cap", "design/typography/dropcap"),
+   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap") ]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -193,6 +195,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("economics/mechanism-design/quadratic-voting", "quadratic voting")
           , ("economics/mechanism-design/auction", "auctions")
           , ("economics/mechanism-design", "mechanism design")
+          , ("design/typography/dropcap", "dropcaps (typography)")
           , ("design/typography/sidenote", "sidenotes (typography)")
           , ("design/typography/sentence-spacing", "sentence-spacing (typography)")
           , ("darknet-market/silk-road/1/lsd", "SR1 LSD")
@@ -221,6 +224,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/gan/stylegan/progan", "ProGAN")
           , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
           , ("ai/nn/diffusion/discrete", "discrete diffusion model")
+          , ("ai/nn/diffusion/midjourney/dropcap", "dropcaps (AI typography)")
           , ("ai/nn/diffusion/midjourney", "Midjourney")
           , ("ai/highleyman", "Highleyman’s AI")
           , ("psychology/neuroscience/tcs", "TDCS")
@@ -267,7 +271,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("cat/psychology/drug/tatarian-honeysuckle", "Tatarian honeysuckle (cat)")
           , ("cat/psychology/drug/valerian", "Valerian (cat)")
           , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
-          , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s Delage")
+          , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s “Delage”")
           , ("fiction/gene-wolfe", "Gene Wolfe")
           , ("fiction/text-game", "text game")
           , ("fiction/humor", "humor")
