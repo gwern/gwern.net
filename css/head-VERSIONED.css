@@ -2097,6 +2097,9 @@ body.special-halloween-dark h6 {
 	color: var(--GW-body-text-color);
 }
 
+body.special-halloween-dark #sidebar svg.logo-image {
+	visibility: hidden;
+}
 @media all and (max-width: 649px) {
 	body[class*='special-halloween'] #sidebar span.logo-image img {
 		width: 133%;
