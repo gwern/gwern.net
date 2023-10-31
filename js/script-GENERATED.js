@@ -5710,9 +5710,19 @@ Content = {
 				let codeDocument;
 
 				//	Parse (encoding and wrapping first, if need be).
-				if (response.slice(0, 1) == "<") {
+				if (   response.slice(0, 1) == "<"
+					&& link.pathname.endsWithAnyOf([ ".html", ".xml", ".svg" ]) == false) {
 					//	Syntax-highlighted code (already HTML-encoded).
 					codeDocument = newDocument(response);
+
+					//	We want <body> contents only, no metadata and such.
+					let nodes = Array.from(codeDocument.childNodes);
+					let codeWrapper = codeDocument.querySelector("div.sourceCode");
+					codeDocument.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
+
+					//	Mark truncated syntax-highlighted code files.
+					if (codeWrapper.nextElementSibling?.tagName == "P")
+						codeWrapper.classList.add("truncated");
 				} else {
 					//	“Raw” code.
 					let htmlEncodedResponse = response.replace(
@@ -10444,10 +10454,6 @@ Extracts = { ...Extracts,
 		}
 
 		//	REAL REWRITES BEGIN HERE
-
-        //  Mark truncated code blocks, so layout can be adjusted properly.
-        if (popFrame.body.lastElementChild.tagName == "P")
-            popFrame.body.firstElementChild.classList.add("truncated");
     },
 };
 

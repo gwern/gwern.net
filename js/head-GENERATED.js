@@ -2523,6 +2523,8 @@ GW.layout = {
 		[ ".interview .exchange",		 4, false ],
 		[ ".interview .utterance",		 2, false ],
 
+		[ ".truncated + p", 			 4, false ],
+
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],

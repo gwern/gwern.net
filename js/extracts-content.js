@@ -1315,10 +1315,6 @@ Extracts = { ...Extracts,
 		}
 
 		//	REAL REWRITES BEGIN HERE
-
-        //  Mark truncated code blocks, so layout can be adjusted properly.
-        if (popFrame.body.lastElementChild.tagName == "P")
-            popFrame.body.firstElementChild.classList.add("truncated");
     },
 };
 
