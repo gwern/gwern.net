@@ -2097,11 +2097,8 @@ body.special-halloween-dark h6 {
 	color: var(--GW-body-text-color);
 }
 
-body.special-halloween-dark #sidebar svg.logo-image {
-	visibility: hidden;
-}
 @media all and (max-width: 649px) {
-	body.special-halloween-dark #sidebar span.logo-image img {
+	body[class*='special-halloween'] #sidebar span.logo-image img {
 		width: 133%;
 		position: relative;
 		left: -15%; top: -15%;
@@ -2109,14 +2106,14 @@ body.special-halloween-dark #sidebar svg.logo-image {
 }
 @media all and (min-width: 650px) {
 	@media all and (max-width: 1179px) {
-		body.special-halloween-dark #sidebar span.logo-image img {
+		body[class*='special-halloween'] #sidebar span.logo-image img {
 			width: 150%;
 			position: relative;
 			left: -30%; top: -15%;
 		}
 	}
 	@media all and (min-width: 1180px) {
-		body.special-halloween-dark #sidebar span.logo-image img {
+		body[class*='special-halloween'] #sidebar span.logo-image img {
 			width: 150%;
 			position: relative;
 			left: -30%; top: -10%;
