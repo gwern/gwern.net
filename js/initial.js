@@ -303,8 +303,8 @@ GW.notificationCenter = {
 
                 The format for this string is as follows:
 
-				- If the entire string is equal to “<”, then the given handler 
-				  function will be called prior to any handlers that are 
+				- If the entire string is equal to “<”, then the given handler
+				  function will be called prior to any handlers that are
 				  assigned to any other phase (or to no specific phase). (Within
 				  this “before all others” ‘pseudo-phase’, handlers are called
 				  in the order in which they were added.)
@@ -318,7 +318,7 @@ GW.notificationCenter = {
 				- If the string is empty, then the given handler function will
 				  be called after all other handlers, but before any handlers
 				  that were assigned to phase “>”. (Within this “no particular
-				  phase” ‘pseudo-phase’, handlers are called in the order in 
+				  phase” ‘pseudo-phase’, handlers are called in the order in
 				  which they were added.)
 
                 - If the first character is anything other than ‘<’ or ‘>’, the
@@ -520,7 +520,7 @@ GW.notificationCenter = {
         let insertAt;
         if (options.phase == "<") {
 			/*	If the handler we’re registering is assigned to phase “<” (i.e.,
-				is specified to run before all others), it’s inserted 
+				is specified to run before all others), it’s inserted
 				immediately after all other handlers already likewise specified.
 			 */
         	for (var i = 0; i < handlers.length; i++) {
@@ -538,10 +538,10 @@ GW.notificationCenter = {
         	insertAt = handlers.length;
         } else if (   options.phase == ""
         		   || targetPhaseIndex == -1) {
-			/*  If the handler we’re registering isn’t assigned to any 
+			/*  If the handler we’re registering isn’t assigned to any
 				particular handler phase, or if it’s assigned to a phase that
-				does not actually exist in this event’s handler phase order, 
-				we will add it just before all handlers of phase “>” (i.e., 
+				does not actually exist in this event’s handler phase order,
+				we will add it just before all handlers of phase “>” (i.e.,
 				those handlers specified to be called after all others).
 			 */
         	for (var j = 0; j < handlers.length; j++) {
@@ -552,7 +552,7 @@ GW.notificationCenter = {
 			insertAt = j;
         } else {
 			/*	The handler is specified to run before, during, or after a named
-				phase (i.e., not “<” or “>”) that (as we’ve confirmed already) 
+				phase (i.e., not “<” or “>”) that (as we’ve confirmed already)
 				exists in this event’s defined handler phase order.
 			 */
 
@@ -799,11 +799,11 @@ GW.notificationCenter = {
     presentation to the user. Typography rectification must take place; the HTML
     structure of certain page elements (such as tables, figures, etc.) must be
     reconfigured; CSS classes must be added; various event listeners attached;
-    etc. Most of rewrite.js consists of exactly such “content load handlers” and 
-    “content inject handlers”, a.k.a. “rewrite functions”. (Additional content 
-    load and inject handlers are defined elsewhere in the code, as appropriate; 
-    e.g. the handler that attaches event listeners to annotated links to load 
-    annotations when the user mouses over such links, which is found in 
+    etc. Most of rewrite.js consists of exactly such “content load handlers” and
+    “content inject handlers”, a.k.a. “rewrite functions”. (Additional content
+    load and inject handlers are defined elsewhere in the code, as appropriate;
+    e.g. the handler that attaches event listeners to annotated links to load
+    annotations when the user mouses over such links, which is found in
     extracts-annotations.js.)
 
     The GW.contentDidLoad event has the following named handler phases (see
@@ -879,7 +879,7 @@ GW.notificationCenter = {
 
             ‘stripCollapses’
                 Specifies whether the loaded content is permitted to have
-                collapsed sections. Generally false. If the value of this key 
+                collapsed sections. Generally false. If the value of this key
                 is true, then any collapse blocks in the loaded content will be
                 automatically expanded and stripped, and all content in
                 collapsible sections will be visible at all times.
@@ -919,7 +919,7 @@ function addContentInjectHandler(handler, phase, condition = null, once = false)
     });
 }
 
-/*  Event-specific handler phase order for the ‘GW.contentDidLoad’ and 
+/*  Event-specific handler phase order for the ‘GW.contentDidLoad’ and
 	‘GW.contentDidInject’ events.
  */
 GW.notificationCenter.handlerPhaseOrders["GW.contentDidLoad"] = [ "transclude", "rewrite" ];
@@ -1036,13 +1036,13 @@ function updateScrollState(event) {
 
     GW.scrollState.newScrollTop = window.pageYOffset;
     GW.scrollState.unbrokenDownScrollDistance = GW.scrollState.newScrollTop > GW.scrollState.lastScrollTop
-        										? (  GW.scrollState.unbrokenDownScrollDistance 
-        										   + GW.scrollState.newScrollTop 
+        										? (  GW.scrollState.unbrokenDownScrollDistance
+        										   + GW.scrollState.newScrollTop
         										   - GW.scrollState.lastScrollTop)
         										: 0;
     GW.scrollState.unbrokenUpScrollDistance = GW.scrollState.newScrollTop < GW.scrollState.lastScrollTop
-        									  ? (  GW.scrollState.unbrokenUpScrollDistance 
-        									     + GW.scrollState.lastScrollTop 
+        									  ? (  GW.scrollState.unbrokenUpScrollDistance
+        									     + GW.scrollState.lastScrollTop
         									     - GW.scrollState.newScrollTop)
         									  : 0;
     GW.scrollState.lastScrollTop = GW.scrollState.newScrollTop;
@@ -1175,8 +1175,8 @@ document.addEventListener("readystatechange", () => {
 /*********************/
 
 /********************************************************************/
-/*	Inject a special page logo image of a specific type (‘halloween’, 
-	‘christmas’, etc.). Directory structure and file naming for the 
+/*	Inject a special page logo image of a specific type (‘halloween’,
+	‘christmas’, etc.). Directory structure and file naming for the
 	specified logo type must match existing holiday logos.
  */
 function injectSpecialPageLogo(logoType, options = { }) {
@@ -1208,7 +1208,7 @@ function injectSpecialPageLogo(logoType, options = { }) {
 			class: "logo-image"
 		});
 		imageWrapper.append(newElement("IMG", {
-			class: "figure-not", 
+			class: "figure-not",
 			src: versionedLogoURL.pathname + versionedLogoURL.search
 		}));
 
@@ -1270,14 +1270,18 @@ function isTodayHalloween() {
     let language = window.navigator.userLanguage || window.navigator.language;
     if ("en" == language.slice(0, 2)) { // match ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
         let now = new Date();
-        let date = (now.toISOString()).slice(5,10); // `YYYY-MM-DDTHH:mm:ss.sssZ` → MM-DD
-        let hour =  now.getHours();
-        /*	It is a sin to celebrate Halloween while there is daylight; however, 
-        	calculating local sunset or local ambient light is too hard (where 
-        	would we even get that geolocation or light sensor data from‽), so 
+        let month = now.getMonth() + 1; // getMonth() returns 0-11, so we add 1
+        let date = now.getDate(); // getDate() returns 1-31
+        let hour = now.getHours(); // getHours() returns 0-23
+        let formattedDate = (month < 10 ? '0' : '') + month + '-' + (date < 10 ? '0' : '') + date;
+
+
+        /*	It is a sin to celebrate Halloween while there is daylight; however,
+        	calculating local sunset or local ambient light is too hard (where
+        	would we even get that geolocation or light sensor data from‽), so
         	we will simply define ‘night’ as >=6PM and <6AM.
-         */
-        return (date == "10-31" && hour >= 18) || (date == "11-01" && hour < 6)
+        */
+        return (formattedDate == "10-31" && hour >= 18) || (formattedDate == "11-01" && hour < 6);
     } else {
     	return false;
     }
@@ -1290,7 +1294,7 @@ function isTodayChristmas() {
     let now = new Date();
     let date = (now.toISOString()).slice(5,10);
     let hour =  now.getHours();
-    /*	Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in 
+    /*	Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in
     	the evening, so again >5PM.
      */
     return (date == "12-24" && hour > 17) || (date == "12-25")
