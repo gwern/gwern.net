@@ -2,6 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"$if(dir)$ dir="$dir$"$endif$>
 <head>
   <meta charset="utf-8" />
+
+  <!-- INLINED-STANDALONE-BEGIN -->
+  <!--#include virtual="/static/include/inlined-standalone.html" -->
+  <!-- INLINED-STANDALONE-END -->
+
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 

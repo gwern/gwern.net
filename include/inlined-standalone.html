@@ -1,0 +1,331 @@
+<style id="inlined-styles-colors">
+:root {
+    /*  General.
+     */
+    --GW-body-background-color: #fff;
+    --GW-body-text-color: #000;
+
+    /*  Selection.
+     */
+    --GW-text-selection-background-color: #333;
+    --GW-text-selection-color: #fff;
+
+	/*	Links.
+	 */
+    --GW-body-link-color: #333;
+    --GW-body-link-hover-color: #888;
+    --GW-body-link-visited-color: #666;
+    --GW-body-link-inverted-color: #eee;
+    --GW-body-link-inverted-hover-color: #ccc;
+    --GW-body-link-inverted-visited-color: #ddd;
+
+    /*  Blockquotes.
+     */
+    --GW-blockquote-border-color-level-one: #ccc;
+    --GW-blockquote-border-color-level-two: #c4c4c4;
+    --GW-blockquote-border-color-level-three: #b3b3b3;
+    --GW-blockquote-border-color-level-four: #a6a6a6;
+    --GW-blockquote-background-color-level-one: #f8f8f8;
+    --GW-blockquote-background-color-level-two: #e6e6e6;
+    --GW-blockquote-background-color-level-three: #d8d8d8;
+
+    /*  Abstracts.
+     */
+    --GW-abstract-border-color: #bbb;
+
+	/*	Block context highlighting.
+	 */
+	--GW-block-context-span-highlight-color: #ddd;
+
+    /*  Table of contents.
+     */
+    --GW-TOC-border-color: #ccc;
+    --GW-TOC-background-color: #f8f8f8;
+    --GW-TOC-collapse-button-text-color: #ccc;
+    --GW-TOC-collapse-button-text-hover-color: #fff;
+    --GW-TOC-collapse-button-color: rgba(248, 248, 248, 0.8);
+    --GW-TOC-collapse-button-hover-color: #ddd;
+    --GW-TOC-collapse-button-border-hover-color: #000;
+    --GW-TOC-link-hover-background-color: #ececec;
+    --GW-TOC-link-hover-color: #000;
+    --GW-TOC-link-hover-indicator-bar-color: #ccc;
+    --GW-TOC-number-color: #909090;
+    --GW-TOC-number-hover-color: #313131;
+
+    /*  Collapse blocks.
+        */
+	--GW-abstract-collapse-blockquote-hover-color: #eee;
+	--GW-collapse-disclosure-button-color: #eee;
+	--GW-collapse-disclosure-button-hover-color: #ddd;
+	--GW-collapse-in-blockquote-disclosure-button-color: #ddd;
+	--GW-collapse-in-blockquote-disclosure-button-hover-color: #ccc;
+	--GW-collapse-disclosure-button-text-color: #bbb;
+	--GW-collapse-disclosure-button-text-hover-color: #fff;
+	--GW-collapse-in-blockquote-disclosure-button-text-color: #999;
+	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #888;
+	--GW-collapse-inline-disclosure-button-text-color: #555;
+	--GW-collapse-inline-expanded-disclosure-button-text-color: #bbb;
+	--GW-collapse-inline-disclosure-button-text-hover-color: #999;
+
+    /*  Headings.
+     */
+    --GW-H1-border-color: #888;
+    --GW-H2-border-color: #888;
+
+    /*  Comments.
+     */
+    --GW-comment-section-top-border-color: #999;
+
+    /*  Lists.
+     */
+    --GW-bulleted-list-marker-color: #808080;
+
+    /*  Figures.
+     */
+    --GW-figure-outline-color: #888;
+    --GW-figure-caption-outline-color: #888;
+
+    /*  Epigraphs.
+     */
+    --GW-epigraph-quotation-mark-color: #808080;
+
+    /*  Footnotes.
+     */
+    --GW-footnote-border-color: #aaa;
+    --GW-footnote-highlighted-border-color: #aaa;
+    --GW-footnotes-section-top-rule-color: #ccc;
+    --GW-footnote-backlink-border-color: #000;
+    --GW-footnote-backlink-border-hover-color: #999;
+
+    /*  Footnote references.
+     */
+    --GW-highlighted-link-outline-color: #999;
+
+    /*  Sidenotes.
+     */
+    --GW-sidenote-highlight-box-shadow-color: #aaa;
+    --GW-sidenote-border-color: #aaa;
+    --GW-sidenote-scrollbar-thumb-color: #aaa;
+    --GW-sidenote-scrollbar-thumb-hover-color: #999;
+    --GW-sidenote-self-link-border-color: #aaa;
+
+	/*	Annotations.
+	 */
+	--GW-section-highlighted-border-color: #666;
+
+    /*  Tables.
+     */
+    --GW-table-border-color: #000;
+    --GW-table-caption-border-color: #000;
+    --GW-table-row-horizontal-border-color: #000;
+    --GW-table-scrollbar-thumb-color: #aaa;
+    --GW-table-scrollbar-thumb-hover-color: #999;
+    --GW-table-scrollbar-border-color: #000;
+    --GW-table-column-heading-hover-background-color: #e2f0f2;
+    --GW-table-sorted-column-heading-background-color: #8bd0ed;
+    --GW-table-sorted-column-heading-text-color: #fff;
+    --GW-table-sorted-column-heading-text-shadow-color: #000;
+    --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
+    --GW-table-row-hover-outline-color: #000;
+
+    /*  Code blocks.
+     */
+    --GW-code-element-border-color: #c8c8c8;
+    --GW-code-element-background-color: #fafafa;
+    --GW-pre-element-border-color: #c8c8c8;
+    --GW-pre-element-background-color: #fafafa;
+    --GW-pre-element-scrollbar-track-color: #fafafa;
+    --GW-pre-element-scrollbar-thumb-color: #ccc;
+    --GW-pre-element-scrollbar-thumb-hover-color: #999;
+
+    /*  Syntax highlight theme.
+     */
+    --GW-syntax-highlight-color-normal: #1f1c1b;
+    --GW-syntax-highlight-color-attribute: #002561;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #666666;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #777;
+    --GW-syntax-highlight-color-comment: #777;
+    --GW-syntax-highlight-color-control-flow: #003900;
+    --GW-syntax-highlight-color-keyword: #002561;
+    --GW-syntax-highlight-color-operator: #002561;
+    --GW-syntax-highlight-color-special-char: #607880;
+    --GW-syntax-highlight-color-built-in: #002561;
+    --GW-syntax-highlight-color-function: #002561;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #bf0303;
+    --GW-syntax-highlight-color-error: #ff0000;
+    --GW-syntax-highlight-color-import: #777777;
+    --GW-syntax-highlight-color-special-string: #666666;
+
+    /*  Math.
+     */
+    --GW-math-block-background-color: #f6f6f6;
+    --GW-math-block-background-color-flash: #fff;
+    --GW-math-block-scrollbar-border-color: #ccc;
+    --GW-math-block-scrollbar-thumb-color: #ccc;
+    --GW-math-block-scrollbar-thumb-hover-color: #999;
+
+    /*  Drop caps.
+     */
+    --GW-drop-caps-yinit-color: #0d0d0d;
+    --GW-drop-caps-yinit-text-shadow-color: #777;
+    --GW-drop-caps-de-zs-color: #1b1b1b;
+    --GW-drop-caps-cheshire-color: #191919;
+    --GW-drop-caps-kanzlei-color: #191919;
+
+    /*  Admonitions.
+     */
+    --GW-admonition-note-left-border-color: #909090;
+    --GW-admonition-note-background-color: #d8d8d8;
+    --GW-admonition-tip-left-border-color: #d8d8d8;
+    --GW-admonition-tip-background-color: #f0f0f0;
+    --GW-admonition-warning-left-border-color: #5a5a5a;
+    --GW-admonition-warning-background-color: #9a9a9a;
+    --GW-admonition-warning-text-color: #fff;
+    --GW-admonition-error-left-border-color: #2d2d2d;
+    --GW-admonition-error-background-color: #5a5a5a;
+    --GW-admonition-error-text-color: #fff;
+    --GW-admonition-reversed-link-color: #ddd;
+    --GW-admonition-reversed-link-color-hover: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #bbb;
+
+	/*	Footer.
+	 */
+    --GW-bottom-ornament-line-color: #000;
+
+	/*	Pop-frames (popups or popins).
+	 */
+    --GW-code-popframe-line-highlight-background-color: #ffd;
+    --GW-code-popframe-line-highlight-border-color: #ddd;
+    --GW-code-popframe-line-number-color: #aaa;
+    --GW-code-popframe-line-number-divider-color: #ccc;
+
+    --GW-extracts-options-dialog-backdrop-background-color: rgba(255, 255, 255, 0.95);
+    --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-border-color: #aaa;
+    --GW-extracts-options-dialog-box-shadow-color: #444;
+    --GW-extracts-options-dialog-horizontal-rule-color: #ccc;
+    --GW-extracts-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-extracts-options-dialog-button-text-color: #000;
+    --GW-extracts-options-dialog-button-border-color: #000;
+    --GW-extracts-options-dialog-button-hover-box-shadow-color: #000;
+    --GW-extracts-options-dialog-option-button-explanation-text-color: #777;
+    --GW-extracts-options-dialog-option-button-hover-text-color: #777;
+    --GW-extracts-options-dialog-radio-button-border-color: #000;
+
+    /*  Popups.
+     */
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+
+    --GW-popups-object-popup-background-color: #fff;
+
+    --GW-popups-popup-border-color: #ccc;
+    --GW-popups-box-shadow-color: #ccc;
+    --GW-popups-popup-border-focused-color: #aaa;
+    --GW-popups-box-shadow-focused-color: #aaa;
+
+    --GW-popups-popup-title-bar-background-color: #fff;
+    --GW-popups-popup-title-bar-button-color: #bbb;
+    --GW-popups-popup-title-bar-button-color-hover: #000;
+	--GW-popups-popup-title-color: #aaa;
+    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
+    --GW-popups-popup-title-bar-button-focused-color: #777;
+    --GW-popups-popup-title-bar-button-focused-color-hover: #000;
+    --GW-popups-popup-title-bar-submenu-box-shadow-color: #ddd;
+	--GW-popups-popup-title-focused-color: #000;
+    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
+
+    --GW-popups-popup-scrollbar-thumb-color: #ddd;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #bbb;
+    --GW-popups-popup-scrollbar-thumb-focused-color: #ccc;
+    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #999;
+
+    /*  Popins.
+     */
+    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-border-color: #aaa;
+    --GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.4);
+    --GW-popins-box-shadow-color: #aaa;
+    --GW-popins-popin-title-bar-background-color: #fff;
+    --GW-popins-popin-title-bar-button-color: #888;
+    --GW-popins-popin-scrollbar-thumb-color: #ccc;
+    --GW-popins-popin-scrollbar-thumb-hover-color: #999;
+    --GW-popins-popin-stack-counter-text-color: #fff;
+
+    /*  Image focus.
+     */
+    --GW-image-focus-image-hover-drop-shadow-color: #777;
+
+	/*	Page toolbar.
+	 */
+    --GW-page-toolbar-border-color: #aaa;
+	--GW-page-toolbar-control-button-color: #aaa;
+	--GW-page-toolbar-control-button-active-color: #000;
+
+	/*	Page toolbar widgets.
+	 */
+	--GW-page-toolbar-button-icon-color: #aaa;
+	--GW-page-toolbar-button-selectable-icon-color: #e4e4e4;
+	--GW-page-toolbar-button-selected-icon-color: #777;
+    --GW-page-toolbar-button-text-color: #666;
+    --GW-page-toolbar-button-disabled-text-color: #ccc;
+
+	/*	Reader mode.
+	 */
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0, 0, 0, 0.6);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #bbb;
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color: #444;
+
+	/*	“Back to top” link.
+	 */
+	--GW-back-to-top-link-color: #ccc;
+	--GW-back-to-top-link-hover-color: #999;
+
+	/*	Mobile floating header.
+	 */
+	--GW-floating-header-box-shadow-color: #ccc;
+	--GW-floating-header-scroll-indicator-color: #999;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #fff;
+	--GW-skip-to-content-border-color: #fff;
+	--GW-skip-to-content-background-color: #bf1722;
+
+	/*	Nav header.
+	 */
+	--GW-nav-header-link-color: #888;
+	--GW-nav-header-link-hover-color: #000;
+
+	/*	X of the day.
+	 */
+	--GW-x-of-the-day-border-color: #ccc;
+}
+:root {
+    --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif);
+    --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif);
+
+    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
+    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
+    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
+    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
+
+	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-777-fff-2x-gif);
+	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-000-fff-2x-gif);
+}
+</style>
+<link rel="stylesheet" href="/static/css/head.css?v=1698794399">
+<link rel="stylesheet" href="/static/css/style.css?v=1698794399">
