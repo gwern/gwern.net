@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <link rel="stylesheet" href="/static/css/style-VERSIONED.css">
+  <link rel="stylesheet" href="/static/css/light-mode-GENERATED.css">
+  <link rel="stylesheet" href="/static/css/head-VERSIONED.css">
+
 $for(author-meta)$
   <meta name="author" content="$author-meta$" />
 $endfor$
