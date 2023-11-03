@@ -178,4 +178,16 @@ $body_includes = [
 process_source_files($body_includes, 'build_body_includes.php');
 
 
+## Styles for standalone files.
+## Build the SSI-included <head> section, with both inlined styles and blocking
+## (versioned) links to head.css and style.css.
+$body_includes = [
+	"{$css_dir}/light-mode-GENERATED.css",
+	"{$css_dir}/head-VERSIONED.css",
+	"{$css_dir}/style-VERSIONED.css"
+];
+
+process_source_files($body_includes, 'build_standalone_includes.php');
+
+
 ?>

@@ -15,7 +15,7 @@ global $static_root, $include_dir;
 
  In template or page:
 
- 	<!--#include virtual="/static/include/inlined-foot.html"-->
+ 	<!--#include virtual="/static/include/inlined-asset-links.html"-->
 
  In .htaccess (if using Apache):
 
