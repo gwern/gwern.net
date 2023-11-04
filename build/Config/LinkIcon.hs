@@ -42,7 +42,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
-                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com"]
+                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:
@@ -418,6 +418,8 @@ linkIconRulesSVG u
  | u'' u "radiolab.org" = ("audio-waveform-lines", "svg") -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
  | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
+ | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>
+
  -- FINAL MATCHES:
  -- many orgs will use a medium subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
  | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -1031,4 +1033,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")
          , ("https://www.reddit.com/r/emacs/comments/1530yh8/kalman_reti_the_last_symbolics_developer_speaks/", "emacs", "svg")
+         , ("https://www.chicagotribune.com/news/ct-xpm-2004-07-23-0407240014-story.html", "chicago-tribune", "svg")
         ]
