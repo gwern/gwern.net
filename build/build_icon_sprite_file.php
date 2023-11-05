@@ -46,6 +46,12 @@ foreach ($icon_file_paths as $path) {
 																		 ]) == false); 
 												 	})));
 
+	if ($viewBox == '') {
+		preg_match('/[^\/]+$/', $path, $m);
+		echo "WARNING: Icon `{$m[0]}` has invalid viewBox attribute; skipping.\n";
+		continue;
+	}
+
 	$viewBox = explode(' ', $viewBox);
 
 	$translateX = $position - floatval($viewBox[0]);
