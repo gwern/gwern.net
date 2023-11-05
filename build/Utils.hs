@@ -1492,7 +1492,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>b</em> = ", "β = ")
          , (" ", " ")
          , (" LaTeX", " <span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span>")
+         , (">LaTeX</a>", "><span class=\"logotype-latex\">L<span class=\"logotype-latex-a\">a</span>T<span class=\"logotype-latex-e\">e</span>X</span></a>")
          , (" TeX", " <span class=\"logotype-tex\">T<sub>e</sub>X</span>")
+         , (">TeX</a>", "><span class=\"logotype-tex\">T<sub>e</sub>X</span></a>")
          , ("DALL-E", "DALL·E")
          -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
          , ("~linearly", "linearly")
@@ -2126,6 +2128,12 @@ printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ m
               , (0.224, 1, "0.2")
               , (0.224, 2, "0.22")
               ]
+
+flattenLinksInInlines :: [Inline] -> [Inline]
+flattenLinksInInlines inlines = map flattenLinks inlines
+  where flattenLinks :: Inline -> Inline
+        flattenLinks x@Link{} = Str (inlinesToText [x])
+        flattenLinks x = x
 
 -- | Convert a list of inlines into a string.
 inlinesToText :: [Inline] -> T.Text
