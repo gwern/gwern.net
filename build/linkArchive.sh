@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-10-26 23:37:43 gwern"
+# When:  Time-stamp: "2023-11-05 09:35:00 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -105,6 +105,14 @@ else
             # Handle actual remote HTML file:
         else
             TARGET="/tmp/$HASH.html"
+            # Some websites break snapshots if any JS is left in them: the content will display briefly, but then the JS will refresh to an error page. This can be poorly written JS or deliberate anti-archiving. For such websites, we need single-file to remove JS from the snapshot entirely.
+            # However, we cannot simply match on the domain, because a major offender here is Substack, which is often used under a custom domain and not just 'foo.substack.com' subdomains.
+            # So we must do a quick cheap fingerprint check.
+            if curl -s "$URL" | grep -q -e "https://substackcdn.com" -e "https://your.substack.com" || [[ "$URL" == *".substack.com"* ]]; then
+                REMOVE_SCRIPTS="true"
+            else
+                REMOVE_SCRIPTS="false"
+            fi
             # https://github.com/gildas-lormeau/SingleFile/blob/master/cli/README.MD (ArchiveBox didn't work out)
             # WARNING: for me single-file emits misleading errors about needing to `npm install` the browser, but
             # apparently you're supposed to `--browser-executable-path` workaround that, which is documented only in a bug report
@@ -112,7 +120,8 @@ else
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
             timeout --kill-after=960s 960s \
-                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS --remove-scripts false --remove-video-src false --remove-audio-src false \
+                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS \
+                    --remove-scripts "$REMOVE_SCRIPTS" --remove-video-src false --remove-audio-src false \
                     `# --browser-extensions "$(find ~/snap/chromium/common/chromium/Default/Extensions/* -maxdepth 0 -type d | tr '\n' ',')"` \
                     --browser-args "[\"--profile-directory=Default\", \"--user-data-dir=/home/gwern/snap/chromium/common/chromium/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.41.4_1/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/dmghijelimhndkbmpgbldicpogfkceaj/0.4.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/doojmbjmlfjjnbmnoijecmcbfeoakpjm/11.3.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/kkdpmhnladdopljabkgpacgpliggeeaf/1.12.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/mpiodijhokgodhhofbcjdecpffjipkle/1.19.30_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/10.9.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/oolchklbojaobiipbmcnlgacfgficiig/1.3.4_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/padekgcemlokbadohgkifijomclgjgif/2.5.21_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/pioclpoplcdbaefihamjohnefbikjilc/7.19.0_0/\"]" \
                     `# --browser-headless=false` \
