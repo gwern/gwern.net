@@ -3618,7 +3618,7 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1699157384",
+	"/static/img/icon/icons.svg": "1699157525",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1698080524",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1698080524",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
