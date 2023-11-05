@@ -185,7 +185,6 @@ generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> 
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag\n",
-             "author: 'N/A'\n",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++

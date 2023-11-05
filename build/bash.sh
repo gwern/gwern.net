@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-10-30 22:58:42 gwern"
+# When:  Time-stamp: "2023-11-04 12:21:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -57,9 +57,11 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
 
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
-    ORIGINAL=$(echo "$@" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
-    mogrify -bordercolor white -border 25 "$ORIGINAL"
-    }
+    for FILE in "$@"; do
+        ORIGINAL=$(echo "$FILE" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
+        mogrify -bordercolor white -border 25 "$FILE"
+    done
+}
 
 # crossref: defined in ~/wiki/static/build/crossref
 cr () { crossref "$@" & }

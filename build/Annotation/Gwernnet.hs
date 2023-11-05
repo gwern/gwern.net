@@ -164,7 +164,8 @@ gwernTOC footnotesP indexP p' f =
                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\"><span>See Also</span></a>\n          </li>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", ""),
                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\"><span>Link Bibliography</span></a>\n          </li>", ""),
-                 ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Link Bibliography</a>\n          </li>", "")
+                 ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Link Bibliography</a>\n          </li>", ""),
+                 ("class=\"footnote-ref\" role=\"doc-noteref\"", "")
                 ] tc') $
  -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
  (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $

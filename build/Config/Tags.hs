@@ -120,7 +120,7 @@ tagsShort2LongRewrites = isUniqueKeys
    ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
    ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning"), ("ai/scaing", "ai/scaling"),
    ("dropcap", "design/typography/dropcap"), ("dropcaps", "design/typography/dropcap"), ("drop-cap", "design/typography/dropcap"),
-   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap") ]
+   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap"), ("wolfe", "gene-wolfe"), ("genewolfe", "gene-wolfe") ]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)

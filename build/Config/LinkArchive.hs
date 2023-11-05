@@ -1286,5 +1286,6 @@ whiteList url
       , "http://www.cgg.cs.tsukuba.ac.jp/~endo/projects/UserControllableLT/" -- low quality (video embeds)
       , "https://sites.google.com/view/aistat/home" -- low quality (video embeds)
       , "https://sites.google.com/view/llm-superpositions" -- low quality (contentless)
+      , "http://writingclaritycalculator.com/" -- interactive (tool)
       ] = True
     | otherwise = False
