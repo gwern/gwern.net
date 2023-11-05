@@ -53,6 +53,8 @@ inflationDollarTestCases = isUniqueAll
     ,(("$800,000","$2011"),Span ("",["inflation-adjusted"],[("year-original","2011"),("amount-original","800,000"),("year-current","2023"),("amount-current","1075617.55"),("title","CPI inflation-adjusted US dollar: from nominal $800000 in 2011 \8594 real $1075617.55 in 2023")]) [Str "$1075617.55",Span ("",["subsup"],[]) [Superscript [Str "$800000"],Subscript [Str "2011"]]])
     ,(("$14,000","$2002"),Span ("",["inflation-adjusted"],[("year-original","2002"),("amount-original","14,000"),("year-current","2023"),("amount-current","22623.42"),("title","CPI inflation-adjusted US dollar: from nominal $14000 in 2002 \8594 real $22623.42 in 2023")]) [Str "$22623.42",Span ("",["subsup"],[]) [Superscript [Str "$14000"],Subscript [Str "2002"]]])
     ,(("$232","$2012"),Span ("",["inflation-adjusted"],[("year-original","2012"),("amount-original","232"),("year-current","2023"),("amount-current","306.11"),("title","CPI inflation-adjusted US dollar: from nominal $232 in 2012 \8594 real $306.11 in 2023")]) [Str "$306.11",Span ("",["subsup"],[]) [Superscript [Str "$232"],Subscript [Str "2012"]]])
+    , (("$100 000","$1950"), Span ("",["inflation-adjusted"],[("year-original","1950"),("amount-original","100,000"),("year-current","2023"),("amount-current","951830.43"),("title","CPI inflation-adjusted US dollar: from nominal $100000 in 1950 \8594 real $951830.43 in 2023")]) [Str "$951830.43",Span ("",["subsup"],[]) [Superscript [Str "$100000"],Subscript [Str "1950"]]]) -- NON BREAKING SPACE
+    , (("$200\8201\&000","$1950"), Span ("",["inflation-adjusted"],[("year-original","1950"),("amount-original","200000"),("year-current","2023"),("amount-current","1903660.87"),("title","CPI inflation-adjusted US dollar: from nominal $200000 in 1950 \8594 real $1903660.87 in 2023")]) [Str "$1903660.87",Span ("",["subsup"],[]) [Superscript [Str "$200000"],Subscript [Str "1950"]]]) -- THIN SPACE
 
     , (("$0.06","$2016"),          Span nullAttr [Str "$0.06"])
     , (("$0.6","$2016"),           Span nullAttr [Str "$0.6"])
@@ -99,6 +101,8 @@ inflationDollarTestCases = isUniqueAll
     , (("$0.10","$2018"),          Span nullAttr [Str "$0.10"])
     , (("$240","$2021"),           Span nullAttr [Str "$240"])
     , (("$0.24","$2017"),          Span nullAttr [Str "$0.24"])
+    , (("$100 000","$2023"),       Span nullAttr [Str "$100 000"]) -- NON BREAKING SPACE: null-op, do nothing to the formatting
+    , (("$200 000","$2023"),        Span nullAttr [Str "$200 000"]) -- THIN SPACE: null-op, do nothing to the formatting
     ]
 
 bitcoinUSDExchangeRateHistory :: M.Map String Double

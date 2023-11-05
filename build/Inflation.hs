@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-10-23 10:01:38 gwern"
+-- When:  Time-stamp: "2023-11-05 09:00:32 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -70,7 +70,7 @@ import Text.Read (readMaybe)
 import qualified Data.Map.Strict as M (findMax, findMin, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
-import Utils (currentYear, printDouble, inlinesToText)
+import Utils (currentYear, printDouble, inlinesToText, replace)
 import Config.Inflation as C
 
 nominalToRealInflationAdjuster :: Inline -> Inline
@@ -82,7 +82,10 @@ nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
 nominalToRealInflationAdjuster x = x
 
 -- hardwired for 2023 results.
-inflationDollarTestSuite :: [((T.Text,T.Text), Inline, Inline)]
+inflationDollarTestSuite :: [((T.Text, -- test-case: Amount
+                               T.Text), -- test-case: Original Year
+                               Inline, -- Expected result
+                               Inline)] -- Actual result (which ≠ Expected)
 inflationDollarTestSuite = filter (\(_,expect,result) -> expect/=result) $ map (\((t,y), expected) -> ((t,y), expected, dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, "")))) C.inflationDollarTestCases
 
 -- TODO: refactor dollarAdjuster/bitcoinAdjuster - they do *almost* the same thing, aside from handling year vs dates
@@ -102,7 +105,7 @@ dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
                ("title", T.pack ("CPI inflation-adjusted US dollar: from nominal $"++oldDollarString'++" in "++T.unpack oldYear++" → real $"++adjustedDollarString++" in "++show currentyear)) ])
         -- [Str ("$" ++ oldDollarString), Subscript [Str oldYear, Superscript [Str ("$"++adjustedDollarString)]]]
         [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["subsup"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
-    where text' = T.unpack $ inlinesToText text
+    where text' = replace " " "" $ replace " " "," $ T.unpack $ inlinesToText text
           -- oldYear = '$1970' → '1970'
           oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
           -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13
