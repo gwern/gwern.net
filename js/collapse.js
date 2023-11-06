@@ -425,11 +425,28 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 		&& collapseBlock.closest("blockquote") == null
 		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
-			let contentRect = collapseBlock.querySelector(".collapse-content-wrapper").getBoundingClientRect();
-			let enclosingContentRect = collapseBlock.closest(".markdownBody").getBoundingClientRect();
-			let offset = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
+			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
+			let markdownBody = collapseBlock.closest(".markdownBody");
 
-			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${offset})`;
+			let contentRect = collapseContentWrapper.getBoundingClientRect();
+			let enclosingContentRect = markdownBody.getBoundingClientRect();
+			let collapseLeftOffsetPx = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
+			let floatOffset = 0;
+
+			//	Compensate for TOC.
+			if (markdownBody.id == "markdownBody") {
+				let TOC = document.querySelector("#TOC");
+				if (TOC) {
+					let TOCRect = TOC.getBoundingClientRect();
+					if (TOCRect.bottom > contentRect.top) {
+						floatOffset = Math.round(  TOCRect.width 
+												 + parseInt(getComputedStyle(TOC).marginRight)
+												 + parseInt(getComputedStyle(collapseBlock).paddingLeft));
+					}
+				}
+			}
+
+			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${collapseLeftOffsetPx} + ${floatOffset}px)`;
 		} else { // if (collapsing)
 			collapseBlock.style.marginLeft = "";
 		}
