@@ -195,7 +195,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
     GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("li").forEach(paragraphizeTextNodesOfElement);
+	eventInfo.container.querySelectorAll(selectorize([ "li" ])).forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /**********************************************/
@@ -389,7 +389,7 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
     GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+	eventInfo.container.querySelectorAll(selectorize([ "figcaption" ])).forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /***************************************************************************/
@@ -1884,6 +1884,15 @@ addContentLoadHandler(GW.contentLoadHandlers.designatedColorInvertedContainers =
 	eventInfo.container.querySelectorAll(selector).forEach(container => {
 		container.classList.add("colors-invert");
 	});
+}, "rewrite");
+
+/******************************************************************/
+/*	Wrap text nodes and inline elements in admonitions in <p> tags.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (eventInfo) => {
+    GWLog("paragraphizeAdmonitionTextNodes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(selectorize([ ".admonition", ".admonition-title" ])).forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /*********************************************/

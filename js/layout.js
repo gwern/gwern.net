@@ -104,6 +104,8 @@ GW.layout = {
 
 		[ ".truncated + p", 			 4, false ],
 
+		[ ".admonition-title > p + p",   1, false ],
+
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
@@ -847,7 +849,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				".text-center",
 				".margin-notes-block",
 				".page-description-annotation",
-				".annotation .data-field"
+				".annotation .data-field",
+				".admonition-title > p"
 			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, { 
 				alsoBlockElements: [ ".list" ],
