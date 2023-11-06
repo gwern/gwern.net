@@ -38,6 +38,26 @@ html,
 }
 
 
+/****************/
+/* ADAPTIVENESS */
+/****************/
+
+/*	Utility classes: show something only on mobile (`.desktop-not`) 
+	or only on desktop (`.mobile-not`).
+ */
+@media all and (max-width: 649px) {
+	.mobile-not {
+		display: none !important;
+	}
+}
+@media all and (min-width: 650px) {
+	.desktop-not {
+		display: none !important;
+	}
+}
+
+
+
 /********************/
 /* GENERIC ELEMENTS */
 /********************/

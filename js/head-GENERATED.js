@@ -2595,6 +2595,9 @@ GW.layout = {
 	]
 };
 
+//	Add support for .desktop-not and .mobile-not classes.
+GW.layout.skipElements.push(GW.mediaQueries.mobileWidth.matches ? ".mobile-not" : ".desktop-not");
+
 GW.layout.defaultOptions = processLayoutOptions({
 	blockContainers: GW.layout.blockContainers,
 	blockElements: GW.layout.blockElements,
