@@ -12370,11 +12370,19 @@ addCopyProcessor((event, selection) => {
 addCopyProcessor((event, selection) => {
     /*  Set `display` of all `span.cite-joiner` to `initial` (overriding the
         default of `none`) so that their contents are included in the
-        content properties of the selection).
+        content properties of the selection); inject surrounding spaces.
      */
     selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
         citeJoiner.style.display = "initial";
         citeJoiner.innerHTML = ` ${citeJoiner.innerHTML} `;
+    });
+
+	/*	Inject preceding space when a span.cite-date follows immediately after
+		a span.cite-author (i.e., there is no span.cite-joiner, because there
+		are no more than two authors).
+	 */
+    selection.querySelectorAll(".cite-author + .cite-date").forEach(citeDateAfterAuthor => {
+    	citeDateAfterAuthor.innerHTML = ` ${citeDateAfterAuthor.innerHTML}`;
     });
 
     return true;
