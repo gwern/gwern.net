@@ -38,7 +38,7 @@ Extracts = {
             ".footnote-self-link",
             ".sidenote-self-link",
             "[aria-hidden='true']",
-            "[href='#top']",
+            "[href$='#top']",
             ".extract-not"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
