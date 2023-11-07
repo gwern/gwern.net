@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces) where
+module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (toUpper)
@@ -26,7 +26,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (sed, currentYear, replaceMany, parseRawAllClean) -- addClass
+import Utils (sed, currentYear, replaceMany, parseRawAllClean, isUniqueKeys) -- addClass
 import Config.Typography as C
 
 typographyTransform :: Pandoc -> Pandoc
@@ -216,50 +216,66 @@ titlecase' t = let t' = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
          titlecase'' t' =  replaceMany [("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
-           capitalizeAfterHyphen t'
+          capitalizeAfterApostrophe $ capitalizeAfterHyphen t'
 
          capitalizeAfterHyphen :: String -> String
          capitalizeAfterHyphen "" = ""
          capitalizeAfterHyphen s = case break (== '-') s of
-              (before, '-':after) -> before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen after)
+              (before, '-':after) ->
+                  before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen after)
               (before, [])        -> before
               _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
             where
               capitalizeFirst []     = []
               capitalizeFirst (x:xs) = toUpper x : xs
 
--- titleCaseTestCases :: [(String, String)]
--- titleCaseTestCases = isUniqueAll [ ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
---             , ("end-to-end testing", "End-To-End Testing")
---             , ("mother-in-law", "Mother-In-Law")
---             , ("state-of-the-art technology", "State-Of-The-Art Technology")
---             , ("x-ray", "X-Ray")
---             , ("e-commerce", "E-Commerce")
---             , ("co-worker", "Co-Worker")
---             , ("self-esteem", "Self-Esteem")
---             , ("long-term plan", "Long-Term Plan")
---             , ("high-quality product", "High-Quality Product")
---             , ("no hyphen here", "No Hyphen Here")
---             , ("double--hyphen", "Double--Hyphen")
---             , ("--leading hyphen", "--Leading Hyphen")
---             , ("trailing hyphen--", "Trailing Hyphen--")
---             , ("hyphen-at-both-ends-", "Hyphen-At-Both-Ends-")
---             , ("", "")
---             , ("-", "-")
---             , ("a-b-c-d-e-f", "A-B-C-D-E-F")
---             , ("first-class mail", "First-Class Mail")
---             , ("well-being", "Well-Being")
---             , ("123-456", "123-456")
---             , ("abc-def-123", "Abc-Def-123")
---             , ("-start with hyphen", "-Start With Hyphen")
---             , ("end with hyphen-", "End With Hyphen-")
---             , ("hyphen--in--middle", "Hyphen--In--Middle")
---             , ("test-case", "Test-Case")
---             , ("test---case", "Test---Case")
---             , ("test-Case", "Test-Case")
---             , ("Test-case", "Test-Case")
---             , ("TEST-CASE", "TEST-CASE")
---             ]
+         capitalizeAfterApostrophe :: String -> String
+         capitalizeAfterApostrophe "" = ""
+         capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
+              (before, punctuation:after) -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
+              (before, [])                -> before
+            where
+              capitalizeFirst []     = []
+              capitalizeFirst (x:xs) = toUpper x : xs
+
+titleCaseTestCases :: [(String, String)]
+titleCaseTestCases = isUniqueKeys [ ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
+            , ("end-to-end testing", "End-To-End Testing")
+            , ("mother-in-law", "Mother-In-Law")
+            , ("state-of-the-art technology", "State-Of-The-Art Technology")
+            , ("x-ray", "X-Ray")
+            , ("e-commerce", "E-Commerce")
+            , ("co-worker", "Co-Worker")
+            , ("self-esteem", "Self-Esteem")
+            , ("long-term plan", "Long-Term Plan")
+            , ("high-quality product", "High-Quality Product")
+            , ("no hyphen here", "No Hyphen Here")
+            , ("double--hyphen", "Double--Hyphen")
+            , ("--leading hyphen", "--Leading Hyphen")
+            , ("trailing hyphen--", "Trailing Hyphen--")
+            , ("hyphen-at-both-ends-", "Hyphen-At-Both-Ends-")
+            , ("", "")
+            , ("-", "-")
+            , ("a-b-c-d-e-f", "A-B-C-D-E-F")
+            , ("first-class mail", "First-Class Mail")
+            , ("well-being", "Well-Being")
+            , ("123-456", "123-456")
+            , ("abc-def-123", "Abc-Def-123")
+            , ("-start with hyphen", "-Start With Hyphen")
+            , ("end with hyphen-", "End With Hyphen-")
+            , ("hyphen--in--middle", "Hyphen--In--Middle")
+            , ("test-case", "Test-Case")
+            , ("test---case", "Test---Case")
+            , ("test-Case", "Test-Case")
+            , ("Test-case", "Test-Case")
+            , ("TEST-CASE", "TEST-CASE")
+            , ("West ‘has Not Recovered’", "West ‘Has Not Recovered’")
+            , ("West 'has Not Recovered'", "West 'Has Not Recovered'")
+            , ("West \"has Not Recovered\"", "West \"Has Not Recovered\"")
+            , ("West “has Not Recovered”", "West “Has Not Recovered”")
+            ]
+titleCaseTest :: [(String, String)]
+titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) titleCaseTestCases
 
 -- lift `titlecase'` to Inline so it can be walked, such as in Headers
 titlecaseInline :: Inline -> Inline

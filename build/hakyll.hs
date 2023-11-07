@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-11-06 18:56:50 gwern"
+When: Time-stamp: "2023-11-07 10:51:05 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation,)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
-import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
+import Typography (linebreakingTransform, typographyTransform, titlecaseInline, titleCaseTest)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, inlinesToText, flattenLinksInInlines) -- sed
 import Arrow (upDownArrows, testUpDownArrows)
 
@@ -91,6 +91,9 @@ main =
 
                let cycles = testCycleDetection
                unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
+
+               let cases = titleCaseTest
+               unless (null cases) $ preprocess $ printRed ("Title-case typography test suite has errors in: " ++ show cases)
 
                archives <- preprocess testLinkRewrites
                unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
@@ -403,7 +406,7 @@ footnoteAnchorChecker :: Inline -> Inline
 footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie. swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
 footnoteAnchorChecker n = n
 
--- especially in list items, we wind up with odd situations like '<li>text</li>' instead of '<li><p>text</p></li>'. This *seems* to be due to the HTML/Markdown AST roundtripping resulting in 'loose' elements which Pandoc defaults to 'Plain'. I do not use 'Plain' anywhere wittingly, so it should be safe to blindly rewrite all instances of Plain to Para?
+-- HACK: especially in list items, we wind up with odd situations like '<li>text</li>' instead of '<li><p>text</p></li>'. This *seems* to be due to the HTML/Markdown AST roundtripping resulting in 'loose' elements which Pandoc defaults to 'Plain'. I do not use 'Plain' anywhere wittingly, so it should be safe to blindly rewrite all instances of Plain to Para?
 wrapInParagraphs :: Pandoc -> Pandoc
 wrapInParagraphs = walk go
   where
