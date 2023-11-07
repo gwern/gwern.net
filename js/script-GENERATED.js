@@ -12212,21 +12212,6 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
     wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, false);
 }, "rewrite", (info) => info.fullWidthPossible);
 
-/*************************************************************************/
-/*  Fix code block styling glitch by setting code block height to rendered
-    height, eliminating fractional pixels.
-
-    UPDATE: This seems to no longer be necessary anyhow. Wait for some more 
-    time, then remove. —SA 2023-05-23
- */
-// addContentInjectHandler(GW.contentInjectHandlers.rectifyCodeBlockHeights = (eventInfo) => {
-//     GWLog("rectifyCodeBlockHeights", "rewrite.js", 1);
-
-//  eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
-//      preBlock.style.height = preBlock.offsetHeight + "px";
-//  });
-// }, ">rewrite");
-
 
 /***********/
 /* COLUMNS */
