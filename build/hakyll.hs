@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-11-04 21:26:59 gwern"
+When: Time-stamp: "2023-11-06 18:56:50 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -351,7 +351,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
      pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
-     let pbth = addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
+     let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
      if indexp then return pbth else
        walkM (imageLinkHeightWidthSet <=< invertImageInline) pbth
 
@@ -402,3 +402,11 @@ headerSelflinkAndSanitize x = x
 footnoteAnchorChecker :: Inline -> Inline
 footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie. swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
 footnoteAnchorChecker n = n
+
+-- especially in list items, we wind up with odd situations like '<li>text</li>' instead of '<li><p>text</p></li>'. This *seems* to be due to the HTML/Markdown AST roundtripping resulting in 'loose' elements which Pandoc defaults to 'Plain'. I do not use 'Plain' anywhere wittingly, so it should be safe to blindly rewrite all instances of Plain to Para?
+wrapInParagraphs :: Pandoc -> Pandoc
+wrapInParagraphs = walk go
+  where
+    go :: Block -> Block
+    go (Plain strs) = Para strs
+    go x = x
