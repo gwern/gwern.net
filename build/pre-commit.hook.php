@@ -100,6 +100,7 @@ process_source_files($versioned_assets, 'build_asset_versions.php');
 ## Assemble all the .css and .js files into head.css/style.css and 
 ## head.js/script.js, respectively.
 $disparate_assets = [
+	"{$js_dir}/utility.js",
 	"{$js_dir}/initial.js",
 	"{$js_dir}/layout.js",
 	"{$js_dir}/dark-mode-initial.js",
