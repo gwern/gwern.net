@@ -1,6 +1,6 @@
 <?php
 
-echo "Building <head> includes...\n";
+echo "Building standalone page includes...\n";
 
 require_once(__DIR__ . '/build_paths.php');
 require_once(__DIR__ . '/build_variables.php');
