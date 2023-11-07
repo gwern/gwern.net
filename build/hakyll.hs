@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-11-07 10:51:05 gwern"
+When: Time-stamp: "2023-11-07 11:17:59 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -196,9 +196,7 @@ main =
                                        "static/**.el",
                                        "static/build/.htaccess",
                                        "static/build/upload",
-                                       "static/build/png",
                                        "static/build/newsletter-lint",
-                                       "static/build/gwsed.sh",
                                        "static/build/gwa",
                                        "static/build/crossref",
                                        "static/build/compressPdf",

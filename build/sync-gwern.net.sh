@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-11-06 10:14:55 gwern"
+# When:  Time-stamp: "2023-11-07 11:18:37 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -995,7 +995,7 @@ else
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find * -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc/') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find * -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
     λ(){ find ./ -type f | grep -F --invert-match -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/drop-cap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E --invert-match -e '^ +1 ' | sort --numeric-sort; }
@@ -1114,7 +1114,7 @@ else
     wrap λ "Compressing high-quality JPGs to ≤65% quality…"
 
     bold "Compressing new PNGs…"
-    png $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/')
+    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/')
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.png' ); do
