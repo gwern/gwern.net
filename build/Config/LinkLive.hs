@@ -2301,7 +2301,7 @@ badDomainsSimple = isUniqueList [ "2chan.us"
 goodLinks, badLinks :: [(T.Text,Bool)]
 goodLinks = map (\u -> (u,True)) $ isUniqueList ["https://demo.allennlp.org/next-token-lm"
             , "https://aleph.se/andart2/neuroscience/energetics-of-the-brain-and-ai/"
-            , "https://alumni.media.mit.edu/~cahn/life/gian-carlo-rota-10-lessons.html#mistakes"
+            , "https://alumni.media.mit.edu/~fviegas/papers/history_flow.pdf"
             , "https://beza1e1.tuxen.de/articles/accidentally_turing_complete.html"
             , "https://courses.csail.mit.edu/6.857/2012/files/nash.py"
             , "https://datacolada.org/"

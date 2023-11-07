@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-03 20:14:17 gwern"
+;;; When:  Time-stamp: "2023-11-06 11:10:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1616,11 +1616,15 @@ Mostly string search-and-replace to enforce house style in terms of format."
 This replaces all dollar amounts in the buffer with a Pandoc Markdown
  Span element in Gwern.net inflation-adjuster format.
 
-The user is prompted for a year, defaulting to the current year. All dollar
-amounts in the buffer are then (interactively) replaced with the dollar
-amount wrapped in a Pandoc Markdown Span element tagged with the year,
-following the format '[$Y]($YEAR)'. For example, '$20' would be replaced
-with '[$20]($2023)' if the year 2023 was input.
+The function checks first if there are any dollar amounts in the buffer.
+If there are, it prompts the user for a year, defaulting to the current year,
+and then replaces all dollar amounts with the dollar amount wrapped in a
+Pandoc Markdown Span element tagged with the year, following the format
+'[$Y]($YEAR)'.
+
+For example, '$20' would be replaced with '[$20]($2023)' if the year 2023
+was input. If there are no dollar amounts in the buffer, the function exits
+without prompting the user.
 
 The function handles negative dollar amounts, and dollar amounts followed
 immediately by punctuation. It does not handle dollar amounts in
@@ -1631,12 +1635,14 @@ The function checks if the year input by the user is a numeric string.
 If it is not, the function outputs an error message and does not perform
 the replacement."
   (interactive)
-  (let* ((year (read-string "Year: " (format-time-string "%Y"))))
-    (if (string-match-p "\\`[0-9]+\\'" year)
-        (let ((from "\\([-−]?\\$\\([0-9,.]+\\)\\([kmbt]?\\)\\)\\>")
-              (to (concat "[$\\2]($" year ")\\3")))
-          (query-replace-regexp from to nil (point-min) (point-max)))
-      (message "Invalid year"))))
+  (let ((from "\\([-−]?\\$\\([0-9,.]+\\)\\([kmbt]?\\)\\)\\>"))
+    (if (not (string-match-p from (buffer-string)))
+        (message "query-inflation-adjust: No dollar amounts to adjust; exiting.")
+      (let* ((year (read-string "Year: " (format-time-string "%Y"))))
+        (if (string-match-p "\\`[0-9]+\\'" year)
+            (let ((to (concat "[$\\2]($" year ")\\3")))
+              (query-replace-regexp from to nil (point-min) (point-max)))
+          (message "Invalid year"))))))
 
 (defun number-with-commas (num)
   "Format a number `NUM` with commas."

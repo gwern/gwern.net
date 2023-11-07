@@ -1287,5 +1287,6 @@ whiteList url
       , "https://sites.google.com/view/aistat/home" -- low quality (video embeds)
       , "https://sites.google.com/view/llm-superpositions" -- low quality (contentless)
       , "http://writingclaritycalculator.com/" -- interactive (tool)
+      , "https://evolutiongym.github.io/" -- low quality (video embeds)
       ] = True
     | otherwise = False
