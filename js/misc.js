@@ -784,8 +784,10 @@ function updateFootnoteTargeting() {
 /* DROP CAPS */
 /*************/
 
-GW.graphicalDropCaps = {
-	dropCapTypes: [
+GW.dropCaps = {
+	dropCapBlockSelector: "p[class*='drop-cap-']:not(.drop-cap-not)",
+
+	graphicalDropCapTypes: [
 		"dropcat"
 	]
 };

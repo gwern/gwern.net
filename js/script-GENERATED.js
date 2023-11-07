@@ -784,8 +784,10 @@ function updateFootnoteTargeting() {
 /* DROP CAPS */
 /*************/
 
-GW.graphicalDropCaps = {
-	dropCapTypes: [
+GW.dropCaps = {
+	dropCapBlockSelector: "p[class*='drop-cap-']:not(.drop-cap-not)",
+
+	graphicalDropCapTypes: [
 		"dropcat"
 	]
 };
@@ -13415,87 +13417,72 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /* DROP CAPS */
 /*************/
 
-/****************************************************************************/
-/*	Wrap non-graphical (textual) drop-caps in a span, for ease of processing.
+/***************************************************/
+/*	Drop-caps (only on sufficiently wide viewports).
  */
-addContentInjectHandler(GW.contentInjectHandlers.separateNonGraphicalDropCaps = (eventInfo) => {
-    GWLog("separateNonGraphicalDropCaps", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) => {
+    GWLog("rewriteDropCaps", "rewrite.js", 1);
+
+	//	A capital letter, optionally preceded by an opening quotation mark.
+	let initialRegexp = new RegExp(/^([“‘])?([A-Z])/);
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(dropCapBlock => {
 			//	If this drop-cap has already been processed, do nothing.
 			if (dropCapBlock.querySelector(".drop-cap"))
 				return;
 
-			//	Determine drop-cap type.
-			let dropCapType = dropCapTypeOf(dropCapBlock);
-
-			//	If this is a graphical drop-cap, do nothing.
-			if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == true)
+			//	Make sure the graf begins properly and determine initial letter.
+			let initial = initialRegexp.exec(dropCapBlock.textContent);
+			if (initial == null) {
+				addDropCapClassTo(dropCapBlock, "not");
 				return;
-
-			//	Determine initial letter.
-			let firstLetter = dropCapBlock.firstTextNode.textContent.slice(0, 1);
+			}
+			let [ fullInitial, precedingPunctuation, initialLetter ] = initial;
 
 			//	Separate first letter from rest of text content.
-			dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(1);
-
-			//	Inject the drop-cap.
-			let dropCap = newElement("SPAN", {
-				class: "drop-cap"
-			}, {
-				innerHTML: firstLetter
-			});
-			dropCapBlock.insertBefore(dropCap, dropCapBlock.firstChild);
-		});
-	});
-}, "rewrite", (info) => (   info.document == document
-						 && GW.mediaQueries.mobileWidth.matches == false));
-
-/*************************************************************/
-/*	Graphical drop-caps (only on sufficiently wide viewports).
- */
-addContentInjectHandler(GW.contentInjectHandlers.enableGraphicalDropCaps = (eventInfo) => {
-    GWLog("enableGraphicalDropCaps", "rewrite.js", 1);
-
-	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
-			//	If this block has already been processed, no need to do anything.
-			if (dropCapBlock.querySelector(".drop-cap"))
-				return;
+			dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(fullInitial.length);
 
 			//	Determine drop-cap type.
 			let dropCapType = dropCapTypeOf(dropCapBlock);
 
-			//	Is this a recognized graphical drop-cap type?
-			if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
-				return;
+			//	Is this is a graphical drop-cap?
+			if (GW.dropCaps.graphicalDropCapTypes.includes(dropCapType)) {
+				//	Designate as graphical drop-cap.
+				dropCapBlock.classList.add("graphical-drop-cap");
 
-			//	Designate as graphical drop-cap.
-			dropCapBlock.classList.add("graphical-drop-cap");
+				//	Inject a hidden span to hold the first letter as text.
+				dropCapBlock.insertBefore(newElement("SPAN", {
+					class: "hidden-initial-letter",
+				}, {
+					innerHTML: initialLetter
+				}), dropCapBlock.firstChild);
 
-			//	Determine initial letter.
-			let firstLetter = dropCapBlock.firstTextNode.textContent.slice(0, 1);
+				//	Select a drop-cap.
+				let dropCapURL = randomDropCapURL(dropCapType, initialLetter);
 
-			//	Separate first letter from rest of text content.
-			dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(1);
+				//	Inject the drop-cap image element.
+				dropCapBlock.insertBefore(newElement("IMG", {
+					class: "drop-cap figure-not",
+					src: dropCapURL.pathname + dropCapURL.search
+				}), dropCapBlock.firstChild);
+			} else {
+				//	Inject the drop-cap.
+				dropCapBlock.insertBefore(newElement("SPAN", {
+					class: "drop-cap"
+				}, {
+					innerHTML: initialLetter
+				}), dropCapBlock.firstChild);
+			}
 
-			//	Inject a hidden span to hold the first letter as text.
-			dropCapBlock.insertBefore(newElement("SPAN", {
-				class: "hidden-first-letter",
-			}, {
-				innerHTML: firstLetter
-			}), dropCapBlock.firstChild);
-
-			//	Select a drop-cap.
-			let dropCapURL = randomDropCapURL(dropCapType, firstLetter);
-
-			//	Inject the drop-cap image element.
-			let dropCapImage = newElement("IMG", {
-				class: "drop-cap figure-not",
-				src: dropCapURL.pathname + dropCapURL.search
-			});
-			dropCapBlock.insertBefore(dropCapImage, dropCapBlock.firstChild);
+			//	If there’s punctuation before the initial letter, inject it.
+			if (precedingPunctuation) {
+				dropCapBlock.insertBefore(newElement("SPAN", {
+					class: "initial-preceding-punctuation"
+				}, {
+					innerHTML: precedingPunctuation
+				}), dropCapBlock.firstChild);
+			}
 		});
 	});
 }, "rewrite", (info) => (   info.document == document
@@ -13508,12 +13495,12 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
     GWLog("activateDynamicGraphicalDropCaps", "rewrite.js", 1);
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(dropCapBlock => {
 			//	Determine drop-cap type.
 			let dropCapType = dropCapTypeOf(dropCapBlock);
 
 			//	Is this a recognized graphical drop-cap type?
-			if (GW.graphicalDropCaps.dropCapTypes.includes(dropCapType) == false)
+			if (GW.dropCaps.graphicalDropCapTypes.includes(dropCapType) == false)
 				return;
 
 			//	Get the drop-cap image element.
@@ -13526,13 +13513,13 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
 				return;
 
 			//	Get the initial letter.
-			let firstLetter = dropCapBlock.querySelector(".hidden-first-letter")?.textContent;
-			if (firstLetter == null)
+			let initialLetter = dropCapBlock.querySelector(".hidden-initial-letter")?.textContent;
+			if (initialLetter == null)
 				return;
 
 			//	Add event handler to switch image when mode changes.
 			GW.notificationCenter.addHandlerForEvent(dropCapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
-				let dropCapUrl = randomDropCapURL(dropCapType, firstLetter);
+				let dropCapUrl = randomDropCapURL(dropCapType, initialLetter);
 				dropCapImage.src = dropCapUrl.pathname + dropCapUrl.search;
 			});
 		});
@@ -13547,7 +13534,7 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
     GWLog("linkifyDropCaps", "rewrite.js", 1);
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
+		container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(dropCapBlock => {
 			//	If this drop-cap has already been linkified, do nothing.
 			if (dropCapBlock.querySelector(".link-drop-cap"))
 				return;
@@ -13556,8 +13543,8 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
 			let dropCapType = dropCapTypeOf(dropCapBlock);
 
 			//	Determine initial letter.
-			let firstLetter = (   dropCapBlock.querySelector("span.drop-cap")
-							   ?? dropCapBlock.querySelector(".hidden-first-letter")).textContent;
+			let initialLetter = (   dropCapBlock.querySelector("span.drop-cap")
+								 ?? dropCapBlock.querySelector(".hidden-initial-letter")).textContent;
 
 			//	Get the drop-cap (textual or graphical).
 			let dropCap = dropCapBlock.querySelector(".drop-cap");
@@ -13566,13 +13553,18 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
 			let dropCapLink = newElement("A", {
 				class: "link-page link-drop-cap",
 				href: "/dropcap#" + dropCapType,
-				"data-letter": firstLetter,
+				"data-letter": initialLetter,
 				"data-drop-cap-type": dropCapType
 			});
 			let dropCapLinkWrapper = newElement("SPAN");
 			dropCapLinkWrapper.append(dropCapLink);
 			dropCapLink.append(dropCap);
-			dropCapBlock.insertBefore(dropCapLinkWrapper, dropCapBlock.firstChild);
+
+			//	Inject the link-wrapped drop-cap back into the block.
+			let precedingPunctuation = dropCapBlock.querySelector(".initial-preceding-punctuation");
+			dropCapBlock.insertBefore(dropCapLinkWrapper, precedingPunctuation
+														  ? precedingPunctuation.nextSibling
+														  : dropCapBlock.firstChild);
 
 			//	Process the link to enable extract pop-frames.
 			Extracts.addTargetsWithin(dropCapLinkWrapper);

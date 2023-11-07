@@ -1984,21 +1984,33 @@ del {
     p[class*='drop-cap-'].overlap-not {
         min-height: 6em;
     }
-    p[class*='drop-cap-']::first-letter {
+
+    p[class*='drop-cap-'] a.link-drop-cap,
+    p[class*='drop-cap-'] a.link-drop-cap * {
+    	text-shadow: none;
+    }
+    p[class*='drop-cap-'] span.drop-cap {
         font-style: normal;
         font-weight: normal;
         float: left;
     }
 
+	.initial-preceding-punctuation {
+		float: left;
+		margin-left: -1ch;
+		font-size: 1.5em;
+	}
+
     /*  All of these numbers are magic.
      */
-    p.drop-cap-goudy::first-letter {
+    p.drop-cap-goudy span.drop-cap {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
         margin: 0.025em 0.02em -0.25em 0;
+        color: var(--GW-drop-caps-goudy-color);
     }
-    p.drop-cap-yinit::first-letter {
+    p.drop-cap-yinit span.drop-cap {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
@@ -2006,21 +2018,21 @@ del {
         text-shadow: 0 0 0 var(--GW-drop-caps-yinit-text-shadow-color);
         color: var(--GW-drop-caps-yinit-color);
     }
-    p.drop-cap-de-zs::first-letter {
+    p.drop-cap-de-zs span.drop-cap {
         font-family: Deutsche Zierschrift;
         font-size: 6.625em;
         line-height: 1.1;
-        margin: 0.01em 0.03em -0.25em 0;
+        margin: 0.01em 0.05em -0.25em 0;
         color: var(--GW-drop-caps-de-zs-color);
     }
-    p.drop-cap-cheshire::first-letter {
+    p.drop-cap-cheshire span.drop-cap {
         font-family: Cheshire Initials;
         font-size: 6.75em;
         line-height: 1;
-        margin: 0.045em 0.05em -0.25em 0;
+        margin: 0.045em 0.06em -0.25em 0;
         color: var(--GW-drop-caps-cheshire-color);
     }
-    p.drop-cap-kanzlei::first-letter {
+    p.drop-cap-kanzlei span.drop-cap {
         font-family: Kanzlei Initialen;
         font-size: 7em;
         line-height: 1;
@@ -2031,36 +2043,36 @@ del {
     /*  Compensating for responsive line-height reduction.
      */
     @media all and (max-width: 1199px) {
-        p.drop-cap-goudy::first-letter {
+        p.drop-cap-goudy span.drop-cap {
             font-size: 6.875em;
         }
-        p.drop-cap-yinit::first-letter {
+        p.drop-cap-yinit span.drop-cap {
             font-size: 5.375em;
         }
-        p.drop-cap-de-zs::first-letter {
+        p.drop-cap-de-zs span.drop-cap {
             font-size: 6.5em;
         }
-        p.drop-cap-cheshire::first-letter {
+        p.drop-cap-cheshire span.drop-cap {
             font-size: 6.625em;
         }
-        p.drop-cap-kanzlei::first-letter {
+        p.drop-cap-kanzlei span.drop-cap {
             font-size: 6.875em;
         }
     }
     @media all and (max-width: 999px) {
-        p.drop-cap-goudy::first-letter {
+        p.drop-cap-goudy span.drop-cap {
             font-size: 6.625em;
         }
-        p.drop-cap-yinit::first-letter {
+        p.drop-cap-yinit span.drop-cap {
             font-size: 5.25em;
         }
-        p.drop-cap-de-zs::first-letter {
+        p.drop-cap-de-zs span.drop-cap {
             font-size: 6.25em;
         }
-        p.drop-cap-cheshire::first-letter {
+        p.drop-cap-cheshire span.drop-cap {
             font-size: 6.3125em;
         }
-        p.drop-cap-kanzlei::first-letter {
+        p.drop-cap-kanzlei span.drop-cap {
             font-size: 6.6875em;
         }
     }
@@ -2068,29 +2080,26 @@ del {
     /*  Special styles for special browsers.
      */
     @supports (-moz-user-focus: normal) {
-        p.drop-cap-goudy::first-letter {
+        p.drop-cap-goudy span.drop-cap {
             margin: 0.05em 0.02em 0 0;
         }
-        p.drop-cap-yinit::first-letter {
+        p.drop-cap-yinit span.drop-cap {
             margin: 0.06em 0.06em 0 0;
         }
-        p.drop-cap-de-zs::first-letter {
+        p.drop-cap-de-zs span.drop-cap {
             margin: 0.06em 0.04em 0 0;
         }
-        p.drop-cap-cheshire::first-letter {
+        p.drop-cap-cheshire span.drop-cap {
             margin: 0.06em 0.04em 0 0;
         }
-        p.drop-cap-kanzlei::first-letter {
+        p.drop-cap-kanzlei span.drop-cap {
             margin: 0.05em 0.02em 0 -0.03em;
         }
     }
 
 	/*	Graphical drop-caps.
 	 */
-	p.graphical-drop-cap::first-letter {
-		float: none !important;
-	}
-	p.graphical-drop-cap .hidden-first-letter {
+	p.graphical-drop-cap .hidden-initial-letter {
 		display: inline-block;
 		width: 0;
 		overflow: hidden;
