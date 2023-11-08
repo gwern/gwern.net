@@ -1,9 +1,13 @@
 /*	Popup/floating footnotes to avoid readers needing to scroll to the end of
 	the page to see any footnotes; see
 	https://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
-Original author:  Lukas Mathis (2010-04-20)
-License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
-	*/
+
+	Original author:  Lukas Mathis (2010-04-20)
+	License: public domain (“And some people have asked me about a license for 
+	this piece of code. I think it’s far too short to get its own license, so 
+	I’m relinquishing any copyright claims. Consider the code to be public 
+	domain. No attribution is necessary.")
+ */
 
 Popins = {
 	/******************/
@@ -354,6 +358,8 @@ Popins = {
 		let styleReset = newElement("STYLE");
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
 		popin.document.insertBefore(styleReset, popin.body);
+
+		popin.document.popin = popin;
 
 		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
 

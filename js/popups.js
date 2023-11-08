@@ -334,6 +334,8 @@ Popups = {
 		styleReset.innerHTML = `.shadow-body { all: initial; }`;
 		popup.document.insertBefore(styleReset, popup.body);
 
+		popup.document.popup = popup;
+
 		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
 		popup.titleBarContents = [ ];
