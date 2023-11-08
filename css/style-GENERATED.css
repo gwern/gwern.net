@@ -5670,13 +5670,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popin-stack-counter {
     position: absolute;
     right: calc(100% + var(--GW-popins-popin-border-width));
-    bottom: var(--GW-popins-popin-border-width);
+    bottom: calc(var(--GW-popins-popin-border-width) - 1px);
     height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 1px);
-    padding: 0 0.5rem;
-    background-color: var(--GW-popins-popin-border-color);
-    border-style: solid;
-    border-color: var(--GW-popins-popin-border-color);
-    border-width: 1px 0 0 1px;
+    padding: 1px calc(0.5rem + 1px) 1px calc(0.5rem + 2px);
+    background-color: var(--GW-popins-popin-stack-counter-background-color);
     font-family: var(--GW-sans-serif-font-stack);
     font-size: calc(1rem * 8/9);
     font-weight: normal;
