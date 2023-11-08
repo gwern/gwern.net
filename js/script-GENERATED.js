@@ -3967,13 +3967,16 @@ Popins = {
 		popin.insertBefore(popin.footerBar, null);
 
 		//	Inject footer title-link.
-		let footerTitleLink = newElement("A");
-		footerTitleLink.classList.add("popframe-title-link");
-		footerTitleLink.href = popinTitleLink.href;
-		footerTitleLink.title = `Open ${footerTitleLink.href} in a new tab.`;
-		footerTitleLink.target = "_blank";
-		footerTitleLink.textContent = "Open in new tab…";
-		popin.footerBar.appendChild(footerTitleLink);
+		popin.footerBar.appendChild(newElement("A", {
+			href: popinTitleLink.href,
+			class: "popframe-title-link",
+			title: `Open ${popinTitleLink.href} in a new tab.`,
+			target: "_blank"
+		}, {
+			innerHTML: `<span class="bracket">[</span>`
+					 + `Open in new tab`
+					 + `<span class="bracket">]</span>`
+		}));
 	},
 
 	/*  Elements and methods related to popin title bars.

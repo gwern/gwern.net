@@ -5711,6 +5711,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     font-size: 0.875rem;
 }
 
+.popin .popin-footer-bar .popframe-title-link .bracket {
+	font-size: 1.125em;
+}
+
 /*┌─────────────────────────────┐*/
 /*│ Popup with appended footer. │*/
 /*└─────────────────────────────┘*/
