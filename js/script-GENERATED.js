@@ -3735,9 +3735,8 @@ Popins = {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
 		//  Remove all remnant popins.
-		Popins.allSpawnedPopins().forEach(popin => {
-			Popins.removePopin(popin);
-		});
+		while (Popins.getTopPopin())
+			Popins.removePopin(Popins.getTopPopin());
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popins.keyUp);
@@ -3864,7 +3863,7 @@ Popins = {
 
 	//	Called by: Popins.keyUp
 	getTopPopin: () => {
-		return document.querySelector(".popin");
+		return Popins.spawnedPopins.first;
 	},
 
 	allSpawnedPopFrames: () => {
@@ -4222,8 +4221,7 @@ Popins = {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
 		//  If there’s another popin in the ‘stack’ below this one…
-		let popinBelow = (   popin.nextElementSibling
-						  && popin.nextElementSibling.classList.contains("popin"))
+		let popinBelow = popin.nextElementSibling?.classList.contains("popin")
 						 ? popin.nextElementSibling
 						 : null;
 
