@@ -607,6 +607,16 @@ Extracts = { ...Extracts,
         return popup;
     },
 
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_DROP_CAP_LINK: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
+    },
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_DROP_CAP_LINK: (popFrame) => {
         GWLog("Extracts.rewritePopFrameContent_DROP_CAP_LINK", "extracts.js", 2);
@@ -701,6 +711,16 @@ Extracts = { ...Extracts,
         return popup;
     },
 
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_CITATION: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
+    },
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_CITATION: (popFrame, injectEventInfo = null) => {
         GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts.js", 2);
@@ -791,6 +811,16 @@ Extracts = { ...Extracts,
         popup.classList.add("mini-title-bar");
 
         return popup;
+    },
+
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_CITATION_BACK_LINK: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
@@ -981,6 +1011,16 @@ Extracts = { ...Extracts,
         return popup;
     },
 
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_LOCAL_VIDEO: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
+    },
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_VIDEO: (popFrame) => {
     	let video = popFrame.document.querySelector("video");
@@ -1050,6 +1090,16 @@ Extracts = { ...Extracts,
         popup.classList.add("no-resize-height");
 
         return popup;
+    },
+
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_LOCAL_AUDIO: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
@@ -1152,6 +1202,16 @@ Extracts = { ...Extracts,
         popup.classList.add("mini-title-bar");
 
         return popup;
+    },
+
+    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
+    preparePopin_LOCAL_IMAGE: (popin) => {
+        let target = popin.spawningTarget;
+
+        //  No footer bar.
+        popin.classList.add("no-footer-bar");
+
+        return popin;
     },
 
     //  Called by: Extracts.rewritePopinContent_LOCAL_IMAGE

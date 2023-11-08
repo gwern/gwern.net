@@ -399,7 +399,9 @@ Popins = {
 			*/
 		if (target.popin.titleBarContents.length > 0) {
 			Popins.addTitleBarToPopin(target.popin);
-			Popins.addFooterBarToPopin(target.popin);
+
+			if (target.popin.classList.contains("no-footer-bar") == false)
+				Popins.addFooterBarToPopin(target.popin);
 		}
 
 		//	Add listener to enable tapping on the backdrop to dismiss the popin.
