@@ -4595,7 +4595,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-title-bar-button.extracts-disable-button {
     padding: 5px;
-    margin-right: 0;
+    margin: 0 0 0 2px;
 }
 .popin .popframe-title-bar-button.close-button {
     padding: 4px;
