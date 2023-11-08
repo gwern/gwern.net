@@ -397,9 +397,10 @@ Popins = {
 		/*  If title bar contents are provided, create and inject the popin
 			title bar, and set class `has-title-bar` on the popin.
 			*/
-		if (target.popin.titleBarContents.length > 0)
+		if (target.popin.titleBarContents.length > 0) {
 			Popins.addTitleBarToPopin(target.popin);
 			Popins.addFooterBarToPopin(target.popin);
+		}
 
 		//  Get containing document.
 		let containingDocument = Popins.containingDocumentForTarget(target);
