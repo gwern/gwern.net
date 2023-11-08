@@ -4113,6 +4113,9 @@ Popins = {
 			Popins.addFooterBarToPopin(target.popin);
 		}
 
+		//	Add listener to enable tapping on the backdrop to dismiss the popin.
+		target.popin.addEventListener("click", Popins.popinClicked);
+
 		//  Get containing document.
 		let containingDocument = Popins.containingDocumentForTarget(target);
 
@@ -4285,6 +4288,21 @@ Popins = {
 		}
 
 		document.activeElement.blur();
+	},
+
+	//	A click (tap) on the popin (which will actually be the popin backdrop).
+	popinClicked: (event) => {
+		GWLog("Popins.popinClicked", "popins.js", 2);
+
+		/*	If this isn’t a tap directly on the popin itself (i.e., if the event
+			has bubbled up from a descendant element), we do nothing.
+		 */
+		if (event.target.classList.contains("popin") == false)
+			return;
+
+		event.stopPropagation();
+
+		Popins.removePopin(event.target);
 	},
 
 	/*  The keyup event.
