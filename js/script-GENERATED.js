@@ -9223,6 +9223,13 @@ Extracts = { ...Extracts,
 				&& target.classList.contains("link-page"));
 	},
 
+	/*	Annotation title-links on mobile.
+	 */
+	isMobileAnnotationTitleLink: (target) => {
+		return (   GW.isMobile()
+				&& target.matches(".data-field.title a.title-link"));
+	},
+
     /*  This “special testing function” is used to exclude certain targets which
         have already been categorized as (in this case) `LOCAL_PAGE` targets. It
         returns false if the target is to be excluded, true otherwise. Excluded
@@ -9232,7 +9239,8 @@ Extracts = { ...Extracts,
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
         		  && (   Extracts.isTOCLink(target)
-        			  || Extracts.isSidebarLink(target))));
+        			  || Extracts.isSidebarLink(target)
+        			  || Extracts.isMobileAnnotationTitleLink(target))));
     },
 
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
