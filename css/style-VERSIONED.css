@@ -2309,18 +2309,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5241,14 +5241,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5389,7 +5389,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5656,8 +5656,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: 24px;
 }
 
-.popin .popframe-title-bar-button.disable-extracts-button {
+.popin .popframe-title-bar-button.extracts-disable-button {
+    padding: 5px;
+    margin-right: 0;
+}
+.popin .popframe-title-bar-button.close-button {
     padding: 4px;
+    opacity: 0.85;
 }
 
 /*  Popin stack counter.
@@ -5848,14 +5853,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6758,7 +6763,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#question');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7324,7 +7329,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1699157525#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7399,7 +7404,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699157525#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699481093#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

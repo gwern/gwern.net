@@ -273,7 +273,7 @@ Popins = {
 	titleBarComponents: {
 		//  Icons for various popup title bar buttons.
 		buttonIcons: {
-			"close": "xmark-regular",
+			"close": "times-square-regular",
 			"options": "gear-solid"
 		},
 

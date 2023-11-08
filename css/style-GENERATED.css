@@ -5656,8 +5656,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: 24px;
 }
 
-.popin .popframe-title-bar-button.disable-extracts-button {
+.popin .popframe-title-bar-button.extracts-disable-button {
+    padding: 5px;
+    margin-right: 0;
+}
+.popin .popframe-title-bar-button.close-button {
     padding: 4px;
+    opacity: 0.85;
 }
 
 /*  Popin stack counter.
