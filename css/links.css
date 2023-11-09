@@ -1081,6 +1081,13 @@ a[data-link-icon='emacs'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
+
+a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+    opacity: 0.65;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
