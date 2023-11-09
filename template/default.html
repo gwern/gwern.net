@@ -140,15 +140,14 @@
           <h1><a href="#backlinks-section" title="Link to section: § 'Further Reading'">Further Reading</a></h1>
           <a id="backlinks" href="/metadata/annotation/backlink/$escapedURL$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict">[Backlinks]</a>
         </section>$endif$
-        $if(linkbibYes)$<section id="link-bibliography-section" class="level1">
-          <h1><a href="#link-bibliography-section" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
-          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[Link bibliography]</a>$endif$
-        </section>
         $if(similarsYes)$<section id="similars-section" class="level1">
           <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
           <a id="similars" href="/metadata/annotation/similar/$escapedURL$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[Similars]</a>
           </section>$endif$
-          $endif$
+        $if(linkbibYes)$<section id="link-bibliography-section" class="level1 collapse">
+          <h1><a href="#link-bibliography-section" title="Link to section: § 'Link Bibliography'">Link Bibliography</a></h1>
+          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escapedURL$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include link-bibliography">[Link bibliography]</a>$endif$
+        </section>$endif$
         </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
         <nav id="navigation" title="Website Navigation: Top of Page/Previous Page/Next Page">
