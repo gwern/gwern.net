@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-10-17 19:45:45 gwern"
+# When:  Time-stamp: "2023-11-08 18:44:42 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -73,57 +73,21 @@
 # higher scores. We run extensive ablations to measure the contributions of the components of our
 # proposed method.
 
-import signal
 import sys
-import openai
-
-# define timeout handling:
-def handler(signum, frame):
-    raise TimeoutError("Function call timed out")
-
-# define function to run with timeout:
-def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
-    func = getattr(openai.ChatCompletion, func_name)
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(timeout)
-    try:
-        result = func(*args, **kwargs)
-    except TimeoutError as e:
-        result = None
-    finally:
-        signal.alarm(0)
-    return result
+from openai import OpenAI
+client = OpenAI()
 
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
     target = sys.argv[1]
 
-messages = [
+completion = client.chat.completions.create(
+  model="gpt-4-1106-preview",
+  messages=[
     {"role": "system", "content": "You are a helpful assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
-    {"role": "user", "content": f"Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Use American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
-]
-
-result = run_with_timeout(
-    "create",
-    kwargs={
-        "model": "gpt-4",
-        # "model": "gpt-3.5-turbo-instruct",
-        "messages": messages,
-        # "max_tokens": 4090,
-        "temperature": 0
-    },
-    timeout=120
+    {"role": "user", "content": f"You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.) Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Convert to American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+  ]
 )
 
-if result is None:
-                          sys.stderr.write("Function call timed out")
-else:
-                          print(result['choices'][0]['message']['content'])
-
-# print(result)
-# if target == (result.replace('\n', '')).replace(' ', ''):
-#     print(result)
-# else:
-#     sys.stderr.write(result+'\n-----------------------------------------\n')
-#     print("mangled")
+print(completion.choices[0].message.content)

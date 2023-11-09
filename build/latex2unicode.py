@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2023-10-10 09:43:55 gwern"
+# When:  Time-stamp: "2023-11-08 18:48:33 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -18,31 +18,14 @@
 # $ echo 'a + b = c^2' | python3 latex2unicode.py
 # <em>a</em> + <em>b</em> = <em>c</em><sup>2</sup>
 
-import signal
 import sys
-import openai
-
-# define timeout handling:
-def handler(signum, frame):
-    raise TimeoutError("Function call timed out")
-
-# define function to run with timeout:
-def run_with_timeout(func_name, args=(), kwargs={}, timeout=5):
-    func = getattr(openai.ChatCompletion, func_name)
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(timeout)
-    try:
-        result = func(*args, **kwargs)
-    except TimeoutError as e:
-        result = None
-    finally:
-        signal.alarm(0)
-    return result
+from openai import OpenAI
+client = OpenAI()
 
 if len(sys.argv) == 1:
-    input_text = sys.stdin.read().strip()
+    target = sys.stdin.read().strip()
 else:
-    input_text = sys.argv[1]
+    target = sys.argv[1]
 
 prompt = """
 Task: Convert LaTeX inline expressions from ArXiv-style TeX math to inline Unicode+HTML+CSS, for easier reading in web browsers.
@@ -73,26 +56,14 @@ Converted output: <em>H</em> ≫ 1
 
 Task:
 
-Input to convert: """ + input_text + "Converted output:\n"
+Input to convert: """ + target + "Converted output:\n"
 
-messages = [
-    {"role": "system", "content": "You are a skilled research assistant & tasteful typographer."},
-    {"role": "user", "content": prompt}
-]
-
-result = run_with_timeout(
-    "create",
-    kwargs={
-        "model": "gpt-4", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
-        # "model": "gpt-3.5-turbo-instruct",
-        "messages": messages,
-        "max_tokens": 30,
-        "temperature": 0
-    },
-    timeout=60
+completion = client.chat.completions.create(
+  model="gpt-4-1106-preview", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
+  messages=[
+    {"role": "system", "content": "You are a skilled mathematician & tasteful typographer, expert in LaTeX."},
+    {"role": "user", "content": prompt }
+  ]
 )
 
-if result is None:
-                          sys.stderr.write("Function call timed out")
-else:
-                          print(result['choices'][0]['message']['content'])
+print(completion.choices[0].message.content)
