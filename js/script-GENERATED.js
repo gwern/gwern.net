@@ -4777,12 +4777,6 @@ Annotations = { ...Annotations,
 				if (titleLinkDataAttributes == "")
 					titleLinkDataAttributes = null;
 
-				//	Archive URL.
-				let archiveURL = referenceElement.dataset.urlArchive ?? null;
-				let archiveURLText = archiveURL
-									  ? "archive"
-									  : null;
-
 				//  Author list.
 				let authorElement = response.querySelector(".author");
 				//	Generate comma-separated author list; truncate with “…” abbreviation for ‘et al’ @ > 3.
@@ -4792,55 +4786,69 @@ Annotations = { ...Annotations,
 					if (authorList.length < authorElement.innerHTML.length)
 						authorList += "…";
 				}
-				let author = authorElement 
-							 ? `<span class="data-field author cite-author">${authorList}</span>` 
-							 : null;
+				let authorHTML = authorElement 
+								 ? `<span class="data-field author cite-author">${authorList}</span>` 
+								 : null;
 
 				//  Date.
 				let dateElement = response.querySelector(".date");
-				let date = dateElement 
-						   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
-						      + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
-						      + `</span>`) 
-						   : null;
+				let dateHTML = dateElement 
+							   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
+								  + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
+								  + `</span>`) 
+							   : null;
 
-				// Link Tags
+				//	Link tags.
 				let tagsElement = response.querySelector(".link-tags");
-				let tags = tagsElement
-						   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
-						   : null;
+				let tagsHTML = tagsElement
+							   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
+							   : null;
+
+				//	Archive URL (if exists).
+				let archiveLinkHref = referenceElement.dataset.urlArchive ?? null;
+				let linkTarget = (GW.isMobile() ? "_self" : "_blank");
+				let archiveLinkHTML = archiveLinkHref
+									  ? `<span 
+									  	  class="data-field archiveURL"
+									  	  ><a
+									  	    title="Link to local archive for ${titleText}"
+									  	    href="${archiveLinkHref}"
+									  	    target="${linkTarget}"
+									  	    alt="Locally archived version of this URL"
+									  	    >archive</a></span>`
+									  : null;
 
 				//	The backlinks link (if exists).
 				let backlinksElement = response.querySelector(".backlinks");
-				let backlinks = backlinksElement
-								? `<span 
-									class="data-field aux-links backlinks" 
-									>${backlinksElement.innerHTML}</span>`
-								: null;
+				let backlinksHTML = backlinksElement
+									? `<span 
+										class="data-field aux-links backlinks" 
+										>${backlinksElement.innerHTML}</span>`
+									: null;
 
 				//	The similar-links link (if exists).
 				let similarsElement = response.querySelector(".similars");
-				let similars = similarsElement
-							   ? `<span 
-							       class="data-field aux-links similars"
-							       >${similarsElement.innerHTML}</span>`
-							   : null;
+				let similarsHTML = similarsElement
+								   ? `<span 
+									   class="data-field aux-links similars"
+									   >${similarsElement.innerHTML}</span>`
+								   : null;
 
                 //	The link-link-bibliography link (if exists).
 				let linkbibElement = response.querySelector(".link-bibliography");
-				let linkbib = linkbibElement
-							  ? `<span 
-							  	  class="data-field aux-links link-bibliography"
-							  	  >${linkbibElement.innerHTML}</span>`
-							  : null;
+				let linkbibHTML = linkbibElement
+								  ? `<span 
+							  	      class="data-field aux-links link-bibliography"
+							  	      >${linkbibElement.innerHTML}</span>`
+							  	  : null;
 
-				//	All the aux-links (tags, backlinks, similars, link link-bib).
-				let auxLinks = ([ tags, backlinks, similars, linkbib ].filter(x => x).join("; ") || null);
-				if (auxLinks)
-					auxLinks = ` (${auxLinks})`;
+				//	All the aux-links (tags, archive, backlinks, similars, link link-bib).
+				let auxLinksHTML = ([ archiveLinkHTML, backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
+				if (auxLinksHTML || tagsHTML)
+					auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
 
 				//  Combined author, date, & aux-links.
-				let authorDateAux = ([ author, date, auxLinks ].filter(x => x).join("") || null);
+				let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
 
 				//	Abstract (if exists).
 				let abstractElement = response.querySelector("blockquote");
@@ -4871,12 +4879,10 @@ Annotations = { ...Annotations,
 						titleLinkClass:           titleLinkClass,
 						titleLinkIconMetadata:    titleLinkIconMetadata,
 						titleLinkDataAttributes:  titleLinkDataAttributes,
-						archiveURL:               archiveURL,
-						archiveURLText:           archiveURLText,
-						author:                   author,
-						date:                     date,
-						auxLinks:                 auxLinks,
-						authorDateAux:            authorDateAux,
+						author:                   authorHTML,
+						date:                     dateHTML,
+						auxLinks:                 auxLinksHTML,
+						authorDateAux:            authorDateAuxHTML,
 						abstract:                 abstractHTML,
 					},
 					template:                       "annotation-blockquote-inside",
@@ -4885,7 +4891,7 @@ Annotations = { ...Annotations,
 					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 					popFrameTitleText:              popFrameTitleText,
 					popFrameTitleLinkHref:          titleLinkHref,
-					popFrameTitleArchiveLinkHref:   archiveURL
+					popFrameTitleArchiveLinkHref:   archiveLinkHref
 				};
 			},
 
@@ -7854,17 +7860,7 @@ Transclude.templates = {
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF abstract & ![ archiveURL | authorDateAux ] ]>:<[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a>]</span>
-		<[IFEND]>\\
-
+		<[IF abstract & !authorDateAux ]>:<[IFEND]>\\
 		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
@@ -7881,16 +7877,7 @@ Transclude.templates = {
 		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a>]</span>
-		<[IFEND]>
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
 	</p>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
@@ -7909,17 +7896,7 @@ Transclude.templates = {
 		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a
-		>]</span>
-		<[IFEND]>
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
 	</p>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>

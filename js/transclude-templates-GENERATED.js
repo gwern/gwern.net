@@ -10,17 +10,7 @@ Transclude.templates = {
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF abstract & ![ archiveURL | authorDateAux ] ]>:<[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a>]</span>
-		<[IFEND]>\\
-
+		<[IF abstract & !authorDateAux ]>:<[IFEND]>\\
 		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
@@ -37,16 +27,7 @@ Transclude.templates = {
 		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a>]</span>
-		<[IFEND]>
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
 	</p>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
@@ -65,17 +46,7 @@ Transclude.templates = {
 		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
 			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-
-		<[IF archiveURL]>
-		<span class="archiveURL">[<a
-			 title="Link to local archive for <{titleText}>"
-			 href="<{archiveURL}>"
-			 <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-			 alt="Locally archived version of this URL"
-				 ><{archiveURLText}></a
-		>]</span>
-		<[IFEND]>
+		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
 	</p>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>

@@ -3763,14 +3763,6 @@ section.footnotes .footnote-self-link {
     font-weight: bold;
 }
 
-/*  Original URL.
- */
-.annotation .archiveURL,
-.annotation-partial .archiveURL {
-    font-variant-caps: small-caps;
-    margin-left: 0.25em;
-}
-
 /*  Italicize link tags in popups/indexes similar to the page metadata block’s
     tags, for consistency.
  */
