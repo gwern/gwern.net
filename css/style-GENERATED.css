@@ -8214,25 +8214,25 @@ a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='hn'] .link-icon-hook::after {
+a[data-link-icon='hacker-news'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.65;
 }
-a[data-link-icon='hn']:hover .link-icon-hook::after {
+a[data-link-icon='hacker-news']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='internetarchive'] .link-icon-hook::after {
+a[data-link-icon='internet-archive'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 
     opacity: 0.6;
 }
-a[data-link-icon='internetarchive']:hover .link-icon-hook::after {
+a[data-link-icon='internet-archive']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -8271,14 +8271,14 @@ a[data-link-icon='nautilus']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='newyorktimes'] .link-icon-hook::after {
+a[data-link-icon='newyork-times'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
 }
-a[data-link-icon='newyorktimes']:hover .link-icon-hook::after {
+a[data-link-icon='newyork-times']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -8338,7 +8338,7 @@ a[data-link-icon='springerlink']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='stackexchange'] .link-icon-hook::after {
+a[data-link-icon='stack-exchange'] .link-icon-hook::after {
     --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
@@ -8353,7 +8353,7 @@ a[data-link-icon='substack'] .link-icon-hook::after {
 
     opacity: 0.55;
 }
-a[data-link-icon='theguardian'] .link-icon-hook::after {
+a[data-link-icon='the-guardian'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
@@ -8361,14 +8361,14 @@ a[data-link-icon='theguardian'] .link-icon-hook::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='thenewyorker'] .link-icon-hook::after {
+a[data-link-icon='the-new-yorker'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6
 }
-a[data-link-icon='thenewyorker']:hover .link-icon-hook::after {
+a[data-link-icon='the-new-yorker']:hover .link-icon-hook::after {
     opacity: 0.45;
 }
 
@@ -8388,7 +8388,7 @@ a[data-link-icon='twitter'] .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='uptontea'] .link-icon-hook::after {
+a[data-link-icon='upton-tea'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.45em;
@@ -8407,14 +8407,14 @@ a[data-link-icon='video']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='washingtonpost'] .link-icon-hook::after {
+a[data-link-icon='washington-post'] .link-icon-hook::after {
     --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.85;
 }
-a[data-link-icon='washingtonpost']:hover .link-icon-hook::after {
+a[data-link-icon='washington-post']:hover .link-icon-hook::after {
     opacity: 0.55;
 }
 

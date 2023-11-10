@@ -2309,18 +2309,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5241,14 +5241,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5389,7 +5389,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5850,14 +5850,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6760,7 +6760,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#question');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7326,7 +7326,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1699191185#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1699637901#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7401,7 +7401,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699191185#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699637901#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -8214,25 +8214,25 @@ a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='hn'] .link-icon-hook::after {
+a[data-link-icon='hacker-news'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.65;
 }
-a[data-link-icon='hn']:hover .link-icon-hook::after {
+a[data-link-icon='hacker-news']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='internetarchive'] .link-icon-hook::after {
+a[data-link-icon='internet-archive'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.3em;
 
     opacity: 0.6;
 }
-a[data-link-icon='internetarchive']:hover .link-icon-hook::after {
+a[data-link-icon='internet-archive']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -8271,14 +8271,14 @@ a[data-link-icon='nautilus']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='newyorktimes'] .link-icon-hook::after {
+a[data-link-icon='newyork-times'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
 }
-a[data-link-icon='newyorktimes']:hover .link-icon-hook::after {
+a[data-link-icon='newyork-times']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
@@ -8338,7 +8338,7 @@ a[data-link-icon='springerlink']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='stackexchange'] .link-icon-hook::after {
+a[data-link-icon='stack-exchange'] .link-icon-hook::after {
     --link-icon-size: 0.6em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
@@ -8353,7 +8353,7 @@ a[data-link-icon='substack'] .link-icon-hook::after {
 
     opacity: 0.55;
 }
-a[data-link-icon='theguardian'] .link-icon-hook::after {
+a[data-link-icon='the-guardian'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
@@ -8361,14 +8361,14 @@ a[data-link-icon='theguardian'] .link-icon-hook::after {
     opacity: 0.55;
 }
 
-a[data-link-icon='thenewyorker'] .link-icon-hook::after {
+a[data-link-icon='the-new-yorker'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6
 }
-a[data-link-icon='thenewyorker']:hover .link-icon-hook::after {
+a[data-link-icon='the-new-yorker']:hover .link-icon-hook::after {
     opacity: 0.45;
 }
 
@@ -8388,7 +8388,7 @@ a[data-link-icon='twitter'] .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='uptontea'] .link-icon-hook::after {
+a[data-link-icon='upton-tea'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.45em;
@@ -8407,14 +8407,14 @@ a[data-link-icon='video']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
-a[data-link-icon='washingtonpost'] .link-icon-hook::after {
+a[data-link-icon='washington-post'] .link-icon-hook::after {
     --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.85;
 }
-a[data-link-icon='washingtonpost']:hover .link-icon-hook::after {
+a[data-link-icon='washington-post']:hover .link-icon-hook::after {
     opacity: 0.55;
 }
 
