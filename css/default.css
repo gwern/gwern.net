@@ -6385,13 +6385,45 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         display: none;
     }
     #link-bibliography-section,
-    #toc-link-bibliography-section,
     .link-bibliography-append {
+    	display: none;
+    }
+    .TOC li:has(#toc-link-bibliography-section) {
     	display: none;
     }
     .similars-list li:has(.similar-links-search) {
         display: none;
     }
+
+	/*	Links.
+	 */
+    .markdownBody a:link .indicator-hook,
+    .markdownBody a:link .link-icon-hook {
+    	display: none;
+    }
+    .markdownBody a:link.has-indicator-hook {
+    	padding: 0;
+    	margin: 0;
+    }
+    .markdownBody a:link,
+    .markdownBody a:link * {
+    	text-shadow: none;
+    }
+    .markdownBody a:link,
+    .markdownBody a:link.has-annotation {
+    	background-image: none;
+    }
+	.markdownBody a:link,
+	.markdownBody a:visited {
+    	color: inherit;
+	}
+    .markdownBody p a:link {
+    	text-decoration: underline;
+    	text-decoration-thickness: from-font;
+    	text-underline-position: from-font;
+    	text-underline-offset: -0.05em;
+    }
+
     /*	Label the page tags, as offline/in-print, they will look quite
     	mysterious.
      */
