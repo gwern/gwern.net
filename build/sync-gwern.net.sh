@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-11-07 11:18:37 gwern"
+# When:  Time-stamp: "2023-11-11 16:19:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -828,7 +828,12 @@ else
              (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
               sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
               sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
-              if ((RANDOM % 100 > 90)); then $X_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop"; fi;
+              if ((RANDOM % 100 > 90)); then
+                  # check page speed report for any regressions:
+                  $X_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
+                  bold "Checking print-mode CSS as well…"
+                  chromium --headless --print-to-pdf="~/gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && $X_BROWSER ~/gwernnet-printmode.pdf
+              fi;
              )
          fi
      done
