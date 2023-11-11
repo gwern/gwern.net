@@ -6376,14 +6376,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #footer, #footer-decoration-container {
         display: none;
     }
-    /* Restore the dot separator, which was deleted before by needing to delete the other metadata fields */
-    .page-author::after {
-        content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-        margin: 0 0.35em 0 0.65em;
+    /*	Label the page tags, as offline/in-print, they will look quite
+    	mysterious.
+     */
+    #page-metadata .link-tags p::before {
+    	content: "tags: ";
+    	font-style: normal;
     }
-    /* Label the page tags, as offline/in-print, they will look quite mysterious: */
-    #page-metadata .link-tags::before { content: "tags: ";
-                                        font-style: normal; }
     body {
         margin: 0;
     }
@@ -6393,11 +6392,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     h1, h2, h3, h4, h5, h6 {
         margin-left: 0;
     }
-    .markdownBody p {
-        line-height: 1.6;
-        text-align: justify;
-    }
-    #markdownBody a { text-decoration: underline; }
 }
 
 /***********/

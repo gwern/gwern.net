@@ -2309,18 +2309,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5233,14 +5233,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5381,7 +5381,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5842,14 +5842,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6752,7 +6752,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#question');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7318,7 +7318,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1699481093#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1699647489#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7393,7 +7393,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1699481093#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1699647489#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -7439,14 +7439,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #footer, #footer-decoration-container {
         display: none;
     }
-    /* Restore the dot separator, which was deleted before by needing to delete the other metadata fields */
-    .page-author::after {
-        content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-        margin: 0 0.35em 0 0.65em;
+    /*	Label the page tags, as offline/in-print, they will look quite
+    	mysterious.
+     */
+    #page-metadata .link-tags p::before {
+    	content: "tags: ";
+    	font-style: normal;
     }
-    /* Label the page tags, as offline/in-print, they will look quite mysterious: */
-    #page-metadata .link-tags::before { content: "tags: ";
-                                        font-style: normal; }
     body {
         margin: 0;
     }
@@ -7456,11 +7455,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     h1, h2, h3, h4, h5, h6 {
         margin-left: 0;
     }
-    .markdownBody p {
-        line-height: 1.6;
-        text-align: justify;
-    }
-    #markdownBody a { text-decoration: underline; }
 }
 
 /***********/
