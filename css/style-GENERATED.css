@@ -7423,20 +7423,36 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         --GW-blockquote-background-color: transparent !important;
     }
 
+	/*	Fix for figure top border spanning page breaks.
+	 */
+	figure {
+		position: relative;
+		top: 2px;
+	}
+	.figure-inner-wrapper {
+		margin: -2px auto 2px auto;
+	}
+
     #skip-to-content-link,
     #ui-elements-container,
     #sidebar,
     #page-metadata .page-metadata-fields .backlinks,
     #page-metadata .page-metadata-fields .similars,
     #page-metadata .page-metadata-fields .link-bibliography,
-    #page-metadata .page-metadata-fields .page-importance::after,
     #navigation,
     #noscript-warning-header,
-    .toc-collapse-toggle-button,
     #TOC .toc-collapse-toggle-button,
-    .reader-mode-note,
-    .similar-links-search,
-    #footer, #footer-decoration-container {
+    #footer,
+    #footer-decoration-container,
+    .reader-mode-note {
+        display: none;
+    }
+    #link-bibliography-section,
+    #toc-link-bibliography-section,
+    .link-bibliography-append {
+    	display: none;
+    }
+    .similars-list li:has(.similar-links-search) {
         display: none;
     }
     /*	Label the page tags, as offline/in-print, they will look quite

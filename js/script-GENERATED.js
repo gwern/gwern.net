@@ -13839,25 +13839,29 @@ GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorChec
 /*********************************************************************/
 /*  Trigger transcludes and expand-lock collapse blocks when printing.
  */
-window.addEventListener("beforeprint", (event) => {
+window.addEventListener("beforeprint", GW.beforePrintHandler = (event) => {
     GWLog("Print command received.", "rewrite.js", 1);
 
     function expand(container) {
-        if (   container instanceof Element
-            && container.closest("#link-bibliography, .aux-links-append"))
-            return;
+        Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
+			if (includeLink.closest("#link-bibliography, .link-bibliography-append"))
+				return;
 
-        Transclude.triggerTranscludesInContainer(container);
+            Transclude.transclude(includeLink, true);
+        });
+
         container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
     }
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (eventInfo) => {
         expand(eventInfo.container);
+    }, {
+    	condition: (info) => (info.document == document)
     });
 
     expand(document);
 });
-window.addEventListener("afterprint", (event) => {
+window.addEventListener("afterprint", GW.afterPrintHandler = (event) => {
     GWLog("Print command completed.", "rewrite.js", 1);
 
     GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
