@@ -1565,6 +1565,7 @@ figure.width-full {
 }
 .marginnote.inline {
     color: inherit;
+    font-variant-caps: initial;
 }
 #markdownBody .marginnote.sidenote {
 	--text-hyphenation: none;
