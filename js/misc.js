@@ -620,6 +620,9 @@ function aggregateMarginNotes(eventInfo) {
 		//	Unwrap the inner wrapper (unneeded here).
 		unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
 
+		//	Remove drop-cap, if any.
+		resetDropCapInBlock(clonedNote);
+
 		//	Trim whitespace.
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
 
@@ -635,6 +638,28 @@ function aggregateMarginNotes(eventInfo) {
 	eventInfo.document.querySelectorAll(`.${marginNotesBlockClass}`).forEach(marginNotesBlock => {
 		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);			
 	});
+}
+
+/***************************************************************************/
+/*	Child nodes of a paragraph, excluding any margin notes in sidenote mode.
+ */
+function nodesOfGraf(graf) {
+	return Array.from(graf.childNodes).filter(node => ((node instanceof Element && node.matches(".marginnote.sidenote")) == false));
+}
+
+/*****************************************************************************/
+/*	Text content of a paragraph, excluding the contents of any margin notes in 
+	sidenote mode.
+ */
+function textContentOfGraf(graf) {
+	return nodesOfGraf(graf).map(node => node.textContent).join("");
+}
+
+/******************************************************************************/
+/*	First text node of a paragraph, skipping any margin notes in sidenote mode.
+ */
+function firstTextNodeOfGraf(graf) {
+	return nodesOfGraf(graf).first.firstTextNode;
 }
 
 
@@ -804,6 +829,36 @@ function randomDropCapURL(dropCapType, letter) {
 	let dropCapURL = versionedAssetURL(dropCapPathname);
 
 	return dropCapURL;
+}
+
+/*****************************************************************************/
+/*	Reset drop cap in the given block to initial state (as it was prior to the 
+	handlers in this section being run, i.e. not implemented, only marked for
+	implementation).
+
+	This function is also used to strip drop-caps from blocks that shouldn’t
+	have them in the first place.
+ */
+function resetDropCapInBlock(block) {
+	let dropCapLink = block.querySelector(".link-drop-cap");
+	if (dropCapLink == null)
+		return;
+
+	unwrap(dropCapLink);
+
+	block.querySelector("img.drop-cap")?.remove();
+
+	//	Text node surgery: reattach letter.
+	let letterSpan = block.querySelector("span.drop-cap, span.hidden-initial-letter");
+	letterSpan.nextSibling.textContent = letterSpan.textContent + letterSpan.nextSibling.textContent;
+	letterSpan.remove();
+
+	//	Text node surgery: reattach preceding punctuation (if any).
+	let precedingPunctuation = block.querySelector("span.initial-preceding-punctuation");
+	if (precedingPunctuation) {
+		precedingPunctuation.nextSibling.textContent = precedingPunctuation.textContent + precedingPunctuation.nextSibling.textContent;
+		precedingPunctuation.remove();
+	}
 }
 
 

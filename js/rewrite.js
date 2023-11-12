@@ -1916,8 +1916,13 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) => {
     GWLog("rewriteDropCaps", "rewrite.js", 1);
 
+	//	Reset drop-caps when margin note mode changes.
+	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "GW.dropCaps.resetDropCapsWhenMarginNoteModeChanges", (mediaQuery) => {
+		eventInfo.container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(resetDropCapInBlock);
+	});
+
 	//	A capital letter, optionally preceded by an opening quotation mark.
-	let initialRegexp = new RegExp(/^([“‘])?([A-Z])/);
+	let initialRegexp = new RegExp(/^(\s*[“‘]?)?([A-Z])/);
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
 		container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(dropCapBlock => {
@@ -1926,15 +1931,19 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 				return;
 
 			//	Make sure the graf begins properly and determine initial letter.
-			let initial = initialRegexp.exec(dropCapBlock.textContent);
+			let initial = initialRegexp.exec(textContentOfGraf(dropCapBlock));
 			if (initial == null) {
 				addDropCapClassTo(dropCapBlock, "not");
 				return;
 			}
 			let [ fullInitial, precedingPunctuation, initialLetter ] = initial;
 
+			//	Locate insertion point.
+			let firstNode = firstTextNodeOfGraf(dropCapBlock);
+			let firstNodeParent = firstNode.parentElement;
+
 			//	Separate first letter from rest of text content.
-			dropCapBlock.firstTextNode.textContent = dropCapBlock.firstTextNode.textContent.slice(fullInitial.length);
+			firstNode.textContent = firstNode.textContent.slice(fullInitial.length);
 
 			//	Determine drop-cap type.
 			let dropCapType = dropCapTypeOf(dropCapBlock);
@@ -1945,36 +1954,36 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 				dropCapBlock.classList.add("graphical-drop-cap");
 
 				//	Inject a hidden span to hold the first letter as text.
-				dropCapBlock.insertBefore(newElement("SPAN", {
+				firstNodeParent.insertBefore(newElement("SPAN", {
 					class: "hidden-initial-letter",
 				}, {
 					innerHTML: initialLetter
-				}), dropCapBlock.firstChild);
+				}), firstNode);
 
 				//	Select a drop-cap.
 				let dropCapURL = randomDropCapURL(dropCapType, initialLetter);
 
 				//	Inject the drop-cap image element.
-				dropCapBlock.insertBefore(newElement("IMG", {
+				firstNodeParent.insertBefore(newElement("IMG", {
 					class: "drop-cap figure-not",
 					src: dropCapURL.pathname + dropCapURL.search
-				}), dropCapBlock.firstChild);
+				}), firstNode.previousSibling);
 			} else {
 				//	Inject the drop-cap.
-				dropCapBlock.insertBefore(newElement("SPAN", {
+				firstNodeParent.insertBefore(newElement("SPAN", {
 					class: "drop-cap"
 				}, {
 					innerHTML: initialLetter
-				}), dropCapBlock.firstChild);
+				}), firstNode);
 			}
 
 			//	If there’s punctuation before the initial letter, inject it.
 			if (precedingPunctuation) {
-				dropCapBlock.insertBefore(newElement("SPAN", {
+				firstNodeParent.insertBefore(newElement("SPAN", {
 					class: "initial-preceding-punctuation"
 				}, {
 					innerHTML: precedingPunctuation
-				}), dropCapBlock.firstChild);
+				}), firstNodeParent.querySelector(".drop-cap"));
 			}
 		});
 	});
@@ -2053,11 +2062,19 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
 			dropCapLinkWrapper.append(dropCapLink);
 			dropCapLink.append(dropCap);
 
+			//	Locate insertion point.
+			let firstNode = firstTextNodeOfGraf(dropCapBlock);
+			let firstNodeParent = firstNode.parentElement;
+			if (firstNodeParent.matches(".initial-preceding-punctuation")) {
+				firstNode = firstNodeParent.nextSibling;
+				firstNodeParent = firstNodeParent.parentElement;
+			} else if (firstNodeParent.matches(".hidden-initial-letter")) {
+				firstNode = firstNodeParent;
+				firstNodeParent = firstNodeParent.parentElement;
+			}
+
 			//	Inject the link-wrapped drop-cap back into the block.
-			let precedingPunctuation = dropCapBlock.querySelector(".initial-preceding-punctuation");
-			dropCapBlock.insertBefore(dropCapLinkWrapper, precedingPunctuation
-														  ? precedingPunctuation.nextSibling
-														  : dropCapBlock.firstChild);
+			firstNodeParent.insertBefore(dropCapLinkWrapper, firstNode);
 
 			//	Process the link to enable extract pop-frames.
 			Extracts.addTargetsWithin(dropCapLinkWrapper);
