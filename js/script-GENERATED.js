@@ -8572,8 +8572,19 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                    && (element = targetElementInDocument(target, popFrame.document)))
+                    && (element = targetElementInDocument(target, popFrame.document))) {
+					//	Scroll to element immediately...
                     revealElement(element, true);
+
+					//	... and also after the first layout pass completes.
+					GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+						revealElement(element, true);
+					}, {
+						condition: (layoutEventInfo) => (   layoutEventInfo.container == popFrame.body
+														 && layoutEventInfo.processorName == "applyBlockSpacingInContainer"),
+						once: true
+					});
+                }
             });
         }
     },

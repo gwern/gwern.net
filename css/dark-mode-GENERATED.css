@@ -426,13 +426,6 @@ hr::after,
     filter: invert(1);
 }
 
-/*  Drop cap opacity adjustment.
- */
-.drop-cap-goudy::first-letter,
-.drop-cap-goudy > p::first-letter {
-    opacity: 0.95;
-}
-
 /*  Admonition icons.
  */
 div.admonition.tip::before {

@@ -3322,7 +3322,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 
-
 /**************/
 /* POP-FRAMES */
 /**************/
@@ -3410,25 +3409,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popframe-body .footnotes .footnote-back {
     vertical-align: text-top;
-}
-
-/*  Drop caps in pop-frames.
- */
-
-.popframe-body p.drop-cap-goudy::first-letter {
-    font-size: 6.5em;
-}
-.popframe-body p.drop-cap-yinit::first-letter {
-    font-size: 5.125em;
-}
-.popframe-body p.drop-cap-de-zs::first-letter {
-    font-size: 6.375em;
-}
-.popframe-body p.drop-cap-cheshire::first-letter {
-    font-size: 6.375em;
-}
-.popframe-body p.drop-cap-kanzlei::first-letter {
-    font-size: 6.625em;
 }
 
 /*=-----------------=*/
