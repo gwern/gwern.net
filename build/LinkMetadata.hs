@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-09-26 18:59:33 gwern"
+When:  Time-stamp: "2023-11-13 11:14:12 gwern"
 License: CC-0
 -}
 
@@ -490,7 +490,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                                            [Str (T.pack $ dateTruncateBad dt)]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not", "link-annotated-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
-           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similars"] (T.pack slp, "Similar links for this link (by text embedding).")]]
+           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], []) [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "sources"] (T.pack lb, "Link-bibliography for this annotation (list of sources it cites).")]]
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
