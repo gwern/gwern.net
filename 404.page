@@ -14,14 +14,9 @@ index: true
 error404: true
 ...
 
-<figure class="float-right outline-not" style="margin-top: -50px;">
-    <svg width="452" height="452" aria-labelledby="logoDesc">
-        <title>'I think you went too far.'</title>
-        <desc id="logoDesc">[Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’.]</desc>
-        <use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use>
-    </svg>
-    <figcaption aria-hidden="true">You went too far.</figcaption>
-</figure>
+```{=html}
+<figure class="float-right outline-not" style="margin-top: -50px;"><svg width="452" height="452" aria-labelledby="logoDesc"><title>'I think you went too far.'</title><desc id="logoDesc">[Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’.]</desc><use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use></svg><figcaption aria-hidden="true">You went too far.</figcaption></figure>
+```
 
 <div class="epigraph">
 > Every shrub, every tree—<br />if one has not forgotten<br />where they were planted—<br />has beneath the fallen snow<br />some vestige of its form.
@@ -36,7 +31,8 @@ Try to remember what you were looking for...
 - visit the [**main index**](/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - use a [**search engine**](https://www.google.com/search?q=site%3Agwern.net)
 - browse [documents by **tag**](/doc/index "‘Essays’, N/A 2009"){.backlink-not .icon-not}
-- or look at a list of **pages by traffic**:
+
+Or look at a list of **pages by traffic**:
 
 <div class="columns">
 - [GPT-3 Creative Fiction](/gpt-3 "Branwen 2020"){.backlink-not .icon-not}

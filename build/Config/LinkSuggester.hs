@@ -207,7 +207,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
              "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
              "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
              "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked",
-             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of"]
+             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -984,8 +984,9 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "_The Guardian_" , "The Guardian" ]
     )
   , ( "https://en.wikipedia.org/wiki/The_New_York_Times"
-    , [ "NYT" , "New York Times" , "The New York Times" ]
+    , [ "NYT" , "_New York Times_", "_The New York Times_", "New York Times" , "The New York Times" ]
     )
+  , ("https://en.wikipedia.org/wiki/The_New_Yorker", ["the NYer", "_The New Yorker_", "The New Yorker", "NYer", "_New Yorker_", "New Yorker"])
   , ( "https://en.wikipedia.org/wiki/The_Sandman_%28Vertigo%29"
     , [ "Sandman" ]
     )

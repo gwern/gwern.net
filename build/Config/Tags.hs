@@ -69,7 +69,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("psychology/birds", "psychology/animal/bird"), ("dalle", "dall-e/3"), ("dall-e", "ai/nn/transformer/gpt/dall-e/3"), ("dall-e-3", "ai/nn/transformer/gpt/dall-e/3"), ("dall-1", "ai/nn/transformer/gpt/dall-e/1"), ("dall-2", "ai/nn/transformer/gpt/dall-e/2"), ("dall-e-2", "ai/nn/transformer/gpt/dall-e/2"), ("dall-3", "ai/nn/transformer/gpt/dall-e/3"),
     ("darknet-markets", "darknet-market"), ("silk-road-1", "darknet-market/silk-road/1"), ("sr1", "darknet-market/silk-road/1"), ("sr-1", "darknet-market/silk-road/1"), ("sr-2", "darknet-market/silk-road/2"),
     ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1"),
-    ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"),
+    ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"), ("bird-brain", "psychology/animal/bird/neuroscience"), ("bird/brain", "psychology/animal/bird/neuroscience"), ("brain/bird", "psychology/animal/bird/neuroscience"),
     ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd"),
     ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness"),
     ("conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety"),
@@ -120,7 +120,7 @@ tagsShort2LongRewrites = isUniqueKeys
    ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
    ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning"), ("ai/scaing", "ai/scaling"),
    ("dropcap", "design/typography/dropcap"), ("dropcaps", "design/typography/dropcap"), ("drop-cap", "design/typography/dropcap"),
-   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap"), ("wolfe", "gene-wolfe"), ("genewolfe", "gene-wolfe") ]
+   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap"), ("wolfe", "gene-wolfe"), ("genewolfe", "gene-wolfe"), ("batch", "offline"), ("offline-rl", "reinforcement-learning/offline"), ("off-line", "offline") ]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -148,6 +148,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("reinforcement-learning/imperfect-information", "hidden-information game")
           , ("reinforcement-learning/imitation-learning/brain-imitation-learning", "brain imitation learning")
           , ("reinforcement-learning/imitation-learning",                          "imitation learning")
+          , ("reinforcement-learning/offline",                          "offline RL")
           , ("reinforcement-learning/armstrong-controlproblem", "Armstrong’s RL control problem")
           , ("psychology/inner-monologue", "inner-monologue (psych)")
           , ("psychology/writing", "writing psychology")

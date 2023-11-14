@@ -1288,5 +1288,6 @@ whiteList url
       , "https://sites.google.com/view/llm-superpositions" -- low quality (contentless)
       , "http://writingclaritycalculator.com/" -- interactive (tool)
       , "https://evolutiongym.github.io/" -- low quality (video embeds)
+      , "https://sermanet.github.io/imitate/" -- low quality (video embeds)
       ] = True
     | otherwise = False

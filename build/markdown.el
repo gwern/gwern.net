@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-06 11:10:43 gwern"
+;;; When:  Time-stamp: "2023-11-11 10:15:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1379,10 +1379,10 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "3-fourths" "3⁄4" nil begin end)
        (query-replace "three-fifths" "3⁄5" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
-       (query-replace-regexp "\\([0-9]+\\) of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp "\\([0-9]+\\) of the \\([0-9][0-9]?[0-9]?\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp " \\([0-9][0-9]?[0-9]?\\) of \\([0-9][0-9]?[0-9]?\\) " " \\1⁄\\2 " nil begin end)
-       (query-replace-regexp "\\([0-9]+\\) out of \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
-       (query-replace-regexp "\\([0-9]+\\) out of the \\([0-9]+\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp "\\([0-9]+\\) out of \\([0-9][0-9]?[0-9]?\\)" "\\1⁄\\2" nil begin end)
+       (query-replace-regexp "\\([0-9]+\\) out of the \\([0-9][0-9]?[0-9]?\\)" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\([0-9]+\\) in every \\([0-9]+\\)" "\\1⁄\\2" nil begin end) ; eg. "approximately one in every 10 citations across leading psychology journals is inaccurate"
        (query-replace-regexp "≈ \\([0-9]+\\)%" "≈\\1%" nil begin end) ; "to ≈ 15% for heroin"
 

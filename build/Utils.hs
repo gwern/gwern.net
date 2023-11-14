@@ -314,7 +314,7 @@ cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,"
 inlineMath2Text :: Inline -> IO Inline
 inlineMath2Text x@(Math InlineMath a) =
   do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
-     let mb' = T.pack $ trim $ U.toString mb
+     let mb' = T.pack $ trim $ replace "Converted output: " "" $ U.toString mb
      case status of
        ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
        _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
@@ -1634,6 +1634,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<em>C</em>. <em>elegans</em>", "<em>C. elegans</em>")
          , (" Caenorhabditis elegans ", " <em>Caenorhabditis elegans</em> ")
          , (" C. elegans", " <em>C. elegans</em>")
+         , (" Bacillus subtilis", " <em>Bacillus subtilis</em>")
          , (" Octopus insularis", " <em>Octopus insularis</em>")
          , (" T. gondii", " <em>T. gondii</em>")
          , (" Equus ", " <em>Equus</em> ")
@@ -1757,6 +1758,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" utilizing", " using")
          , (" utilisation", " usage")
          , (" utilization", " usage")
+         , ("synthesising", "synthesizing")
          , (" rivall", " rival")
          , ("hospitalisation", "hospitalization")
          , ("apriori", "a priori")
@@ -1809,6 +1811,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" u.s. ", " U.S. ")
          , (" ofthe", " of the")
          , (" ofdata", " of data")
+         , ("thatuse", "that use")
          , ("nuture", "nurture")
          , ("\8201", " ")
          , ("ADE20k", "ADE20K")
