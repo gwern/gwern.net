@@ -138,13 +138,17 @@ Extracts = { ...Extracts,
 		let button = Extracts.popFrameProvider.titleBarComponents.genericButton();
 
 		button.title = `Disable link ${(Extracts.popFrameTypeText())}s [currently enabled]`;
-		button.innerHTML = GW.svg("message-lines-regular");
+		button.innerHTML = Extracts.popFrameProvider == Popups
+						   ? GW.svg("message-lines-regular")
+						   : GW.svg("message-lines-light");
 		button.classList.add("extracts-disable-button");
 
 		button.addActivateEvent((event) => {
 			event.stopPropagation();
 
-			button.innerHTML = GW.svg("message-slash-regular");
+			button.innerHTML = Extracts.popFrameProvider == Popups
+							   ? GW.svg("message-slash-regular")
+							   : GW.svg("message-slash-light")
 			button.classList.add("disabled");
 
 			GW.pageToolbar.toggleCollapseState(false);

@@ -272,7 +272,7 @@ Popins = {
 	titleBarComponents: {
 		//  Icons for various popup title bar buttons.
 		buttonIcons: {
-			"close": "times-square-regular",
+			"close": "times-square-light",
 			"options": "gear-solid"
 		},
 

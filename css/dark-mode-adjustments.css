@@ -44,6 +44,8 @@
 
 	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
 
+	--GW-popins-popin-title-bar-button-color: #bbb;
+
     --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
     --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
     --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
