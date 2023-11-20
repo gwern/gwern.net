@@ -10660,7 +10660,7 @@ Extracts = { ...Extracts,
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-		let url = URLFromString(target.dataset.urlHtml ?? target.href);
+		let url = URLFromString(target.dataset.urlArchive ?? target.dataset.urlHtml ?? target.href);
 
         //  WARNING: EXPERIMENTAL FEATURE!
         if (localStorage.getItem("enable-embed-proxy") == "true") {
@@ -11884,7 +11884,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 /*	Rectify HTML structure of interviews.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
-    GWLog("designateBlockquoteLevels", "rewrite.js", 1);
+    GWLog("rewriteInterviews", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("div.interview, div.interview > div.collapse").forEach(interviewWrapper => {
 		if (interviewWrapper.firstElementChild.tagName != "UL")

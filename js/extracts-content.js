@@ -1441,7 +1441,7 @@ Extracts = { ...Extracts,
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-		let url = URLFromString(target.dataset.urlHtml ?? target.href);
+		let url = URLFromString(target.dataset.urlArchive ?? target.dataset.urlHtml ?? target.href);
 
         //  WARNING: EXPERIMENTAL FEATURE!
         if (localStorage.getItem("enable-embed-proxy") == "true") {
