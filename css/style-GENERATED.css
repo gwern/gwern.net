@@ -7632,13 +7632,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 /*  Dotted underlines for annotated links.
  */
-.markdownBody a.has-annotation {
+.markdownBody a.has-annotation,
+.markdownBody a.has-annotation-partial {
     --link-underline-background-image: var(--GW-dotted-underline-background-image);
 
     background-image: var(--link-underline-background-image);
     background-size: 2px 1px;
 }
-.markdownBody a.has-annotation:hover {
+.markdownBody a.has-annotation:hover,
+.markdownBody a.has-annotation-partial:hover {
     --link-underline-background-image: var(--GW-dotted-underline-hover-background-image);
 }
 .markdownBody a.has-annotation.decorate-not {
@@ -7647,10 +7649,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 /*  Reversed link colors.
  */
-.markdownBody .colors-invert a.has-annotation {
+.markdownBody .colors-invert a.has-annotation,
+.markdownBody .colors-invert a.has-annotation-partial {
     --link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
 }
-.markdownBody .colors-invert a.has-annotation:hover {
+.markdownBody .colors-invert a.has-annotation:hover,
+.markdownBody .colors-invert a.has-annotation-partial:hover {
     --link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
 }
 
@@ -8663,14 +8667,15 @@ a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
 /*=------------------=*/
 
 a[data-link-icon='wikipedia'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.12em;
+    --link-icon-offset-y: 0.50em;
 
-    opacity: 0.9;
+    opacity: 0.65;
+	margin-right: 0.05em;
 }
 a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 /*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs.
@@ -8678,6 +8683,12 @@ a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
     has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
     function); the dotted-underlining is enough.
  */
+/*	Experimentally un-suppressing, in tandem with styling changes to the WP
+	link icon that make it less obtrusive.
+		—SA 2023-11-19
+ */
+/* 
 a[data-link-icon='wikipedia'].has-annotation .link-icon-hook {
     display: none;
 }
+ */
