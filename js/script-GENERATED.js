@@ -16305,6 +16305,14 @@ ImageFocus = {
 			return node.textContent.trim().replace(/\n\n/g, " ");
 		}
 
+		//	For truncating very long URLs.
+		function truncatedURLString(urlString) {
+			let maxLength = 160;
+			return urlString.length > maxLength
+				   ? urlString.slice(0, maxLength) + "…"
+				   : urlString;
+		}
+
 		/*	Get the figure caption, the ‘title’ attribute of the image, and the 
 			‘alt’ attribute of the image. Clean each of typographic invisibles
 			and educate quotes. Discard duplicate strings. Wrap all remaining 
@@ -16337,7 +16345,7 @@ ImageFocus = {
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
 			  + `<code class="url">`
-				  + ImageFocus.currentlyFocusedImage.src
+				  + truncatedURLString(ImageFocus.currentlyFocusedImage.src)
 			  + `</code>`
 			  + `<span class="icon-container">`
 				  + `<span class="icon normal">`
@@ -16352,7 +16360,7 @@ ImageFocus = {
 		//	Activate click-to-copy on image URL.
 		let imageURLContainer = ImageFocus.overlay.querySelector(".caption .image-url");
 		imageURLContainer.addActivateEvent((event) => {
-			copyTextToClipboard(imageURLContainer.querySelector(".url").textContent);
+			copyTextToClipboard(ImageFocus.currentlyFocusedImage.src);
 
 			//	Update icon.
 			imageURLContainer.classList.add("copied");
