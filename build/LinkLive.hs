@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-09-15 11:40:09 gwern"
+When:  Time-stamp: "2023-11-23 09:49:51 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -55,10 +55,11 @@ import qualified Config.LinkLive as C
 import qualified Config.Misc as CM (userAgent)
 
 linkLive :: Inline -> Inline
-linkLive x@(Link (_,cl,_) _ (u, _))
+linkLive x@(Link (_,cl,kvs) _ (u, _))
  | "link-live-not" `elem` cl = x
  | u `elem` overrideLinkLive = aL x
- | "http://" `T.isPrefixOf` u   = x -- WARNING: no HTTP page can be live-link loaded by a browser visiting HTTPS Gwern.net due to mixed security context
+ | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
+ | "http://" `T.isPrefixOf` u   = x -- WARNING: no HTTP page can be live-link loaded by a browser visiting HTTP*S*-only Gwern.net due to 'mixed security context'
  | "/"    `T.isPrefixOf` u   = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
  | otherwise = case urlLive u of
                  Just True -> aL x
@@ -119,7 +120,7 @@ linkLiveTest = filter (\(u, bool) -> bool /=
 -- check the live test-cases with curl for X-Frame HTTP headers; the presence of these guarantees liveness no longer works and they need to be updated.
 linkLiveTestHeaders :: IO ()
 linkLiveTestHeaders = forM_ (map fst C.goodLinks)
-  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--insecure", "--user-agent", CM.userAgent, "--location","--silent","--head", T.unpack u]
+  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--compressed", "--insecure", "--user-agent", CM.userAgent, "--location", "--silent", "--head", T.unpack u]
             case status of
                 ExitFailure _ -> printRed "Error: curl download failed on URL " >> print (T.unpack u ++ " : " ++ show status ++ " : " ++ show bs)
                 _ -> do let s = map toLower $ U.toString bs
