@@ -445,8 +445,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
             && figure.querySelector("figcaption") != null)
             return;
 
-        wrapElement(image, null, "FIGURE", true,
-            [ "float-left", "float-right", "outline-not", "image-focus-not" ]);
+        wrapElement(image, null, "FIGURE", true, false);
     }, null, eventInfo.container);
 }, "rewrite");
 
@@ -565,11 +564,12 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         //  Re-insert the wrapped caption into the figure.
         innerWrapper.appendChild(captionWrapper);
 
-        //  Tag the figure with the first (or only) media element’s float class.
-        [ "float-left", "float-right" ].forEach(floatClass => {
-            if (media.classList.contains(floatClass))
-                figure.classList.add(floatClass);
-                media.classList.remove(floatClass);
+        //  Tag the figure with the first (or only) media element’s classes.
+        [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
+            if (media.classList.contains(imgClass)) {
+                figure.classList.add(imgClass);
+				media.classList.remove(imgClass);
+			}
         });
     });
 }, "rewrite");
