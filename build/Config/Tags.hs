@@ -108,7 +108,8 @@ tagsShort2LongRewrites = isUniqueKeys
     ("rare-variants", "rare"), ("explore", "exploration"), ("allergies", "allergy"),
     ("cat-allergy", "cat/biology/allergy"), ("cat-allergies", "cat/biology/allergy"), ("antibodies", "antibody"),
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
-    ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("intrasexual-agression", "intrasexual-aggression"),
+    ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"),
+    ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
     ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"),
     ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog"),
@@ -120,7 +121,11 @@ tagsShort2LongRewrites = isUniqueKeys
    ("bp", "bipolar"), ("bpd", "borderline"), ("security-blanket", "transitional-object"), ("comfort-object", "transitional-object"),
    ("animal/psych", "psychology/animal"), ("dataset-pruning", "data-pruning"), ("ai/scaing", "ai/scaling"),
    ("dropcap", "design/typography/dropcap"), ("dropcaps", "design/typography/dropcap"), ("drop-cap", "design/typography/dropcap"),
-   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap"), ("wolfe", "gene-wolfe"), ("genewolfe", "gene-wolfe"), ("batch", "offline"), ("offline-rl", "reinforcement-learning/offline"), ("off-line", "offline") ]
+   ("ai-dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("ai/dropcap", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-ai", "ai/nn/diffusion/midjourney/dropcap"), ("dropcap-mj", "ai/nn/diffusion/midjourney/dropcap"), ("wolfe", "gene-wolfe"), ("genewolfe", "gene-wolfe"),
+   ("batch", "offline"), ("offline-rl", "reinforcement-learning/offline"), ("off-line", "offline"),
+   ("recapture", "statistics/order/capture"), ("capture-recapture", "statistics/order/capture"), ("mark", "statistics/order/capture"), ("mark-and-recapture", "statistics/order/capture"), ("mark-and-capture", "statistics/order/capture"), ("mark-recapture", "statistics/order/capture"),
+   ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue"),
+   ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -136,7 +141,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("technology/self-sinking", "self-sinking disposal")
           , ("technology/google/alerts", "Google Alerts")
           , ("statistics/probability", "probability theory")
-          , ("statistics/peer-review", "peer-review methodology")
+          , ("statistics/peer-review", "peer review")
           , ("statistics/causality", "causality")
           , ("statistics/bias/animal", "animal study methodology")
           , ("statistics/bias", "scientific bias")
@@ -185,6 +190,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("genetics/genome-synthesis", "genome synthesis")
           , ("food/mead", "mead")
           , ("fiction/science-fiction/batman", "Batman")
+          , ("fiction/science-fiction/time-travel", "time-travel")
           , ("fiction/humor/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
           , ("fiction/humor/dinosaur-comics", "<em>Dinosaur Comics</em>")
           , ("existential-risk/nuclear/hofstadter", "nuclear war (Hofstadter)")
@@ -300,6 +306,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("longevity/senolytic", "senolytics")
           , ("longevity/johan-bjorksten", "Johan Bjorksten (aging)")
           , ("psychology/personality/psychopathy", "psychopath")
+          , ("psychology/personality/narcissism", "narcissism")
           , ("psychiatry/meditation", "meditation")
           , ("psychiatry/depression", "MDD")
           , ("psychiatry/bipolar/autism", "BP & autism")
@@ -322,6 +329,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("statistics/stylometry", "stylometry")
           , ("statistics/decision/mail-delivery", "mail-delivery optimization")
           , ("statistics/decision", "decision theory")
+          , ("statistics/order/capture", "mark-and-recapture")
           , ("statistics/order", "order statistics")
           , ("statistics/bayes", "Bayes")
           , ("statistics/power-analysis", "power analysis")

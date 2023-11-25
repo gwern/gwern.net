@@ -595,7 +595,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stack-exchange","svg")
          , ("https://ctan.org/pkg/marginnote", "tex","svg")
          , ("https://danbooru.donmai.us/posts?tags=death_flag", "❐", "text")
-         , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=100&year1=1992&year2=2011", "BLS", "text,sans")
+         , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=1&year1=199201&year2=201101", "BLS", "text,sans")
          , ("https://derpibooru.org/tags/generator-colon-thisponydoesnotexist", "❐", "text")
          , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
          , ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg")

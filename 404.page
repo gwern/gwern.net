@@ -14,9 +14,7 @@ index: true
 error404: true
 ...
 
-```{=html}
-<figure class="float-right outline-not" style="margin-top: -50px;"><svg width="452" height="452" aria-labelledby="logoDesc"><title>'I think you went too far.'</title><desc id="logoDesc">[Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’.]</desc><use href="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg#logo-unifrakturmaguntia-lowercase-h"></use></svg><figcaption aria-hidden="true">You went too far.</figcaption></figure>
-```
+![You went too far.](/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg "Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’."){.float-right .outline-not style="margin-top: -50px;" width="452" height="452"}
 
 <div class="epigraph">
 > Every shrub, every tree—<br />if one has not forgotten<br />where they were planted—<br />has beneath the fallen snow<br />some vestige of its form.

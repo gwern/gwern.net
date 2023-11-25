@@ -1289,5 +1289,10 @@ whiteList url
       , "http://writingclaritycalculator.com/" -- interactive (tool)
       , "https://evolutiongym.github.io/" -- low quality (video embeds)
       , "https://sermanet.github.io/imitate/" -- low quality (video embeds)
+      , "https://maayanlab.cloud/Enrichr/" -- interactive
+      , "https://www.magicschool.ai/" -- low quality (video embeds)
+      , "https://maggieappleton.com/lm-sketchbook#daemons" -- low quality (video embeds)
+      , "https://video-ttt.github.io/" -- low quality (video embeds)
+      , "https://rl-at-scale.github.io/" -- low quality (video embeds)
       ] = True
     | otherwise = False

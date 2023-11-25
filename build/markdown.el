@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-11 10:15:59 gwern"
+;;; When:  Time-stamp: "2023-11-23 10:28:50 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -663,6 +663,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("$\sigma$" . "σ")
                         ("Neff=" . "_N_~eff~ = ")
                         ("Neff" . "_N_~eff~")
+                        ("Ntotal" . "_N_~total~")
                         (" Ne " . " <em>N<sub>e</sub></em> ")
                         ("$N_e$" . "_N_~_e_~")
                         ("$\frac{n}{2}$" . "_n_⁄2")
