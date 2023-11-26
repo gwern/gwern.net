@@ -3253,6 +3253,14 @@ body.page-static-404 figure {
     background-color: var(--GW-body-background-color);
 }
 
+body.page-static-404 figure .figure-inner-wrapper {
+	padding: 0 1em;
+}
+
+body.page-static-404 figure figcaption {
+	margin-top: 0.5em;
+}
+
 /*=----------------=*/
 /*= /review/book =*/
 /*=----------------=*/
