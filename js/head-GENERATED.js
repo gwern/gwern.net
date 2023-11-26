@@ -3155,13 +3155,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		heading.classList.add("heading");
 	});
 
-	//	Designate floats.
-	container.querySelectorAll(selectorize([
-		".float-left",
-		".float-right"
-	])).forEach(floatBlock => {
-		floatBlock.classList.add("float");
-	});
+	//	Designate floats (on non-mobile layouts).
+	if (GW.isMobile() == false) {
+		container.querySelectorAll(selectorize([
+			".float-left",
+			".float-right"
+		])).forEach(floatBlock => {
+			floatBlock.classList.add("float");
+		});
+	}
 
 	//	Designate lists.
 	container.querySelectorAll(selectorize([
@@ -3423,7 +3425,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 			delete listItem.dataset.bsmMod;
 	});
 
-	//	Floats require special treatment.
+	//	Floats require special treatment on non-mobile layouts.
 	container.querySelectorAll(selectorize([ ".float" ])).forEach(floatBlock => {
 		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
