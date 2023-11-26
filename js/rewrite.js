@@ -526,7 +526,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimens
 		requestAnimationFrame(() => {
 			images.forEach(image => {
 				image.style.width = "";
-				setImageDimensions(image);
+				setImageDimensions(image, true);
 			});
 		});
 	});
