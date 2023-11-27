@@ -12174,7 +12174,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimens
 
 	let images = eventInfo.container.querySelectorAll("figure img[width][height]");
 
-	GW.mediaQueries.portraitOrientation.addListener((event) => { 
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
 		requestAnimationFrame(() => {
 			images.forEach(image => {
 				image.style.width = "";
@@ -15894,7 +15894,9 @@ ImageFocus = {
 		</div>`);
 
 		//  On orientation change, reset the size & position.
-		GW.mediaQueries.portraitOrientation.addListener((event) => { requestAnimationFrame(ImageFocus.resetFocusedImagePosition); });
+		doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "ImageFocus.resetFocusedImagePositionWhenOrientationChanges", (mediaQuery) => {
+			requestAnimationFrame(ImageFocus.resetFocusedImagePosition);
+		});
 
 		//  Add click listeners to the buttons.
 		ImageFocus.overlay.querySelectorAll(".slideshow-button").forEach(button => {

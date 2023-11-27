@@ -522,7 +522,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimens
 
 	let images = eventInfo.container.querySelectorAll("figure img[width][height]");
 
-	GW.mediaQueries.portraitOrientation.addListener((event) => { 
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
 		requestAnimationFrame(() => {
 			images.forEach(image => {
 				image.style.width = "";
