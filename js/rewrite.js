@@ -453,9 +453,6 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
  */
 function setImageDimensions(image, fixWidth = false, fixHeight = false) {
-	console.log("Setting image dimensions...");
-	console.log(image);
-
     let width = image.getAttribute("width");
     let height = image.getAttribute("height");
 
@@ -475,7 +472,6 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
         width = Math.round(Math.min(width, image.maxHeight * (width/height)));
 
     if (fixWidth) {
-		console.log("Width:  " + width);
         image.style.width = `${width}px`;
     }
     if (fixHeight) {
@@ -570,6 +566,19 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
         //  Re-insert the wrapped caption into the figure.
         innerWrapper.appendChild(captionWrapper);
+    });
+}, "rewrite");
+
+/*****************************************************************************/
+/*	Allow for specifying figure classes by setting classes on a media element.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) => {
+    GWLog("rectifyFigureClasses", "rewrite.js", 1);
+
+    let mediaSelector = "img, audio, video";
+
+    eventInfo.container.querySelectorAll("figure").forEach(figure => {
+        let media = figure.querySelector(mediaSelector);
 
         //  Tag the figure with the first (or only) media element’s classes.
         [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
