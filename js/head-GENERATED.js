@@ -2621,17 +2621,74 @@ function addLayoutProcessor(name, processor, options = { }) {
 	GW.layout.layoutProcessors.push([ name, processor, options ]);
 }
 
+/******************************************************************************/
+/*	Applies given layout processor to given block container within the given
+	container.
+
+	If the layout processor’s options include a condition, tests the condition
+	against the block container and the base location, applying the processor 
+	only if the test passes.
+
+	Fires didComplete event for each time a layout processor fires.
+
+	Optionally, specify a containing document different from the root document.
+
+	Optionally, specify a base location different from the root document’s.
+	(Useful for processing document fragments representing other pages or parts
+	 thereof.)
+ */
+function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, containingDocument = document, baseLocation = location) {
+	let [ name, processor, options ] = processorSpec;
+
+	let info = {
+		container: blockContainer,
+		baseLocation: baseLocation
+	};
+	if (options.condition?.(info) == false)
+		return;
+
+	processor(blockContainer);
+
+	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
+		document: containingDocument,
+		container: container,
+		processorName: name,
+		processorOptions: options,
+		blockContainer: blockContainer
+	});
+}
+
+/******************************************************************************/
+/*	Do layout in the given container. (Apply all layout processors to all block
+	containers within the given container.)
+ */
+function doLayoutInContainer(container) {
+	let containingDocument = container.getRootNode();
+	let baseDocumentLocation = baseLocationForDocument(containingDocument);
+
+	let blockContainersSelector = selectorize(GW.layout.blockContainers);
+
+	let blockContainers = container.matches(blockContainersSelector)
+						  ? [ container ]
+						  : container.querySelectorAll(".markdownBody");
+
+	blockContainers.forEach(blockContainer => {
+		GW.layout.layoutProcessors.forEach(processorSpec => {
+			applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, containingDocument, baseDocumentLocation);
+		});
+	});
+}
+
 /****************************************************/
 /*	Activates dynamic layout for the given container.
  */
 function startDynamicLayoutInContainer(container) {
 	let containingDocument = container.getRootNode();
+	let baseDocumentLocation = baseLocationForDocument(containingDocument);
 
 	let blockContainersSelector = selectorize(GW.layout.blockContainers);
 
 	let observer = new MutationObserver((mutationsList, observer) => {
-		let baseDocumentLocation = baseLocationForDocument(mutationsList.first?.target?.getRootNode());
-
 		//	Construct list of all block containers affected by these mutations.
 		let affectedBlockContainers = [ ];
 
@@ -2666,25 +2723,8 @@ function startDynamicLayoutInContainer(container) {
 			//	Do layout in all waiting block containers.
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {
 				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
-				GW.layout.layoutProcessors.forEach(layoutProcessor => {
-					let [ name, processor, options ] = layoutProcessor;
-
-					let info = {
-						container: nextBlockContainer,
-						baseLocation: baseDocumentLocation
-					};
-					if (options.condition?.(info) == false)
-						return;
-
-					processor(nextBlockContainer);
-
-					GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
-						document: containingDocument,
-						container: container,
-						processorName: name,
-						processorOptions: options,
-						blockContainer: nextBlockContainer
-					});
+				GW.layout.layoutProcessors.forEach(processorSpec => {
+					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container, containingDocument, baseDocumentLocation);
 				});
 			}
 		});
@@ -2698,6 +2738,11 @@ function startDynamicLayoutInContainer(container) {
  */
 doWhenBodyExists(() => {
 	startDynamicLayoutInContainer(document.body);
+
+	//	Add listener to redo layout when orientation changes.
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
+		doLayoutInContainer(document.body);
+	});
 });
 
 /*****************************************************************************/
@@ -3156,12 +3201,17 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 
 	//	Designate floats (on non-mobile layouts).
-	if (GW.isMobile() == false) {
-		container.querySelectorAll(selectorize([
-			".float-left",
-			".float-right"
-		])).forEach(floatBlock => {
+	let floatClasses = [
+		".float-left",
+		".float-right"
+	];
+	if (GW.mediaQueries.mobileWidth.matches == false) {
+		container.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
 			floatBlock.classList.add("float");
+		});
+	} else {
+		container.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
+			floatBlock.classList.remove("float");
 		});
 	}
 
@@ -3466,7 +3516,8 @@ GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eve
 	GWLog("applyBlockSpacingInCollapseBlockOnStateChange", "layout.js", 2);
 
 	GW.layout.applyBlockSpacingInContainer(eventInfo.collapseBlock);
-});/*	This code is part of dark-mode.js by Said Achmiz.
+});
+/*	This code is part of dark-mode.js by Said Achmiz.
 	See the file `dark-mode.js` for license and more information.
  */
 

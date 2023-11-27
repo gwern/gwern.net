@@ -453,6 +453,9 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
  */
 function setImageDimensions(image, fixWidth = false, fixHeight = false) {
+	console.log("Setting image dimensions...");
+	console.log(image);
+
     let width = image.getAttribute("width");
     let height = image.getAttribute("height");
 
@@ -472,6 +475,7 @@ function setImageDimensions(image, fixWidth = false, fixHeight = false) {
         width = Math.round(Math.min(width, image.maxHeight * (width/height)));
 
     if (fixWidth) {
+		console.log("Width:  " + width);
         image.style.width = `${width}px`;
     }
     if (fixHeight) {
@@ -523,6 +527,9 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimens
 	let images = eventInfo.container.querySelectorAll("figure img[width][height]");
 
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
+		images.forEach(image => {
+			image.maxHeight = null;
+		});
 		requestAnimationFrame(() => {
 			images.forEach(image => {
 				image.style.width = "";
@@ -1988,7 +1995,8 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 		});
 	});
 }, "rewrite", (info) => (   info.document == document
-						 && GW.mediaQueries.mobileWidth.matches == false));
+						 && GW.mediaQueries.mobileWidth.matches == false
+						 && GW.isMobile() == false));
 
 /***********************************************************/
 /*	Activate mode-based dynamic graphical drop-cap swapping.
@@ -2027,7 +2035,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropCap
 		});
 	});
 }, "eventListeners", (info) => (   info.document == document
-								&& GW.mediaQueries.mobileWidth.matches == false));
+								&& GW.mediaQueries.mobileWidth.matches == false
+								&& GW.isMobile() == false));
 
 /*********************/
 /*	Linkify drop-caps.
@@ -2084,7 +2093,8 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
 		});
 	});
 }, "rewrite", (info) => (   info.document == document
-						 && GW.mediaQueries.mobileWidth.matches == false));
+						 && GW.mediaQueries.mobileWidth.matches == false
+						 && GW.isMobile() == false));
 
 /***********************************************************************/
 /*	Prevent blocks with drop caps from overlapping the block below them.
@@ -2101,7 +2111,8 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (event
 		});
 	});
 }, ">rewrite", (info) => (   info.document == document
-						  && GW.mediaQueries.mobileWidth.matches == false));
+						  && GW.mediaQueries.mobileWidth.matches == false
+						  && GW.isMobile() == false));
 
 
 /********/
