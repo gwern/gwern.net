@@ -6310,12 +6310,77 @@ Content = {
 	include or omit. (If both attributes are present, 
 	`data-include-selector-not` is applied first.)
 
+	The `data-include-selector-options`, `data-include-selector-not-options`,
+	and `data-include-selector-general-options` attributes allows various 
+	options to be specified for how the selectors should be applied. The values 
+	of these attributes are pipe (`|`) separated lists of option fields. The 
+	`-options` version of the attribute applies only to `data-include-selector`;
+	`-not-options` applies only to `data-include-selector-not`; and 
+	`-general-options` applies to both. (The specific options attributes take
+	precedence over the general options attribute.)
+
+	The following options may be specified:
+
+	first
+		Select only the first element matching the specified selector, instead 
+		of selecting all matching elements. (In other words, use querySelector()
+		instead of querySelectorAll().)
+
 	(NOTE: `data-include-selector` may be seen as a generalization of the 
 	 `include-block-context` option, described above. Note, however, that both
 	 `include-block-context` and either or both of `data-include-selector` / 
 	 `data-include-selector-not` may be used simultaneously. The effects of the 
 	 data attributes are applied last, after all `include-*` options have been
 	 applied.)
+
+
+	IV. ALIASES
+	===========
+
+	The following classes, set on include-links, function as aliases for various
+	combinations of the above-described functionality. Each entry below lists
+	the alias class (or set of multiple specific classes, in some cases), 
+	followed by the combination of classes, data attributes, etc. to which the 
+	alias is equivalent. Some entries also include usage notes.
+
+	class="include-block-context-expanded"
+
+		class="include-block-context"
+		data-block-context-options="expanded"
+
+		“Expanded block context” typically means “broaden the block context 
+		beyond a single paragraph”.
+
+	class="include-annotation-partial"
+
+		class="include-annotation"
+		data-include-selector-not=".annotation-abstract"
+		data-template-fields="annotationClassSuffix:$"
+		data-annotation-class-suffix="-partial"
+
+		Includes only the metadata of annotations (omitting the annotation 
+		abstract, i.e. the body of the annotation, if any). Formats the included
+		annotation as a partial.
+
+	class="include-annotation include-omit-metadata"
+
+		data-include-selector=".annotation-abstract"
+
+		Essentially the opposite of .include-annotation-partial; includes only
+		the annotation abstract, omitting metadata. (If there is no abstract - 
+		i.e., if the annotation is a partial - the included content will be
+		empty.)
+
+	class="include-content-no-header"
+
+		class="include-unwrap"
+		data-include-selector-not="h1, h2, h3, h4, h5, h6"
+		data-include-selector-not-options="first"
+
+		Applied to an include-link that targets a <section>, will include only 
+		the content of the section; the <section> will be unwrapped, and the 
+		heading discarded. (If applied in some other case, behavior may be
+		unpredictable.)
  */
 
 /******************************************************************************/
@@ -7289,13 +7354,11 @@ Transclude = {
 			include-link. (See documentation for the .include-block-context
 			class for details.)
 		 */
-		if (includeLink.dataset.blockContextOptions) {
-			let options = includeLink.dataset.blockContextOptions.split("|");
+		let options = includeLink.dataset.blockContextOptions?.split("|");
 
-			//	Expanded mode.
-			if (options.includes("expanded"))
-				selectors.remove("p");
-		}
+		//	Expanded mode.
+		if (options?.includes("expanded"))
+			selectors.remove("p");
 
 		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
@@ -7495,19 +7558,56 @@ Transclude = {
 
 		//	Apply `data-include-selector-not` attribute.
 		if (includeLink.dataset.includeSelectorNot) {
-			content.querySelectorAll(includeLink.dataset.includeSelectorNot).forEach(element => {
+			/*	Parse and process selector inclusion options (if any) specified 
+				by the include-link. (See documentation for selector-based
+				inclusion for details.)
+			 */
+			let options;
+			if (   includeLink.dataset.includeSelectorNotOptions
+				|| includeLink.dataset.includeSelectorGeneralOptions)
+				options = (   includeLink.dataset.includeSelectorNotOptions
+						   || includeLink.dataset.includeSelectorGeneralOptions).split("|");
+
+			let elementsToExclude = [ ];
+			if (options?.includes("first")) {
+				let element = content.querySelector(includeLink.dataset.includeSelectorNot);
+				if (element)
+					elementsToExclude.push(element);
+			} else {
+				content.querySelectorAll(includeLink.dataset.includeSelectorNot).forEach(element => {
+					if (elementsToExclude.findIndex(x => x.contains(element)) === -1)
+						elementsToExclude.push(element);
+				});
+			}
+			elementsToExclude.forEach(element => {
 				element.remove();
 			});
 		}
 
 		//	Apply `data-include-selector` attribute.
 		if (includeLink.dataset.includeSelector) {
-			let nodesToInclude = [ ];
-			content.querySelectorAll(includeLink.dataset.includeSelector).forEach(element => {
-				if (nodesToInclude.findIndex(x => x.contains(element)) === -1)
-					nodesToInclude.push(element);
-			});
-			content.replaceChildren(...nodesToInclude);
+			/*	Parse and process selector inclusion options (if any) specified 
+				by the include-link. (See documentation for selector-based
+				inclusion for details.)
+			 */
+			let options;
+			if (   includeLink.dataset.includeSelectorOptions
+				|| includeLink.dataset.includeSelectorGeneralOptions)
+				options = (   includeLink.dataset.includeSelectorOptions
+						   || includeLink.dataset.includeSelectorGeneralOptions).split("|");
+
+			let elementsToInclude = [ ];
+			if (options?.includes("first")) {
+				let element = content.querySelector(includeLink.dataset.includeSelector);
+				if (element)
+					elementsToInclude.push(element);
+			} else {
+				content.querySelectorAll(includeLink.dataset.includeSelector).forEach(element => {
+					if (elementsToInclude.findIndex(x => x.contains(element)) === -1)
+						elementsToInclude.push(element);
+				});
+			}
+			content.replaceChildren(...elementsToInclude);
 		}
 
         return content;
@@ -7901,10 +8001,12 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
 /*	.include-content-no-header
 		`class="include-unwrap"`
 		`data-include-selector-not="h1, h2, h3, h4, h5, h6"`
+		`data-include-selector-not-options="first"`
  */
 Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) => {
 	includeLink.classList.add("include-unwrap");
 	includeLink.dataset.includeSelectorNot = "h1, h2, h3, h4, h5, h6";
+	includeLink.dataset.includeSelectorNotOptions = "first";
 
 	return true;
 });
