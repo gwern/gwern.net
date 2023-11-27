@@ -5513,6 +5513,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     border-top: 1px dotted var(--SA-image-focus-overlay-image-caption-separator-color);
     font-size: 0.9em;
 }
+@media (max-width:  649px) and (orientation: portrait),
+       (max-height: 649px) and (orientation: landscape) {
+	#image-focus-overlay .caption p + p {
+	   display: none;
+	}
+}
 
 #image-focus-overlay .caption code {
     background-color: inherit;
@@ -5547,17 +5553,10 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     transition:
         background-color 0.15s ease-out;
 }
-@media (max-width:  649px) and (orientation: portrait) {
+@media (max-width:  649px) and (orientation: portrait),
+       (max-height: 649px) and (orientation: landscape) {
     #image-focus-overlay .caption .image-url {
-        position: fixed;
-        top: 4.5em;
-    }
-}
-@media (max-height: 649px) and (orientation: landscape) {
-    #image-focus-overlay .caption .image-url {
-        position: fixed;
-        top: 0;
-        margin: 0.5em 6.5em;
+        display: none;
     }
 }
 

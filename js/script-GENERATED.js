@@ -16357,9 +16357,11 @@ ImageFocus = {
 			)].join("") 
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
-			  + `<code class="url">`
-				  + truncatedURLString(ImageFocus.currentlyFocusedImage.src)
-			  + `</code>`
+		  	  + (ImageFocus.currentlyFocusedImage.src.startsWith("data:")
+		  	     ? ``
+		  	     : (  `<code class="url">`
+					+ truncatedURLString(ImageFocus.currentlyFocusedImage.src)
+					+ `</code>`))
 			  + `<span class="icon-container">`
 				  + `<span class="icon normal">`
 					  + GW.svg("copy-regular")
