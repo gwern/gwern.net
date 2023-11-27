@@ -164,6 +164,11 @@ Annotations = { ...Annotations,
 	//	Called by: Annotations.processedAPIResponseForLink
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	dataSourceForLink: (link) => {
+		//	Enables `data-annotation-data-source="foo"` (e.g., "local").
+		if (   link.dataset.annotationDataSource
+			&& Object.keys(Annotations.dataSources).includes(link.dataset.annotationDataSource))
+			return Annotations.dataSources[link.dataset.annotationDataSource];
+
 		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
 			if (sourceName == "local")
 				continue;
