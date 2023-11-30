@@ -4182,7 +4182,7 @@ badLinks = map (\u -> (u,False)) $ isUniqueList ["https://1d4chan.org/wiki/Tale_
             , "https://www.om.nl/actueel/nieuwsberichten/@88570/aanhoudingen/"
             , "https://www.openphilanthropy.org/research/what-should-we-learn-from-past-ai-forecasts/"
             , "https://www.optimizely.com/insights/blog/how-does-page-load-time-impact-engagement/"
-            , "https://www.optimox.com/iodine-study-12"
+            , "https://www.optimox.com/iodine-study-1"
             , "https://www.oreilly.com/library/view/cjkv-information-processing/9780596156114/"
             , "https://www.osti.gov/biblio/10172219"
             , "https://www.outsideonline.com/culture/books-media/how-athletes-get-great/"

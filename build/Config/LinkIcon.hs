@@ -42,7 +42,8 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com",
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
-                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net", "www.1001fonts.com"]
+                     "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
+                     "www.1001fonts.com", "andrewmayne.com"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:
@@ -83,7 +84,7 @@ linkIconRulesOverrides u
  | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
  | aU' u ["twitter.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,monospace") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
- | u' u "openai" || u'' u "gptprompts.wikidot.com" = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
+ | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' u "microsoft" = ("MS", "text,sans,italic") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u' u "#anthropic" || u' u "twitter.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
@@ -98,7 +99,8 @@ linkIconRulesSingle u
  | u'' u "groups.yahoo.com" = ("✉", "text")
  | u'' u "www.mail-archive.com" = ("✉", "text")
  | u' u "carryiton.net/chain-letter/" = ("✉", "text") -- linked only for the archive, so this is an appropriate icon
- | u'' u "www.forbes.com" = ("F", "text")
+ | u'' u "www.forbes.com" = ("F", "text") -- red capital F serif
+ | u'' u "fortune.com" = ("F", "text,sans") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
  | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' u "arxiv.org" || u'' u "ar5iv.labs.arxiv.org" || u'' u "proceedings.mlr.press" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
  | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
@@ -419,6 +421,7 @@ linkIconRulesSVG u
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
  | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
  | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>
+ | u'' u "theinformation.com" = ("the-information", "svg") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'?
 
  -- FINAL MATCHES:
  -- many orgs will use a medium subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
@@ -870,6 +873,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans")
          , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,mono")
          , ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text")
+         , ("https://fortune.com/2023/01/10/microsoft-investment-10-billion-openai-chatgpt/", "F", "text,sans")
          , ("https://www.frontiersin.org/articles/10.3389/fnhum.2011.00134/full", "FS", "text,sans")
          , ("https://www.ft.com/content/009050e4-75ea-11e2-9891-00144feabdc0", "FT", "text")
          , ("https://www.givewell.org/giving101", "GW", "text")
@@ -942,7 +946,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg")
          , ("https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text")
          , ("https://www.research.va.gov/", "VA", "text,sans")
-         , ("https://www.reuters.com/article/us-astrazeneca-targacept/astrazeneca-targacept-drug-fails-depression-test-idUSTRE7A71KO20111108", "R", "text,sans")
+         , ("https://www.reuters.com/article/us-russia-kant-shooting/man-shot-in-russia-in-argument-over-kant-idUSBRE98F0DI20130916", "R", "text,sans")
          , ("https://www.ribbonfarm.com/2011/09/23/the-milo-criterion/", "ℝ𝔽", "text,sans")
          , ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans")
          , ("https://www.salon.com/2007/11/01/whistleblowers/",  "s","text")
@@ -1034,4 +1038,5 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")
          , ("https://www.reddit.com/r/emacs/comments/1530yh8/kalman_reti_the_last_symbolics_developer_speaks/", "emacs", "svg")
          , ("https://www.chicagotribune.com/news/ct-xpm-2004-07-23-0407240014-story.html", "chicago-tribune", "svg")
+         , ("https://www.theinformation.com/", "the-information", "svg")
         ]

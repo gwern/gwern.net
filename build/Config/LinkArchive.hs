@@ -1294,5 +1294,6 @@ whiteList url
       , "https://maggieappleton.com/lm-sketchbook#daemons" -- low quality (video embeds)
       , "https://video-ttt.github.io/" -- low quality (video embeds)
       , "https://rl-at-scale.github.io/" -- low quality (video embeds)
+      , "https://www.nassiben.com/video-based-crypta" -- low quality (video embeds)
       ] = True
     | otherwise = False

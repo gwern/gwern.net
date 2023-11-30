@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-23 10:28:50 gwern"
+;;; When:  Time-stamp: "2023-11-29 18:55:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -436,6 +436,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("<Sub>" . "<sub>")
                      ("</Sub>" . "</sub>")
                      ("]9/doc" . "](/doc")
+                     ("on X (formerly Twitter)" . "on Twitter")
+                     (" X (formerly known as Twitter)" . " Twitter")
+                     ("Elon Musk’s X" . "Elon Musk’s Twitter")
                      )
                    )
             )
@@ -740,6 +743,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("DALL-E" . "DALL·E")
                         ("DALL-e" . "DALL·E")
                         ("NOVA1" . "_NOVA1_")
+                        (" X " . " Twitter ")
+                        (" X." . " Twitter.")
+                        ("X, formerly known as Twitter," . "Twitter")
                         ("x-axis" . "_x_-axis")
                         ("x axis" . "_x_-axis")
                         ("z axis" . "_x_-axis")
