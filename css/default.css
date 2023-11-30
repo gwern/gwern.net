@@ -809,7 +809,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
     --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
 
-    border-top: 1px solid var(--GW-TOC-border-color);
+    border-top: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
 .annotation .collapse.no-abstract.aux-links-append > .collapse-content-wrapper {
@@ -3447,13 +3447,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
  */
 .popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append {
     padding-right: 0.5em;
-    border-right: 1px solid var(--GW-TOC-border-color);
-}
-.popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append.expanded-not {
-    border-left: 1px solid var(--GW-TOC-border-color);
+    border-right: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 .popframe-body > .annotation > .annotation-abstract > .collapse.aux-links-append:last-child {
-    border-bottom: 1px solid var(--GW-TOC-border-color);
+    border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
 /*┌──────────────────────┐*/
@@ -3663,7 +3660,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popframe-body .collapse.section-backlinks-container {
     padding-right: 0.5em;
-    border-color: var(--GW-TOC-border-color);
+    border-color: var(--GW-aux-links-collapse-border-color);
     border-style: solid;
     border-width: 1px 1px 1px 0;
 }

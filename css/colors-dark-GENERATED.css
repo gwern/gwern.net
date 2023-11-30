@@ -66,6 +66,10 @@
 	--GW-collapse-inline-expanded-disclosure-button-text-color: #6c6c6c;
 	--GW-collapse-inline-disclosure-button-text-hover-color: #8b8b8b;
 
+	/*	Aux-links collapse blocks.
+	 */
+	--GW-aux-links-collapse-border-color: #646464;
+
     /*  Headings.
      */
     --GW-H1-border-color: #999;
