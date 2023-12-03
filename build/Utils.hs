@@ -8,7 +8,7 @@ import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, 
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
-import Network.URI (parseURIReference, uriAuthority, uriRegName)
+import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
@@ -19,7 +19,6 @@ import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefix
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
-import Network.URI (uriPath)
 
 import Numeric (showFFloat)
 
@@ -142,18 +141,30 @@ simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
 -- is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
-addClass clss x@(Span  (i, clsses, ks) s)           = if clss `elem` clsses then x else Span (i, clss:clsses, ks) s
-addClass clss x@(Link  (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link (i, clss:clsses, ks) s (url, tt)
+addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code  (i, clss:clsses, ks) code
 addClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Image (i, clss:clsses, ks) s (url, tt)
-addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code (i, clss:clsses, ks) code
+addClass clss x@(Link  (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link  (i, clss:clsses, ks) s (url, tt)
+addClass clss x@(Span  (i, clsses, ks) s)           = if clss `elem` clsses then x else Span  (i, clss:clsses, ks) s
 addClass _    x = x
 removeClass :: T.Text -> Inline -> Inline
-removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span (i, filter (/=clss) clsses, ks) s
-removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link (i, filter (/=clss) clsses, ks) s (url, tt)
+removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsses then x else Code  (i, filter (/=clss) clsses, ks) code
 removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Image (i, filter (/=clss) clsses, ks) s (url, tt)
-removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsses then x else Code (i, filter (/=clss) clsses, ks) code
+removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link  (i, filter (/=clss) clsses, ks) s (url, tt)
+removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span  (i, filter (/=clss) clsses, ks) s
 removeClass _    x = x
 
+removeKey :: T.Text -> Inline -> Inline
+removeKey key (Code  (i, cl, ks) code)        = Code  (i, cl, filter (\(k,_) -> k/=key) ks) code
+removeKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, filter (\(k,_) -> k/=key) ks) s (url, tt)
+removeKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, filter (\(k,_) -> k/=key) ks) s (url, tt)
+removeKey key (Span  (i, cl, ks) s)           = Span  (i, cl, filter (\(k,_) -> k/=key) ks) s
+removeKey _ x = x
+addKey :: (T.Text,T.Text) -> Inline -> Inline
+addKey key (Code  (i, cl, ks) code)        = Code  (i, cl, nub (key : ks)) code
+addKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, nub (key : ks)) s (url, tt)
+addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nub (key : ks)) s (url, tt)
+addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nub (key : ks)) s
+addKey _ x = x
 
 -- enable printing of normal vs dangerous log messages to terminal stderr:
 green, red :: String -> String
@@ -2031,11 +2042,11 @@ isCycleLess xs = if not (cycleExists xs) then xs else
 cycleExists :: Ord a => [(a, a)] -> Bool
 cycleExists tuples = any (uncurry (==)) tuples ||
     -- There's a cycle if one of the strongly connected components has more than one node
-    (any ((> 1) . length . flattenSCC) $
+    any ((> 1) . length . flattenSCC)
        -- Generate strongly connected components from edges
-       stronglyConnComp $
-       -- Create edges by converting a tuple (a, b) to (a, b, [b]) to reflect a -> b
-       map (\(a, b) -> (a, a, [b])) tuples)
+       (stronglyConnComp $
+        -- Create edges by converting a tuple (a, b) to (a, b, [b]) to reflect a -> b
+        map (\(a, b) -> (a, a, [b])) tuples)
 
 -- *Which* rewrite rules are responsible for an infinite loop?
 -- Here's one way to find bad nodes easily (albeit inefficiently):
@@ -2138,7 +2149,7 @@ printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ m
               ]
 
 flattenLinksInInlines :: [Inline] -> [Inline]
-flattenLinksInInlines inlines = map flattenLinks inlines
+flattenLinksInInlines = map flattenLinks
   where flattenLinks :: Inline -> Inline
         flattenLinks x@Link{} = Str (inlinesToText [x])
         flattenLinks x = x

@@ -5,11 +5,11 @@ module LinkIcon (linkIcon, linkIconTest, linkIconPrioritize) where
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, Text)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (host, hasKeyAL, anyPrefixT)
+import Utils (host, hasKeyAL, anyPrefixT, inlinesToText, removeKey, addClass)
 import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules)
 
 -- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
@@ -76,8 +76,22 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg")
 
- | otherwise = addIcon x $ C.linkIconRules u
+ | otherwise = removeIconDuplicate $ addIcon x $ C.linkIconRules u
 linkIcon x = x
+
+-- Periodically like newspapers are often referenced by their abbreviation, which may also be their text link-icon;
+-- it is unnecessary to have a link with a redundant link-icon, eg. 'the WSJ^WSJ^ reported today...' These would
+-- be tedious to try to remember to annotate every instance with a `.icon-not`, so we check for that redundancy,
+-- and remove or skip the text link-icon.
+--
+-- This doesn't apply to symbolic link-icons (eg. 'the NYT^icon^ reported today...' is probably not worth bothering trying to hide).
+removeIconDuplicate :: Inline -> Inline
+removeIconDuplicate x@(Link (_,_,kvs) text _) = let iconType = filter (\(k,v) -> k == "link-icon-type" && "text" `T.isPrefixOf` v) kvs
+                                                in if null iconType then x else
+                                                     let iconText = head $ map snd $ filter (\(k,_) -> k == "link-icon") kvs
+                                                         text' = inlinesToText text
+                                                     in if iconText /= text' then x else removeIcon x
+removeIconDuplicate x = x
 
 hasIcon :: Inline -> Bool
 hasIcon (Link (_,_,ks) _ (_,_)) =
@@ -102,6 +116,12 @@ addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType)  =
                                   ks) a (b,c)
 addIcon x _ = x
 
+-- remove any existing icon metadata from a Link, and add `.icon-not` to ensure it can't show up again
+-- should any later passes try to add icons again.
+removeIcon :: Inline -> Inline
+removeIcon x@Link{} = addClass "icon-not" $ removeKey "link-icon" $ removeKey "link-icon-type" x
+removeIcon x        = x
+
 -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
 -- from the backlinks database) and return domains with at least `linkIconMin` matches. (Link icons
 -- are enough work that below a certain level of prevalence, they are not worthwhile even if completely
@@ -125,6 +145,8 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 -- fixing.
 -- Here we test that URLs get assigned the appropriate icons; on /lorem, we render them to check for
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
+--
+-- TODO: does not test more complex behavior like supression of redundant link-icons
 linkIconTest :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                           /=

@@ -1042,3 +1042,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.theinformation.com/", "the-information", "svg")
          , ("https://www.semafor.com/article/03/24/2023/the-secret-history-of-elon-musk-sam-altman-and-openai", "SMFR", "text,quad")
         ]
+
+-- TODO: more complex link-icon testing: suppression of redundant link-icons
+-- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "") →
+-- Link ("",["icon-not"],[]) [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905","")
