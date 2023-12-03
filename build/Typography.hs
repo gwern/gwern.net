@@ -273,6 +273,7 @@ titleCaseTestCases = isUniqueKeys [ ("‘Two Truths and a Lie’ As a Class-part
             , ("West 'has Not Recovered'", "West 'Has Not Recovered'")
             , ("West \"has Not Recovered\"", "West \"Has Not Recovered\"")
             , ("West “has Not Recovered”", "West “Has Not Recovered”")
+            , ("Did I get Sam Altman fired from OpenAI?: Nathan\8217s redteaming experience, noticing how the board was not aware of GPT-4 jailbreaks & had not even tried GPT-4 prior to its early release", "Did I Get Sam Altman Fired from OpenAI?: Nathan\8217s Redteaming Experience, Noticing How the Board Was Not Aware of GPT-4 Jailbreaks & Had Not Even Tried GPT-4 prior to Its Early Release")
             ]
 titleCaseTest :: [(String, String)]
 titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) titleCaseTestCases

@@ -101,7 +101,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction"),
     ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-monologue"),
     ("latex", "design/typography/tex"), ("vitamind", "vitamin-d"), ("des", "design"),
-    ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"),
+    ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"), ("hierarchy", "ai/nn/transformer/attention/hierarchical"),
     ("bpe", "tokenization"), ("bpes", "tokenization"), ("silex", "psychiatry/anxiety/lavender"),
     ("lavandar", "psychiatry/anxiety/lavender"), ("decision-theory", "decision"), ("statistics/decision-theory", "statistics/decision"),
     ("language", "linguistics"), ("auction-design", "auction"), ("bilingualism", "bilingual"),

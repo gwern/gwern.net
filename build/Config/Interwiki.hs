@@ -72,7 +72,7 @@ testCases = isUniqueKeys [
   , (Link nullAttr [Emph [Str "George Washington’s"]] ("!Wikipedia",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington’s"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
   , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia","George Washington's"),
-      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington's", ""))
+      Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia","Antoine's"),

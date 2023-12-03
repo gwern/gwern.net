@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-29 18:55:53 gwern"
+;;; When:  Time-stamp: "2023-11-30 20:50:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -333,8 +333,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("ﬂ" . "fl")
                      ("￿" . "fi")
                      ("Æ" . "fi")
-                     ("𝑥" . "<em>x</em>")
-                     ("𝑦" . "<em>y</em>")
+                     ("𝑥" . "_x_")
+                     ("𝑦" . "_y_")
                      (" opens in new tab." . "")
                      ("Author links open overlay" . "")
                      ("Get rights and content" . "")
@@ -1845,7 +1845,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (replace-all "%3Csup%3Erd%3C/sup%3E" "rd")
       (replace-all "<!-- -->" "")
       ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
-      ; (query-replace "'" "''" nil begin end)
+      (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
       (ding)
