@@ -103,6 +103,9 @@ inflationDollarTestCases = isUniqueAll
     , (("$0.24","$2017"),          Span nullAttr [Str "$0.24"])
     , (("$100 000","$2023"),       Span nullAttr [Str "$100 000"]) -- NON BREAKING SPACE: null-op, do nothing to the formatting
     , (("$200 000","$2023"),        Span nullAttr [Str "$200 000"]) -- THIN SPACE: null-op, do nothing to the formatting
+    , (("$0","$2017"),             Span nullAttr [Str "$0"])
+    , (("$0.0","$2018"),           Span nullAttr [Str "$0.0"])
+    , (("$0.00","$2019"),          Span nullAttr [Str "$0.00"])
     ]
 
 bitcoinUSDExchangeRateHistory :: M.Map String Double

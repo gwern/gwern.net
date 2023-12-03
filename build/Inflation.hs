@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-11-05 09:00:32 gwern"
+-- When:  Time-stamp: "2023-12-02 22:07:44 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -95,7 +95,7 @@ dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
   -- if the adjustment is <X%, don't bother, it's not misleading enough yet to need adjusting:
   if head text' /= '$' then error $ "Inflation.hs: dollarAdjuster: amount text must begin with a dollar sign: " ++ show l
   else
-   if (adjustedDollar / oldDollar) < C.minPercentage
+   if (adjustedDollar / oldDollar) < C.minPercentage || oldDollar == 0 -- (0/0) yields NaN which fails comparison so we would try to inflation-adjust $0
    then Span nullAttr text -- just strip out the inflation annotation & do nothing
    else Span ("", -- no unique identifier available
               ["inflation-adjusted"], -- CSS/HTML class for styling
