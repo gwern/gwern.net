@@ -62,7 +62,8 @@ tagsShort2LongRewrites = isUniqueKeys
     ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/sample"), ("samples", "ai/nn/transformer/clip/sample"),
     ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"),
     ("quantization", "ai/nn/sparsity/low-precision") , ("reduced-precision", "ai/nn/sparsity/low-precision"), ("mixed-precision", "ai/nn/sparsity/low-precision"), ("evolution", "genetics/selection/natural"),
-    ("gpt-3", "ai/nn/transformer/gpt"), ("gpt3", "ai/nn/transformer/gpt"), ("gpt/nonfiction", "ai/nn/transformer/gpt/non-fiction"),
+    ("gpt-2", "ai/nn/transformer/gpt/2"), ("gpt2", "ai/nn/transformer/gpt/2"),
+    ("gpt-3", "ai/nn/transformer/gpt/3"), ("gpt3", "ai/nn/transformer/gpt/3"), ("gpt/nonfiction", "ai/nn/transformer/gpt/non-fiction"),
     ("red", "design/typography/rubrication"), ("self-attention", "ai/nn/transformer/attention"), ("efficient-attention", "ai/nn/transformer/attention"),
     ("ai/rnn", "ai/nn/rnn"), ("ai/retrieval", "ai/nn/retrieval"), ("mr", "genetics/heritable/correlation/mendelian-randomization"),
     ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience"),
@@ -89,6 +90,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("mlp", "ai/nn/fully-connected"), ("gpt-4", "ai/nn/transformer/gpt/4"), ("gpt4", "ai/nn/transformer/gpt/4"),
     ("gp-4", "ai/nn/transformer/gpt/4"), ("gpt-5", "ai/nn/transformer/gpt/5"), ("gpt5", "ai/nn/transformer/gpt/5"),
     ("gp-5", "ai/nn/transformer/gpt/5"), ("gp5", "ai/nn/transformer/gpt/5"), ("attention/sparse", "ai/nn/transformer/attention/sparsity"),
+    ("ai/sparsity", "sparsity"),
     ("gp4-4", "ai/nn/transformer/gpt/4"), ("gp4", "ai/nn/transformer/gpt/4"), ("gpt-4/nonfiction", "ai/nn/transformer/gpt/4/nonfiction"),
     ("ai/nn/transformer/gpt/4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"), ("gpt-4/non-fiction", "ai/nn/transformer/gpt/4/nonfiction"),
     ("4/non", "ai/nn/transformer/gpt/4/nonfiction"),
@@ -125,7 +127,8 @@ tagsShort2LongRewrites = isUniqueKeys
    ("batch", "offline"), ("offline-rl", "reinforcement-learning/offline"), ("off-line", "offline"),
    ("recapture", "statistics/order/capture"), ("capture-recapture", "statistics/order/capture"), ("mark", "statistics/order/capture"), ("mark-and-recapture", "statistics/order/capture"), ("mark-and-capture", "statistics/order/capture"), ("mark-recapture", "statistics/order/capture"),
    ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue"),
-   ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism")]
+   ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism"),
+   ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -450,6 +453,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("ai/nn/transformer/gpt/4/fiction",          "GPT-4 fiction")
           , ("ai/nn/transformer/gpt/4",                  "GPT-4")
           , ("ai/nn/transformer/gpt/3",                  "GPT-3")
+          , ("ai/nn/transformer/gpt/2",                  "GPT-2")
           , ("ai/nn/transformer/gpt/instruction-tuning", "instruct-tuning LMs")
           , ("ai/nn/transformer/gpt/jukebox",            "Jukebox")
           , ("ai/nn/transformer/gpt/poetry",             "GPT poetry")
@@ -639,7 +643,7 @@ shortTagTestSuite = isUniqueKeys
         , ("gp-4" , "ai/nn/transformer/gpt/4")
         , ("gp4" , "ai/nn/transformer/gpt/4")
         , ("gpt" , "ai/nn/transformer/gpt")
-        , ("gpt-3" , "ai/nn/transformer/gpt")
+        , ("gpt-3" , "ai/nn/transformer/gpt/3")
         , ("gpt-4" , "ai/nn/transformer/gpt/4")
         , ("gpt4" , "ai/nn/transformer/gpt/4")
         , ("gpt-4/fiction" , "ai/nn/transformer/gpt/4/fiction")

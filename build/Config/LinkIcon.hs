@@ -43,7 +43,7 @@ prioritizeLinkIconBlackList = isUniqueList ["lilianweng.github.io", "digital.lib
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
-                     "www.1001fonts.com", "andrewmayne.com"]
+                     "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:
@@ -124,6 +124,7 @@ linkIconRulesSingle u
  | u'' u "slate.com" = ("S", "text,sans")
  | u'' u "www.salon.com" = ("s", "text")
  | u'' u "www.technologyreview.com" = ("T", "text,sans") -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
+ | aU'' u ["time.com", "healthland.time.com"] = ("T", "text") -- Time Magazine
  | aU'' u ["www.urth.net", "lists.urth.net", "www.wolfewiki.com"] = ("U", "text") -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u' u "onlinelibrary.wiley.com" = ("W", "text,sans") -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
  | aU' u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = ("X", "text,overline") -- Long Now Foundation projects
@@ -152,11 +153,12 @@ linkIconRulesSingle u
  | u'' u "www.thelancet.com" = ("L", "text")
  | u' u "github.com/huggingface/" || u' u "medium.com/huggingface/" || u'' u "huggingface.co" = ("\129303", "text") -- "🤗" HUGGING FACE U+1F917
  | u'' u "www.pragmatic.ml" = ("𝕄", "text") -- Madison May, machine learning blog
- | u'' u "www.outsideonline.com" = ("𝕆", "text,sans") -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
+ | u'' u "www.outsideonline.com" = ("𝕆", "text") -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>
  | u'' u "norvig.com" = ("N", "text,sans") -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <https://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
  | u'' u "novelai.net" || u'' u "blog.novelai.net" = ("🖋", "text") -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
- | u'' u "www.thebeliever.net" = ("𝐁", "text,serif") -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
- | u'' u "solar.lowtechmagazine.com" = ("☀", "text,sans") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
+ | u'' u "www.thebeliever.net" = ("𝐁", "text") -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
+ | u'' u "solar.lowtechmagazine.com" = ("☀", "text") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
+ | u'' u "www.nobelprize.org" = ("🏅", "text") -- Nobel Prize, SPORTS MEDAL
  | otherwise = ("", "")
 
 linkIconRulesDouble u
@@ -385,7 +387,9 @@ linkIconRulesSVG u
  | u'' u "www.theguardian.com" || u'' u "www.guardian.co.uk" = ("the-guardian", "svg") -- El Grauniad.
  | u'' u "www.newyorker.com" = ("the-new-yorker", "svg") -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' u "tumblr.com" = ("tumblr", "svg")
- | aU'' u ["twitter.com", "blog.twitter.com", "developer.twitter.com"] = ("twitter", "svg")
+ | aU'' u ["twitter.com", "blog.twitter.com", "developer.twitter.com"] ||
+   -- we host local HTML mirrors of Twitter/Nitter for archiving & annotation-override reasons; rather than give them an uninformative HTML icon, we detect & override here to assign them the bird icon. They follow the schema `/doc/foo/$DATE-$AUTHOR-twitter-$TITLE.html`:
+   (isLocal u && hasExtension ".html" u && "-twitter-" `T.isInfixOf` u) = ("twitter", "svg")
  | u'' u "www.uptontea.com" = ("upton-tea", "svg")
  | u'' u "soundcloud.com" = ("audio", "svg")
  | u' u ".bandcamp.com" = ("audio", "svg")
@@ -446,7 +450,7 @@ linkIconRulesFiletypes u
  | u'' u "imgur.com" || u'' u "i.imgur.com"       = ("image", "svg")
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg")
- | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = ("pdf", "svg")
+ | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg")
  | otherwise = ("", "")
 
 ------------------------------------------------------------------------------------------
@@ -798,6 +802,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
          , ("https://twitter.com/EvaMonkey/", "EG", "text")
          , ("https://twitter.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
+         , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg")
          , ("https://twitter.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
          , ("https://twitter.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
          , ("https://twitter.com/razibkhan/status/1463204399954776073", "RK", "text,sans")
@@ -928,7 +933,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.nzherald.co.nz/nz/drug-mail-or-mule-risks-the-same/QHX3IGRINL7AN5QZR3JRSOQ3NA/", "𝕳", "text")
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri")
          , ("https://www.openphilanthropy.org/research/how-much-computational-power-does-it-take-to-match-the-human-brain/", "open-philanthropy", "svg")
-         , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text,sans")
+         , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text")
          , ("https://www.overcomingbias.com/p/stupider-than-you-realizehtml",  "OB","text")
          , ("https://www.palladiummag.com/2019/05/09/what-botswana-can-teach-us-about-political-stability/", "Pd", "text,sans")
          , ("https://www.patreon.com/AIDungeon", "AID", "text,tri,sans")
@@ -972,7 +977,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
          , ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text")
          , ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic")
-         , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text,serif")
+         , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text")
          , ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text")
          , ("https://www.theguardian.com/books/2013/jul/10/man-behind-dickens-dostoevsky-hoax",  "the-guardian","svg")
          , ("https://www.thenewatlantis.com/publications/correlation-causation-and-confusion", "NA", "text")
@@ -1031,7 +1036,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/js/sidenotes.js",  "code","svg")
          , ("/static/nginx/twdne.conf",  "code","svg")
          , ("/static/template/default.html",  "code","svg")
-         , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text,sans")
+         , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
          , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,monospace")
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
@@ -1041,6 +1046,8 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.chicagotribune.com/news/ct-xpm-2004-07-23-0407240014-story.html", "chicago-tribune", "svg")
          , ("https://www.theinformation.com/", "the-information", "svg")
          , ("https://www.semafor.com/article/03/24/2023/the-secret-history-of-elon-musk-sam-altman-and-openai", "SMFR", "text,quad")
+         , ("https://www.nobelprize.org/?p=2688", "🏅", "text")
+         , ("https://time.com/6337437/sam-altman-openai-fired-why-microsoft-musk/", "T", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
