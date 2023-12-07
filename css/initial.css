@@ -1380,6 +1380,43 @@ ol.list-type-upper-roman > li::before {
 }
 
 
+/**********/
+/* FLOATS */
+/**********/
+/*	Floating figures (mostly for amusing asides/memes), floating small tables,
+	code blocks, blockquotes, etc.
+ */
+
+@media all and (min-width: 650px) {
+	.markdownBody {
+		--float-side-margin: 2em;
+	}
+	.markdownBody blockquote {
+		--float-side-margin: 1.5em;
+	}
+
+	div.float,
+	figure.float {
+        max-width: calc(50% - var(--float-side-margin));
+        margin-bottom: calc(var(--float-side-margin) * 0.5);
+        position: relative;
+        z-index: 1;
+	}
+	div.float-right,
+    figure.float-right {
+        float: right;
+        margin-right: 0;
+        margin-left: var(--float-side-margin);
+    }
+    div.float-left,
+    figure.float-left {
+        float: left;
+        margin-left: 0;
+        margin-right: var(--float-side-margin);
+    }
+}
+
+
 /***********/
 /* FIGURES */
 /***********/
@@ -1394,35 +1431,7 @@ figure {
     }
 }
 
-/*  Floating figures. (Mostly for amusing asides/memes.)
- */
 @media all and (min-width: 650px) {
-	/*	Applies to floating small tables also.
-	 */
-	.markdownBody {
-		--float-side-margin: 2em;
-	}
-	.markdownBody blockquote {
-		--float-side-margin: 1.5em;
-	}
-
-	figure.float {
-        max-width: calc(50% - var(--float-side-margin));
-        margin-bottom: calc(var(--float-side-margin) * 0.5);
-        position: relative;
-        z-index: 1;
-	}
-    figure.float-right {
-        float: right;
-        margin-right: 0;
-        margin-left: var(--float-side-margin);
-    }
-    figure.float-left {
-        float: left;
-        margin-left: 0;
-        margin-right: var(--float-side-margin);
-    }
-
 	/*	Reduce reflow.
 	 */
 	img.float-right,

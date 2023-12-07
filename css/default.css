@@ -1323,19 +1323,11 @@ table {
     But when tried on heavy users like /clone#mackenzie-et-al-1986 or /ab-testing, floated small tables interact badly with code blocks/paragraphs/figures. One would need more intelligence than just making them all float left (or right), so they are left unfloated and must be manually floated (usually in a left/right zig-zag).
  */
 @media all and (min-width: 650px) {
-    .table-small.float {
-        max-width: calc(50% - var(--float-side-margin));
-        margin-bottom: calc(var(--float-side-margin) * 0.5);
-    }
     .table-small.float-left {
-        float: left;
         clear: right;
-        margin-right: var(--float-side-margin);
     }
     .table-small.float-right {
-        float: right;
         clear: left;
-        margin-left: var(--float-side-margin);
     }
 }
 
