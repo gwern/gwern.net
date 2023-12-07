@@ -32,7 +32,7 @@ GW.layout = {
 		".footnote",
 		"figure",
 		"hr",
-		".sourceCode",
+		"div.sourceCode",
 		".table-wrapper",
 		".math.block",
 		".admonition",
