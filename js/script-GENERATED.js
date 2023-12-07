@@ -12346,6 +12346,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) 
 				media.classList.remove(imgClass);
 			}
         });
+
+		media.classList.remove("float");
     });
 }, "rewrite");
 
@@ -12471,6 +12473,29 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapPreBlocks = (eventInfo) => {
     GWLog("wrapPreBlocks", "rewrite.js", 1);
 
 	wrapAll("pre", "sourceCode", "DIV", eventInfo.container, true, false);
+}, "rewrite");
+
+/*****************************************************************************/
+/*	Allow for specifying code block classes by setting classes on the <pre>.
+	(Workaround for a Pandoc peculiarity where classes set on a code block
+	 are applied to the <pre> element and not on the div.sourceCode wrapper.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyCodeBlockClasses = (eventInfo) => {
+    GWLog("rectifyCodeBlockClasses", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll("pre").forEach(preBlock => {
+        let wrapper = preBlock.closest("div.sourceCode");
+
+        //  Tag the wrapper with the <pre>’s classes.
+        [ "float-left", "float-right" ].forEach(preClass => {
+            if (preBlock.classList.contains(preClass)) {
+                wrapper.classList.add(preClass);
+				preBlock.classList.remove(preClass);
+			}
+        });
+
+		preBlock.classList.remove("float");
+    });
 }, "rewrite");
 
 /**********************************************************************/
