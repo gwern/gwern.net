@@ -1222,10 +1222,6 @@ blockquote {
     }
 }
 
-blockquote:not(.float) {
-	clear: both;
-}
-
 blockquote > * {
 	font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
 	line-height: calc((var(--line-height) - 0.05) / var(--blockquote-font-size-scaling-factor));
