@@ -5353,7 +5353,7 @@ Annotations.dataSources.wikipedia = {
 			let thumbnailParents = [ ];
 
 			//  Create the figure and move the thumbnail(s) into it.
-			let figure = newElement("FIGURE", { "class": "float-right" });
+			let figure = newElement("FIGURE", { "class": "thumbnail float-right" });
 			thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
 				if (image.closest("figure") == figure)
 					return;
@@ -5401,7 +5401,7 @@ Annotations.dataSources.wikipedia = {
 
 			//  Insert the figure as the first child of the annotation.
 			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
-			figure.classList.add("float-right");
+			figure.classList.add("thumbnail", "float-right");
 
 			let caption = figure.querySelector("figcaption");
 			if (caption.textContent == "")
@@ -5411,10 +5411,17 @@ Annotations.dataSources.wikipedia = {
 		//	Rewrite other figures.
 		referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
 			let figure = newElement("FIGURE");
-			figureBlock.querySelectorAll("img").forEach(image => {
+
+			let images = figureBlock.querySelectorAll("img");
+			if (images.length == 0)
+				return;
+
+			images.forEach(image => {
 				figure.appendChild(image);
 			});
+
 			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
+
 			figureBlock.parentNode.insertBefore(figure, figureBlock);
 			figureBlock.remove();
 		});
