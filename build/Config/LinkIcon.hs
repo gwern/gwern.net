@@ -72,7 +72,7 @@ linkIconRules u = let result = filter (/=("","")) $ map (\f -> f u) [linkIconRul
 
 -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL. This must be matched first.
 linkIconRulesOverrides u
- | u' u "deepmind"  = ("deepmind", "svg") -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
+ | u' u "deepmind"  = ("deepmind", "svg") -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
  | u' u "schmidhuber" || u' u "people.idsia.ch/~juergen/" = ("SMDH", "text,quad,sans") -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
  | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg")
  | u' u "sites.google.com/berkeley.edu" || aU'' u ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = ("BAIR", "text,quad,mono") -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
@@ -88,7 +88,7 @@ linkIconRulesOverrides u
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
- | u' u "#anthropic" || u' u "twitter.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
+ | u' u "#anthropic" || u' u "twitter.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
  | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text") -- override Yahoo! email
  | otherwise = ("","")
@@ -360,6 +360,7 @@ linkIconRulesQuad u
  | u'' u "scale.com" = ("SCLE", "text,quad,monospace") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
+ | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1048,6 +1049,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.semafor.com/article/03/24/2023/the-secret-history-of-elon-musk-sam-altman-and-openai", "SMFR", "text,quad")
          , ("https://www.nobelprize.org/?p=2688", "🏅", "text")
          , ("https://time.com/6337437/sam-altman-openai-fired-why-microsoft-musk/", "T", "text")
+         , ("https://www.cnbc.com/2017/11/15/microsoft-and-github-unveil-pair-programming-tools.html", "CNBC", "text,quad,sans")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
