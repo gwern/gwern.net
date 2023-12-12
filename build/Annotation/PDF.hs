@@ -63,5 +63,5 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer doi $ cleanAbstractsHTML a
+                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer doi $ linkAutoHtml5String $ cleanAbstractsHTML a
                                                     return $ Just trimmedAbstract
