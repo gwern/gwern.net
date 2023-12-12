@@ -3281,6 +3281,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		list.classList.toggle("big-list", bigList);
 	});
 
+	//	Disable triptychs on mobile layouts.
+	container.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+		/*	Why “aptych”? Because on mobile it is laid out in one column
+			instead of three, making it “un-folded”:
+			https://old.reddit.com/r/AncientGreek/comments/ypts2o/polyptychs_help_with_a_word/
+		 */
+		triptych.classList.toggle("aptych", GW.mediaQueries.mobileWidth.matches);
+	});
+
 	//	Apply special block sequence classes.
 	container.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
@@ -3441,9 +3450,28 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		}
 	});
 
-	//	Lists require special treatment.
+	//	Triptychs require special treatment.
+	container.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
 
-	//	Apply list spacing.
+		if (triptych.classList.contains("aptych")) {
+			triptych.style.removeProperty("--bsm");
+			triptych.classList.remove("block");
+		} else {
+			//	Set triptych BSM to that of first panel.
+			let triptychBSM = parseInt(triptych.firstElementChild.style.getPropertyValue("--bsm"));;
+
+			//	Set all panels’ BSM to 0.
+			for (let panel of triptych.children)
+				panel.style.setProperty("--bsm", 0);
+
+			triptych.style.setProperty("--bsm", triptychBSM);
+			triptych.classList.add("block");
+		}
+	});
+
+	//	Lists require special treatment.
 	container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;

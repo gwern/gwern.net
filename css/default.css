@@ -1007,6 +1007,19 @@ ol.has-floats > li {
 }
 
 
+/*************/
+/* TRIPTYCHS */
+/*************/
+
+@media all and (min-width: 650px) {
+	.triptych {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-column-gap: var(--float-side-margin);
+	}
+}
+
+
 /***********/
 /* FIGURES */
 /***********/
