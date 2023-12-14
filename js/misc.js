@@ -813,7 +813,8 @@ GW.dropCaps = {
 	dropCapBlockSelector: "p[class*='drop-cap-']:not(.drop-cap-not)",
 
 	graphicalDropCapTypes: [
-		"dropcat"
+		"dropcat",
+		"gene-wolfe"
 	]
 };
 
