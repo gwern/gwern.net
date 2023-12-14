@@ -128,7 +128,7 @@ tagsShort2LongRewrites = isUniqueKeys
    ("recapture", "statistics/order/capture"), ("capture-recapture", "statistics/order/capture"), ("mark", "statistics/order/capture"), ("mark-and-recapture", "statistics/order/capture"), ("mark-and-capture", "statistics/order/capture"), ("mark-recapture", "statistics/order/capture"),
    ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue"),
    ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism"),
-   ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide")]
+   ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive")]
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -227,7 +227,8 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("anime/eva/notenki-memoirs/blue-blazes", "<em>Blue Blazes</em>")
           , ("anime/eva/notenki-memoirs", "<em>Notenki Memoirs</em>")
           , ("anime/eva/little-boy/otaku-talk", "“Otaku Talk” roundtable")
-          , ("ai/scaling/economics", "AI scaling economics")
+          , ("ai/scaling/economics", "AI economics")
+          , ("ai/scaling/hardware", "AI hardware")
           , ("ai/poetry", "poetry by AI")
           , ("ai/nn/transformer/gpt/calibration", "GPT calibration")
           , ("ai/nn/transformer/fiction", "Transformer fiction")
@@ -373,6 +374,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("reinforcement-learning/multi-agent", "MARL")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/meta-learning", "meta-learning")
+          , ("ai/nn/anthropic", "Anthropic")
           , ("reinforcement-learning/deepmind", "DeepMind")
           , ("reinforcement-learning/openai", "OA")
           , ("cs/linkrot/archiving", "Internet archiving")

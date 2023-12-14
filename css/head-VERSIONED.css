@@ -42,7 +42,7 @@ html,
 /* ADAPTIVENESS */
 /****************/
 
-/*	Utility classes: show something only on mobile (`.desktop-not`) 
+/*	Utility classes: show something only on mobile (`.desktop-not`)
 	or only on desktop (`.mobile-not`).
  */
 @media all and (max-width: 649px) {
@@ -336,7 +336,7 @@ article {
 #page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
-/*  Interpunct separators for the metadata fields; looks nicer than semicolons 
+/*  Interpunct separators for the metadata fields; looks nicer than semicolons
 	or slashes.
  */
 #page-metadata .page-metadata-fields > span::after {
@@ -458,7 +458,7 @@ article {
     }
 	/*	Author (on its own line).
 	 */
-	#page-metadata .page-metadata-fields .page-author {	
+	#page-metadata .page-metadata-fields .page-author {
 		flex: 1 1 100%;
 		text-align: center;
 	}
@@ -1969,6 +1969,11 @@ body.page-index #markdownBody section h1 a::after {
 
 /*  Link lists.
  */
+/* Index tweak: we start the unordered lists of pages with the second-level list icon (the empty/white star) instead
+   of the default first-level list icon (the filled/black star). This is because if we use the normal list markers,
+   it looks rather overwhelming due to the sheer number of black stars, distracting from the essay titles and
+   wrecking the 'color'. Since there is currently no three-level nesting, we don't need to worry about cycling,
+   and just lighten the color of the first/second level markers by overriding them. */
 body.page-index #markdownBody section ul {
 	--list-left-padding: 1.375em;
 	--text-alignment: left;

@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-11-30 20:50:11 gwern"
+;;; When:  Time-stamp: "2023-12-10 11:01:15 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -420,6 +420,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" ex vivo " . " _ex vivo_ ")
                      ("two-by-two" . "2×2")
                      (" B.M.I" . " BMI")
+                     (" A.I." . " AI")
+                     (" C.E.O." . " CEO")
                      ("controled" . "controlled")
                      ("one-fourth" . "1⁄4")
                      ("one-half" . "1⁄2")
@@ -437,8 +439,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("</Sub>" . "</sub>")
                      ("]9/doc" . "](/doc")
                      ("on X (formerly Twitter)" . "on Twitter")
+                     ("on X:" . "on Twitter:")
+                     (" X," . " Twitter,")
                      (" X (formerly known as Twitter)" . " Twitter")
                      ("Elon Musk’s X" . "Elon Musk’s Twitter")
+                     (" target=\"_blank\"" . " target=\"_blank\"")
                      )
                    )
             )
@@ -1017,7 +1022,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([0-9∞.]++|one|two|three\\) to \\([0-9∞.]+\\)"          . "\\1 → \\2")
                         ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
                         (" \\([0-9∞.]+\\) or \\([0-9∞.]+\\) "        . " \\1–\\2 ")
-                        ("\\([0-9∞]+\\)- to \\([0-9∞]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
+                        ("\\([0-9∞.]+\\)- to \\([0-9∞.]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         ("95% CI = \\([0-9]\\.[0-9]+\\), \\([0-9]\\.[0-9]+\\)" . "95% CI = \\1–\\2")
                         )
                       ))

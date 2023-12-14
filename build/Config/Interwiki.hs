@@ -162,7 +162,7 @@ testCases = isUniqueKeys [
   ]
 
 quoteOverrides :: [T.Text]
-quoteOverrides = isUniqueList ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's",
+quoteOverrides = isUniqueList ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Denny's", "Denny’s",
                                 "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's",
                                 "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
 

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-11-29 10:42:52 gwern"
+# When:  Time-stamp: "2023-12-12 18:46:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -123,6 +123,7 @@ else
         compile generateDirectory.hs; fi
     compile preprocess-markdown.hs
     compile guessTag.hs &
+    compile changeTag.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
@@ -777,7 +778,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --exclude='link-extractor' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"

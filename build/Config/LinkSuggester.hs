@@ -207,7 +207,7 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
              "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
              "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
              "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked",
-             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter"]
+             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter", "media report"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -219,6 +219,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/MIT_Technology_Review", ["MIT Technology Review", "Technology Review"])
   , ("https://en.wikipedia.org/wiki/Greg_Brockman", ["Greg Brockman", "Brockman"])
   , ("https://en.wikipedia.org/wiki/Ilya_Sutskever", ["Ilya Sutskever", "Sutskever"])
   , ("https://en.wikipedia.org/wiki/John_Carmack", ["John Carmack"])
@@ -243,7 +244,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"
       ]
     )
-  , ( "/doc/genetics/heritable/1987-plomin.pdf"
+  , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3147063/"
     , [ "Why are children in the same family so different from one another"
       ]
     )
@@ -1168,7 +1169,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
   , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
     , [ "Learning through human feedback" ]
     )
-  , ( "https://www.deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system"
+  , ( "https://deepmind.google/discover/blog/prefrontal-cortex-as-a-meta-reinforcement-learning-system/"
     , [ "Prefrontal cortex as a meta-reinforcement learning system" ]
     )
   , ( "https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio"

@@ -32,8 +32,9 @@ biorxiv p = do checkURL p
                                      let author  = cleanAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                      let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                      let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
-                                     abstrct <- fmap (replace "9s" "s". -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                                      linkAutoHtml5String . cleanAbstractsHTML) $ processParagraphizer p $ cleanAbstractsHTML abstractRaw'
+                                     abstrct <- processParagraphizer p $
+                                                replace "9s" "s" $ -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
+                                                linkAutoHtml5String $ cleanAbstractsHTML abstractRaw'
                                      let ts = [] -- TODO: replace with ML call to infer tags
                                      if abstrct == "" then do printRed "BioRxiv parsing failed"
                                                               print ("Metas: " ++ show metas)

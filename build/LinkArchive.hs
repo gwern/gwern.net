@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-10-24 09:56:55 gwern"
+When:  Time-stamp: "2023-12-07 10:02:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -117,7 +117,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed')
+import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed', printGreen)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
@@ -161,7 +161,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                      Right (Just "") -> printRed' "Error! Invalid empty archive link: " (show p ++ " : " ++ show ami) >> return False
                                      Right u@(Just ('/':'/':_)) -> printRed' "Error! Invalid double-slash archive link: " (show p ++ show ami ++ show u) >> return False
                                      Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
-                                                          printRed' "Warning: Did a local link slip in somehow? (this will be removed automatically) " (show p ++ show u ++ show ami) >> return False
+                                                          printGreen "Warning: Did a local link slip in somehow? (this will be removed automatically): " >> print (show p ++ show u ++ show ami) >> return False
                                                         else
                                                           if isNothing (parseTLD p) then
                                                            printRed' "Error! Invalid URI link in archive? " (show p ++ show u ++ show ami) >> return False

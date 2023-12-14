@@ -299,7 +299,7 @@ processDOIArxiv url = "10.48550/arXiv." ++
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
-cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","), ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"), (" DO,", ","), ("M. D. MPH", ""), (" ", " ")]) .
+cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","), ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"), (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","), (" M. D. MMM", "")]) .
                        sedMany (isUniqueKeys [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -1134,6 +1134,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\n</abstract>", "")
          , ("<strong>Abstract</strong>:<p>", "<p>")
          , ("<p><strong>Abstract</strong>: ", "<p>")
+         , ("<p><strong>Abstract</strong></p>", "")
          , ("<strong>AIM:</strong>", "<strong>Aim</strong>:")
          , ("<strong>METHODS:</strong>", "<strong>Method</strong>:")
          , ("<strong>RESULTS:</strong>", "<strong>Results</strong>:")
@@ -1714,6 +1715,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (" Copyright</p>", "")
          , (" GPT2", " GPT-2")
          , (" GPT3", " GPT-3")
+         , (" target=\"_blank\"", "")
          , ("</sup><br />", "</sup>")
          , (" < jats:sub>", "<sub>")
          , ("<italic toggle=\"yes\">", "<em>")

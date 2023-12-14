@@ -471,5 +471,6 @@ siteBlackList = isUniqueList [
           "pile.eleuther.ai", "verdagon.dev", "dataverse.harvard.edu", "tim.blog", "radiolab.org", "melaniemitchell.me", "www.ece.uvic.ca",
           "classic.clinicaltrials.gov", "www.takimag.com", "theathletic.com", "fasttext.cc", "ars.els-cdn.com", "pubs.aip.org",
           "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","researchers.wls.wisc.edu","www.harvey.ai",
-          "tylervigen.com", "foundation.wikimedia.org", "cdn.discordapp.com","internetshakespeare.uvic.ca", "forecasting.substack.com", "git-scm.com"
-          , "www.emacswiki.org", "geminiprotocol.net", "figshare.com", "www.semafor.com", "google-research.github.io"]
+          "tylervigen.com", "foundation.wikimedia.org", "cdn.discordapp.com","internetshakespeare.uvic.ca", "forecasting.substack.com", "git-scm.com",
+          "www.emacswiki.org", "geminiprotocol.net", "figshare.com", "www.semafor.com", "google-research.github.io", "deepmind.google",
+          "www.crd.york.ac.uk", "www.crunchbase.com"]
