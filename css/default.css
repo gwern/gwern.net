@@ -232,12 +232,6 @@ section.highlight-fading::before {
     padding-bottom: 0;
 }
 
-/*	Collapse/float interaction.
- */
-.collapse-block:not(.float) {
-	clear: both;
-}
-
 /************************************/
 /*  Collapse block component z-order.
  */
