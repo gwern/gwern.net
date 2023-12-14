@@ -13903,11 +13903,20 @@ addContentInjectHandler(GW.contentInjectHandlers.linkifyDropCaps = (eventInfo) =
 addContentInjectHandler(GW.contentInjectHandlers.preventDropCapsOverlap = (eventInfo) => {
     GWLog("preventDropCapsOverlap", "rewrite.js", 1);
 
+	let blocksNotToBeOverlappedSelector = [
+		"section",
+		"blockquote",
+		".list",
+		".collapse",
+		".list-heading",
+		"p[class*='drop-cap-']"
+	].join(", ");
+
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
 		container.querySelectorAll("p[class*='drop-cap-']").forEach(dropCapBlock => {
 			let nextBlock = nextBlockOf(dropCapBlock, { alsoBlockElements: [ ".list" ] });
 			if (   nextBlock == null
-				|| nextBlock.matches("section, blockquote, .list, .collapse, .list-heading"))
+				|| nextBlock.matches(blocksNotToBeOverlappedSelector))
 				dropCapBlock.classList.add("overlap-not");
 		});
 	});
