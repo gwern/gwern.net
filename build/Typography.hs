@@ -12,7 +12,7 @@
 module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
-import Data.Char (toUpper)
+import Data.Char (isPunctuation, isSpace, toUpper)
 import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text) -- any
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
@@ -216,30 +216,46 @@ titlecase' t = let t' = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
          titlecase'' t' =  replaceMany [("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
-          capitalizeAfterApostrophe $ capitalizeAfterHyphen t'
+          capitalizeAfterApostrophe $ capitalizeAfterHyphen t t'
 
-         capitalizeAfterHyphen :: String -> String
-         capitalizeAfterHyphen "" = ""
-         capitalizeAfterHyphen s = case break (== '-') s of
-              (before, '-':after) ->
-                  before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen after)
-              (before, [])        -> before
-              _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
-            where
-              capitalizeFirst []     = []
-              capitalizeFirst (x:xs) = toUpper x : xs
+capitalizeAfterHyphen :: String -> String -> String
+capitalizeAfterHyphen _ "" = ""
+capitalizeAfterHyphen t s = case break (== '-') s of
+     (before, '-':after) ->
+         before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen t after)
+     (before, [])        -> before
+     _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
+   where
+     capitalizeFirst []     = []
+     capitalizeFirst (x:xs) = toUpper x : xs
 
-         capitalizeAfterApostrophe :: String -> String
-         capitalizeAfterApostrophe "" = ""
-         capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
-              (before, punctuation:after) -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
-              (before, [])                -> before
-            where
-              capitalizeFirst []     = []
-              capitalizeFirst (x:xs) = toUpper x : xs
+-- Handles capitalization after an apostrophe.
+-- The function uses pattern matching to identify different scenarios and apply the appropriate capitalization.
+-- The patterns are as follows:
+--
+-- 1. When an apostrophe is followed by "s" at the end of the string, it leaves the "s" lowercase,
+-- as it is likely denoting possession.
+-- 2. When an apostrophe is followed by "s" and then another character, it checks if the next character is a space or punctuation.
+-- If it is, it leaves the "s" lowercase; otherwise, it capitalizes it.
+-- 3. When an apostrophe is followed by any character, it capitalizes the character after the apostrophe.
+-- 4. When there is no apostrophe in the string, it simply returns the original string.
+capitalizeAfterApostrophe :: String -> String
+capitalizeAfterApostrophe "" = ""
+capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
+    (before, punctuation:'s':[]) -> before ++ [punctuation] ++ 's' : []
+    (before, punctuation:'s':after@(x:_)) -> if isSpace x || isPunctuation x
+                                              then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)
+                                              else before ++ [punctuation] ++ 'S' : capitalizeFirst (capitalizeAfterApostrophe after)
+    (before, punctuation:after) -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
+    (before, [])                -> before
+  where
+    -- Capitalizes the first character of a string.
+    capitalizeFirst []     = []
+    capitalizeFirst (x:xs) = toUpper x : xs
 
 titleCaseTestCases :: [(String, String)]
-titleCaseTestCases = isUniqueKeys [ ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
+titleCaseTestCases = isUniqueKeys [
+  ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
             , ("end-to-end testing", "End-To-End Testing")
             , ("mother-in-law", "Mother-In-Law")
             , ("state-of-the-art technology", "State-Of-The-Art Technology")
@@ -274,7 +290,29 @@ titleCaseTestCases = isUniqueKeys [ ("‘Two Truths and a Lie’ As a Class-part
             , ("West \"has Not Recovered\"", "West \"Has Not Recovered\"")
             , ("West “has Not Recovered”", "West “Has Not Recovered”")
             , ("Did I get Sam Altman fired from OpenAI?: Nathan\8217s redteaming experience, noticing how the board was not aware of GPT-4 jailbreaks & had not even tried GPT-4 prior to its early release", "Did I Get Sam Altman Fired from OpenAI?: Nathan\8217s Redteaming Experience, Noticing How the Board Was Not Aware of GPT-4 Jailbreaks & Had Not Even Tried GPT-4 prior to Its Early Release")
-            ]
+            , ("Foo's bar", "Foo's Bar")
+            , ("Foo’s bar", "Foo’s Bar")
+            , ("Foo'Bar", "Foo'Bar")
+            , ("Foo' bar", "Foo' Bar")
+            , ("Foo's", "Foo's")
+            , ("Foo's Bar's", "Foo's Bar's")
+            , ("Foo'Bar's", "Foo'Bar's")
+            , ("Foo'Bar's Baz", "Foo'Bar's Baz")
+            , ("'foo bar'", "'Foo Bar'")
+            , ("'foo bar's'", "'Foo Bar's'")
+            , ("'foo's bar'", "'Foo's Bar'")
+            , ("'foo's bar's'", "'Foo's Bar's'")
+            , ("'foo'bar's'", "'Foo'Bar's'")
+            , ("foo-bar's", "Foo-Bar's")
+            , ("foo-bar's baz", "Foo-Bar's Baz")
+            , ("foo-bar's-baz", "Foo-Bar's-Baz")
+            , ("foo'bar-baz", "Foo'Bar-Baz")
+            , ("foo-bar's baz-qux", "Foo-Bar's Baz-Qux")
+            , ("foo'bar-baz'qux", "Foo'Bar-Baz'Qux")
+            , ("foo'bar's-baz'qux", "Foo'Bar's-Baz'Qux")
+            , ("foo'bar's baz'qux", "Foo'Bar's Baz'Qux")
+            , ("foo'bar's-baz qux", "Foo'Bar's-Baz Qux")
+              ]
 titleCaseTest :: [(String, String)]
 titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) titleCaseTestCases
 
