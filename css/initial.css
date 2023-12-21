@@ -2024,6 +2024,31 @@ body.page-index #markdownBody section ul ul {
 }
 
 
+/*=------------=*/
+/*= /doc/index =*/
+/*=------------=*/
+
+.doc-index-tag-short {
+	display: block;
+	font-size: 0.875em;
+	padding-left: 1.5em;
+	font-family: var(--GW-sans-serif-font-stack);
+}
+
+body.page-doc-index #see-alsos > ul > li {
+	padding: 0;
+}
+body.page-doc-index #see-alsos > ul > li::before {
+	display: none;
+}
+
+body.page-doc-index #see-alsos code {
+	background: inherit;
+	border: none;
+	padding: 0;
+}
+
+
 /*****************************/
 /* SOURCE CODE FILE PREVIEWS */
 /*****************************/
