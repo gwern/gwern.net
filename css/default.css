@@ -2041,7 +2041,7 @@ del {
         font-family: Kanzlei Initialen;
         font-size: 7em;
         line-height: 1;
-        margin: 0.025em 0.025em -0.25em -0.03em;
+        margin: 0.025em 0.025em -0.25em -0.02em;
         color: var(--GW-drop-caps-kanzlei-color);
     }
 

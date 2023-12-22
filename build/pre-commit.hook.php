@@ -108,6 +108,7 @@ $disparate_assets = [
 	"{$js_dir}/asset-versions-GENERATED.js",
 
 	"{$css_dir}/initial.css",
+	"{$css_dir}/special-occasions.css",
 	"{$css_dir}/initial-fonts-VERSIONED.css",
 	"{$css_dir}/reader-mode-initial.css",
 

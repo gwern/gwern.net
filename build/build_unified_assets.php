@@ -12,6 +12,7 @@ global $template_dir, $css_dir, $js_dir;
 
 $head_css = [
 	'initial.css',
+	'special-occasions.css',
 	'initial-fonts-VERSIONED.css',
 	'reader-mode-initial.css'
 ];

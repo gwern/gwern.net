@@ -2348,15 +2348,17 @@ GW.specialOccasions = [
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
     [ "christmas", () => isTodayChristmas(), () => {
-    	document.body.classList.add("special-christmas");
-
-		//	TODO: this!
-		let numLogoVariants = 6;
+		//	Different special styles for light and dark mode.
+        document.body.classList.remove("special-christmas-dark", "special-christmas-light");
+        let specialClass = DarkMode.computedMode() == "light"
+                           ? "special-christmas-light"
+                           : "special-christmas-dark";
+        document.body.classList.add(specialClass);
 
 		//	Replace logo.
 		injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true });
       }, () => {
-    	document.body.classList.remove("special-christmas");
+        document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
 ];
 

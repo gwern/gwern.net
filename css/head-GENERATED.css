@@ -2066,8 +2066,6 @@ body.file-preview-source-code pre {
 body.file-preview-source-code pre code {
 	padding: 1rem;
 }
-
-
 /*********************/
 /* SPECIAL OCCASIONS */
 /*********************/
@@ -2126,6 +2124,7 @@ body.special-halloween-dark {
 	--GW-bottom-ornament-line-color: var(--GW-blood-red-arterial);
 
     --GW-back-to-top-link-color: var(--GW-blood-red-dried);
+    --GW-back-to-top-link-hover-color: var(--GW-blood-red-arterial);
 
 	--GW-floating-header-scroll-indicator-color: var(--GW-blood-red);
 
@@ -2138,6 +2137,13 @@ body.special-halloween-dark blockquote {
     --border-color: var(--GW-blood-red-dried);
 }
 
+body.special-halloween-dark .heading {
+    --GW-body-text-color: var(--GW-blood-red);
+    --GW-body-link-color: var(--GW-blood-red);
+
+	color: var(--GW-body-text-color);
+}
+
 body.special-halloween-dark #navigation a {
     color: var(--GW-blood-red);
 }
@@ -2145,23 +2151,11 @@ body.special-halloween-dark #navigation a:hover {
     color: var(--GW-blood-red-arterial);
 }
 
-body.special-halloween-dark h1,
-body.special-halloween-dark h2,
-body.special-halloween-dark h3,
-body.special-halloween-dark h4,
-body.special-halloween-dark h5,
-body.special-halloween-dark h6 {
-    --GW-body-text-color: var(--GW-blood-red);
-    --GW-body-link-color: var(--GW-blood-red);
-
-	color: var(--GW-body-text-color);
-}
-
 body.special-halloween-dark #sidebar svg.logo-image {
 	visibility: hidden;
 }
 @media all and (max-width: 649px) {
-	body[class*='special-halloween'] #sidebar span.logo-image img {
+	body.special-halloween-dark #sidebar span.logo-image img {
 		width: 133%;
 		position: relative;
 		left: -15%; top: -15%;
@@ -2169,14 +2163,14 @@ body.special-halloween-dark #sidebar svg.logo-image {
 }
 @media all and (min-width: 650px) {
 	@media all and (max-width: 1179px) {
-		body[class*='special-halloween'] #sidebar span.logo-image img {
+		body.special-halloween-dark #sidebar span.logo-image img {
 			width: 150%;
 			position: relative;
 			left: -30%; top: -15%;
 		}
 	}
 	@media all and (min-width: 1180px) {
-		body[class*='special-halloween'] #sidebar span.logo-image img {
+		body.special-halloween-dark #sidebar span.logo-image img {
 			width: 150%;
 			position: relative;
 			left: -30%; top: -10%;
@@ -2184,6 +2178,8 @@ body.special-halloween-dark #sidebar svg.logo-image {
 	}
 }
 
+/*	Styles for /index
+ */
 body.index.special-halloween-dark #sidebar a:hover {
 	color: var(--GW-blood-red);
 }
@@ -2192,8 +2188,146 @@ body.index.special-halloween-dark #sidebar a:hover {
 /*= Christmas =*/
 /*=-----------=*/
 
+body.special-christmas-light {
+	--GW-santa-hat-red: #900;
+	--GW-holly-berry-red: #c00;
+	--GW-holly-leaf-green: #060;
+	--GW-mistletoe-green: #0c0;
+	--GW-pine-needle-green: #050;
+	--GW-fir-needle-green: #014421;
+	--GW-christmas-lights-gold: #ff0;
+}
+
+body.special-christmas-dark {
+	--GW-santa-hat-red: #d00;
+	--GW-holly-berry-red: #f00;
+	--GW-holly-leaf-green: #0a0;
+	--GW-mistletoe-green: #050;
+	--GW-pine-needle-green: #5eff33;
+	--GW-fir-needle-green: #a7cab1;
+	--GW-christmas-lights-gold: #996515;
+}
+
+body[class*='special-christmas'] {
+    --GW-nav-header-link-color: var(--GW-holly-leaf-green);
+    --GW-nav-header-link-hover-color: var(--GW-holly-berry-red);
+
+    --GW-TOC-border-color: var(--GW-mistletoe-green);
+    --GW-abstract-border-color: var(--GW-mistletoe-green);
+
+    --GW-pre-element-border-color: var(--GW-holly-leaf-green);
+
+    --GW-epigraph-quotation-mark-color: var(--GW-holly-leaf-green);
+
+    --GW-H1-border-color: var(--GW-holly-leaf-green);
+    --GW-H2-border-color: var(--GW-holly-leaf-green);
+
+    --GW-drop-caps-yinit-color: var(--GW-santa-hat-red);
+    --GW-drop-caps-yinit-text-shadow-color: var(--GW-santa-hat-red);
+    --GW-drop-caps-de-zs-color: var(--GW-santa-hat-red);
+    --GW-drop-caps-cheshire-color: var(--GW-santa-hat-red);
+    --GW-drop-caps-kanzlei-color: var(--GW-santa-hat-red);
+
+    --GW-figure-outline-color: var(--GW-holly-leaf-green);
+    --GW-figure-caption-outline-color: var(--GW-holly-leaf-green);
+
+    --GW-footnotes-section-top-rule-color: var(--GW-holly-leaf-green);
+    --GW-footnote-border-color: var(--GW-holly-leaf-green);
+    --GW-sidenote-highlight-box-shadow-color: var(--GW-holly-leaf-green);
+    --GW-footnote-backlink-border-color: var(--GW-holly-leaf-green);
+    --GW-footnote-backlink-border-hover-color: var(--GW-holly-berry-red);
+	--GW-footnote-highlighted-border-color: var(--GW-holly-leaf-green);
+
+    --GW-sidenote-self-link-border-color: var(--GW-holly-leaf-green);
+    --GW-sidenote-border-color: var(--GW-holly-leaf-green);
+
+    --GW-math-block-scrollbar-border-color: var(--GW-holly-leaf-green);
+
+    --GW-collapse-disclosure-button-text-color: var(--GW-holly-leaf-green);
+    --GW-collapse-disclosure-button-text-hover-color: var(--GW-holly-berry-red);
+
+	--GW-x-of-the-day-border-color: var(--GW-holly-leaf-green);
+
+    --GW-page-toolbar-border-color: var(--GW-holly-leaf-green);
+    --GW-page-toolbar-control-button-color: var(--GW-holly-leaf-green);
+
+	--GW-bottom-ornament-line-color: var(--GW-holly-leaf-green);
+
+    --GW-back-to-top-link-color: var(--GW-holly-leaf-green);
+    --GW-back-to-top-link-hover-color: var(--GW-holly-berry-red);
+
+	--GW-floating-header-scroll-indicator-color: var(--GW-holly-leaf-green);
+
+	--GW-body-link-color: var(--GW-pine-needle-green);
+	--GW-body-link-visited-color: var(--GW-fir-needle-green);
+    --GW-body-link-hover-color: var(--GW-holly-berry-red);
+
+    --GW-highlighted-link-outline-color: var(--GW-santa-hat-red);
+}
+
+body[class*='special-christmas'] blockquote {
+    --border-color: var(--GW-holly-leaf-green);
+}
+
+body[class*='special-christmas'] .heading {
+    --GW-body-text-color: var(--GW-holly-leaf-green);
+    --GW-body-link-color: var(--GW-holly-leaf-green);
+
+	color: var(--GW-body-text-color);
+}
+
+body[class*='special-christmas'] header h1 {
+    --GW-body-text-color: var(--GW-holly-leaf-green);
+
+	color: var(--GW-body-text-color);
+}
+
+body[class*='special-christmas'] #navigation a {
+    color: var(--GW-santa-hat-red);
+}
+body[class*='special-christmas'] #navigation a:hover {
+    color: var(--GW-holly-berry-red);
+}
+
+/********/
+/*	Glow.
+ */
+ 
+body.special-christmas-light header h1 {
+	text-shadow:
+		0 0 2px var(--GW-christmas-lights-gold);
+}
+body.special-christmas-light .heading a,
+body.special-christmas-light p[class*='drop-cap-'] span.drop-cap,
+body.special-christmas-light #navigation a,
+body.special-christmas-light #sidebar a {
+	text-shadow:
+		0 0 1px var(--GW-christmas-lights-gold);
+}
+
+body.special-christmas-dark header h1 {
+	text-shadow:
+		0 0 6px var(--GW-body-background-color),
+		0 0 4px var(--GW-christmas-lights-gold);
+}
+body.special-christmas-dark .heading a,
+body.special-christmas-dark p[class*='drop-cap-'] span.drop-cap,
+body.special-christmas-dark #navigation a,
+body.special-christmas-dark #sidebar a {
+	text-shadow:
+		0 0 2px var(--GW-body-background-color),
+		0 0 2px var(--GW-christmas-lights-gold);
+}
+
+/********/
+/*	Logo.
+ */
+ 
+body[class*='special-christmas'] #sidebar svg.logo-image {
+	visibility: hidden;
+}
 @media all and (max-width: 649px) {
-	body.special-christmas #sidebar span.logo-image img {
+	body[class*='special-christmas'] #sidebar span.logo-image img {
 		width: 133%;
 		position: relative;
 		left: -15%; top: -15%;
@@ -2201,19 +2335,25 @@ body.index.special-halloween-dark #sidebar a:hover {
 }
 @media all and (min-width: 650px) {
 	@media all and (max-width: 1179px) {
-		body.special-christmas #sidebar span.logo-image img {
+		body[class*='special-christmas'] #sidebar span.logo-image img {
 			width: 150%;
 			position: relative;
 			left: -30%; top: -15%;
 		}
 	}
 	@media all and (min-width: 1180px) {
-		body.special-christmas #sidebar span.logo-image img {
+		body[class*='special-christmas'] #sidebar span.logo-image img {
 			width: 125%;
 			position: relative;
 			left: -10%; top: -10%;
 		}
 	}
+}
+
+/*	Styles for /index
+ */
+body.index[class*='special-christmas'] #sidebar a:hover {
+	color: var(--GW-holly-leaf-green);
 }
 @charset "UTF-8";
 
