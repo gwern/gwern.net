@@ -20,6 +20,7 @@ $head_css = [
 $head_js = [
 	'utility.js',
 	'initial.js',
+	'special-occasions.js',
 	'layout.js',
 	'dark-mode-initial.js',
 	'reader-mode-initial.js',

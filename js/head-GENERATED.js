@@ -2267,8 +2267,6 @@ window.addEventListener("load", () => {
 document.addEventListener("readystatechange", () => {
     GWLog("document.readyState." + document.readyState, "browser event");
 });
-
-
 /*********************/
 /* SPECIAL OCCASIONS */
 /*********************/

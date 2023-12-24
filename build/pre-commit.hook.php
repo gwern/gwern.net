@@ -102,6 +102,7 @@ process_source_files($versioned_assets, 'build_asset_versions.php');
 $disparate_assets = [
 	"{$js_dir}/utility.js",
 	"{$js_dir}/initial.js",
+	"{$js_dir}/special-occasions.js",
 	"{$js_dir}/layout.js",
 	"{$js_dir}/dark-mode-initial.js",
 	"{$js_dir}/reader-mode-initial.js",
