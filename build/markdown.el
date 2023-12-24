@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-12-10 11:01:15 gwern"
+;;; When:  Time-stamp: "2023-12-24 10:14:52 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -19,10 +19,10 @@
 (add-to-list 'load-path "~/src/markdown-mode/")
 (require 'markdown-mode)
 
-; YAML-mode is most useful for editing my `/metadata/full.yaml` file
+; Metadata files are stored in YAML; but yaml-mode may be too slow to use given how large they have become...
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+; (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
@@ -200,6 +200,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
      )
    )
   )
+
 (defun fmt ()
   "Update gwern.net Markdown files & annotations with latest conventions.
 Mostly string search-and-replace to enforce house style in terms of format."
@@ -389,16 +390,18 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("(n ≈" . "(_n_ ≈")
                      (" n ≈" . " _n_ ≈")
                      ("(n " . "(_n_ ")
-                     ("(ie, " . "(ie. ")
-                     ("(ie " . "(ie. ")
-                     ("(i\\.e\\.," . "(ie.")
-                     ("(i\\.e\\." . "(ie.")
-                     (" e\\.g\\." . " eg.")
-                     ("(e\\.g\\." . "(eg.")
-                     ("(eg " . "(eg.")
-                     (" eg " . " eg. ")
-                     ("eg\\., " . "eg. ")
-                     ("e\\.g\\., " . "eg. ")
+                     ("(ie, " . "(ie ")
+                     ("(ie " . "(ie ")
+                     ("(i\\.e\\.," . "(ie")
+                     ("(i\\.e\\." . "(ie")
+                     ("(ie\\." . "(ie")
+                     (" e\\.g\\." . " eg")
+                     ("(e\\.g\\." . "(eg")
+                     ("(eg\\." . "(eg")
+                     ("(eg " . "(eg ")
+                     (" eg " . " eg ")
+                     ("eg\\., " . "eg ")
+                     ("e\\.g\\., " . "eg ")
                      ("Na\\+" . "Na⁺")
                      ("K\\+" . "K⁺")
                      ("Ca2+" . "Ca<sup>2</sup>⁺")
@@ -414,14 +417,14 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("F1-ATPase" . "F<sub>1</sub>-ATPase")
                      ("α3β3" . "α<sub>3</sub>β<sub>3</sub>")
                      (" Escherichia coli" . " <em>Escherichia coli</em>")
-                     (" E. coli" . " <em>E. coli</em>")
+                     (" E\\. coli" . " <em>E. coli</em>")
                      (" Saccharomyces cerevisiae" . " <em>Saccharomyces cerevisiae</em>")
                      (" in vivo " . " _in vivo_ ")
                      (" ex vivo " . " _ex vivo_ ")
                      ("two-by-two" . "2×2")
-                     (" B.M.I" . " BMI")
-                     (" A.I." . " AI")
-                     (" C.E.O." . " CEO")
+                     (" B\\.M\\.I\\." . " BMI")
+                     (" A\\.I\\." . " AI")
+                     (" C\\.E\\.O\\." . " CEO")
                      ("controled" . "controlled")
                      ("one-fourth" . "1⁄4")
                      ("one-half" . "1⁄2")
@@ -1039,12 +1042,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "- \n" "" nil begin end)
          (query-replace "-\n" "-" nil begin end)
 
-         (when (and (equal (buffer-name) "foo")
-           (not (save-excursion
-                  (goto-char (point-min))
-                  (re-search-forward "^[0-9#]" nil t))))
-           (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
-           )
          (query-replace " -- " "---" nil begin end)
          (query-replace " --- " "---" nil begin end)
          (query-replace "--- " "---" nil begin end)
@@ -1607,6 +1604,14 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "].(" ".](" nil begin end)
        (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
+
+       ; do this at the end to minimize errors from things that would've been fixed
+       (when (and (equal (buffer-name) "foo")
+                  (not (save-excursion
+                         (goto-char (point-min))
+                         (re-search-forward "^[0-9#]" nil t))))
+         (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
+         )
 
        (message "%s %s" begin end)
        )

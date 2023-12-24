@@ -285,7 +285,7 @@ generateDirectoryItems parent current ds =
 
        abbreviateTagLongForm :: T.Text -> (T.Text, [Inline])
        abbreviateTagLongForm dir = ("<code>" `T.append`   dir `T.append` "</code>",
-                                    [Space, RawInline (Format "html") $ "<span class=\"doc-index-tag-short\">(" `T.append` abbreviateTag dir `T.append` ")</span>"])
+                                    [Space, RawInline (Format "html") $ "<span class=\"doc-index-tag-short\">" `T.append` abbreviateTag dir `T.append` "</span>"])
 
 generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)

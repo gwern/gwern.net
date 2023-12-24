@@ -98,7 +98,7 @@ invertImagePreview f = do utcFile <- getModificationTime f
                           when (age < nominalDay) $ do
                             f' <- emptySystemTempFile "inverted"
                             void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
-                            void $ runShellCommand "./" Nothing "firefox" [f']
+                            void $ runShellCommand "./" Nothing "chromium" [f']
 
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
