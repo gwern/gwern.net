@@ -1264,6 +1264,7 @@ GW.pageToolbar = {
 			/*	Slowly collapse toolbar shortly after page load (if it’s not
 				already collapsed).
 			 */
+			let startCollapsed = getSavedCount("page-toolbar-demos-count") > GW.pageToolbar.maxDemos;
 			if (startCollapsed == false) {
 				requestAnimationFrame(() => {
 					Array.from(GW.pageToolbar.getToolbar().querySelector(".widgets").children).forEach(widget => {
