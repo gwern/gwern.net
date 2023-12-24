@@ -209,7 +209,8 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a.logo:hover {
+        #sidebar a.logo:hover,
+        #sidebar a.logo.bright {
             opacity: 1.0;
         }
         #sidebar a.logo .logo-image {

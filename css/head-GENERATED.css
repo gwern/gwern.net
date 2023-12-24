@@ -209,7 +209,8 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a.logo:hover {
+        #sidebar a.logo:hover,
+        #sidebar a.logo.bright {
             opacity: 1.0;
         }
         #sidebar a.logo .logo-image {
@@ -2154,6 +2155,9 @@ body.special-halloween-dark #navigation a:hover {
 body.special-halloween-dark #sidebar svg.logo-image {
 	visibility: hidden;
 }
+body.special-halloween-dark #sidebar span.logo-image img {
+	filter: none;
+}
 @media all and (max-width: 649px) {
 	body.special-halloween-dark #sidebar span.logo-image img {
 		width: 133%;
@@ -2201,10 +2205,10 @@ body.special-christmas-light {
 body.special-christmas-dark {
 	--GW-santa-hat-red: #d00;
 	--GW-holly-berry-red: #f00;
-	--GW-holly-leaf-green: #0a0;
-	--GW-mistletoe-green: #050;
-	--GW-pine-needle-green: #5eff33;
-	--GW-fir-needle-green: #a7cab1;
+	--GW-holly-leaf-green: #0a3;
+	--GW-mistletoe-green: #005519;
+	--GW-pine-needle-green: #5eff66;
+	--GW-fir-needle-green: #a7cab6;
 	--GW-christmas-lights-gold: #996515;
 }
 
@@ -2325,6 +2329,9 @@ body.special-christmas-dark #sidebar a {
  
 body[class*='special-christmas'] #sidebar svg.logo-image {
 	visibility: hidden;
+}
+body[class*='special-christmas'] #sidebar svg.logo-image img {
+	filter: none;
 }
 @media all and (max-width: 649px) {
 	body[class*='special-christmas'] #sidebar span.logo-image img {
