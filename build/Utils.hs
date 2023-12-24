@@ -190,6 +190,8 @@ putStrStdErr = hPutStr stderr
 
 -- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
 -- reporting on the occasional infinite loop.
+-- Note: set to 5000 iterations by default. However, if you are using a list of _n_ simple rewrite rules, the limit can be set to _n_+1 rewrites
+-- as any more than that implies a cycle/infinite-loop.
 fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
 fixedPoint = fixedPoint' 5000
  where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a
@@ -497,6 +499,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: ")
          , ("<jats:title>([a-zA-Z0-9_]+):</jats:title><jats:p>", "<p><strong>\\1</strong>: ")
          , ("<jats:title>([a-zA-Z0-9_]+)\\.</jats:title><jats:p>", "<p><strong>\\1</strong>: ")
+         , ("<jats:styled-content style=\"fixed-case\">([A-Z.]+)</jats:styled-content>", "\\1") -- odd acronym markup
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\">", "")
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
          , (" © [0-9]+ European Association of Personality Psychology", "")
@@ -1817,6 +1820,29 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("stabilisation", "stabilization")
          , ("benefitt", "benefit")
          , ("noninsight", "non-insight")
+         , ("personalised ", "personalized ")
+         , ("favouritism", "favoritism")
+         , ("schizohrenia", "schizophrenia")
+         , ("quantitive", "quantitative")
+         , ("non-institutionalised", "non-institutionalized")
+         , ("nonadherence", "non-adherence")
+         , ("Langrangians", "Lagrangians")
+         , ("regularisation", "regularization")
+         , ("urbanisatio", "nurbanization")
+         , ("organisation", "organization")
+         , ("vectorised", "vectorized")
+         , ("nonspecifically", "non-specifically")
+         , ("attentionless", "attention-less")
+         , ("disfavour", "disfavor")
+         , ("nonpredictive", "non-predictive")
+         , ("subquadratic-time", "sub-quadratic-time")
+         , ("webscale", "web-scale")
+         , ("benchmarks", "tobenchmarks to")
+         , ("fertilised", "fertilized")
+         , ("metabolising", "metabolizing")
+         , ("polygeneti", "cpolygenic")
+         , ("submodels", "sub-models")
+         , ("Nonblind", "Non-blind")
          , (" colour", " color")
          , (" Colour", " Color")
          , (" UNet", " U-Net")

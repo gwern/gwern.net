@@ -718,14 +718,14 @@ a[data-link-icon='nautilus']:hover .link-icon-hook::after {
     opacity: 0.5;
 }
 
-a[data-link-icon='newyork-times'] .link-icon-hook::after {
+a[data-link-icon='new-york-times'] .link-icon-hook::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.15em;
 
     opacity: 0.6;
 }
-a[data-link-icon='newyork-times']:hover .link-icon-hook::after {
+a[data-link-icon='new-york-times']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 

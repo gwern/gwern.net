@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-12 18:46:30 gwern"
+# When:  Time-stamp: "2023-12-21 09:34:28 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -278,7 +278,7 @@ _upload() {
 }
 complete -F _upload upload
 
-# wait for a file to become quiescent because eg. Firefox is still downloading it:
+# wait for a file to become quiescent because eg. the web browser is still downloading it:
 is_downloading() {
   file="$1"
   current_time=$(date +%s)

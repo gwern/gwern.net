@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-20 22:28:19 gwern"
+# When:  Time-stamp: "2023-12-22 09:18:06 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -658,7 +658,7 @@ else
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
-                 -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -- ./metadata/backlinks.hs;
+                 -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
        grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
@@ -826,14 +826,14 @@ else
 
          if ((RANDOM % 100 > 50)); then
              # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-             (if ((RANDOM % 100 > 90)); then sleep 30s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
-              sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-              sleep 5s; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+             (if ((RANDOM % 100 > 90)); then sleep 30s && chromium "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
+              sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+              sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
               if ((RANDOM % 100 > 90)); then
                   # check page speed report for any regressions:
-                  $X_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
+                  chromium "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
                   bold "Checking print-mode CSS as well…"
-                  chromium --headless --print-to-pdf="~/gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && $X_BROWSER ~/gwernnet-printmode.pdf
+                  chromium --headless --print-to-pdf="~/gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && chromium ~/gwernnet-printmode.pdf
               fi;
              )
          fi
@@ -842,7 +842,7 @@ else
     sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 > 99)); then $X_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
+    if ((RANDOM % 100 > 99)); then chromium "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
     if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
