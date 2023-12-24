@@ -2322,18 +2322,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5222,14 +5222,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5370,7 +5370,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5830,14 +5830,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6739,7 +6739,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#question');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7305,7 +7305,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1701319104#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1701370313#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7380,7 +7380,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1701319104#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1701370313#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

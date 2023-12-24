@@ -213,6 +213,10 @@ main {
         #sidebar a.logo.bright {
             opacity: 1.0;
         }
+        #sidebar a.logo.fading {
+            transition:
+            	opacity 1s ease;
+        }
         #sidebar a.logo .logo-image {
             --logo-width: 4em;
         }

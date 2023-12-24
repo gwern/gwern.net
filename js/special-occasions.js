@@ -21,17 +21,37 @@ function injectSpecialPageLogo(logoType, options = { }) {
 					   : `/static/img/logo/${logoType}/logo-${logoType}-small-${scale}x.png`;
 	}
 
-	let logoSelector = "#sidebar .logo-image";
-	let logoImage;
+	//	Temporarily brighten logo, then fade slowly after set duration.
+	let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
+		let logoLink = document.querySelector("#sidebar a.logo");
+
+		logoLink.classList.add("bright");
+		logoLink.fadeTimer = setTimeout(() => {
+			logoLink.swapClasses( [ "bright", "fading" ], 1);
+			logoLink.fadeTimer = setTimeout(() => {
+				logoLink.classList.remove("fading");
+			}, fadeDuration);
+		}, brightDuration);
+
+		//	Ensure proper interaction with mouse hover.
+		logoLink.addEventListener("mouseenter", (event) => {
+			logoLink.classList.remove("fading");
+		});
+		logoLink.addEventListener("mouseleave", (event) => {
+			logoLink.classList.remove("fading");
+		});
+	}
 
 	/*	Note that randomAsset() and versionedAssetURL() are defined in misc.js,
 		and so cannot be called prior to this.
 	 */
 	let replaceLogo = (logoImage) => {
+		//	Get new logo URL (random, if need be).
 		if (options.randomize)
 			logoPathname = randomAsset(logoPathname);
 		let versionedLogoURL = versionedAssetURL(logoPathname);
 
+		//	Create new image element and wrapper.
 		let imageWrapper = newElement("SPAN", {
 			class: "logo-image"
 		});
@@ -40,9 +60,15 @@ function injectSpecialPageLogo(logoType, options = { }) {
 			src: versionedLogoURL.pathname + versionedLogoURL.search
 		}));
 
+		//	Inject wrapped image.
 		logoImage.replaceWith(imageWrapper);
+
+		//	Brighten logo; fade (over 1 second) after 20 seconds.
+		brightenLogoTemporarily(20 * 1000, 1000);
 	};
 
+	let logoSelector = "#sidebar .logo-image";
+	let logoImage;
 	if (logoImage = document.querySelector(logoSelector)) {
 		replaceLogo(logoImage);
 	} else {

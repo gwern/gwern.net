@@ -213,6 +213,10 @@ main {
         #sidebar a.logo.bright {
             opacity: 1.0;
         }
+        #sidebar a.logo.fading {
+            transition:
+            	opacity 1s ease;
+        }
         #sidebar a.logo .logo-image {
             --logo-width: 4em;
         }
@@ -2330,7 +2334,7 @@ body.special-christmas-dark #sidebar a {
 body[class*='special-christmas'] #sidebar svg.logo-image {
 	visibility: hidden;
 }
-body[class*='special-christmas'] #sidebar svg.logo-image img {
+body[class*='special-christmas'] #sidebar span.logo-image img {
 	filter: none;
 }
 @media all and (max-width: 649px) {
