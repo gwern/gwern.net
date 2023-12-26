@@ -104,7 +104,7 @@ linkIconRulesSingle u
  | u'' u "www.forbes.com" = ("F", "text") -- red capital F serif
  | u'' u "fortune.com" = ("F", "text,sans") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
  | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
- | u'' u "arxiv.org" || u'' u "ar5iv.labs.arxiv.org" || u'' u "proceedings.mlr.press" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
+ | u'' u "arxiv.org" || u'' u "browse.arxiv.org" || u'' u "proceedings.mlr.press" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
  | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u' u "theatlantic.com" = ("A", "text,italic") -- The Atlantic: replicate sloping by italics
  | u'' u "www.dailymail.co.uk" = ("𝔐", "text") -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
@@ -546,7 +546,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://antilop.cc/sr/#assassination_plot", "෴", "text")
          , ("https://apnews.com/article/ap-top-news-international-news-weekend-reads-china-health-269b3de1af34e17c1941a514f78d764c", "AP", "text,sans")
          , ("https://apps.apple.com/app/id307920888", "apple", "svg")
-         , ("https://ar5iv.labs.arxiv.org/html/2112.11848",  "\120536","text")
+         , ("https://browse.arxiv.org/html/2112.11848",  "\120536","text")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans")
          , ("https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/", "eleutherai", "svg")
          , ("https://archive.foolz.us/a/thread/77196171/#77207238", "4CH", "text,sans")

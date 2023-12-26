@@ -455,7 +455,7 @@ siteBlackList = isUniqueList [
           "baynature.org", "barrett.dyson.cornell.edu", "bahfest.com", "babbemusic.bandcamp.com", "b-ok.cc",
           "avinayak.github.io", "avikdas.com", "auphonic.com", "augmentingcognition.com", "atomic-skies.blogspot.com",
           "asset-pdf.scinapse.io", "asofterworld.com", "arthurjensen.net", "arrgh.tim-smith.us", "arcinstitute.org",
-          "archivebox.io", "archive.fo", "archive.canadianbusiness.com", "ar5iv.labs.arxiv.org", "apps.npr.org",
+          "archivebox.io", "archive.fo", "archive.canadianbusiness.com", "browse.arxiv.org", "apps.npr.org",
           "app.inferkit.com", "apjjf.org", "annesofiebeckknudsen.com", "anitra.net", "anildash.com",
           "anagramatron.tumblr.com", "amstat.tandfonline.com", "amid.fish", "americanaffairsjournal.org", "alok.github.io",
           "allendowney.blogspot.com", "alexanderetz.com", "alessonislearned.com", "ajjacobs.com", "aiindex.stanford.edu",

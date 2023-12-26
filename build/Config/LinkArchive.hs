@@ -42,8 +42,8 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
 
 -- `data-href-mobile`:
-transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
-  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
+transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://browse.arxiv.org/html/\\1?fallback=original\\2" .
+  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://browse.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
   replace "https://twitter.com" "https://nitter.net"
 
 -- `data-url-html`:
@@ -65,9 +65,9 @@ localizeLinktestCases :: [(T.Text, -- original URL
                             [T.Text]))] -- classes (just in case, so far)
 localizeLinktestCases = [
     ("https://arxiv.org/abs/1909.05858#salesforce",
-      ("/doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce", "https://ar5iv.labs.arxiv.org/html/1909.05858?fallback=original#salesforce", "", []))
-    , ("https://arxiv.org/abs/1904.01201#facebook", ("/doc/www/arxiv.org/3280474172991f9f5e492000192466bf1d9b6f7d.pdf#facebook", "https://ar5iv.labs.arxiv.org/html/1904.01201?fallback=original#facebook", "", []))
-    , ("https://arxiv.org/abs/hep-ph/0204295", ("/doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf", "https://ar5iv.labs.arxiv.org/html/hep-ph/0204295?fallback=original", "", []))
+      ("/doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce", "https://browse.arxiv.org/html/1909.05858?fallback=original#salesforce", "", []))
+    , ("https://arxiv.org/abs/1904.01201#facebook", ("/doc/www/arxiv.org/3280474172991f9f5e492000192466bf1d9b6f7d.pdf#facebook", "https://browse.arxiv.org/html/1904.01201?fallback=original#facebook", "", []))
+    , ("https://arxiv.org/abs/hep-ph/0204295", ("/doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf", "https://browse.arxiv.org/html/hep-ph/0204295?fallback=original", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://twitter.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
@@ -212,10 +212,9 @@ strikes me as fussy (I don't mind PDF links) but I can't deny that these people 
 Could we use non-abstract HTML links? Unlike BioRxiv/MedRxiv, where you can simply append `.full` and get a nice usable
 HTML version, Arxiv provides only the PDF, so it's unclear what other HTML page you could send people to. The good news
 is that there turns out there are projects to create HTML versions of Arxiv PDFs:
-[Arxiv-vanity](https://www.arxiv-vanity.com/) and a new one, [Ar5iv](https://ar5iv.labs.arxiv.org/). Both use the same
-trick: a LaTeX→HTML compiler <https://github.com/brucemiller/LaTeXML>. (As they use the same compiler, they are fairly
-similar, but Ar5iv appears to be much more ambitious & actively maintained and may be merged into Arxiv proper at some
-point, so I will consider just Ar5iv.) Compiling LaTeX to anything else is… hard. And many of the papers have
+[Arxiv-vanity](https://www.arxiv-vanity.com/) and a new one, [Ar5iv](https://blog.arxiv.org/2023/12/21/accessibility-update-arxiv-now-offers-papers-in-html-format/). Both use the same
+trick: a LaTeX→HTML compiler <https://github.com/brucemiller/LaTeXML>.
+Compiling LaTeX to anything else is… hard. And many of the papers have
 rendering problems, major or minor, or are not present at all. (Ar5iv is about a month out of date. They served an error
 page before, but at my request changed it to redirect to Arxiv proper with the query parameter `fallback=original`
 (redirecting without an option apparently confuses non-gwern.net readers), so you can just rewrite your Arxiv links and
@@ -1105,7 +1104,7 @@ whiteList url
       , "https://podcasts.google.com/feed/aHR0cHM6Ly9yc3MuYWNhc3QuY29tL2Rhbm55aW50aGV2YWxsZXk/episode/MDI4NDI4ODMtZmE3YS00MzA2LTk1ZGItZjgzZDdlMzAwZThk" -- audio embed
       , "https://jdlm.info/articles/2018/03/18/markov-decision-process-2048.html" -- interactive solver
       , "https://www.dailydot.com/crime/hive-silk-road-online-drug-culture-history/" -- video embed
-      , "ar5iv.labs.arxiv.org" -- HTML mirror of Arxiv PDFs, regularly updated to improve compilation quality, and allows live popups so no need to mirror locally
+      , "browse.arxiv.org" -- HTML mirror of Arxiv PDFs, regularly updated to improve compilation quality, and allows live popups so no need to mirror locally
       , "digital.library.unt.edu/explore/partners/" -- search
       , "worldcat.org" -- updated
       , "tinyurl.com" -- redirects

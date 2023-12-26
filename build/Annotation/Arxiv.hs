@@ -19,7 +19,8 @@ import Paragraph (processParagraphizer)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
-               (status,bs, arxivid) <- arxivDownload url
+               let url' = replace "https://browse.arxiv.org/html/" "https://arxiv.org/abs/" url
+               (status,bs, arxivid) <- arxivDownload url'
                case status of
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
@@ -29,14 +30,14 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
-                         let doi = if null doiTmp then processDOIArxiv url else doiTmp
-                         abst <- processParagraphizer url $ linkAutoHtml5String $ cleanAbstractsHTML $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
+                         let doi = if null doiTmp then processDOIArxiv url' else doiTmp
+                         abst <- processParagraphizer url' $ linkAutoHtml5String $ cleanAbstractsHTML $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] :: [String] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" then do printRed "Error: Arxiv parsing failed!"
-                                             printGreen ("Error details: failure on Arxiv URL "++url ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
+                                             printGreen ("Error details: failure on Arxiv URL "++url' ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
                                              return (Left Temporary)
-                                      else return $ Right (url, (title,authors,published,doi,ts,abst))
+                                      else return $ Right (url', (title,authors,published,doi,ts,abst))
 
 arxivDownload :: String -> IO (ExitCode, U.ByteString, String)
 arxivDownload url = do
