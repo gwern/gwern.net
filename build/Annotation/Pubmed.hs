@@ -24,7 +24,7 @@ pubmed l = do checkURL l
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
-                             abstract' <- processParagraphizer l $ linkAutoHtml5String $ processPubMedAbstract $ unlines abstrct
+                             abstract' <- fmap cleanAbstractsHTML $ processParagraphizer l $ linkAutoHtml5String $ processPubMedAbstract $ unlines abstrct
                              return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
 processPubMedAbstract :: String -> String
@@ -42,4 +42,4 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ ppShow e ++ " : " ++ abst
-                                  Right output -> linkAutoHtml5String $ cleanAbstractsHTML $ trim $ replace "<br />" "" $ cleanAbstractsHTML output
+                                  Right output -> cleanAbstractsHTML $ replace "<br />" "" output
