@@ -333,38 +333,20 @@ inlineMath2Text x@(Math InlineMath a) =
        _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
 inlineMath2Text x = return x
 
+-- test for possible infinite-loops in the rewrite suite; our initial source of cases is just the fixed-string rewrites.
+-- The cycle detector is not enough because the rewrites operate infix, not by replacing the *whole* string, so it's possible to have expansion/contraction which produces loops.
+cleanAbstractsHTMLTest :: [(String,String,String)]
+cleanAbstractsHTMLTest = map (\(a,b) -> (a,b,fixedPoint cleanAbstractsHTML a)) $ reverse htmlRewriteFixed
+
 -- run all necessary rewrites on a string to clean up malformation, inconsistent formatting, errors, convert to house style, etc
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
-       cleanAbstractsHTML' = trim . sedMany (isUniqueKeys [
-         -- add newlines for readability
-         ("<p><strong>\nAuthor summary\n</strong>:</p>\n<p>\n", "<p><strong>\nAuthor summary\n</strong>: ")
-         , ("<strong>Abstract</strong>: ", "")
-         , ("<p><strong>Abstract</strong>: <strong>Objective</strong>: ", "<p><strong>Objective</strong>: ")
-         , ("<strong>Abstract</strong>\n<p>", "<p>")
-         , ("<strong>Abstract</strong>\n \n ", "")
-         , ("<p>Abstract. ", "<p>")
-         , ("<strong>ABSTRACT</strong><br />", "")
-         , ("<strong>Abstract</strong><br />", "")
-         , ("<strong>One Sentence Summary</strong></p>\n<p>", "<strong>One Sentence Summary</strong>: ")
-         , ("<strong>One Sentence Summary</strong></p> <p>", "<strong>One Sentence Summary</strong>: ")
-         , ("R<sup>2</sup>D2", "R2D2")
-         , ("</p> ?<p>", "</p>\n<p>")
-         , ("</p>\n<p>", "</p> <p>")
-         , ("</p>\n \n<p>", "</p>\n<p>")
-         , ("  *", " ") -- squeeze whitespace
-         , (" \\( ", " (")
-         , (" \\) ", " )")
-         , (" </p>", "</p>")
-         , ("</a></p>", "</a>.</p>")
-         , ("<br /> *</p>", "</p>")
-         , ("<p> *", "<p>")
-         , (" *</p>", "</p>")
-         , ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>")
+       cleanAbstractsHTML' = trim . sedMany (isUniqueKeys htmlRewriteRegexp) . replaceMany (isUniqueKeys htmlRewriteFixed)
 
-         -- regexp substitutions:
-         , ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
+htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
+htmlRewriteRegexp = [
+         ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
          , ("([0-9])- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
          , ("\\\\emph{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
@@ -504,11 +486,27 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<sec id=\"[a-zA-Z0-9_]+\">", "")
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
          , (" © [0-9]+ European Association of Personality Psychology", "")
-         ]) .
+         ]
 
-         -- simple string substitutions:
-         replaceMany (isUniqueKeys [
-         ("<span style=\"font-weight:normal\"> </span>", "")
+-- simple string substitutions:
+htmlRewriteFixed =
+         [
+         ("<strong>One Sentence Summary</strong></p>\n<p>", "<strong>One Sentence Summary</strong>: ")
+         , ("<strong>One Sentence Summary</strong></p> <p>", "<strong>One Sentence Summary</strong>: ")
+         , ("R<sup>2</sup>D2", "R2D2")
+         , ("</p> ?<p>", "</p>\n<p>")
+         , ("</p>\n<p>", "</p> <p>")
+         , ("</p>\n \n<p>", "</p>\n<p>")
+         , ("  *", " ") -- squeeze whitespace
+         , (" \\( ", " (")
+         , (" \\) ", " )")
+         , (" </p>", "</p>")
+         , ("</a></p>", "</a>.</p>")
+         , ("<br /> *</p>", "</p>")
+         , ("<p> *", "<p>")
+         , (" *</p>", "</p>")
+         , ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>")
+         , ("<span style=\"font-weight:normal\"> </span>", "")
          , ("href=\"github.com", "href=\"https://github.com")
          , ("https://github.com/deepmind/ deepmind-research/", "https://github.com/deepmind/deepmind-research/")
          , ("i . e .,", "ie.")
@@ -1114,33 +1112,40 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("strong>Author summary</strong>", "strong>Author Summary</strong>")
          , ("<jats:title>SUMMARY</jats:title>", "")
          , ("<jats:title>Summary</jats:title>", "")
-         , ("<strong>ABSTRACT</strong><br />              <p>", "<p>")
-         , ("</strong><p>", "</strong>: <p>")
-         , ("<p></abstract></p>", "")
-         , ("<strong>Abstract</strong>:        ", "")
-         , ("<abstract abstract-type=\"summary\"><br />", "")
-         , ("<abstract abstract-type=\"toc\">", "")
-         , ("<abstract abstract-type=\"editor\">", "")
-         , ("<abstract abstract-type=\"synopsis\">", "")
-         , ("<strong>SUMMARY</jats:title>", "")
-         , ("<strong>Abstract</jats:title>", "")
-         , ("<strong>Abstract</strong><br />", "")
-         , ("<h3>Abstract:</h3>", "")
-         , ("<h3>Summary/Abstract</h3>", "")
-         , ("<h3>ABSTRACT</h3>", "")
-         , ("<h3>Abstract</h3>", "")
-         , ("<h3>SUMMARY</h3>", "")
-         , ("<h3>Summary</h3>", "")
-         , ("▪ Abstract", "")
-         , ("<abstract abstract-type=\"summary\">", "")
-         , ("<p><abstract abstract-type=\"short\"></p>", "")
          , ("</abstract>", "")
+         , ("</strong><p>", "</strong>: <p>")
+         , ("<abstract abstract-type=\"editor\">", "")
+         , ("<abstract abstract-type=\"summary\">", "")
+         , ("<abstract abstract-type=\"summary\"><br />", "")
+         , ("<abstract abstract-type=\"synopsis\">", "")
+         , ("<abstract abstract-type=\"toc\">", "")
          , ("<abstract>", "")
          , ("<abstract>\n  ", "")
-         , ("\n</abstract>", "")
-         , ("<strong>Abstract</strong>:<p>", "<p>")
+         , ("<h3>ABSTRACT</h3>", "")
+         , ("<h3>Abstract:</h3>", "")
+         , ("<h3>Abstract</h3>", "")
+         , ("<h3>SUMMARY</h3>", "")
+         , ("<h3>Summary/Abstract</h3>", "")
+         , ("<h3>Summary</h3>", "")
+         , ("<p></abstract></p>", "")
+         , ("<p><abstract abstract-type=\"short\"></p>", "")
          , ("<p><strong>Abstract</strong>: ", "<p>")
+         , ("<p><strong>Abstract</strong>: <strong>Objective</strong>: ", "<p><strong>Objective</strong>: ")
          , ("<p><strong>Abstract</strong></p>", "")
+         , ("<p><strong>\nAuthor summary\n</strong>:</p>\n<p>\n", "<p><strong>\nAuthor summary\n</strong>: ")
+         , ("<p>Abstract. ", "<p>")
+         , ("<strong>ABSTRACT</strong><br />              <p>", "<p>")
+         , ("<strong>ABSTRACT</strong><br />", "")
+         , ("<strong>Abstract</jats:title>", "")
+         , ("<strong>Abstract</strong>:        ", "")
+         , ("<strong>Abstract</strong>: ", "")
+         , ("<strong>Abstract</strong>:<p>", "<p>")
+         , ("<strong>Abstract</strong><br />", "")
+         , ("<strong>Abstract</strong>\n \n ", "")
+         , ("<strong>Abstract</strong>\n<p>", "<p>")
+         , ("<strong>SUMMARY</jats:title>", "")
+         , ("\n</abstract>", "")
+         , ("▪ Abstract", "")
          , ("<strong>AIM:</strong>", "<strong>Aim</strong>:")
          , ("<strong>METHODS:</strong>", "<strong>Method</strong>:")
          , ("<strong>RESULTS:</strong>", "<strong>Results</strong>:")
@@ -1157,7 +1162,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
          , ("<p>Purpose. ", "\n<strong>Purpose</strong>: ")
          , ("\nRationale: ", "\n<strong>Rationale</strong>: ")
-
          , ("<strong>ANIMALS</strong>: ", "<strong>Animals</strong>: ")
          , ("<strong>OBJECTIVE</strong>: ", "<strong>Objective</strong>: ")
          , ("<strong>METHOD</strong>: ", "<strong>Method</strong>: ")
@@ -1165,7 +1169,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("<strong>CONCLUSIONS</strong>: ", "<strong>Conclusion</strong>: ")
          , ("<strong>CLINICAL RELEVANCE</strong>: ", "<strong>Clinical Relevance</strong>: ")
          , ("<strong>PROCEDURES</strong>: ", "<strong>Procedures</strong>: ")
-
          , ("</p><strong>Setting & Participants</strong>:<p>", "</p><p><strong>Setting & Participants</strong>: ")
          , ("<strong>OBJECTIVE</strong></p>\n", "<strong>Objective</strong>: ")
          , ("<strong>METHOD</strong></p>\n", "<strong>Method</strong>: ")
@@ -1758,11 +1761,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , ("non-significant", "non-statistically-significant")
          , ("non-significance", "non-statistical-significance")
          , ("statistically statistically-significant", "statistically-significant")
-         , ("-wide significance", "-wide statistical-significance")
          , ("GW significance", "genome-wide statistical-significance")
          , ("Most of the significance for", "Most of the statistical-significance for")
          , ("a significance test", "a statistical-significance test")
-         , ("significance tests", "statistical-significance tests")
+         , (" significance test", " statistical-significance test")
          , ("The significance of melatonergic", "The importance of melatonergic")
          , (", with significance for the ", ", with implications for the")
          , ("variants of uncertain significance", "variants of uncertain importance")
@@ -1951,7 +1953,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          , (",’", "’,")
          , (" (”", " (“")
          , ("\160", " ") -- NO BREAK SPACE
-         ])
+         ]
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwern.net/" "/" l

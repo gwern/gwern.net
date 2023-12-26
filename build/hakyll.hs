@@ -5,33 +5,14 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-11-22 21:44:33 gwern"
+When: Time-stamp: "2023-12-26 10:46:25 gwern"
 License: CC-0
 
 Debian dependencies:
-$ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev libghc-yaml-dev imagemagick s3cmd git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
+$ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev libghc-yaml-dev imagemagick rsync git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
 
-(GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and s3cmd/git upload to hosting/Github respectively.)
+(GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and rsync for the server/git upload to hosting/Github respectively.)
 Demo command (for the full script, with all static checks & generation & optimizations, see `sync-gwern.net.sh`):
-
-$ cd ~/wiki/ && ghc -rtsopts -threaded -O2 -fforce-recomp -optl-s --make hakyll.hs &&
-  ./hakyll rebuild +RTS -N3 -RTS && echo -n -e '\a'  &&
-  s3cmd -v -v --human-readable-sizes --reduced-redundancy --no-mime-magic --guess-mime-type --default-mime-type=text/html
-        --add-header="Cache-Control: max-age=604800, public" --delete-removed sync _site/ s3://gwern.net/ &&
-  rm -rf ~/wiki/_cache/ ~/wiki/_site/ && rm ./hakyll *.o *.hi ;
-  git push; echo -n -e '\a'
-
-Explanations:
-
-- we could run Hakyll with a command like `./hakyll.hs build` but this would run much slower than if we compile an optimized parallelized binary & run it with multiple threads; this comes at the cost of considerable extra complexity in the invocation, though, since we need to compile it with fancy options, run it with other options, and then at the end clean up by deleting the compiled binary & intermediates (GHC cannot take care of them on its own: https://ghc.haskell.org/trac/ghc/ticket/4114 )
-- `rebuild` instead of 'build' because IIRC there was some problem where Hakyll didn't like extension-less files so incremental syncs/builds don't work; this tells Hakyll
- to throw everything away without even trying to check
-- s3cmd:
-
-    - `--reduced-redundancy` saves a bit of money; no need for high-durability since everything is backed up locally in the git repo, after all
-    - s3cmd's MIME type detection has been unreliable in the past due to long-standing bugs in `python-magic` (particularly with CSS), so we need to force a default, especially for the extension-less (HTML) files
-- after that, we clean up after ourselves and sync with the Github mirror as well
-- the 'echo' calls are there to ring the terminal bell and notify the user that he needs to edit the Modafinil file or that the whole thing is done
 -}
 
 import Control.Monad (when, unless, (<=<))
@@ -71,7 +52,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeA
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline, titleCaseTest)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, inlinesToText, flattenLinksInInlines) -- sed
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, cleanAbstractsHTMLTest, inlinesToText, flattenLinksInInlines) -- sed
 import Arrow (upDownArrows, testUpDownArrows)
 
 main :: IO ()
@@ -94,6 +75,9 @@ main =
 
                let cases = titleCaseTest
                unless (null cases) $ preprocess $ printRed ("Title-case typography test suite has errors in: " ++ show cases)
+
+               let htmlRewrites = cleanAbstractsHTMLTest
+               preprocess $ printGreen ("Tested HTML cleanup rules for infinite loops, verified: " ++ show (length htmlRewrites))
 
                archives <- preprocess testLinkRewrites
                unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
