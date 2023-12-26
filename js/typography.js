@@ -104,7 +104,7 @@ Typography = {
 		],
 		wordbreaks: [
 			// Word-breaks after slashes (for long URLs etc.).
-			[ /(?<=.)\/+(?!\u200b)/, '$&\u200b' ],
+			[ /(?<=.)\/+(?=[^\u200b\/])/, '$&\u200b' ],
 		],
 		misc: [
 			// Convert nbsp to regular space.
@@ -151,8 +151,9 @@ Typography = {
 			let globalPattern = new RegExp(pattern.source, pattern.flags + "g");
 			let match = null;
 			while (match = globalPattern.exec(str)) {
-				let newStr = str.replace(pattern, template);
-				let lengthChange = newStr.length - str.length;
+				let oldLength = str.length;
+				str = str.replace(pattern, template);
+				let lengthChange = str.length - oldLength;
 
 				if (lengthChange == 0)
 					continue;
@@ -164,8 +165,6 @@ Typography = {
 				} else {
 					//	TODO: THIS!
 				}
-
-				str = newStr;
 			}
 		});
 
