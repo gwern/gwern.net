@@ -242,7 +242,7 @@ capitalizeAfterHyphen t s = case break (== '-') s of
 capitalizeAfterApostrophe :: String -> String
 capitalizeAfterApostrophe "" = ""
 capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
-    (before, punctuation:'s':[]) -> before ++ [punctuation] ++ 's' : []
+    (before, punctuation:"s") -> before ++ [punctuation] ++ "s"
     (before, punctuation:'s':after@(x:_)) -> if isSpace x || isPunctuation x
                                               then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)
                                               else before ++ [punctuation] ++ 'S' : capitalizeFirst (capitalizeAfterApostrophe after)
@@ -337,6 +337,10 @@ Image ("",[],[]) [Strong [Str "Figure 2"],Str ": ",Emph [Str "Instability of an 
 imageCaptionLinebreak :: Inline -> Inline
 -- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
 imageCaptionLinebreak x@(Image _ (Strong _ : Str ": (" : Emph _ : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : _ : LineBreak : _) _) = x
 imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) = Image y
                                                                                       (Strong a : Str b : Emph c : LineBreak : d)
                                                                                       z
