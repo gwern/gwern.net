@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-12-26 10:46:25 gwern"
+When: Time-stamp: "2023-12-27 20:35:38 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -52,7 +52,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeA
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv, testTags)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline, titleCaseTest)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, cleanAbstractsHTMLTest, inlinesToText, flattenLinksInInlines) -- sed
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, cleanAbstractsHTMLTest, cleanAuthorsTest, inlinesToText, flattenLinksInInlines) -- sed
 import Arrow (upDownArrows, testUpDownArrows)
 
 main :: IO ()
@@ -76,8 +76,8 @@ main =
                let cases = titleCaseTest
                unless (null cases) $ preprocess $ printRed ("Title-case typography test suite has errors in: " ++ show cases)
 
-               let htmlRewrites = cleanAbstractsHTMLTest
-               preprocess $ printGreen ("Tested HTML cleanup rules for infinite loops, verified: " ++ show (length htmlRewrites))
+               let infixRewrites = cleanAbstractsHTMLTest ++ cleanAuthorsTest
+               preprocess $ printGreen ("Tested HTML/author cleanup rules for infinite loops, verified: " ++ show (length infixRewrites))
 
                archives <- preprocess testLinkRewrites
                unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)

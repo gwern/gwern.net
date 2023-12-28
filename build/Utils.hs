@@ -301,7 +301,7 @@ processDOIArxiv url = "10.48550/arXiv." ++
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
-cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","), ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"), (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","), (" M. D. MMM", "")]) .
+cleanAuthors = trim . replaceMany cleanAuthorsFixedRewrites  .
                        sedMany (isUniqueKeys [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -320,6 +320,23 @@ cleanAuthors = trim . replaceMany (isUniqueKeys [(". . ", ". "), ("?",""), (",,"
                          (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 "),                            -- "John H A. Smith"  → "John H. A. Smith"
                          (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
                          ])
+cleanAuthorsFixedRewrites :: [(String,String)]
+cleanAuthorsFixedRewrites = isUniqueKeys [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","),
+                                           ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""),
+                                           (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""),
+                                           (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "),
+                                           (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""),
+                                           (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","),
+                                           (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","),
+                                           (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "),
+                                           ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","),
+                                           (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","),
+                                           ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""),
+                                           (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"),
+                                           (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
+                                           (" M. D. MMM", "")]
+cleanAuthorsTest :: [(String,String,String)]
+cleanAuthorsTest = testInfixRewriteLoops cleanAuthorsFixedRewrites cleanAuthors
 
 -- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
 -- > Text.Pandoc.Walk.walkM inlineMath2Text [Math InlineMath "a + b = c"]
@@ -336,7 +353,7 @@ inlineMath2Text x = return x
 -- test for possible infinite-loops in the rewrite suite; our initial source of cases is just the fixed-string rewrites.
 -- The cycle detector is not enough because the rewrites operate infix, not by replacing the *whole* string, so it's possible to have expansion/contraction which produces loops.
 cleanAbstractsHTMLTest :: [(String,String,String)]
-cleanAbstractsHTMLTest = map (\(a,b) -> (a,b,fixedPoint cleanAbstractsHTML a)) $ reverse htmlRewriteFixed
+cleanAbstractsHTMLTest = testInfixRewriteLoops htmlRewriteFixed cleanAbstractsHTML
 
 -- run all necessary rewrites on a string to clean up malformation, inconsistent formatting, errors, convert to house style, etc
 cleanAbstractsHTML :: String -> String
@@ -2078,6 +2095,11 @@ isUniqueValues xs
 -- 4. isUniqueAll: all keys, values, and key-value pairs are unique
 isUniqueAll :: (Eq a, Show a, Eq b, Show b) => [(a,b)] -> [(a,b)]
 isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
+
+-- simple test for infinite loops in infix string rewrites: we take the list of before→after rewrites, and we try to rewrite the 'before'
+-- using some given function. If it infinite-loops...
+testInfixRewriteLoops :: [(String,String)] -> (String -> String) -> [(String,String,String)]
+testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ reverse rewrites
 
 isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]
 isCycleLess xs = if not (cycleExists xs) then xs else
