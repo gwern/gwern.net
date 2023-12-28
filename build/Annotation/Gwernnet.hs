@@ -15,7 +15,7 @@ import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
 import Utils (anyInfix, anySuffix, anyPrefix, checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors, printGreen, printRed, replace, replaceMany, safeHtmlWriterOptions, sed, sedMany, split, trim)
-import Tags (listTagDirectories, abbreviateTag)
+import Tags (listTagDirectoriesAll, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
 import Query (truncateTOCHTML)
 
@@ -87,7 +87,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 
 -- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
-gwerntoplevelDocAbstract = do allDirs <- listTagDirectories ["doc/"]
+gwerntoplevelDocAbstract = do allDirs <- listTagDirectoriesAll ["doc/"]
                               let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/doc/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
                               return $ Right ("/doc/index", ("doc tag","N/A","","",[],"<p>Bibliography for tag <em>doc</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 

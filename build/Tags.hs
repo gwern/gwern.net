@@ -94,13 +94,20 @@ abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsL
 listTagsAll :: IO [String]
 listTagsAll = fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.page")) "doc/"
 
+
+
 -- given a list of ["doc/foo/index.page"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
-listTagDirectories :: [FilePath] -> IO [FilePath]
-listTagDirectories direntries' = do
-                       directories <- mapM (getSubdirsRecursive . sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/") direntries'
+-- Bool argument = whether to include all sub-directories recursively.
+listTagDirectories :: Bool -> [FilePath] -> IO [FilePath]
+listTagDirectories allp direntries' = do
+                       directories <- if allp then mapM (getSubdirsRecursive . sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/") direntries'
+                                      else return [map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/") direntries']
                        let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
                        directoriesVerified <- filterM (\f -> doesFileExist (f++".page")) directoriesMi
                        return $ sort $ map ("/"++) directoriesVerified
+-- a `listTagDirectories` which includes all sub-directory/children as well:
+listTagDirectoriesAll :: [FilePath] -> IO [FilePath]
+listTagDirectoriesAll = listTagDirectories True
 
 -- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
 -- so eg. 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'

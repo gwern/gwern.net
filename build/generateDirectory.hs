@@ -29,7 +29,7 @@ import Utils (inlinesToText)
 import LinkID (generateID, authorsToCite)
 import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import Tags (listTagDirectories, abbreviateTag)
+import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
@@ -85,8 +85,8 @@ generateDirectory filterp md dirs dir'' = do
   -- we suppress what would be duplicate entries in the File/me section
   let tagged' = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
-  dirsChildren   <- listTagDirectories [dir'']
-  dirsSeeAlsos   <- listTagDirectories taggedDirs
+  dirsChildren   <- listTagDirectoriesAll [dir'']
+  dirsSeeAlsos   <- listTagDirectories False taggedDirs
 
   triplets  <- listFiles md direntries'
 
