@@ -171,7 +171,7 @@ Extracts = {
 
 		//  Set pop-frame type (mode) - popups or popins.
 		let mobileMode = (   localStorage.getItem("extracts-force-popins") == "true"
-						  || GW.isMobile() 
+						  || GW.isMobile()
 						  || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches);
 		Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
 		GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
@@ -248,7 +248,7 @@ Extracts = {
         GWLog("Extracts.processTargetsInContainer", "extracts.js", 2);
 
 		if (   container instanceof DocumentFragment
-			|| (   container instanceof Element 
+			|| (   container instanceof Element
 			    && container.closest(Extracts.contentContainersSelector))) {
 			Extracts.addTargetsWithin(container);
 		} else {
@@ -261,9 +261,9 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		container.querySelectorAll(".has-content").forEach(link => {
-			link.classList.toggle("has-indicator-hook", 
+			link.classList.toggle("has-indicator-hook",
 								  (link.closest(Extracts.hooklessLinksContainersSelector) == null));
-				
+
 			if (link.querySelector(".indicator-hook") != null)
 				return;
 
@@ -525,9 +525,9 @@ Extracts = {
         }
     },
 
-	/*	If the reference data is not yet available, we either queue the 
-		refresh-pop-frame callbacks for when it does load or fail (in the case 
-		where the network request hasn’t come back yet), or mark the pop-frame 
+	/*	If the reference data is not yet available, we either queue the
+		refresh-pop-frame callbacks for when it does load or fail (in the case
+		where the network request hasn’t come back yet), or mark the pop-frame
 		as “loading failed” and do nothing (if the load has failed).
 	 */
 	//	Called by: Extracts.localPageForTarget
@@ -540,7 +540,7 @@ Extracts = {
              */
 			target.popFrame.classList.toggle("loading", true);
 
-			dataProvider.waitForDataLoad(dataProvider.targetIdentifier(target), 
+			dataProvider.waitForDataLoad(dataProvider.targetIdentifier(target),
 			   (identifier) => {
 				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
 			}, (identifier) => {
@@ -647,9 +647,9 @@ Extracts = {
         //  Import the class(es) of the target.
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
-        popFrame.classList.remove("has-annotation", "has-annotation-partial", 
-        	"has-content", "link-self", "link-annotated", "link-page", 
-        	"has-icon", "has-indicator-hook", "uri", "arrow-up", "arrow-down", 
+        popFrame.classList.remove("has-annotation", "has-annotation-partial",
+        	"has-content", "link-self", "link-annotated", "link-page",
+        	"has-icon", "has-indicator-hook", "uri",
         	"spawns-popup", "spawns-popin");
 
         //  Attempt to fill the popup.
@@ -660,13 +660,13 @@ Extracts = {
         popFrame.body.classList.add("markdownBody");
 
 		//	Inject styles.
-		let inlinedStyleIDs = [ 
-			"inlined-styles-colors", 
-			"inlined-styles-colors-dark", 
+		let inlinedStyleIDs = [
+			"inlined-styles-colors",
+			"inlined-styles-colors-dark",
 			"mathjax-styles"
 		];
-		Array.from(document.styleSheets).filter(styleSheet => 
-			(   styleSheet.ownerNode.tagName == "LINK" 
+		Array.from(document.styleSheets).filter(styleSheet =>
+			(   styleSheet.ownerNode.tagName == "LINK"
 			 || inlinedStyleIDs.includes(styleSheet.ownerNode.id))
 		).forEach(styleSheet => {
 			let styleBlock = elementFromHTML("<style>"
@@ -688,8 +688,8 @@ Extracts = {
 				Popups.positionPopup(popFrame);
 			else // if (Extracts.popFrameProvider == Popins)
 				Popins.scrollPopinIntoView(popFrame);
-		}, { 
-			condition: (info) => (info.document == popFrame.document) 
+		}, {
+			condition: (info) => (info.document == popFrame.document)
 		});
 
         return popFrame;
@@ -721,9 +721,9 @@ Extracts = {
 				leftMargin = (bodyRect.left - popinRect.left);
 				rightMargin = (popinRect.right - bodyRect.right);
 			} else {
-				let containerSelector = [ 
+				let containerSelector = [
 					".abstract blockquote",
-					".markdownBody" 
+					".markdownBody"
 				].join(", ");
 				let containerRect = popin.closest(containerSelector).getBoundingClientRect();
 				leftMargin = (containerRect.left - popinRect.left);
@@ -821,7 +821,7 @@ Extracts = {
      */
 
 	popupsDisabledLocalStorageItemKey: "extract-popups-disabled",
-	
+
     //  Called by: Extracts.setup
     //  Called by: extracts-options.js
     popupsEnabled: () => {
@@ -933,8 +933,8 @@ Extracts = {
     }
 };
 
-/*	Browser native image lazy loading does not seem to work in pop-frames (due 
-	to the shadow root or the nested scroll container or some combination 
+/*	Browser native image lazy loading does not seem to work in pop-frames (due
+	to the shadow root or the nested scroll container or some combination
 	thereof), so we have to implement it ourselves.
  */
 Extracts.additionalRewrites.push(Extracts.lazyLoadImages = (popFrame) => {

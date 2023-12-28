@@ -22,13 +22,9 @@ import Utils (isUniqueAll)
 
 -- We do this by walking the Pandoc AST in order, and keeping track of whether a referenced ID has been before; if it has, then it must be 'before', and if it has not, then it must be 'after'.
 -- Specifically:
--- initialize an empty `Set` using the State monad; use a monadic `walkM` (depth-first pre-order traversal?); for each element with an ID, add that ID to the set; if the element is a Link which has a `#` prefix on its target, then look up the target in the Set; if it is present, then the target is 'before' and one adds .arrow-up; if it is not present, then the target must be 'after' and it gets .arrow-down. IDs are required by HTML to be unique, so the first instance must be the only instance and we do not need to worry about multiple definitions and 'which' is targeted.
+-- initialize an empty `Set` using the State monad; use a monadic `walkM` (depth-first pre-order traversal?); for each element with an ID, add that ID to the set; if the element is a Link which has a `#` prefix on its target, then look up the target in the Set; if it is present, then the target is 'before' and one adds 'arrow-up' link-icon; if it is not present, then the target must be 'after' and it gets 'arrow-down' link-icon. IDs are required by HTML to be unique, so the first instance must be the only instance and we do not need to worry about multiple definitions and 'which' is targeted.
 
 type Refs = S.Set T.Text
-
-arrowUp, arrowDown :: T.Text
-arrowUp = "arrow-up"
-arrowDown = "arrow-down"
 
 addID :: Attr -> ST.State Refs ()
 addID ("",_,_) = return ()
@@ -90,16 +86,17 @@ addArrowClassTableBody (TableBody attr rowHeadColumns headerRows rows) = do
       return $ Cell attr alignment rowSpan colSpan blocks'
 
 addArrowClassInline :: Inline -> ST.State Refs Inline
-addArrowClassInline link@(Link attr@(_,classes,_) inlines (url, title))
+addArrowClassInline link@(Link attr@(_,_,kvs) inlines (url, title))
   | T.head url /= '#' = return link
   | otherwise = do
       refs <- ST.get
-      let newAttr = if url == "#top" || -- interesting special-case: the ID #top is required to exist at runtime, though it is nowhere at compile-time, and it is always at the top of the page before any elements, so we must special-case it & it always is 'before' any element linking to it, so it gets arrowUp.
+      let keys = map fst kvs
+          newAttr = if url == "#top" || -- interesting special-case: the ID #top is required to exist at runtime, though it is nowhere at compile-time, and it is always at the top of the page before any elements, so we must special-case it & it always is 'before' any element linking to it, so it gets arrowUp.
                        S.member (T.tail url) refs &&
                        -- WARNING: depending on the recursion pattern, it's possible to add *both*! We must check to avoid that:
-                       arrowUp `notElem` classes && arrowDown `notElem` classes
-                    then addClass arrowUp attr
-                    else addClass arrowDown attr
+                       arrowUp `notElem` keys && arrowDown `notElem` keys
+                    then addKV ("link-icon", arrowUp)   $ addKV ("link-icon-type","svg") attr
+                    else addKV ("link-icon", arrowDown) $ addKV ("link-icon-type","svg") attr
       return $ Link newAttr inlines (url, title)
 addArrowClassInline (Span attr inlines) = do
   addID attr
@@ -107,11 +104,18 @@ addArrowClassInline (Span attr inlines) = do
   return $ Span attr inlines'
 addArrowClassInline x = return x  -- other inlines
 
-addClass :: T.Text -> Attr -> Attr
--- NOTE: we use nub because the class list is guaranteed to never be more than 3 or 4 long & Data.Set is overkill & more verbose.
-addClass cls (i, classes, kv)
-  | cls `elem` classes = (i, classes, kv)
-  | otherwise = (i, nub (cls:classes), kv)
+arrowUp, arrowDown :: T.Text
+arrowUp = "arrow-up"
+arrowDown = "arrow-down"
+arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
+arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
+arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
+
+addKV :: (T.Text,T.Text) -> Attr -> Attr
+-- NOTE: we use nub because the key-value assoc-list is guaranteed to never be more than 3 or 4 long & Data.Set is overkill & more verbose.
+addKV kv x@(i, classes, kvs)
+  | fst kv `elem` map fst kvs = x
+  | otherwise = (i, classes, nub (kv:kvs))
 
 upDownArrows :: Pandoc -> Pandoc
 upDownArrows (Pandoc meta blocks) = Pandoc meta (ST.evalState (walkM addArrowClass blocks) S.empty)
@@ -122,37 +126,37 @@ testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pand
     testCases :: [([Block], [Block])]
     testCases = isUniqueAll
       [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
-        [Para [Link ("", [arrowDown], []) [Str "simpleCase"] ("#target", "")]])
+        [Para [Link ("", [], arrowDownKV) [Str "simpleCase"] ("#target", "")]])
       , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [arrowDown], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]])
+         [Para [Link ("", [], arrowDownKV) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]])
       , ([Para [Link ("", [], []) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [arrowDown], []) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
+         [Para [Link ("", [], arrowDownKV) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
       , ([Para [Link ("", [], []) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]],
-          [Para [Link ("", [arrowDown], []) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]])
+          [Para [Link ("", [], arrowDownKV) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]])
       , ([Para [Link ("", [], []) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]],
-         [Para [Link ("", [arrowDown], []) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]])
+         [Para [Link ("", [], arrowDownKV) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]])
       , ([Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "beforeLinkCase"] ("#target", "")]],
-         [Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [arrowUp], []) [Str "beforeLinkCase"] ("#target", "")]])
+         [Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkCase"] ("#target", "")]])
       , ([Para [Link ("", [], []) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-          [Para [Link ("", [arrowDown], []) [Str "multipleLinksCase"] ("#target", ""), Link ("", [arrowDown], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
+          [Para [Link ("", [], arrowDownKV) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
       , ([Para [Link ("", [], []) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]],
-         [Para [Link ("", [arrowDown], []) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [arrowDown], []) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]])
+         [Para [Link ("", [], arrowDownKV) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]])
       , ([Para [Link ("", [], []) [Str "nonExistentTargetCase"] ("#nonexistent", "")]],
-         [Para [Link ("", [arrowDown], []) [Str "nonExistentTargetCase"] ("#nonexistent", "")]])
+         [Para [Link ("", [], arrowDownKV) [Str "nonExistentTargetCase"] ("#nonexistent", "")]])
       , ([Para [Str "noLinksCase: no links or targets here"]],
          [Para [Str "noLinksCase: no links or targets here"]])
       , ([Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], []) [Str "beforeLinkNestedCase"] ("#target", "")]],
-         [Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [arrowUp], []) [Str "beforeLinkNestedCase"] ("#target", "")]])
+         [Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkNestedCase"] ("#target", "")]])
       , ([Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], []) [Str "beforeLinkHeaderCase"] ("#target", "")]],
-         [Header 1 ("target", [], []) [Str "header"], Para [Link ("", [arrowUp], []) [Str "beforeLinkHeaderCase"] ("#target", "")]])
+         [Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], arrowUpKV) [Str "beforeLinkHeaderCase"] ("#target", "")]])
       , ([Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], []) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")]],
-         [Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [arrowUp], []) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [arrowUp], []) [Str "link2"] ("#target2", "")]])
+         [Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], arrowUpKV) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], arrowUpKV) [Str "link2"] ("#target2", "")]])
       , ([Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], []) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]],
-         [Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [arrowUp], []) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [arrowDown], []) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]])
+         [Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], arrowUpKV) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]])
       , ([Para [Link ("", [], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "link3"] ("#target", "")]],
-         [Para [Link ("", [arrowDown], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [arrowDown], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [arrowUp], []) [Str "link3"] ("#target", "")]])
+         [Para [Link ("", [], arrowDownKV) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "link3"] ("#target", "")]])
       , ([Div ("", [], []) [Para [Link ("", [], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]],
-         [Div ("", [], []) [Para [Link ("", [arrowDown], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
+         [Div ("", [], []) [Para [Link ("", [], arrowDownKV) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
       , ([Para [Link ("", [], []) [Str "simpleCase"] ("#top", "")]],
-         [Para [Link ("", [arrowUp], []) [Str "simpleCase"] ("#top", "")]])
+         [Para [Link ("", [], arrowUpKV) [Str "simpleCase"] ("#top", "")]])
       ]

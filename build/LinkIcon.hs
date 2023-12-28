@@ -72,6 +72,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
  | anyPrefixT u ["/metadata/annotation/"] = x
 
+ -- `arrow-down`/`arrow-up` are handled by Arrow.hs
  | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg")
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg")
@@ -146,7 +147,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 -- Here we test that URLs get assigned the appropriate icons; on /lorem, we render them to check for
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
 --
--- TODO: does not test more complex behavior like supression of redundant link-icons
+-- TODO: does not test more complex behavior like suppression of redundant link-icons
 linkIconTest :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                           /=
