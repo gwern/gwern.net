@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-12-24 10:14:52 gwern"
+;;; When:  Time-stamp: "2023-12-27 10:23:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -398,8 +398,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" e\\.g\\." . " eg")
                      ("(e\\.g\\." . "(eg")
                      ("(eg\\." . "(eg")
-                     ("(eg " . "(eg ")
-                     (" eg " . " eg ")
                      ("eg\\., " . "eg ")
                      ("e\\.g\\., " . "eg ")
                      ("Na\\+" . "Na⁺")
@@ -514,6 +512,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("N = " . "_n_ = ")
                         (" n≤" . " _n_ ≤ ")
                         (" n≥" . " _n_ ≥ ")
+                        ("λN" . "λ<em>n</em>")
                         (" O(" . " 𝒪(")
                         ("( r =" . "(_r_ =")
                         ("(r)" . "(_r_)")
@@ -526,6 +525,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" rs =" . " <em>r</em>s =")
                         ("rmeta =" . "<em>r</em><sub>meta</sub> =")
                         ("rUKB =" . "<em>r</em><sub>UKB</sub> =")
+                        (" r " . " _r_ ")
                         ("Mr = " . "_M_~r~ = ")
                         ("zMR " . "_z_~MR~")
                         ("z score" . "_z_ score")

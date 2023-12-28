@@ -132,7 +132,7 @@ linkIconRulesSingle u
  | u'' u "beepb00p.xyz" = ("\129302", "text") -- ROBOT FACE U+1F916
  | u'' u "antilop.cc" = ("෴", "text") -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' u "forum.effectivealtruism.org" || u'' u "www.effectivealtruism.org" = ("EA", "text")
- | u'' u "boards.fireden.net" || u'' u "archive.foolz.us" || u' u "4channel.org"  = ("4CH", "text,sans")
+ | u'' u "boards.fireden.net" || u'' u "archive.foolz.us" || u' u "4channel.org" || u' u "boards.4chan.org"  = ("4CH", "text,sans")
  | u'' u "www.kaggle.com" = ("k", "text,sans")
  | u'' u "www.discovermagazine.com" = ("D", "text")
  | u'' u "www.mirror.co.uk" = ("M", "text,sans")
@@ -374,7 +374,7 @@ linkIconRulesSVG u
  | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg")
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' u "www.paulgraham.com" = ("pg", "text,monospace") -- Paul Graham, known by username 'pg' on HN
+ | u'' u "paulgraham.com" = ("pg", "text,monospace") -- Paul Graham, known by username 'pg' on HN
  | u' u "ycombinator.com" = ("hacker-news", "svg") -- HN/YC (shared logo). primary user: news.ycombinator.com
  | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo.
  | u'' u "mega.nz" = ("mega", "svg") -- MegaUpload/Mega: filesharing (used for big files).
@@ -545,7 +545,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://animekritik.wordpress.com/2011/05/12/evangelion-2-0-surnames-statements-and-makinami/", "NGE", "text,tri")
          , ("https://antilop.cc/sr/#assassination_plot", "෴", "text")
          , ("https://apnews.com/article/ap-top-news-international-news-weekend-reads-china-health-269b3de1af34e17c1941a514f78d764c", "AP", "text,sans")
-         , ("https://apps.apple.com/app/id307920888", "apple", "svg")
+         , ("https://apps.apple.com/us/app/better-brain-lite/id307920888", "apple", "svg")
          , ("https://browse.arxiv.org/html/2112.11848",  "\120536","text")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans")
          , ("https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/", "eleutherai", "svg")
@@ -579,12 +579,12 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://blog.eleuther.ai/year-one/", "eleutherai", "svg")
          , ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text")
          , ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text")
-         , ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
+         , ("https://blogs.nvidia.com/blog/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
          , ("https://blottyparchment.livejournal.com/7541.html?thread=233845", "LJ", "text,sans")
          , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,sans")
          , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "springerlink", "svg")
          , ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,tri,sans")
-         , ("https://boards.4channel.org/jp/", "4CH", "text,sans")
+         , ("https://boards.4chan.org/jp/", "4CH", "text,sans")
          , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans")
          , ("https://boingboing.net/2011/02/03/cosmic-commodities-h.html", "bb", "text,mono")
          , ("https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext", "acm", "text,tri,sans")
@@ -745,7 +745,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://poniesatdawn.bandcamp.com/album/dreamwalkers",  "P@D","text,tri")
          , ("https://predictionbook.com/",  "?","text,sans,bold")
          , ("https://proceedings.mlr.press/v37/xuc15.pdf",  "\120536","text")
-         , ("https://psyarxiv.com/gjh95/",   "ψ", "text")
+         , ("https://osf.io/preprints/psyarxiv/gjh95/",   "ψ", "text")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")
          , ("https://quantifiedself.com/2014/04/eric-jain-sleep-moon-phases/", "QS", "text,sans")
@@ -777,7 +777,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://soundcloud.com/leggysalad/girls-afternoon-appointments",  "audio","svg")
          , ("https://speakingofmedicine.plos.org/2012/06/25/less-research-is-needed/",  "plos","svg")
          , ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,mono,quad")
-         , ("https://stability.ai/blog/stable-diffusion-public-release", "SD", "text,sans")
+         , ("https://stability.ai/news/stable-diffusion-public-release", "SD", "text,sans")
          , ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stack-exchange","svg")
          , ("https://static.cambridge.org/binary/version/id/urn:cambridge.org:id:binary-alt:20181009171208-81978-mediumThumb-S0033291718001873_fig1g.jpg?pub-status=live", "⛨", "text")
          , ("https://statmodeling.stat.columbia.edu/2004/12/29/type_1_type_2_t/",  "\9605\9607\9603","text")
@@ -855,9 +855,9 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad")
          , ("https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html", "EWD", "text,tri,sans")
-         , ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans")
+         , ("https://www.dailydot.com/unclick/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans")
          , ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝔐", "text")
-         , ("https://www.deepmind.com/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii",  "deepmind","svg")
+         , ("https://deepmind.google/discover/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/",  "deepmind","svg")
          , ("https://www.deviantart.com/caji9i/art/stylegan-neural-ahegao-842847987", "DA", "text,sans")
          , ("https://www.discovermagazine.com/mind/the-brain-a-body-fit-for-a-freaky-big-brain", "D", "text")
          , ("https://www.drugsdata.org/results.php?start=0&search_field=all&s=modafinil", "erowid","svg")
@@ -899,7 +899,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.jneurosci.org/content/32/12/4156.full", "JN", "text")
          , ("https://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri")
-         , ("https://www.kaggle.com/ultrajack/modern-renaissance-poetry", "k", "text,sans")
+         , ("https://www.kaggle.com/datasets/ultrajack/modern-renaissance-poetry", "k", "text,sans")
          , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
          , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE","text,tri")
          , ("https://www.latimes.com/archives/la-xpm-1988-07-17-tm-9636-story.html", "𝔏A", "text")
@@ -945,7 +945,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://www.projectrho.com/public_html/rocket/futurelang.php", "ρ", "text")
          , ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans")
-         , ("https://www.quantamagazine.org/the-busy-beaver-game-illuminates-the-fundamental-limits-of-math-20201210/", "quanta", "svg")
+         , ("https://www.quantamagazine.org/how-the-slowest-computer-programs-illuminate-maths-fundamental-limits-20201210/", "quanta", "svg")
          , ("https://www.rand.org/pubs/monographs/MG1026.html",  "RAND","text,quad,sans")
          , ("https://www.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
          , ("https://www.reddit.com/r/HPMOR/", "MoR", "text,tri,italic")
@@ -1019,7 +1019,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("http://www.gainax.co.jp/wp/",  "NGE","text,tri")
          , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
          , ("https://www.metafor-project.org/doku.php",  "R","text")
-         , ("http://www.paulgraham.com/hundred.html",  "pg","text,monospace")
+         , ("https://paulgraham.com/hundred.html",  "pg","text,monospace")
          , ("http://www.scholarpedia.org/article/Applications_of_algorithmic_information_theory", "scholarpedia", "svg")
          , ("http://www.sequentialtart.com/archive/july00/grant.shtml", "ST", "text,sans")
          , ("http://www.thelancet.com/journals/lancet/article/PIIS0140-6736%2811%2960693-4/abstract", "L", "text")

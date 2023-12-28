@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-10-16 12:40:04 gwern"
+# When:  Time-stamp: "2023-12-27 13:36:19 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -238,8 +238,8 @@ do
               runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E "^http" | grep -F -v -e 'https://gwern.net' -e arxiv.org -e pnas.org | sort -u | shuf | parallel -n 1 checkPDF; }
         wrap λ "Non-icon/warned PDF links"
 
-        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/doc/' -e 'https:\/\/www\.gwern\.net\/' | \
-                               grep -E '\.pdf$' | sed -e 's/\/doc/doc/' -e 's/https:\/\/www\.gwern\.net//' ); do
+        λ() { for PDF in $(runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -e '^/doc/' -e 'https:\/\/gwern\.net\/' | \
+                               grep -E '\.pdf$' | sed -e 's/\/doc/doc/' -e 's/https:\/\/gwern\.net//' ); do
 
                   TITLE=$(exiftool -printFormat '$Title' -Title ~/wiki/"$PDF")
                   AUTHOR=$(exiftool -printFormat '$Author' -Author ~/wiki/"$PDF")

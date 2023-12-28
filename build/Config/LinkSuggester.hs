@@ -1132,7 +1132,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
     , [ "PredictionBook" , "PredictionBook.com" ]
     )
   , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
-  , ( "https://web.archive.org/web/20140527121332/http://www.infinityplus.co.uk/stories/under.htm"
+  , ( "https://web.archive.org/web/20140527121332/https://www.infinityplus.co.uk/stories/under.htm"
     , [ "\"Understand\"" ]
     )
   , ( "https://web.archive.org/web/20161021035119/http://www.ibooksonline.com/88/Text/hell.html"
@@ -1162,18 +1162,18 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "Lello et al 2017"
       ]
     )
-  , ( "https://www.deepmind.com/blog/agent57-outperforming-the-human-atari-benchmark"
+  , ( "https://deepmind.google/discover/blog/agent57-outperforming-the-human-atari-benchmark/"
     , [ "Agent57"
       , "Agent57: Outperforming the Atari Human Benchmark', Badia et al 2020"
       ]
     )
-  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
+  , ( "https://deepmind.google/discover/blog/learning-through-human-feedback/"
     , [ "Learning through human feedback" ]
     )
   , ( "https://deepmind.google/discover/blog/prefrontal-cortex-as-a-meta-reinforcement-learning-system/"
     , [ "Prefrontal cortex as a meta-reinforcement learning system" ]
     )
-  , ( "https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio"
+  , ( "https://deepmind.google/discover/blog/wavenet-a-generative-model-for-raw-audio/"
     , [ "WaveNet: A Generative Model for Raw Audio" ]
     )
   , ( "https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf"

@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-09-26 21:00:12 gwern"
+When:  Time-stamp: "2023-12-27 20:29:28 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -68,7 +68,7 @@ getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
                                if not linkExists then return ("","")
                                  else return x
 
--- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'http://www.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/http%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
+-- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'https://www.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/https%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath,FilePath)
 getAnnotationLink = getXLink ""
 getBackLink       = getXLink "backlink"

@@ -28,7 +28,7 @@ $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runghc -istatic/build/ ./
 4 : #jaeggi-2008
 3 : https://www.newsweek.com/2010/06/18/this-is-your-brain-aging.print.html
 3 : https://www.mindsparke.com/
-3 : http://www.klingberglab.se/pub/McNab2008.pdf
+3 : https://www.klingberglab.se/pub/McNab2008.pdf
 ...
 
 More complex use:
