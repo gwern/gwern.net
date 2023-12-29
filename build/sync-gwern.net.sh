@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-28 14:11:13 gwern"
+# When:  Time-stamp: "2023-12-29 10:09:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -134,7 +134,7 @@ else
 
   if [ "$SLOW" ]; then
     bold "Checking embeddings database…"
-    ghci -i/home/gwern/wiki/static/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
+    ghci -istatic/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ grep -F -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.yaml || true; }
@@ -200,9 +200,18 @@ else
         kill "$NITTER_PID"
 
         bold "Updating X-of-the-day…"
-        ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs \
-             -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; qotd; sotd; }' | \
+        bold "Updating annotation-of-the-day…"
+        ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; }' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
+
+        bold "Updating quote-of-the-day…"
+        ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'qotd' | \
+            grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
+
+        bold "Updating site-of-the-day…"
+        ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sotd' | \
+            grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
+        wait;
     fi
 
     bold "Results size:"
@@ -1148,7 +1157,7 @@ else
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ +[4-9][0-9][0-9][0-9]+ +'; }
     wrap λ "Similar-links: overused links (>999) indicate pathological lookups; blacklist links as necessary."
 
-    λ(){ ghci -i/home/gwern/wiki/static/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
+    λ(){ ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
     wrap λ "Site-of-the-day: check for recommendations?"
 
