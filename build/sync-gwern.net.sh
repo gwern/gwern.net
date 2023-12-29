@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-27 20:04:48 gwern"
+# When:  Time-stamp: "2023-12-28 14:11:13 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -55,6 +55,7 @@ else
     SLOW="true"
     SKIP_DIRECTORIES=""
     NITTER_PID=""
+    TODAY=$(date '+%F')
 
     for ARG in "$@"; do
         case "$ARG" in
@@ -80,7 +81,7 @@ else
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( s() { gwsed "$@"; }
           ## domain rewrites:
-          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://x.com/' 'https://twitter.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://www.paulgraham.com'; s 'http://www.paulgraham.com' 'https://www.paulgraham.com';
+          s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://x.com/' 'https://twitter.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://en.m.wikipedia.org/' 'https://en.wikipedia.org/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://nitter.net/' 'https://twitter.com/'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com";
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
@@ -106,7 +107,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -456,6 +457,7 @@ else
                    -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
                    -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' -e '^include-annotation$' -e '^include-even-when-collapsed$' \
                    -e '^include-spinner-not$' -e '^include-replace-container$' -e '^include-replace-container-not$' -e '^include-unwrap$' \
+                   -e '^include-block-context$' -e '^include-omit-metadata$' -e '^include-content$' -e '^include-content-no-header$' -e '^include-block-context-expanded$' \
                    -e '^marginnote$' -e '^markdownBody$' -e '^mjpage$' -e '^mjpage__block$' -e '^mjx-base$' -e '^mjx-box$' -e '^MJXc-display$' \
                    -e '^mjx-cell$' -e '^mjx-char$' -e '^mjx-charbox$' -e '^mjx-chtml$' -e '^MJXc-space1$' -e '^MJXc-space2$' -e '^MJXc-space3$' \
                    -e '^MJXc-stacked$' -e '^MJXc-TeX-ams-R$' -e '^MJXc-TeX-cal-R$' -e '^MJXc-TeX-main-R$' -e '^MJXc-TeX-math-I$' \
@@ -466,9 +468,9 @@ else
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
                    -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^similar-links-search$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
-                   -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^include-block-context$' -e '^tag-index-link-bibliography-block$' \
-                   -e 'doc-index-tag-short' -e '^decorate-not$' -e '^include-omit-metadata$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^include-content-no-header$' -e '^drop-cap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; }
+                   -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
+                   -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
+                   -e '^reader-mode-note$' -e '^drop-cap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -827,14 +829,14 @@ else
 
          if ((RANDOM % 100 > 50)); then
              # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-             (if ((RANDOM % 100 > 90)); then sleep 30s && chromium "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
-              sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-              sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+             (if ((RANDOM % 100 > 90)); then sleep 30s && $X_WWW_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
+              sleep 5s; $X_WWW_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+              sleep 5s; $X_WWW_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
               if ((RANDOM % 100 > 90)); then
                   # check page speed report for any regressions:
-                  chromium "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
+                  $X_WWW_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
                   bold "Checking print-mode CSS as well…"
-                  chromium --headless --print-to-pdf="~/gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && chromium ~/gwernnet-printmode.pdf
+                  chromium --headless --print-to-pdf="$HOME/$TODAY-gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && chromium ~/$HOME/$TODAY-gwernnet-printmode.pdf
               fi;
              )
          fi
@@ -843,7 +845,7 @@ else
     sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 > 99)); then chromium "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
+    if ((RANDOM % 100 > 99)); then $X_WWW_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
     if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi

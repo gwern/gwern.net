@@ -1394,6 +1394,7 @@ htmlRewriteFixed =
          , ("</a> .", "</a>.")
          , ("</jats:ext-link>", "</a>")
          , ("<jats:ext-link xmlns:xlink=\"http://www.w3.org/1999/xlink\" ext-link-type=\"uri\" xlink:href=", "<a href=")
+         , ("<ext-link xlink:href=", "<a href=")
          , ("<ext-link ext-link-type=\"uri\"", "<a")
          , ("<ext-link ext-link-type=\"uri\" xlink:href=", "<a href=")
          , ("xlink:type=\"simple\"", "")
