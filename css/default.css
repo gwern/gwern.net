@@ -2082,26 +2082,6 @@ del {
         }
     }
 
-    /*  Special styles for special browsers.
-     */
-    @supports (-moz-user-focus: normal) {
-        p.drop-cap-goudy span.drop-cap {
-            margin: 0.05em 0.02em 0 0;
-        }
-        p.drop-cap-yinit span.drop-cap {
-            margin: 0.06em 0.06em 0 0;
-        }
-        p.drop-cap-de-zs span.drop-cap {
-            margin: 0.06em 0.04em 0 0;
-        }
-        p.drop-cap-cheshire span.drop-cap {
-            margin: 0.06em 0.04em 0 0;
-        }
-        p.drop-cap-kanzlei span.drop-cap {
-            margin: 0.05em 0.02em 0 -0.03em;
-        }
-    }
-
 	/*	Graphical drop-caps.
 	 */
 	p.graphical-drop-cap .hidden-initial-letter {
