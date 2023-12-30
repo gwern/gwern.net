@@ -626,6 +626,13 @@ function aggregateMarginNotes(eventInfo) {
 		//	Trim whitespace.
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
 
+		//	Strip brackets.
+		if (   clonedNote.textContent.startsWith("[")
+			&& clonedNote.textContent.endsWith("]")) {
+			clonedNote.firstTextNode.nodeValue = clonedNote.firstTextNode.nodeValue.slice(1);
+			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
+		}
+
 		//	Strip trailing period.
 		if (clonedNote.textContent.endsWith("."))
 			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);

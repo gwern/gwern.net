@@ -1627,6 +1627,7 @@ figure.width-full {
 
 .markdownBody .margin-notes-block {
 	text-align: center;
+	hyphens: none;
 }
 
 .markdownBody .margin-notes-block.hidden {
