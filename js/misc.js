@@ -5,8 +5,8 @@
 GW.elementInjectTriggers = { };
 
 /****************************************************************************/
-/*	Register element inject trigger for the given uuid. (In other words, when 
-	element with `data-uuid` attribute with value equal to the given uuid is 
+/*	Register element inject trigger for the given uuid. (In other words, when
+	element with `data-uuid` attribute with value equal to the given uuid is
 	injected into the document, run the given function on the element.)
 
 	Returns the uuid.
@@ -24,7 +24,7 @@ function onInject(uuid, f) {
 }
 
 /***********************************************************************/
-/*	Watch for element injections in the given document. Process injected 
+/*	Watch for element injections in the given document. Process injected
 	elements through registered inject triggers.
  */
 function observeInjectedElementsInDocument(doc) {
@@ -69,7 +69,7 @@ observeInjectedElementsInDocument(document);
 	is passed).
 
 	If an optional wrapper function is given, replacement is done within an
-	anonymous closure which is passed to the wrapper function. (This can be 
+	anonymous closure which is passed to the wrapper function. (This can be
 	used to, e.g., delay replacement, by passing a suitable doWhen function
 	as the wrapper.)
  */
@@ -515,7 +515,7 @@ Notes = {
 
         let allNotes = Array.from(document.querySelectorAll(selector)
         			   ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
-        			   ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame => 
+        			   ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame =>
 									Array.from(popFrame.body.querySelectorAll(selector)))
         			   ).unique();
         /*  We must check to ensure that the note in question is from the same
@@ -573,18 +573,18 @@ function aggregateMarginNotes(eventInfo) {
 
 		let marginNotesBlock = section.querySelector(`#${(CSS.escape(section.id))}-${marginNotesBlockClass}`);
 		if (marginNotesBlock == null) {
-			/*	Construct the margin notes block. It should go after any 
+			/*	Construct the margin notes block. It should go after any
 				abstract and/or epigraph that opens the section.
 			 */
 			let firstBlock = firstBlockOf(section, {
-				alsoSkipElements: [ 
-					".abstract blockquote", 
-					".epigraph", 
+				alsoSkipElements: [
+					".abstract blockquote",
+					".epigraph",
 					"p.data-field"
 				]
 			}, true);
 
-			let marginNoteBlockContainerElementsSelector = [ 
+			let marginNoteBlockContainerElementsSelector = [
 				"section",
 				".markdownBody",
 				".abstract-collapse:not(.abstract)",
@@ -627,6 +627,11 @@ function aggregateMarginNotes(eventInfo) {
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
 
 		//	Strip brackets.
+        /* Reason: we use brackets for editorial insertions & commentary, particularly in annotations where the reader assumes the text is written by the original authors.
+           Sometimes in long annotations where we wish to add 'sections' (because the original didn't have them or they were inappropriate, eg. long journalistic essays where the material is scattered rather than organized by topic as necessary for a convenient annotation), we use margin-notes as a substitute for original sections.
+           Such editorializing of course must be marked by brackets to avoid misleading the reader; but then, when aggregated at the beginning of the annotation like all margin notes, it looks bad: '[Foo] · [Bar] · [Baz] · [Quux]'.
+           So, although it risks misleading readers who do not read down to the actual margin-note usage & see that it's an editorial insertion, we remove the brackets when aggregated.
+           (If it is necessary to override this feature & force brackets displayed in aggregates—perhaps because the margin-note is some exotic chemical name that starts with a bracket—one can use alternate Unicode bracket-pairs, or possibly some sort of non-printing non-whitespace character to block the match. Although, since the match requires the text to both start *and* end with a bracket, this should be an extremely rare edge-case not worth thinking about further.) */
 		if (   clonedNote.textContent.startsWith("[")
 			&& clonedNote.textContent.endsWith("]")) {
 			clonedNote.firstTextNode.nodeValue = clonedNote.firstTextNode.nodeValue.slice(1);
@@ -643,7 +648,7 @@ function aggregateMarginNotes(eventInfo) {
 
 	//	Update visibility of margin note blocks.
 	eventInfo.document.querySelectorAll(`.${marginNotesBlockClass}`).forEach(marginNotesBlock => {
-		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);			
+		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);
 	});
 }
 
@@ -655,7 +660,7 @@ function nodesOfGraf(graf) {
 }
 
 /*****************************************************************************/
-/*	Text content of a paragraph, excluding the contents of any margin notes in 
+/*	Text content of a paragraph, excluding the contents of any margin notes in
 	sidenote mode.
  */
 function textContentOfGraf(graf) {
@@ -693,7 +698,7 @@ function updatePageTOCIfNeeded(eventInfo) {
 }
 
 /*****************************************************************************/
-/*  Updates the page TOC with any sections in the page that don’t already have 
+/*  Updates the page TOC with any sections in the page that don’t already have
 	TOC entries.
  */
 //  Called by: updateMainPageTOC (rewrite.js)
@@ -732,16 +737,16 @@ function updatePageTOC(eventInfo) {
 
 		let nextSection = null;
 		let nextSectionTOCLink = null;
-		let followingSections = childBlocksOf(parentSection).filter(child => 
+		let followingSections = childBlocksOf(parentSection).filter(child =>
 			   child.tagName == "SECTION"
 			&& child.compareDocumentPosition(section) == Node.DOCUMENT_POSITION_PRECEDING
 		);
 		do {
 			nextSection = followingSections.shift();
-			nextSectionTOCLink = nextSection 
-								 ? parentTOCElement.querySelector(`#toc-${(CSS.escape(nextSection.id))}`) 
+			nextSectionTOCLink = nextSection
+								 ? parentTOCElement.querySelector(`#toc-${(CSS.escape(nextSection.id))}`)
 								 : null;
-		} while (   nextSection 
+		} while (   nextSection
 				 && nextSectionTOCLink == null);
 		let followingTOCElement = nextSectionTOCLink
 								  ? nextSectionTOCLink.closest("li")
@@ -752,14 +757,14 @@ function updatePageTOC(eventInfo) {
 		let entryText = section.id == "footnotes"
 						? "Footnotes"
 						: section.firstElementChild.querySelector("a").innerHTML;
-		entry.innerHTML = `<a 
+		entry.innerHTML = `<a
 							class='link-self decorate-not'
-							id='toc-${section.id}' 
+							id='toc-${section.id}'
 							href='#${fixedEncodeURIComponent(section.id)}'
 								>${entryText}</a>`;
 
 		//  Get or construct the <ul> element.
-		let subList = (   Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL") 
+		let subList = (   Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL")
 					   ?? parentTOCElement.appendChild(newElement("UL")));
 
 		//	Insert and store.
@@ -840,7 +845,7 @@ function randomDropCapURL(dropCapType, letter) {
 }
 
 /*****************************************************************************/
-/*	Reset drop cap in the given block to initial state (as it was prior to the 
+/*	Reset drop cap in the given block to initial state (as it was prior to the
 	handlers in this section being run, i.e. not implemented, only marked for
 	implementation).
 
@@ -1002,8 +1007,8 @@ GW.pageToolbar = {
 														  { raiseOnHover: true })));
 	},
 
-	/*	Adds a widget (which may contain buttons or whatever else) (first 
-		creating it from HTML, if necessary) to the page toolbar, and returns 
+	/*	Adds a widget (which may contain buttons or whatever else) (first
+		creating it from HTML, if necessary) to the page toolbar, and returns
 		the added widget.
 
 		NOTE: This function may run before GW.pageToolbar.setup().
@@ -1063,7 +1068,7 @@ GW.pageToolbar = {
 		return GW.pageToolbar.toolbar.classList.contains("expanded-temp");
 	},
 
-	/*	Collapse or uncollapse toolbar. (The second argument uncollapses 
+	/*	Collapse or uncollapse toolbar. (The second argument uncollapses
 		temporarily or collapses slowly. By default, uncollapse permanently and
 		collapse quickly.)
 
@@ -1103,10 +1108,10 @@ GW.pageToolbar = {
 		GW.pageToolbar.toolbar.classList.add("collapsed");
 
 		if (slowly) {
-			GW.pageToolbar.addToolbarClassesTemporarily("animating", "collapsed-slowly", 
+			GW.pageToolbar.addToolbarClassesTemporarily("animating", "collapsed-slowly",
 				GW.pageToolbar.demoCollapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 		} else {
-			GW.pageToolbar.addToolbarClassesTemporarily("animating", 
+			GW.pageToolbar.addToolbarClassesTemporarily("animating",
 				GW.pageToolbar.collapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 		}
 	},
@@ -1118,7 +1123,7 @@ GW.pageToolbar = {
 	uncollapse: () => {
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
-		GW.pageToolbar.addToolbarClassesTemporarily("animating", 
+		GW.pageToolbar.addToolbarClassesTemporarily("animating",
 			GW.pageToolbar.collapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 
 		GW.pageToolbar.toolbar.classList.remove("collapsed", "collapsed-slowly");
@@ -1136,7 +1141,7 @@ GW.pageToolbar = {
 		GW.pageToolbar.toolbar.classList.remove("faded");
 	},
 
-	/*	Temporarily add one or more classes to the toolbar. Takes 2 or more 
+	/*	Temporarily add one or more classes to the toolbar. Takes 2 or more
 		arguments; the 1st through n-1’th argument are strings (class names),
 		while the last argument is a number (the time duration after which
 		the added classes shall be removed).
@@ -1157,7 +1162,7 @@ GW.pageToolbar = {
 		 added or removed.)
 	 */
 	updateState: (event) => {
-		if (   event 
+		if (   event
 			&& event.type == "scroll"
 			&& GW.pageToolbar.toolbar.matches(":hover") == false) {
 			//	Collapse on scroll.
@@ -1535,8 +1540,8 @@ GW.floatingHeader = {
 		let thresholdElement = getComputedStyle(GW.floatingHeader.pageHeader).display != "none"
 							   ? GW.floatingHeader.pageHeader
 							   : document.querySelector("#sidebar");
-		GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top 
-										 + window.pageYOffset 
+		GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
+										 + window.pageYOffset
 										 + thresholdElement.offsetHeight;
 
 		//  Show/hide the back-to-top link on scroll up/down.
@@ -1655,5 +1660,3 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
     GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
 }, { once: true });
-
-
