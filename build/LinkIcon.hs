@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon, linkIconTest, linkIconPrioritize) where
+module LinkIcon (addIcon, linkIcon, linkIconTest, linkIconPrioritize) where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)

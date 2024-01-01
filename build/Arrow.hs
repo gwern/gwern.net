@@ -2,7 +2,6 @@
 
 module Arrow (upDownArrows, testUpDownArrows) where
 
-import Data.List (nub)
 import qualified Data.Set as S (empty, insert, member, Set)
 import qualified Control.Monad.State as ST (evalState, get, modify, State)
 import qualified Data.Text as T (head, tail, Text)
@@ -12,6 +11,7 @@ import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span, Str),
                                Pandoc(..), TableBody(..), Row(..), Cell(..))
 import Text.Pandoc.Walk (walkM)
 
+import LinkIcon (addIcon)
 import Utils (isUniqueAll)
 
 -- Compile-time Layout Optimization: annotate self-reference links with whether they are 'before' or 'after' the link, so they are decorated with either '↑' or '↓' icons to help the reader know what the link refers to & if they have read it already.
@@ -86,18 +86,17 @@ addArrowClassTableBody (TableBody attr rowHeadColumns headerRows rows) = do
       return $ Cell attr alignment rowSpan colSpan blocks'
 
 addArrowClassInline :: Inline -> ST.State Refs Inline
-addArrowClassInline link@(Link attr@(_,_,kvs) inlines (url, title))
-  | T.head url /= '#' = return link
+addArrowClassInline x@(Link (_,_,kvs) _ (url, _))
+  | T.head url /= '#' = return x
   | otherwise = do
       refs <- ST.get
       let keys = map fst kvs
-          newAttr = if url == "#top" || -- interesting special-case: the ID #top is required to exist at runtime, though it is nowhere at compile-time, and it is always at the top of the page before any elements, so we must special-case it & it always is 'before' any element linking to it, so it gets arrowUp.
+      return $ if url == "#top" || -- interesting special-case: the ID #top is required to exist at runtime, though it is nowhere at compile-time, and it is always at the top of the page before any elements, so we must special-case it & it always is 'before' any element linking to it, so it gets arrowUp.
                        S.member (T.tail url) refs &&
                        -- WARNING: depending on the recursion pattern, it's possible to add *both*! We must check to avoid that:
                        arrowUp `notElem` keys && arrowDown `notElem` keys
-                    then addKV ("link-icon", arrowUp)   $ addKV ("link-icon-type","svg") attr
-                    else addKV ("link-icon", arrowDown) $ addKV ("link-icon-type","svg") attr
-      return $ Link newAttr inlines (url, title)
+                    then addIcon x (arrowUp,  "svg")
+                    else addIcon x (arrowDown,"svg")
 addArrowClassInline (Span attr inlines) = do
   addID attr
   inlines' <- mapM addArrowClassInline inlines
@@ -110,12 +109,6 @@ arrowDown = "arrow-down"
 arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
 arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
 arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
-
-addKV :: (T.Text,T.Text) -> Attr -> Attr
--- NOTE: we use nub because the key-value assoc-list is guaranteed to never be more than 3 or 4 long & Data.Set is overkill & more verbose.
-addKV kv x@(i, classes, kvs)
-  | fst kv `elem` map fst kvs = x
-  | otherwise = (i, classes, nub (kv:kvs))
 
 upDownArrows :: Pandoc -> Pandoc
 upDownArrows (Pandoc meta blocks) = Pandoc meta (ST.evalState (walkM addArrowClass blocks) S.empty)
