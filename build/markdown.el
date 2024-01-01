@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-12-27 10:23:17 gwern"
+;;; When:  Time-stamp: "2023-12-31 18:17:39 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -21,7 +21,23 @@
 
 ; Metadata files are stored in YAML; but yaml-mode may be too slow to use given how large they have become...
 (require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(defun my/yaml-mode-decision ()
+  "Activate yaml-mode with conditionally disabled Flycheck."
+  (let (
+        (disable-flycheck (or (string-prefix-p (expand-file-name "~/wiki/metadata/") (buffer-file-name))
+                              (> (nth 7 (file-attributes (buffer-file-name))) 1000000))))
+    ;; Disable Flycheck if the file is large or in a specific directory
+    (when disable-flycheck
+      (flycheck-mode -1))
+
+    ;; Activate yaml-mode
+    (yaml-mode)
+
+    ;; Additional settings if Flycheck is disabled
+    (when disable-flycheck
+      (font-lock-mode -1)
+      (message "Custom YAML mode settings applied for large file/specific directory"))))
+(add-hook 'yaml-mode-hook 'my/yaml-mode-decision)
 ; (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
