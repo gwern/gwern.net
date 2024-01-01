@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2023-12-31 18:17:39 gwern"
+;;; When:  Time-stamp: "2023-12-31 20:29:34 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -31,7 +31,7 @@
       (flycheck-mode -1))
 
     ;; Activate yaml-mode
-    (yaml-mode)
+    ; (yaml-mode)
 
     ;; Additional settings if Flycheck is disabled
     (when disable-flycheck

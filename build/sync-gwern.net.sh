@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-29 10:09:33 gwern"
+# When:  Time-stamp: "2023-12-30 10:58:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -542,7 +542,7 @@ else
     λ(){ ge -e ' a [aei]' $PAGES | grep -F --invert-match -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
-     λ(){ ge -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -- $PAGES; }
+     λ(){ ge -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' -- $PAGES; }
      wrap λ "Markdown: miscellaneous regexp errors."
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
