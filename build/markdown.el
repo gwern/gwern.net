@@ -42,7 +42,7 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown preview' --to=html5 --standalone --number-sections --toc --reference-links --css=~/wiki/static/css/initial.css --css=~/wiki/static/css/links.css --css=~/wiki/static/css/default.css --css=~/wiki/static/css/dark-mode-adjustments.css --css=~/wiki/static/css/fonts.css --css=~/wiki/static/css/FontAwesome.css --css=~/wiki/static/css/dark-mode.css --css=~/wiki/static/css/colors.css --css=~/wiki/static/css/colors-dark.css -f markdown+smart --template=/home/gwern/wiki/static/template/pandoc/template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title='Markdown-preview' --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/wiki/static/template/pandoc/template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
@@ -1837,10 +1837,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
     (message "Preprocessing and compiling into HTML…")
     ; Pandoc converts the Markdown to HTML. Then the HTML goes through `preprocess-markdown` which runs additional typographic/formatting rewrites, runs LinkAuto to automatically linkify text, and then runs through GenerateSimilar to provide a list of relevant annotations to curate as the 'see-also' section at the bottom of annotations (if they are approved).
     ; NOTE: because `preprocess-markdown` is calling the OA API via the embedder, $OPENAI_API_KEY must be defined in the Emacs environment, either via `(setenv "OPENAI_API_KEY" "sk-xyz123456789")` or by putting it in `~/.bash_profile`. (Putting it in `.env` or `.bashrc` is not enough, because they won't apply to GUI/X Emacs)
-    (let ((markdown-command "cd ~/wiki/ && timeout 2m ~/wiki/static/build/preprocess-markdown | \\
-                             pandoc --mathjax --metadata title='Annotation preview' --to=html5 --from=html | \\
-                             tidy -indent -wrap 130 --clean yes --merge-divs no --break-before-br yes --logical-emphasis yes --quote-nbsp no -quiet --show-warnings no --show-body-only auto | \\
-                             sed 's/^/    /' || true") (visible-bell nil))
+    (let ((markdown-command "~/wiki/static/build/preprocess-annotation.sh") (visible-bell nil))
       (markdown-kill-ring-save)
 
       (setq $pos (point-max))
