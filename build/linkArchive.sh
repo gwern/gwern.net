@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2023-12-28 13:11:49 gwern"
+# When:  Time-stamp: "2024-01-03 12:17:03 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -120,11 +120,8 @@ else
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
             timeout --kill-after=960s 960s \
-                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS \
+                    docker run singlefile "$URL" --compress-CSS \
                     --remove-scripts "$REMOVE_SCRIPTS" --remove-video-src false --remove-audio-src false \
-                    `# --browser-extensions "$(find ~/snap/chromium/common/chromium/Default/Extensions/* -maxdepth 0 -type d | tr '\n' ',')"` \
-                    --browser-args "[\"--profile-directory=Default\", \"--user-data-dir=/home/gwern/snap/chromium/common/chromium/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.41.4_1/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/dmghijelimhndkbmpgbldicpogfkceaj/0.4.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/doojmbjmlfjjnbmnoijecmcbfeoakpjm/11.3.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/kkdpmhnladdopljabkgpacgpliggeeaf/1.12.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/mpiodijhokgodhhofbcjdecpffjipkle/1.19.30_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/10.9.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/oolchklbojaobiipbmcnlgacfgficiig/1.3.4_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/padekgcemlokbadohgkifijomclgjgif/2.5.21_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/pioclpoplcdbaefihamjohnefbikjilc/7.19.0_0/\"]" \
-                    `# --browser-headless=false` \
                     --accept-headers  "[{\"font\":\"application/font-woff2;q=1.0,application/font-woff;q=0.9,*/*;q=0.8\",\"image\":\"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8\",\"stylesheet\":\"text/css,*/*;q=0.1\",\"script\":\"*/*\",\"document\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Language\": \"en-US,en;q=0.5\", \"Encoding\": \"gzip, deflate, br\"}]" \
                     --user-agent "$USER_AGENT" \
                     --browser-load-max-time "480000" \
@@ -132,14 +129,14 @@ else
                     --max-resource-size 100 \
                     --browser-wait-until "networkidle2" \
                     --browser-height "10000" \
-                    "$URL" "$TARGET" 1>&2
+                    > "$TARGET" # 1>&2
             set +x
 
             if [[ -f "$TARGET" ]]; then
                 ## Check for error pages which nevertheless returned validly:
                 ERROR_404=$(grep -F -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' -e 'Instance has been rate limited' "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
-                    mkdir --parents "./doc/www/$DOMAIN/"
+                    mkdir "./doc/www/$DOMAIN/" &> /dev/null || true # assume that ./doc/www/ exists; if it doesn't we may be in the wrong place.
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"
                     ## everything successful, so return the filepath of the final result to our caller:
                     echo -n "doc/www/$DOMAIN/$HASH.html$ANCHOR"
@@ -148,7 +145,7 @@ else
                         true
                     else
                         ## open original vs archived preview in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
-                        $X_WWW_BROWSER "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$URL" &
+                        $WWW_BROWSER "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$URL" &
                     fi
                 else
                     rm "$TARGET"
