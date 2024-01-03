@@ -19,7 +19,7 @@ archivePerRunN = 13
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
-isCheapArchive url = anyInfix url [".pdf", "#pdf", "scribe.rip", "news.ycombinator.com", "localhost:8081",
+isCheapArchive url = anyInfix url [".pdf", "#pdf", "scribe.rip", "news.ycombinator.com", "localhost:8081", "twitter.com",
                                    "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
@@ -36,7 +36,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
                             . replace "https://www.reddit.com" "https://old.reddit.com"
-                            . replace "https://twitter.com" "http://localhost:8081"
+                            . replace "https://twitter.com/" "http://localhost:8081/"
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
                             . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>

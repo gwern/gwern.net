@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2023-12-07 10:02:16 gwern"
+When:  Time-stamp: "2024-01-03 15:00:44 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -197,13 +197,13 @@ checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.
 rewriteLink :: ArchiveMetadata -> IORef Integer -> String -> IO String
 rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return Nothing else
  do today <- currentDay
+    let url' = C.transformURLsForArchiving url
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url
-
+      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url || C.isCheapArchive url'
        in if ((today - firstSeen) < C.archiveDelay) && not cheapArchive
           then return Nothing
-          else do let url' = C.transformURLsForArchiving url
+          else do
                   archivedP <- archiveURLCheck url'
                   if archivedP then do archive <- archiveURL url'
                                        insertLinkIntoDB (Right archive) url
