@@ -1627,7 +1627,7 @@ htmlRewriteFixed =
          , ("<em>e</em>.<em>g</em>.,", "eg.")
          , (" e.g.", " eg.")
          , ("(e.g.", "(eg.")
-         , ("(eg ", "(eg.")
+         , ("(eg ", "(eg. ")
          , (" eg ", " eg. ")
          , ("eg., ", "eg. ")
          , ("e.g., ", "eg. ")

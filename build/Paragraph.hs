@@ -32,12 +32,12 @@ processParagraphizer p a = -- the path is necessary to check against the whiteli
                               return (T.unpack html, pandoc)
                         case clean of
                               Left e -> error $ ppShow e ++ " : " ++ a
-                              Right (output,document) ->  void (checkURLs document) >> return (cleanAbstractsHTML output)
+                              Right (output,document) ->  checkURLs document >> return (cleanAbstractsHTML output)
 
 -- EXPERIMENTAL: the GPT-3/4 paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
 checkURLs :: Pandoc -> IO ()
 checkURLs p = let urls = extractURLs p in
-                mapM_ (\u -> runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium" [T.unpack u]) urls
+                mapM_ (\u -> void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "x-www-browser" [T.unpack u]) urls
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.

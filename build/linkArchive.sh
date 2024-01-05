@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-01-03 12:17:03 gwern"
+# When:  Time-stamp: "2024-01-04 10:51:38 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -62,7 +62,7 @@ if [[ -n $(echo "$URL" | grep -F '#') ]]; then
 fi
 
 FILE=$(ls "doc/www/$DOMAIN/$HASH."* 2> /dev/null) || true
-if [[ -n "$FILE" || $CHECK == 1 ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
+if [[ -n "$FILE" && $(stat -c%s "$FILE") -ge 1024 || $CHECK == 1 ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
     echo -n "$FILE$ANCHOR"
 else
 
@@ -119,8 +119,8 @@ else
             # CURRENT CLI from chrome://version: /home/gwern/snap/chromium/common/chromium/Default
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
-            timeout --kill-after=960s 960s \
-                    docker run singlefile "$URL" --compress-CSS \
+            timeout --kill-after=300s 200s \
+                    docker run --network="host" singlefile "$URL" --compress-CSS \
                     --remove-scripts "$REMOVE_SCRIPTS" --remove-video-src false --remove-audio-src false \
                     --accept-headers  "[{\"font\":\"application/font-woff2;q=1.0,application/font-woff;q=0.9,*/*;q=0.8\",\"image\":\"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8\",\"stylesheet\":\"text/css,*/*;q=0.1\",\"script\":\"*/*\",\"document\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Language\": \"en-US,en;q=0.5\", \"Encoding\": \"gzip, deflate, br\"}]" \
                     --user-agent "$USER_AGENT" \
@@ -132,9 +132,9 @@ else
                     > "$TARGET" # 1>&2
             set +x
 
-            if [[ -f "$TARGET" ]]; then
+            if [[ -n "$TARGET" && $(stat -c%s "$TARGET") -ge 1024 && -f "$TARGET" ]]; then
                 ## Check for error pages which nevertheless returned validly:
-                ERROR_404=$(grep -F -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' -e 'Instance has been rate limited' "$TARGET")
+                ERROR_404=$(grep -F -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' -e 'Instance has been rate limited' -e 'Token is required' -- "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
                     mkdir "./doc/www/$DOMAIN/" &> /dev/null || true # assume that ./doc/www/ exists; if it doesn't we may be in the wrong place.
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"

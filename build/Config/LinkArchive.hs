@@ -1294,5 +1294,6 @@ whiteList url
       , "https://video-ttt.github.io/" -- low quality (video embeds)
       , "https://rl-at-scale.github.io/" -- low quality (video embeds)
       , "https://www.nassiben.com/video-based-crypta" -- low quality (video embeds)
+      , "https://leggedrobotics.github.io/rl-perceptiveloco/" -- low quality (video embeds)
       ] = True
     | otherwise = False

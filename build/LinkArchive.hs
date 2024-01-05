@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-03 15:00:44 gwern"
+When:  Time-stamp: "2024-01-04 11:03:41 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -154,7 +154,7 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
                          case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
-                           Nothing -> error $ "Failed to read metadata/archive.hs. Contents of string: " ++ pdlString
+                           Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ (take 10000 pdlString)
                            Just pdl -> do
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
@@ -227,7 +227,7 @@ archiveURLCheck :: String -> IO Bool
 archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l, "--check"]
                        case exit of
                          ExitSuccess -> return $ stdout /= ""
-                         ExitFailure _ -> printRed' (l ++ " : archiving script existence-check failed to run correctly: ") (U.toString stderr') >> return False
+                         ExitFailure _ -> printRed' (l ++ " : archiving script existence-check failed to run correctly:") (" " ++ U.toString stderr') >> return False
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
