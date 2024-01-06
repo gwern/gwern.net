@@ -602,15 +602,6 @@ function aggregateMarginNotes(eventInfo) {
 			firstBlock.parentElement.insertBefore(marginNotesBlock, firstBlock);
 		}
 
-		//	Prevent duplication.
-		if (Array.from(marginNotesBlock.children).findIndex(child => {
-				let trimmedNoteContent = marginNote.textContent.trim()
-				return (trimmedNoteContent.endsWith(".")
-						? child.textContent.trim() == trimmedNoteContent.slice(0, -1)
-						: child.textContent.trim() == trimmedNoteContent);
-			}) != -1)
-			return;
-
 		//	Clone the note.
 		let clonedNote = marginNote.cloneNode(true);
 
@@ -627,11 +618,30 @@ function aggregateMarginNotes(eventInfo) {
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
 
 		//	Strip brackets.
-        /* Reason: we use brackets for editorial insertions & commentary, particularly in annotations where the reader assumes the text is written by the original authors.
-           Sometimes in long annotations where we wish to add 'sections' (because the original didn't have them or they were inappropriate, eg. long journalistic essays where the material is scattered rather than organized by topic as necessary for a convenient annotation), we use margin-notes as a substitute for original sections.
-           Such editorializing of course must be marked by brackets to avoid misleading the reader; but then, when aggregated at the beginning of the annotation like all margin notes, it looks bad: '[Foo] · [Bar] · [Baz] · [Quux]'.
-           So, although it risks misleading readers who do not read down to the actual margin-note usage & see that it's an editorial insertion, we remove the brackets when aggregated.
-           (If it is necessary to override this feature & force brackets displayed in aggregates—perhaps because the margin-note is some exotic chemical name that starts with a bracket—one can use alternate Unicode bracket-pairs, or possibly some sort of non-printing non-whitespace character to block the match. Although, since the match requires the text to both start *and* end with a bracket, this should be an extremely rare edge-case not worth thinking about further.) */
+        /*	Reason: we use brackets for editorial insertions & commentary, 
+        	particularly in annotations where the reader assumes the text is 
+        	written by the original authors.
+        		Sometimes in long annotations where we wish to add ‘sections’ 
+        	(because the original didn’t have them or they were inappropriate, 
+        	eg. long journalistic essays where the material is scattered rather 
+        	than organized by topic as necessary for a convenient annotation), 
+        	we use margin-notes as a substitute for original sections.
+        	Such editorializing of course must be marked by brackets to avoid 
+        	misleading the reader; but then, when aggregated at the beginning 
+        	of the annotation like all margin notes, it looks bad: 
+        	‘[Foo] · [Bar] · [Baz] · [Quux]’.
+        		So, although it risks misleading readers who do not read down 
+        	to the actual margin-note usage & see that it’s an editorial 
+        	insertion, we remove the brackets when aggregated.
+        		(If it is necessary to override this feature & force brackets 
+        	displayed in aggregates - perhaps because the margin-note is some 
+        	exotic chemical name that starts with a bracket - one can use 
+        	alternate Unicode bracket-pairs, or possibly some sort of 
+        	non-printing non-whitespace character to block the match. 
+        	Although, since the match requires the text to both start *and* end 
+        	with a bracket, this should be an extremely rare edge-case not 
+        	worth thinking about further.)
+         */
 		if (   clonedNote.textContent.startsWith("[")
 			&& clonedNote.textContent.endsWith("]")) {
 			clonedNote.firstTextNode.nodeValue = clonedNote.firstTextNode.nodeValue.slice(1);
@@ -641,6 +651,12 @@ function aggregateMarginNotes(eventInfo) {
 		//	Strip trailing period.
 		if (clonedNote.textContent.endsWith("."))
 			clonedNote.lastTextNode.nodeValue = clonedNote.lastTextNode.nodeValue.slice(0, -1);
+
+		//	Prevent duplication.
+		if (Array.from(marginNotesBlock.children).findIndex(child => {
+				return clonedNote.textContent == child.textContent;
+			}) != -1)
+			return;
 
 		//	Append.
 		marginNotesBlock.append(clonedNote);
