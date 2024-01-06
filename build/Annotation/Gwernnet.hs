@@ -60,7 +60,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invert-auto float-right page-thumbnail\"" else "class=\"float-right page-thumbnail\""
+                              let imgClass = if color then "class=\"invert-auto float-right outline-not page-thumbnail\"" else "class=\"float-right outline-not page-thumbnail\""
                               return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
