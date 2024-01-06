@@ -259,7 +259,11 @@ Content = {
 
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
-				let tweetDateString = `${tweetDate.getFullYear()}-${tweetDate.getMonth()}-${tweetDate.getDate()}`;
+				let tweetDateString = ("" + tweetDate.getFullYear()) 
+									+ "-" 
+									+ ("" + tweetDate.getMonth()).padStart(2, '0') 
+									+ "-"
+									+ ("" + tweetDate.getDate()).padStart(2, '0');
 				let tweetLinkURL = URLFromString(link.href);
 				tweetLinkURL.hostname = nitterHost;
 				tweetLinkURL.hash = "m";
