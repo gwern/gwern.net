@@ -5701,11 +5701,14 @@ Content = {
 
 				//	Avatar.
 				let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
-				avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style") 
-													   + ";" 
-													   + tweetPage.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
-				let avatarImgSrcVar = avatarImgElement.style.getPropertyValue("background-image").match(/var\((.+?)\)/)[1];
-				let avatarImgSrc = avatarImgElement.style.getPropertyValue(avatarImgSrcVar).match(/url\("(.+?)"\)/)[1];
+				let avatarImgSrc = avatarImgElement.getAttribute("src");
+				if (avatarImgSrc.startsWith("data:image/svg+xml")) {
+					avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style") 
+														   + ";" 
+														   + tweetPage.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
+					let avatarImgSrcVar = avatarImgElement.style.getPropertyValue("background-image").match(/var\((.+?)\)/)[1];
+					avatarImgSrc = avatarImgElement.style.getPropertyValue(avatarImgSrcVar).match(/url\("(.+?)"\)/)[1];
+				}
 				let avatarImg = newElement("IMG", { src: avatarImgSrc, class: "avatar figure-not" });
 
 				//	Text of link to user’s page.
