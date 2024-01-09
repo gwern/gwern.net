@@ -2007,6 +2007,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 				//	Inject the drop-cap image element.
 				firstNodeParent.insertBefore(newElement("IMG", {
 					class: "drop-cap figure-not",
+					loading: "lazy",
 					src: dropCapURL.pathname + dropCapURL.search
 				}), firstNode.previousSibling);
 			} else {
