@@ -243,6 +243,17 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
         this.addEventListener("mousedown", ael);
 }
 
+/******************************************************************************/
+/*	Removes event listener from a clickable element, automatically detaching it
+	from all relevant event types.
+ */
+Element.prototype.removeActivateEvent = function() {
+	let ael = this.activateEventListener;
+	this.removeEventListener("mousedown", ael);
+	this.removeEventListener("click", ael);
+	this.removeEventListener("keyup", ael);
+}
+
 /***************************************************************************/
 /*  Swap classes on the given element.
     First argument is an array with two string elements (the classes).
