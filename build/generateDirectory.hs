@@ -25,7 +25,6 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 import Control.Parallel.Strategies (parListChunk, rseq, using)
 import Text.Pandoc.Walk (walk)
 
-import Utils (inlinesToText)
 import LinkID (generateID, authorsToCite)
 import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback)
 import LinkMetadataTypes (Metadata, MetadataItem)
@@ -33,7 +32,7 @@ import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
+import Utils (inlinesToText, replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
@@ -41,7 +40,7 @@ import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 main :: IO ()
 main = do dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = sort $ map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = sort $ map (\dir -> replace "/index" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
 
@@ -83,14 +82,17 @@ generateDirectory filterp md dirs dir'' = do
   let taggedDirs = sort $ map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
 
   -- we suppress what would be duplicate entries in the File/me section
-  let tagged' = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+  let taggedAll = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+  let taggedSelf = filter (\(_,(_,aut,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll
+  let tagged' = taggedAll \\ taggedSelf
 
   dirsChildren   <- listTagDirectoriesAll [dir'']
   dirsSeeAlsos   <- listTagDirectories False taggedDirs
 
   triplets  <- listFiles md direntries'
 
-  let linksAll = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
+  let linksSelf = nub $ reverse $ sortByDate taggedSelf  -- newest first, to show recent additions
+  let linksAll = nub $ reverse $ sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` f)) linksAll
   let linksWP = linksAll \\ links
@@ -103,10 +105,12 @@ generateDirectory filterp md dirs dir'' = do
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
+  let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") linksSelf
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md tagSelf titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
 
+  let selfLinksSection = generateSections' 1 selfTitledLinks
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems untitledLinks
 
@@ -132,6 +136,11 @@ generateDirectory filterp md dirs dir'' = do
   let body = abstract ++
 
              [Header 1 nullAttr [Str "See Also"]] ++ [sectionDirectory] ++
+
+             (if null selfLinksSection then [] else
+                [Para []] ++
+                 [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Gwern"]] ++
+                 selfLinksSection) ++
 
              (if null titledLinks then [] else
                  -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
@@ -179,7 +188,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),lb)  =
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
-    in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` (T.pack f))]]]
+    in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
@@ -265,7 +274,7 @@ generateDirectoryItems parent current ds =
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
-                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ tail $ takeDirectory p) `T.append` "/' (ascending)")]]]]
+                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append` (T.pack $ tail $ takeDirectory p) `T.append` "/' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
