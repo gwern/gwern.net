@@ -244,7 +244,7 @@ GW.assetVersions = {
 	"/static/font/drop-cap/gene-wolfe/light/V-04-small-2x.png": "1702664117",
 	"/static/font/drop-cap/gene-wolfe/light/V-05-small-1x.png": "1702664116",
 	"/static/font/drop-cap/gene-wolfe/light/V-05-small-2x.png": "1702664117",
-	"/static/font/drop-cap/gene-wolfe/light/F-06.svg": "1704822487",
+	"/static/font/drop-cap/gene-wolfe/light/F-06.svg": "1704930786",
 	"/static/font/drop-cap/gene-wolfe/light/F-07.svg": "1704822488",
 	"/static/font/drop-cap/gene-wolfe/light/F-08.svg": "1704822488",
 	"/static/font/drop-cap/gene-wolfe/light/F-09.svg": "1704822488",
