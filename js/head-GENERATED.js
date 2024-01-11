@@ -243,6 +243,17 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
         this.addEventListener("mousedown", ael);
 }
 
+/******************************************************************************/
+/*	Removes event listener from a clickable element, automatically detaching it
+	from all relevant event types.
+ */
+Element.prototype.removeActivateEvent = function() {
+	let ael = this.activateEventListener;
+	this.removeEventListener("mousedown", ael);
+	this.removeEventListener("click", ael);
+	this.removeEventListener("keyup", ael);
+}
+
 /***************************************************************************/
 /*  Swap classes on the given element.
     First argument is an array with two string elements (the classes).
@@ -3990,7 +4001,7 @@ GW.assetVersions = {
 	"/static/font/drop-cap/gene-wolfe/light/V-04-small-2x.png": "1702664117",
 	"/static/font/drop-cap/gene-wolfe/light/V-05-small-1x.png": "1702664116",
 	"/static/font/drop-cap/gene-wolfe/light/V-05-small-2x.png": "1702664117",
-	"/static/font/drop-cap/gene-wolfe/light/F-06.svg": "1704822487",
+	"/static/font/drop-cap/gene-wolfe/light/F-06.svg": "1704930786",
 	"/static/font/drop-cap/gene-wolfe/light/F-07.svg": "1704822488",
 	"/static/font/drop-cap/gene-wolfe/light/F-08.svg": "1704822488",
 	"/static/font/drop-cap/gene-wolfe/light/F-09.svg": "1704822488",

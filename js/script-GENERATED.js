@@ -13806,7 +13806,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 
 				//	Inject the drop-cap image element.
 				firstNodeParent.insertBefore(newElement("IMG", {
-					class: "drop-cap figure-not",
+					class: "drop-cap figure-not " + dropCapURL.pathname.slice(-3),
 					loading: "lazy",
 					src: dropCapURL.pathname + dropCapURL.search
 				}), firstNode.previousSibling);

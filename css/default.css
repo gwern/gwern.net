@@ -2097,6 +2097,10 @@ del {
 		margin: -0.5em -0.10em -0.95em -0.75em;
 		filter: none;
 	}
+	p.graphical-drop-cap img.drop-cap.svg {
+		height: 8em;
+		margin: 0 0.25em 0 0;
+	}
 
 	@media all and (max-width: 1199px) {
 		p.graphical-drop-cap img.drop-cap {
