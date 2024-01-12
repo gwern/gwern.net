@@ -11995,7 +11995,12 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
     GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(selectorize([ "li" ])).forEach(paragraphizeTextNodesOfElement);
+	eventInfo.container.querySelectorAll("li").forEach(listItem => {
+		if (listItem.closest(".TOC"))
+			return;
+
+		paragraphizeTextNodesOfElement(listItem);
+	});
 }, "rewrite");
 
 /**********************************************/
@@ -12189,7 +12194,7 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInf
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
     GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(selectorize([ "figcaption" ])).forEach(paragraphizeTextNodesOfElement);
+	eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /***************************************************************************/
@@ -13718,7 +13723,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designatedColorInvertedContainers =
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (eventInfo) => {
     GWLog("paragraphizeAdmonitionTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(selectorize([ ".admonition", ".admonition-title" ])).forEach(paragraphizeTextNodesOfElement);
+	eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /*********************************************/
