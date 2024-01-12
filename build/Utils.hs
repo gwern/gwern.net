@@ -364,6 +364,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
 htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexp = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
+         , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
          , ("([0-9])- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
          , ("\\\\emph{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
@@ -2155,7 +2156,7 @@ testCycleDetection = testCycleExists testCases
 
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
 extractTwitterUsername :: String -> String
-extractTwitterUsername = sed "^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$" "\\1"
+extractTwitterUsername = sed "^https:\\/\\/x\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$" "\\1" . sed "^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$" "\\1"
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.

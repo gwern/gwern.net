@@ -33,7 +33,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
                  | anyInfix l ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l
-                 | "https://twitter.com/" `isPrefixOf` l = twitter l
+                 | "https://x.com" `isPrefixOf` l || "https://twitter.com/" `isPrefixOf` l = twitter l
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
                  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l' else return (Left Permanent)
