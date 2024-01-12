@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2023-12-20 18:35:15 gwern"
+When:  Time-stamp: "2024-01-12 11:54:06 gwern"
 License: CC-0
 -}
 
@@ -54,7 +54,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive)
-import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(..), isPagePath)
+import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath)
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
@@ -364,9 +364,9 @@ typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtens
 createAnnotations :: Metadata -> Pandoc -> IO ()
 createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extractLinksInlines (Pandoc nullMeta markdown)
 
-annotateLink :: Metadata -> Inline -> IO Bool
+annotateLink :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
-  | anyPrefixT targetT ["/metadata/", "#", "$", "!", "\8383"] = return False
+  | anyPrefixT targetT ["/metadata/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)
@@ -389,17 +389,17 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
      let annotated = M.lookup target'' md
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
-       Just _  -> return False
+       Just i  -> return (Right (target'', i))
        Nothing -> do new <- linkDispatcher x
                      case new of
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
-                       Left Temporary -> return False
+                       Left Temporary -> return (Left Temporary)
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return False
+                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return (Left Permanent)
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
-                                       appendLinkMetadata target'' m >> return True
+                                       appendLinkMetadata target'' m >> return (Right y)
 annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:

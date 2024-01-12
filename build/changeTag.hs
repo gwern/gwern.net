@@ -35,7 +35,7 @@ import Text.Pandoc (Inline(Link), nullAttr)
 import qualified Data.Text as T (pack)
 
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
-import LinkMetadataTypes (MetadataList, MetadataItem)
+import LinkMetadataTypes (MetadataList, MetadataItem, Failure(Temporary, Permanent))
 import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, replace)
 
@@ -103,7 +103,10 @@ writeUpdatedYaml oldList target newList = when (oldList /= newList) $ writeYaml 
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
                       returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
-                      if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
+                      case returnValue of
+                        Left Temporary -> error ("annotateLink returned a Temporary error! " ++ show tag ++ " : " ++ show p)
+                        Left Permanent -> changeOneTag p tag
+                        Right _ -> changeOneTag p tag
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag "" a b  = error $ "changeTag called with empty arguments: " ++ "\"\""  ++ ":" ++ show a  ++ ":" ++ show b  ++ "; this should never happen."
