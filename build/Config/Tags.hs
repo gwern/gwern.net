@@ -378,6 +378,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("reinforcement-learning/robot", "robotics")
           , ("reinforcement-learning/multi-agent", "MARL")
           , ("reinforcement-learning/preference-learning", "preference learning")
+          , ("reinforcement-learning/meta-learning/continual-learning", "continual learning")
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("ai/nn/anthropic", "Anthropic")
           , ("reinforcement-learning/deepmind", "DeepMind")

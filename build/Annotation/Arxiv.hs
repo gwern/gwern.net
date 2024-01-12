@@ -34,10 +34,11 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          abst <- processParagraphizer url' $ linkAutoHtml5String $ cleanAbstractsHTML $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] :: [String] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
-                         if abst=="" then do printRed "Error: Arxiv parsing failed!"
-                                             printGreen ("Error details: failure on Arxiv URL "++url' ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
-                                             return (Left Temporary)
-                                      else return $ Right (url', (title,authors,published,doi,ts,abst))
+                         if abst=="" || authors=="arXiv api core" || title=="Error" then
+                           do printRed "Error: Arxiv parsing failed!"
+                              printGreen ("Error details: failure on Arxiv URL "++url' ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, doi, abst, show ts])
+                              return (Left Temporary)
+                           else return $ Right (url', (title,authors,published,doi,ts,abst))
 
 arxivDownload :: String -> IO (ExitCode, U.ByteString, String)
 arxivDownload url = do

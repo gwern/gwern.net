@@ -102,8 +102,8 @@ writeUpdatedYaml oldList target newList = when (oldList /= newList) $ writeYaml 
 -- to work with (and will do auto.yaml → half.yaml).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
-                      _ <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
-                      changeOneTag p tag -- if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
+                      returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
+                      if returnValue then changeOneTag p tag else error ("annotateLink returned False! " ++ show tag ++ " : " ++ show p)
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag "" a b  = error $ "changeTag called with empty arguments: " ++ "\"\""  ++ ":" ++ show a  ++ ":" ++ show b  ++ "; this should never happen."

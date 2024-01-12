@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-01-02 21:55:48 gwern"
+;;; When:  Time-stamp: "2024-01-09 12:21:54 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -318,6 +318,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" ‑\n" . "")
                      ("‑\n" . "")
                      ("‑" . "-") ; deal with NON-BREAKING HYPHEN which NEJM uses for both line-breaking and regular hyphens, /sigh
+                     ("¬ " . "")
                      ("<b>" . "**")
                      ("</b>" . "**")
                      ("<i>" . "<em>")
@@ -411,11 +412,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("(i\\.e\\.," . "(ie")
                      ("(i\\.e\\." . "(ie")
                      ("(ie\\." . "(ie")
+                     ("e\\.g\\., " . "eg ")
                      (" e\\.g\\." . " eg")
                      ("(e\\.g\\." . "(eg")
-                     ("(eg\\." . "(eg")
                      ("eg\\., " . "eg ")
-                     ("e\\.g\\., " . "eg ")
+                     ("(eg\\." . "(eg")
                      ("Na\\+" . "Na⁺")
                      ("K\\+" . "K⁺")
                      ("Ca2+" . "Ca<sup>2</sup>⁺")
@@ -457,7 +458,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("]9/doc" . "](/doc")
                      ("on X (formerly Twitter)" . "on Twitter")
                      ("on X:" . "on Twitter:")
-                     (" X," . " Twitter,")
                      (" X (formerly known as Twitter)" . " Twitter")
                      ("Elon Musk’s X" . "Elon Musk’s Twitter")
                      (" target=\"_blank\"" . " target=\"_blank\"")
@@ -1326,6 +1326,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace " Homo " " _Homo_ " nil begin end)
        (query-replace "https://www.gwern.net/" "https://gwern.net/" nil begin end)
        (query-replace "https://gwern.net/" "/" nil begin end)
+       (query-replace "\nhat " "\nWhat" nil begin end)
 
        ; shout-out to typography nerds by using the proper logotypes:
        (let ((case-fold-search t) (search-upper-case t)) ; need these to override `query-replace` magic‽

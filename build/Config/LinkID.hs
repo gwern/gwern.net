@@ -215,7 +215,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("https://arxiv.org/abs/2201.02605#facebook", "zhou-et-al-2022-detic")
        , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
        , ("https://arxiv.org/abs/2202.01994#google", "bansal-et-al-2022-nmtscaling")
-       , ("https://arxiv.org/abs/2205.05131#google", "tay-et-al-202-ul2")
+       , ("https://arxiv.org/abs/2205.05131#google", "tay-et-al-2022-ul2")
        , ("https://arxiv.org/abs/2206.15472", "lin-et-al-2022-smolml")
        , ("https://arxiv.org/abs/2207.10397#microsoft", "chen-et-al-2022-codet")
        , ("https://arxiv.org/abs/2209.06794#google", "chen-et-al-2022-pali")

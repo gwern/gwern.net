@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-01-04 10:51:38 gwern"
+# When:  Time-stamp: "2024-01-10 13:30:18 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -62,7 +62,7 @@ if [[ -n $(echo "$URL" | grep -F '#') ]]; then
 fi
 
 FILE=$(ls "doc/www/$DOMAIN/$HASH."* 2> /dev/null) || true
-if [[ -n "$FILE" && $(stat -c%s "$FILE") -ge 1024 || $CHECK == 1 ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string
+if [[ -n "$FILE" && $(stat -c%s "$FILE") -ge 1024 || $CHECK == 1 ]]; then # use of `--check` means that we always skip archiving and return either the path or its failure, an empty string; as all real webpages are at least 1kb in size, we treat <1kb as corrupted.
     echo -n "$FILE$ANCHOR"
 else
 
@@ -119,6 +119,7 @@ else
             # CURRENT CLI from chrome://version: /home/gwern/snap/chromium/common/chromium/Default
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
+            # NOTE: we must specify '--network="host"' to Docker, so that the Single-file app running inside Docker (which is its own private network namespace) can 'see' the local Nitter instance (running normally) for making Twitter snapshots; if we forget to do this, we get unhelpful 'connection error' messages like "$ docker run singlefile http://localhost:8081/novelaiofficial/status/1723601550927356343 → net::ERR_CONNECTION_REFUSED at http://localhost:8081/novelaiofficial/status/1723601550927356343"
             timeout --kill-after=300s 200s \
                     docker run --network="host" singlefile "$URL" --compress-CSS \
                     --remove-scripts "$REMOVE_SCRIPTS" --remove-video-src false --remove-audio-src false \
