@@ -1,5 +1,8 @@
 <?php
 
+## Usage:
+##   svg_strip_background.php foo.svg bar.svg baz.svg
+
 $svg_tag_regexp = '/<svg ([^<>]* )?width="(.+?)" ([^<>]* )?height="(.+?)"[^<>]*>/';
 
 $file_names = array_slice($argv, 1);

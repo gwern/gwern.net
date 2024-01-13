@@ -1,5 +1,9 @@
 <?php
 
+## Usage:
+##   svg_squeeze 2 foo.svg bar.svg baz.svg
+## (The second argument is the squeeze factor; 2 or 3 works best for most images.)
+
 $path_regexp = '/(<path[^<>]*d=")(.+?)("[^<>]*>)/';
 $value_regexp = '/(?<![0-9\.])[0-9]+(?:\.[0-9]+)?(?![0-9\.])/';
 
