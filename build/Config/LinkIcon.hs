@@ -429,6 +429,7 @@ linkIconRulesSVG u
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
  | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
  | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>
+ | u'' u "www.tiktok.com" = ("tiktok", "svg")
 
  -- FINAL MATCHES:
  -- many orgs will use a medium subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
@@ -1052,6 +1053,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://time.com/6337437/sam-altman-openai-fired-why-microsoft-musk/", "T", "text")
          , ("https://www.cnbc.com/2017/11/15/microsoft-and-github-unveil-pair-programming-tools.html", "CNBC", "text,quad,sans")
          , ("https://www.crunchbase.com/person/james-c-gaither", "cb", "text,sans")
+         , ("https://www.tiktok.com/@dale_ebert/video/7301073510267407658", "tiktok", "svg")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

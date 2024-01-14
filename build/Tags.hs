@@ -139,4 +139,6 @@ testTags = do
 
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $
-  map (\(input,output) -> (input, guessTagFromShort alltags input, output)) C.shortTagTestSuite
+  map (\(input,output) -> (input, guessTagFromShort alltags input, output)) (C.shortTagTestSuite ++ selfTagTestSuite)
+  where selfTagTestSuite :: [(String,String)] -- every long tag should rewrite to itself, of course
+        selfTagTestSuite = zip alltags alltags

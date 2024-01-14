@@ -341,6 +341,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniq
         , ("GPT-1", "https://openai.com/research/language-unsupervised")
         , ("GPT-2", "/doc/ai/nn/transformer/gpt/2/2019-radford.pdf#openai")
         , ("(GPT-3|Brown et al 2020)", "https://arxiv.org/abs/2005.14165#openai")
+        , ("GPT-4-V", "https://openai.com/research/gpt-4v-system-card")
         , ("GPT-4", "https://openai.com/research/gpt-4")
         , ("ChatGPT", "https://openai.com/blog/chatgpt/")
         , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")

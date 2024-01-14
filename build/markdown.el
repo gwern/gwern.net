@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-01-09 12:21:54 gwern"
+;;; When:  Time-stamp: "2024-01-13 21:08:10 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -230,6 +230,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (de-unicode)
        (flyspell-buffer)
        (delete-trailing-whitespace)
+       (check-parens)
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
@@ -774,6 +775,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("x axis" . "_x_-axis")
                         ("z axis" . "_x_-axis")
                         ("y-axis" . "_y_-axis")
+                        (" y-value" . " _y_-value")
+                        (" x-value" . " _x_-value")
+                        (" z-value" . " _z_-value")
                         ("z-axis" . "_z_-axis")
                         ("y axis" . "_y_-axis")
                         ("x-axes" . "_x_-axes")

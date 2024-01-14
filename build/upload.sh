@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-01-07 14:44:45 gwern"
+# When:  Time-stamp: "2024-01-13 20:03:02 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -142,6 +142,7 @@ _upload() {
                   firefox "$URL") &
 
               else echo "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
+                   ls "$TARGET"
                    return 4
               fi
           else echo "First argument $FILENAME is not a file?"
