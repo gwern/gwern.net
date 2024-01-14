@@ -32,7 +32,7 @@ import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (inlinesToText, replace, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
+import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
@@ -40,7 +40,7 @@ import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 main :: IO ()
 main = do dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = sort $ map (\dir -> replace "/index" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
 
@@ -110,7 +110,7 @@ generateDirectory filterp md dirs dir'' = do
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md tagSelf titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
 
-  let selfLinksSection = generateSections' 1 selfTitledLinks
+  let selfLinksSection = generateSections' 2 selfTitledLinks
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems untitledLinks
 

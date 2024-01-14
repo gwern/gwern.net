@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-12 17:31:09 gwern"
+# When:  Time-stamp: "2024-01-13 20:56:00 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -51,7 +51,7 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N=29
+    N=28
     SLOW="true"
     SKIP_DIRECTORIES=""
     NITTER_PID=""
@@ -838,12 +838,12 @@ else
 
          if ((RANDOM % 100 > 50)); then
              # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-             (if ((RANDOM % 100 > 90)); then sleep 30s && $X_WWW_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
-              sleep 5s; $X_WWW_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
-              sleep 5s; $X_WWW_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
+             (if ((RANDOM % 100 > 90)); then sleep 30s && x-www-browser "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE"; fi;
+              sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE&no_referer=on";
+              sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION&no_referer=on";
               if ((RANDOM % 100 > 90)); then
                   # check page speed report for any regressions:
-                  $X_WWW_BROWSER "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
+                  x-www-browser "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE&form_factor=desktop";
                   bold "Checking print-mode CSS as well…"
                   chromium --headless --print-to-pdf="$HOME/$TODAY-gwernnet-printmode.pdf" "$CHECK_RANDOM_PAGE" && chromium ~/$HOME/$TODAY-gwernnet-printmode.pdf
               fi;
@@ -854,7 +854,7 @@ else
     sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 > 99)); then $X_WWW_BROWSER "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
+    if ((RANDOM % 100 > 99)); then x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
     if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi

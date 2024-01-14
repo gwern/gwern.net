@@ -50,6 +50,8 @@ wholeTagRewritesRegexes = isUniqueKeys [("^cs/", "CS/")
                      , ("^doc$", "Tags Index") -- NOTE: nothing is tagged this, so this just sets the <title> on /doc/index to something more useful than '<code>docs</code> tag'.
                      , ("^genetics/selection$", "evolution")
                      , ("^genetics/selection/natural$", "natural selection")
+                     , ("^artificial/selection$", "genetics/selection/artificial")
+                     , ("^genetics/selection/artificial-selection$", "genetics/selection/artificial")
                      ]
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
@@ -57,7 +59,7 @@ tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
 tagsShort2LongRewrites = isUniqueKeys
    [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot"),
     ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dogs", "dog"), ("dog/genetics", "genetics/heritable/dog"),
-    ("dog/cloning", "genetics/cloning/dog"), ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
+    ("dog/cloning", "genetics/cloning/dog"),
     ("T5", "ai/nn/transformer/t5"), ("link-rot", "cs/linkrot"), ("linkrot", "cs/linkrot"),
     ("ai/clip", "ai/nn/transformer/clip"), ("clip/samples", "ai/nn/transformer/clip/sample"), ("samples", "ai/nn/transformer/clip/sample"),
     ("japanese", "japan"), ("quantised", "ai/nn/sparsity/low-precision"), ("quantized", "ai/nn/sparsity/low-precision"),
@@ -97,7 +99,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("gpt-4/fiction", "ai/nn/transformer/gpt/4/fiction"), ("gpt-4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4poetry", "ai/nn/transformer/gpt/4/poetry"),
     ("gpt4/poetry", "ai/nn/transformer/gpt/4/poetry"), ("gpt-4/poem", "ai/nn/transformer/gpt/4/poetry"), ("chess", "reinforcement-learning/chess"),
     ("rl-chess", "reinforcement-learning/chess"), ("aimusic", "ai/music"),
-    ("animal", "psychology/animal"), ("artificial", "ai"), ("code", "cs"),
+    ("animal", "psychology/animal"), ("code", "cs"),
     ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction"),
     ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware"),
     ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction"),
@@ -110,7 +112,7 @@ tagsShort2LongRewrites = isUniqueKeys
     ("rare-variants", "rare"), ("explore", "exploration"), ("allergies", "allergy"),
     ("cat-allergy", "cat/biology/allergy"), ("cat-allergies", "cat/biology/allergy"), ("antibodies", "antibody"),
     ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math"),
-    ("frank-p-ramsey", "frank-ramsey"), ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"),
+    ("frank-p-ramsey", "frank-ramsey"),
     ("intrasexual-agression", "intrasexual-aggression"),
     ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self"),
     ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting"),
@@ -128,8 +130,8 @@ tagsShort2LongRewrites = isUniqueKeys
    ("recapture", "statistics/order/capture"), ("capture-recapture", "statistics/order/capture"), ("mark", "statistics/order/capture"), ("mark-and-recapture", "statistics/order/capture"), ("mark-and-capture", "statistics/order/capture"), ("mark-recapture", "statistics/order/capture"),
    ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue"),
    ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism"),
-   ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"),
-   ("artificial/selection", "genetics/selection/artificial"), ("genetics/selection/artificial-selection", "genetics/selection/artificial")]
+   ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"), ("alphazero", "alphago") ]
+   -- ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
@@ -554,7 +556,7 @@ shortTagTestSuite = isUniqueKeys
         , ("anxiety" , "psychiatry/anxiety")
         , ("apple" , "genetics/selection/artificial/apple")
         , ("archiving" , "cs/linkrot/archiving")
-        , ("artificial" , "ai")
+        , ("artificial" , "genetics/selection/artificial")
         , ("aspirin" , "longevity/aspirin")
         , ("attention" , "ai/nn/transformer/attention")
         , ("attention/hierarchical"
