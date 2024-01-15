@@ -854,7 +854,7 @@ function randomDropCapURL(dropCapType, letter) {
 	let mode = DarkMode.computedMode();
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter}-%R(.svg|-small-${scale}x.png)`);
+	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
 	let dropCapURL = versionedAssetURL(dropCapPathname);
 
 	return dropCapURL;

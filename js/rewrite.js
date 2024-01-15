@@ -1967,8 +1967,8 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 		eventInfo.container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(resetDropCapInBlock);
 	});
 
-	//	A capital letter, optionally preceded by an opening quotation mark.
-	let initialRegexp = new RegExp(/^(\s*[“‘]?)?([A-Z])/);
+	//	A letter (capital or lowercase), optionally preceded by an opening quotation mark.
+	let initialRegexp = new RegExp(/^(\s*[“‘]?)?([a-zA-Z])/);
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
 		container.querySelectorAll(GW.dropCaps.dropCapBlockSelector).forEach(dropCapBlock => {
@@ -2020,7 +2020,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropCaps = (eventInfo) =
 				firstNodeParent.insertBefore(newElement("SPAN", {
 					class: "drop-cap"
 				}, {
-					innerHTML: initialLetter
+					innerHTML: initialLetter.toUpperCase()
 				}), firstNode);
 			}
 
