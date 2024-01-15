@@ -1583,6 +1583,7 @@ figure.width-full {
 }
 #markdownBody .marginnote.sidenote {
 	--text-hyphenation: none;
+	--background-color: transparent;
 
     display: flex;
     justify-content: right;
