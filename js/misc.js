@@ -660,6 +660,9 @@ function aggregateMarginNotes(eventInfo) {
 
 		//	Append.
 		marginNotesBlock.append(clonedNote);
+
+		//	Process the new entries to activate pop-frame spawning.
+		Extracts.addTargetsWithin(marginNotesBlock);
 	});
 
 	//	Update visibility of margin note blocks.
