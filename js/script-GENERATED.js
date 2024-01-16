@@ -567,7 +567,7 @@ function aggregateMarginNotes(eventInfo) {
 		if (marginNote.textContent.trim() == "☞")
 			return;
 
-		let section = marginNote.closest("section, .markdownBody");
+		let section = marginNote.closest("section, .markdownBody, blockquote.data-field");
 		if (section == null)
 			return;
 
@@ -591,6 +591,8 @@ function aggregateMarginNotes(eventInfo) {
 				".collapse-content-wrapper",
 				".annotation-abstract"
 			].join(", ");
+			console.log(firstBlock);
+			console.log(firstBlock.parentElement);
 			while (firstBlock.parentElement.matches(marginNoteBlockContainerElementsSelector) == false)
 				firstBlock = firstBlock.parentElement;
 
