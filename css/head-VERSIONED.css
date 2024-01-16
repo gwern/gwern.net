@@ -2099,11 +2099,11 @@ body.special-halloween-dark {
     --GW-H1-border-color: var(--GW-blood-red);
     --GW-H2-border-color: var(--GW-blood-red);
 
-    --GW-drop-caps-yinit-color: var(--GW-blood-red);
-    --GW-drop-caps-yinit-text-shadow-color: var(--GW-blood-red);
-    --GW-drop-caps-de-zs-color: var(--GW-blood-red);
-    --GW-drop-caps-cheshire-color: var(--GW-blood-red);
-    --GW-drop-caps-kanzlei-color: var(--GW-blood-red);
+    --GW-dropcaps-yinit-color: var(--GW-blood-red);
+    --GW-dropcaps-yinit-text-shadow-color: var(--GW-blood-red);
+    --GW-dropcaps-de-zs-color: var(--GW-blood-red);
+    --GW-dropcaps-cheshire-color: var(--GW-blood-red);
+    --GW-dropcaps-kanzlei-color: var(--GW-blood-red);
 
     --GW-figure-outline-color: var(--GW-blood-red-dried);
     --GW-figure-caption-outline-color: var(--GW-blood-red);
@@ -2232,11 +2232,11 @@ body[class*='special-christmas'] {
     --GW-H1-border-color: var(--GW-holly-leaf-green);
     --GW-H2-border-color: var(--GW-holly-leaf-green);
 
-    --GW-drop-caps-yinit-color: var(--GW-santa-hat-red);
-    --GW-drop-caps-yinit-text-shadow-color: var(--GW-santa-hat-red);
-    --GW-drop-caps-de-zs-color: var(--GW-santa-hat-red);
-    --GW-drop-caps-cheshire-color: var(--GW-santa-hat-red);
-    --GW-drop-caps-kanzlei-color: var(--GW-santa-hat-red);
+    --GW-dropcaps-yinit-color: var(--GW-santa-hat-red);
+    --GW-dropcaps-yinit-text-shadow-color: var(--GW-santa-hat-red);
+    --GW-dropcaps-de-zs-color: var(--GW-santa-hat-red);
+    --GW-dropcaps-cheshire-color: var(--GW-santa-hat-red);
+    --GW-dropcaps-kanzlei-color: var(--GW-santa-hat-red);
 
     --GW-figure-outline-color: var(--GW-holly-leaf-green);
     --GW-figure-caption-outline-color: var(--GW-holly-leaf-green);
@@ -2308,7 +2308,7 @@ body.special-christmas-light header h1 {
 		0 0 2px var(--GW-christmas-lights-gold);
 }
 body.special-christmas-light .heading a,
-body.special-christmas-light p[class*='drop-cap-'] span.drop-cap,
+body.special-christmas-light p[class*='dropcap-'] span.dropcap,
 body.special-christmas-light #navigation a,
 body.special-christmas-light #sidebar a {
 	text-shadow:
@@ -2321,7 +2321,7 @@ body.special-christmas-dark header h1 {
 		0 0 4px var(--GW-christmas-lights-gold);
 }
 body.special-christmas-dark .heading a,
-body.special-christmas-dark p[class*='drop-cap-'] span.drop-cap,
+body.special-christmas-dark p[class*='dropcap-'] span.dropcap,
 body.special-christmas-dark #navigation a,
 body.special-christmas-dark #sidebar a {
 	text-shadow:

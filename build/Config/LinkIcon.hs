@@ -1033,7 +1033,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("/static/build/linkAbstract.R",  "code","svg")
          , ("/static/build/markdown-lint.sh",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
-         , ("/static/font/drop-cap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")
+         , ("/static/font/dropcap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")
          , ("/static/img/favicon.ico",  "image","svg")
          , ("/static/img/icon/video.svg",  "image","svg")
          , ("/static/js/sidenotes.js",  "code","svg")

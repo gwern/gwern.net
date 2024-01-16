@@ -208,7 +208,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              next++"\n",
              "confidence: log\n",
              "importance: 0\n",
-             "cssExtension: drop-caps-de-zs\n",
+             "cssExtension: dropcaps-de-zs\n",
              "index: true\n",
              "...\n",
              "\n"]

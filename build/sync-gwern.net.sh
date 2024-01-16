@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-13 20:56:00 gwern"
+# When:  Time-stamp: "2024-01-15 21:52:12 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -479,7 +479,7 @@ else
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
                    -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^drop-cap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; }
+                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | grep -F --invert-match 'Hafu' | xargs --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -506,7 +506,7 @@ else
              `## blacklist of fraudsters or bad papers:` \
              grep -F \
                   `### authors:` \
-                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' \
+                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' \
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
@@ -521,8 +521,8 @@ else
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ find ./ -type f -name "*.page" -type f -exec grep -E -e 'cssExtension:' {} \; | \
-       grep -F --invert-match -e 'cssExtension: drop-caps-cheshire' -e 'cssExtension: drop-caps-cheshire reader-mode' -e 'cssExtension: drop-caps-de-zs' -e 'cssExtension: drop-caps-goudy' -e 'cssExtension: drop-caps-goudy reader-mode' -e 'cssExtension: drop-caps-kanzlei' -e 'cssExtension: "drop-caps-kanzlei reader-mode"' -e 'cssExtension: drop-caps-yinit'; }
-    wrap λ "Incorrect drop caps in Markdown."
+       grep -F --invert-match -e 'cssExtension: dropcaps-cheshire' -e 'cssExtension: dropcaps-cheshire reader-mode' -e 'cssExtension: dropcaps-de-zs' -e 'cssExtension: dropcaps-goudy' -e 'cssExtension: dropcaps-goudy reader-mode' -e 'cssExtension: dropcaps-kanzlei' -e 'cssExtension: "dropcaps-kanzlei reader-mode"' -e 'cssExtension: dropcaps-yinit'; }
+    wrap λ "Incorrect dropcaps in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match -e 'lorem-code.page' -e 'ab-test.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
@@ -887,7 +887,7 @@ else
           ## check every possible extension:
           ## check some random ones:
           cm "application/epub+zip" 'https://gwern.net/doc/anime/eva/2002-takeda-notenkimemoirs.epub'
-          cm "application/font-sfnt" 'https://gwern.net/static/font/drop-cap/kanzlei/Kanzlei-Initialen-M.ttf'
+          cm "application/font-sfnt" 'https://gwern.net/static/font/dropcap/kanzlei/Kanzlei-Initialen-M.ttf'
           cm "application/javascript" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/script.js'
           cm "application/javascript" 'https://gwern.net/static/js/rewrite.js'
           cm "application/javascript" 'https://gwern.net/static/js/sidenotes.js'
@@ -1016,7 +1016,7 @@ else
     λ(){ fdupes --quiet --sameline --size --nohidden $(find * -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
-    λ(){ find ./ -type f | grep -F --invert-match -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/drop-cap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E --invert-match -e '^ +1 ' | sort --numeric-sort; }
+    λ(){ find ./ -type f | grep -F --invert-match -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/dropcap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E --invert-match -e '^ +1 ' | sort --numeric-sort; }
     wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }

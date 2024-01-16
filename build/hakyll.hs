@@ -244,7 +244,7 @@ postCtx md =
     constField "status" "notes" <>
     constField "confidence" "log" <>
     constField "importance" "0" <>
-    constField "cssExtension" "drop-caps-de-zs" <>
+    constField "cssExtension" "dropcaps-de-zs" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:

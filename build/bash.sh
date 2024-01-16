@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2023-12-21 09:34:28 gwern"
+# When:  Time-stamp: "2024-01-15 17:51:08 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -60,6 +60,12 @@ pad () {
     for FILE in "$@"; do
         ORIGINAL=$(echo "$FILE" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
         mogrify -bordercolor white -border 25 "$FILE"
+    done
+}
+pad-black () {
+    for FILE in "$@"; do
+        ORIGINAL=$(echo "$FILE" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
+        mogrify -bordercolor black -border 25 "$FILE"
     done
 }
 

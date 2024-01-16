@@ -14,9 +14,9 @@ $asset_patterns = [
 	"{$logo_dir}/*/*-small-*.png",
 	"{$logo_dir}/*/*/*-small-*.png",
 
-	"{$font_dir}/drop-cap/*/*-small-*.png",
-	"{$font_dir}/drop-cap/*/*/*-small-*.png",
-	"{$font_dir}/drop-cap/*/*/*.svg"
+	"{$font_dir}/dropcap/*/*-small-*.png",
+	"{$font_dir}/dropcap/*/*/*-small-*.png",
+	"{$font_dir}/dropcap/*/*/*.svg"
 ];
 foreach ($asset_patterns as $pattern) {
 	$asset_file_paths = array_merge($asset_file_paths, glob($pattern));
