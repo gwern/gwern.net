@@ -9,7 +9,7 @@ GW.layout = {
 
 	layoutProcessors: [ ],
 
-	//	Block containers 
+	//	Block containers
 	blockContainers: [
 		".markdownBody",
 		"section",
@@ -89,7 +89,7 @@ GW.layout = {
 		[ ".heading + section",			 5, false ],
 		[ ".heading + *",				 4, false ],
 
-		[ ".annotation p.data-field.title + p.data-field",	
+		[ ".annotation p.data-field.title + p.data-field",
 										 1, false ],
 		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
 										 3, false ],
@@ -189,7 +189,7 @@ GW.layout.defaultOptions = processLayoutOptions({
 });
 
 /**********************************************************************/
-/*	Registers a layout processor function, which will be applied to all 
+/*	Registers a layout processor function, which will be applied to all
 	rendered content as part of the dynamic layout process.
  */
 function addLayoutProcessor(name, processor, options = { }) {
@@ -205,7 +205,7 @@ function addLayoutProcessor(name, processor, options = { }) {
 	container.
 
 	If the layout processor’s options include a condition, tests the condition
-	against the block container and the base location, applying the processor 
+	against the block container and the base location, applying the processor
 	only if the test passes.
 
 	Fires didComplete event for each time a layout processor fires.
@@ -282,10 +282,10 @@ function startDynamicLayoutInContainer(container) {
 				affectedBlockContainers.push(nearestBlockContainer);
 		}
 
-		/*	Exclude block containers that are contained within other block 
+		/*	Exclude block containers that are contained within other block
 			containers in the list, to prevent redundant processing.
 		 */
-		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => 
+		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x =>
 			(c.compareDocumentPosition(x) & Node.DOCUMENT_POSITION_CONTAINS)
 		) == -1);
 
@@ -406,7 +406,7 @@ function generateCacheKey(action, options) {
 }
 
 /***************************************************************************/
-/*	Retrieve desired result from element’s layout cache, or calculate it and 
+/*	Retrieve desired result from element’s layout cache, or calculate it and
 	store in element’s layout cache; and, in any case, return.
  */
 function useLayoutCache(element, uniqueKey, options, f) {
@@ -512,7 +512,7 @@ function sequentialBlockOf(element, direction, options) {
 		if (terminalBlock)
 			return terminalBlock;
 	}
-	
+
 	//	Skip elements that don’t participate in block flow.
 	if (   isSkipped(element[siblingKey], options)
 		|| (   isNodeEmpty(element[siblingKey]) == true
@@ -523,8 +523,8 @@ function sequentialBlockOf(element, direction, options) {
 	if (isBlock(element[siblingKey], options))
 		return element[siblingKey];
 
-	/*	If we’re asked for the sequential block of the terminal child of a 
-		transparent wrapper, we return the sequential block of that wrapper 
+	/*	If we’re asked for the sequential block of the terminal child of a
+		transparent wrapper, we return the sequential block of that wrapper
 		(recursively, of course).
 	 */
 	if (isWrapper(element.parentElement, wrapperOutType, options))
@@ -575,8 +575,8 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 	if (   strictDescent == true
 		|| isWrapper(element, wrapperType, options)) {
 		let childBlocks = childBlocksOf(element);
-		for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1); 
-				 i != (terminus == "first" ? childBlocks.length : -1); 
+		for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1);
+				 i != (terminus == "first" ? childBlocks.length : -1);
 			     i += (terminus == "first" ? 1                  : -1)) {
 			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 			if (   terminalBlock
@@ -630,8 +630,8 @@ function firstBlockOf(element, options, strictDescent) {
 }
 
 /***************************************************************************/
-/*	Returns all “child” blocks of an element (blocks that are descended from 
-	the given element with no other blocks in the chain of descent; wrappers 
+/*	Returns all “child” blocks of an element (blocks that are descended from
+	the given element with no other blocks in the chain of descent; wrappers
 	don’t count).
  */
 function childBlocksOf(element, options) {
@@ -680,14 +680,14 @@ function getBlockSpacingMultiplier(block, debug = false) {
 	let predicateFromSelector = (selector) => {
 		let parts = selector.match(/^(.+) \+ (.+)$/);
 		if (parts) {
-			/*	Headings do not normally count as layout blocks, but they do 
+			/*	Headings do not normally count as layout blocks, but they do
 				here (unless it’s a heading of a collapse section, in which case
 				it still doesn’t count as a layout block).
 			 */
 			return (block) => (   previousBlockOf(block, {
 									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
 									cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
-								  })?.matches(parts[1]) 
+								  })?.matches(parts[1])
 							   && block.matches(parts[2]));
 		} else {
 			return (block) => block.matches(selector);
@@ -739,7 +739,7 @@ function getBlockSpacingMultiplier(block, debug = false) {
 /*	Returns a block’s dropcap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
 function dropcapTypeOf(block) {
-	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("-caps-", "-cap-")?.slice("dropcap-".length);
+	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("caps-", "cap-")?.slice("dropcap-".length);
 }
 
 /******************************************************************************/
@@ -816,7 +816,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 
 	//	Designate “big lists”.
-	/*	If any of a list’s list items have multiple non-list children, then 
+	/*	If any of a list’s list items have multiple non-list children, then
 		it is a “big list” (with consequences for block spacing).
 	 */
 	let isBigList = (list) => {
@@ -836,7 +836,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	container.querySelectorAll(".list").forEach(list => {
 		let bigList = isBigList(list);
 
-		/*	If this is a sub-list, and any other sub-lists on the same level as 
+		/*	If this is a sub-list, and any other sub-lists on the same level as
 			this one are “big lists”, then this is also a “big list” (because
 			the designation of “bigness” is applied to *list levels within a
 			list tree*, not to individual lists).
@@ -874,11 +874,11 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
-		/*	Designate blocks preceded by nothing (not counting floats and other 
-			elements that do not participate in block flow) in their block 
+		/*	Designate blocks preceded by nothing (not counting floats and other
+			elements that do not participate in block flow) in their block
 			container (the .first-block class).
 
-			Headings do not normally count as layout blocks, but they do here 
+			Headings do not normally count as layout blocks, but they do here
 			(unless it’s a heading of a collapse section, in which case it still
 			 doesn’t count as a layout block).
 		 */
@@ -901,7 +901,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			if (emptyGraf)
 				return;
 
-			/*	Paragraphs not preceded directly by other paragraphs 
+			/*	Paragraphs not preceded directly by other paragraphs
 				(not in lists) (the .first-graf class).
 			 */
 			let firstGraf = false;
@@ -913,9 +913,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				".annotation .data-field",
 				".admonition-title > p"
 			].join(", ");
-			let strictPreviousBlock = previousBlockOf(block, { 
+			let strictPreviousBlock = previousBlockOf(block, {
 				alsoBlockElements: [ ".list" ],
-				notWrapperElements: [ "li", ".list" ], 
+				notWrapperElements: [ "li", ".list" ],
 				notHalfWrapperElements: [ "section" ],
 				cacheKey: "alsoBlocks_lists_notWrappers_listsAndListItems_notHalfWrappers_sections"
 			});
@@ -923,13 +923,13 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				|| strictPreviousBlock.matches(previousBlockSelector) == true)
 				firstGraf = true;
 			block.classList.toggle("first-graf", firstGraf);
-			
-			/*	Colon-terminated paragraphs followed by lists 
+
+			/*	Colon-terminated paragraphs followed by lists
 				(the .list-heading class).
 			 */
 			let listHeading = false;
-			let strictNextBlock = nextBlockOf(block, { 
-				alsoBlockElements: [ ".list" ], 
+			let strictNextBlock = nextBlockOf(block, {
+				alsoBlockElements: [ ".list" ],
 				notWrapperElements: [ ".list" ],
 				cacheKey: "alsoBlocks_lists_notWrappers_lists"
 			});
@@ -967,9 +967,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				if (introGraf)
 					block.classList.add("first-graf");
 
-				/*  Add dropcap class. This could be set globally, or 
-					overridden by a .abstract; the latter could be 
-					`dropcap-not` (which nullifies any page-global dropcap 
+				/*  Add dropcap class. This could be set globally, or
+					overridden by a .abstract; the latter could be
+					`dropcap-not` (which nullifies any page-global dropcap
 					class for the given block).
 				 */
 				let dropcapType = null;
@@ -1059,20 +1059,20 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
 		//	Apply list item BSM modifier.
-		if (   bsm > "" 
+		if (   bsm > ""
 			&& listItem.dataset.bsmMod > "")
 			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
 
 		//	Apply BSM.
 		if (bsm > "") {
-			/*	We must propagate the spacing of the first block within the 
+			/*	We must propagate the spacing of the first block within the
 				list item to the list item itself.
 			 */
 			listItem.classList.add("block");
 			listItem.style.setProperty("--bsm", bsm);
 
 			//	Avoid double-counting.
-			if (   firstBlockWithin != null 
+			if (   firstBlockWithin != null
 				&& firstBlockWithin != listItem)
 				firstBlockWithin.style.setProperty("--bsm", 0);
 		}
@@ -1094,7 +1094,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		});
 		let nextBlockBSM = nextBlock?.style?.getPropertyValue("--bsm");
 		if (nextBlockBSM) {
-			/*	If the next block (in the strict sense, i.e. not counting list 
+			/*	If the next block (in the strict sense, i.e. not counting list
 				items!) is a paragraph, then adjust margin.
 			 */
 			let strictNextBlock = nextBlockOf(floatBlock);
