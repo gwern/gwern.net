@@ -591,8 +591,6 @@ function aggregateMarginNotes(eventInfo) {
 				".collapse-content-wrapper",
 				".annotation-abstract"
 			].join(", ");
-			console.log(firstBlock);
-			console.log(firstBlock.parentElement);
 			while (firstBlock.parentElement.matches(marginNoteBlockContainerElementsSelector) == false)
 				firstBlock = firstBlock.parentElement;
 
