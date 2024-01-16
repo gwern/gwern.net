@@ -3229,7 +3229,7 @@ function getBlockSpacingMultiplier(block, debug = false) {
 /*	Returns a block’s dropcap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
 function dropcapTypeOf(block) {
-	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("caps-", "cap-")?.slice("dropcap-".length);
+	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("dropcaps-", "dropcap-")?.slice("dropcap-".length);
 }
 
 /******************************************************************************/
