@@ -10,7 +10,7 @@
 	- IBM Plex Mono
 		for code blocks
 	- Initial-capital fonts 
-		for 5 kinds of drop caps; enabled in /static/css/default.css
+		for 5 kinds of dropcaps; enabled in /static/css/default.css
 		- Deutsche Zierschrift
 			for general pages
 		- Yinit
@@ -104,7 +104,7 @@ font-display	swap
 `normal			Bold-SUBSETTED
 
 <?php
-/*	Each drop-cap font is subsetted into A-Z, so only *one* letter needs to be 
+/*	Each dropcap font is subsetted into A-Z, so only *one* letter needs to be 
 	loaded (at a cost of 8-16KB), rather than 200-700KB or worse.
  */
 function all_the_letters() {
@@ -120,31 +120,31 @@ function all_the_letters() {
 ?>
 
 Deutsche Zierschrift
-/static/font/drop-cap/de-zs/DeutscheZierschrift-
+/static/font/dropcap/de-zs/DeutscheZierschrift-
 ttf
 font-display	swap
 <?php all_the_letters(); ?>
 
 Yinit
-/static/font/drop-cap/yinit/Yinit-
+/static/font/dropcap/yinit/Yinit-
 ttf
 font-display	swap
 <?php all_the_letters(); ?>
 
 Goudy Initialen
-/static/font/drop-cap/goudy/GoudyInitialen-
+/static/font/dropcap/goudy/GoudyInitialen-
 ttf
 font-display	swap
 <?php all_the_letters(); ?>
 
 Cheshire Initials
-/static/font/drop-cap/cheshire/Cheshire-Initials-
+/static/font/dropcap/cheshire/Cheshire-Initials-
 ttf
 font-display	swap
 <?php all_the_letters(); ?>
 
 Kanzlei Initialen
-/static/font/drop-cap/kanzlei/Kanzlei-Initialen-
+/static/font/dropcap/kanzlei/Kanzlei-Initialen-
 ttf
 font-display	swap
 <?php all_the_letters(); ?>

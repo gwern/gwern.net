@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-01-13 20:03:02 gwern"
+# When:  Time-stamp: "2024-01-14 21:11:43 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -54,7 +54,8 @@ _upload() {
     if [[ -n "$new_file_path" ]]; then
       for ((i=2; i<=20; i++)); do
         new_filename="${base_name}-${i}.${extension}"
-        new_file_path=$(find ~/wiki/ -type f -name "$new_filename" -print -quit)
+        # avoid spurious collisions with temporary/working files in the infrastructure repo or the scratch directory:
+        new_file_path=$(find ~/wiki/ -type f ! -path "~/wiki/static/*" ! -path "~/wiki/doc/www/*" -name "$filename" -print -quit)
 
         if [[ -z "$new_file_path" ]]; then
           mv "$filename" "$new_filename"

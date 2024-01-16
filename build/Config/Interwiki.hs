@@ -3098,7 +3098,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
           , ("Measurement_error", "Observational_error")
           , ("Meat_pies", "Meat_pie")
           , ("Mecha_anime", "Mecha_anime_and_manga")
-          , ("Mechanical_keyboard", "Keyboard_technology#Mechanical-switch_keyboard")
+          , ("Mechanical_keyboard", "Keyboard_technology#Discrete-switch_keyboard")
           , ("Mechanistic_target_of_rapamycin", "MTOR")
           , ("Media_Matters", "Media_Matters_for_America")
           , ("Medial_temporal_lobe", "Temporal_lobe")

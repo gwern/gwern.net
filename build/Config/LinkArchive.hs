@@ -1296,5 +1296,6 @@ whiteList url
       , "https://www.nassiben.com/video-based-crypta" -- low quality (video embeds)
       , "https://leggedrobotics.github.io/rl-perceptiveloco/" -- low quality (video embeds)
       , "https://synthia-dataset.net/" -- low quality (video embeds)
+      , "https://www.openstreetmap.org/" -- interactive (tool)
       ] = True
     | otherwise = False

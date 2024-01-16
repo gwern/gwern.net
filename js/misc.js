@@ -611,7 +611,7 @@ function aggregateMarginNotes(eventInfo) {
 		//	Unwrap the inner wrapper (unneeded here).
 		unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
 
-		//	Remove drop-cap, if any.
+		//	Remove dropcap, if any.
 		resetDropCapInBlock(clonedNote);
 
 		//	Trim whitespace.
@@ -837,11 +837,11 @@ function updateFootnoteTargeting() {
 
 
 /*************/
-/* DROP CAPS */
+/* DROPCAPS */
 /*************/
 
 GW.dropCaps = {
-	dropCapBlockSelector: "p[class*='drop-cap-']:not(.drop-cap-not)",
+	dropCapBlockSelector: "p[class*='dropcap-']:not(.dropcap-not)",
 
 	graphicalDropCapTypes: [
 		"dropcat",
@@ -850,38 +850,38 @@ GW.dropCaps = {
 };
 
 /***************************************************************************/
-/*	Returns URL of a random graphical drop-cap of the given type and letter,
+/*	Returns URL of a random graphical dropcap of the given type and letter,
 	appropriate for the current mode and the viewport’s device pixel ratio.
  */
 function randomDropCapURL(dropCapType, letter) {
 	let mode = DarkMode.computedMode();
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-	let dropCapPathname = randomAsset(`/static/font/drop-cap/${dropCapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
+	let dropCapPathname = randomAsset(`/static/font/dropcap/${dropCapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
 	let dropCapURL = versionedAssetURL(dropCapPathname);
 
 	return dropCapURL;
 }
 
 /*****************************************************************************/
-/*	Reset drop cap in the given block to initial state (as it was prior to the
+/*	Reset dropcap in the given block to initial state (as it was prior to the
 	handlers in this section being run, i.e. not implemented, only marked for
 	implementation).
 
-	This function is also used to strip drop-caps from blocks that shouldn’t
+	This function is also used to strip dropcaps from blocks that shouldn’t
 	have them in the first place.
  */
 function resetDropCapInBlock(block) {
-	let dropCapLink = block.querySelector(".link-drop-cap");
+	let dropCapLink = block.querySelector(".link-dropcap");
 	if (dropCapLink == null)
 		return;
 
 	unwrap(dropCapLink);
 
-	block.querySelector("img.drop-cap")?.remove();
+	block.querySelector("img.dropcap")?.remove();
 
 	//	Text node surgery: reattach letter.
-	let letterSpan = block.querySelector("span.drop-cap, span.hidden-initial-letter");
+	let letterSpan = block.querySelector("span.dropcap, span.hidden-initial-letter");
 	letterSpan.nextSibling.textContent = letterSpan.textContent + letterSpan.nextSibling.textContent;
 	letterSpan.remove();
 

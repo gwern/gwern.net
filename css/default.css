@@ -1097,7 +1097,7 @@ ul.interview .speaker {
 }
 
 /*  Auto-smallcaps introductory paragraphs of documents or sub-documents.
-    (This is also where drop caps appear.)
+    (This is also where dropcaps appear.)
  */
 p.intro-graf::first-line {
     font-variant-caps: small-caps;
@@ -1954,17 +1954,17 @@ del {
 
 
 /*************/
-/* DROP CAPS */
+/* DROPCAPS */
 /*************/
-/*  "drop caps"/"initials" (https://en.wikipedia.org/wiki/Initial
+/*  "dropcaps"/"initials" (https://en.wikipedia.org/wiki/Initial
     https://wiki.obormot.net/Reference/DropCapsDemo) are large fancy
     block letters used to start a page/section.
 
-    The 5 drop-caps right now are Cheshire ('drop-caps-cheshire') (https://www.dafont.com/cheshire-initials.font), Goudy Initialen (https://www.1001fonts.com/goudy-initialen-font.html)
-    ('drop-caps-goudy'), yinit (https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8) ('drop-caps-yinit'), Kanzlei Initialen ('drop-caps-kanzlei') (https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Kanzlei+Initialen), and
-    De-Zs/Deutsche Zierschrift (https://www.typografie.info/3/Schriften/fonts.html/deutsche-zierschrift-r250/) ('drop-caps-de-zs').
+    The 5 dropcaps right now are Cheshire ('dropcaps-cheshire') (https://www.dafont.com/cheshire-initials.font), Goudy Initialen (https://www.1001fonts.com/goudy-initialen-font.html)
+    ('dropcaps-goudy'), yinit (https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8) ('dropcaps-yinit'), Kanzlei Initialen ('dropcaps-kanzlei') (https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Kanzlei+Initialen), and
+    De-Zs/Deutsche Zierschrift (https://www.typografie.info/3/Schriften/fonts.html/deutsche-zierschrift-r250/) ('dropcaps-de-zs').
 
-    Drop-caps are used to subtly 'theme' pages: Cheshire is for literary pages, Goudy is for
+    Dropcaps are used to subtly 'theme' pages: Cheshire is for literary pages, Goudy is for
     historical/humanities pages, Kanzlei is for light technical/scientific pages, while yinit is for hardcore technical/scientific
     pages (if it has a lot of equations, it's yinit), and De-Zs is for everything else (such as newsletters).
 
@@ -1974,27 +1974,27 @@ del {
     (Mobile users can't have nice things.)
 
     To implement them, each Markdown
-    page has a custom metadata field like "css: drop-caps-goudy" which is
+    page has a custom metadata field like "css: dropcaps-goudy" which is
     substituted into the compiled HTML like
-    '<body class="pagename drop-caps-goudy">', allowing defining of multiple
-    drop-caps and customized per page. The body class then is read by JS
+    '<body class="pagename dropcaps-goudy">', allowing defining of multiple
+    dropcaps and customized per page. The body class then is read by JS
     (currently: `rewrite.js` l841, the `dropCapBlocksSelector` variable) which
     actually sets it on relevant paragraphs. It would be difficult to define 'first paragraph'
     at the start of the page correctly without many special-case pure-CSS selectors.
-    (Drop-caps in arbitrary manually-specified places, like appendices or split-out articles,
-    are supported by a separate 'drop-cap' singular class which can wrap either the abstract
+    (Dropcaps in arbitrary manually-specified places, like appendices or split-out articles,
+    are supported by a separate 'dropcap' singular class which can wrap either the abstract
     or a specific <p>.)
  */
 @media all and (min-width: 650px) {
-    p[class*='drop-cap-'].overlap-not {
+    p[class*='dropcap-'].overlap-not {
         min-height: 6em;
     }
 
-    p[class*='drop-cap-'] a.link-drop-cap,
-    p[class*='drop-cap-'] a.link-drop-cap * {
+    p[class*='dropcap-'] a.link-dropcap,
+    p[class*='dropcap-'] a.link-dropcap * {
     	text-shadow: none;
     }
-    p[class*='drop-cap-'] span.drop-cap {
+    p[class*='dropcap-'] span.dropcap {
         font-style: normal;
         font-weight: normal;
         float: left;
@@ -2008,102 +2008,102 @@ del {
 
     /*  All of these numbers are magic.
      */
-    p.drop-cap-goudy span.drop-cap {
+    p.dropcap-goudy span.dropcap {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
         margin: 0.025em 0.02em -0.25em 0;
-        color: var(--GW-drop-caps-goudy-color);
+        color: var(--GW-dropcaps-goudy-color);
     }
-    p.drop-cap-yinit span.drop-cap {
+    p.dropcap-yinit span.dropcap {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
         margin: 0.07em 0.08em -0.5em 0;
-        text-shadow: 0 0 0 var(--GW-drop-caps-yinit-text-shadow-color);
-        color: var(--GW-drop-caps-yinit-color);
+        text-shadow: 0 0 0 var(--GW-dropcaps-yinit-text-shadow-color);
+        color: var(--GW-dropcaps-yinit-color);
     }
-    p.drop-cap-de-zs span.drop-cap {
+    p.dropcap-de-zs span.dropcap {
         font-family: Deutsche Zierschrift;
         font-size: 6.625em;
         line-height: 1.1;
         margin: 0.01em 0.05em -0.25em 0;
-        color: var(--GW-drop-caps-de-zs-color);
+        color: var(--GW-dropcaps-de-zs-color);
     }
-    p.drop-cap-cheshire span.drop-cap {
+    p.dropcap-cheshire span.dropcap {
         font-family: Cheshire Initials;
         font-size: 6.75em;
         line-height: 1;
         margin: 0.045em 0.06em -0.25em 0;
-        color: var(--GW-drop-caps-cheshire-color);
+        color: var(--GW-dropcaps-cheshire-color);
     }
-    p.drop-cap-kanzlei span.drop-cap {
+    p.dropcap-kanzlei span.dropcap {
         font-family: Kanzlei Initialen;
         font-size: 7em;
         line-height: 1;
         margin: 0.025em 0.025em -0.25em -0.02em;
-        color: var(--GW-drop-caps-kanzlei-color);
+        color: var(--GW-dropcaps-kanzlei-color);
     }
 
     /*  Compensating for responsive line-height reduction.
      */
     @media all and (max-width: 1199px) {
-        p.drop-cap-goudy span.drop-cap {
+        p.dropcap-goudy span.dropcap {
             font-size: 6.875em;
         }
-        p.drop-cap-yinit span.drop-cap {
+        p.dropcap-yinit span.dropcap {
             font-size: 5.375em;
         }
-        p.drop-cap-de-zs span.drop-cap {
+        p.dropcap-de-zs span.dropcap {
             font-size: 6.5em;
         }
-        p.drop-cap-cheshire span.drop-cap {
+        p.dropcap-cheshire span.dropcap {
             font-size: 6.625em;
         }
-        p.drop-cap-kanzlei span.drop-cap {
+        p.dropcap-kanzlei span.dropcap {
             font-size: 6.875em;
         }
     }
     @media all and (max-width: 999px) {
-        p.drop-cap-goudy span.drop-cap {
+        p.dropcap-goudy span.dropcap {
             font-size: 6.625em;
         }
-        p.drop-cap-yinit span.drop-cap {
+        p.dropcap-yinit span.dropcap {
             font-size: 5.25em;
         }
-        p.drop-cap-de-zs span.drop-cap {
+        p.dropcap-de-zs span.dropcap {
             font-size: 6.25em;
         }
-        p.drop-cap-cheshire span.drop-cap {
+        p.dropcap-cheshire span.dropcap {
             font-size: 6.3125em;
         }
-        p.drop-cap-kanzlei span.drop-cap {
+        p.dropcap-kanzlei span.dropcap {
             font-size: 6.6875em;
         }
     }
 
-	/*	Graphical drop-caps.
+	/*	Graphical dropcaps.
 	 */
-	p.graphical-drop-cap .hidden-initial-letter {
+	p.graphical-dropcap .hidden-initial-letter {
 		display: inline-block;
 		width: 0;
 		height: 0;
 		overflow: hidden;
 	}
-	p.graphical-drop-cap img.drop-cap {
+	p.graphical-dropcap img.dropcap {
 		float: left;
 		display: block;
 		height: 9.4em;
 		margin: -0.5em -0.10em -0.95em -0.75em;
 		filter: none;
 	}
-	p.graphical-drop-cap img.drop-cap.svg {
+	p.graphical-dropcap img.dropcap.svg {
 		height: 8em;
 		margin: 0 0.25em 0 0;
 	}
 
 	@media all and (max-width: 1199px) {
-		p.graphical-drop-cap img.drop-cap {
+		p.graphical-dropcap img.dropcap {
 			margin-top: -0.25em;
 		}
 	}
@@ -4189,10 +4189,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 /*┌──────────────────┐*/
-/*│ Drop-cap popups. │*/
+/*│ Dropcap popups. │*/
 /*└──────────────────┘*/
 
-.popup-body.drop-cap p {
+.popup-body.dropcap p {
 	text-align: left;
 }
 

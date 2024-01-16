@@ -566,7 +566,7 @@ Extracts = { ...Extracts,
 };
 
 /*=----------------=*/
-/*= DROP-CAP LINKS =*/
+/*= DROPCAP LINKS =*/
 /*=----------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
@@ -574,13 +574,13 @@ Extracts.targetTypeDefinitions.insertBefore([
     "isDropCapLink",     // Type predicate function
     null,                // Target classes to add
     "dropCapForTarget",  // Pop-frame fill function
-    "drop-cap"           // Pop-frame classes
+    "dropcap"           // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isDropCapLink: (target) => {
-        return target.classList.contains("link-drop-cap");
+        return target.classList.contains("link-dropcap");
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
@@ -591,9 +591,9 @@ Extracts = { ...Extracts,
 		let dropCapType = target.dataset.dropCapType;
 
 		return newDocument(
-			  `<p>A capital letter <strong>${letter}</strong> drop-cap initial, from the `
+			  `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
 			+ `<a class="link-page" href="/dropcap#${dropCapType}"><strong>${dropCapType}</strong></a>`
-			+ ` drop-cap font.</p>`
+			+ ` dropcap font.</p>`
 		)
     },
 

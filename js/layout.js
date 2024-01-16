@@ -736,33 +736,33 @@ function getBlockSpacingMultiplier(block, debug = false) {
 }
 
 /*****************************************************************************/
-/*	Returns a block’s drop cap type (‘goudy’, ‘yinit’, etc.), or null if none.
+/*	Returns a block’s dropcap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
 function dropCapTypeOf(block) {
-	return Array.from(block.classList).find(cssClass => /^drop-caps?-/.test(cssClass))?.replace("-caps-", "-cap-")?.slice("drop-cap-".length);
+	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("-caps-", "-cap-")?.slice("dropcap-".length);
 }
 
 /******************************************************************************/
-/*	Adds a drop cap class to a block. Drop caps may be ‘kanzlei’, ‘de-zs’, etc.
+/*	Adds a dropcap class to a block. Dropcaps may be ‘kanzlei’, ‘de-zs’, etc.
 	(See default.css for the list.)
  */
 function addDropCapClassTo(block, dropCapType) {
-	if (block.classList.contains("force-drop-cap"))
+	if (block.classList.contains("force-dropcap"))
 		return;
 
 	stripDropCapClassesFrom(block);
 
-	block.classList.add(`drop-cap-${dropCapType}`);
+	block.classList.add(`dropcap-${dropCapType}`);
 }
 
 /*************************************/
-/*	Strip drop cap classes from block.
+/*	Strip dropcap classes from block.
  */
 function stripDropCapClassesFrom(block) {
-	if (block.classList.contains("force-drop-cap"))
+	if (block.classList.contains("force-dropcap"))
 		return;
 
-	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("drop-cap-"))));
+	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("dropcap-"))));
 }
 
 
@@ -967,9 +967,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				if (introGraf)
 					block.classList.add("first-graf");
 
-				/*  Add drop cap class. This could be set globally, or 
+				/*  Add dropcap class. This could be set globally, or 
 					overridden by a .abstract; the latter could be 
-					`drop-cap-not` (which nullifies any page-global drop-cap 
+					`dropcap-not` (which nullifies any page-global dropcap 
 					class for the given block).
 				 */
 				let dropCapType = null;

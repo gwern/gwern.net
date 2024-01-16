@@ -178,14 +178,14 @@
     --GW-math-block-scrollbar-thumb-color: #ccc;
     --GW-math-block-scrollbar-thumb-hover-color: #999;
 
-    /*  Drop caps.
+    /*  Dropcaps.
      */
-    --GW-drop-caps-goudy-color: #000;
-    --GW-drop-caps-yinit-color: #0d0d0d;
-    --GW-drop-caps-yinit-text-shadow-color: #777;
-    --GW-drop-caps-de-zs-color: #1b1b1b;
-    --GW-drop-caps-cheshire-color: #191919;
-    --GW-drop-caps-kanzlei-color: #191919;
+    --GW-dropcaps-goudy-color: #000;
+    --GW-dropcaps-yinit-color: #0d0d0d;
+    --GW-dropcaps-yinit-text-shadow-color: #777;
+    --GW-dropcaps-de-zs-color: #1b1b1b;
+    --GW-dropcaps-cheshire-color: #191919;
+    --GW-dropcaps-kanzlei-color: #191919;
 
     /*  Admonitions.
      */
