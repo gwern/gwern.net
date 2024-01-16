@@ -333,7 +333,16 @@ DOMTokenList.prototype.containsAllOf = function (tokens) {
  */
 Object.defineProperty(Document.prototype, "innerHTML", {
     get() {
-        return Array.from(this.childNodes).map(node => (node.nodeValue || node.outerHTML)).join("");
+        return Array.from(this.childNodes).map(node => {
+        	switch (node.nodeType) {
+			case Node.ELEMENT_NODE:
+				return node.outerHTML;
+			case Node.COMMENT_NODE:
+				return `<!--${node.nodeValue}-->`;
+			default:
+				return node.nodeValue;
+        	}
+        }).join("");
     }
 });
 
@@ -342,7 +351,16 @@ Object.defineProperty(Document.prototype, "innerHTML", {
  */
 Object.defineProperty(DocumentFragment.prototype, "innerHTML", {
     get() {
-        return Array.from(this.childNodes).map(node => (node.nodeValue || node.outerHTML)).join("");
+        return Array.from(this.childNodes).map(node => {
+        	switch (node.nodeType) {
+			case Node.ELEMENT_NODE:
+				return node.outerHTML;
+			case Node.COMMENT_NODE:
+				return `<!--${node.nodeValue}-->`;
+			default:
+				return node.nodeValue;
+        	}
+        }).join("");
     }
 });
 
