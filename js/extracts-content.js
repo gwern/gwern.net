@@ -570,35 +570,35 @@ Extracts = { ...Extracts,
 /*=----------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "DROP_CAP_LINK",     // Type name
-    "isDropCapLink",     // Type predicate function
+    "DROPCAP_LINK",      // Type name
+    "isDropcapLink",     // Type predicate function
     null,                // Target classes to add
-    "dropCapForTarget",  // Pop-frame fill function
-    "dropcap"           // Pop-frame classes
+    "dropcapForTarget",  // Pop-frame fill function
+    "dropcap"            // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
-    isDropCapLink: (target) => {
+    isDropcapLink: (target) => {
         return target.classList.contains("link-dropcap");
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    dropCapForTarget: (target) => {
-        GWLog("Extracts.dropCapForTarget", "extracts-content.js", 2);
+    dropcapForTarget: (target) => {
+        GWLog("Extracts.dropcapForTarget", "extracts-content.js", 2);
 
 		let letter = target.dataset.letter;
-		let dropCapType = target.dataset.dropCapType;
+		let dropcapType = target.dataset.dropcapType;
 
 		return newDocument(
 			  `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
-			+ `<a class="link-page" href="/dropcap#${dropCapType}"><strong>${dropCapType}</strong></a>`
+			+ `<a class="link-page" href="/dropcap#${dropcapType}"><strong>${dropcapType}</strong></a>`
 			+ ` dropcap font.</p>`
 		)
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_DROP_CAP_LINK: (popup) => {
+    preparePopup_DROPCAP_LINK: (popup) => {
         let target = popup.spawningTarget;
 
         //  Mini title bar.
@@ -608,7 +608,7 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_DROP_CAP_LINK: (popin) => {
+    preparePopin_DROPCAP_LINK: (popin) => {
         let target = popin.spawningTarget;
 
         //  No footer bar.
@@ -618,8 +618,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_DROP_CAP_LINK: (popFrame) => {
-        GWLog("Extracts.rewritePopFrameContent_DROP_CAP_LINK", "extracts.js", 2);
+    rewritePopFrameContent_DROPCAP_LINK: (popFrame) => {
+        GWLog("Extracts.rewritePopFrameContent_DROPCAP_LINK", "extracts.js", 2);
 
 		//	Determine load location.
         let target = popFrame.spawningTarget;
@@ -630,13 +630,13 @@ Extracts = { ...Extracts,
 		
 		//	Fire events.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			source: "Extracts.rewritePopFrameContent_DROPCAP_LINK",
 			container: popFrame.body,
 			document: popFrame.document,
 			loadLocation: new URL(loadLocation.href)
 		});
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
-			source: "Extracts.rewritePopFrameContent_DROP_CAP_LINK",
+			source: "Extracts.rewritePopFrameContent_DROPCAP_LINK",
 			container: popFrame.body,
 			document: popFrame.document,
 			loadLocation: new URL(loadLocation.href),

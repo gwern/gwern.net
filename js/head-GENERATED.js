@@ -3228,7 +3228,7 @@ function getBlockSpacingMultiplier(block, debug = false) {
 /*****************************************************************************/
 /*	Returns a block’s dropcap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
-function dropCapTypeOf(block) {
+function dropcapTypeOf(block) {
 	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace("-caps-", "-cap-")?.slice("dropcap-".length);
 }
 
@@ -3236,19 +3236,19 @@ function dropCapTypeOf(block) {
 /*	Adds a dropcap class to a block. Dropcaps may be ‘kanzlei’, ‘de-zs’, etc.
 	(See default.css for the list.)
  */
-function addDropCapClassTo(block, dropCapType) {
+function addDropcapClassTo(block, dropcapType) {
 	if (block.classList.contains("force-dropcap"))
 		return;
 
-	stripDropCapClassesFrom(block);
+	stripDropcapClassesFrom(block);
 
-	block.classList.add(`dropcap-${dropCapType}`);
+	block.classList.add(`dropcap-${dropcapType}`);
 }
 
 /*************************************/
 /*	Strip dropcap classes from block.
  */
-function stripDropCapClassesFrom(block) {
+function stripDropcapClassesFrom(block) {
 	if (block.classList.contains("force-dropcap"))
 		return;
 
@@ -3462,20 +3462,20 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 					`dropcap-not` (which nullifies any page-global dropcap 
 					class for the given block).
 				 */
-				let dropCapType = null;
+				let dropcapType = null;
 				if (introGraf) {
-					dropCapType = (previousBlock?.matches(".abstract blockquote")
-								   ? dropCapTypeOf(previousBlock)
-								   : null) ?? dropCapTypeOf(document.body);
+					dropcapType = (previousBlock?.matches(".abstract blockquote")
+								   ? dropcapTypeOf(previousBlock)
+								   : null) ?? dropcapTypeOf(document.body);
 				} else if (block.parentElement?.tagName == "DIV") {
-					dropCapType = dropCapTypeOf(block.parentElement);
-					if (dropCapType && dropCapType != "not")
+					dropcapType = dropcapTypeOf(block.parentElement);
+					if (dropcapType && dropcapType != "not")
 						block.classList.add("first-graf");
 				}
-				if (dropCapType && dropCapType != "not") {
-					addDropCapClassTo(block, dropCapType);
+				if (dropcapType && dropcapType != "not") {
+					addDropcapClassTo(block, dropcapType);
 				} else {
-					stripDropCapClassesFrom(block);
+					stripDropcapClassesFrom(block);
 				}
 			}
 			block.classList.toggle("intro-graf", introGraf);

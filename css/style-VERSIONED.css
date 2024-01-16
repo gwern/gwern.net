@@ -2322,18 +2322,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -3041,7 +3041,7 @@ del {
     substituted into the compiled HTML like
     '<body class="pagename dropcaps-goudy">', allowing defining of multiple
     dropcaps and customized per page. The body class then is read by JS
-    (currently: `rewrite.js` l841, the `dropCapBlocksSelector` variable) which
+    (currently: `rewrite.js` l841, the `dropcapBlocksSelector` variable) which
     actually sets it on relevant paragraphs. It would be difficult to define 'first paragraph'
     at the start of the page correctly without many special-case pure-CSS selectors.
     (Dropcaps in arbitrary manually-specified places, like appendices or split-out articles,
@@ -5207,14 +5207,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5355,7 +5355,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5815,14 +5815,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6724,7 +6724,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#question');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7290,7 +7290,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1705360018#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7365,7 +7365,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705360018#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

@@ -612,7 +612,7 @@ function aggregateMarginNotes(eventInfo) {
 		unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
 
 		//	Remove dropcap, if any.
-		resetDropCapInBlock(clonedNote);
+		resetDropcapInBlock(clonedNote);
 
 		//	Trim whitespace.
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
@@ -840,10 +840,10 @@ function updateFootnoteTargeting() {
 /* DROPCAPS */
 /*************/
 
-GW.dropCaps = {
-	dropCapBlockSelector: "p[class*='dropcap-']:not(.dropcap-not)",
+GW.dropcaps = {
+	dropcapBlockSelector: "p[class*='dropcap-']:not(.dropcap-not)",
 
-	graphicalDropCapTypes: [
+	graphicalDropcapTypes: [
 		"dropcat",
 		"gene-wolfe"
 	]
@@ -853,14 +853,14 @@ GW.dropCaps = {
 /*	Returns URL of a random graphical dropcap of the given type and letter,
 	appropriate for the current mode and the viewport’s device pixel ratio.
  */
-function randomDropCapURL(dropCapType, letter) {
+function randomDropcapURL(dropcapType, letter) {
 	let mode = DarkMode.computedMode();
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-	let dropCapPathname = randomAsset(`/static/font/dropcap/${dropCapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
-	let dropCapURL = versionedAssetURL(dropCapPathname);
+	let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
+	let dropcapURL = versionedAssetURL(dropcapPathname);
 
-	return dropCapURL;
+	return dropcapURL;
 }
 
 /*****************************************************************************/
@@ -871,12 +871,12 @@ function randomDropCapURL(dropCapType, letter) {
 	This function is also used to strip dropcaps from blocks that shouldn’t
 	have them in the first place.
  */
-function resetDropCapInBlock(block) {
-	let dropCapLink = block.querySelector(".link-dropcap");
-	if (dropCapLink == null)
+function resetDropcapInBlock(block) {
+	let dropcapLink = block.querySelector(".link-dropcap");
+	if (dropcapLink == null)
 		return;
 
-	unwrap(dropCapLink);
+	unwrap(dropcapLink);
 
 	block.querySelector("img.dropcap")?.remove();
 

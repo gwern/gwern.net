@@ -1978,7 +1978,7 @@ del {
     substituted into the compiled HTML like
     '<body class="pagename dropcaps-goudy">', allowing defining of multiple
     dropcaps and customized per page. The body class then is read by JS
-    (currently: `rewrite.js` l841, the `dropCapBlocksSelector` variable) which
+    (currently: `rewrite.js` l841, the `dropcapBlocksSelector` variable) which
     actually sets it on relevant paragraphs. It would be difficult to define 'first paragraph'
     at the start of the page correctly without many special-case pure-CSS selectors.
     (Dropcaps in arbitrary manually-specified places, like appendices or split-out articles,
