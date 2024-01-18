@@ -16044,7 +16044,7 @@ ImageFocus = {
 
 	shrinkRatio: 0.975,
 
-	hideUITimerDuration: 1500,
+	hideUITimerDuration: 3000,
 
 	dropShadowFilterForImages: " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
 
