@@ -1952,9 +1952,9 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 }, "rewrite");
 
 
-/*************/
+/************/
 /* DROPCAPS */
-/*************/
+/************/
 
 /***************************************************/
 /*	Dropcaps (only on sufficiently wide viewports).
@@ -2069,8 +2069,10 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropcap
 
 			//	Add event handler to switch image when mode changes.
 			GW.notificationCenter.addHandlerForEvent(dropcapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
-				let dropcapUrl = randomDropcapURL(dropcapType, initialLetter);
-				dropcapImage.src = dropcapUrl.pathname + dropcapUrl.search;
+				let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+				dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
+				dropcapImage.classList.remove("png", "svg");
+				dropcapImage.classList.add(dropcapURL.pathname.slice(-3));
 			});
 		});
 	});
