@@ -3052,6 +3052,9 @@ del {
     p[class*='dropcap-'].overlap-not {
         min-height: 6em;
     }
+    p[class*='dropcap-'].graphical-dropcap.overlap-not {
+        min-height: 8em;
+    }
 
     p[class*='dropcap-'] a.link-dropcap,
     p[class*='dropcap-'] a.link-dropcap * {
