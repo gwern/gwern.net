@@ -841,6 +841,12 @@ Annotations.dataSources.wikipedia = {
 			element.remove();
 		});
 
+		//	Clean empty nodes.
+		referenceEntry.childNodes.forEach(node => {
+			if (isNodeEmpty(node))
+				node.remove();
+		});
+
 		//  Remove location maps (they don’t work right).
 		referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
 			(locmap.closest("tr") ?? locmap).remove();
@@ -1046,6 +1052,22 @@ Annotations.dataSources.wikipedia = {
 		].map(selector => `${selector} img`).join(", ");
 		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
 			image.classList.add("figure-not");
+		});
+
+		//	Move infoboxes out of the way.
+		let childElements = Array.from(referenceEntry.children);
+		let firstInfoboxIndex = childElements.findIndex(x => x.matches(".infobox"));
+		if (firstInfoboxIndex !== -1) {
+			let firstInfobox = childElements[firstInfoboxIndex];
+			let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
+			if (firstGrafAfterInfobox)
+				referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
+		}
+
+		//	Clean empty nodes, redux.
+		referenceEntry.childNodes.forEach(node => {
+			if (isNodeEmpty(node))
+				node.remove();
 		});
 	}
 };

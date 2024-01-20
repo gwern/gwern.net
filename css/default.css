@@ -2783,7 +2783,6 @@ ol.link-bibliography-list-compact > li::before {
  */
 
 .annotation.wikipedia-entry .table-wrapper {
-    margin: 1.5em 0 1.5em 0;
     clear: both;
 }
 .annotation.wikipedia-entry .infobox {
