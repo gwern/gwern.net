@@ -773,6 +773,7 @@ function updatePageTOC(eventInfo) {
 
 		//  Construct entry.
 		let entry = newElement("LI");
+		console.log(section);
 		let entryText = section.id == "footnotes"
 						? "Footnotes"
 						: section.firstElementChild.querySelector("a").innerHTML;
