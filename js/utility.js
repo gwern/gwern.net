@@ -486,7 +486,7 @@ function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper
         let wrapper = newElement(wrapTagName);
         if (wrapClass > "")
             wrapper.classList.add(...(wrapClass.split(" ")));
-        element.parentElement.insertBefore(wrapper, element);
+        element.parentNode.insertBefore(wrapper, element);
         wrapper.appendChild(element);
     }
 

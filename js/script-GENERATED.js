@@ -5483,6 +5483,7 @@ Annotations.dataSources.wikipedia = {
 			let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
 			if (firstGrafAfterInfobox)
 				referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
+			wrapElement(firstInfobox, "collapse");
 		}
 
 		//	Clean empty nodes, redux.
