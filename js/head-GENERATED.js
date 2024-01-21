@@ -3467,12 +3467,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 					dropcapType = (previousBlock?.matches(".abstract blockquote")
 								   ? dropcapTypeOf(previousBlock)
 								   : null) ?? dropcapTypeOf(document.body);
-				} else if (block.parentElement?.tagName == "DIV") {
+				} else if (   firstGraf
+						   && block.parentElement?.tagName == "DIV") {
 					dropcapType = dropcapTypeOf(block.parentElement);
-					if (dropcapType && dropcapType != "not")
-						block.classList.add("first-graf");
 				}
-				if (dropcapType && dropcapType != "not") {
+				if (   dropcapType 
+					&& dropcapType != "not") {
 					addDropcapClassTo(block, dropcapType);
 				} else {
 					stripDropcapClassesFrom(block);
