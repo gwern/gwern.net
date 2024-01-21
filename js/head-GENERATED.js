@@ -3467,9 +3467,17 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 					dropcapType = (previousBlock?.matches(".abstract blockquote")
 								   ? dropcapTypeOf(previousBlock)
 								   : null) ?? dropcapTypeOf(document.body);
-				} else if (   firstGraf
-						   && block.parentElement?.tagName == "DIV") {
-					dropcapType = dropcapTypeOf(block.parentElement);
+				} else {
+					let dropcapContainerOptions = {
+						alsoBlockContainers: [ "div[class*='dropcap-']" ],
+						cacheKey: "alsoBlockContainers_dropcapDivs"
+					};
+					let dropcapContainer = blockContainerOf(block, dropcapContainerOptions);
+					if (   dropcapContainer?.matches("div")
+						&& previousBlockOf(block, dropcapContainerOptions) == null) {
+						dropcapType = dropcapTypeOf(dropcapContainer);
+						block.classList.add("first-graf");
+					}
 				}
 				if (   dropcapType 
 					&& dropcapType != "not") {
