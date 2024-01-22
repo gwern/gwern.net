@@ -58,10 +58,14 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnailText, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnailText set.
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
-                        thumbnailFigure <- if thumbnail'=="" then return "" else do
-                              (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invert-auto float-right outline-not page-thumbnail\"" else "class=\"float-right outline-not page-thumbnail\""
-                              return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
+                        let thumbnailCSS = words $ (\(TagOpen _ [_, ("content", css)]) -> css) $ head $ filter filterThumbnailCSS metas
+
+                        (color,h,w) <- invertImage thumbnail'
+                        let color' = if "invert" `elem` thumbnailCSS || "invert-not" `elem` thumbnailCSS then ""
+                                         else if color then "invert-auto" else "invert-not"
+                        let thumbnailFigure = if thumbnail'=="" then "" else
+                              let imgClass =  "class=\"float-right page-thumbnail " ++ color' ++ unwords thumbnailCSS ++ "\""
+                              in ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
                         let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
@@ -84,6 +88,8 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
+          filterThumbnailCSS (TagOpen "meta" [("property", "gwern:thumbnail:css-classes"), _]) = True
+          filterThumbnailCSS _ = False
 
 -- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.page' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))

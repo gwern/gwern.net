@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2023-12-27 20:35:38 gwern"
+When: Time-stamp: "2024-01-21 20:33:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -245,6 +245,7 @@ postCtx md =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "cssExtension" "dropcaps-de-zs" <>
+    constField "thumbnailCSS" "outline-not" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
