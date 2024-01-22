@@ -166,7 +166,7 @@ function versionedAssetURL(pathname) {
 	Specified assets must be listed in the versioned asset database.
  */
 function randomAsset(assetPathnamePattern) {
-	let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
+	let assetPathnameRegExp = new RegExp(assetPathnamePattern);
 	let alternateAssetPathnames = [ ];
 	for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
 		if (assetPathnameRegExp.test(versionedAssetPathname))
@@ -858,7 +858,7 @@ function randomDropcapURL(dropcapType, letter) {
 	let mode = DarkMode.computedMode();
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-	let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/${mode}/${letter.toUpperCase()}-%R(.svg|-small-${scale}x.png)`);
+	let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/${mode}/${letter.toUpperCase()}(?:-.*)?-[0-9]+(.svg|-small-${scale}x.png)$`);
 	let dropcapURL = versionedAssetURL(dropcapPathname);
 
 	return dropcapURL;
