@@ -1297,5 +1297,7 @@ whiteList url
       , "https://leggedrobotics.github.io/rl-perceptiveloco/" -- low quality (video embeds)
       , "https://synthia-dataset.net/" -- low quality (video embeds)
       , "https://www.openstreetmap.org/" -- interactive (tool)
+      , "https://styletts2.github.io/" -- low-quality (audio embeds)
+      , "https://intxpower.com/" -- interactive (tool)
       ] = True
     | otherwise = False

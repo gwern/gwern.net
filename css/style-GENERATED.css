@@ -7657,7 +7657,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     filter: invert(1);
 }
 
-
 /**************/
 /* LINK ICONS */
 /**************/
@@ -8650,11 +8649,17 @@ a[data-link-icon='emacs'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-
 a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.20em;
     opacity: 0.65;
+}
+
+a[data-link-icon='tiktok'] .link-icon-hook::after {
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+  /* opacity: 0.7; */
+  --link-icon-size: 0.75em;
 }
 
 /*=------------------=*/
@@ -8667,7 +8672,7 @@ a[data-link-icon='wikipedia'] .link-icon-hook::after {
     --link-icon-offset-y: 0.50em;
 
     opacity: 0.65;
-	margin-right: 0.05em;
+    margin-right: 0.05em;
 }
 a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
     opacity: 0.4;
@@ -8678,11 +8683,11 @@ a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
     has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
     function); the dotted-underlining is enough.
  */
-/*	Experimentally un-suppressing, in tandem with styling changes to the WP
-	link icon that make it less obtrusive.
-		—SA 2023-11-19
+/*  Experimentally un-suppressing, in tandem with styling changes to the WP
+    link icon that make it less obtrusive.
+        —SA 2023-11-19
  */
-/* 
+/*
 a[data-link-icon='wikipedia'].has-annotation .link-icon-hook {
     display: none;
 }
