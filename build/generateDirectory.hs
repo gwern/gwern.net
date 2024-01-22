@@ -201,6 +201,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
               " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"\n",
              thumbnail,
+             "thumbnailCSS: \"outline\"", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
              "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
              "status: in progress\n",
