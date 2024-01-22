@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-15 17:51:08 gwern"
+# When:  Time-stamp: "2024-01-21 18:25:52 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -68,6 +68,9 @@ pad-black () {
         mogrify -bordercolor black -border 25 "$FILE"
     done
 }
+
+# function split_image() {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+# convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
 # crossref: defined in ~/wiki/static/build/crossref
 cr () { crossref "$@" & }

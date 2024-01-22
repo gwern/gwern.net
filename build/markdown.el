@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-01-13 21:08:10 gwern"
+;;; When:  Time-stamp: "2024-01-21 14:44:29 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -461,7 +461,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("on X:" . "on Twitter:")
                      (" X (formerly known as Twitter)" . " Twitter")
                      ("Elon Musk’s X" . "Elon Musk’s Twitter")
-                     (" target=\"_blank\"" . " target=\"_blank\"")
+                     (" target=\"_blank\"" . "")
                      )
                    )
             )
@@ -1629,9 +1629,14 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        ; do this at the end to minimize errors from things that would've been fixed
        (when (and (equal (buffer-name) "foo")
+                  ; avoid breaking numbered-lists & headers
                   (not (save-excursion
                          (goto-char (point-min))
-                         (re-search-forward "^[0-9#]" nil t))))
+                         (re-search-forward "^[0-9#]" nil t)))
+                  ; we must skip annotations with `.interview` markup: the indentation is critical, and simply wrapping breaks the interview formatting unless it is correctly done, which we can't do because it requires parsing Markdown lists & depths to understand exactly how many spaces to indent. So since removing newlines-in-paragraphs is nice but not critical, we just skip it for interviews.
+                  (not (save-excursion
+                  (goto-char (point-min))
+                  (re-search-forward "<div class=\"interview\">" nil t))))
          (markdown-remove-newlines-in-paragraphs) ; once all the hyphenation is dealt with, remove the hard-newlines which are common in PDF copy-pastes. These hard newlines are a problem because they break many string matches, and they make `langcheck` highlight every line beginning/ending in red as an error.
          )
 

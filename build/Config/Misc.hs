@@ -22,7 +22,8 @@ backlinkBlackList :: T.Text -> Bool
 backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."
 backlinkBlackList e
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem",
+  -- TODO: it would be better to set this as per-page YAML header metadata variables like 'backlink: False' and read it from the page when running generateBacklink.hs, instead of secretly hardwiring it all here
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem", "/fiction/clippy",
                    -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
                    "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "/confidential/", "/private/", "/secret/"] = True
   | anySuffixT f ["/index", "/index-long"] = True

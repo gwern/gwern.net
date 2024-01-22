@@ -210,6 +210,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           , ("economics/mechanism-design/quadratic-voting", "quadratic voting")
           , ("economics/mechanism-design/auction", "auctions")
           , ("economics/mechanism-design", "mechanism design")
+          , ("design/typography/square", "block fonts")
           , ("design/typography/dropcap", "dropcaps (typography)")
           , ("design/typography/sidenote", "sidenotes (typography)")
           , ("design/typography/sentence-spacing", "sentence-spacing (typography)")

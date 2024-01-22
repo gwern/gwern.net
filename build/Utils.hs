@@ -218,7 +218,7 @@ replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 
 -- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
-replace before after = if before == after then error ("Fatal error in `replace`: before == after" ++ show before ++ "\"") else intercalate after . split before
+replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before
 split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []
 split delim str =
@@ -1042,6 +1042,8 @@ htmlRewriteFixed =
          , (" N2 =", " <em>n</em><sub>2</sub> =")
          , ("(N1 =", "(<em>n</em><sub>1</sub> =")
          , ("(N2 =", "(<em>n</em><sub>2</sub> =")
+         , ("M full-scale", "M<sub>full-scale</sub>")
+         , ("M age", "M<sub>age</sub>")
          , ("( <em>n</em> =", "(<em>n</em> =")
          , ("<em>N</em> =", "<em>n</em> =")
          , ("N = ", "<em>N</em> = ")
@@ -1175,6 +1177,7 @@ htmlRewriteFixed =
          , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
          , ("\nBackground: ", "\n<strong>Background</strong>: ")
          , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
+         , ("<p>Abstract: ", "<p>")
          , ("\nContext: ", "\n<strong>Context</strong>: ")
          , ("<strong>Purpose</strong>\n<p>", "<p><strong>Purpose</strong>: ")
          , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
@@ -1607,6 +1610,14 @@ htmlRewriteFixed =
          , ("(5th", "(5<sup>th</sup>")
          , ("(12th", "(12<sup>th</sup>")
          , (" 14th ", " 14<sup>th</sup> ")
+         , (" 22nd", " 22<sup>nd</sup>")
+         , (" 30th", " 30<sup>th</sup>")
+         , (" 50th", " 50<sup>th</sup>")
+         , (" 1st", " 1<sup>st</sup>")
+         , (" 2nd", " 2<sup>nd</sup>")
+         , (" 3rd", " 3<sup>rd</sup>")
+         , (" 5th", " 5<sup>th</sup>")
+         , (" 4th", " 4<sup>th</sup>")
          , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
          , ("ml-1", "ml<sup>−1</sup>")
          , ("10(9)", "10<sup>9</sup>")
@@ -1617,6 +1628,7 @@ htmlRewriteFixed =
          , ("Cmax", "C<sub>max</sub>")
          , ("<small></small>", "")
          , ("Hazard Ratio", "hazard ratio")
+         , ("tertile", "third")
          , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
          , (" et al. ", " et al ")
          , (" et al., ", " et al ")
