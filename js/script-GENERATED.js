@@ -845,7 +845,8 @@ GW.dropcaps = {
 
 	graphicalDropcapTypes: [
 		"dropcat",
-		"gene-wolfe"
+		"gene-wolfe",
+		"ninit"
 	]
 };
 

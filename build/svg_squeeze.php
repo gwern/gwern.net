@@ -31,7 +31,7 @@ foreach ($file_names as $file_name) {
 
 	sort($all_values, SORT_NUMERIC);
 	$scale = $all_values[count($all_values) - 1] - $all_values[0];
-	$precision = (floor(log10($scale)) * -1) + $squeeze_factor;
+	$precision = ((round(log10($scale)) - 1) * -1) + $squeeze_factor;
 
 	$svg = preg_replace_callback($path_regexp, function ($m) use ($precision) {
 		global $value_regexp;
