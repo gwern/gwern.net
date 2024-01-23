@@ -1996,7 +1996,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
 
 			//	Is this is a graphical dropcap?
 			if (GW.dropcaps.graphicalDropcapTypes.includes(dropcapType)) {
-				//	Designate as graphical dropcap.
+				//	Designate as graphical dropcap block.
 				dropcapBlock.classList.add("graphical-dropcap");
 
 				//	Inject a hidden span to hold the first letter as text.
@@ -2006,15 +2006,36 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
 					innerHTML: initialLetter
 				}), firstNode);
 
+				//	Construct the dropcap image element.
+				let dropcapImage = newElement("IMG", {
+					class: "dropcap figure-not",
+					loading: "lazy"
+				});
+
 				//	Select a dropcap.
 				let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+				if (dropcapURL == null) {
+					//	If no available dropcap image, set disabled flag.
+					dropcapBlock.classList.add("disable-dropcap");
+				} else {
+					//	Specify image URL.
+					dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
+
+					//	Add image file format class.
+					dropcapImage.classList.add(dropcapURL?.pathname.slice(-3));
+
+					/*	Dropcap should be inverted if it’s designed for a mode 
+						opposite to the current mode (rather than being designed 
+						either for the current mode or for either mode); in such a
+						case it will have the opposite mode in the file name.
+					 */
+					let shouldInvert = dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light"));
+					if (shouldInvert)
+						dropcapImage.classList.add("invert");
+				}
 
 				//	Inject the dropcap image element.
-				firstNodeParent.insertBefore(newElement("IMG", {
-					class: "dropcap figure-not " + dropcapURL.pathname.slice(-3),
-					loading: "lazy",
-					src: dropcapURL.pathname + dropcapURL.search
-				}), firstNode.previousSibling);
+				firstNodeParent.insertBefore(dropcapImage, firstNode.previousSibling);
 			} else {
 				//	Inject the dropcap.
 				firstNodeParent.insertBefore(newElement("SPAN", {
@@ -2058,19 +2079,35 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropcap
 			if (dropcapImage == null)
 				return;
 
-			//	If the handler already exists, do nothing.
-			if (dropcapImage.modeChangeHandler)
-				return;
-
 			//	Get the initial letter.
 			let initialLetter = dropcapBlock.querySelector(".hidden-initial-letter")?.textContent;
 			if (initialLetter == null)
 				return;
 
+			//	If the handler already exists, do nothing.
+			if (dropcapImage.modeChangeHandler)
+				return;
+
 			//	Add event handler to switch image when mode changes.
 			GW.notificationCenter.addHandlerForEvent(dropcapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
+				//	Clear disabled flag, if any.
+				dropcapBlock.classList.remove("disable-dropcap");
+
+				//	Get new dropcap URL.
 				let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+				if (dropcapURL == null) {
+					//	If no available dropcap image, set disabled flag.
+					dropcapBlock.classList.add("disable-dropcap");
+					return;
+				}
+
+				//	Update image URL.
 				dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
+
+				//	Update inversion.
+				dropcapImage.classList.toggle("invert", dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light")));
+
+				//	Update image file format class.
 				dropcapImage.classList.remove("png", "svg");
 				dropcapImage.classList.add(dropcapURL.pathname.slice(-3));
 			});

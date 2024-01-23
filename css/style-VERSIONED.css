@@ -2322,18 +2322,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -3148,14 +3148,10 @@ del {
         }
     }
 
+	/**********************/
 	/*	Graphical dropcaps.
 	 */
-	p.graphical-dropcap .hidden-initial-letter {
-		display: inline-block;
-		width: 0;
-		height: 0;
-		overflow: hidden;
-	}
+
 	p.graphical-dropcap img.dropcap {
 		float: left;
 		display: block;
@@ -3163,15 +3159,29 @@ del {
 		margin: -0.5em -0.10em -0.95em -0.75em;
 		filter: none;
 	}
-	p.graphical-dropcap img.dropcap.svg {
-		height: 8em;
-		margin: 0 0.25em 0 0;
-	}
-
 	@media all and (max-width: 1199px) {
 		p.graphical-dropcap img.dropcap {
 			margin-top: -0.25em;
 		}
+	}
+
+	p.graphical-dropcap img.dropcap.svg {
+		height: 8em;
+		margin: 0 0.25em 0 0;
+	}
+	p.graphical-dropcap img.dropcap.svg.invert {
+		filter: invert(1);
+	}
+
+	p.graphical-dropcap.disable-dropcap img.dropcap {
+		display: none;
+	}
+
+	p.graphical-dropcap:not(.disable-dropcap) .hidden-initial-letter {
+		display: inline-block;
+		width: 0;
+		height: 0;
+		overflow: hidden;
 	}
 }
 
@@ -5209,14 +5219,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5357,7 +5367,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5817,14 +5827,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6726,7 +6736,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#question');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7292,7 +7302,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1705201596#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1705740373#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7367,7 +7377,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1705201596#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1705740373#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

@@ -173,7 +173,7 @@ function randomAsset(assetPathnamePattern) {
 			alternateAssetPathnames.push(versionedAssetPathname);
 	}
 
-	return alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1];
+	return (alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1] ?? null);
 }
 
 
@@ -858,10 +858,11 @@ function randomDropcapURL(dropcapType, letter) {
 	let mode = DarkMode.computedMode();
 	let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-	let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/${mode}/${letter.toUpperCase()}(?:-.*)?-[0-9]+(.svg|-small-${scale}x.png)$`);
-	let dropcapURL = versionedAssetURL(dropcapPathname);
+	let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-[0-9]+(\\.svg|-small-${scale}x\\.png)$`);
+	if (dropcapPathname == null)
+		return null;
 
-	return dropcapURL;
+	return versionedAssetURL(dropcapPathname);
 }
 
 /*****************************************************************************/
@@ -879,7 +880,15 @@ function resetDropcapInBlock(block) {
 
 	unwrap(dropcapLink);
 
-	block.querySelector("img.dropcap")?.remove();
+	//	If this is a graphical dropcap block...
+	let dropcapImage = block.querySelector("img.dropcap");
+	if (dropcapImage) {
+		//	Remove mode change handler.
+		GW.notificationCenter.removeHandlerForEvent(dropcapImage.modeChangeHandler, "DarkMode.computedModeDidChange");
+
+		//	Remove graphical dropcap.
+		dropcapImage.remove();
+	}
 
 	//	Text node surgery: reattach letter.
 	let letterSpan = block.querySelector("span.dropcap, span.hidden-initial-letter");

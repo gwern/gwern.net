@@ -13,9 +13,12 @@ $asset_file_paths = [
 $asset_patterns = [
 	"{$logo_dir}/*/*-small-*.png",
 	"{$logo_dir}/*/*/*-small-*.png",
+	"{$logo_dir}/*/*.svg",
+	"{$logo_dir}/*/*/*.svg",
 
 	"{$font_dir}/dropcap/*/*-small-*.png",
 	"{$font_dir}/dropcap/*/*/*-small-*.png",
+	"{$font_dir}/dropcap/*/*.svg",
 	"{$font_dir}/dropcap/*/*/*.svg"
 ];
 foreach ($asset_patterns as $pattern) {

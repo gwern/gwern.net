@@ -3148,14 +3148,10 @@ del {
         }
     }
 
+	/**********************/
 	/*	Graphical dropcaps.
 	 */
-	p.graphical-dropcap .hidden-initial-letter {
-		display: inline-block;
-		width: 0;
-		height: 0;
-		overflow: hidden;
-	}
+
 	p.graphical-dropcap img.dropcap {
 		float: left;
 		display: block;
@@ -3163,15 +3159,29 @@ del {
 		margin: -0.5em -0.10em -0.95em -0.75em;
 		filter: none;
 	}
-	p.graphical-dropcap img.dropcap.svg {
-		height: 8em;
-		margin: 0 0.25em 0 0;
-	}
-
 	@media all and (max-width: 1199px) {
 		p.graphical-dropcap img.dropcap {
 			margin-top: -0.25em;
 		}
+	}
+
+	p.graphical-dropcap img.dropcap.svg {
+		height: 8em;
+		margin: 0 0.25em 0 0;
+	}
+	p.graphical-dropcap img.dropcap.svg.invert {
+		filter: invert(1);
+	}
+
+	p.graphical-dropcap.disable-dropcap img.dropcap {
+		display: none;
+	}
+
+	p.graphical-dropcap:not(.disable-dropcap) .hidden-initial-letter {
+		display: inline-block;
+		width: 0;
+		height: 0;
+		overflow: hidden;
 	}
 }
 
