@@ -25,8 +25,8 @@ inflationRatesUSD = let -- CPI: http://www.usinflationcalculator.com/inflation/c
     pce2022 = [9.0] -- rough ballpark estimate of cumulative inflation over 2022, given its ~0.9%/month inflation & exceeding forecasts repeatedly
     in (cpi19131958 ++ pce19592018 ++ pce20192021) ++ pce20192021 ++ repeat (last pce2022)
 
-inflationDollarTestCases :: [((T.Text,T.Text), Inline)]
-inflationDollarTestCases = isUniqueAll
+inflationDollarLinkTestCases :: [((T.Text,T.Text), Inline)]
+inflationDollarLinkTestCases = isUniqueAll
   [(("$0.01","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","0.01"),("year-current","2023"),("amount-current","0.22"),("title","CPI inflation-adjusted US dollar: from nominal $0.01 in 1913 \8594 real $0.22 in 2023")]) [Str "$0.22",Span ("",["subsup"],[]) [Superscript [Str "$0.01"],Subscript [Str "1913"]]])
     , (("$0.1","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","0.1"),("year-current","2023"),("amount-current","2.24"),("title","CPI inflation-adjusted US dollar: from nominal $0.1 in 1913 \8594 real $2.24 in 2023")]) [Str "$2.24",Span ("",["subsup"],[]) [Superscript [Str "$0.1"],Subscript [Str "1913"]]])
     , (("$1","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","1"),("year-current","2023"),("amount-current","22.41"),("title","CPI inflation-adjusted US dollar: from nominal $1 in 1913 \8594 real $22.41 in 2023")]) [Str "$22.41",Span ("",["subsup"],[]) [Superscript [Str "$1"],Subscript [Str "1913"]]])

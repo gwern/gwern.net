@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2023-12-02 22:07:44 gwern"
+-- When:  Time-stamp: "2024-01-23 09:52:53 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -17,7 +17,9 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- This may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.
 --
 -- Years/dates are specified in a variant of my interwiki link syntax (see Interwiki.hs); for example: '[$50]($2000)'
--- or '[₿0.5](₿2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater
+-- or '[₿0.5](₿2017-01-01)'. As a backup syntax (eg. for use inside link anchor texts), one can write it as a span
+-- like '[$50]{inflation=$2000)' (ie. `<span data-inflation="$2000">$50</span>`).
+-- Dollar amounts use year, and Bitcoins use full dates, as the greater
 -- temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs
 -- and need to be manually updated every once in a while; if out of date, the last available rate is
 -- carried forward for future adjustments.
@@ -61,8 +63,13 @@ $ echo '[₿50.50](₿2017-01-1)' | pandoc -w native
 > bitcoinAdjuster (Link ("",[],[]) [Str "\8383\&50.50"] ("\8383\&2017-01-01",""))
 Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amount-original","50.50"),("year-current","2020"),("amount-current","56,617"),("title","Exchange-rate-adjusted currency: \8383\&50.50 in 2017-01-01 \8594 $56,617")]) [Str "$56,617",Span ("",["subsup"],[]) [Superscript [Str "\8383\&50.50"],Subscript [Str "2017"]]]
 
-$  echo 'Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amount-original","50.50"),("year-current","2020"),("amount-current","56,617"),("title","Inflation-adjusted currency: from \8383\&50.50 in 2017-01-01 \8594 $56,617 in 2020")]) [Str "\\$56,617",Math InlineMath "_{\\text{2017}}^{\\text{\8383\&50.50}}"]' | pandoc -f native -w html
+$ echo 'Span ("",["inflation-adjusted"],[("year-original","2017-01-01"),("amount-original","50.50"),("year-current","2020"),("amount-current","56,617"),("title","Inflation-adjusted currency: from \8383\&50.50 in 2017-01-01 \8594 $56,617 in 2020")]) [Str "\\$56,617",Math InlineMath "_{\\text{2017}}^{\\text{\8383\&50.50}}"]' | pandoc -f native -w html
 <span class="inflation-adjusted" data-year-original="2017-01-01" data-amount-original="50.50" data-year-current="2020" data-amount-current="56,617" title="Exchange-rate-adjusted currency: ₿50.50 in 2017-01-01 → $56,617">$56,617<span class="subsup"><sub>2017</sub><sup>₿50.50</sup></span></span>
+
+$ echo '[$100]{inflation=$2024}' | pandoc -w native
+[ Para [ Span ( "" , [] , [ ( "inflation" , "$2024" ) ] ) [ Str "$100" ] ] ]
+$ echo '[$100]{inflation=$2024}' | pandoc -w html
+<p><span data-inflation="$2024">$100</span></p>
 -}
 
 import Text.Pandoc (nullAttr, Inline(Link, Span, Str, Subscript, Superscript))
@@ -74,6 +81,8 @@ import Utils (currentYear, printDouble, inlinesToText, replace)
 import Config.Inflation as C
 
 nominalToRealInflationAdjuster :: Inline -> Inline
+nominalToRealInflationAdjuster x@(Span (a, b, ((k,v):[])) inlines) = if  k /= "inflation" then x
+                                                                     else nominalToRealInflationAdjuster (Link (a,b,[]) inlines (v,""))
 nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (Inflation.hs: nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
   | t == '$' = dollarAdjuster currentYear x
@@ -86,7 +95,7 @@ inflationDollarTestSuite :: [((T.Text, -- test-case: Amount
                                T.Text), -- test-case: Original Year
                                Inline, -- Expected result
                                Inline)] -- Actual result (which ≠ Expected)
-inflationDollarTestSuite = filter (\(_,expect,result) -> expect/=result) $ map (\((t,y), expected) -> ((t,y), expected, dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, "")))) C.inflationDollarTestCases
+inflationDollarTestSuite = filter (\(_,expect,result) -> expect/=result) $ map (\((t,y), expected) -> ((t,y), expected, dollarAdjuster 2023 (Link ("",[],[]) [Str t] (y, "")))) C.inflationDollarLinkTestCases
 
 -- TODO: refactor dollarAdjuster/bitcoinAdjuster - they do *almost* the same thing, aside from handling year vs dates
 dollarAdjuster :: Int -> Inline -> Inline
