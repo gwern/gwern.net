@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-12 11:54:06 gwern"
+When:  Time-stamp: "2024-01-22 20:24:34 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Te
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced, cleanAuthors)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced, cleanAuthors)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -108,7 +108,7 @@ updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
                         rescrapeYAML gwernEntries "metadata/half.yaml"
                         rescrapeYAML gwernEntries "metadata/auto.yaml"
                         readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
-  where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path || "#manual-annotation" `isInfixOf` path)
+  where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)
 
 -- eg. to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
 rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
@@ -285,7 +285,7 @@ readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,ab
                               let full' = take n1 full
                               let n2 = round (fromIntegral n * (1-ratio))
                               let half' = take n2 half
-                              let final = M.fromList $ filter (\(path,(_,_,_,_,_,_)) -> not (anySuffix path ["#manual-annotation"])) $ interleave full' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
+                              let final = M.fromList $ interleave full' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
                               return final
   where
     interleave :: [a] -> [a] -> [a]
@@ -307,7 +307,7 @@ writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool 
 writeAnnotationFragment _ _ _ _ _ ("","","","",[],"") = return ()
 writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
-         anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous", "/index#manual-annotation"] then return ()
+         anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
               let (filepath',_) = getAnnotationLink u'
               annotationExisted <- doesFileExist filepath'

@@ -900,7 +900,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) $ isUniq
         , ("[Vv]alue [Ii]teration [Nn]etworks?", "https://arxiv.org/abs/1602.02867#deepmind")
         , ("[Vv]alue-[Ee]quivalence", "https://arxiv.org/abs/2011.03506#deepmind")
         , ("[Vv]ariance", "https://en.wikipedia.org/wiki/Variance")
-        , ("[Vv]ariance[ -][Cc]omponent.?", "/note/variance-components")
+        , ("[Vv]ariance[ -][Cc]omponent.?", "/note/variance-component")
         , ("[Vv]itri(fied|fy|fying|fication)", "https://en.wikipedia.org/wiki/Vitrification")
         , ("[Ww]abi[ -]sabi", "https://en.wikipedia.org/wiki/Wabi-sabi")
         , ("[Ww]ake therapy", "https://en.wikipedia.org/wiki/Wake_therapy")

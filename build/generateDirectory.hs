@@ -17,9 +17,9 @@ import Data.Maybe (fromJust)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
-import System.FilePath (takeDirectory, takeFileName)
+import System.FilePath (takeDirectory, takeFileName, splitPath)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, RawBlock, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Control.Parallel.Strategies (parListChunk, rseq, using)
@@ -32,7 +32,7 @@ import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy)
-import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, parseRawBlock, extractTwitterUsername)
+import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
 -- import Text.Show.Pretty (ppShow)
@@ -117,19 +117,20 @@ generateDirectory filterp md dirs dir'' = do
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
 
-  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'\n"
+  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst))
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
 
-  let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
 
-  -- A tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/doc/foo/index#manual-annotation'
-  let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") md of
-                   Nothing -> []
-                   Just (_,_,_,_,_,"") -> []
-                   Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract", "abstract-tag-directory"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
+  -- A tag index may have an optional Markdown essay/page explaining it; if it does, that is located at `/note/basename($TAG)`, and we transclude it at runtime.
+  abstract <- do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
+                 let abstractf = "note/" ++ tagBase
+                 abstractp <- doesFileExist (abstractf ++ ".page") -- 'note/catnip.page'
+                 return $ if not abstractp then []
+                          else [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
 
   let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),lb) -> not (null lb)) links
 
@@ -190,29 +191,29 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_),lb)  =
                else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
-generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String
-generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail
-  = concat [ "---\n",
-             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag\n",
+generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
+generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail thumbnailText
+  = unlines $ filter (not . null) [ "---",
+             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN/=0 && annotationN/=0 && linkN/=0) then ", & " else " & ") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
               " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
-               ".\"\n",
+               ".\"",
              thumbnail,
-             "thumbnailCSS: \"outline\"", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
-             "created: 'N/A'\n",
-             if date=="" then "" else "modified: " ++ date ++ "\n",
-             "status: in progress\n",
-             previous++"\n",
-             next++"\n",
-             "confidence: log\n",
-             "importance: 0\n",
-             "cssExtension: dropcaps-de-zs\n",
-             "index: true\n",
-             "...\n",
-             "\n"]
+             thumbnailText,
+             "thumbnailCSS: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
+             "created: 'N/A'",
+             if date=="" then "" else "modified: \'" ++ date++"\'",
+             "status: 'in progress'",
+             previous,
+             next,
+             "confidence: log",
+             "importance: 0",
+             "cssExtension: dropcaps-de-zs",
+             "index: true",
+             "...\n"]
   where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]

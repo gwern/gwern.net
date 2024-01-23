@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-21 16:20:49 gwern"
+# When:  Time-stamp: "2024-01-22 20:00:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -563,7 +563,7 @@ else
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs." &
 
-    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' -e '/index#manual-annotation' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
+    λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
     wrap λ "Untagged annotations." &
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
