@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-04 11:03:41 gwern"
+When:  Time-stamp: "2024-01-23 21:16:31 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -92,11 +92,11 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata) where
+module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
-import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList)
+import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList)
 import Data.List (isInfixOf, isPrefixOf, nub)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
@@ -151,11 +151,29 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
                                                         filter (\(_,b) -> b/="") [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html)])
                                                   [] (url, "")
 
+-- archive the first n links which are due
+manualArchive :: Int -> IO ()
+manualArchive n = do am <- readArchiveMetadata
+                     return ()
+
+insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
+insertLinkIntoDB a url = do adb <- readArchiveMetadata
+                            let adb' = M.insert url a adb
+                            writeArchiveMetadata adb'
+
+writeArchiveMetadata :: ArchiveMetadata -> IO ()
+writeArchiveMetadata adb = writeUpdatedFile "archive-metadata-auto.db.hs" "metadata/archive.hs" (T.pack $ ppShow $ M.toAscList adb)
+
+-- fast path:
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
                          case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
                            Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ (take 10000 pdlString)
-                           Just pdl -> do
+                           Just pdl -> return $ M.fromList pdl
+-- slow path:
+readArchiveMetadataAndCheck :: IO ArchiveMetadata
+readArchiveMetadataAndCheck =
+                         do pdl <- readArchiveMetadata
                             -- check for failed archives:
                             pdl' <- filterM (\(p,ami) -> case ami of
                                      Right (Just "") -> printRed' "Error! Invalid empty archive link: " (show p ++ " : " ++ show ami) >> return False
@@ -174,7 +192,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                                                                     else if size > 1024 then return True else return False
                                      Right Nothing   -> return True
                                      Left  _         -> return True)
-                                 pdl
+                                 $ M.toList pdl
                             let pdl'' = filter (\(p,_) -> "http" `isPrefixOf` p && not (C.whiteList p)) pdl'
                             -- for mismatches, we know they were archived before, so we should archive them ASAP:
                             let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
@@ -216,11 +234,6 @@ rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return
                                   unless cheapArchive $ writeIORef archivedN (archivedNAlreadyP - 1)
                                   return archive
       Just (Right archive) -> if archive == Just "" then printRed' "Error! Tried to return a link to a non-existent archive! " url >> return Nothing else return archive
-
-insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
-insertLinkIntoDB a url = do adb <- readArchiveMetadata
-                            let adb' = M.insert url a adb
-                            writeUpdatedFile "archive-metadata-auto.db.hs" "metadata/archive.hs" (T.pack $ ppShow $ M.toAscList adb')
 
 -- has a URL been archived already (ie. does a hashed file exist?)
 archiveURLCheck :: String -> IO Bool

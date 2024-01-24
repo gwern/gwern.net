@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-21 20:33:51 gwern"
+When: Time-stamp: "2024-01-23 21:16:05 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -43,7 +43,7 @@ import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite)
 import Interwiki (convertInterwikiLinks, interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadata, testLinkRewrites, ArchiveMetadata)
+import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkIcon (linkIconTest)
@@ -104,7 +104,7 @@ main =
                preprocess $ printGreen ("Testing finished." :: String)
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
-               am           <- preprocess readArchiveMetadata
+               am           <- preprocess readArchiveMetadataAndCheck
                hasArchivedN <- preprocess $ if slow then newIORef archivePerRunN else newIORef 0
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
