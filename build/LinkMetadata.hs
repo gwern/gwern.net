@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-24 12:29:39 gwern"
+When:  Time-stamp: "2024-01-24 16:47:19 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
 import System.FilePath (takeDirectory, takeFileName, takeBaseName)
-import System.GlobalLock (lock)
+import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
@@ -586,7 +586,7 @@ third :: MetadataItem -> String
 third (_,_,rd,_,_,_) = rd
 
 writeYaml :: Path -> MetadataList -> IO ()
-writeYaml path yaml = lock $ do
+writeYaml path yaml = GL.lock $ do
   let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate " " (filter (/=defTag) ts),f)) $ yaml
   writeUpdatedFile "hakyll-yaml" path newYaml
 

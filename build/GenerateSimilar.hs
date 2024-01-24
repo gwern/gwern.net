@@ -29,6 +29,7 @@ import Control.Monad.Identity (runIdentity, Identity)
 import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, serialiseRPForest)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
+import System.GlobalLock as GL (lock)
 
 import LinkBacklink (getSimilarLink, getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as C (listLength)
@@ -421,26 +422,43 @@ sortTagByTopic md tag = do
 
                            sortSimilars edb newest paths
 
--- instead of a mapM, we foldM: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
+-- what was the short name suggested for a list of URLs? quick DB letting us look up cached short names:
+type ListName = [([FilePath], String)]
+readListName :: IO [([FilePath], String)]
+readListName = do let p = "metadata/listname.hs"
+                  exists <- doesFileExist p
+                  if not exists then return [] else
+                            do ls <- readFile p
+                               return $ if ls=="" then [] else (read ls :: ListName)
+writeListName :: [([FilePath], String)] -> IO ()
+writeListName = lock . writeFile "metadata/listname.hs" . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
+
+-- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.
-sortSimilarsStartingWithNewestWithTag :: Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
-sortSimilarsStartingWithNewestWithTag _ _ [] = return []
-sortSimilarsStartingWithNewestWithTag _ _ [a] = return [("",[a])]
-sortSimilarsStartingWithNewestWithTag _ _ [a, b] = return [("",[a]), ("",[b])]
-sortSimilarsStartingWithNewestWithTag md parentTag items =
+sortSimilarsStartingWithNewestWithTag :: ListName -> Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
+sortSimilarsStartingWithNewestWithTag _ _ _ []     = return []
+sortSimilarsStartingWithNewestWithTag _ _ _ [a]    = return [("",[a])]
+sortSimilarsStartingWithNewestWithTag _ _ _ [a, b] = return [("",[a]), ("",[b])]
+sortSimilarsStartingWithNewestWithTag ldb md parentTag items =
   do
     lists <- sortSimilarsStartingWithNewest md items
-    (result, _) <- foldM processWithBlacklistAccumulator ([], []) lists
+    (result, _) <- foldM (processWithBlacklistAccumulator ldb) ([], []) lists
     return result
   where
-    processWithBlacklistAccumulator :: ([(String, [(FilePath, MetadataItem)])], [String]) -> [(FilePath, MetadataItem)]
-                                    -> IO ([(String, [(FilePath, MetadataItem)])], [String])
-    processWithBlacklistAccumulator (acc, blacklist) fs = do
-      suggestion <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-      -- retry once for sporadic API errors:
-      suggestion' <- if not (null suggestion) then return suggestion else processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-      let newAcc = mergeIntoAccumulator acc (suggestion', fs)
-      return (newAcc, blacklist ++ [suggestion'])
+    processWithBlacklistAccumulator :: ListName ->
+                                    ([(String, [(FilePath, MetadataItem)])], [String]) ->
+                                    [(FilePath, MetadataItem)] ->
+                                    IO ([(String, [(FilePath, MetadataItem)])], [String])
+    processWithBlacklistAccumulator ldb' (acc, blacklist) fs = do
+      let urlList = map fst fs
+      suggestion <- case lookup (sort urlList) ldb' of
+                      Just nickname -> print ("Just: old nickname is: " ++ nickname) >> return nickname -- use existing one, or generate new suggestion & cache it out:
+                      Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+                                    let ldb'' = (urlList, nicknameNew) : ldb'
+                                    writeListName ldb''
+                                    return nicknameNew
+      let newAcc = mergeIntoAccumulator acc (suggestion, fs)
+      return (newAcc, blacklist ++ [suggestion])
       where
         mergeIntoAccumulator :: [(String, [(FilePath, MetadataItem)])] -> (String, [(FilePath, MetadataItem)]) -> [(String, [(FilePath, MetadataItem)])]
         mergeIntoAccumulator accum (tag, fls) = -- despite the prompting, sometimes a duplicate tag-name will be returned anyway, so we try to merge those together

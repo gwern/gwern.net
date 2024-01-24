@@ -34,7 +34,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -108,7 +108,9 @@ generateDirectory filterp md dirs dir'' = do
   let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") linksSelf
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
-  titledLinksSorted <- if not filterp then return [] else sortSimilarsStartingWithNewestWithTag md tagSelf titledLinks -- skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+  titledLinksSorted <- if not filterp then return [] else
+                         do ldb <- readListName
+                            sortSimilarsStartingWithNewestWithTag ldb md tagSelf titledLinks -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
 
   let selfLinksSection = generateSections' 2 selfTitledLinks
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
@@ -127,8 +129,8 @@ generateDirectory filterp md dirs dir'' = do
 
   -- A tag index may have an optional Markdown essay/page explaining it; if it does, that is located at `/note/basename($TAG)`, and we transclude it at runtime.
   abstract <- do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
-                 let abstractf = "note/" ++ tagBase
-                 abstractp <- doesFileExist (abstractf ++ ".page") -- 'note/catnip.page'
+                 let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
+                 abstractp <- doesFileExist (tail abstractf ++ ".page") -- check existence of (relative) file, 'note/catnip.page'
                  return $ if not abstractp then []
                           else [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
 
@@ -221,9 +223,7 @@ listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (replace ".page" "") . filter ('#' `notElem`)) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
-                   -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`
-                   -- backlinks    <- mapM (fmap snd . getBackLinkCheck . fst)    fileAnnotationsMi
-                   -- similarlinks <- mapM (fmap snd . getSimilarLinkCheck . fst) fileAnnotationsMi
+                   -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`. This is also true of PDF page-anchors.
                    linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
 
                    return $ zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi linkbiblios
@@ -237,8 +237,6 @@ listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "doc/" "" dir in
                      let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
-                          -- backlinks    <- mapM (fmap snd . getBackLinkCheck)    files
-                          -- similarlinks <- mapM (fmap snd . getSimilarLinkCheck) files
                           linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $ zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi linkbiblios
