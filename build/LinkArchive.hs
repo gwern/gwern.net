@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-23 22:53:49 gwern"
+When:  Time-stamp: "2024-01-24 12:17:02 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -96,7 +96,7 @@ module LinkArchive (C.archivePerRunN, localizeLink, manualArchive, readArchiveMe
 
 import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
-import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, filterWithKey, union)
+import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter)
 import Data.List (isInfixOf, isPrefixOf, nub, sortOn)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
@@ -120,7 +120,6 @@ import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetad
 import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed', printGreen)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
--- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> IORef Integer -> Inline -> IO Inline
 localizeLink adb archivedN (Link (identifier, classes, pairs) b (targetURL, targetDescription)) = do
   targetURL' <- fmap T.pack $ rewriteLink adb archivedN $ T.unpack targetURL
@@ -151,26 +150,24 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
                                                         filter (\(_,b) -> b/="") [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html)])
                                                   [] (url, "")
 
--- archive the first _n_ links which are due. Can be scripted like
--- `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
+-- archive the first _n_ links which are due, and all pending 'cheap' archives.
+-- Can be scripted like `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
 manualArchive :: Int -> IO ()
 manualArchive n = do
   adb <- readArchiveMetadata
   today <- currentDay
-  let adbPending = M.filterWithKey (archiveItemDue today) adb
+  let adbPending = M.filter (archiveItemDue today) adb
   let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
   let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
-  let urlsToArchive = map fst sortedItems
+  let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
+  let urlsToArchive = nub $ map fst $ cheapItems ++ sortedItems
   adbExecuted <- traverse archiveItem urlsToArchive
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
   writeArchiveMetadata adb'
 
-archiveItemDue :: Integer -> String -> ArchiveMetadataItem -> Bool
-archiveItemDue date url ai = let url' = C.transformURLsForArchiving url
-                                 cheapArchive = C.isCheapArchive url || C.isCheapArchive url' in
-                                  case ai of
-                                    Right _ -> False -- already been tried
-                                    Left firstSeen -> ((date - firstSeen) < C.archiveDelay) && not cheapArchive
+archiveItemDue :: Integer -> ArchiveMetadataItem -> Bool
+archiveItemDue _    (Right _)        = False -- already been tried
+archiveItemDue date (Left firstSeen) = (date - firstSeen) < C.archiveDelay
 
 archiveItem :: String -> IO ArchiveMetadataItem
 archiveItem url =
@@ -242,7 +239,7 @@ rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return
     let url' = C.transformURLsForArchiving url
     case M.lookup url adb of
       Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url || C.isCheapArchive url'
+      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url
        in if ((today - firstSeen) < C.archiveDelay) && not cheapArchive
           then return Nothing
           else do
