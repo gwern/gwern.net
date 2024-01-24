@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-23 21:16:31 gwern"
+When:  Time-stamp: "2024-01-23 22:53:49 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -92,12 +92,12 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (C.archivePerRunN, localizeLink, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
+module LinkArchive (C.archivePerRunN, localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
 import Data.IORef (IORef, readIORef, writeIORef)
-import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList)
-import Data.List (isInfixOf, isPrefixOf, nub)
+import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, filterWithKey, union)
+import Data.List (isInfixOf, isPrefixOf, nub, sortOn)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -151,10 +151,32 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
                                                         filter (\(_,b) -> b/="") [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html)])
                                                   [] (url, "")
 
--- archive the first n links which are due
+-- archive the first _n_ links which are due. Can be scripted like
+-- `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
 manualArchive :: Int -> IO ()
-manualArchive n = do am <- readArchiveMetadata
-                     return ()
+manualArchive n = do
+  adb <- readArchiveMetadata
+  today <- currentDay
+  let adbPending = M.filterWithKey (archiveItemDue today) adb
+  let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
+  let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
+  let urlsToArchive = map fst sortedItems
+  adbExecuted <- traverse archiveItem urlsToArchive
+  let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
+  writeArchiveMetadata adb'
+
+archiveItemDue :: Integer -> String -> ArchiveMetadataItem -> Bool
+archiveItemDue date url ai = let url' = C.transformURLsForArchiving url
+                                 cheapArchive = C.isCheapArchive url || C.isCheapArchive url' in
+                                  case ai of
+                                    Right _ -> False -- already been tried
+                                    Left firstSeen -> ((date - firstSeen) < C.archiveDelay) && not cheapArchive
+
+archiveItem :: String -> IO ArchiveMetadataItem
+archiveItem url =
+ do let url' = C.transformURLsForArchiving url
+    archive <- archiveURL url'
+    return (Right archive)
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -168,46 +190,48 @@ writeArchiveMetadata adb = writeUpdatedFile "archive-metadata-auto.db.hs" "metad
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
                          case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
-                           Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ (take 10000 pdlString)
+                           Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ take 10000 pdlString
                            Just pdl -> return $ M.fromList pdl
 -- slow path:
 readArchiveMetadataAndCheck :: IO ArchiveMetadata
 readArchiveMetadataAndCheck =
-                         do pdl <- readArchiveMetadata
-                            -- check for failed archives:
-                            pdl' <- filterM (\(p,ami) -> case ami of
-                                     Right (Just "") -> printRed' "Error! Invalid empty archive link: " (show p ++ " : " ++ show ami) >> return False
-                                     Right u@(Just ('/':'/':_)) -> printRed' "Error! Invalid double-slash archive link: " (show p ++ show ami ++ show u) >> return False
-                                     Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
-                                                          printGreen "Warning: Did a local link slip in somehow? (this will be removed automatically): " >> print (show p ++ show u ++ show ami) >> return False
-                                                        else
-                                                          if isNothing (parseTLD p) then
-                                                           printRed' "Error! Invalid URI link in archive? " (show p ++ show u ++ show ami) >> return False
-                                                          else do let filepath = takeWhile (/='#') u
-                                                                  exists <- doesFileExist filepath
-                                                                  unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path in archive.hs: " ++ u ++ "; original tuple: " ++ show (p,ami) ++ ")")
-                                                                  size <- getFileStatus filepath >>= \s -> return $ fileSize s
-                                                                  if size == 0 then
-                                                                    printRed' "Error! Empty archive file. Not using: " (show p ++ show u ++ show ami) >> return False
-                                                                    else if size > 1024 then return True else return False
-                                     Right Nothing   -> return True
-                                     Left  _         -> return True)
-                                 $ M.toList pdl
-                            let pdl'' = filter (\(p,_) -> "http" `isPrefixOf` p && not (C.whiteList p)) pdl'
-                            -- for mismatches, we know they were archived before, so we should archive them ASAP:
-                            let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
-                            return $ M.fromList pdl'''
+ do pdl <- readArchiveMetadata
+    -- check for failed archives:
+    pdl' <- filterM (\(p,ami) -> case ami of
+             Right (Just "") -> printRed' "Error! Invalid empty archive link: " (show p ++ " : " ++ show ami) >> return False
+             Right u@(Just ('/':'/':_)) -> printRed' "Error! Invalid double-slash archive link: " (show p ++ show ami ++ show u) >> return False
+             Right (Just u)  -> if not ("http" `isPrefixOf` p || "\n" `isInfixOf` p) then
+                                  printGreen "Warning: Did a local link slip in somehow? (this will be removed automatically): " >> print (show p ++ show u ++ show ami) >> return False
+                                else
+                                  if isNothing (parseTLD p) then
+                                   printRed' "Error! Invalid URI link in archive? " (show p ++ show u ++ show ami) >> return False
+                                  else do let filepath = takeWhile (/='#') u
+                                          exists <- doesFileExist filepath
+                                          unless exists $ error ("Archive file not found: " ++ filepath ++ " (original path in archive.hs: " ++ u ++ "; original tuple: " ++ show (p,ami) ++ ")")
+                                          size <- getFileStatus filepath >>= \s -> return $ fileSize s
+                                          if size == 0 then
+                                            printRed' "Error! Empty archive file. Not using: " (show p ++ show u ++ show ami) >> return False
+                                            else if size > 1024 then return True else return False
+             Right Nothing   -> return True
+             Left  _         -> return True)
+         $ M.toList pdl
+    let pdl'' = filter (\(p,_) -> "http" `isPrefixOf` p && not (C.whiteList p)) pdl'
+    -- for mismatches, we know they were archived before, so we should archive them ASAP:
+    let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
+    return $ M.fromList pdl'''
 
 -- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of Gwern.net. But since the checksum is deterministically derived from the URL, the checksum of the URL will no longer match the checksum encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
 checksumIsValid :: Path -> ArchiveMetadataItem -> Bool
 checksumIsValid _ (Left _) = True
 checksumIsValid _ (Right Nothing) = True
-checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.Char8.unpack $ Data.ByteString.Base16.encode $ Crypto.Hash.SHA1.hash $ Data.ByteString.Char8.pack (C.transformURLsForArchiving (takeWhile (/='#') url) ++ "\n")
+checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.Char8.unpack $
+                                                Data.ByteString.Base16.encode $ Crypto.Hash.SHA1.hash $
+                                                Data.ByteString.Char8.pack (C.transformURLsForArchiving (takeWhile (/='#') url) ++ "\n")
                                               storedChecksum = takeWhile (/= '.') $ takeFileName file
                                           in derivedChecksum == storedChecksum
 
 -- rewriteLink:
--- 1. Exit on whitelisted URLs.
+-- 1. Skip whitelisted URLs.
 -- 2. Access what we know about the URL, defaulting to "First I've heard of it.".
 -- 3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of cheap easy archive targets like PDFs, which we
 --    locally archive immediately.) Do only 1 archive per run by checking the IORef to see
