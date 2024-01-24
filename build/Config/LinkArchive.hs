@@ -12,9 +12,8 @@ import qualified Data.Map.Strict as M (fromList)
 
 import LinkMetadataTypes (ArchiveMetadata)
 
-archiveDelay, archivePerRunN :: Integer
+archiveDelay :: Integer
 archiveDelay = 60
-archivePerRunN = 13
 
 -- some URLs are so cheap & easy & reliable to archive that we don't need to count them
 -- against our manual-review limit, because we won't meaningfully manually review them.
@@ -94,7 +93,7 @@ localizeLinktestCases = [
 localizeLinkTestDB :: ArchiveMetadata
 localizeLinkTestDB = M.fromList $
   -- links should not have archives (must be specified to be permanent failures to avoid the link-archive test suite trying to archive them):
-  (map (\a -> (a,Right Nothing)) ["https://twitter.com/alexeyguzey/status/1068583101633359874", "https://darkrunescape.fandom.com/wiki/Doubling_money_scam", "https://archive.org/details/in.ernet.dli.2015.90433", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", "https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", "https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", "https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", "https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", "https://en.wikipedia.org/wiki/George_Washington"])
+  map (\a -> (a,Right Nothing)) ["https://twitter.com/alexeyguzey/status/1068583101633359874", "https://darkrunescape.fandom.com/wiki/Doubling_money_scam", "https://archive.org/details/in.ernet.dli.2015.90433", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", "https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", "https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", "https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", "https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", "https://en.wikipedia.org/wiki/George_Washington"]
   -- links which should have archives:
   ++ map (\(a,b) -> (a,Right (Just b))) [("https://arxiv.org/abs/1909.05858#salesforce", "doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce")
                     , ("https://arxiv.org/abs/hep-ph/0204295", "doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf")

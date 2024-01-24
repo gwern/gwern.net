@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-23 21:16:05 gwern"
+When: Time-stamp: "2024-01-24 12:30:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -17,7 +17,6 @@ Demo command (for the full script, with all static checks & generation & optimiz
 
 import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)
-import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
@@ -43,7 +42,7 @@ import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite)
 import Interwiki (convertInterwikiLinks, interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (archivePerRunN, localizeLink, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata)
+import LinkArchive (localizeLink, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkIcon (linkIconTest)
@@ -105,14 +104,13 @@ main =
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
                am           <- preprocess readArchiveMetadataAndCheck
-               hasArchivedN <- preprocess $ if slow then newIORef archivePerRunN else newIORef 0
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess readLinkMetadata
                preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
-                                            writeAnnotationFragments am meta hasArchivedN False
+                                            writeAnnotationFragments am meta False
                                     else do printGreen ("Writing only missing annotations…" :: String)
-                                            writeAnnotationFragments am meta hasArchivedN True
+                                            writeAnnotationFragments am meta True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do
@@ -126,7 +124,7 @@ main =
                               ident <- getUnderlying
                               indexpM <- getMetadataField ident "index"
                               let indexp = fromMaybe "" indexpM
-                              pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedN indexp)
+                              pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
                                 >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta)
                                 >>= imgUrls
 
@@ -324,8 +322,8 @@ descField escape d d' = field d' $ \item -> do
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ replace "<p>" "" $ replace "</p>" "" finalDesc -- strip <p></p>
 
-pandocTransform :: Metadata -> ArchiveMetadata -> IORef Integer -> String -> Pandoc -> IO Pandoc
-pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
+pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
+pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do let indexp = indexp' == "true"
      let pw
@@ -334,7 +332,7 @@ pandocTransform md adb archived indexp' p = -- linkAuto needs to run before `con
                  walk linkAuto p
      unless indexp $ createAnnotations md pw
      let pb = (if indexp then id else upDownArrows) $ walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
-     pbt <- fmap typographyTransform . walkM (localizeLink adb archived)
+     pbt <- fmap typographyTransform . walkM (localizeLink adb)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt

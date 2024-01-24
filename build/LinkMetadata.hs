@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-22 20:24:34 gwern"
+When:  Time-stamp: "2024-01-24 12:29:39 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,6 @@ import Data.Char (isPunctuation, toLower, isSpace, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
-import Data.IORef (IORef)
 import Data.Function (on)
 import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
 import Data.List.HT (search)
@@ -301,11 +300,11 @@ warnParagraphizeYAML path = do yaml <- readYaml path
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 250
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> IO ()
-writeAnnotationFragments am md archived writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived writeOnlyMissing p mi) $ M.toList md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Integer -> Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ _ ("","","","",[],"") = return ()
-writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
+writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
+writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
+writeAnnotationFragment am md onlyMissing u i@(a,b,c,d,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
@@ -337,7 +336,7 @@ writeAnnotationFragment am md archived onlyMissing u i@(a,b,c,d,ts,abst) =
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
-                                          walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am archived) p
+                                          walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))

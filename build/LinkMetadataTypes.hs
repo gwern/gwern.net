@@ -23,8 +23,5 @@ data Failure = Temporary | Permanent deriving Show
 
 isPagePath :: T.Text -> Bool
 isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
-    (if
-        not ("/" `isPrefixOf` f') ||
-      ("/static/" `isPrefixOf` f')
-     then False else
-       takeExtension f' == "")
+                 (not (not ("/" `isPrefixOf` f') || ("/static/" `isPrefixOf` f')) &&
+                   (takeExtension f' == ""))

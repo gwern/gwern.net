@@ -27,7 +27,6 @@ import qualified Data.Text as T (isInfixOf, pack, unpack, Text)
 import qualified Data.Map.Strict as M (toList, filterWithKey, map, fromListWith)
 import Data.List (isSuffixOf, sortOn, sort)
 import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullMeta, Block(Div,BlockQuote,Para))
-import Data.IORef (newIORef, IORef)
 import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
 import LinkMetadataTypes (Metadata)
@@ -94,8 +93,7 @@ sotd    = generateSnippetAndWriteTTDB   siteDBPath  sitePath  sited
 
 aotd :: Metadata -> IO ()
 aotd md = do am <- readArchiveMetadata
-             n <- newIORef (1::Integer)
-             generateAnnotationOfTheDay md annotDayDB annotPath (annotated am n)
+             generateAnnotationOfTheDay md annotDayDB annotPath (annotated am)
 
 -- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and—tag-directory style—write an `{.annotation-include-partial}` snippet for transcluding into the footer of each page after the quote-of-the-day.
 
@@ -106,9 +104,9 @@ annotPath = "metadata/today-annotation.html"
 type AotD = [String]
 
 -- it is important to run the archive pass on the annotation link for cases like Arxiv. Although this is quite ugly...
-annotated :: ArchiveMetadata -> IORef Integer -> String -> String
-annotated a n url = Unsafe.unsafePerformIO $ do
-  lnk <- localizeLink a n $ linkIcon $ Link ("", ["include-annotation-partial", "link-annotated", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
+annotated :: ArchiveMetadata -> String -> String
+annotated a url = Unsafe.unsafePerformIO $ do
+  lnk <- localizeLink a $ linkIcon $ Link ("", ["include-annotation-partial", "link-annotated", "backlink-not", "include-spinner-not"], []) [Str "Annotation Of The Day"] (T.pack url,"")
   let htmlE = runPure $ writeHtml5String safeHtmlWriterOptions $
         Pandoc nullMeta [Div ("", ["annotation-of-the-day"], [("title","Annotated Link Of The Day")]) [BlockQuote [Para [lnk]]]]
   case htmlE of

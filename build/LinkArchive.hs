@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-24 12:17:02 gwern"
+When:  Time-stamp: "2024-01-24 12:33:51 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -47,8 +47,7 @@ Details:
   (indicating the previous mirror attempt failed and it's probably a permanently broken link which
   must be updated manually), it is mirrored and rewritten, otherwise, just rewritten
 
-    - only one mirror is made per Hakyll run; because links are processed independently in parallel,
-      this is enforced by passing around an IORef. Simply downloading *all* links turns out to have
+    - Only a few URLs should be mirrored each time. Simply downloading *all* links turns out to have
       a lot of undesired consequences: bulk-adds of PDFs will trigger anti-bot defenses & corrupt PDFs
       requiring extremely labor-intensive checks & repairs; and manual review of a dozen simultaneous
       HTML snapshots can come at unwelcome, stressed-out times (which is _muri_).
@@ -92,10 +91,9 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (C.archivePerRunN, localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
+module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
-import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter)
 import Data.List (isInfixOf, isPrefixOf, nub, sortOn)
 import Data.Maybe (isNothing, fromMaybe)
@@ -118,11 +116,11 @@ import System.Directory (doesFileExist)
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
 import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed', printGreen)
-import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archivePerRunN, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
+import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
-localizeLink :: ArchiveMetadata -> IORef Integer -> Inline -> IO Inline
-localizeLink adb archivedN (Link (identifier, classes, pairs) b (targetURL, targetDescription)) = do
-  targetURL' <- fmap T.pack $ rewriteLink adb archivedN $ T.unpack targetURL
+localizeLink :: ArchiveMetadata -> Inline -> IO Inline
+localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescription)) = do
+  targetURL' <- fmap T.pack $ rewriteLink adb $ T.unpack targetURL
   let mobileURL = T.pack $ C.transformURLsForMobile  $ T.unpack targetURL
       cleanURL  = T.pack $ C.transformURLsForLinking $ T.unpack targetURL
        -- NOTE: because the archive database is checked before the whitelist or `.archive-not` class, the archive database now overrides the whitelist or transforms
@@ -133,11 +131,11 @@ localizeLink adb archivedN (Link (identifier, classes, pairs) b (targetURL, targ
   let classes' = if "doc/www/localhost/" `T.isPrefixOf` targetURL' || "doc/www/nitter.net/" `T.isPrefixOf` targetURL' then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
   let archiveAnnotatedLink = Link (identifier, classes', nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
   return archiveAnnotatedLink
-localizeLink _ _ x = return x
+localizeLink _ x = return x
 
 testLinkRewrites :: IO [(Inline, Inline)]
 testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
-                            linkActual <- localizeLink C.localizeLinkTestDB undefined (l u)
+                            linkActual <- localizeLink C.localizeLinkTestDB (l u)
                             return (l' u results, linkActual)
     ) C.localizeLinktestCases
 
@@ -189,7 +187,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                          case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
                            Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ take 10000 pdlString
                            Just pdl -> return $ M.fromList pdl
--- slow path:
+-- slow path with error-checking:
 readArchiveMetadataAndCheck :: IO ArchiveMetadata
 readArchiveMetadataAndCheck =
  do pdl <- readArchiveMetadata
@@ -217,7 +215,9 @@ readArchiveMetadataAndCheck =
     let pdl''' = map (\(p,ami) ->  if checksumIsValid p ami then (p,ami) else (p, Left 0)) pdl''
     return $ M.fromList pdl'''
 
--- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of Gwern.net. But since the checksum is deterministically derived from the URL, the checksum of the URL will no longer match the checksum encoded in the file name. So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
+-- When we rewrite links to fix link rot, archive.hs can become stale: it records a failed archive of the old URL, and doesn't know there's a new URL because archive.hs was rewritten with the rest of Gwern.net.
+-- But since the checksum is deterministically derived from the URL, the checksum of the URL will no longer match the checksum encoded in the file name.
+-- So when there is a mismatch, we can drop that entry, deleting it, and now the new URL will get picked up as a fresh URL entered into the archive queue.
 checksumIsValid :: Path -> ArchiveMetadataItem -> Bool
 checksumIsValid _ (Left _) = True
 checksumIsValid _ (Right Nothing) = True
@@ -230,38 +230,16 @@ checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.
 -- rewriteLink:
 -- 1. Skip whitelisted URLs.
 -- 2. Access what we know about the URL, defaulting to "First I've heard of it.".
--- 3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of cheap easy archive targets like PDFs, which we
---    locally archive immediately.) Do only 1 archive per run by checking the IORef to see
--- 4. Return archive contents.
-rewriteLink :: ArchiveMetadata -> IORef Integer -> String -> IO String
-rewriteLink adb archivedN url = fromMaybe url <$> if C.whiteList url then return Nothing else
- do today <- currentDay
-    let url' = C.transformURLsForArchiving url
-    case M.lookup url adb of
-      Nothing               -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> let cheapArchive = C.isCheapArchive url
-       in if ((today - firstSeen) < C.archiveDelay) && not cheapArchive
-          then return Nothing
-          else do
-                  archivedP <- archiveURLCheck url'
-                  if archivedP then do archive <- archiveURL url'
-                                       insertLinkIntoDB (Right archive) url
-                                       return archive
-                  else do archivedNAlreadyP <- readIORef archivedN
-                          -- have we already used up our link archive 'budget' this run? If so, skip all additional link archives
-                          if archivedNAlreadyP < 1 && not cheapArchive then return Nothing
-                          else do archive <- archiveURL url'
-                                  insertLinkIntoDB (Right archive) url
-                                  unless cheapArchive $ writeIORef archivedN (archivedNAlreadyP - 1)
-                                  return archive
-      Just (Right archive) -> if archive == Just "" then printRed' "Error! Tried to return a link to a non-existent archive! " url >> return Nothing else return archive
-
--- has a URL been archived already (ie. does a hashed file exist?)
-archiveURLCheck :: String -> IO Bool
-archiveURLCheck l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l, "--check"]
-                       case exit of
-                         ExitSuccess -> return $ stdout /= ""
-                         ExitFailure _ -> printRed' (l ++ " : archiving script existence-check failed to run correctly:") (" " ++ U.toString stderr') >> return False
+-- 3. If not seen before, insert into the archive DB with the current date as 'first-seen'
+-- 4. Else, return archive path.
+rewriteLink :: ArchiveMetadata -> String -> IO String
+rewriteLink adb url = fromMaybe url <$> if C.whiteList url then return Nothing else
+ case M.lookup url adb of
+      Nothing                -> do today <- currentDay
+                                   Nothing <$ insertLinkIntoDB (Left today) url
+      Just (Left  _)         -> return Nothing
+      Just (Right (Just "")) -> printRed' "Error! Tried to return a link to a non-existent archive! " url >> return Nothing
+      Just (Right archive)   -> return archive
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
