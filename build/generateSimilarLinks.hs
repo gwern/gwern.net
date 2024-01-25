@@ -10,7 +10,7 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
 import Data.Map.Strict as M (fromList, lookup, keys, filter)
 
-import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings, expireMatches, sortSimilars)
+import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings, expireMatches, sortSimilars, readListSortedMagic)
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
 import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata)
@@ -60,6 +60,7 @@ main = do md  <- readLinkMetadata
           -- Otherwise, we keep going & compute all the suggestions.
           -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
           ddb <- embeddings2Forest edb''
+          sortDB <- readListSortedMagic
           unless (args == ["--only-embed"]) $ do
               printGreen "Begin computing & writing out missing similarity-rankings…"
               Par.mapM_ (\f -> do exists <- similaritemExistsP f
@@ -68,7 +69,7 @@ main = do md  <- readLinkMetadata
                                                  Nothing        -> return ()
                                                  Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                                       -- rerank the _n_ matches to put them into a more internally-coherent ordering by pairwise distance minimization, rather than merely minimizing distance to the target URL:
-                                                                      hitsSorted <- sortSimilars edb (head hits) hits
+                                                                      hitsSorted <- sortSimilars edb sortDB (head hits) hits
                                                                       let nmatchesSorted = (path, hitsSorted)
                                                                       when (f `elem` todoLinks) $ expireMatches (snd nmatchesSorted)
                                                                       writeOutMatch md bdb nmatchesSorted
@@ -81,7 +82,7 @@ main = do md  <- readLinkMetadata
                 Par.mapM_ (\f -> case M.lookup f edbDB of
                                        Nothing        -> return ()
                                        Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
-                                                            hitsSorted <- sortSimilars edb (head hits) hits
+                                                            hitsSorted <- sortSimilars edb sortDB (head hits) hits
                                                             let nmatchesSorted = (path, hitsSorted)
                                                             writeOutMatch md bdb nmatchesSorted
                                       )

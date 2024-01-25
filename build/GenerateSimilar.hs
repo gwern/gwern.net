@@ -8,9 +8,10 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Span, Str, Strong), Format(..), runPure, Pandoc(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
+import qualified Data.Text.IO as TIO (readFile, writeFile)
 import Data.List ((\\), intercalate,  nub, tails, sort)
 import Data.Maybe (fromJust, fromMaybe)
-import qualified Data.Map.Strict as M (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
+import qualified Data.Map.Strict as M -- (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
 import System.Directory (doesFileExist, renameFile, removeFile)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
@@ -29,17 +30,17 @@ import Control.Monad.Identity (runIdentity, Identity)
 import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, serialiseRPForest)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
-import System.GlobalLock as GL (lock)
+-- import System.GlobalLock as GL (lock)
 
 import LinkBacklink (getSimilarLink, getForwardLinks, readBacklinksDB, Backlinks)
-import Columns as C (listLength)
+import Columns as CL (listLength)
 import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, currentDay, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed)
 
-import Config.GenerateSimilar as C
+import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, minimumLength, maximumLength, maxDistance, blackList, minimumSuggestions)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -51,7 +52,8 @@ singleShotRecommendations html =
      newEmbedding <- embed [] md bdb ("",("","","","",[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 1) newEmbedding :: (String,[String])
-     hitsSorted <- sortSimilars edb (head hits) hits
+     sortDB <- readListSortedMagic
+     hitsSorted <- sortSimilars edb sortDB (head hits) hits
 
      let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
      return matchListHtml
@@ -367,7 +369,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
                                 Right output -> output
-             similarLinksHtmlFragment = if C.listLength (BulletList similarItems) > 60 || length matchesPruned < 4 then html
+             similarLinksHtmlFragment = if CL.listLength (BulletList similarItems) > 60 || length matchesPruned < 4 then html
                                         else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
@@ -420,28 +422,45 @@ sortTagByTopic md tag = do
                            let mdlSorted =  filter (\(f,_) -> M.member f edbDB) $ LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
                            let newest = fst $ head mdlSorted
 
-                           sortSimilars edb newest paths
+                           sortDB <- readListSortedMagic
+                           sortSimilars edb sortDB newest paths
 
 -- what was the short name suggested for a list of URLs? quick DB letting us look up cached short names:
 type ListName = [([FilePath], String)]
-readListName :: IO [([FilePath], String)]
+readListName :: IO ListName
 readListName = do let p = "metadata/listname.hs"
                   exists <- doesFileExist p
                   if not exists then return [] else
-                            do ls <- readFile p
-                               return $ if ls=="" then [] else (read ls :: ListName)
-writeListName :: [([FilePath], String)] -> IO ()
-writeListName = GL.lock . writeFile "metadata/listname.hs" . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
+                            do ls <- fmap T.unpack $ TIO.readFile p
+                               return $ if ls=="" then [] else (validateListName $ read ls :: ListName)
+   where validateListName :: ListName -> ListName
+         validateListName l = if any (\(f,g) -> null g || length f < 1 || any null f) l then error ("validateListName: read file failed sanity check: " ++ show l) else l
+writeListName :: ListName -> IO ()
+writeListName = TIO.writeFile "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
+
+-- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
+type ListSortedMagicList = [([FilePath], [FilePath])]
+type ListSortedMagic = M.Map [FilePath] [FilePath]
+readListSortedMagic :: IO ListSortedMagic
+readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
+                         exists <- doesFileExist p
+                         if not exists then return M.empty else
+                           do ls <- fmap T.unpack $ TIO.readFile p
+                              return $ if ls=="" then M.empty else (M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList))
+   where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
+         validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
+writeListSortedMagic :: ListSortedMagic -> IO ()
+writeListSortedMagic = TIO.writeFile "metadata/listsortedmagic.hs" . T.pack . ppShow . M.toList
 
 -- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.
-sortSimilarsStartingWithNewestWithTag :: ListName -> Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
-sortSimilarsStartingWithNewestWithTag _ _ _ []     = return []
-sortSimilarsStartingWithNewestWithTag _ _ _ [a]    = return [("",[a])]
-sortSimilarsStartingWithNewestWithTag _ _ _ [a, b] = return [("",[a]), ("",[b])]
-sortSimilarsStartingWithNewestWithTag ldb md parentTag items =
+sortSimilarsStartingWithNewestWithTag :: ListName -> ListSortedMagic -> Metadata -> String -> [(FilePath, MetadataItem)] -> IO [(String, [(FilePath, MetadataItem)])]
+sortSimilarsStartingWithNewestWithTag _ _ _ _ []     = return []
+sortSimilarsStartingWithNewestWithTag _ _ _ _ [a]    = return [("",[a])]
+sortSimilarsStartingWithNewestWithTag _ _ _ _ [a, b] = return [("",[a]), ("",[b])]
+sortSimilarsStartingWithNewestWithTag ldb sortDB md parentTag items =
   do
-    lists <- sortSimilarsStartingWithNewest md items
+    lists <- sortSimilarsStartingWithNewest md sortDB items
     (result, _) <- foldM (processWithBlacklistAccumulator ldb) ([], []) lists
     return result
   where
@@ -452,11 +471,11 @@ sortSimilarsStartingWithNewestWithTag ldb md parentTag items =
     processWithBlacklistAccumulator ldb' (acc, blacklist) fs = do
       let urlList = map fst fs
       suggestion <- case lookup (sort urlList) ldb' of
-                      Just nickname -> print ("Just: old nickname is: " ++ nickname) >> return nickname -- use existing one, or generate new suggestion & cache it out:
+                      Just nickname -> return nickname -- use existing one, or generate new suggestion & cache it out:
                       Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-                                    GL.lock $ do ldb'' <- readListName -- the in-memory DB may be stale due to other threads also trying to update the on-disk, so re-read
-                                                 let ldb''' = (urlList, nicknameNew) : ldb''
-                                                 writeListName ldb'''
+                                    ldb'' <- readListName -- the in-memory DB may be stale due to other threads also trying to update the on-disk, so re-read
+                                    let ldb''' = (urlList, nicknameNew) : ldb''
+                                    writeListName ldb'''
                                     return nicknameNew
       let newAcc = mergeIntoAccumulator acc (suggestion, fs)
       return (newAcc, blacklist ++ [suggestion])
@@ -477,11 +496,11 @@ processTitles parentTag blacklistTags a =
            _ -> return $ (last . lines . replace "'" "" . replace "." "" . replace "The suggested tag is " "" . replace "The best tag suggestion is: " "" . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
                            . trim . U.toString) mb
 
-sortSimilarsStartingWithNewest :: Metadata -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
-sortSimilarsStartingWithNewest _ []     = return []
-sortSimilarsStartingWithNewest _ [a]    = return [[a]]
-sortSimilarsStartingWithNewest _ [a, b] = return [[a, b]]
-sortSimilarsStartingWithNewest md items = do
+sortSimilarsStartingWithNewest :: Metadata -> ListSortedMagic -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]
+sortSimilarsStartingWithNewest _ _ []     = return []
+sortSimilarsStartingWithNewest _ _ [a]    = return [[a]]
+sortSimilarsStartingWithNewest _ _ [a, b] = return [[a, b]]
+sortSimilarsStartingWithNewest md sortDB items = do
   edb <- readEmbeddings
   let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
   let md' = M.restrictKeys md (S.fromList $ filter (`M.member` edbDB) $ map fst items)
@@ -490,7 +509,7 @@ sortSimilarsStartingWithNewest md items = do
     do let paths = M.keys md'
        let newest = fst $ head mdlSorted
        -- print "mdlSorted: " >> print mdlSorted >> print "newest: " >> print newest
-       pathsSorted <- sortSimilars edb newest paths
+       pathsSorted <- sortSimilars edb sortDB newest paths
        let pathsSorted' = clusterIntoSublist edb pathsSorted
        -- print "pathsSorted: " >> print pathsSorted
        return $ map (`restoreAssoc` items) pathsSorted'
@@ -503,11 +522,11 @@ sortSimilarsStartingWithNewest md items = do
 minTagAuto :: Int
 minTagAuto = 3
 
-sortSimilars :: Embeddings -> FilePath -> [FilePath] -> IO [FilePath]
-sortSimilars _ _ []    = return []
-sortSimilars _ _ [a]   = return [a]
-sortSimilars _ ""   _     = error "sortSimilars given an invalid seed!"
-sortSimilars edb seed paths = do
+sortSimilars :: Embeddings -> ListSortedMagic -> FilePath -> [FilePath] -> IO [FilePath]
+sortSimilars _ _ _ []    = return []
+sortSimilars _ _ _ [a]   = return [a]
+sortSimilars _ _ ""   _  = error "sortSimilars given an invalid seed!"
+sortSimilars edb sortDB seed paths = do
                              let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
                              let edbDB' = M.restrictKeys edbDB (S.fromList (seed:paths))
                              let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
@@ -518,14 +537,26 @@ sortSimilars edb seed paths = do
                              -- print ("Seed: " ++ seed)
                              -- print "sortSimilars: done"
                              -- print ("edb' length: "  ++ show (length edb'))
-                             lookupNextAndShrink paths' edb' seed
+                             case M.lookup (seed:paths') sortDB of
+                               Nothing -> do paths'' <- lookupNextAndShrink paths' edb' seed
+                                             -- print ("seed: " ++ show seed)
+                                             -- print ("paths: " ++ show paths)
+                                             -- print ("paths': " ++ show paths')
+                                             -- print ("paths'': " ++ show paths'')
+                                             sortDB' <- readListSortedMagic
+                                             let sortDB'' = M.insert (seed:paths') paths'' sortDB'
+                                             -- print ("writing new sortDB'': " ++ show sortDB'')
+                                             writeListSortedMagic sortDB''
+                                             -- print ("wrote new sortDB"::String)
+                                             return paths''
+                               Just paths''' -> return paths'''
 
 lookupNextAndShrink :: [FilePath]
               -> [(FilePath, Integer, String, String, [Double])]
               -> FilePath
               -> IO [FilePath]
 lookupNextAndShrink     []   _ _ = return []
-lookupNextAndShrink     [a]  _ _ = return [a]
+lookupNextAndShrink     [a]  _ previous = return $ previous:[a]
 lookupNextAndShrink targets embeddings previous = do results <- go targets embeddings
                                                      return $ previous:results
   where go ta em = do ddb <- embeddings2Forest em
@@ -533,15 +564,17 @@ lookupNextAndShrink targets embeddings previous = do results <- go targets embed
                       case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
                               Nothing ->  putStr "Exited at Nothing in lookupNextAndShrink, this should never happen?" >> error ""
                               Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 C.maxDistance (previous,b,c,d,e))
-                                                   let match = filter (/=previous) $ findNearest ddb 6 C.maxDistance (previous,b,c,d,e) :: [FilePath]
-                                                   let match' = head match
-                                                   if null match then
-                                                          let fallback = head targets in
-                                                            lookupNextAndShrink (filter (\f -> f/=previous && f/=fallback) ta)
+                                                   let matchs = filter (/=previous) $ findNearest ddb 6 C.maxDistance (previous,b,c,d,e) :: [FilePath]
+                                                   if null matchs then
+                                                          let fallback = head targets
+                                                              targetsNewNull = filter (\f -> f/=previous && f/=fallback) ta in
+                                                            lookupNextAndShrink targetsNewNull
                                                                                 (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings)
                                                                                 fallback
                                                    else
-                                                     lookupNextAndShrink (filter (\f -> f/=previous && f/=match') ta) (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings) match'
+                                                    let match' = head matchs
+                                                        targetsNewNotNull = filter (\f -> f/=previous && f/=match') ta in
+                                                      lookupNextAndShrink targetsNewNotNull (Prelude.filter (\(f,_,_,_,_) -> f/= previous) embeddings) match'
 
 ---------------------
 

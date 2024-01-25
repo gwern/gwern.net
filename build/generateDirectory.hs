@@ -34,7 +34,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -110,7 +110,8 @@ generateDirectory filterp md dirs dir'' = do
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
   titledLinksSorted <- if not filterp then return [] else
                          do ldb <- readListName
-                            sortSimilarsStartingWithNewestWithTag ldb md tagSelf titledLinks -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+                            sortDB <- readListSortedMagic
+                            sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
 
   let selfLinksSection = generateSections' 2 selfTitledLinks
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
