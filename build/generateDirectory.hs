@@ -12,17 +12,19 @@ module Main where
 -- directory (mostly showing random snippets).
 
 import Control.Monad (filterM, void)
+import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List.Split (chunksOf)
+import qualified Data.Map as M (keys, lookup, filterWithKey)
 import Data.Maybe (fromJust)
+import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
+
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
-import qualified Data.Map as M (keys, lookup, filterWithKey)
-import qualified Data.Text as T (append, pack, unpack, Text)
-import Control.Parallel.Strategies (parListChunk, rseq, using)
 import Text.Pandoc.Walk (walk)
 
 import LinkID (generateID, authorsToCite)
@@ -34,7 +36,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, extractTwitterUsername)
 import Config.Misc as C (miscellaneousLinksCollapseLimit)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic, ListName, ListSortedMagic)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -43,18 +45,23 @@ main = do dirs <- getArgs
           let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
+          ldb <- readListName
+          sortDB <- readListSortedMagic
 
-          Prelude.mapM_ (generateDirectory True meta dirs') (dirs' `using` parListChunk chunkSize rseq) -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          let chunkSize = 17 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
+          let dirChunks = chunksOf chunkSize dirs'
+
+          Prelude.mapM_ (Par.mapM_ (generateDirectory True meta ldb sortDB dirs')) dirChunks
+
+          -- Par.mapM_ (generateDirectory True meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
           metaNewest <- readLinkMetadataNewest 100
-          generateDirectory False metaNewest ["doc/", "doc/newest/", "/"] "doc/newest/"
-  where chunkSize :: Int
-        chunkSize = 10
+          generateDirectory False metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
-generateDirectory :: Bool -> Metadata -> [FilePath] -> FilePath -> IO ()
-generateDirectory filterp md dirs dir'' = do
+generateDirectory :: Bool -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
+generateDirectory filterp md ldb sortDB dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.page', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
@@ -108,10 +115,9 @@ generateDirectory filterp md dirs dir'' = do
   let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") linksSelf
   let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
-  titledLinksSorted <- if not filterp then return [] else
-                         do ldb <- readListName
-                            sortDB <- readListSortedMagic
-                            sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+  titledLinksSorted <- if not filterp then return []
+                        -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+                       else sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks
 
   let selfLinksSection = generateSections' 2 selfTitledLinks
   let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
