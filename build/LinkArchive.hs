@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-24 12:33:51 gwern"
+When:  Time-stamp: "2024-01-25 11:23:54 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -112,6 +112,7 @@ import Crypto.Hash.SHA1 (hash) -- cryptohash
 import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName)
 import System.Directory (doesFileExist)
+import Control.Concurrent.Async (mapConcurrently)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
@@ -152,14 +153,16 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
 -- Can be scripted like `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
 manualArchive :: Int -> IO ()
 manualArchive n = do
-  adb <- readArchiveMetadata
+  adb <- readArchiveMetadataAndCheck
   today <- currentDay
   let adbPending = M.filter (archiveItemDue today) adb
   let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
-  let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
+  unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)
+  let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
+  unless (null sortedItems) $ putStrLn ("N-due: " ++ show sortedItems)
   let urlsToArchive = nub $ map fst $ cheapItems ++ sortedItems
-  adbExecuted <- traverse archiveItem urlsToArchive
+  adbExecuted <- mapConcurrently archiveItem urlsToArchive
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
   writeArchiveMetadata adb'
 
