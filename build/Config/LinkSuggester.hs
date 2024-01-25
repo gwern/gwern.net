@@ -219,6 +219,7 @@ whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isUR
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Suicidal_ideation", ["suicidal ideation"])
   , ("https://en.wikipedia.org/wiki/Stripe,_Inc.", ["Stripe Inc.", "Stripe"])
   , ("https://en.wikipedia.org/wiki/MIT_Technology_Review", ["MIT Technology Review", "Technology Review"])
   , ("https://en.wikipedia.org/wiki/Greg_Brockman", ["Greg Brockman", "Brockman"])
