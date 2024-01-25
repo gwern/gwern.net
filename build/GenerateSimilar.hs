@@ -431,7 +431,7 @@ readListName = do let p = "metadata/listname.hs"
                             do ls <- readFile p
                                return $ if ls=="" then [] else (read ls :: ListName)
 writeListName :: [([FilePath], String)] -> IO ()
-writeListName = lock . writeFile "metadata/listname.hs" . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
+writeListName = GL.lock . writeFile "metadata/listname.hs" . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
 
 -- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.
@@ -454,8 +454,9 @@ sortSimilarsStartingWithNewestWithTag ldb md parentTag items =
       suggestion <- case lookup (sort urlList) ldb' of
                       Just nickname -> print ("Just: old nickname is: " ++ nickname) >> return nickname -- use existing one, or generate new suggestion & cache it out:
                       Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
-                                    let ldb'' = (urlList, nicknameNew) : ldb'
-                                    writeListName ldb''
+                                    GL.lock $ do ldb'' <- readListName -- the in-memory DB may be stale due to other threads also trying to update the on-disk, so re-read
+                                                 let ldb''' = (urlList, nicknameNew) : ldb''
+                                                 writeListName ldb'''
                                     return nicknameNew
       let newAcc = mergeIntoAccumulator acc (suggestion, fs)
       return (newAcc, blacklist ++ [suggestion])
