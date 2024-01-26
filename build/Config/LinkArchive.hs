@@ -3,7 +3,7 @@ module Config.LinkArchive where
 
 import Data.Maybe (fromMaybe, isJust, fromJust)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find, delete)
-import Utils (sed, anyInfix, anyPrefix, anySuffix, replace, isUniqueList)
+import Utils (sed, anyInfix, anyPrefix, anySuffix, replace)
 import Network.URI (parseURI, uriAuthority, uriFragment, uriPath, uriQuery, uriRegName, uriToString, URI, URIAuth)
 import Network.HTTP.Types.URI (parseQuery, renderQuery)
 import Data.ByteString.Char8 (pack, unpack)
@@ -251,7 +251,12 @@ whiteList url
   | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
   | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/doc/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
-  | anyInfix url $ isUniqueList [
+  | anyInfix url whiteListMatchesFixed = True
+    | otherwise = False
+
+-- TODO: test this with isUniqueList; factor out elsewhere
+whiteListMatchesFixed :: [String]
+whiteListMatchesFixed = [
       "archive.org/details/", "archive.org/download/", "scholar.archive.org"
       , ".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
@@ -1299,5 +1304,5 @@ whiteList url
       , "https://www.openstreetmap.org/" -- interactive (tool)
       , "https://styletts2.github.io/" -- low-quality (audio embeds)
       , "https://intxpower.com/" -- interactive (tool)
-      ] = True
-    | otherwise = False
+      , "https://wangyanhui666.github.io/MicroCinema.github.io/" -- low quality (video embeds)
+      ]

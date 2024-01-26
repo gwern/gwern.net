@@ -220,9 +220,11 @@ titlecase' t = let t' = titlecase $ titlecase'' t
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""
-capitalizeAfterHyphen t s = case break (== '-') s of
+capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—') s of
      (before, '-':after) ->
          before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen t after)
+     (before, '—':after) ->
+         before ++ "—" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, [])        -> before
      _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
    where
@@ -312,6 +314,7 @@ titleCaseTestCases = isUniqueKeys [
             , ("foo'bar's-baz'qux", "Foo'Bar's-Baz'Qux")
             , ("foo'bar's baz'qux", "Foo'Bar's Baz'Qux")
             , ("foo'bar's-baz qux", "Foo'Bar's-Baz Qux")
+            , ("Fading Hip-Hop Mogul—who’s Been Buffeted by Charges of Sexual Assault—to Salvage", "Fading Hip-Hop Mogul—Who’s Been Buffeted by Charges of Sexual Assault—To Salvage")
               ]
 titleCaseTest :: [(String, String)]
 titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) titleCaseTestCases

@@ -362,6 +362,7 @@ linkIconRulesQuad u
  | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon
+ | u'' u "www.scmp.com" = ("SCMP", "text,quad") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?)
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1054,6 +1055,7 @@ linkIconTestUnitsText = isUniqueKeys3
          , ("https://www.cnbc.com/2017/11/15/microsoft-and-github-unveil-pair-programming-tools.html", "CNBC", "text,quad,sans")
          , ("https://www.crunchbase.com/person/james-c-gaither", "cb", "text,sans")
          , ("https://www.tiktok.com/@dale_ebert/video/7301073510267407658", "tiktok", "svg")
+         , ("https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty", "SCMP", "text,quad")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
