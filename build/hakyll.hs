@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-25 11:32:24 gwern"
+When: Time-stamp: "2024-01-26 09:46:27 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -38,69 +38,26 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
-import Annotation (tooltipToMetadataTest)
 import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
-import Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite)
-import Interwiki (convertInterwikiLinks, interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (localizeLink, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata)
+import Inflation (nominalToRealInflationAdjuster)
+import Interwiki (convertInterwikiLinks)
+import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
-import LinkIcon (linkIconTest)
-import LinkLive (linkLiveTest, linkLivePrioritize)
 import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation,)
 import LinkMetadataTypes (Metadata)
-import Tags (tagsToLinksDiv, testTags)
-import Typography (linebreakingTransform, typographyTransform, titlecaseInline, titleCaseTest)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, printDoubleTestSuite, testCycleDetection, cleanAbstractsHTMLTest, cleanAuthorsTest, inlinesToText, flattenLinksInInlines) -- sed
-import Arrow (upDownArrows, testUpDownArrows)
+import Tags (tagsToLinksDiv)
+import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
+import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
+import Arrow (upDownArrows)
+import Test (testAll)
 
 main :: IO ()
 main =
- do -- arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
+    -- arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     -- let slow = "true" == fromMaybe "" arg
     hakyll $ do
-               preprocess $ printGreen ("Testing link icon matches…" :: String)
-               let linkIcons = linkIconTest
-               unless (null linkIcons) $ preprocess $ printRed ("Link icon rules have errors in: " ++ show linkIcons)
-
-               let arrows = testUpDownArrows
-               unless (null arrows) $ preprocess $ printRed ("Self-link arrow up/down AST test suite has errors in: " ++ show arrows)
-
-               let doubles = printDoubleTestSuite
-               unless (null doubles) $ preprocess $ printRed ("Double-printing function test suite has errors in: " ++ show doubles)
-
-               let cycles = testCycleDetection
-               unless (null cycles) $ preprocess $ printRed ("Cycle-detection test suite has errors in: " ++ show cycles)
-
-               let cases = titleCaseTest
-               unless (null cases) $ preprocess $ printRed ("Title-case typography test suite has errors in: " ++ show cases)
-
-               let infixRewrites = cleanAbstractsHTMLTest ++ cleanAuthorsTest
-               preprocess $ printGreen ("Tested HTML/author cleanup rules for infinite loops, verified: " ++ show (length infixRewrites))
-
-               archives <- preprocess testLinkRewrites
-               unless (null archives) $ preprocess $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
-
-               preprocess $ printGreen ("Testing tag rewrites…" :: String)
-               preprocess testTags
-
-               preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
-               let livelinks = linkLiveTest
-               unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
-               _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
-               -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
-
-               preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
-               let interwikiPopupTestCases = interwikiTestSuite
-               unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
-               let interwikiCycleTestCases = interwikiCycleTestSuite
-               unless (null interwikiCycleTestCases) $ preprocess $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestCases)
-
-               let inflationTestCases = inflationDollarTestSuite
-               unless (null inflationTestCases) $ preprocess $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationTestCases)
-
-               unless (null tooltipToMetadataTest) $ preprocess $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
-               preprocess $ printGreen ("Testing finished." :: String)
+               preprocess testAll
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
                am           <- preprocess readArchiveMetadataAndCheck
@@ -360,7 +317,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
 -- headerSelflinkAndSanitize x = x
 
 headerSelflinkAndSanitize :: Block -> Block
-headerSelflinkAndSanitize x@(Header _ _ ((Link _ _ _):[])) = x
+headerSelflinkAndSanitize x@(Header _ _ [Link{}]) = x
 -- headerSelflinkAndSanitize (Header a b (x:xs))
 --   | isLinkOrStr x = Header a b (x : flattenLinksInInlines xs)
 --   where
