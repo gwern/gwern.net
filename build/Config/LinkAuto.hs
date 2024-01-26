@@ -4,6 +4,24 @@ module Config.LinkAuto where
 import Data.List (sortBy)
 import qualified Data.Text as T (length, Text)
 
+import Text.Pandoc (nullAttr, Pandoc(..), QuoteType(DoubleQuote), Inline(Link,Quoted,Space,Str), nullMeta, Block(Para))
+
+linkAutoTests :: [([Inline], Pandoc)]
+linkAutoTests =
+  -- test that it does *not* rewrite 'reinforcement learning' inside a Link's text (which would be an invalid Link-in-a-Link):
+  [
+    ([Link nullAttr [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"],
+   Pandoc nullMeta [Para [Link nullAttr [Quoted DoubleQuote [Str "Self-improving reactive agents based on",Str " ",Str "reinforcement learning",Str ",",Str " planning and teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ", Lin 1992"]])
+
+  -- test rewrites of 'BigGAN', 'TPUv3', 'Barack Obama', 'DistilBERT', 'BERT':
+  , ([Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link nullAttr [Link nullAttr [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ").", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."],
+     Pandoc nullMeta [Para [Str "bigGAN means BIGGAN; you will have an easier time training a GAN on a good GPU like a P100 or a",Str " ",Link nullAttr [Str "TPUv3"] ("https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Third_generation_TPU",""),Str ".",Str " (See WP on ",Link nullAttr [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str "). Nevertheless, expensive is a GAN. See",Str " ",Link nullAttr [Str "Barack Obama"] ("https://en.wikipedia.org/wiki/Barack_Obama",""),Str "'",Str "s presidency. Still, we shouldn't put too much weight on",Str " ",Str "Barack Obama",Str ".",Str " More efficient is",Str " ",Link nullAttr [Str "DistilBERT"] ("https://arxiv.org/abs/1910.01108",""),Str ",",Str " not to be confused with",Str " ",Link nullAttr [Str "BERT"] ("https://arxiv.org/abs/1810.04805#google",""),Str "."]])
+
+    -- test 'StyleGAN', 'MuZero', 'Muesli', 'Brown et al 2020'
+  , ([Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli. Brown et al 2020."],
+     Pandoc nullMeta [Para [Str "It's a dilemma: at small or easy domains,",Str " ",Link ("",[],[]) [Str "StyleGAN"] ("https://arxiv.org/abs/1812.04948#nvidia",""),Str " ",Str "is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass",Str " ",Str "StyleGAN",Str ".",Str " ",Link ("",[],[]) [Str "MuZero"] ("https://arxiv.org/abs/1911.08265#deepmind",""),Str " ",Str "vs",Str " ",Link ("",[],[]) [Str "Muesli"] ("https://arxiv.org/abs/2104.06159",""),Str ".",Str " ",Link ("",[],[]) [Str "Brown et al 2020"] ("https://arxiv.org/abs/2005.14165#openai",""),Str "."]])
+    ]
+
 -- descending order, longest match to shortest (for regex priority):
 -- WARNING: we appear to be hitting some sort of exponential slowdown despite the optimizations. From now on, delete at least one rewrite for every added rewrite. Many are unnecessary.
 custom, customSorted :: [(T.Text, T.Text)]
@@ -340,7 +358,7 @@ custom = [
         , ("GODIVA", "https://arxiv.org/abs/2104.14806#microsoft")
         , ("GPT-1", "https://openai.com/research/language-unsupervised")
         , ("GPT-2", "/doc/ai/nn/transformer/gpt/2/2019-radford.pdf#openai")
-        , ("(GPT-3|Brown et al 2020)", "https://arxiv.org/abs/2005.14165#openai")
+        , ("(GPT-3|Brown[  ]et[  ]al[  ]2020)", "https://arxiv.org/abs/2005.14165#openai") -- Brown et al 2020
         , ("GPT-4-V", "https://openai.com/research/gpt-4v-system-card")
         , ("GPT-4", "https://openai.com/research/gpt-4")
         , ("ChatGPT", "https://openai.com/blog/chatgpt/")

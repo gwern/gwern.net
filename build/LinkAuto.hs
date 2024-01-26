@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered) where
+module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, linkAutoTest) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2024-01-26 10:36:21 gwern"
+When:  Time-stamp: "2024-01-26 18:36:28 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -44,30 +44,18 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Qu
 
 import Data.Char (isPunctuation, isSpace)
 import Data.List (nub)
-import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, pack, unpack, Text)
-import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
-import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str)) -- nullMeta, Inline(Space), Block(Para)
+import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), nullMeta, Block(Para))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
 import Utils (addClass, frequency, simplifiedDoc, safeHtmlWriterOptions, cleanUpDivsEmpty, cleanUpSpans, inlinesToText)
 import Query (extractURLs)
 import Typography (mergeSpaces)
-import qualified Config.LinkAuto as C (customSorted)
-
--- test,test2 :: [Inline]
--- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
--- test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli. Brown et al 2020."]
--- test = [Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ").", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
--- testDoc :: Pandoc
--- testDoc = let doc = Pandoc nullMeta [Para test2] in
---             linkAuto doc
+import qualified Config.LinkAuto as C (customSorted, linkAutoTests)
 
 -----------
 
@@ -75,6 +63,13 @@ import qualified Config.LinkAuto as C (customSorted)
 linkAuto :: Pandoc -> Pandoc
 linkAuto p@(Pandoc _ []) = p
 linkAuto p = linkAutoFiltered id p
+
+linkAutoInline2Doc :: [Inline] -> Pandoc
+linkAutoInline2Doc test = let doc = Pandoc nullMeta [Para test] in
+                            linkAuto doc
+
+linkAutoTest :: [([Inline], Pandoc, Pandoc)]
+linkAutoTest = map (\(inline', doc') -> (inline', doc', linkAutoInline2Doc inline')) $ filter (\(inline, doc) -> linkAutoInline2Doc inline /= doc) C.linkAutoTests
 
 -- wrapper convenience function: run LA over a HTML string, return HTML string
 linkAutoHtml5String :: String -> String
@@ -206,12 +201,6 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    allRegex :: R.Regex -- in the default case of all regexes are valid (because nothing could be filtered out), use the precompiled top-level all-regex Regex value for efficiency, else, create a new one:
    allRegex = masterRegex definitions -- if map (\(a,_,_) -> a) definitions == map fst custom then masterRegexAll else masterRegex definitions
 
-   threadN :: Int
-   threadN = 1 `max` (unsafePerformIO getNumCapabilities - 1)
-
-   regexpsMax :: Int
-   regexpsMax = 16
-
    -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝒪(log R) passes.
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
    -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
@@ -222,14 +211,10 @@ filterMatches plain definitions  = if T.length plain < 10000 then
    -- it is long enough that we should try to split it up into sublists and fork out the recursive call; doing a 'wide' recursion *should* be a lot faster than a binary tree
    filterMatch skipCheck ds
     -- for the very first iteration (called from `filterMatches`), we want to skip the master regex because it will be huge and slow.
-    -- So, immediately break up the regexp list and descend
-    | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-                  in concat $ parMap rseq (filterMatch False) subDefinitions
+    -- So, immediately descend:
+    | skipCheck = concatMap (filterMatch False . return) ds
     | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax || threadN == 1  = concatMap (filterMatch False . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
-    | otherwise =
-      let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rseq (filterMatch False) subDefinitions
+    | otherwise = concatMap (filterMatch False . return) ds
 
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
