@@ -2,7 +2,6 @@
 module Config.LinkLive where
 
 import qualified Data.Text as T (isPrefixOf, isInfixOf, Text)
-import Utils (isUniqueList)
 
 -- local relative path of Markdown source file to append links to via `writeLinkLiveTestcase` for manual review:
 testPage :: FilePath
@@ -24,14 +23,14 @@ miscUrlRules u
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise = Nothing
 
-goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
-goodDomainsSub = isUniqueList [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
+goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks :: [T.Text]
+goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
                    ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org",
                    ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com",
                    ".blogspot.com", "antifandom.com"]
 goodDomainsSimple =
-  isUniqueList ["1dollarscan.com"
-               , "humanprogress.org"
+  ["1dollarscan.com"
+    , "humanprogress.org"
     , "6thfloor.blogs.nytimes.com"
     , "80000hours.org"
     , "abandonedfootnotes.blogspot.com"
@@ -764,9 +763,9 @@ goodDomainsSimple =
     , "allenai.org"
     ]
 
-badDomainsSub = isUniqueList [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
-                  ".oxfordjournals.org", ".medium.com", ".translate.goog"]
-badDomainsSimple = isUniqueList [ "2chan.us"
+badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
+                 ".oxfordjournals.org", ".medium.com", ".translate.goog"]
+badDomainsSimple = [ "2chan.us"
    , "1d4chan.org"
    , "5onwnspjvuk7cwvk.tor2web.org"
    , "a16z.com"
@@ -2295,8 +2294,7 @@ badDomainsSimple = isUniqueList [ "2chan.us"
    , "www.biology.ualberta.ca"
    ]
 
-goodLinks, badLinks :: [(T.Text,Bool)]
-goodLinks = map (\u -> (u,True)) $ isUniqueList ["https://allenai.org/allennlp"
+goodLinks = ["https://allenai.org/allennlp"
             , "https://aleph.se/andart2/neuroscience/energetics-of-the-brain-and-ai/"
             , "https://beza1e1.tuxen.de/articles/accidentally_turing_complete.html"
             , "https://courses.csail.mit.edu/6.857/2012/files/nash.py"
@@ -3024,7 +3022,7 @@ goodLinks = map (\u -> (u,True)) $ isUniqueList ["https://allenai.org/allennlp"
             , "https://antifandom.com/mlp/wiki/Explore_Equestria:_Greatest_Hits"
             ]
 
-badLinks = map (\u -> (u,False)) $ isUniqueList ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
+badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "/doc/ai/anime/danbooru/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
             , "/doc/darknet-market/dnm-archive/2017-02-12-thetimes-darknetdealersdraggedintothelight.html"
             , "/doc/genetics/editing/1999-tang.pdf"

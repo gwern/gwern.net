@@ -4,10 +4,8 @@ module Config.Interwiki where
 import Text.Pandoc (Inline(..), nullAttr)
 import qualified Data.Text as T (Text, append, isPrefixOf)
 
-import Utils (isUniqueList, isUniqueKeys)
-
 testCases :: [(Inline, Inline)]
-testCases = isUniqueKeys [
+testCases = [
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
@@ -162,16 +160,16 @@ testCases = isUniqueKeys [
   ]
 
 quoteOverrides :: [T.Text]
-quoteOverrides = isUniqueList ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Denny's", "Denny’s",
-                                "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's",
-                                "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
+quoteOverrides =  ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Denny's", "Denny’s",
+                    "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's",
+                    "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
 
 -- manual override of a particular WP link A with another target B.
 -- This is useful for skipping redirects & ensuring all variants globally produce the same WP link (which is helpful for LinkSuggester to avoid false negatives).
 -- This can also be used to override links to disambiguation pages: for example, 'Dialysis' is a disambiguation page, even though the other uses are so obscure, so one can force that to point to the always-intended `Kidney_dialysis` instead.
 redirectDB :: [(T.Text, T.Text)]
 redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https://en.wikipedia.org/wiki/" u in
-               isUniqueKeys $ map (\(a,b) -> (wp a, wp b)) [
+               map (\(a,b) -> (wp a, wp b)) [
           ("WP:RS", "Wikipedia:Reliable_sources")
           , ("%2420", "$20")
           , ("%2A%2ALukas_Biewald", "**Lukas_Biewald")

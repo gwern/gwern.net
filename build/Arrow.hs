@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Arrow (upDownArrows, testUpDownArrows) where
+module Arrow (upDownArrows, arrowTestCases, testUpDownArrows) where
 
 import qualified Data.Set as S (empty, insert, member, Set)
 import qualified Control.Monad.State as ST (evalState, get, modify, State)
@@ -12,7 +12,6 @@ import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span, Str),
 import Text.Pandoc.Walk (walkM)
 
 import LinkIcon (addIcon)
-import Utils (isUniqueAll)
 
 -- Compile-time Layout Optimization: annotate self-reference links with whether they are 'before' or 'after' the link, so they are decorated with either '↑' or '↓' icons to help the reader know what the link refers to & if they have read it already.
 -- Doing this at compile-time reduces the burden on client-side JS & layout shift.
@@ -114,10 +113,10 @@ upDownArrows :: Pandoc -> Pandoc
 upDownArrows (Pandoc meta blocks) = Pandoc meta (ST.evalState (walkM addArrowClass blocks) S.empty)
 
 testUpDownArrows :: [(Pandoc, Pandoc)]
-testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pandoc nullMeta a, Pandoc nullMeta b)) testCases
-  where
-    testCases :: [([Block], [Block])]
-    testCases = isUniqueAll
+testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pandoc nullMeta a, Pandoc nullMeta b)) arrowTestCases
+
+arrowTestCases :: [([Block], [Block])]
+arrowTestCases =
       [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
         [Para [Link ("", [], arrowDownKV) [Str "simpleCase"] ("#target", "")]])
       , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],

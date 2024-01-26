@@ -3,7 +3,7 @@ module Config.Tags where
 import Data.Char (toLower)
 import Data.List (isInfixOf, isPrefixOf)
 
-import Utils (anyInfix, anyPrefix, isUniqueAll, isUniqueKeys, isUniqueList)
+import Utils (anyInfix, anyPrefix)
 
 -- sub-directories where directory ≠ tag; this is usually the case in projects or archives/mirrors/dumps. We don't consider them to be tags.
 tagGuessBlacklist :: String -> Bool
@@ -34,7 +34,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     specialCases = [(\u -> anyInfix u ["evageeks.org","eva.onegeek.org", "evamonkey.com"], "anime/eva")]
 
 wholeTagRewritesRegexes  :: [(String,String)]
-wholeTagRewritesRegexes = isUniqueKeys [("^cs/", "CS/")
+wholeTagRewritesRegexes = [("^cs/", "CS/")
                      , ("^cs$", "CS")
                      , ("^cs/c$", "C")
                      , ("^cs/r$", "R")
@@ -56,7 +56,7 @@ wholeTagRewritesRegexes = isUniqueKeys [("^cs/", "CS/")
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
 tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
-tagsShort2LongRewrites = isUniqueKeys
+tagsShort2LongRewrites =
    [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot")
    , ("reinforcement-learning/robotic", "reinforcement-learning/robot"), ("dogs", "dog"), ("dog/genetics", "genetics/heritable/dog")
    , ("dog/cloning", "genetics/cloning/dog")
@@ -137,13 +137,16 @@ tagsShort2LongRewrites = isUniqueKeys
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
-  map (\s -> (s, error s)) (isUniqueList ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
-                                           "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong",
-                                           "the", "to", "tr", "up", "we"]) ++
+  map (\s -> (s, error s)) shortTagBlacklist ++
   -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
-tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
+shortTagBlacklist :: [String]
+shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
+                                           "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong",
+                                           "the", "to", "tr", "up", "we"]
+
+tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing")
           , ("technology/northpaw", "Northpaw compass")
           , ("technology/self-sinking", "self-sinking disposal")
@@ -536,7 +539,7 @@ tagsLong2Short = isUniqueAll $ reverse [ -- priority: first one wins. so sub-dir
           ]
 
 shortTagTestSuite :: [(String, String)]
-shortTagTestSuite = isUniqueKeys
+shortTagTestSuite =
    [("active-learning", "reinforcement-learning/exploration/active-learning")
         , ("add" , "psychiatry/adhd")
         , ("adhd" , "psychiatry/adhd")

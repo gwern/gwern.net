@@ -4,7 +4,7 @@ module Utils where
 import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.Graph (flattenSCC, stronglyConnComp)
-import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, nub, foldl')
+import Data.List (group, intercalate, intersperse, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, nub)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Time.Calendar (toGregorian, toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
@@ -19,7 +19,6 @@ import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefix
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
-import qualified Data.Set as Set
 
 import Numeric (showFFloat)
 
@@ -302,39 +301,41 @@ processDOIArxiv url = "10.48550/arXiv." ++
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
 cleanAuthors = trim . replaceMany cleanAuthorsFixedRewrites  .
-                       sedMany (isUniqueKeys [
-                         ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
-                         (",$", ""),
-                         (", +", ", "),
-                         ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1"), -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3"), -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5"), -- 3-author
-                         ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7"), -- 4-author, and I won't try for more
-                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith"      → "A. Smith"
-                         (" ([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3"),             -- " LK Barnes"   → " L. K. Barnes"
-                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith"   → "A. B. Smith"
-                         ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
-                         (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
-                         (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
-                         (" ([A-Z]\\.) ([A-Z]) ", " \\1 \\2. "),                            -- "John H. A Smith"  → "John H. A. Smith"
-                         (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 "),                            -- "John H A. Smith"  → "John H. A. Smith"
-                         (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
-                         ])
+                       sedMany cleanAuthorsRegexps
+cleanAuthorsRegexps :: [(String,String)]
+cleanAuthorsRegexps = [
+  ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2") -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
+  , (",$", "")
+  , (", +", ", ")
+  , ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1") -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3") -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5") -- 3-author
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7") -- 4-author, and I won't try for more
+  , ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2")                              -- "A.Smith"      → "A. Smith"
+  , (" ([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3")             -- " LK Barnes"   → " L. K. Barnes"
+  , ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3")               -- "A.B. Smith"   → "A. B. Smith"
+  , ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4") -- "C.A.B. Smith" → "C. A. B. Smith"
+  , (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. ")                   -- "John HAB Smith" → "John H. A. B. Smith"
+  , (" ([A-Z])([A-Z]) ", " \\1. \\2. ")                               -- "John HA Smith"  → "John H. A. Smith"
+  , (" ([A-Z]\\.) ([A-Z]) ", " \\1 \\2. ")                            -- "John H. A Smith"  → "John H. A. Smith"
+  , (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 ")                            -- "John H A. Smith"  → "John H. A. Smith"
+  , (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
+  ]
 cleanAuthorsFixedRewrites :: [(String,String)]
-cleanAuthorsFixedRewrites = isUniqueKeys [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","),
-                                           ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""),
-                                           (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""),
-                                           (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "),
-                                           (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""),
-                                           (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","),
-                                           (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","),
-                                           (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "),
-                                           ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","),
-                                           (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","),
-                                           ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""),
-                                           (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"),
-                                           (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
-                                           (" M. D. MMM", "")]
+cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","),
+                             ("Dr ", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""),
+                             (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""),
+                             (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "),
+                             (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""),
+                             (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","),
+                             (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","),
+                             (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "),
+                             ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","),
+                             (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","),
+                             ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""),
+                             (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"),
+                             (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
+                             (" M. D. MMM", "")]
 cleanAuthorsTest :: [(String,String,String)]
 cleanAuthorsTest = testInfixRewriteLoops cleanAuthorsFixedRewrites cleanAuthors
 
@@ -359,7 +360,7 @@ cleanAbstractsHTMLTest = testInfixRewriteLoops htmlRewriteFixed cleanAbstractsHT
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
-       cleanAbstractsHTML' = trim . sedMany (isUniqueKeys htmlRewriteRegexp) . replaceMany (isUniqueKeys htmlRewriteFixed)
+       cleanAbstractsHTML' = trim . sedMany htmlRewriteRegexp . replaceMany htmlRewriteFixed
 
 htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexp = [
@@ -1995,10 +1996,11 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                    | otherwise = l
 
 filterMeta :: String -> String
-filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
- where badSubstrings, badWholes :: [String]
-       badSubstrings = isUniqueList ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "AppleWorks", "Apache", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the ", "shaniahl", ".orig.pdf", ".dvi", ".qxd", ".ps", "doi:10", "DOI", ".tmp", ".pdf", ".eps", ".PDF", "APA template", "Author Guidelines", "156x234mm", "C:\\", "D:\\", "CUP_JBS", ".vp", ".wpd", "EBSCOhost", ".docx", ".qxp", "PDF_Banner", "MergedFile", "No Job Name", "PII: ", "ProQuest Dissertation", "ScanGate", "Science Magazine", ".CHP", ".chp", ".tex", ".fm", "http://content.nejm.org/cgi/content/", "stdin", "Corel PHOTO-PAINT", "Thomson Press India", "B L Ganju", "Meta˚Analytic", "RealObjects", "PDFreactor(R)", "Licensed for: Oxford University", "CoVantage", "RYALS327-SCAN", "WWS-5ZM9", "<unknown>", "[ M1C44 ]", "WWS-5ZM", "html2ps ", "version 1.0 beta2", "jason.richwine", "jmaynard", "jmcfadde", "k.albert", "kstange", "macftz01", "markj", "mcdonaldm", "mchahino", "meiersa", "mkc43", "pilc2501", "pm016", "pm025", "pm054", "pubdat", "randerer", "renee.lojewski", "tiff2ps", "yeh", "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner", "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science", "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer", "ARTICLIZER", "c:/ncn"]
-       badWholes = isUniqueList ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless", "fulvio", "Winter", "markj", "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009", "021186U129", "02_ASQ523602 1..33", "03_gbb155 240..248", "1)", "1.0b", "110s(6) Science. 555-", "1247", "2913 | 01 Chorney", "301246", "378787 1100..1105", "4559", "459119", "4AD004/Prov9 FMV/4P", "52457938", "7.0 psym 7#1 2002", "72508-danigelis.q41", "9757 van Stuijvenberg", "99202", "BBS1200319 661..726", "BBS1300119 297..350", "Backtalk", "Backups", "BatesTalk", "Brookings draft v", "CAM200", "CDP370136 177..182", "CMMI10", "COLLINCH01", "COMM34$U44", "COPSINGOLEVET", "DO00010384 643..650", "DP 14-009", "Digestion", "Final_EXIT_text", "Gerontotherapeutics", "Harrison J", "II", "IMD JATS", "ISO/IEC 9899:yyyy", "Information", "JC162160 1642..1651", "JEOBP_14_2_2011", "JMCB16U208", "Journal06-04b.cdr", "Latvala", "Layout 1", "MASTER THESIS 5", "MIT-LCS:MIT/LCS/TR-164", "MSS21283 927..934", "Masters' Thesis", "Nowicka, R", "OP-ESRJ170071 1..13", "OP-QJEC150001 571..614 ++", "P:TEXSICOMP 9-1 8849 8849", "PEDS20142707_pap_peds 1..9", "PEDS_20173872 1..11", "S0747-5632(00)00043-1", "PME00042", "PSCI13124", "Print", "RAAG_A_1310021_O", "RULES-2014-P-CON", "Review", "SIA", "Slide 1", "Standards 05-06", "TF-TPDR120086 1..8 ++", "Title", "Title:", "Tobler_CameraReady", "US020180204116A120180719", "Unknown", "VJMB_A_1327416_O", "Ventura - 12JBR8", "Vol 9#5", "WR02015.fm", "Wildcats", "ZP577", "ajps_461_HR", "anp060-79 407..506", "bhm211 1737..1747", "btn127 1381..1385", "c011.tex", "cns_317_LR", "ddl206 2721..2731", "default", "desc_745.fm", "e08:9", "ejn_5217 3532..3540", "emon-84-04-01 3..28", "es-2013-03688w 1..9", "foo", "hcrj901068 151..157", "hred_91_110.42_66", "inhy_60_205.213_218", "ipg1200217a", "jasar08282 841..854", "jcp20186 373..378", "jcp25202 175..179", "jcpp_1798 1192..1199", "jn169326 872..877", "khan", "mbev_16_1218.1791_1798", "mgs;01jan95", "osteo-1203 257..264", "oup_cercor_bhy157 1..11 ++", "pnas201201895 1..8", "pnp06457 1125..1128", "s00221-005-2334-6ca-web 23..30", "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5", "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp"]
+filterMeta ea = if anyInfix ea filterMetaBadSubstrings || elem ea filterMetaBadWholes then "" else ea
+
+filterMetaBadSubstrings, filterMetaBadWholes :: [String]
+filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "AppleWorks", "Apache", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED", "TECHBOOKS", "Word 6.01", "TID Print Plant", "8.indd", "pdftk-java", "OP-ESRJ", "JRC5", "klynch", "pruich", "Micron", "Anonymous Submission", "Asterisk", "KBarry2", ",-0", "fi-5530C2dj", "FUJIT S. U.", "LEVET_Layout", "Digitized by the ", "shaniahl", ".orig.pdf", ".dvi", ".qxd", ".ps", "doi:10", "DOI", ".tmp", ".pdf", ".eps", ".PDF", "APA template", "Author Guidelines", "156x234mm", "C:\\", "D:\\", "CUP_JBS", ".vp", ".wpd", "EBSCOhost", ".docx", ".qxp", "PDF_Banner", "MergedFile", "No Job Name", "PII: ", "ProQuest Dissertation", "ScanGate", "Science Magazine", ".CHP", ".chp", ".tex", ".fm", "http://content.nejm.org/cgi/content/", "stdin", "Corel PHOTO-PAINT", "Thomson Press India", "B L Ganju", "Meta˚Analytic", "RealObjects", "PDFreactor(R)", "Licensed for: Oxford University", "CoVantage", "RYALS327-SCAN", "WWS-5ZM9", "<unknown>", "[ M1C44 ]", "WWS-5ZM", "html2ps ", "version 1.0 beta2", "jason.richwine", "jmaynard", "jmcfadde", "k.albert", "kstange", "macftz01", "markj", "mcdonaldm", "mchahino", "meiersa", "mkc43", "pilc2501", "pm016", "pm025", "pm054", "pubdat", "randerer", "renee.lojewski", "tiff2ps", "yeh", "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner", "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science", "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer", "ARTICLIZER", "c:/ncn"]
+filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association", "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo", "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless", "fulvio", "Winter", "markj", "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009", "021186U129", "02_ASQ523602 1..33", "03_gbb155 240..248", "1)", "1.0b", "110s(6) Science. 555-", "1247", "2913 | 01 Chorney", "301246", "378787 1100..1105", "4559", "459119", "4AD004/Prov9 FMV/4P", "52457938", "7.0 psym 7#1 2002", "72508-danigelis.q41", "9757 van Stuijvenberg", "99202", "BBS1200319 661..726", "BBS1300119 297..350", "Backtalk", "Backups", "BatesTalk", "Brookings draft v", "CAM200", "CDP370136 177..182", "CMMI10", "COLLINCH01", "COMM34$U44", "COPSINGOLEVET", "DO00010384 643..650", "DP 14-009", "Digestion", "Final_EXIT_text", "Gerontotherapeutics", "Harrison J", "II", "IMD JATS", "ISO/IEC 9899:yyyy", "Information", "JC162160 1642..1651", "JEOBP_14_2_2011", "JMCB16U208", "Journal06-04b.cdr", "Latvala", "Layout 1", "MASTER THESIS 5", "MIT-LCS:MIT/LCS/TR-164", "MSS21283 927..934", "Masters' Thesis", "Nowicka, R", "OP-ESRJ170071 1..13", "OP-QJEC150001 571..614 ++", "P:TEXSICOMP 9-1 8849 8849", "PEDS20142707_pap_peds 1..9", "PEDS_20173872 1..11", "S0747-5632(00)00043-1", "PME00042", "PSCI13124", "Print", "RAAG_A_1310021_O", "RULES-2014-P-CON", "Review", "SIA", "Slide 1", "Standards 05-06", "TF-TPDR120086 1..8 ++", "Title", "Title:", "Tobler_CameraReady", "US020180204116A120180719", "Unknown", "VJMB_A_1327416_O", "Ventura - 12JBR8", "Vol 9#5", "WR02015.fm", "Wildcats", "ZP577", "ajps_461_HR", "anp060-79 407..506", "bhm211 1737..1747", "btn127 1381..1385", "c011.tex", "cns_317_LR", "ddl206 2721..2731", "default", "desc_745.fm", "e08:9", "ejn_5217 3532..3540", "emon-84-04-01 3..28", "es-2013-03688w 1..9", "foo", "hcrj901068 151..157", "hred_91_110.42_66", "inhy_60_205.213_218", "ipg1200217a", "jasar08282 841..854", "jcp20186 373..378", "jcp25202 175..179", "jcpp_1798 1192..1199", "jn169326 872..877", "khan", "mbev_16_1218.1791_1798", "mgs;01jan95", "osteo-1203 257..264", "oup_cercor_bhy157 1..11 ++", "pnas201201895 1..8", "pnp06457 1125..1128", "s00221-005-2334-6ca-web 23..30", "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5", "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp"]
 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String
@@ -2064,59 +2066,6 @@ balanced str = helper str "" 0 0
     matchingBracket '}' = '{' -- TODO: if this approach works, add double-quotes as delimiters that should be balanced
     matchingBracket _ = error "Invalid bracket"
 
--- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
--- (Since the config lists are static, they can in theory be checked at compile-time, but my attempt to do that with Template Haskell
--- for XMonad keymap configs many years ago ran into a lot of pain, so I won't bother even trying again.)
--- Helper function to check uniqueness & report the offending list:
-
--- Optimized helper function to get duplicates
-getDuplicates :: Ord a => [a] -> [a]
-getDuplicates = snd . foldl' go (Set.empty, [])
-  where
-    go (seen, duplicates) x
-      | x `Set.member` seen = (seen, duplicates)
-      | otherwise = (Set.insert x seen, duplicates)
-throwError :: Show a => String -> [a] -> b
-throwError msg xs = error $ "Error: " ++ msg ++ " " ++ show xs
-checkUniqueOrThrow :: (Eq a, Ord a, Show a) => String -> [a] -> [a]
-checkUniqueOrThrow msg xs
-  | null duplicates = xs
-  | otherwise = throwError msg duplicates
-  where duplicates = getDuplicates xs
-
--- 0. check a simple list for uniqueness in the only way possible:
-isUniqueList :: (Eq a, Ord a, Show a) => [a] -> [a]
-isUniqueList = checkUniqueOrThrow "Simple list contains duplicates:"
-
--- Association-list checks:
--- 1. isUnique: all key-value pairs are unique and there are no duplicates
-isUnique :: (Eq a, Show a, Eq b, Ord a, Ord b, Show b) => [(a,b)] -> [(a,b)]
-isUnique = checkUniqueOrThrow "Association List contains duplicate key-value pairs:"
-
--- 2. isUniqueKeys: all keys are unique and there are no duplicates
-isUniqueKeys :: (Eq a, Ord a, Show a, Show b) => [(a,b)] -> [(a,b)]
-isUniqueKeys xs
-  | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate keys:" duplicates
-  where duplicates = getDuplicates (map fst xs)
--- special-case:
-isUniqueKeys3 :: (Eq a, Ord a, Show a) => [(a,b,c)] -> [(a,b,c)]
-isUniqueKeys3 xs
-  | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate keys:" duplicates
-  where duplicates = getDuplicates (map (\(a,_,_) -> a) xs)
-
--- 3. isUniqueValues: all values are unique and there are no duplicates
-isUniqueValues :: (Show a, Ord a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
-isUniqueValues xs
-  | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate values:" duplicates
-  where duplicates = getDuplicates (map snd xs)
-
--- 4. isUniqueAll: all keys, values, and key-value pairs are unique
-isUniqueAll :: (Eq a, Ord a, Show a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
-isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
-
 -- simple test for infinite loops in infix string rewrites: we take the list of before→after rewrites, and we try to rewrite the 'before'
 -- using some given function. If it infinite-loops...
 testInfixRewriteLoops :: [(String,String)] -> (String -> String) -> [(String,String,String)]
@@ -2124,7 +2073,7 @@ testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ revers
 
 isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]
 isCycleLess xs = if not (cycleExists xs) then xs else
-  throwError "Association list of rewrite-rules has cycles! Errors related to:" (show $ findCycles xs)
+  error $ "Error: Association list of rewrite-rules has cycles! Errors related to:" ++ (show $ findCycles xs)
 
 cycleExists :: Ord a => [(a, a)] -> Bool
 cycleExists tuples = any (uncurry (==)) tuples ||
@@ -2152,26 +2101,26 @@ findCycles xs = snd $ foldl f ([], []) xs
 testCycleExists :: [([(Int,Int)], Bool)] -> [[(Int,Int)]]
 testCycleExists testCases = [ rules | (rules, expected) <- testCases, cycleExists rules /= expected]
 testCycleDetection :: [[(Int,Int)]]
-testCycleDetection = testCycleExists testCases
- where testCases :: [([(Int, Int)], Bool)]
-       testCases = isUniqueKeys [ ([], False) -- no rules, no cycles
-            , ([(1, 2)], False) -- one rule, no cycles
-            , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
-            , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
-            , ([(1, 2), (2, 1)], True) -- simple cycle
-            , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
-            , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
-            , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
-            , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
-            , ([(1, 2), (2, 3), (4, 5), (5, 6)], False) -- separate set of rules, no cycles
-            , ([(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)], True) -- separate set of rules with cycles
-            , ([(1, 2), (2, 3), (3, 2), (4, 5), (5, 4)], True) -- there is a cycle within subset of rules
-            , ([(1, 2), (3, 4), (5, 6)], False) -- separate set of rules, no cycles
-            , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
-            , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
-            , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
-            , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
-            ]
+testCycleDetection = testCycleExists cycleTestCases
+cycleTestCases :: [([(Int, Int)], Bool)]
+cycleTestCases = [ ([], False) -- no rules, no cycles
+     , ([(1, 2)], False) -- one rule, no cycles
+     , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
+     , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
+     , ([(1, 2), (2, 1)], True) -- simple cycle
+     , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
+     , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
+     , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
+     , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
+     , ([(1, 2), (2, 3), (4, 5), (5, 6)], False) -- separate set of rules, no cycles
+     , ([(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)], True) -- separate set of rules with cycles
+     , ([(1, 2), (2, 3), (3, 2), (4, 5), (5, 4)], True) -- there is a cycle within subset of rules
+     , ([(1, 2), (3, 4), (5, 6)], False) -- separate set of rules, no cycles
+     , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
+     , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
+     , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
+     , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
+     ]
 
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
 extractTwitterUsername :: String -> String

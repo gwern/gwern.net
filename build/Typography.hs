@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest) where
+module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -26,7 +26,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (sed, currentYear, replaceMany, parseRawAllClean, isUniqueKeys) -- addClass
+import Utils (sed, currentYear, replaceMany, parseRawAllClean) -- addClass
 import Config.Typography as C
 
 typographyTransform :: Pandoc -> Pandoc
@@ -256,7 +256,7 @@ capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
     capitalizeFirst (x:xs) = toUpper x : xs
 
 titleCaseTestCases :: [(String, String)]
-titleCaseTestCases = isUniqueKeys [
+titleCaseTestCases = [
   ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
             , ("end-to-end testing", "End-To-End Testing")
             , ("mother-in-law", "Mother-In-Law")

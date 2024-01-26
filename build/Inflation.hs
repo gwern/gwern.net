@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) wher
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-01-23 09:52:53 gwern"
+-- When:  Time-stamp: "2024-01-26 10:54:17 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -74,7 +74,7 @@ $ echo '[$100]{inflation=$2024}' | pandoc -w html
 
 import Text.Pandoc (nullAttr, Inline(Link, Span, Str, Subscript, Superscript))
 import Text.Read (readMaybe)
-import qualified Data.Map.Strict as M (findMax, findMin, lookup, lookupGE, lookupLE, mapWithKey, Map)
+import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Utils (currentYear, printDouble, inlinesToText, replace)
@@ -202,7 +202,7 @@ bitcoinQuery cy date = case M.lookup date db of
 
 -- the exchange rates are, of course, historical: a 2013 USD/Bitcoin exchange rate is for a *2013* dollar, not a current dollar. So we update to a current dollar.
 bitcoinUSDExchangeRate :: Int -> M.Map String Double
-bitcoinUSDExchangeRate cy = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) cy) bitcoinUSDExchangeRateHistory
+bitcoinUSDExchangeRate cy = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) cy) (M.fromList bitcoinUSDExchangeRateHistory)
 
 {- This general approach could be applied to many other financial assets.
 Stock prices would benefit from being reported in meaningful terms like net real return compared to

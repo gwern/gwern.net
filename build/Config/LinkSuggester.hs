@@ -6,7 +6,7 @@ import qualified Data.Text as T (head, length, unpack, isPrefixOf, isSuffixOf, T
 import qualified Data.Map.Strict as M (fromList, Map)
 import Text.Regex.TDFA ((=~))
 import Network.URI (isURI)
-import Utils (anyInfixT, anyPrefixT, isUniqueList, isUniqueAll)
+import Utils (anyInfixT, anyPrefixT)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 4
@@ -25,9 +25,11 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                     t =~ regex ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(",".", "Wikipedia link about "] ||
-                    elem t badStrings
+                    elem t badAnchorStrings
   where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
-        badStrings = isUniqueList ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
+
+badAnchorStrings :: [T.Text]
+badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
              "10-50k", "100 days", "100GHz", "100\8211\&1000\215", "12-36 hours",
              "12kb/day", "150 people", "15\215", "175 days", "1908/1966", "1920s",
              "1933 paper", "1960s", "1980s", "1990s", "1kg", "1\8211\&4", "1\8211\&5",
@@ -210,9 +212,11 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
              "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter", "media report", "to cry", "A/B test results"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
-whiteList :: M.Map T.Text [T.Text]
-whiteList = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) $ isUniqueAll
-  [ ( "/crop#hands"
+whiteListDB :: M.Map T.Text [T.Text]
+whiteListDB = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) whiteList
+
+whiteList :: [(T.Text, [T.Text])]
+whiteList = [ ( "/crop#hands"
     , [ "PALM"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of _n_ = 14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of _n_ = 96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and _n_ = 58,536 of them upscaled to \8805\&512px"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of n=14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of n=96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and n=58,536 of them upscaled to \8805\&512px"

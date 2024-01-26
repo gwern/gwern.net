@@ -41,22 +41,22 @@ main = do
   let db = M.filterWithKey (\k _ -> (k /= "") && (T.head k == '/' || isURI (T.unpack k)) && not (C.filterURLs k)) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
-  let dbMinimumLess = M.union C.whiteList $ M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= C.hitsMinimum) db
+  let dbMinimumLess = M.union C.whiteListDB $ M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= C.hitsMinimum) db
   let dbFailedMinimum = ("Did not pass hitsMinimum filter", db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
 
   -- We want to filter out any anchor text which is associated with more than 1 URL (those are too ambiguous to be useful), any text which is in the system dictionary, and anything in the blacklist patterns or list.
   let anchorTextsDupes = U.repeated $ concat $ M.elems dbMinimumLess
-  let dbTextDupeLess = M.union C.whiteList $ M.map (filter (`notElem` anchorTextsDupes)) dbMinimumLess
+  let dbTextDupeLess = M.union C.whiteListDB $ M.map (filter (`notElem` anchorTextsDupes)) dbMinimumLess
   let dbFailedDupe = ("Did not pass anchorTextDupes filter"::T.Text,                   dbMinimumLess `M.difference` dbTextDupeLess)
 
   dict <- dictionarySystem
-  let dbDictLess = M.union C.whiteList $ M.map (filter (\t -> not (S.member (T.toLower t) dict))) dbTextDupeLess
+  let dbDictLess = M.union C.whiteListDB $ M.map (filter (\t -> not (S.member (T.toLower t) dict))) dbTextDupeLess
   let dbFailedDict = ("Did not pass system dictionary filter"::T.Text,                          dbTextDupeLess `M.difference` dbDictLess)
 
-  let dbAnchorLess = M.union C.whiteList $ M.map (filter (not . C.filterAnchors)) dbDictLess
+  let dbAnchorLess = M.union C.whiteListDB $ M.map (filter (not . C.filterAnchors)) dbDictLess
   let dbFailedAnchor = ("Did not pass anchor filter"::T.Text,                 dbDictLess `M.difference` dbAnchorLess)
 
-  let dbClean = M.union C.whiteList $ M.filter (not . null) dbAnchorLess
+  let dbClean = M.union C.whiteListDB $ M.filter (not . null) dbAnchorLess
 
   -- swap [(URL,[Anchor])] to [(Anchor,URL)] (which we need for doing 'search-replace before after'), by expanding/flattening the list:
   let reversedDB = concatMap (\(url,ts) -> zip ts (repeat url)) $ M.toList dbClean

@@ -1,10 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.Inflation where
 
-import qualified Data.Map.Strict as M (fromList, Map)
 import qualified Data.Text as T (Text)
 import Text.Pandoc (nullAttr, Inline(Span, Str, Superscript, Subscript))
-import Utils (isUniqueAll, isUniqueKeys)
 
 minPercentage :: Double
 minPercentage = 1 + 0.20
@@ -26,7 +24,7 @@ inflationRatesUSD = let -- CPI: http://www.usinflationcalculator.com/inflation/c
     in (cpi19131958 ++ pce19592018 ++ pce20192021) ++ pce20192021 ++ repeat (last pce2022)
 
 inflationDollarLinkTestCases :: [((T.Text,T.Text), Inline)]
-inflationDollarLinkTestCases = isUniqueAll
+inflationDollarLinkTestCases =
   [(("$0.01","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","0.01"),("year-current","2023"),("amount-current","0.22"),("title","CPI inflation-adjusted US dollar: from nominal $0.01 in 1913 \8594 real $0.22 in 2023")]) [Str "$0.22",Span ("",["subsup"],[]) [Superscript [Str "$0.01"],Subscript [Str "1913"]]])
     , (("$0.1","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","0.1"),("year-current","2023"),("amount-current","2.24"),("title","CPI inflation-adjusted US dollar: from nominal $0.1 in 1913 \8594 real $2.24 in 2023")]) [Str "$2.24",Span ("",["subsup"],[]) [Superscript [Str "$0.1"],Subscript [Str "1913"]]])
     , (("$1","$1913"),Span ("",["inflation-adjusted"],[("year-original","1913"),("amount-original","1"),("year-current","2023"),("amount-current","22.41"),("title","CPI inflation-adjusted US dollar: from nominal $1 in 1913 \8594 real $22.41 in 2023")]) [Str "$22.41",Span ("",["subsup"],[]) [Superscript [Str "$1"],Subscript [Str "1913"]]])
@@ -108,8 +106,8 @@ inflationDollarLinkTestCases = isUniqueAll
     , (("$0.00","$2019"),          Span nullAttr [Str "$0.00"])
     ]
 
-bitcoinUSDExchangeRateHistory :: M.Map String Double
-bitcoinUSDExchangeRateHistory = M.fromList $ isUniqueKeys [
+bitcoinUSDExchangeRateHistory :: [(String,Double)]
+bitcoinUSDExchangeRateHistory = [
     -- extrapolate from Pizza Day (22 May 2010), $30/₿10,000
     ("2010-05-20", 0.003)
   , ("2010-05-21", 0.003), ("2010-05-22", 0.003), ("2010-05-23", 0.003), ("2010-05-24", 0.003), ("2010-05-25", 0.003)

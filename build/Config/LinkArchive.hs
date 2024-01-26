@@ -254,7 +254,6 @@ whiteList url
   | anyInfix url whiteListMatchesFixed = True
     | otherwise = False
 
--- TODO: test this with isUniqueList; factor out elsewhere
 whiteListMatchesFixed :: [String]
 whiteListMatchesFixed = [
       "archive.org/details/", "archive.org/download/", "scholar.archive.org"

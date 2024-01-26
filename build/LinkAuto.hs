@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2024-01-25 15:59:06 gwern"
+When:  Time-stamp: "2024-01-26 10:36:21 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -59,7 +59,7 @@ import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa s
 import Utils (addClass, frequency, simplifiedDoc, safeHtmlWriterOptions, cleanUpDivsEmpty, cleanUpSpans, inlinesToText)
 import Query (extractURLs)
 import Typography (mergeSpaces)
-import qualified Config.LinkAuto as C (custom)
+import qualified Config.LinkAuto as C (customSorted)
 
 -- test,test2 :: [Inline]
 -- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
@@ -271,5 +271,5 @@ definitionsValidate defs
 -- more sensible to require them to be marked up explicitly, which is vastly easier to program &
 -- more efficient. We'll see.
 customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
-customDefinitions subsetter = if length C.custom > 1007 then error ("LinkAuto.hs (customDefinitions): 'C.custom' too long (" ++ show (length C.custom) ++ "), which will trigger the LA slowdown, making site compiles unacceptably slow. Delete some unused regexp rewrite rules!")
-                              else customDefinitionsR $ definitionsValidate $ subsetter C.custom -- delimit & compile
+customDefinitions subsetter = if length C.customSorted > 1007 then error ("LinkAuto.hs (customDefinitions): 'C.customSorted' too long (" ++ show (length C.customSorted) ++ "), which will trigger the LA slowdown, making site compiles unacceptably slow. Delete some unused regexp rewrite rules!")
+                              else customDefinitionsR $ definitionsValidate $ subsetter C.customSorted -- delimit & compile
