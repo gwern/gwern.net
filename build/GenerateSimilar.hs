@@ -426,17 +426,17 @@ sortTagByTopic md tag = do
                            sortSimilars edb sortDB newest paths
 
 -- what was the short name suggested for a list of URLs? quick DB letting us look up cached short names:
-type ListName = [([FilePath], String)]
+type ListName = M.Map [FilePath] String
 readListName :: IO ListName
 readListName = do let p = "metadata/listname.hs"
                   exists <- doesFileExist p
-                  if not exists then return [] else
+                  if not exists then return M.empty else
                             do ls <- fmap T.unpack $ TIO.readFile p
-                               return $ if ls=="" then [] else (validateListName $ read ls :: ListName)
-   where validateListName :: ListName -> ListName
+                               return $ if ls=="" then M.empty else M.fromList $ validateListName (read ls :: [([FilePath], String)])
+   where validateListName :: [([FilePath], String)] -> [([FilePath], String)]
          validateListName l = if any (\(f,g) -> null g || length f < 1 || any null f) l then error ("validateListName: read file failed sanity check: " ++ show l) else l
 writeListName :: ListName -> IO ()
-writeListName = TIO.writeFile "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) -- ensure consistent set-like lookups by sorting
+writeListName = TIO.writeFile "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) . M.toList -- ensure consistent set-like lookups by sorting
 
 -- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
 type ListSortedMagicList = [([FilePath], [FilePath])]
@@ -446,7 +446,7 @@ readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
                          exists <- doesFileExist p
                          if not exists then return M.empty else
                            do ls <- fmap T.unpack $ TIO.readFile p
-                              return $ if ls=="" then M.empty else (M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList))
+                              return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
          validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
@@ -470,11 +470,11 @@ sortSimilarsStartingWithNewestWithTag ldb sortDB md parentTag items =
                                     IO ([(String, [(FilePath, MetadataItem)])], [String])
     processWithBlacklistAccumulator ldb' (acc, blacklist) fs = do
       let urlList = map fst fs
-      suggestion <- case lookup (sort urlList) ldb' of
+      suggestion <- case M.lookup (sort urlList) ldb' of
                       Just nickname -> return nickname -- use existing one, or generate new suggestion & cache it out:
                       Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
                                     ldb'' <- readListName -- the in-memory DB may be stale due to other threads also trying to update the on-disk, so re-read
-                                    let ldb''' = (urlList, nicknameNew) : ldb''
+                                    let ldb''' = M.insert urlList nicknameNew ldb''
                                     writeListName ldb'''
                                     return nicknameNew
       let newAcc = mergeIntoAccumulator acc (suggestion, fs)
