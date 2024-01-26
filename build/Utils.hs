@@ -31,9 +31,8 @@ import Text.Pandoc (def, nullAttr, nullMeta, runPure,
 import Text.Pandoc.Walk (walk)
 
 -- Auto-update the current year.
-{-# NOINLINE currentYear #-}
 currentYear :: Int
-currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
+currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime -- 2024
 
 currentDay :: IO Integer
 currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime

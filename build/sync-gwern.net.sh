@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-25 18:29:49 gwern"
+# When:  Time-stamp: "2024-01-26 09:30:18 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -566,6 +566,9 @@ else
 
     λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
     wrap λ "Untagged annotations." &
+
+    λ(){ gwa | grep -E -v -e '</a></p> ?</li> ?<li> ?<p><a' | grep -E -e '<div class="aux-links-append see-also-append collapse">.*<p><strong>See Also</strong>:</p>.*<div class="columns"> ?<ul> ?<li>'l }
+    wrap λ "Annotations with single-entry See-Alsos which are collapsed, which is pointless (as it is not any more compact); remove the '.collapse' class."
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:" &
