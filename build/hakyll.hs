@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-24 12:30:16 gwern"
+When: Time-stamp: "2024-01-25 11:32:24 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -20,7 +20,7 @@ import Data.Char (toLower)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
-import System.Environment (lookupEnv)
+-- import System.Environment (lookupEnv)
 import Hakyll (compile, composeRoutes, constField,
                symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
@@ -56,8 +56,8 @@ import Arrow (upDownArrows, testUpDownArrows)
 
 main :: IO ()
 main =
- do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
-    let slow = "true" == fromMaybe "" arg
+ do -- arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
+    -- let slow = "true" == fromMaybe "" arg
     hakyll $ do
                preprocess $ printGreen ("Testing link icon matches…" :: String)
                let linkIcons = linkIconTest
@@ -107,10 +107,8 @@ main =
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
                meta <- preprocess readLinkMetadata
-               preprocess $ if slow then do printGreen ("Writing all annotations…" :: String)
-                                            writeAnnotationFragments am meta False
-                                    else do printGreen ("Writing only missing annotations…" :: String)
-                                            writeAnnotationFragments am meta True
+               preprocess $ do printGreen ("Writing missing annotations…" :: String)
+                               writeAnnotationFragments am meta True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do

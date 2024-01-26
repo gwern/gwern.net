@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-25 00:19:57 gwern"
+# When:  Time-stamp: "2024-01-25 18:29:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -67,7 +67,10 @@ else
     done
     export SLOW SKIP_DIRECTORIES N NITTER_PID
 
-    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi &
+    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
+        bold "Checking metadata…"
+        ./static/build/checkMetadata > ~/METADATA.txt &
+    fi &
     bold "Pulling infrastructure updates…"
     # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
     (cd ./static/ && git status && timeout 10m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
@@ -125,6 +128,7 @@ else
     compile preprocess-markdown.hs
     compile guessTag.hs &
     compile changeTag.hs &
+    compile checkMetadata.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
@@ -194,8 +198,6 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     if [ "$SLOW" ]; then
-        bold "Checking metadata…"
-        ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'readLinkMetadataAndCheck' 1> /dev/null &
 
         kill "$NITTER_PID" || true
 
@@ -211,7 +213,6 @@ else
         bold "Updating site-of-the-day…"
         ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sotd' | \
             grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
-        wait;
     fi
 
     bold "Results size:"
@@ -230,7 +231,7 @@ else
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
-    ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
+    ## NOTE: we generate the sitemap *before* generating syntax-highlighted .html files of everything to avoid having to exclude those (which would be tricky because how do we know if any given 'foo.html' a standalone HTML file or merely a syntax-highlighted snippet?)
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
      find -L _site/doc/ _site/ _site/static/ -not -name "*.page" -type f | grep -F --invert-match -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | grep -E --invert-match -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
@@ -285,19 +286,6 @@ else
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel  --jobs "$N" syntaxHighlight
     set -e
-
-    bold "Stripping compile-time-only classes unnecessary at runtime…"
-    cleanClasses () {
-        sed -i -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
-               `# TODO: revert 9f246da03503b3c20d3c38eecd235b5aa7caa0b3 and remove .backlink-not clutter once all link-ID problems are resolved` \
-               -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
-    "$@"; }; export -f cleanClasses
-    find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F --invert-match -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
-    # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
-    find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"
@@ -374,6 +362,19 @@ else
     bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
     find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F --invert-match -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
+
+    bold "Stripping compile-time-only classes unnecessary at runtime…"
+    cleanClasses () {
+        sed -i -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
+               `# TODO: revert 9f246da03503b3c20d3c38eecd235b5aa7caa0b3 and remove .backlink-not clutter once all link-ID problems are resolved` \
+               -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
+               -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
+               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
+    "$@"; }; export -f cleanClasses
+    find ./ -path ./_site -prune -type f -o -name "*.page" | grep -F --invert-match -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
+    # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
+    find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
 
   if [ "$SLOW" ]; then
     # Testing compilation results:
@@ -761,7 +762,7 @@ else
 
         set -e;
     }
-    wrap λ "Markdown→HTML pages don't validate as HTML5"
+    wrap λ "Markdown→HTML pages don't validate as HTML5" &
 
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
     λ() { for PAGE in $PAGES; do
@@ -769,7 +770,7 @@ else
               if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
           done;
           }
-    wrap λ "Anchors linked but not defined inside page?"
+    wrap λ "Anchors linked but not defined inside page?" &
 
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
@@ -783,21 +784,21 @@ else
     # Sync:
     set -e
     ## make sure nginx user can list all directories (x) and read all files (r)
-    chmod a+x $(find ./ -type d)
-    chmod --recursive a+r ./*
-    wait;
+    chmod a+x $(find ./ -type d) &
+    chmod --recursive a+r ./* &
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static" &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net" &
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if [ "$SLOW" ]; then if ((RANDOM % 100 < 95)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi; else SPEED="--size-only"; fi
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net" &
+    wait;
     set +e
 
     bold "Expiring ≤100 updated files…"
@@ -974,7 +975,7 @@ else
           cm "application/pdf" 'https://gwern.net//doc/sociology/2022-yuan.pdf'
           cm "text/html; charset=utf-8" 'https://gwern.net//index'
         }
-    wrap λ "The live MIME types are incorrect"
+    wrap λ "The live MIME types are incorrect" &
 
     ## known-content check:
     elinks -dump 'https://gwern.net/index'   | grep -F --quiet -e 'This Is The Website' || red "/index content-check failed"
@@ -1002,7 +1003,7 @@ else
     wrap λ "Canary token was downloadable; nginx password-protection security failed?"
 
     ## did any of the key pages mysteriously vanish from the live version?
-    linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/'
+    linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/' &
     ## - traffic checks/alerts are done in Google Analytics: alerts on <900 pageviews/daily, <40s average session length/daily.
     ## - latency/downtime checks are done in `updown.io` (every 1h, 1s response-time for /index)
     set +e
@@ -1064,7 +1065,7 @@ else
                                                 -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                                                 -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
              | parallel --max-args=500 file | grep -F --invert-match -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
-    wrap λ "Corrupted filetype HTMLs"
+    wrap λ "Corrupted filetype HTMLs" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
     λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
@@ -1076,7 +1077,7 @@ else
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
-    wrap λ "Corrupted or broken PDFs"
+    wrap λ "Corrupted or broken PDFs" &
 
     λ(){
         LL="$(curl --silent https://ifconfig.me/ip)"
@@ -1100,7 +1101,7 @@ else
         export -f checkSpamHeader
         find ./doc/ -type f -name "*.pdf" | grep -F --invert-match -e 'doc/www/' | sort | parallel checkSpamHeader
     }
-    wrap λ "Remove academic-publisher wrapper junk from PDFs."
+    wrap λ "Remove academic-publisher wrapper junk from PDFs." &
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then
@@ -1109,31 +1110,31 @@ else
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }
     export -f removeEncryption
-    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption
+    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
 
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
     λ(){ find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
-    wrap λ "Corrupted JPGs"
+    wrap λ "Corrupted JPGs" &
 
     λ(){ find ./doc/ -type f -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
-    wrap λ "Corrupted PNGs"
+    wrap λ "Corrupted PNGs" &
 
     λ(){  find ./doc/ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
-    wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
+    wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')" &
 
     λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
-    echo "$JPGS_BIG"
-    compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
-    wrap λ "Compressing high-quality JPGs to ≤65% quality…"
+         echo "$JPGS_BIG"
+         compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
+    wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
 
     bold "Compressing new PNGs…"
-    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/')
+    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/') &
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.png' ); do
@@ -1143,27 +1144,27 @@ else
                   mogrify  -resize 1700x10000 "$IMAGE";
               fi;
           done; }
-    wrap λ "Too-wide images (downscale)"
+    wrap λ "Too-wide images (downscale)" &
 
     bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
-    wrap λ "Need link icons?"
+    wrap λ "Need link icons?" &
     λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
-    wrap λ "Need link live whitelist/blacklisting?"
+    wrap λ "Need link live whitelist/blacklisting?" &
 
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | grep -F --invert-match -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
-    wrap λ "Refactor out pages?"
+    wrap λ "Refactor out pages?" &
 
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-procs=0 --max-args=5000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | grep -E '^ +[4-9][0-9][0-9][0-9]+ +'; }
-    wrap λ "Similar-links: overused links (>999) indicate pathological lookups; blacklist links as necessary."
+    wrap λ "Similar-links: overused links (>999) indicate pathological lookups; blacklist links as necessary." &
 
     λ(){ ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
-    wrap λ "Site-of-the-day: check for recommendations?"
+    wrap λ "Site-of-the-day: check for recommendations?" &
 
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
-    wrap λ "Test-compilation of all Haskell files in static/build: failure."
+    wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then
@@ -1207,6 +1208,7 @@ else
   fi
 
     rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &>/dev/null || true
+    wait
 
     bold "Sync successful: $(date)"
 fi
