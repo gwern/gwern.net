@@ -9,7 +9,8 @@ import System.Exit (ExitCode(ExitFailure))
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI)
+import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI)
+import Utils (printRed, replace)
 import Paragraph (processParagraphizer)
 
 -- handles medRxiv too (same codebase)

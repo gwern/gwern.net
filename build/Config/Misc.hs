@@ -1,9 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.Misc where
 
+import Data.Time.Calendar (toModifiedJulianDay)
+import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.Text as T (head, takeWhile, Text)
 
 import Utils (anyInfixT, anyPrefixT, anySuffixT)
+
+currentYear :: Int
+currentYear = 2024
+
+currentDay :: IO Integer
+currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 -- for Columns.hs:
 listLengthMaxN :: Int

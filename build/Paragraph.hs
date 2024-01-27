@@ -10,7 +10,8 @@ import Text.Pandoc (def, pandocExtensions, readerExtensions, readMarkdown, runPu
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
-import Utils (replace, printGreen, cleanAbstractsHTML, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix)
+import MetadataFormat (cleanAbstractsHTML)
+import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix)
 import Config.Paragraph as C
 
 import Query (extractURLs)

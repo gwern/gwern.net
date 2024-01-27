@@ -12,8 +12,9 @@ import qualified Data.ByteString.Lazy as BL (length, concat)
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (MetadataItem, Path, Failure(Permanent))
+import MetadataFormat (cleanAbstractsHTML, trimTitle, filterMeta, cleanAuthors, processDOI, pageNumberParse)
 import Paragraph (processParagraphizer)
-import Utils (printGreen, printRed, cleanAbstractsHTML, replace, trim, trimTitle, filterMeta, cleanAuthors, processDOI, pageNumberParse)
+import Utils (printGreen, printRed, replace, trim)
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf "" = error "Fatal error: `Annotation.PDF.pdf` called on empty string argument; this should never happen."

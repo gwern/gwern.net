@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-24 16:47:19 gwern"
+When:  Time-stamp: "2024-01-26 19:19:48 gwern"
 License: CC-0
 -}
 
@@ -57,7 +57,8 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Te
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, parseRawAllClean, balanced, cleanAuthors)
+import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 

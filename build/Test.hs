@@ -4,6 +4,9 @@ import Control.Monad (unless)
 import Data.List (foldl')
 import qualified Data.Set as Set (empty, insert, member)
 
+import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest)
+import Utils (printGreen, printRed)
+
 import Annotation (tooltipToMetadataTest)
 import Arrow (testUpDownArrows)
 import Inflation (inflationDollarTestSuite)
@@ -14,7 +17,7 @@ import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
-import Utils (printGreen, printRed, printDoubleTestSuite, testCycleDetection, cleanAbstractsHTMLTest, cleanAuthorsTest)
+
 import qualified Config.GenerateSimilar (blackListURLs)
 import qualified Config.Interwiki (testCases, quoteOverrides, redirectDB)
 import qualified Config.LinkArchive (whiteListMatchesFixed)
@@ -29,7 +32,8 @@ import qualified Arrow (arrowTestCases)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
-import qualified Utils (cleanAuthorsFixedRewrites, cycleTestCases, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
+import qualified Utils (cycleTestCases, testCycleDetection)
+import qualified MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -87,7 +91,7 @@ isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
-testConfigs = sum $ map length [isUniqueList Utils.filterMetaBadSubstrings, isUniqueList Utils.filterMetaBadWholes
+testConfigs = sum $ map length [isUniqueList MetadataFormat.filterMetaBadSubstrings, isUniqueList MetadataFormat.filterMetaBadWholes
                                , isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
                                , isUniqueList Config.Tags.shortTagBlacklist
@@ -106,7 +110,7 @@ testConfigs = sum $ map length [isUniqueList Utils.filterMetaBadSubstrings, isUn
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys Utils.cleanAuthorsFixedRewrites, length $ isUniqueKeys Utils.cycleTestCases, length $ isUniqueKeys Utils.cleanAuthorsRegexps, length $ isUniqueKeys Utils.htmlRewriteRegexp, length $ isUniqueKeys Utils.htmlRewriteFixed]
+              , length $ isUniqueKeys MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Utils.cycleTestCases, length $ isUniqueKeys MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys MetadataFormat.htmlRewriteFixed]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -118,7 +122,7 @@ testAll = do printGreen ("Testing link icon matches…" :: String)
 
              unless (null printDoubleTestSuite) $ printRed ("Double-printing function test suite has errors in: " ++ show printDoubleTestSuite)
 
-             unless (null testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show testCycleDetection)
+             unless (null Utils.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Utils.testCycleDetection)
 
              unless (null titleCaseTest) $ printRed ("Title-case typography test suite has errors in: " ++ show titleCaseTest)
 

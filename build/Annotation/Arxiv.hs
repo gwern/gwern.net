@@ -14,7 +14,8 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
-import Utils (checkURL, printRed, cleanAuthors, replace, cleanAbstractsHTML, processDOI, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, trimTitle, processDOIArxiv, inlineMath2Text)
+import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI, trimTitle, processDOIArxiv)
+import Utils (printRed, replace, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, inlineMath2Text)
 import Paragraph (processParagraphizer)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))

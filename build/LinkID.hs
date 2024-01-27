@@ -9,7 +9,8 @@ import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (pack, unpack, Text)
 
 import LinkMetadataTypes (MetadataItem, Path)
-import Utils (currentYear, replace, replaceMany, sedMany, split, trim)
+import Utils (replace, replaceMany, sedMany, split, trim)
+import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
 
 -- To ensure unique-ish links (see /design#backlink on why this is important), duplicate annotation links should be handled:

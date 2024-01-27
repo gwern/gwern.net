@@ -26,7 +26,8 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (sed, currentYear, replaceMany, parseRawAllClean) -- addClass
+import Config.Misc (currentYear)
+import Utils (sed, replaceMany, parseRawAllClean) -- addClass
 import Config.Typography as C
 
 typographyTransform :: Pandoc -> Pandoc

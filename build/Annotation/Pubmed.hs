@@ -10,7 +10,8 @@ import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
-import Utils (cleanAbstractsHTML, replace, trim, safeHtmlWriterOptions, sed, processDOI, trimTitle, checkURL, printGreen, cleanAuthors)
+import MetadataFormat (cleanAbstractsHTML, processDOI, trimTitle, checkURL, cleanAuthors)
+import Utils (replace, trim, safeHtmlWriterOptions, sed, printGreen)
 import Paragraph (processParagraphizer)
 
 -- handles both PM & PLOS right now:

@@ -8,7 +8,8 @@ import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
-import Utils (cleanAbstractsHTML, replace, trim, trimTitle, checkURL, cleanAuthors, printRed)
+import MetadataFormat (cleanAbstractsHTML, trimTitle, checkURL, cleanAuthors)
+import Utils (replace, trim, printRed)
 
 import Annotation.Arxiv (processArxivAbstract)
 

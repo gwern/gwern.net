@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-25 11:23:54 gwern"
+When:  Time-stamp: "2024-01-26 19:08:11 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -116,7 +116,8 @@ import Control.Concurrent.Async (mapConcurrently)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Utils (writeUpdatedFile, currentDay, putStrStdErr, green, printRed', printGreen)
+import Config.Misc (currentDay)
+import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
