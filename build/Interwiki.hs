@@ -11,7 +11,8 @@ import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 import Text.Pandoc (Inline(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
-import Utils (replaceManyT, anyPrefixT, fixedPoint, isCycleLess, findCycles, inlinesToText)
+import Cycle (isCycleLess, findCycles)
+import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 -- INTERWIKI PLUGIN

@@ -3,7 +3,6 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.Graph (flattenSCC, stronglyConnComp)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, nub)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
@@ -16,7 +15,6 @@ import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefix
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
-
 
 import Text.Regex (subRegex, mkRegex)
 
@@ -40,7 +38,8 @@ writeUpdatedFile template target contentsNew =
 
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
-  where badChars c = isSpace c || (c=='-')
+  where badChars :: Char -> Bool
+        badChars c = isSpace c || (c=='-')
 
 simplifiedString :: String -> String
 simplifiedString s = trim $ -- NOTE: 'simplified' will return a trailing newline, which is unhelpful when rendering titles.
@@ -125,6 +124,58 @@ cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr
 simplifiedHTMLString :: String -> String
 simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
+-- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
+-- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
+safeHtmlWriterOptions :: WriterOptions
+safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExtension Ext_shortcut_reference_links pandocExtensions}
+
+-- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
+-- > Text.Pandoc.Walk.walkM inlineMath2Text [Math InlineMath "a + b = c"]
+-- [RawInline (Format "html") "<em>a</em> + <em>b</em> = <em>c</em>"]
+inlineMath2Text :: Inline -> IO Inline
+inlineMath2Text x@(Math InlineMath a) =
+  do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
+     let mb' = T.pack $ trim $ replace "Converted output: " "" $ U.toString mb
+     case status of
+       ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
+       _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
+inlineMath2Text x = return x
+
+flattenLinksInInlines :: [Inline] -> [Inline]
+flattenLinksInInlines = map flattenLinks
+  where flattenLinks :: Inline -> Inline
+        flattenLinks x@Link{} = Str (inlinesToText [x])
+        flattenLinks x = x
+
+-- | Convert a list of inlines into a string.
+inlinesToText :: [Inline] -> T.Text
+inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
+  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
+                T.concat . map go
+  where go x = case x of
+               -- reached the literal T.Text:
+               Str s    -> s
+               -- strip & recurse on the [Inline]:
+               Emph        x' -> inlinesToText x'
+               Underline   x' -> inlinesToText x'
+               Strong      x' -> inlinesToText x'
+               Strikeout   x' -> inlinesToText x'
+               Superscript x' -> inlinesToText x'
+               Subscript   x' -> inlinesToText x'
+               SmallCaps   x' -> inlinesToText x'
+               -- throw away attributes and recurse on the [Inline]:
+               Span _      x' -> inlinesToText x' -- eg. [foo]{.smallcaps} -> foo
+               Quoted _    x' -> inlinesToText x'
+               Cite _      x' -> inlinesToText x'
+               Link _   x' _  -> inlinesToText x'
+               Image _  x' _  -> inlinesToText x'
+               -- throw away attributes, return the literal T.Text:
+               Math _      x' -> x'
+               RawInline _ x' -> x'
+               Code _      x' -> x'
+               -- fall through with a blank:
+               _        -> " "::T.Text
+
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
 -- is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
@@ -152,6 +203,20 @@ addKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, nub (key : ks)) s (ur
 addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nub (key : ks)) s (url, tt)
 addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nub (key : ks)) s
 addKey _ x = x
+
+hasExtension :: T.Text -> T.Text -> Bool
+hasExtension ext p = extension p == ext
+
+extension :: T.Text -> T.Text
+extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
+
+isLocal :: T.Text -> Bool
+isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
+isLocal s = T.head s == '/'
+
+isHostOrArchive :: T.Text -> T.Text -> Bool
+isHostOrArchive domain url = let h = host url in
+                                h == domain || ("/doc/www/"`T.append`domain) `T.isPrefixOf` url
 
 -- enable printing of normal vs dangerous log messages to terminal stderr:
 green, red :: String -> String
@@ -261,125 +326,3 @@ hasAny :: Eq a => [a]           -- ^ List of elements to look for
 hasAny [] _          = False             -- An empty search list: always false
 hasAny _ []          = False             -- An empty list to scan: always false
 hasAny search (x:xs) = x `elem` search || hasAny search xs
-
--- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
--- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
-safeHtmlWriterOptions :: WriterOptions
-safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExtension Ext_shortcut_reference_links pandocExtensions}
-
--- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
--- > Text.Pandoc.Walk.walkM inlineMath2Text [Math InlineMath "a + b = c"]
--- [RawInline (Format "html") "<em>a</em> + <em>b</em> = <em>c</em>"]
-inlineMath2Text :: Inline -> IO Inline
-inlineMath2Text x@(Math InlineMath a) =
-  do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
-     let mb' = T.pack $ trim $ replace "Converted output: " "" $ U.toString mb
-     case status of
-       ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
-       _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
-inlineMath2Text x = return x
-
--- simple test for infinite loops in infix string rewrites: we take the list of before→after rewrites, and we try to rewrite the 'before'
--- using some given function. If it infinite-loops...
-testInfixRewriteLoops :: [(String,String)] -> (String -> String) -> [(String,String,String)]
-testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ reverse rewrites
-
-isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]
-isCycleLess xs = if not (cycleExists xs) then xs else
-  error $ "Error: Association list of rewrite-rules has cycles! Errors related to:" ++ (show $ findCycles xs)
-
-cycleExists :: Ord a => [(a, a)] -> Bool
-cycleExists tuples = any (uncurry (==)) tuples ||
-    -- There's a cycle if one of the strongly connected components has more than one node
-    any ((> 1) . length . flattenSCC)
-       -- Generate strongly connected components from edges
-       (stronglyConnComp $
-        -- Create edges by converting a tuple (a, b) to (a, b, [b]) to reflect a -> b
-        map (\(a, b) -> (a, a, [b])) tuples)
-
--- *Which* rewrite rules are responsible for an infinite loop?
--- Here's one way to find bad nodes easily (albeit inefficiently):
--- start with the list of rewrites and two empty temporary lists;
--- from the rewrite list, take & incrementally add rules to the first list if they do not create a cycle in the first list;
--- if they do, add them to the second list instead (otherwise ignoring the second list);
--- when all rules are used up, return the second list. Those are the bad rules.
-findCycles :: Ord a => [(a, a)] -> [(a, a)]
-findCycles xs = snd $ foldl f ([], []) xs
-  where
-    f (good, bad) rule
-      | cycleExists (rule : good) = (good, rule : bad)
-      | otherwise = (rule : good, bad)
-
--- `cycleExists` testsuite:
-testCycleExists :: [([(Int,Int)], Bool)] -> [[(Int,Int)]]
-testCycleExists testCases = [ rules | (rules, expected) <- testCases, cycleExists rules /= expected]
-testCycleDetection :: [[(Int,Int)]]
-testCycleDetection = testCycleExists cycleTestCases
-cycleTestCases :: [([(Int, Int)], Bool)]
-cycleTestCases = [ ([], False) -- no rules, no cycles
-     , ([(1, 2)], False) -- one rule, no cycles
-     , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
-     , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
-     , ([(1, 2), (2, 1)], True) -- simple cycle
-     , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
-     , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
-     , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
-     , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
-     , ([(1, 2), (2, 3), (4, 5), (5, 6)], False) -- separate set of rules, no cycles
-     , ([(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)], True) -- separate set of rules with cycles
-     , ([(1, 2), (2, 3), (3, 2), (4, 5), (5, 4)], True) -- there is a cycle within subset of rules
-     , ([(1, 2), (3, 4), (5, 6)], False) -- separate set of rules, no cycles
-     , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
-     , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
-     , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
-     , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
-     ]
-
-flattenLinksInInlines :: [Inline] -> [Inline]
-flattenLinksInInlines = map flattenLinks
-  where flattenLinks :: Inline -> Inline
-        flattenLinks x@Link{} = Str (inlinesToText [x])
-        flattenLinks x = x
-
--- | Convert a list of inlines into a string.
-inlinesToText :: [Inline] -> T.Text
-inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
-  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
-                T.concat . map go
-  where go x = case x of
-               -- reached the literal T.Text:
-               Str s    -> s
-               -- strip & recurse on the [Inline]:
-               Emph        x' -> inlinesToText x'
-               Underline   x' -> inlinesToText x'
-               Strong      x' -> inlinesToText x'
-               Strikeout   x' -> inlinesToText x'
-               Superscript x' -> inlinesToText x'
-               Subscript   x' -> inlinesToText x'
-               SmallCaps   x' -> inlinesToText x'
-               -- throw away attributes and recurse on the [Inline]:
-               Span _      x' -> inlinesToText x' -- eg. [foo]{.smallcaps} -> foo
-               Quoted _    x' -> inlinesToText x'
-               Cite _      x' -> inlinesToText x'
-               Link _   x' _  -> inlinesToText x'
-               Image _  x' _  -> inlinesToText x'
-               -- throw away attributes, return the literal T.Text:
-               Math _      x' -> x'
-               RawInline _ x' -> x'
-               Code _      x' -> x'
-               -- fall through with a blank:
-               _        -> " "::T.Text
-
-hasExtension :: T.Text -> T.Text -> Bool
-hasExtension ext p = extension p == ext
-
-extension :: T.Text -> T.Text
-extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
-
-isLocal :: T.Text -> Bool
-isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
-isLocal s = T.head s == '/'
-
-isHostOrArchive :: T.Text -> T.Text -> Bool
-isHostOrArchive domain url = let h = host url in
-                                h == domain || ("/doc/www/"`T.append`domain) `T.isPrefixOf` url

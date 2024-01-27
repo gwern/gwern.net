@@ -12,8 +12,9 @@ import Text.Pandoc (Inline(Str, RawInline, Link, Span), Format(..), Block(Para, 
 import qualified Data.Map.Strict as M (elems, map, toList )
 import qualified Data.Text as T (append, pack, unpack, Text)
 
+import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
-import Utils (anyInfix, replace, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint, isCycleLess)
+import Utils (anyInfix, replace, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
 import Config.Tags as C
 
 -- Remind to refine link tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)

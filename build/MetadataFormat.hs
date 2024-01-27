@@ -10,7 +10,8 @@ import qualified Data.Text as T (pack)
 import Text.Regex.TDFA ((=~))
 import Text.Pandoc (Inline(Span, Str))
 
-import Utils (anyInfix, fixedPoint, replace, replaceMany, testInfixRewriteLoops, sed, sedMany, split, trim)
+import Cycle (testInfixRewriteLoops)
+import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, split, trim)
 
 -- check whether brackets are balanced in a text string:
 balanced :: String -> String

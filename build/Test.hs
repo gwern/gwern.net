@@ -32,7 +32,7 @@ import qualified Arrow (arrowTestCases)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
-import qualified Utils (cycleTestCases, testCycleDetection)
+import qualified Cycle (cycleTestCases, testCycleDetection)
 import qualified MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
@@ -110,7 +110,7 @@ testConfigs = sum $ map length [isUniqueList MetadataFormat.filterMetaBadSubstri
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Utils.cycleTestCases, length $ isUniqueKeys MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys MetadataFormat.htmlRewriteFixed]
+              , length $ isUniqueKeys MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys MetadataFormat.htmlRewriteFixed]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ testAll = do printGreen ("Testing link icon matches…" :: String)
 
              unless (null printDoubleTestSuite) $ printRed ("Double-printing function test suite has errors in: " ++ show printDoubleTestSuite)
 
-             unless (null Utils.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Utils.testCycleDetection)
+             unless (null Cycle.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Cycle.testCycleDetection)
 
              unless (null titleCaseTest) $ printRed ("Title-case typography test suite has errors in: " ++ show titleCaseTest)
 
