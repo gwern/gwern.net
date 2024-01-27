@@ -2,6 +2,38 @@
 
 module Config.MetadataFormat where
 
+balancedBracketTestCases :: [(String, String)]
+balancedBracketTestCases =
+    [ ("(abc [de] {fg} \"hi\")", "")
+    , ("((abc)", "((abc)")
+    , ("[abc]]", "]")
+    , ("{[(abc)]}", "")
+    , ("(abc]def)", "]def)")
+    , ("\"abc \"def\" ghi\"", "")
+    , ("\"abc", "\"abc")
+    , ("", "")
+    , ("{[()]}]", "]")
+    , ("({\"[abc (def) 'ghi']\"})", "")
+    , ("(((", "(((")
+    , ("{\"abc [de}f]\"", "}f]\"")
+    , ("abc", "")
+    , ("\"\"", "")
+    , ("\"\"abc\"\"", "")
+    , ("(abc(def)ghi)", "")
+    , ("[\"abc(def)ghi\"]", "")
+    , ("{\"key\": \"value\"}", "")
+    , ("(abc(def]ghi)", "]ghi)")
+    , ("(abc{def)ghi}", ")ghi}")
+    , ("\"abc", "\"abc")
+    , ("abc\"", "\"")
+    , ("[abc", "[abc")
+    , ("abc]", "]")
+    , ("{abc", "{abc")
+    , ("abc}", "}")
+    , ("(abc\"def)ghi\"", ")ghi\"")
+    , ("\"abc(def\"ghi)", ")")
+    ]
+
 printDoubleTests :: [(Double, Int, String)]
 printDoubleTests =
   -- no `isUnique` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc) but we need to test that they print out the same

@@ -4,7 +4,7 @@ import Control.Monad (unless)
 import Data.List (foldl')
 import qualified Data.Set as Set (empty, insert, member)
 
-import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest)
+import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
 import Utils (printGreen, printRed)
 
 import Annotation (tooltipToMetadataTest)
@@ -33,7 +33,7 @@ import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDolla
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
 import qualified Cycle (cycleTestCases, testCycleDetection)
-import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
+import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -110,7 +110,8 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed]
+              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
+                length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases]
 
 -------------------------------------------------------------------------------------------------------------------------------
 

@@ -14,23 +14,38 @@ import Cycle (testInfixRewriteLoops)
 import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, split, trim)
 import Config.MetadataFormat as C
 
--- check whether brackets are balanced in a text string:
+-- | Check if brackets & quotes in a string are balanced.
+--
+-- Checks for balance of '()', '[]', & '{}' brackets, and double-quotes in the input string.
+-- Returns an empty string if balanced, or the substring from the first unbalanced
+-- bracket otherwise. It uses a helper function with a stack to track open brackets.
+--
+-- Examples:
+--  > balanced "(abc[de]{fg})" → "" (balanced)
+--  > balanced "(abc]de)"      → "c]de)" (unbalanced)
+--  > balanced  "foo bar bar \" test test" → "\" test test"
+--
+-- Returns: Empty string if balanced, substring from first unbalanced bracket otherwise.
 balanced :: String -> String
 balanced str = helper str "" 0 0
   where
     helper [] stack _ idx = if null stack then "" else drop idx str
     helper (s:ss) stack n idx
+      | s == '"' =
+          if not (null stack) && head stack == '"'
+            then helper ss (tail stack) (n+1) (if null stack then n else idx)
+            else helper ss ('"':stack) (n+1) (if null stack then n else idx)
       | s `elem` openBrackets = helper ss (s:stack) (n+1) (if null stack then n else idx)
       | s `elem` closeBrackets =
           if not (null stack) && head stack == matchingBracket s
             then helper ss (tail stack) (n+1) (if null stack then n else idx)
             else drop n str
       | otherwise = helper ss stack (n+1) idx
-    openBrackets = "([{"::String
-    closeBrackets = ")]}"::String
+    openBrackets = "([{" :: String
+    closeBrackets = ")]}" :: String
     matchingBracket ')' = '('
     matchingBracket ']' = '['
-    matchingBracket '}' = '{' -- TODO: if this approach works, add double-quotes as delimiters that should be balanced
+    matchingBracket '}' = '{'
     matchingBracket _ = error "Invalid bracket"
 
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
@@ -54,10 +69,6 @@ printDouble precision x = if x > 1.7976931348623157e308 || x < -1.79769313486231
           removeTrailingZeros "0"  = "0"
           removeTrailingZeros y = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
           drop1IfDot xs = if last xs == '.' then init xs else xs
-          -- removeTrailingZeros y
-          --   | take 2 y == ".0" = "0"
-          --   | otherwise = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
-          -- drop1IfDot xs = if not (null xs) && last xs == '.' then init xs else xs
 
 printDoubleTestSuite :: [(Double, Int, String, String)]
 printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ map (\(n,prec,s) -> (n,prec,s, printDouble prec n )) C.printDoubleTests
