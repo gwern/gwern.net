@@ -33,7 +33,7 @@ import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDolla
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
 import qualified Cycle (cycleTestCases, testCycleDetection)
-import qualified MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
+import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -91,7 +91,7 @@ isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
-testConfigs = sum $ map length [isUniqueList MetadataFormat.filterMetaBadSubstrings, isUniqueList MetadataFormat.filterMetaBadWholes
+testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBadSubstrings, isUniqueList Config.MetadataFormat.filterMetaBadWholes
                                , isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
                                , isUniqueList Config.Tags.shortTagBlacklist
@@ -110,7 +110,7 @@ testConfigs = sum $ map length [isUniqueList MetadataFormat.filterMetaBadSubstri
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys MetadataFormat.htmlRewriteFixed]
+              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
