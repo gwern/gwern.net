@@ -603,12 +603,22 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Expand.
 	let wasCollapsed = isCollapsed(collapseBlock);
 
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover");
+	//	Strip collapse-specific classes.
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 
+	//	Strip collapse-specific styles.
+	collapseBlock.style.removeProperty("margin");
+	collapseBlock.style.removeProperty("--collapse-toggle-top-height");
+	collapseBlock.style.removeProperty("--collapse-toggle-top-icon-size");
+	if (collapseBlock.style == "")
+		collapseBlock.removeAttribute("style");
+
+	//	Unwrap subordinate containers.
 	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
 	
+	//	Unwrap collapse block itself if it’s a div with no remaining classes.
 	if (   collapseBlock.tagName == "DIV"
 		&& collapseBlock.className == ""
 		&& isOnlyChild(collapseBlock.firstElementChild)) {
