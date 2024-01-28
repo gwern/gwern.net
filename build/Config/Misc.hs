@@ -4,8 +4,18 @@ module Config.Misc where
 import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.Text as T (head, takeWhile, Text)
+import System.Directory (setCurrentDirectory)
+
+import Text.Pandoc.Definition (Inline(Link, Span, Str),
+                               Block(Div, Header, Para))
 
 import Utils (anyInfixT, anyPrefixT, anySuffixT)
+
+root :: FilePath
+root = "/home/gwern/wiki/"
+
+cd :: IO ()
+cd = setCurrentDirectory Config.Misc.root
 
 currentYear :: Int
 currentYear = 2024
@@ -49,4 +59,94 @@ mininumLinkBibliographyFragment :: Int
 mininumLinkBibliographyFragment = 3
 
 userAgent :: String
-userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/110.0"
+userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/111.0"
+
+tooltipToMetadataTestcases :: [((String,String),(String,String,String))]
+tooltipToMetadataTestcases =
+    [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+      , (("","‘Title1 Title2’s First Word Title3’, Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
+      , (("","'Title1 Title2’s First Word Title3', Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
+      , (("","“Title1 Title2's First Word Title3”, Foo et al 2020a"), ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+      , (("","'Title1 Title2's First Word Title3', Foo & Bar 2020a"), ("Title1 Title2's First Word Title3","Foo, Bar","2020"))
+      , (("","'Title1 Title2's First Word Title3', Foo 2020a"),       ("Title1 Title2's First Word Title3","Foo","2020"))
+      , (("","'Title1 Title2's First Word Title3', John Smith 2020"), ("Title1 Title2's First Word Title3","John Smith","2020"))
+      , (("","'Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>', Le Roy Ladurie 1978"), ("Montaillou: The Promised Land of Error: chapter 2, the <em>domus</em>", "Le Roy Ladurie", "1978"))
+      , (("","'Meta-meta-blinker', Adam P. Goucher 2016-12-15"), ("Meta-meta-blinker", "Adam P. Goucher", "2016-12-15"))
+      , (("","'Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)', Jurgen Schmidhuber 2010"), ("Formal Theory of Creativity & Fun & Intrinsic Motivation (1990-2010)", "Jurgen Schmidhuber", "2010"))
+      , (("", "$5"),      ("","",""))
+      , (("", "$20, 2g"), ("","",""))
+      , (("","!W"),       ("","",""))
+      , (("","₿20"),      ("","",""))
+      , (("","'LaMDA: Language Models for Dialog Applications', Thoppilan?et?al?2022 (Original URL: https://arxiv.org/abs/2201.08239#google )"), ("","",""))
+      , (("","'A', John Smith 2020"), ("","John Smith","2020"))
+      , (("","klynch 2011"),     ("","","2011"))
+      , (("","Foo 2020"),        ("", "Foo", "2020"))
+      , (("","Foo 2020-06-12"),  ("", "Foo", "2020-06-12"))
+      , (("","John Smith 2020"), ("", "John Smith", "2020"))
+      , (("https://pdfobject.com/pdf/pdf_open_parameters_acro8.pdf#page=5","Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)"), ("Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)", "", ""))
+      ]
+
+arrowUp, arrowDown :: T.Text
+arrowUp = "arrow-up"
+arrowDown = "arrow-down"
+arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
+arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
+arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
+
+arrowTestCases :: [([Block], [Block])]
+arrowTestCases =
+      [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
+        [Para [Link ("", [], arrowDownKV) [Str "simpleCase"] ("#target", "")]])
+      , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],
+         [Para [Link ("", [], arrowDownKV) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]])
+      , ([Para [Link ("", [], []) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
+         [Para [Link ("", [], arrowDownKV) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
+      , ([Para [Link ("", [], []) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]],
+          [Para [Link ("", [], arrowDownKV) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]])
+      , ([Para [Link ("", [], []) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]],
+         [Para [Link ("", [], arrowDownKV) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]])
+      , ([Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "beforeLinkCase"] ("#target", "")]],
+         [Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkCase"] ("#target", "")]])
+      , ([Para [Link ("", [], []) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
+          [Para [Link ("", [], arrowDownKV) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
+      , ([Para [Link ("", [], []) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]],
+         [Para [Link ("", [], arrowDownKV) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]])
+      , ([Para [Link ("", [], []) [Str "nonExistentTargetCase"] ("#nonexistent", "")]],
+         [Para [Link ("", [], arrowDownKV) [Str "nonExistentTargetCase"] ("#nonexistent", "")]])
+      , ([Para [Str "noLinksCase: no links or targets here"]],
+         [Para [Str "noLinksCase: no links or targets here"]])
+      , ([Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], []) [Str "beforeLinkNestedCase"] ("#target", "")]],
+         [Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkNestedCase"] ("#target", "")]])
+      , ([Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], []) [Str "beforeLinkHeaderCase"] ("#target", "")]],
+         [Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], arrowUpKV) [Str "beforeLinkHeaderCase"] ("#target", "")]])
+      , ([Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], []) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")]],
+         [Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], arrowUpKV) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], arrowUpKV) [Str "link2"] ("#target2", "")]])
+      , ([Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], []) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]],
+         [Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], arrowUpKV) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]])
+      , ([Para [Link ("", [], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "link3"] ("#target", "")]],
+         [Para [Link ("", [], arrowDownKV) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "link3"] ("#target", "")]])
+      , ([Div ("", [], []) [Para [Link ("", [], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]],
+         [Div ("", [], []) [Para [Link ("", [], arrowDownKV) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
+      , ([Para [Link ("", [], []) [Str "simpleCase"] ("#top", "")]],
+         [Para [Link ("", [], arrowUpKV) [Str "simpleCase"] ("#top", "")]])
+      ]
+
+cycleTestCases :: [([(Int, Int)], Bool)]
+cycleTestCases = [ ([], False) -- no rules, no cycles
+     , ([(1, 2)], False) -- one rule, no cycles
+     , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
+     , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
+     , ([(1, 2), (2, 1)], True) -- simple cycle
+     , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
+     , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
+     , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
+     , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
+     , ([(1, 2), (2, 3), (4, 5), (5, 6)], False) -- separate set of rules, no cycles
+     , ([(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)], True) -- separate set of rules with cycles
+     , ([(1, 2), (2, 3), (3, 2), (4, 5), (5, 4)], True) -- there is a cycle within subset of rules
+     , ([(1, 2), (3, 4), (5, 6)], False) -- separate set of rules, no cycles
+     , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
+     , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
+     , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
+     , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
+     ]

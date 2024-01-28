@@ -71,7 +71,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                                   Right (y,_) -> y
                 in
                   if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
-                     (sed "^.* & " "" $ T.unpack first) `elem` C.surnameFalsePositivesWhiteList then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
+                     sed "^.* & " "" (T.unpack first) `elem` C.surnameFalsePositivesWhiteList then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
                     [Str a]
                   else
                           [Str before] ++
@@ -80,7 +80,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                                                        [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
                                                        -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
                                                        else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
-                                                             [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` (T.replace " " " " $ T.strip second) `T.append` " "]]) ++
+                                                             [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` T.replace " " " " (T.strip second) `T.append` " "]]) ++
                                                     [Span ("", ["cite-date"], []) [Str third]])
                           ] ++
                           go (T.concat after)
@@ -256,69 +256,8 @@ capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
     capitalizeFirst []     = []
     capitalizeFirst (x:xs) = toUpper x : xs
 
-titleCaseTestCases :: [(String, String)]
-titleCaseTestCases = [
-  ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
-            , ("end-to-end testing", "End-To-End Testing")
-            , ("mother-in-law", "Mother-In-Law")
-            , ("state-of-the-art technology", "State-Of-The-Art Technology")
-            , ("x-ray", "X-Ray")
-            , ("e-commerce", "E-Commerce")
-            , ("co-worker", "Co-Worker")
-            , ("self-esteem", "Self-Esteem")
-            , ("long-term plan", "Long-Term Plan")
-            , ("high-quality product", "High-Quality Product")
-            , ("no hyphen here", "No Hyphen Here")
-            , ("double--hyphen", "Double--Hyphen")
-            , ("--leading hyphen", "--Leading Hyphen")
-            , ("trailing hyphen--", "Trailing Hyphen--")
-            , ("hyphen-at-both-ends-", "Hyphen-At-Both-Ends-")
-            , ("", "")
-            , ("-", "-")
-            , ("a-b-c-d-e-f", "A-B-C-D-E-F")
-            , ("first-class mail", "First-Class Mail")
-            , ("well-being", "Well-Being")
-            , ("123-456", "123-456")
-            , ("abc-def-123", "Abc-Def-123")
-            , ("-start with hyphen", "-Start With Hyphen")
-            , ("end with hyphen-", "End With Hyphen-")
-            , ("hyphen--in--middle", "Hyphen--In--Middle")
-            , ("test-case", "Test-Case")
-            , ("test---case", "Test---Case")
-            , ("test-Case", "Test-Case")
-            , ("Test-case", "Test-Case")
-            , ("TEST-CASE", "TEST-CASE")
-            , ("West ‘has Not Recovered’", "West ‘Has Not Recovered’")
-            , ("West 'has Not Recovered'", "West 'Has Not Recovered'")
-            , ("West \"has Not Recovered\"", "West \"Has Not Recovered\"")
-            , ("West “has Not Recovered”", "West “Has Not Recovered”")
-            , ("Did I get Sam Altman fired from OpenAI?: Nathan\8217s redteaming experience, noticing how the board was not aware of GPT-4 jailbreaks & had not even tried GPT-4 prior to its early release", "Did I Get Sam Altman Fired from OpenAI?: Nathan\8217s Redteaming Experience, Noticing How the Board Was Not Aware of GPT-4 Jailbreaks & Had Not Even Tried GPT-4 prior to Its Early Release")
-            , ("Foo's bar", "Foo's Bar")
-            , ("Foo’s bar", "Foo’s Bar")
-            , ("Foo'Bar", "Foo'Bar")
-            , ("Foo' bar", "Foo' Bar")
-            , ("Foo's", "Foo's")
-            , ("Foo's Bar's", "Foo's Bar's")
-            , ("Foo'Bar's", "Foo'Bar's")
-            , ("Foo'Bar's Baz", "Foo'Bar's Baz")
-            , ("'foo bar'", "'Foo Bar'")
-            , ("'foo bar's'", "'Foo Bar's'")
-            , ("'foo's bar'", "'Foo's Bar'")
-            , ("'foo's bar's'", "'Foo's Bar's'")
-            , ("'foo'bar's'", "'Foo'Bar's'")
-            , ("foo-bar's", "Foo-Bar's")
-            , ("foo-bar's baz", "Foo-Bar's Baz")
-            , ("foo-bar's-baz", "Foo-Bar's-Baz")
-            , ("foo'bar-baz", "Foo'Bar-Baz")
-            , ("foo-bar's baz-qux", "Foo-Bar's Baz-Qux")
-            , ("foo'bar-baz'qux", "Foo'Bar-Baz'Qux")
-            , ("foo'bar's-baz'qux", "Foo'Bar's-Baz'Qux")
-            , ("foo'bar's baz'qux", "Foo'Bar's Baz'Qux")
-            , ("foo'bar's-baz qux", "Foo'Bar's-Baz Qux")
-            , ("Fading Hip-Hop Mogul—who’s Been Buffeted by Charges of Sexual Assault—to Salvage", "Fading Hip-Hop Mogul—Who’s Been Buffeted by Charges of Sexual Assault—To Salvage")
-              ]
 titleCaseTest :: [(String, String)]
-titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) titleCaseTestCases
+titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected) C.titleCaseTestCases
 
 -- lift `titlecase'` to Inline so it can be walked, such as in Headers
 titlecaseInline :: Inline -> Inline

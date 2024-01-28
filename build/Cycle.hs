@@ -3,6 +3,7 @@ module Cycle where
 
 import Data.Graph (flattenSCC, stronglyConnComp)
 
+import Config.Misc as C (cycleTestCases)
 import Utils (fixedPoint)
 
 -- simple test for infinite loops in infix string rewrites: we take the list of before→after rewrites, and we try to rewrite the 'before'
@@ -40,23 +41,4 @@ findCycles xs = snd $ foldl f ([], []) xs
 testCycleExists :: [([(Int,Int)], Bool)] -> [[(Int,Int)]]
 testCycleExists testCases = [ rules | (rules, expected) <- testCases, cycleExists rules /= expected]
 testCycleDetection :: [[(Int,Int)]]
-testCycleDetection = testCycleExists cycleTestCases
-cycleTestCases :: [([(Int, Int)], Bool)]
-cycleTestCases = [ ([], False) -- no rules, no cycles
-     , ([(1, 2)], False) -- one rule, no cycles
-     , ([(1, 1)], True), ([(1, 2), (2, 3), (3, 4), (5, 5)], True), ([(1, 2), (2, 3), (4, 4), (5, 6)], True) -- self loop
-     , ([(1, 2), (2, 3), (3, 4)], False) -- rules with no cycles
-     , ([(1, 2), (2, 1)], True) -- simple cycle
-     , ([(1, 2), (2, 3), (3, 1)], True) -- cycle with more than 2 nodes: where there is a cycle of nodes that all point to one another, but no node points to itself
-     , ([(1, 2), (2, 3), (3, 4), (4, 1)], True) -- larger cycle
-     , ([(1, 2), (2, 1), (3, 4), (4, 3), (5, 6), (6, 5)], True) -- Multiple disjoint cycles within a larger rule set
-     , ([(1, 2), (1, 3), (2, 4), (2, 5), (3, 6), (3, 7)], False)
-     , ([(1, 2), (2, 3), (4, 5), (5, 6)], False) -- separate set of rules, no cycles
-     , ([(1, 2), (2, 3), (3, 1), (4, 5), (5, 6), (6, 4)], True) -- separate set of rules with cycles
-     , ([(1, 2), (2, 3), (3, 2), (4, 5), (5, 4)], True) -- there is a cycle within subset of rules
-     , ([(1, 2), (3, 4), (5, 6)], False) -- separate set of rules, no cycles
-     , ([(1, 2), (1, 2), (2, 3), (2, 3)], False) -- repetition
-     , ([(1, 2), (1, 3), (2, 4), (3, 4)], False) -- Multiple paths to the same node, but no cycles
-     , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
-     , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
-     ]
+testCycleDetection = testCycleExists C.cycleTestCases

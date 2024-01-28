@@ -7,8 +7,10 @@ import qualified Data.Set as Set (empty, insert, member)
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
 import Utils (printGreen, printRed)
 
-import Annotation (tooltipToMetadataTest)
+-- module self-tests:
+import Annotation (tooltipToMetadata)
 import Arrow (testUpDownArrows)
+import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
 import LinkArchive (testLinkRewrites)
@@ -18,6 +20,7 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
 
+-- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
 import qualified Config.Interwiki (testCases, quoteOverrides, redirectDB)
 import qualified Config.LinkArchive (whiteListMatchesFixed)
@@ -25,15 +28,13 @@ import qualified Config.LinkIcon (prioritizeLinkIconBlackList, linkIconTestUnits
 import qualified Config.LinkLive (goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks)
 import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
 import qualified Config.Tags (shortTagBlacklist, tagsLong2Short, wholeTagRewritesRegexes, tagsShort2LongRewrites, shortTagTestSuite)
-import qualified Typography (titleCaseTestCases)
-import qualified Config.Typography (surnameFalsePositivesWhiteList)
+import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases)
 import qualified Config.XOfTheDay (siteBlackList)
-import qualified Arrow (arrowTestCases)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
-import qualified Cycle (cycleTestCases, testCycleDetection)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
+import qualified Config.Misc (cd, arrowTestCases, tooltipToMetadataTestcases, cycleTestCases)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -97,26 +98,28 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                , isUniqueList Config.Tags.shortTagBlacklist
                                , isUniqueList Config.Typography.surnameFalsePositivesWhiteList
                                ] ++ -- String
-                               (map length [isUniqueList Config.LinkIcon.prioritizeLinkIconBlackList
+                               map length [isUniqueList Config.LinkIcon.prioritizeLinkIconBlackList
                                            , isUniqueList Config.LinkLive.goodDomainsSub, isUniqueList Config.LinkLive.goodDomainsSimple, isUniqueList Config.LinkLive.badDomainsSub, isUniqueList Config.LinkLive.badDomainsSimple, isUniqueList Config.LinkLive.goodLinks, isUniqueList Config.LinkLive.badLinks
                                            , isUniqueList Config.LinkSuggester.badAnchorStrings
-                                           , isUniqueList Config.XOfTheDay.siteBlackList]) ++ -- T.Text
+                                           , isUniqueList Config.XOfTheDay.siteBlackList] ++ -- T.Text
               [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length $ isUniqueAll Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
-              , length $ isUniqueKeys Typography.titleCaseTestCases
-              , length $ isUniqueAll Arrow.arrowTestCases
+              , length $ isUniqueKeys Config.Typography.titleCaseTestCases
+              , length $ isUniqueAll Config.Misc.arrowTestCases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Cycle.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
+              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
                 length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 testAll :: IO ()
-testAll = do printGreen ("Testing link icon matches…" :: String)
+testAll = do Config.Misc.cd
+
+             printGreen ("Testing link icon matches…" :: String)
              unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)
 
              unless (null testUpDownArrows) $ printRed ("Self-link arrow up/down AST test suite has errors in: " ++ show testUpDownArrows)
@@ -148,7 +151,8 @@ testAll = do printGreen ("Testing link icon matches…" :: String)
 
              unless (null inflationDollarTestSuite) $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationDollarTestSuite)
 
-             unless (null tooltipToMetadataTest) $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipToMetadataTest)
+             let tooltipResults = filter (\((t1, t2), goodResult) -> Annotation.tooltipToMetadata t1 t2 /= goodResult) Config.Misc.tooltipToMetadataTestcases
+             unless (null tooltipResults) $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipResults)
 
              printGreen ("Testing LinkAuto rewrites…" :: String)
              unless (null linkAutoTest) $ printRed ("LinkAuto test-cases have errors in: " ++ show linkAutoTest)

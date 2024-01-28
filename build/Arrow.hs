@@ -1,16 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Arrow (upDownArrows, arrowTestCases, testUpDownArrows) where
+module Arrow (upDownArrows, testUpDownArrows) where
 
 import qualified Data.Set as S (empty, insert, member, Set)
 import qualified Control.Monad.State as ST (evalState, get, modify, State)
 import qualified Data.Text as T (head, tail, Text)
 
-import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span, Str),
+import Text.Pandoc.Definition (nullMeta, Attr, Inline(Link, Span),
                                Block(BlockQuote, BulletList, CodeBlock, DefinitionList, Div, Header, LineBlock, OrderedList, Para, Table),
                                Pandoc(..), TableBody(..), Row(..), Cell(..))
 import Text.Pandoc.Walk (walkM)
 
+import Config.Misc as C (arrowTestCases, arrowUp, arrowDown)
 import LinkIcon (addIcon)
 
 -- Compile-time Layout Optimization: annotate self-reference links with whether they are 'before' or 'after' the link, so they are decorated with either '↑' or '↓' icons to help the reader know what the link refers to & if they have read it already.
@@ -102,53 +103,9 @@ addArrowClassInline (Span attr inlines) = do
   return $ Span attr inlines'
 addArrowClassInline x = return x  -- other inlines
 
-arrowUp, arrowDown :: T.Text
-arrowUp = "arrow-up"
-arrowDown = "arrow-down"
-arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
-arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
-arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
 
 upDownArrows :: Pandoc -> Pandoc
 upDownArrows (Pandoc meta blocks) = Pandoc meta (ST.evalState (walkM addArrowClass blocks) S.empty)
 
 testUpDownArrows :: [(Pandoc, Pandoc)]
-testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pandoc nullMeta a, Pandoc nullMeta b)) arrowTestCases
-
-arrowTestCases :: [([Block], [Block])]
-arrowTestCases =
-      [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
-        [Para [Link ("", [], arrowDownKV) [Str "simpleCase"] ("#target", "")]])
-      , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]],
-          [Para [Link ("", [], arrowDownKV) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]])
-      , ([Para [Link ("", [], []) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]],
-         [Para [Link ("", [], arrowDownKV) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]])
-      , ([Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "beforeLinkCase"] ("#target", "")]],
-         [Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkCase"] ("#target", "")]])
-      , ([Para [Link ("", [], []) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-          [Para [Link ("", [], arrowDownKV) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]])
-      , ([Para [Link ("", [], []) [Str "nonExistentTargetCase"] ("#nonexistent", "")]],
-         [Para [Link ("", [], arrowDownKV) [Str "nonExistentTargetCase"] ("#nonexistent", "")]])
-      , ([Para [Str "noLinksCase: no links or targets here"]],
-         [Para [Str "noLinksCase: no links or targets here"]])
-      , ([Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], []) [Str "beforeLinkNestedCase"] ("#target", "")]],
-         [Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkNestedCase"] ("#target", "")]])
-      , ([Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], []) [Str "beforeLinkHeaderCase"] ("#target", "")]],
-         [Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], arrowUpKV) [Str "beforeLinkHeaderCase"] ("#target", "")]])
-      , ([Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], []) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")]],
-         [Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], arrowUpKV) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], arrowUpKV) [Str "link2"] ("#target2", "")]])
-      , ([Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], []) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]],
-         [Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], arrowUpKV) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]])
-      , ([Para [Link ("", [], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "link3"] ("#target", "")]],
-         [Para [Link ("", [], arrowDownKV) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "link3"] ("#target", "")]])
-      , ([Div ("", [], []) [Para [Link ("", [], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]],
-         [Div ("", [], []) [Para [Link ("", [], arrowDownKV) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
-      , ([Para [Link ("", [], []) [Str "simpleCase"] ("#top", "")]],
-         [Para [Link ("", [], arrowUpKV) [Str "simpleCase"] ("#top", "")]])
-      ]
+testUpDownArrows = filter (uncurry ((/=) . upDownArrows)) $ map (\(a,b) -> (Pandoc nullMeta a, Pandoc nullMeta b)) C.arrowTestCases
