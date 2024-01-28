@@ -14,13 +14,14 @@ import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, read
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
 import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata)
-import Utils (printGreen)
+import Utils (cd, printGreen)
 
 maxEmbedAtOnce :: Int
 maxEmbedAtOnce = 750
 
 main :: IO ()
-main = do md  <- readLinkMetadata
+main = do cd
+          md  <- readLinkMetadata
           let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           bdb <- readBacklinksDB
           edb <- readEmbeddings

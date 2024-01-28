@@ -36,12 +36,14 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import MetadataFormat (extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
-import Config.Misc as C (miscellaneousLinksCollapseLimit)
+import Config.Misc as C (miscellaneousLinksCollapseLimit, cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic, ListName, ListSortedMagic)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
-main = do dirs <- getArgs
+main = do Config.Misc.cd
+
+          dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
