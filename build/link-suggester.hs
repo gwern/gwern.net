@@ -9,7 +9,8 @@
 
 module Main where
 
-import Data.List (nub, sort, sortBy)
+import Data.List (sort, sortBy)
+import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map.Strict as M (difference, elems, filter, filterWithKey, fromListWith, toList, map, union, Map)
 import qualified Data.Set as S (fromList, member, Set)
 import qualified Data.Text as T (append, dropWhile, dropWhileEnd, head, length, lines, intercalate, pack, unpack, toLower, Text, replace)
@@ -41,7 +42,7 @@ main = do
   let db = M.filterWithKey (\k _ -> (k /= "") && (T.head k == '/' || isURI (T.unpack k)) && not (C.filterURLs k)) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
-  let dbMinimumLess = M.union C.whiteListDB $ M.map (nub . sort . cleanAnchors) $ M.filter (\texts -> length texts >= C.hitsMinimum) db
+  let dbMinimumLess = M.union C.whiteListDB $ M.map (nubOrd . sort . cleanAnchors) $ M.filter (\texts -> length texts >= C.hitsMinimum) db
   let dbFailedMinimum = ("Did not pass hitsMinimum filter", db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
 
   -- We want to filter out any anchor text which is associated with more than 1 URL (those are too ambiguous to be useful), any text which is in the system dictionary, and anything in the blacklist patterns or list.

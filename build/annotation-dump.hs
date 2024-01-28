@@ -3,7 +3,8 @@
 -- If arguments or stdin are provided, they are read as URLs/paths to query for; their annotation (if non-empty) is provided, as well as any other annotation which contains them as a substring.
 -- If an argument has an empty annotation, it is printed out as well, as a separate line. (This enables use-cases like parsing all the links out of a file using link-extracter.hs and passing it into annotation-dump.hs to see which ones do not so much as have a tag, so a tag can be added.)
 
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Map as M (lookup, union, toList, fromList)
 import qualified Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
@@ -24,7 +25,7 @@ main = do full  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for ha
           let final = sortItemPathDate $ M.toList finalDB
           let finalSingleLine = map toSingleLine final
 
-          stdin <- fmap (nub . lines . T.unpack) TIO.getContents
+          stdin <- fmap (nubOrd . lines . T.unpack) TIO.getContents
           if null stdin then putStrLn (unlines finalSingleLine)
             else do let lookups = map (\p -> case M.lookup p incompleteDB of
                                               Nothing -> toSingleLine (p, (("","","","",[],""),""))

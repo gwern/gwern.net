@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, linkAutoTest) 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2024-01-26 18:36:28 gwern"
+When:  Time-stamp: "2024-01-28 17:59:23 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -43,7 +43,7 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Qu
 -}
 
 import Data.Char (isPunctuation, isSpace)
-import Data.List (nub)
+import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, pack, unpack, Text)
 import Control.Monad.State (evalState, get, put, State)
@@ -234,8 +234,8 @@ customDefinitionsR = map (\(a,b) -> (a,
 -- validate and error out immediately if there are bad rewrites defined
 definitionsValidate :: [(T.Text, T.Text)] -> [(T.Text, T.Text)]
 definitionsValidate defs
-    | nub (map fst defs) /= map fst defs = error $ "LinkAuto fatal error: Definition keys are not unique! Definitions: "   ++ show (frequency $ map fst defs)
-    | nub (map snd defs) /= map snd defs = error $ "LinkAuto fatal error: Definition values are not unique! Definitions: " ++ show (frequency $ map snd defs)
+    | nubOrd (map fst defs) /= map fst defs = error $ "LinkAuto fatal error: Definition keys are not unique! Definitions: "   ++ show (frequency $ map fst defs)
+    | nubOrd (map snd defs) /= map snd defs = error $ "LinkAuto fatal error: Definition values are not unique! Definitions: " ++ show (frequency $ map snd defs)
     | otherwise = defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.

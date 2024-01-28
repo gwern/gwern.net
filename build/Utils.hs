@@ -3,7 +3,8 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
-import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, nub)
+import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
@@ -198,10 +199,10 @@ removeKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, filter (\(k,_) -> 
 removeKey key (Span  (i, cl, ks) s)           = Span  (i, cl, filter (\(k,_) -> k/=key) ks) s
 removeKey _ x = x
 addKey :: (T.Text,T.Text) -> Inline -> Inline
-addKey key (Code  (i, cl, ks) code)        = Code  (i, cl, nub (key : ks)) code
-addKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, nub (key : ks)) s (url, tt)
-addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nub (key : ks)) s (url, tt)
-addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nub (key : ks)) s
+addKey key (Code  (i, cl, ks) code)        = Code  (i, cl, nubOrd (key : ks)) code
+addKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, nubOrd (key : ks)) s (url, tt)
+addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nubOrd (key : ks)) s (url, tt)
+addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nubOrd (key : ks)) s
 addKey _ x = x
 
 hasExtension :: T.Text -> T.Text -> Bool

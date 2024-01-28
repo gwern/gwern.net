@@ -9,7 +9,8 @@ import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml,
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile, writeFile)
-import Data.List ((\\), intercalate,  nub, tails, sort)
+import Data.List ((\\), intercalate, tails, sort)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as M -- (filter, keys, lookup, fromList, toList, difference, withoutKeys, restrictKeys, member)
 import System.Directory (doesFileExist, renameFile, removeFile)
@@ -178,7 +179,7 @@ embed edb mdb bdb i@(p,_) =
                               Nothing -> []
                               Just bl -> map T.unpack (concatMap snd bl)
             let backlinksMetadata = if null backlinks then "" else
-                                      "\n\nReverse citations:\n\n- " ++ intercalate "\n- " (nub $
+                                      "\n\nReverse citations:\n\n- " ++ intercalate "\n- " (nubOrd $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
                                                     Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
@@ -257,7 +258,7 @@ findN :: Forest -> Int -> Int -> Maybe Double -> Embedding -> (String,[String])
 findN _ 0 _    _ e = error ("findN called for k=0; embedding target: " ++ show e)
 findN _ _ 0    _ e = error ("findN failed to return enough candidates within iteration loop limit. Something went wrong! Embedding target: " ++ show e)
 findN f k iter Nothing e = findN f k iter (Just  C.maxDistance) e
-findN f k iter j@(Just mx) e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nub $ filter (\p2 -> p2/="" && not (C.blackList p2) && p1 /= p2) $ findNearest f k mx e in
+findN f k iter j@(Just mx) e@(p1,_,_,_,_) = let results = take C.bestNEmbeddings $ nubOrd $ filter (\p2 -> p2/="" && not (C.blackList p2) && p1 /= p2) $ findNearest f k mx e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 50.
@@ -397,8 +398,8 @@ m <- sortTagByTopic md tagTest
 m
 
 let m' = map (map (\f -> Data.Maybe.fromJust $ M.lookup f md)) m
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ map LinkMetadata.sortItemDate m' -- by date
-putStrLn $ Text.Show.Pretty.ppShow $ nub $ map (map (\(t,_,_,_,_,_) -> t)) $ m' -- by topic
+putStrLn $ Text.Show.Pretty.ppShow $ nubOrd $ map (map (\(t,_,_,_,_,_) -> t)) $ map LinkMetadata.sortItemDate m' -- by date
+putStrLn $ Text.Show.Pretty.ppShow $ nubOrd $ map (map (\(t,_,_,_,_,_) -> t)) $ m' -- by topic
 edb <- readEmbeddings
 let ml = clusterIntoSublist edb m
 putStrLn $ ppShow ml

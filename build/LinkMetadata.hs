@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-26 19:19:48 gwern"
+When:  Time-stamp: "2024-01-28 18:00:05 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, f
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
-import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.HT (search)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
@@ -162,7 +162,7 @@ readLinkMetadataAndCheck = do
              -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst full
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (nub (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) full
 
@@ -177,7 +177,7 @@ readLinkMetadataAndCheck = do
              unless (null emptyCheck) $ error $ "full.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) full in
-               when (length (nub (sort annotations)) /= length annotations) $ error $
+               when (length (nubOrd (sort annotations)) /= length annotations) $ error $
                "full.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
              -- intermediate link annotations: not finished, like 'full.yaml' entries, but also not fully auto-generated.

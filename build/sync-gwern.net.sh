@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-26 09:30:18 gwern"
+# When:  Time-stamp: "2024-01-28 18:02:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -567,7 +567,7 @@ else
     λ(){ gwa | grep -F -- '[]' | grep -F --invert-match -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | grep -E --invert-match --perl-regexp '\e\[36ma\e\[0m: '
     wrap λ "Untagged annotations." &
 
-    λ(){ gwa | grep -E -v -e '</a></p> ?</li> ?<li> ?<p><a' | grep -E -e '<div class="aux-links-append see-also-append collapse">.*<p><strong>See Also</strong>:</p>.*<div class="columns"> ?<ul> ?<li>'l }
+    λ(){ gwa | grep -E -v -e '</a></p> ?</li> ?<li> ?<p><a' | grep -E -e '<div class="aux-links-append see-also-append collapse">.*<p><strong>See Also</strong>:</p>.*<div class="columns"> ?<ul> ?<li>'; }
     wrap λ "Annotations with single-entry See-Alsos which are collapsed, which is pointless (as it is not any more compact); remove the '.collapse' class."
 
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
@@ -1027,8 +1027,8 @@ else
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' -e ' may refer to:' ./metadata/auto.yaml; }
-    wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
+    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.yaml; }
+    wrap λ "Broken links, corrupt authors, or failed scrapes in auto.yaml."
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | grep -F --invert-match -e metadata/annotation/; }
     wrap λ "No files should have double hyphens or tildes in their names."
@@ -1168,6 +1168,9 @@ else
 
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
+
+    λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
+    wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' instead)."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then

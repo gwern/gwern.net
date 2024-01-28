@@ -29,12 +29,12 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinkIDsWith)
 import Typography (typographyTransform)
-import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions, cd)
-import qualified Config.Misc as C (backlinkBlackList)
+import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
+import qualified Config.Misc as C (backlinkBlackList, cd)
 
 main :: IO ()
 main = do
-  cd
+  C.cd
   createDirectoryIfMissing False "metadata/annotation/backlink/"
   priorBacklinksN <- fmap length $ listDirectory "metadata/annotation/backlink/"
   -- for uninteresting reasons probably due to a bad architecture, when the existing set of backlinks is deleted for a clean start, apparently you have to run generateBacklinks.hs twice...? So if we appear to be at a clean start, we run twice:

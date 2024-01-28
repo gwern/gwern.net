@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-26 19:08:11 gwern"
+When:  Time-stamp: "2024-01-28 17:59:07 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -95,7 +95,8 @@ module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiv
 
 import Control.Monad (filterM, unless)
 import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter)
-import Data.List (isInfixOf, isPrefixOf, nub, sortOn)
+import Data.List (isInfixOf, isPrefixOf, sortOn)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -131,7 +132,7 @@ localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescript
                           (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                           (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
   let classes' = if "doc/www/localhost/" `T.isPrefixOf` targetURL' || "doc/www/nitter.net/" `T.isPrefixOf` targetURL' then "link-annotated" : classes else classes -- TODO: special case, due to unreliability of Nitter mirror creation + use of archive snapshots to create the 'annotation' at runtime. see `LM.addHasAnnotation`
-  let archiveAnnotatedLink = Link (identifier, classes', nub (pairs++archiveAttributes)) b (targetURL, targetDescription)
+  let archiveAnnotatedLink = Link (identifier, classes', nubOrd (pairs++archiveAttributes)) b (targetURL, targetDescription)
   return archiveAnnotatedLink
 localizeLink _ x = return x
 
@@ -162,7 +163,7 @@ manualArchive n = do
   unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)
   let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
   unless (null sortedItems) $ putStrLn ("N-due: " ++ show sortedItems)
-  let urlsToArchive = nub $ map fst $ cheapItems ++ sortedItems
+  let urlsToArchive = nubOrd $ map fst $ cheapItems ++ sortedItems
   adbExecuted <- mapConcurrently archiveItem urlsToArchive
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
   writeArchiveMetadata adb'

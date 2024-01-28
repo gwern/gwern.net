@@ -13,7 +13,8 @@ module Main where
 
 import Control.Monad (filterM, void)
 import Control.Monad.Parallel as Par (mapM_)
-import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy, (\\))
+import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
 import qualified Data.Map as M (keys, lookup, filterWithKey)
 import Data.Maybe (fromJust)
@@ -41,7 +42,7 @@ import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readL
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
-main = do Config.Misc.cd
+main = do C.cd
 
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
@@ -101,8 +102,8 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
 
   triplets  <- listFiles md direntries'
 
-  let linksSelf = nub $ reverse $ sortByDate taggedSelf  -- newest first, to show recent additions
-  let linksAll = nub $ reverse $ sortByDate $ triplets++tagged'
+  let linksSelf = nubOrd $ reverse $ sortByDate taggedSelf  -- newest first, to show recent additions
+  let linksAll = nubOrd $ reverse $ sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` f)) linksAll
   let linksWP = linksAll \\ links
@@ -249,7 +250,7 @@ listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePat
 listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "doc/" "" dir in
                      let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
-                       do let files = nub $ map truncateAnchors $ M.keys tagged
+                       do let files = nubOrd $ map truncateAnchors $ M.keys tagged
                           linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $ zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi linkbiblios
