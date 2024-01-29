@@ -123,12 +123,12 @@ filterMeta ea = if anyInfix ea C.filterMetaBadSubstrings || elem ea C.filterMeta
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
-trimTitle t = let t' = reverse $ sedMany [("†.*", ""), -- eg "Relation of Serum 25-Hydroxyvitamin D to Heart Rate and Cardiac Work (from the National Health and Nutrition Examination Surveys)†\n†Conflict of interest: Dr. Simpson receives support from Abbott Laboratories, Chicago, Illinois"
+trimTitle t = let t' = reverse $ sedMany [("†.*", ""), -- eg. "Relation of Serum 25-Hydroxyvitamin D to Heart Rate and Cardiac Work (from the National Health and Nutrition Examination Surveys)†\n†Conflict of interest: Dr. Simpson receives support from Abbott Laboratories, Chicago, Illinois"
                                           ("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
                        replaceMany [(" : ", ": "), ("\n ", " ")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
- -- eg "foo.pdf#page=50&org=openai" → "50"; "foo.pdf" → ""
+ -- eg. "foo.pdf#page=50&org=openai" → "50"; "foo.pdf" → ""
 pageNumberParse :: String -> String
 pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg

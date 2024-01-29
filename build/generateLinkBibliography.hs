@@ -57,8 +57,8 @@ writeLinkBibliographyFragment md path =
         linksRaw <- if head path == '/' && '.'`notElem`path then
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
                       else
-                        extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".page")
-                    else return $ map T.unpack $ nubOrd $ extractLinks False (T.pack abstract)
+                        extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".page") -- Markdown essay
+                    else return $ map T.unpack $ nubOrd $ extractLinks False (T.pack abstract) -- annotation
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
         let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
         when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $

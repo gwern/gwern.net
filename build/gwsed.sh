@@ -30,7 +30,7 @@ else
             # proceed with trying to do a normal sitewide replacement:
             FILES=$((find ~/wiki/ -name "*.page"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.yaml" -or -name "*.hs" -or -name "*.html"; ) | \
-                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' -e 'static/build/Config/LinkArchive.hs' | \
+                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/build/Config/MetadataFormat.hs' | \
                         xargs grep -F --files-with-matches "$1" | sort)
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2
@@ -43,7 +43,7 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.yaml"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
+                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
                             sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
                 gw "$1";
 

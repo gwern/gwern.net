@@ -178,8 +178,8 @@ gwernTOC footnotesP indexP p' f =
  (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
         -- add columns class to condense it in popups/tags
         replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
-        -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them.
-        -- sed "<span>(.*)</span>" "" $
+        -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them. TODO: should be fixed in Pandoc HEAD, so remove this after a full upgrade.
+        sed "<span>(.*)</span>" "" $
         (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
         -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies/backlinks.
         sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index

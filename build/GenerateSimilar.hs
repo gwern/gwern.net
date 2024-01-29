@@ -8,7 +8,7 @@ module GenerateSimilar where
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Span, Str, Strong), Format(..), runPure, Pandoc(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
-import qualified Data.Text.IO as TIO (readFile, writeFile)
+import qualified Data.Text.IO as TIO (readFile)
 import Data.List ((\\), intercalate, tails, sort)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (fromJust, fromMaybe)
@@ -436,9 +436,9 @@ readListName = do let p = "metadata/listname.hs"
                             do ls <- fmap T.unpack $ TIO.readFile p
                                return $ if ls=="" then M.empty else M.fromList $ validateListName (read ls :: [([FilePath], String)])
    where validateListName :: [([FilePath], String)] -> [([FilePath], String)]
-         validateListName l = if any (\(f,g) -> null g || length f < 1 || any null f) l then error ("validateListName: read file failed sanity check: " ++ show l) else l
+         validateListName l = let errors = filter (\(f,g) -> null g || length f < 1 || any null f) l in if null errors then l else error ("validateListName: read file failed sanity check: " ++ show errors)
 writeListName :: ListName -> IO ()
-writeListName = TIO.writeFile "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) . M.toList -- ensure consistent set-like lookups by sorting
+writeListName = writeUpdatedFile "listname" "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) . filter (\(_,nick) -> nick/="") . M.toList -- ensure consistent set-like lookups by sorting
 
 -- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
 type ListSortedMagicList = [([FilePath], [FilePath])]
@@ -450,9 +450,10 @@ readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
                            do ls <- fmap T.unpack $ TIO.readFile p
                               return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
-         validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
+         validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then
+                                       error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
-writeListSortedMagic = TIO.writeFile "metadata/listsortedmagic.hs" . T.pack . ppShow . M.toList
+writeListSortedMagic = writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" . T.pack . ppShow . M.toList
 
 -- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.

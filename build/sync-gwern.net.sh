@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-28 20:22:09 gwern"
+# When:  Time-stamp: "2024-01-29 16:23:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -69,7 +69,7 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
-        ./static/build/checkMetadata > ~/METADATA.txt &
+        ./static/build/checkMetadata 2>&1 ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -180,10 +180,10 @@ else
     # we want to generate all directories first before running Hakyll in case a new tag was created
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Updating link bibliographies…"
-        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+        # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N16 -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -511,7 +511,7 @@ else
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
-             grep -F --invert-match -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/';
+             grep -F --invert-match -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf';
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
@@ -522,7 +522,7 @@ else
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ find ./ -type f -name "*.page" -type f -exec grep -E -e 'cssExtension:' {} \; | \
-       grep -F --invert-match -e 'cssExtension: dropcaps-cheshire' -e 'cssExtension: dropcaps-cheshire reader-mode' -e 'cssExtension: dropcaps-de-zs' -e 'cssExtension: dropcaps-goudy' -e 'cssExtension: dropcaps-goudy reader-mode' -e 'cssExtension: dropcaps-kanzlei' -e 'cssExtension: "dropcaps-kanzlei reader-mode"' -e 'cssExtension: dropcaps-yinit'; }
+       grep -F --invert-match -e 'cssExtension: dropcaps-cheshire' -e 'cssExtension: dropcaps-cheshire reader-mode' -e 'cssExtension: dropcaps-de-zs' -e 'cssExtension: dropcaps-goudy' -e 'cssExtension: dropcaps-goudy reader-mode' -e 'cssExtension: dropcaps-kanzlei' -e 'cssExtension: "dropcaps-kanzlei reader-mode"' -e 'cssExtension: dropcaps-yinit' -e 'cssExtension: dropcaps-dropcat' -e 'cssExtension: dropcaps-gene-wolfe'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | grep -F --invert-match -e 'lorem-code.page' -e 'ab-test.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
@@ -552,7 +552,7 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "grep -F --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%'; }
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**'; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | grep -F -v -e 'tabindex="-1"></a>'; }
@@ -599,6 +599,9 @@ else
     λ(){ gf -e 'amp#' -- ./metadata/*.yaml; }
     wrap λ "Unicode/HTML entity encoding error?"
 
+    λ(){ grep -F --color=always -e 'en.m.wikipedia.org' -- ./metadata/full.yaml; }
+    wrap λ "Check possible syntax errors in full.yaml YAML metadata database (fixed string matches)."
+
     λ(){ grep -E --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
@@ -620,7 +623,7 @@ else
     wrap λ "#1: Check possible syntax errors in YAML metadata database (fixed string matches)."
     λ(){ grep -F --color=always -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
-            -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
+            -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e '<em>Figure' \
             -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="W"' -e 'href="(' -e '>/em>' -e '<figure>[' \
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
@@ -647,7 +650,7 @@ else
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
 
-    λ(){ grep -E -e ' [0-9]/[0-9]+ ' -- ./metadata/*.yaml | grep -F --invert-match -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11'; }
+    λ(){ grep -E -e ' [0-9]/[0-9]+ ' -- ./metadata/*.yaml | grep -F --invert-match -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11' -e 'TRFK 31/8' -e 'TRFK 303/577' -e 'TRFK 6/8'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
 
     λ(){ grep -F -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
@@ -676,7 +679,7 @@ else
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
                  -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
-       grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs; }
+       grep -E 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
 
     λ(){ grep -F -e '""' -- ./metadata/*.yaml | grep -F --invert-match -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
