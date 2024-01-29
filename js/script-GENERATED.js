@@ -1520,7 +1520,7 @@ GW.floatingHeader = {
             innerHTML: (x.startsWith("#")
                         ? (x == "#footnotes"
                            ? "Footnotes"
-                           : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent)
+                           : document.querySelector(`#${(CSS.escape(x.slice(1)))} .heading a`).innerHTML)
                         : (x == "…"
                            ? "…"
                            : GW.floatingHeader.pageHeader.textContent)).trim()
