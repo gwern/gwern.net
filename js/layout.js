@@ -997,6 +997,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 					addDropcapClassTo(block, dropcapType);
 				} else {
 					stripDropcapClassesFrom(block);
+
+					/*	If resetDropcapInBlock() has not been defined, then it 
+						is also guaranteed to be unnecessary, as that means that
+						the functions that *add* dropcaps to blocks have also
+						not been defined and thus cannot have been called, so
+						nothing needs to be reset.
+					 */
+					if (window.resetDropcapInBlock)
+						resetDropcapInBlock(block);
 				}
 			}
 			block.classList.toggle("intro-graf", introGraf);
