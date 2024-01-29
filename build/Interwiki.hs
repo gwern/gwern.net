@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
 
-import Data.List (intersect, nub)
+import Data.List (intersect)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
 import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
@@ -30,7 +30,7 @@ convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error 
 convertInterwikiLinksInline _ x@(Link _ _ ("", _))        = x
 convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinksInline): tooltip malformed with excess whitespace? " ++ show x else
-  if T.head interwiki == '!' then
+  if T.head interwiki == '!' then if T.head article == '$' || T.head article == '₿' then error $ "Interwiki.convertInterwikiLinksInline called with accidental inflation-adjustment amount instead? " ++ show x else
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
                                             nubOrd (wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
@@ -53,7 +53,8 @@ convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, arti
     interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
                        in
-                         fixedPoint wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $ replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
+                         fixedPoint wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
+                                                                           replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
     deunicode :: T.Text -> T.Text
     deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinksInline _ x = x
@@ -78,7 +79,7 @@ wpURLRedirectRewrites url = let baseURL = T.takeWhile (/='#') url
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
 interwikiTestSuite = let redirectsCircular = map fst C.redirectDB `intersect` map snd C.redirectDB
-                         redirectsDuplicate = nub (map fst C.redirectDB) /= map fst C.redirectDB
+                         redirectsDuplicate = nubOrd (map fst C.redirectDB) /= map fst C.redirectDB
   in if not (null redirectsCircular) then error ("Interwiki.hs: circular redirects detected: " ++ show redirectsCircular)
      else if redirectsDuplicate then error "Interwiki.hs: duplicate redirects detected (in either original or destination)"
   else

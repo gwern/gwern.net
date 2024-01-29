@@ -223,6 +223,7 @@ whiteList = [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Diffusion_model", ["diffusion models", "diffusion model"])
   , ("https://en.wikipedia.org/wiki/Suicidal_ideation", ["suicidal ideation"])
   , ("https://en.wikipedia.org/wiki/Stripe,_Inc.", ["Stripe Inc.", "Stripe"])
   , ("https://en.wikipedia.org/wiki/MIT_Technology_Review", ["MIT Technology Review", "Technology Review"])

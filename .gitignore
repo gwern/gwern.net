@@ -9,6 +9,7 @@ metadata/archive.hs
 **.hi
 **.elc
 build/changeTag
+build/checkMetadata
 build/generateBacklinks
 build/generateDirectory
 build/generateLinkBibliography

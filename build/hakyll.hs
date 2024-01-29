@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-26 09:46:27 gwern"
+When: Time-stamp: "2024-01-28 11:34:00 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,12 +51,14 @@ import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
 import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
 import Arrow (upDownArrows)
 import Test (testAll)
+import Config.Misc (cd)
 
 main :: IO ()
 main =
     -- arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     -- let slow = "true" == fromMaybe "" arg
     hakyll $ do
+               preprocess cd
                preprocess testAll
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
