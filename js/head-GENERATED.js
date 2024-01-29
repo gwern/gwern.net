@@ -774,6 +774,8 @@ function paragraphizeTextNodesOfElement(element) {
 		"a",
 		"em",
 		"strong",
+		"i",
+		"b",
 		"code",
 		"sup",
 		"sub",
