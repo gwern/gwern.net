@@ -3414,6 +3414,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			if (   strictPreviousBlock == null
 				|| strictPreviousBlock.matches(previousBlockSelector) == true)
 				firstGraf = true;
+			//	Centered text must be vertically spaced in all cases.
+			if (block.matches(".text-center"))
+				firstGraf = true;
 			block.classList.toggle("first-graf", firstGraf);
 
 			/*	Colon-terminated paragraphs followed by lists

@@ -1934,8 +1934,8 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (
 addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (eventInfo) => {
     GWLog("rectifySpecialTextBlockTagTypes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".text-center").forEach(div => {
-		rewrapContents(div, null, "P", true, true);
+	eventInfo.container.querySelectorAll(".text-center").forEach(centerDiv => {
+		unwrap(centerDiv, { moveClasses: true });
 	});
 }, "rewrite");
 
