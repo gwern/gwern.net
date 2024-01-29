@@ -3919,6 +3919,7 @@ ol.link-bibliography-list-compact > li::before {
     margin: 0 0 1em 1em;
     overflow: auto;
     position: relative;
+    z-index: 1;
 }
 .annotation.wikipedia-entry .side-box.sister-box ul {
     padding: 0;

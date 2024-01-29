@@ -1520,7 +1520,7 @@ GW.floatingHeader = {
             innerHTML: (x.startsWith("#")
                         ? (x == "#footnotes"
                            ? "Footnotes"
-                           : document.querySelector(`#${(CSS.escape(x.slice(1)))}`).firstElementChild.textContent)
+                           : document.querySelector(`#${(CSS.escape(x.slice(1)))} .heading a`).innerHTML)
                         : (x == "…"
                            ? "…"
                            : GW.floatingHeader.pageHeader.textContent)).trim()
@@ -5076,8 +5076,22 @@ Annotations.dataSources.wikipedia = {
 	referenceDataFromParsedAPIResponse: (response, articleLink) => {
 		let titleLinkHref = articleLink.href;
 
+		let wholePage = false;
+
+		//	Show full page (sans TOC) if it’s a disambiguation page.
+		if (response.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
+			wholePage = true;
+
+			//	Send request to record failure in server logs.
+			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
+		}
+
 		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
-		if (articleLink.hash > "") {
+		if (wholePage) {
+			responseHTML = response.innerHTML;
+			titleHTML = unescapeHTML(response.querySelector("title").innerHTML);
+			fullTitleHTML = titleHTML;
+		} else if (articleLink.hash > "") {
 			let targetHeading = response.querySelector(selectorFromHash(articleLink.hash));
 
 			/*	Check whether we have tried to load a page section which does
@@ -5244,7 +5258,8 @@ Annotations.dataSources.wikipedia = {
 		".mwe-math-mathml-inline",
         ".sidebar",
         ".ambox",
-		".unicode.haudio"
+		".unicode.haudio",
+		"span[typeof='mw:File']",
 	],
 
 	/*  CSS properties to preserve when stripping inline styles.
@@ -5495,6 +5510,18 @@ Annotations.dataSources.wikipedia = {
 				referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
 			wrapElement(firstInfobox, "collapse");
 		}
+
+		//	Apply section classes.
+		referenceEntry.querySelectorAll("section").forEach(section => {
+			if (/[Hh][1-9]/.test(section.firstElementChild.tagName))
+				section.classList.add("level" + section.firstElementChild.tagName.slice(1));
+		});
+
+		//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
+		referenceEntry.querySelectorAll(".dmbox-body").forEach(noteBox => {
+			paragraphizeTextNodesOfElement(noteBox);
+			noteBox.parentElement.classList.add("admonition", "tip");
+		});
 
 		//	Clean empty nodes, redux.
 		referenceEntry.childNodes.forEach(node => {
@@ -13770,8 +13797,8 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (
 addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (eventInfo) => {
     GWLog("rectifySpecialTextBlockTagTypes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".text-center").forEach(div => {
-		rewrapContents(div, null, "P", true, true);
+	eventInfo.container.querySelectorAll(".text-center").forEach(centerDiv => {
+		unwrap(centerDiv, { moveClasses: true });
 	});
 }, "rewrite");
 

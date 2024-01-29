@@ -774,6 +774,8 @@ function paragraphizeTextNodesOfElement(element) {
 		"a",
 		"em",
 		"strong",
+		"i",
+		"b",
 		"code",
 		"sup",
 		"sub",
@@ -3412,6 +3414,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			if (   strictPreviousBlock == null
 				|| strictPreviousBlock.matches(previousBlockSelector) == true)
 				firstGraf = true;
+			//	Centered text must be vertically spaced in all cases.
+			if (block.matches(".text-center"))
+				firstGraf = true;
 			block.classList.toggle("first-graf", firstGraf);
 
 			/*	Colon-terminated paragraphs followed by lists
@@ -3484,6 +3489,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 					addDropcapClassTo(block, dropcapType);
 				} else {
 					stripDropcapClassesFrom(block);
+
+					/*	If resetDropcapInBlock() has not been defined, then it 
+						is also guaranteed to be unnecessary, as that means that
+						the functions that *add* dropcaps to blocks have also
+						not been defined and thus cannot have been called, so
+						nothing needs to be reset.
+					 */
+					if (window.resetDropcapInBlock)
+						resetDropcapInBlock(block);
 				}
 			}
 			block.classList.toggle("intro-graf", introGraf);
