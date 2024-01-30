@@ -5464,7 +5464,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     }
 }
 
-#image-focus-overlay .caption.hidden {
+#image-focus-overlay .caption.hidden:not(.locked) {
     bottom: -50%;
     transition:
         bottom 0.5s ease-in;

@@ -26,7 +26,7 @@ ImageFocus = {
 
 	shrinkRatio: 0.975,
 
-	hideUITimerDuration: 3000,
+	hideUITimerDuration: (GW.isMobile() ? 5000 : 3000),
 
 	dropShadowFilterForImages: " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
 
@@ -407,7 +407,8 @@ ImageFocus = {
 		});
 
 		//  Moving mouse unhides image focus UI.
-		window.addEventListener("mousemove", ImageFocus.mouseMoved);
+		if (GW.isMobile() == false)
+			window.addEventListener("mousemove", ImageFocus.mouseMoved);
 
 		//	Drag-end event; also, click to unfocus.
 		window.addEventListener("mouseup", ImageFocus.mouseUp);
@@ -448,10 +449,11 @@ ImageFocus = {
 		ImageFocus.unfocusImage();
 
 		//  Remove event listeners.
-		window.removeEventListener("wheel", ImageFocus.scrollEvent);
-		window.removeEventListener("mousemove", ImageFocus.mouseMoved);
-		window.removeEventListener("mouseup", ImageFocus.mouseUp);
 		document.removeEventListener("keyup", ImageFocus.keyUp);
+		window.removeEventListener("wheel", ImageFocus.scrollEvent);
+		window.removeEventListener("mouseup", ImageFocus.mouseUp);
+		if (GW.isMobile() == false)
+			window.removeEventListener("mousemove", ImageFocus.mouseMoved);
 
 		//  Hide overlay.
 		ImageFocus.overlay.classList.remove("engaged");
@@ -618,8 +620,7 @@ ImageFocus = {
 			element.classList.toggle("hidden", false);
 		});
 
-		if (GW.isMobile() == false)
-			ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, ImageFocus.hideUITimerDuration);
+		ImageFocus.hideUITimer = setTimeout(ImageFocus.hideUITimerExpired, ImageFocus.hideUITimerDuration);
 	},
 
 	cancelImageFocusHideUITimer: () => {
@@ -738,12 +739,34 @@ ImageFocus = {
 		let imageWasBeingDragged = (window.onmousemove != null);
 
 		//	Do this regardless of where the mouse-up is.
-		if (   ImageFocus.imageInFocus.height >= window.innerHeight
-			|| ImageFocus.imageInFocus.width >= window.innerWidth) {
+		if (   imageWasBeingDragged
+			&& (   ImageFocus.imageInFocus.height >= window.innerHeight
+				|| ImageFocus.imageInFocus.width >= window.innerWidth)) {
 			window.onmousemove = "";
 
 			//  Put the filter back.
 			ImageFocus.imageInFocus.style.filter = ImageFocus.imageInFocus.savedFilter;
+		}
+
+		//	On mobile, tap when UI is hidden unhides UI.
+		if (   GW.isMobile() 
+			&& imageWasBeingDragged == false) {
+			if (ImageFocus.hideUITimer == null) {
+				//	If the UI was hidden, tap unhides it.
+				ImageFocus.unhideImageFocusUI();
+
+				/*	If caption is locked-unhidden, unlock it now (so that it 
+					will be hidden along with the rest of the UI once the 
+					timer expires).
+				 */
+				ImageFocus.overlay.querySelector(".caption").classList.remove("locked");
+
+				//	A tap in this case does nothing else.
+				return;
+			} else if (event.target.closest(".caption") != null) {
+				//	Lock-unhide caption, if tap is on it.
+				ImageFocus.overlay.querySelector(".caption").classList.add("locked");
+			}
 		}
 
 		//	Do nothing more if click is on a UI element.
@@ -754,6 +777,7 @@ ImageFocus = {
 		if (event.button != 0)
 			return;
 
+		//	Exit image focus, if image is not zoomed in.
 		if (   (   ImageFocus.imageInFocus.height < window.innerHeight
 				&& ImageFocus.imageInFocus.width < window.innerWidth)
 			|| (   imageWasBeingDragged == false
