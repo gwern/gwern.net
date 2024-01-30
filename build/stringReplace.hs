@@ -14,7 +14,6 @@
 module Main where
 
 import Control.Monad (when)
--- import System.IO (getContents)
 import System.Environment (getArgs)
 
 import Data.Containers.ListUtils (nubOrd)
@@ -32,6 +31,6 @@ main = do (original:new:file) <- getArgs
           Par.mapM_ (replace (T.pack original) (T.pack new)) files
 
 replace :: T.Text -> T.Text -> FilePath -> IO ()
-replace o n f = do contents <- TIO.readFile f
-                   let new = T.replace o n contents
-                   when (contents /= new) $ TIO.writeFile f new
+replace o n f = do old <- TIO.readFile f
+                   let new = T.replace o n old
+                   when (old /= new) $ TIO.writeFile f new

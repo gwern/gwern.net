@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2023-12-27 20:29:28 gwern"
+When:  Time-stamp: "2024-01-29 19:38:26 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -54,7 +54,8 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text
                            writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
 
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
-getXLink :: String -> FilePath -> (FilePath,FilePath)
+getXLink :: String -> FilePath -> (FilePath, -- raw on-disk relative link like 'metatata/.../foo.html'
+                                   FilePath) -- URL-encoded absolute like '/metadata'.../%...foo.html'
 getXLink linkType p = let linkType' = "/metadata/annotation/" ++ linkType
                           linkBase = if linkType=="" then linkType' else linkType'++"/"
                           linkRaw = linkBase ++ take 246 (urlEncode p) ++ ".html"

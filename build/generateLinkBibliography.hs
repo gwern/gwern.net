@@ -25,7 +25,7 @@ import System.FilePath (takeDirectory, takeFileName)
 
 import Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getModificationTime)
 import Control.Monad.Parallel as Par (mapM_)
 
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
@@ -48,11 +48,24 @@ main = do md <- readLinkMetadata
 writeLinkBibliographyFragment :: Metadata -> FilePath -> IO ()
 writeLinkBibliographyFragment md path =
   case M.lookup path md of
-       Nothing -> return ()
-       Just (_,_,_,_,_,"") -> return ()
-       Just (_,_,_,_,_,abstract) -> do
-        let self = takeWhile (/='#') path
-            selfAbsolute = "https://gwern.net"++self
+    Nothing -> return ()
+    Just (_,_,_,_,_,"") -> return ()
+    Just (_,_,_,_,_,abstract) -> do
+      let self = takeWhile (/='#') path
+      let selfAbsolute = "https://gwern.net" ++ self
+      let (path',_) = getLinkBibLink path
+      lbExists <- doesFileExist path
+      let essay = head path == '/' && '.' `notElem` path
+      shouldWrite <- if essay then -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
+                                   if not lbExists then return True else
+                                     do essayLastModified <- getModificationTime (tail (takeWhile (/='#') path) ++ ".page")
+                                        lbLastModified    <- getModificationTime path'
+                                        return (essayLastModified >= lbLastModified)
+                      else return True
+      when shouldWrite $ parseExtractCompileWrite md path path' self selfAbsolute abstract
+
+parseExtractCompileWrite :: Metadata -> String -> FilePath -> String -> String -> String -> IO ()
+parseExtractCompileWrite md path path' self selfAbsolute abstract = do
         -- toggle between parsing the full original Markdown page, and just the annotation abstract:
         linksRaw <- if head path == '/' && '.'`notElem`path then
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
@@ -72,8 +85,7 @@ writeLinkBibliographyFragment md path =
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
-               Right p' -> do let (path',_) = getLinkBibLink path
-                              when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
+               Right p' -> do when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
                               writeUpdatedFile "link-bibliography-fragment" path' p'
 
 generateLinkBibliographyItems :: [(String,MetadataItem)] -> Block

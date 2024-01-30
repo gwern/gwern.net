@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-29 16:23:59 gwern"
+# When:  Time-stamp: "2024-01-29 20:51:50 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -69,7 +69,7 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
-        ./static/build/checkMetadata 2>&1 ~/METADATA.txt || true &
+        pkill checkMetadata || true ; ./static/build/checkMetadata 2>&1 ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -104,7 +104,16 @@ else
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep -E`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
-          sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' metadata/*.yaml  `find . -name "*.page" -or -name "*.yaml"`; sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g'  `find . -name "*.page" -or -name "*.yaml"`;
+          ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
+          for file in $(find . -name "*.page" -or -name "*.yaml"); do
+              if grep -qE "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+                  sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
+              fi
+
+              if grep -qE "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+                  sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g' "$file"
+              fi
+          done
 
           ## anchor errors:
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
@@ -177,11 +186,11 @@ else
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \
                                         -e 'confidential/' -e 'private/' -e 'secret/' -e 'newest/')"
 
-    # we want to generate all directories first before running Hakyll in case a new tag was created
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Updating link bibliographies…"
-        # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
+        # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
         ./static/build/generateDirectory +RTS -N16 -RTS $DIRECTORY_TAGS
     fi

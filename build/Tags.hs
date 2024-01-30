@@ -95,8 +95,6 @@ abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsL
 listTagsAll :: IO [String]
 listTagsAll = fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.page")) "doc/"
 
-
-
 -- given a list of ["doc/foo/index.page"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
 -- Bool argument = whether to include all sub-directories recursively.
 listTagDirectories :: Bool -> [FilePath] -> IO [FilePath]

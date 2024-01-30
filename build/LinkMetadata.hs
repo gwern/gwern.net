@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-28 18:00:05 gwern"
+When:  Time-stamp: "2024-01-29 20:27:21 gwern"
 License: CC-0
 -}
 
@@ -192,10 +192,10 @@ readLinkMetadataAndCheck = do
 
              let ensureExtension f = if '.' `elem` f then f else f ++ ".page"
              let checkFile f = fmap not $ doesFileExist $ ensureExtension f
-             let printError f = let f' = ensureExtension f in
-                                printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")
              fileChecks <- Par.mapM checkFile files
              let missingFiles = map fst $ filter snd $ zip files fileChecks
+             let printError f = let f' = ensureExtension f in
+                                printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")
              mapM_ printError missingFiles
 
              -- auto-generated cached definitions; can be deleted if gone stale
