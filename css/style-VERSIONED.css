@@ -6517,7 +6517,6 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         max-width: calc(100% - 2em);
         left: 1em;
         right: 1em;
-        z-index: 2;
     }
 }
 @media (min-width:  650px) and (orientation: portrait),
@@ -6842,11 +6841,6 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     display: flex;
     justify-content: space-between;
     pointer-events: none;
-}
-@media all and (max-width: 1179px) {
-    #image-focus-overlay .slideshow-buttons {
-        z-index: 1;
-    }
 }
 
 #image-focus-overlay .slideshow-buttons button {
