@@ -156,6 +156,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
 htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexp = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
+         -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to stripe attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
          , ("([0-9])- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'

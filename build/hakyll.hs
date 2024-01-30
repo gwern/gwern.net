@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-28 11:34:00 gwern"
+When: Time-stamp: "2024-01-29 15:58:47 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -300,34 +300,8 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
 --
 -- While processing Headers, ensure that they have valid CSS IDs. (Pandoc will happily generate invalid HTML IDs, which contain CSS-forbidden characters like periods; this can cause fatal errors in JS/CSS without dangerous workarounds. So the author needs to manually add a period-less ID. This is an outstanding issue: <https://github.com/jgm/pandoc/issues/6553>.)
 -- NOTE: We could instead require the author to manually assign an ID like `# Foo.bar {#foobar}`, which would be reliable & compatible with other Markdown systems, but this would not solve the problem on *generated* pages, like the tag-directories which put paper titles in headers & will routinely incur this problem. So we have to automate it as a Pandoc rewrite.
--- headerSelflinkAndSanitize :: Block -> Block
--- headerSelflinkAndSanitize x@(Header _ _ ((Link _ _ _):[])) = x -- already processed by `headerSelflinkAndSanitize`
--- headerSelflinkAndSanitize   (Header a b (x@(Link _ _ _):y@(Link _ _ _):z)) = Header a b (x : flattenLinksInInlines (y:z))
--- headerSelflinkAndSanitize   (Header a b (x@(Link _ _ _):Space:y@(Link _ _ _):z)) = Header a b (x : flattenLinksInInlines (y:z))
--- headerSelflinkAndSanitize   (Header a b (x@(Str _):Space:y@(Link _ _ _):z)) = Header a b (x : flattenLinksInInlines (y:z))
--- headerSelflinkAndSanitize   (Header a b (x@(Str _):xx@(Str _):y@(Link _ _ _):z)) = Header a b (x : xx : flattenLinksInInlines (y:z))
--- headerSelflinkAndSanitize x@(Header _ _ []) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no visible text‽ This should be impossible: " ++ show x
--- headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no specified ID‽ This should be impossible: " ++ show x
--- headerSelflinkAndSanitize x@(Header a (href,b,c) d) =
---   let href' = T.filter (`notElem` ['.', '#', ':']) href in -- NOTE: these appear to be the only dangerously inconsistent allowed characters, and Pandoc already seems to filter out octothorpe & colon, but we will double-check by filtering those out too.
---     unsafePerformIO $ do
---       when (href' /= href) $ printRed $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
---       if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
---         -- NOTE: we do not need to check the new ID for uniqueness, as colliding IDs are invalid HTML and the document author is responsible for ensuring no collisions; this is enforced by checking the final HTML using HTML Tidy to verify validity.
---         return $ Header a (href',b,c) [Link nullAttr (walk titlecaseInline d)
---                                        ("#"`T.append`href', "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
--- headerSelflinkAndSanitize x = x
-
 headerSelflinkAndSanitize :: Block -> Block
 headerSelflinkAndSanitize x@(Header _ _ [Link{}]) = x
--- headerSelflinkAndSanitize (Header a b (x:xs))
---   | isLinkOrStr x = Header a b (x : flattenLinksInInlines xs)
---   where
---         isLinkOrStr :: Inline -> Bool
---         isLinkOrStr Link{}  = True
---         isLinkOrStr (Str _) = True
---         isLinkOrStr Space   = True
---         isLinkOrStr _       = False
 headerSelflinkAndSanitize x@(Header _ _ []) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no visible text‽ This should be impossible: " ++ show x
 headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid header with no specified ID‽ This should be impossible: " ++ show x
 headerSelflinkAndSanitize x@(Header a (href,b,c) d) =

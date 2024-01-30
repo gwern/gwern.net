@@ -472,4 +472,5 @@ siteBlackList = [
           "tools.openlab.psu.edu", "www.memteaimports.com","tomodachi.de","blog.daviskedrosky.com","researchers.wls.wisc.edu","www.harvey.ai",
           "tylervigen.com", "foundation.wikimedia.org", "cdn.discordapp.com","internetshakespeare.uvic.ca", "forecasting.substack.com", "git-scm.com",
           "www.emacswiki.org", "geminiprotocol.net", "figshare.com", "www.semafor.com", "google-research.github.io", "deepmind.google",
-          "www.crd.york.ac.uk", "www.crunchbase.com", "dx.doi.org", "gawker.com", "cvm.missouri.edu", "gigamonkeys.com", "www.tiktok.com"]
+          "www.crd.york.ac.uk", "www.crunchbase.com", "dx.doi.org", "gawker.com", "cvm.missouri.edu", "gigamonkeys.com", "www.tiktok.com",
+          "conversationswithtyler.com"]
