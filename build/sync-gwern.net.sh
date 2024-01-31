@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-30 10:42:46 gwern"
+# When:  Time-stamp: "2024-01-31 17:39:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -69,7 +69,7 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
-        pkill checkMetadata || true ; ./static/build/checkMetadata 2>&1 ~/METADATA.txt || true &
+        pkill checkMetadata || true ; ./static/build/checkMetadata > ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -192,7 +192,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N16 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N15 -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -1030,7 +1030,7 @@ else
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find * -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ./* -type d | grep -E --invert-match -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc') | grep -F --invert-match -e 'bytes each' -e 'trimfill.png'; }
     wrap λ "Duplicate file check"
 
     λ(){ find ./ -type f | grep -F --invert-match -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/dropcap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | grep -E --invert-match -e '^ +1 ' | sort --numeric-sort; }
@@ -1057,14 +1057,14 @@ else
     λ(){ find . -type f -name "*.html.html.html"; }
     wrap λ "Found a triple-.html HTML file; weird! Syntax-highlighting gone astray?"
 
-    λ(){ find . -type f -mtime +3 -name "*#*" -or -type f -name "temp[0-9]*"; }
+    λ(){ find . -type f -mtime +2 -name "*#*" -or -type f -name "temp[0-9]*"; }
     wrap λ "Stale temporary files?"
 
-    λ(){ find * -type d -empty; }
+    λ(){ find ./* -type d -empty; }
     wrap λ "Unused or empty directories?"
 
     bold "Checking for HTML anomalies…"
-    λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | grep -F --invert-match 'static/' | \
+    λ(){ BROKEN_HTMLS="$(find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match 'static/' | \
                          parallel --max-args=500 "grep -F --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied' -e '403 Forbidden'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS; do
@@ -1073,7 +1073,7 @@ else
     wrap λ "Archives of broken links"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
+    λ(){ find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
                                                 -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \
@@ -1083,11 +1083,11 @@ else
     wrap λ "Corrupted filetype HTMLs" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
     bold "Checking for PDF anomalies…"
-    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
+    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
                                 grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
@@ -1114,7 +1114,7 @@ else
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./doc/ -type f -name "*.pdf" | grep -F --invert-match -e 'doc/www/' | sort | parallel checkSpamHeader
+        find ./doc/ -type f -mtime -31 -name "*.pdf" | grep -F --invert-match -e 'doc/www/' | sort | parallel checkSpamHeader
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs." &
 
@@ -1125,25 +1125,25 @@ else
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }
     export -f removeEncryption
-    find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
+    find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
 
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
-    λ(){ find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
+    λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | grep -F --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs" &
 
-    λ(){ find ./doc/ -type f -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
+    λ(){ find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | grep -F --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs" &
 
-    λ(){  find ./doc/ -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
+    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')" &
 
     λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
-    λ(){ JPGS_BIG="$(find ./doc/ -type f -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
          compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
@@ -1152,7 +1152,7 @@ else
     png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/') &
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./doc/ -type f -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.png' ); do
+    λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.png' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1700  )); then
                   echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
