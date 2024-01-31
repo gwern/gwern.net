@@ -1305,4 +1305,6 @@ whiteListMatchesFixed = [
       , "https://intxpower.com/" -- interactive (tool)
       , "https://wangyanhui666.github.io/MicroCinema.github.io/" -- low quality (video embeds)
       , "https://bbycroft.net/llm" -- interactive (visualization)
+      , "https://gandalf.lakera.ai/" -- interactive (game)
+      , "https://google-research.github.io/lingvo-lab/translatotron3/" -- low quality (audio embeds)
       ]

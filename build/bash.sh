@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-21 18:25:52 gwern"
+# When:  Time-stamp: "2024-01-31 19:54:46 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -71,6 +71,37 @@ pad-black () {
 
 # function split_image() {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
+
+# check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs, often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
+png2JPGQualityCheck () {
+    QUALITY_THRESHOLD=28 # decibels
+    SIZE_REDUCTION_THRESHOLD=25 # %
+    TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
+    JPG_BASENAME="$(basename "${1%.png}.jpg")"
+    JPG="$TMP_DIR/$JPG_BASENAME"
+
+    # Convert PNG to JPG at 85% quality:
+    convert "$1" -quality 85% "$JPG"
+
+    # Calculate file sizes
+    PNG_SIZE=$(stat -c%s "$1")
+    JPG_SIZE=$(stat -c%s "$JPG")
+
+    # Calculate size reduction in percentage
+    SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
+
+    # Calculate PSNR
+    PSNR=$(compare -metric PSNR "$1" "$JPG" null: 2>&1)
+
+    # Check both PSNR quality and size reduction
+    if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
+        echo "$1"
+    fi
+
+    # Clean up: Remove the temporary JPG file
+    rm "$JPG"
+}
+export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
 cr () { crossref "$@" & }
@@ -173,12 +204,11 @@ gwmv () {
         echo "Need two arguments: OLD file and NEW file! Only got: \"$@\""
         return 2
     else
-    (
+
         set -x
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
         OLD=$(echo "$1" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
-
 
         if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
             echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories."
@@ -197,27 +227,33 @@ gwmv () {
         if [[ -a ~/wiki$NEW ]]; then
             echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first."
             return 4
-            # to rename a gwern.net file:
-            # 1. git mv the old filename to new
+        fi
+
+        # Check if OLD is a PNG and NEW is a JPG for conversion
+        if [[ "$OLD" =~ \.png$ && "$NEW" =~ \.jpg$ ]]; then
+            # preserve the git history by stashing the converted JPG, doing a `git mv` to tell git about the file renaming, and then overwriting the 'JPG' (actually the original PNG) with an actual JPG
+            TMP="$(mktemp /tmp/XXXXX.jpg)"
+            convert "$HOME/wiki$OLD" "$TMP"
+            git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
+            mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
-            ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net$(dirname $NEW)" # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
-            rsync --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
-            # 2. gwsed old new
-            gwsed "$OLD" "$NEW"
-            # 3. add a redirected old to nw
-            echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf
-            # 4. delete outdated annotations:
-            OLD_FILE=$(basename "$OLD")
-            rm ~/wiki/metadata/annotation/*"$OLD_FILE"* || true > /dev/null
         else
-                echo "File does not exist? $OLD (to be moved to $NEW)" && return 1;
+            echo "File does not exist? $OLD (to be moved to $NEW)" && return 1;
         fi
+
+        ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net$(dirname $NEW)"  # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
+        rsync --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
+        gwsed "$OLD" "$NEW"
+        echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
+        # 4. delete outdated annotations:
+        OLD_FILE=$(basename "$OLD"); rm "~/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
         wait
-        )
-        set +x
+
+    set +x
     fi
 }
+
 ## Move a directory:
 gwmvdir () {
     cd ~/wiki/

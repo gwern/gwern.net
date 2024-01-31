@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-31 17:39:36 gwern"
+# When:  Time-stamp: "2024-02-01 09:52:48 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -69,7 +69,7 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
-        pkill checkMetadata || true ; ./static/build/checkMetadata > ~/METADATA.txt || true &
+        pkill checkMetadata || true ; ./static/build/checkMetadata >~/METADATA.txt 2>&1 || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Obormot's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -192,7 +192,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N15 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N13 -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -1154,12 +1154,15 @@ else
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e '2021-gwern-meme-virginvschad-journalpapervsblogpost.png' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.png' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
-              if (( SIZE_W > 1700  )); then
+              if (( SIZE_W > 1700 )); then
                   echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
                   mogrify  -resize 1700x10000 "$IMAGE";
               fi;
           done; }
     wrap λ "Too-wide images (downscale)" &
+
+    λ() { find ./doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e 'static/' -e 'doc/www/misc/' | sort | parallel png2JPGQualityCheck; }
+    wrap λ "PNGs that should be JPGs?" &
 
     bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:

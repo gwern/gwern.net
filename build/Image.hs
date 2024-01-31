@@ -25,7 +25,12 @@ import Text.Pandoc (Inline(Image, Link))
 
 import Utils (addClass, printRed, replace, anySuffix)
 
+-- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
+isImageFilename :: FilePath -> Bool
+isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".psd", ".svg", ".xcf"]
+
 -------------------------------------------
+-- Dark-mode
 
 -- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy
 -- image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check
@@ -212,7 +217,7 @@ staticImg x@(TagOpen "img" xs) = do
      not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
      ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
        do
-         let p' = urlDecode $ if head p == '/' then tail p else p
+         let p' = urlDecode $ takeWhile (/='#') $ if head p == '/' then tail p else p
          exists <- doesFileExist p'
          if not exists then printRed "staticImg: File does not exist: " >> putStrLn p >> return x else
           do (height,width) <- imageMagickDimensions p' `onException` printRed p

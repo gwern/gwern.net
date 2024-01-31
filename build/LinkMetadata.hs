@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-29 20:27:21 gwern"
+When:  Time-stamp: "2024-01-31 20:12:14 gwern"
 License: CC-0
 -}
 
@@ -36,7 +36,7 @@ import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
+                    Inline(Image, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -48,7 +48,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
-import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet)
+import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
@@ -529,13 +529,16 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
+generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,abst)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
+                                    -- optional 'literal' view of a link, eg. we show an image link and then we show the image itself in an indented paragraph afterwards:
+                                    transclusion = if not (isImageFilename f) then [] else
+                                      [Para [Image nullAttr [Str $ T.pack tle] (T.pack f,T.pack abst)]]
                                 in
-                                  [Para [link]]
+                                  [Para [link]] ++ transclusion
 
 -- annotations, like /face, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
