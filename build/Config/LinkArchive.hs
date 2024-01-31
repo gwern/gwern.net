@@ -1304,4 +1304,5 @@ whiteListMatchesFixed = [
       , "https://styletts2.github.io/" -- low-quality (audio embeds)
       , "https://intxpower.com/" -- interactive (tool)
       , "https://wangyanhui666.github.io/MicroCinema.github.io/" -- low quality (video embeds)
+      , "https://bbycroft.net/llm" -- interactive (visualization)
       ]

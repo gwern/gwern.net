@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-29 20:51:50 gwern"
+# When:  Time-stamp: "2024-01-30 10:42:46 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -868,7 +868,7 @@ else
          fi
      done
 
-    sleep 30s; chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null & # check the x-of-the-day in a different & cache-free browser instance
+    sleep 30s; (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null) & # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi

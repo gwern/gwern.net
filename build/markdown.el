@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-01-21 14:44:29 gwern"
+;;; When:  Time-stamp: "2024-01-29 21:16:00 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -371,7 +371,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("†," . ",")
                      ("‡" . "")
                      (",," . ",")
-                     ("\\.," . ". ")
                      (",”" . "”,")
                      ("‘‘" . "\"")
                      ("’’" . "\"")
@@ -462,6 +461,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" X (formerly known as Twitter)" . " Twitter")
                      ("Elon Musk’s X" . "Elon Musk’s Twitter")
                      (" target=\"_blank\"" . "")
+                     ("\\.," . ". ")
                      )
                    )
             )
@@ -990,7 +990,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("Five " . "5 ")
                         ("Four " . "4 ")
                         ("Three " . "3 ")
-                                        ; look for possible screwed-up exponentials
+                        ; look for possible screwed-up exponentials
                         (" 1015" . " 10^15^")
                         (" 1014" . " 10^14^")
                         (" 1013" . " 10^13^")
@@ -1005,9 +1005,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" 104" . " 10^4^")
                         (" 103" . " 10^3^")
                         (" 102" . " 10^2^")
-                        ("First" . "1^st^")
-                        ("Second" . "2^nd^")
-                        ("Third" . "3^rd^")
                         )
                       )
              )

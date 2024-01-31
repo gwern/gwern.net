@@ -36,7 +36,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
 wholeTagRewritesRegexes  :: [(String,String)]
 wholeTagRewritesRegexes = [("^cs/", "CS/")
                      , ("^cs$", "CS")
-                     , ("^cs/c$", "C")
+                     , ("^cs/c$", "C (CS)")
                      , ("^cs/r$", "R")
                      , ("^ai/", "AI/")
                      , ("^ai$", "AI")
@@ -149,7 +149,7 @@ shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be"
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing")
           , ("technology/northpaw", "Northpaw compass")
-          , ("technology/self-sinking", "self-sinking disposal")
+          , ("technology/self-sinking", "self-sinking waste disposal")
           , ("technology/google/alerts", "Google Alerts")
           , ("statistics/probability", "probability theory")
           , ("statistics/peer-review", "peer review")
