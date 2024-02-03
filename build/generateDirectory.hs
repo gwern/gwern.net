@@ -25,7 +25,7 @@ import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle, UpperAlpha), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import Text.Pandoc.Walk (walk)
 
 import LinkID (generateID, authorsToCite)
@@ -145,7 +145,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
                  abstractp <- doesFileExist (tail abstractf ++ ".page") -- check existence of (relative) file, 'note/catnip.page'
                  essayp <- doesFileExist (tagBase ++ ".page")
                  return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
-                          else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation", "include-replace-container", "link-page"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase ++ ".page"), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
+                          else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation", "include-replace-container"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                else []
 
   let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),lb) -> not (null lb)) links
@@ -326,7 +326,7 @@ generateSections links linksSorted linkswp = (if null links then [] else annotat
                     Para [Str "Beginning with the newest annotation, it uses the embedding of each annotation to attempt to create a list of nearest-neighbor annotations, creating a progression of topics. For more details, see the link."]
                    ]
                  ] ++
-                 (concatMap generateReferenceToPreviousSection linksSorted)
+                 concatMap generateReferenceToPreviousSection linksSorted
           wp
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
                  [Str "Wikipedia"],
@@ -335,15 +335,13 @@ generateSections links linksSorted linkswp = (if null links then [] else annotat
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)],
-                                                  OrderedList (1, UpperAlpha, DefaultDelim) $
+generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
                                              concatMap (\(f,(_,aut,dt,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
-                                                      in [[Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]]
+                                                      in [Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]
                                                        ) items
-                                           ]
 generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
 generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
