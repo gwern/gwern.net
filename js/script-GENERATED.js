@@ -7462,8 +7462,13 @@ Transclude = {
 		let options = includeLink.dataset.blockContextOptions?.split("|");
 
 		//	Expanded mode.
-		if (options?.includes("expanded"))
+		if (options?.includes("expanded")) {
+			//	Remove `p`, to prioritize selectors for enclosing elements.
 			selectors.remove("p");
+
+			//	Re-add `p` as a last-resort selector.
+			selectors.push("p");
+		}
 
 		for (selector of selectors)
 			if (block = element.closest(selector) ?? block)
