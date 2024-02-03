@@ -14564,22 +14564,6 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseWrapper.classList.add("no-abstract");
 		}
 
-		//	Mark as expanded, if need be.
-		collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
-
-		//  Inject the disclosure button.
-		if (collapseWrapper.classList.contains("collapse-inline")) {
-			//	Button at start.
-			collapseWrapper.insertBefore(newDisclosureButton(false), collapseWrapper.firstChild);
-
-			//	Button at end.
-			collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
-		} else if ([ "SECTION" ].includes(collapseWrapper.tagName)) {
-			collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstElementChild.nextElementSibling);
-		} else {
-			collapseWrapper.insertBefore(newDisclosureButton(), collapseWrapper.firstChild);
-		}
-
 		//	Slight HTML structure rectification.
 		if (   collapseWrapper.parentElement
 			&& [ "P" ].includes(collapseWrapper.parentElement.tagName) == true
@@ -14593,14 +14577,23 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		let childNodesArray = Array.from(collapseWrapper.childNodes);
 		collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
 			return (   node instanceof Element 
-					&& node.matches(".disclosure-button:not(.end), .abstract-collapse"));
+					&& node.matches(".heading, .abstract-collapse"));
 		}) + 1));
 		collapseWrapper.append(collapseContentWrapper);
-		/*	Move the auxiliary (closing) disclosure button of an inline 
-			collapse back to its proper place.
-		 */
-		if ([ "SPAN" ].includes(collapseWrapper.tagName))
-			collapseWrapper.append(collapseContentWrapper.lastElementChild);
+
+		//  Inject the disclosure button.
+		if (collapseWrapper.classList.contains("collapse-inline")) {
+			//	Button at start.
+			collapseWrapper.insertBefore(newDisclosureButton(false), collapseContentWrapper);
+
+			//	Button at end.
+			collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
+		} else {
+			collapseWrapper.insertBefore(newDisclosureButton(), collapseContentWrapper);
+		}
+
+		//	Mark as expanded, if need be.
+		collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
 
 		//	Fire event.
 		if (startExpanded) {
