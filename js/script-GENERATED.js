@@ -12625,8 +12625,12 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (ev
     GWLog("disableSingleItemColumnBlocks", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".columns > ul").forEach(columnList => {
-        if (columnList.children.length == 1)
+        if (columnList.children.length == 1) {
             columnList.parentElement.classList.remove("columns");
+
+	        if (columnList.parentElement.className == "")
+	        	unwrap(columnList.parentElement);
+		}
     });
 }, "rewrite");
 
