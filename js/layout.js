@@ -188,6 +188,9 @@ GW.layout.defaultOptions = processLayoutOptions({
 	halfWrapperElements: GW.layout.halfWrapperElements
 });
 
+//	Needed so that predicates (like isBlock()) can be called prior to layout.
+GW.layout.currentPassBegin = 1;
+
 /**********************************************************************/
 /*	Registers a layout processor function, which will be applied to all
 	rendered content as part of the dynamic layout process.
