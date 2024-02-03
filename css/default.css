@@ -5322,10 +5322,10 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     --SA-image-focus-overlay-image-caption-separator-color: #888;
     --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
     --SA-image-focus-overlay-help-box-text-color: #fff;
-    --SA-image-focus-overlay-info-icon-color: #000;
-    --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
-    --SA-image-focus-overlay-image-number-text-color: #000;
-    --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
+    --SA-image-focus-overlay-info-icon-drop-shadow-color: #000;
+    --SA-image-focus-overlay-image-number-text-color: #fff;
+    --SA-image-focus-overlay-image-number-text-shadow-color: #000;
+    --SA-image-focus-overlay-image-url-copy-icon-color: #bbb;
     --SA-image-focus-overlay-slideshow-button-color: #ddd;
     --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
     --SA-image-focus-overlay-slideshow-button-hover-color: #777;
@@ -5436,7 +5436,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .caption {
     position: absolute;
-    bottom: 0.75em;
+    bottom: 0.25em;
     left: 4.5em;
     right: 4.5em;
     margin: auto;
@@ -5486,7 +5486,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .caption .caption-text-wrapper {
     background-color: var(--SA-image-focus-overlay-image-caption-background-color);
-    padding: 0.25em 1.25em;
+    padding: 0.125em 1.25em 1px 1.25em;
     border-radius: 8px;
 }
 @media (max-width:  649px) and (orientation: portrait),
@@ -5504,7 +5504,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
  */
 
 #image-focus-overlay .caption p {
-    margin: 0.75em 0;
+    margin: 0.875em 0;
     color: var(--SA-image-focus-overlay-image-caption-text-color);
 }
 #image-focus-overlay .caption p + p {
@@ -5543,14 +5543,22 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .caption .image-url {
     position: relative;
-    margin: 0.5em 0 0 0;
-    padding: 0.5em 1.25em 0.75em 1.25em;
+    margin: 0;
+    padding: 0.625em 1.25em 0.875em 1.25em;
     border-radius: 8px;
     background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     cursor: copy;
     user-select: none;
     transition:
         background-color 0.15s ease-out;
+}
+#image-focus-overlay .caption .image-url::before {
+	content: "";
+	position: absolute;
+	top: -1px;
+	left: 1.25em;
+	right: 1.25em;
+	border-top: 1px dotted var(--SA-image-focus-overlay-image-caption-separator-color);
 }
 @media (max-width:  649px) and (orientation: portrait),
        (max-height: 649px) and (orientation: landscape) {
@@ -5588,8 +5596,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     position: absolute;
     width: 0.95em;
     height: 0.95em;
-    right: 0.2em;
-    top: 0.25em;
+    right: 0.55em;
+    top: 0.9em;
     pointer-events: none;
     overflow: hidden;
 }
@@ -5600,7 +5608,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     top: 0;
     left: 0;
     height: 100%;
-    color: var(--SA-image-focus-overlay-image-caption-separator-color);
+    color: var(--SA-image-focus-overlay-image-url-copy-icon-color);
     transition:
         opacity 2s ease-in;
 }
@@ -5682,8 +5690,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     right: 0;
     bottom: 0;
     padding: 10px;
-    color: var(--SA-image-focus-overlay-info-icon-color);
-    filter: drop-shadow(0 0 6px var(--SA-image-focus-overlay-info-icon-drop-shadow-color));
+    filter: invert(1) drop-shadow(0 0 4px var(--SA-image-focus-overlay-info-icon-drop-shadow-color));
     visibility: visible;
     opacity: 0.85;
     transition:
@@ -5738,10 +5745,10 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     font-weight: 600;
     color: var(--SA-image-focus-overlay-image-number-text-color);
     text-shadow:
-        0 0  3px var(--SA-image-focus-overlay-image-number-text-shadow-color),
-        0 0  5px var(--SA-image-focus-overlay-image-number-text-shadow-color),
-        0 0  8px var(--SA-image-focus-overlay-image-number-text-shadow-color),
-        0 0 13px var(--SA-image-focus-overlay-image-number-text-shadow-color);
+        0 0  2px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0  4px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0  6px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0 10px var(--SA-image-focus-overlay-image-number-text-shadow-color);
     width: 1.5em;
     text-align: right;
     white-space: nowrap;
