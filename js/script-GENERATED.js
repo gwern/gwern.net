@@ -8133,7 +8133,7 @@ Transclude.templates = {
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
 		<[IF abstract & !authorDateAux ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author | date]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
