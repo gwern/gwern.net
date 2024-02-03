@@ -577,7 +577,7 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 	//	Look inside wrappers (or any block, if strictDescent is specified).
 	if (   strictDescent == true
 		|| isWrapper(element, wrapperType, options)) {
-		let childBlocks = childBlocksOf(element);
+		let childBlocks = childBlocksOf(element, options);
 		for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1);
 				 i != (terminus == "first" ? childBlocks.length : -1);
 			     i += (terminus == "first" ? 1                  : -1)) {
