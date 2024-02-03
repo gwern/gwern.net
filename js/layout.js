@@ -13,7 +13,7 @@ GW.layout = {
 	blockContainers: [
 		".markdownBody",
 		"section",
-		".collapse",
+		".collapse-block",
 		"blockquote",
 		".epigraph",
 		".admonition",
@@ -24,7 +24,7 @@ GW.layout = {
 	//	Block elements get layout classes applied to them.
 	blockElements: [
 		"section",
-		".collapse",
+		".collapse-block",
 		"blockquote",
 		".epigraph",
 		"p",
