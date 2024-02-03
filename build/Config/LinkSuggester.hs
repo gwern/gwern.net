@@ -1147,7 +1147,7 @@ whiteList = [ ( "/crop#hands"
   , ( "https://www.amazon.com/Turings-Cathedral-Origins-Digital-Universe/dp/1400075998/"
     , [ "Turing\8217s Cathedral" ]
     )
-  , ( "https://www.avmf.org/clientuploads/documents/News%20Articles/Cat%20Health%20Network%20Feline%20SNP%20Chip%20Studies%20-%20Final%20Accomplishments%20MAFFINAL%2005-23-13.pdf"
+  , ( "/doc/cat/psychology/drug/catnip/2013-avmf.pdf"
     , [ "Genome-Wide Association Study for Catnip Response in Domestic Cats', Lyons 2013"
       , "catnip GWAS"
       ]

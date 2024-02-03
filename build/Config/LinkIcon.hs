@@ -836,7 +836,7 @@ linkIconTestUnitsText =
          , ("https://www.amazon.com/gp/product/B0050MYHBQ/",  "amazon","svg")
          , ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text,tri")
          , ("https://www.animenewsnetwork.com/anime-spotlight/2018/summer/revue-starlight/.132471",  "ANN","text,tri")
-         , ("https://www.anthropic.com/index/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems", "anthropic", "svg")
+         , ("https://www.anthropic.com/news/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems", "anthropic", "svg")
          , ("https://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans")
          , ("https://www.atlasobscura.com/articles/cyoa-choose-your-own-adventure-maps", "atlas-obscura", "svg")
          , ("https://www.bbc.com/news/business-43365710",  "BBC","text,tri,sans")

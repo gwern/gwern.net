@@ -103,7 +103,7 @@ tagsShort2LongRewrites =
    , ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction")
    , ("genetic", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware")
    , ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction")
-   , ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-monologue")
+   , ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-voice")
    , ("latex", "design/typography/tex"), ("vitamind", "vitamin-d"), ("des", "design")
    , ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"), ("hierarchy", "ai/nn/transformer/attention/hierarchical")
    , ("bpe", "tokenization"), ("bpes", "tokenization"), ("silex", "psychiatry/anxiety/lavender")
@@ -131,7 +131,7 @@ tagsShort2LongRewrites =
    , ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue")
    , ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism")
    , ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"), ("alphazero", "alphago")
-   , ("steganographic", "steganography")]
+   , ("steganographic", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")]
    -- ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -166,7 +166,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("reinforcement-learning/imitation-learning",                          "imitation learning")
           , ("reinforcement-learning/offline",                          "offline RL")
           , ("reinforcement-learning/armstrong-controlproblem", "Armstrong’s RL control problem")
-          , ("psychology/inner-monologue", "inner-monologue (psych)")
+          , ("psychology/inner-voice", "inner-monologue (psych)")
           , ("psychology/writing", "writing psychology")
           , ("psychology/willpower", "willpower")
           , ("psychology/vision/dream", "dreams")
@@ -249,7 +249,12 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/gan/stylegan/progan", "ProGAN")
           , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
           , ("ai/nn/diffusion/discrete", "discrete diffusion model")
+          , ("ai/nn/diffusion/midjourney/dropcap/ninit", "Ninit dropcaps")
+          , ("ai/nn/diffusion/midjourney/dropcap/genewolfe-dropcap", "Gene Wolfe dropcaps")
+          , ("ai/nn/diffusion/midjourney/dropcap/dropcat", "Dropcat dropcaps")
           , ("ai/nn/diffusion/midjourney/dropcap", "dropcaps (AI typography)")
+          , ("ai/nn/diffusion/midjourney/black-sun", "‘black sun’ sigil")
+          , ("ai/nn/diffusion/midjourney/landscape", "‘Midjourney landscapes")
           , ("ai/nn/diffusion/midjourney", "Midjourney")
           , ("ai/highleyman", "Highleyman’s AI")
           , ("psychology/neuroscience/tcs", "TDCS")
@@ -862,5 +867,5 @@ shortTagTestSuite =
         , ("visualization" , "design/visualization")
         , ("willpower" , "psychology/willpower")
         , ("writing" , "psychology/writing")
-        , ("psych/inner-monologue", "psychology/inner-monologue")
+        , ("psych/inner-monologue", "psychology/inner-voice")
         ]

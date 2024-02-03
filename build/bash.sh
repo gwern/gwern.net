@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-01-31 19:54:46 gwern"
+# When:  Time-stamp: "2024-02-02 19:37:12 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -333,9 +333,9 @@ is_downloading() {
     modified_time=$(stat -c %Y "$file")
     elapsed_time=$((current_time - modified_time))
 
-    # Sleep if last-modified time is not at least 3 seconds ago
-    if [ $elapsed_time -lt 4 ]; then
-      sleep $((4 - elapsed_time))
+    # Sleep if last-modified time is not at least 5 seconds ago
+    if [ $elapsed_time -lt 5 ]; then
+      sleep $((5 - elapsed_time))
     fi
   else
     echo "File not found."

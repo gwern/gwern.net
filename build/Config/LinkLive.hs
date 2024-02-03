@@ -760,6 +760,7 @@ goodDomainsSimple =
     , "researchers.wls.wisc.edu"
     , "mitp-content-server.mit.edu"
     , "allenai.org"
+    , "dialnet.unirioja.es"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -2218,7 +2219,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.uber.com"
    , "www.ukbiobank.ac.uk"
    , "www.unicef.org"
-   , "dialnet.unirioja.es"
    , "www.unitedpharmacies-uk.md"
    , "www.upi.com"
    , "www.upjohn.org"
