@@ -762,8 +762,8 @@ function includeContent(includeLink, content) {
         includeLink.remove();
 
     //  Intelligent rectification of surrounding HTML structure.
-    if (   Transclude.isAnnotationTransclude(includeLink)
-        && replaceContainer == false) {
+    if (   replaceContainer == false
+    	&& isBlock(wrapper.firstElementChild)) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
