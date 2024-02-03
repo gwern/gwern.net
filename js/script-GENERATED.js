@@ -13743,7 +13743,7 @@ addContentLoadHandler(GW.contentLoadHandlers.cleanUpImageAltText = (eventInfo) =
         if present; otherwise, a default string (“Image”).
      */
     eventInfo.container.querySelectorAll("img:not([alt])").forEach(image => {
-        image.alt = (image.title || "Image");
+        image.alt = (image.title || "[Image]");
     });
 
     //  URL-encode ‘%’ signs in image alt text.
