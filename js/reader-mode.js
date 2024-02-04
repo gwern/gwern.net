@@ -11,9 +11,9 @@ ReaderMode = { ...ReaderMode,
 	adjustedPopupTriggerDelay: 2400,
 
 	modeOptions: [
-		[ "auto", "Auto", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)", "book-with-gear" ],
-		[ "on", "On", "Enable reader mode on all pages. (Hold Alt key to show links in text.)", "book-open-solid" ],
-		[ "off", "Off", "Disable reader mode on all pages.", "book-open" ]
+		[ "auto", "Auto Reader Mode", "Auto Reader Mode", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)", "book-with-gear" ],
+		[ "on", "Enable Reader Mode", "Reader Mode Enabled", "Enable reader mode on all pages. (Hold Alt key to show links in text.)", "book-open-solid" ],
+		[ "off", "Disable Reader Mode", "Reader-Mode Disabled", "Disable reader mode on all pages.", "book-open" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -107,7 +107,7 @@ ReaderMode = { ...ReaderMode,
 		let currentMode = ReaderMode.currentMode();
 
 		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
-			let [ name, label, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
@@ -116,17 +116,22 @@ ReaderMode = { ...ReaderMode,
 						  : "");
 			if (name == currentMode)
 				desc += ReaderMode.selectedModeOptionNote;
+			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
 			return `<button
-						type="button"
-						class="select-mode-${name}${selected}${active}"
-						${disabled}
-						tabindex="-1"
-						data-name="${name}"
-						title="${desc}"
-							>`
+					 type="button"
+					 class="select-mode-${name}${selected}${active}"
+					 ${disabled}
+					 tabindex="-1"
+					 data-name="${name}"
+					 title="${desc}"
+					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span class="label">${label}</span>`
-					 + `</button>`;
+						+ `<span 
+							class="label"
+							data-selected-label="${selectedLabel}"
+							data-unselected-label="${unselectedLabel}"
+							>${label}</span>`
+				 + `</button>`;
 		  }).join("");
 
 		let selectorTag = (inline ? "span" : "div");
@@ -202,6 +207,10 @@ ReaderMode = { ...ReaderMode,
 			button.disabled = false;
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
+
+			//	Reset label text to unselected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.unselectedLabel;
 		});
 
 		//	Set the correct button to be selected.
@@ -209,6 +218,10 @@ ReaderMode = { ...ReaderMode,
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += ReaderMode.selectedModeOptionNote;
+
+			//	Set label text to selected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.selectedLabel;
 		});
 
 		/*	Ensure the right button (on or off) has the “currently active”

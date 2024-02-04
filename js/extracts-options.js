@@ -3,14 +3,15 @@ Extracts = { ...Extracts,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "on", "On", `Enable link pop-frames.`, "message-lines-solid" ],
-		[ "off", "Off", `Disable link pop-frames.`, "message-slash-solid" ],
+		[ "on", "Enable Pop-frames", "Pop-frames Enabled", `Enable link pop-frames.`, "message-lines-solid" ],
+		[ "off", "Disable Pop-frames", "Pop-frames Disabled", `Disable link pop-frames.`, "message-slash-solid" ],
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
 
 	popFramesDisableDespawnDelay: 2000,
-	popFramesDisableAutoToggleDelay: 250,
+	popFramesDisableWidgetFlashStayDuration: 3000,
+	popFramesDisableAutoToggleDelay: 1000,
 
 	/******************/
 	/*	Infrastructure.
@@ -33,23 +34,30 @@ Extracts = { ...Extracts,
 		let currentMode = Extracts.extractPopFramesEnabled() ? "on" : "off";
 
 		let modeSelectorInnerHTML = Extracts.modeOptions.map(modeOption => {
-			let [ name, label, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
-			desc = desc.replace("pop-frame", Extracts.popFrameTypeText());
+			unselectedLabel = unselectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
+			selectedLabel = selectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
+			desc = desc.replace("-frame", Extracts.popFrameTypeSuffix());
 			if (name == currentMode)
 				desc += Extracts.selectedModeOptionNote;
+			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
 			return `<button
-						type="button"
-						class="select-mode-${name}${selected}"
-						${disabled}
-						tabindex="-1"
-						data-name="${name}"
-						title="${desc}"
-							>`
+					 type="button"
+					 class="select-mode-${name}${selected}"
+					 ${disabled}
+					 tabindex="-1"
+					 data-name="${name}"
+					 title="${desc}"
+					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span class="label">${label}</span>`
-					 + `</button>`;
+						+ `<span 
+							class="label"
+							data-selected-label="${selectedLabel}"
+							data-unselected-label="${unselectedLabel}"
+							>${label}</span>`
+				 + `</button>`;
 		  }).join("");
 
 		let selectorTag = (inline ? "span" : "div");
@@ -123,6 +131,10 @@ Extracts = { ...Extracts,
 			button.disabled = false;
 			if (button.title.endsWith(Extracts.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * Extracts.selectedModeOptionNote.length));
+
+			//	Reset label text to unselected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.unselectedLabel;
 		});
 
 		//	Set the correct button to be selected.
@@ -130,6 +142,10 @@ Extracts = { ...Extracts,
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += Extracts.selectedModeOptionNote;
+
+			//	Set label text to selected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.selectedLabel;
 		});
 	},
 
@@ -137,7 +153,7 @@ Extracts = { ...Extracts,
 	disableExtractPopFramesPopFrameTitleBarButton: () => {
 		let button = Extracts.popFrameProvider.titleBarComponents.genericButton();
 
-		button.title = `Disable link ${(Extracts.popFrameTypeText())}s [currently enabled]`;
+		button.title = `Disable link pop${(Extracts.popFrameTypeSuffix())}s [currently enabled]`;
 		button.innerHTML = Extracts.popFrameProvider == Popups
 						   ? GW.svg("message-lines-regular")
 						   : GW.svg("message-lines-light");
@@ -156,14 +172,20 @@ Extracts = { ...Extracts,
 			setTimeout(() => {
 				Extracts.popFrameProvider.cleanup();
 
+				GW.pageToolbar.flashWidget("extracts-mode-selector", { 
+					flashStayDuration: Extracts.popFramesDisableWidgetFlashStayDuration,
+					showSelectedButtonLabel: true 
+				});
 				setTimeout(() => {
-					GW.pageToolbar.flashWidget("extracts-mode-selector");
-					setTimeout(() => {
-						Extracts.disableExtractPopFrames();
+					Extracts.disableExtractPopFrames();
 
-						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
-					}, GW.pageToolbar.widgetFlashRiseDuration);
-				}, Extracts.popFramesDisableAutoToggleDelay);
+					GW.pageToolbar.toggleCollapseState(true, {
+														   delay: GW.pageToolbar.demoCollapseDelay 
+																+ Extracts.popFramesDisableWidgetFlashStayDuration
+																- Extracts.popFramesDisableAutoToggleDelay
+																+ GW.pageToolbar.widgetFlashFallDuration
+													   });
+				}, GW.pageToolbar.widgetFlashRiseDuration + Extracts.popFramesDisableAutoToggleDelay);
 			}, Extracts.popFramesDisableDespawnDelay);
 		});
 

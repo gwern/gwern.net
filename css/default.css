@@ -72,8 +72,8 @@
     --GW-page-toolbar-collapse-duration: 0.25s;
     --GW-page-toolbar-slow-collapse-duration: 1s;
     --GW-page-toolbar-fade-after-collapse-duration: 0.25s;
-    --GW-page-toolbar-widget-flash-rise-duration: 0.75s;
-    --GW-page-toolbar-widget-flash-fall-duration: 0.75s;
+    --GW-page-toolbar-widget-flash-rise-duration: 1s;
+    --GW-page-toolbar-widget-flash-fall-duration: 1s;
 }
 @supports (-moz-user-focus: normal) {
     :root {
@@ -5133,6 +5133,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     margin: auto;
     display: flex;
     align-items: center;
+    white-space: nowrap;
     padding: 0 10px;
     font-variant-caps: small-caps;
     background-color: var(--background-color);
@@ -5145,7 +5146,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     pointer-events: none;
 }
 @media all and (hover: hover) {
-    #page-toolbar.vertical .widget button:hover .label {
+    #page-toolbar.vertical .widget button:hover .label,
+    #page-toolbar.vertical .widget.show-selected-button-label button.selected .label {
         opacity: 1;
     }
 }

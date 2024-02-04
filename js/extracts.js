@@ -631,10 +631,10 @@ Extracts = {
     /*  Pop-frames (in general).
      */
 
-	popFrameTypeText: () => {
+	popFrameTypeSuffix: () => {
 		return (Extracts.popFrameProvider == Popups
-				? "popup"
-				: "popin");
+				? "up"
+				: "in");
 	},
 
     //  Called by: Extracts.preparePopup

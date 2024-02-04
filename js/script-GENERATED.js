@@ -1017,9 +1017,9 @@ GW.pageToolbar = {
 	fadeAfterCollapseDuration: 250, // --GW-page-toolbar-fade-after-collapse-duration
 
 	//	Do not modify these two values without updating CSS also!
-	widgetFlashRiseDuration: 750, // --GW-page-toolbar-widget-flash-rise-duration
-	widgetFlashFallDuration: 750, // --GW-page-toolbar-widget-flash-fall-duration
-	widgetFlashStayDuration: 1000,
+	widgetFlashRiseDuration: 1000, // --GW-page-toolbar-widget-flash-rise-duration
+	widgetFlashFallDuration: 1000, // --GW-page-toolbar-widget-flash-fall-duration
+	widgetFlashStayDuration: 500,
 
 	toolbar: null,
 
@@ -1073,20 +1073,22 @@ GW.pageToolbar = {
 		return widget;
 	},
 
-	flashWidget: (widgetID, quickly = false) => {
+	flashWidget: (widgetID, options = { }) => {
 		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
 		if (widget == null)
 			return null;
 
-		let durationFactor = quickly ? 0.25 : 1.0;
-
 		widget.classList.add("flashing");
+		if (options.showSelectedButtonLabel)
+			setTimeout(() => { widget.classList.add("show-selected-button-label"); }, GW.pageToolbar.widgetFlashRiseDuration * 0.5);
 		setTimeout(() => {
 			widget.swapClasses([ "flashing", "flashing-fade" ], 1);
 			setTimeout(() => {
 				widget.classList.remove("flashing-fade");
 			}, GW.pageToolbar.widgetFlashFallDuration);
-		}, GW.pageToolbar.widgetFlashRiseDuration + (GW.pageToolbar.widgetFlashStayDuration * durationFactor));
+			if (options.showSelectedButtonLabel)
+				setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, GW.pageToolbar.widgetFlashFallDuration * 0.5);
+		}, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
 	},
 
 	isCollapsed: () => {
@@ -1104,9 +1106,14 @@ GW.pageToolbar = {
 		NOTE: Use only this method to collapse or uncollapse toolbar; the
 		.collapse() and .uncollapse() methods are for internal use only.
 	 */
-	toggleCollapseState: (collapse, tempOrSlowly = false, delay) => {
-		if (collapse && delay) {
-			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState, delay, collapse, tempOrSlowly);
+	toggleCollapseState: (collapse, options = { }) => {
+		if (   collapse 
+			&& options.delay) {
+			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState, 
+															  options.delay, 
+															  collapse, {
+																  tempOrSlowly: options.tempOrSlowly
+															  });
 			return;
 		}
 
@@ -1119,10 +1126,10 @@ GW.pageToolbar = {
 				GW.pageToolbar.collapse();
 			}
 		} else if (collapse == true) {
-			GW.pageToolbar.collapse(tempOrSlowly);
+			GW.pageToolbar.collapse(options.tempOrSlowly);
 		} else {
 			GW.pageToolbar.uncollapse();
-			if (tempOrSlowly)
+			if (options.tempOrSlowly)
 				GW.pageToolbar.toolbar.classList.add("expanded-temp");
 		}
 	},
@@ -1229,8 +1236,6 @@ GW.pageToolbar = {
 			//	Don’t collapse if hovering.
 			if (GW.pageToolbar.toolbar.matches(":hover") == false)
 				GW.pageToolbar.toggleCollapseState(true);
-		} else {
-			incrementSavedCount("page-toolbar-demos-count");
 		}
 
 		GW.pageToolbar.toolbar.append(
@@ -1286,7 +1291,7 @@ GW.pageToolbar = {
 					//	Uncollapse on hover.
 					onEventAfterDelayDo(button, "mouseenter", GW.pageToolbar.hoverUncollapseDelay, (event) => {
 						if (GW.pageToolbar.isCollapsed())
-							GW.pageToolbar.toggleCollapseState(false, true);
+							GW.pageToolbar.toggleCollapseState(false, { tempOrSlowly: true });
 					}, [ "mouseleave", "mousedown" ]);
 
 					//	Collapse on unhover.
@@ -1305,18 +1310,27 @@ GW.pageToolbar = {
 			/*	Slowly collapse toolbar shortly after page load (if it’s not
 				already collapsed).
 			 */
-			let startCollapsed = getSavedCount("page-toolbar-demos-count") > GW.pageToolbar.maxDemos;
+			let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
 			if (startCollapsed == false) {
 				requestAnimationFrame(() => {
 					Array.from(GW.pageToolbar.getToolbar().querySelector(".widgets").children).forEach(widget => {
 						let order = parseInt(getComputedStyle(widget).order);
-						setTimeout(GW.pageToolbar.flashWidget, order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, widget.id, true);
+						setTimeout(GW.pageToolbar.flashWidget, 
+								   order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, 
+								   widget.id, { 
+									   showSelectedButtonLabel: true 
+								   });
 					});
 
 					//	Don’t collapse if hovering.
 					if (GW.pageToolbar.toolbar.matches(":hover") == false)
-						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay);
+						GW.pageToolbar.toggleCollapseState(true, { 
+															  tempOrSlowly: true, 
+															  delay: GW.pageToolbar.demoCollapseDelay
+														   });
 				});
+			} else {
+				incrementSavedCount("page-toolbar-demos-count");
 			}
 
 			//	Update toolbar state on scroll.
@@ -8833,10 +8847,10 @@ Extracts = {
     /*  Pop-frames (in general).
      */
 
-	popFrameTypeText: () => {
+	popFrameTypeSuffix: () => {
 		return (Extracts.popFrameProvider == Popups
-				? "popup"
-				: "popin");
+				? "up"
+				: "in");
 	},
 
     //  Called by: Extracts.preparePopup
@@ -11046,14 +11060,15 @@ Extracts = { ...Extracts,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "on", "On", `Enable link pop-frames.`, "message-lines-solid" ],
-		[ "off", "Off", `Disable link pop-frames.`, "message-slash-solid" ],
+		[ "on", "Enable Pop-frames", "Pop-frames Enabled", `Enable link pop-frames.`, "message-lines-solid" ],
+		[ "off", "Disable Pop-frames", "Pop-frames Disabled", `Disable link pop-frames.`, "message-slash-solid" ],
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
 
 	popFramesDisableDespawnDelay: 2000,
-	popFramesDisableAutoToggleDelay: 250,
+	popFramesDisableWidgetFlashStayDuration: 3000,
+	popFramesDisableAutoToggleDelay: 1000,
 
 	/******************/
 	/*	Infrastructure.
@@ -11076,23 +11091,30 @@ Extracts = { ...Extracts,
 		let currentMode = Extracts.extractPopFramesEnabled() ? "on" : "off";
 
 		let modeSelectorInnerHTML = Extracts.modeOptions.map(modeOption => {
-			let [ name, label, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
-			desc = desc.replace("pop-frame", Extracts.popFrameTypeText());
+			unselectedLabel = unselectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
+			selectedLabel = selectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
+			desc = desc.replace("-frame", Extracts.popFrameTypeSuffix());
 			if (name == currentMode)
 				desc += Extracts.selectedModeOptionNote;
+			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
 			return `<button
-						type="button"
-						class="select-mode-${name}${selected}"
-						${disabled}
-						tabindex="-1"
-						data-name="${name}"
-						title="${desc}"
-							>`
+					 type="button"
+					 class="select-mode-${name}${selected}"
+					 ${disabled}
+					 tabindex="-1"
+					 data-name="${name}"
+					 title="${desc}"
+					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span class="label">${label}</span>`
-					 + `</button>`;
+						+ `<span 
+							class="label"
+							data-selected-label="${selectedLabel}"
+							data-unselected-label="${unselectedLabel}"
+							>${label}</span>`
+				 + `</button>`;
 		  }).join("");
 
 		let selectorTag = (inline ? "span" : "div");
@@ -11166,6 +11188,10 @@ Extracts = { ...Extracts,
 			button.disabled = false;
 			if (button.title.endsWith(Extracts.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * Extracts.selectedModeOptionNote.length));
+
+			//	Reset label text to unselected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.unselectedLabel;
 		});
 
 		//	Set the correct button to be selected.
@@ -11173,6 +11199,10 @@ Extracts = { ...Extracts,
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += Extracts.selectedModeOptionNote;
+
+			//	Set label text to selected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.selectedLabel;
 		});
 	},
 
@@ -11180,7 +11210,7 @@ Extracts = { ...Extracts,
 	disableExtractPopFramesPopFrameTitleBarButton: () => {
 		let button = Extracts.popFrameProvider.titleBarComponents.genericButton();
 
-		button.title = `Disable link ${(Extracts.popFrameTypeText())}s [currently enabled]`;
+		button.title = `Disable link pop${(Extracts.popFrameTypeSuffix())}s [currently enabled]`;
 		button.innerHTML = Extracts.popFrameProvider == Popups
 						   ? GW.svg("message-lines-regular")
 						   : GW.svg("message-lines-light");
@@ -11199,14 +11229,20 @@ Extracts = { ...Extracts,
 			setTimeout(() => {
 				Extracts.popFrameProvider.cleanup();
 
+				GW.pageToolbar.flashWidget("extracts-mode-selector", { 
+					flashStayDuration: Extracts.popFramesDisableWidgetFlashStayDuration,
+					showSelectedButtonLabel: true 
+				});
 				setTimeout(() => {
-					GW.pageToolbar.flashWidget("extracts-mode-selector");
-					setTimeout(() => {
-						Extracts.disableExtractPopFrames();
+					Extracts.disableExtractPopFrames();
 
-						GW.pageToolbar.toggleCollapseState(true, true, GW.pageToolbar.demoCollapseDelay + GW.pageToolbar.widgetFlashStayDuration);
-					}, GW.pageToolbar.widgetFlashRiseDuration);
-				}, Extracts.popFramesDisableAutoToggleDelay);
+					GW.pageToolbar.toggleCollapseState(true, {
+														   delay: GW.pageToolbar.demoCollapseDelay 
+																+ Extracts.popFramesDisableWidgetFlashStayDuration
+																- Extracts.popFramesDisableAutoToggleDelay
+																+ GW.pageToolbar.widgetFlashFallDuration
+													   });
+				}, GW.pageToolbar.widgetFlashRiseDuration + Extracts.popFramesDisableAutoToggleDelay);
 			}, Extracts.popFramesDisableDespawnDelay);
 		});
 
@@ -17047,9 +17083,9 @@ DarkMode = { ...DarkMode,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "auto", "Auto", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
-		[ "light", "Light", "Light mode at all times (black-on-white)", "sun-solid" ],
-		[ "dark", "Dark", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
+		[ "auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
+		[ "light", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
+		[ "dark", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -17090,7 +17126,7 @@ DarkMode = { ...DarkMode,
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
-			let [ name, label, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = (   currentMode == "auto"
@@ -17099,17 +17135,22 @@ DarkMode = { ...DarkMode,
 						  : "";
 			if (name == currentMode)
 				desc += DarkMode.selectedModeOptionNote;
+			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
 			return `<button
-						type="button"
-						class="select-mode-${name}${selected}${active}"
-						${disabled}
-						tabindex="-1"
-						data-name="${name}"
-						title="${desc}"
-							>`
+					 type="button"
+					 class="select-mode-${name}${selected}${active}"
+					 ${disabled}
+					 tabindex="-1"
+					 data-name="${name}"
+					 title="${desc}"
+					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span class="label">${label}</span>`
-					 + `</button>`;
+						+ `<span 
+							class="label"
+							data-selected-label="${selectedLabel}"
+							data-unselected-label="${unselectedLabel}"
+							>${label}</span>`
+				 + `</button>`;
 		  }).join("");
 
 		let selectorTag = (inline ? "span" : "div");
@@ -17189,6 +17230,10 @@ DarkMode = { ...DarkMode,
 			button.disabled = false;
 			if (button.title.endsWith(DarkMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * DarkMode.selectedModeOptionNote.length));
+
+			//	Reset label text to unselected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.unselectedLabel;
 		});
 
 		//	Set the correct button to be selected.
@@ -17196,6 +17241,10 @@ DarkMode = { ...DarkMode,
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += DarkMode.selectedModeOptionNote;
+
+			//	Set label text to selected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.selectedLabel;
 		});
 
 		/*	Ensure the right button (light or dark) has the “currently active” 
@@ -17228,9 +17277,9 @@ ReaderMode = { ...ReaderMode,
 	adjustedPopupTriggerDelay: 2400,
 
 	modeOptions: [
-		[ "auto", "Auto", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)", "book-with-gear" ],
-		[ "on", "On", "Enable reader mode on all pages. (Hold Alt key to show links in text.)", "book-open-solid" ],
-		[ "off", "Off", "Disable reader mode on all pages.", "book-open" ]
+		[ "auto", "Auto Reader Mode", "Auto Reader Mode", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)", "book-with-gear" ],
+		[ "on", "Enable Reader Mode", "Reader Mode Enabled", "Enable reader mode on all pages. (Hold Alt key to show links in text.)", "book-open-solid" ],
+		[ "off", "Disable Reader Mode", "Reader-Mode Disabled", "Disable reader mode on all pages.", "book-open" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -17324,7 +17373,7 @@ ReaderMode = { ...ReaderMode,
 		let currentMode = ReaderMode.currentMode();
 
 		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
-			let [ name, label, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
@@ -17333,17 +17382,22 @@ ReaderMode = { ...ReaderMode,
 						  : "");
 			if (name == currentMode)
 				desc += ReaderMode.selectedModeOptionNote;
+			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
 			return `<button
-						type="button"
-						class="select-mode-${name}${selected}${active}"
-						${disabled}
-						tabindex="-1"
-						data-name="${name}"
-						title="${desc}"
-							>`
+					 type="button"
+					 class="select-mode-${name}${selected}${active}"
+					 ${disabled}
+					 tabindex="-1"
+					 data-name="${name}"
+					 title="${desc}"
+					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span class="label">${label}</span>`
-					 + `</button>`;
+						+ `<span 
+							class="label"
+							data-selected-label="${selectedLabel}"
+							data-unselected-label="${unselectedLabel}"
+							>${label}</span>`
+				 + `</button>`;
 		  }).join("");
 
 		let selectorTag = (inline ? "span" : "div");
@@ -17419,6 +17473,10 @@ ReaderMode = { ...ReaderMode,
 			button.disabled = false;
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
+
+			//	Reset label text to unselected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.unselectedLabel;
 		});
 
 		//	Set the correct button to be selected.
@@ -17426,6 +17484,10 @@ ReaderMode = { ...ReaderMode,
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
 			button.title += ReaderMode.selectedModeOptionNote;
+
+			//	Set label text to selected state.
+			let label = button.querySelector(".label");
+			label.innerHTML = label.dataset.selectedLabel;
 		});
 
 		/*	Ensure the right button (on or off) has the “currently active”
