@@ -8327,7 +8327,7 @@ Extracts = {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
 		//	Remove pop-frame indicator hooks.
-		document.querySelectorAll(".has-content").forEach(link => {
+		document.querySelectorAll(".has-indicator-hook").forEach(link => {
 			link.querySelector(".indicator-hook").remove();
 			link.classList.remove("has-indicator-hook");
 		});
