@@ -13,7 +13,7 @@ ReaderMode = { ...ReaderMode,
 	modeOptions: [
 		[ "auto", "Auto Reader Mode", "Auto Reader Mode", "Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)", "book-with-gear" ],
 		[ "on", "Enable Reader Mode", "Reader Mode Enabled", "Enable reader mode on all pages. (Hold Alt key to show links in text.)", "book-open-solid" ],
-		[ "off", "Disable Reader Mode", "Reader-Mode Disabled", "Disable reader mode on all pages.", "book-open" ]
+		[ "off", "Disable Reader Mode", "Reader-Mode Disabled", "Disable reader mode on all pages.", "book-open-regular" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
