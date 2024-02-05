@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-01-29 21:16:00 gwern"
+;;; When:  Time-stamp: "2024-02-04 20:35:21 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1726,18 +1726,27 @@ the replacement."
                                    " regexp"
                                    (if (and transient-mark-mode mark-active) " in region" ""))
                            t))
+
 (defun my-markdown-or-html-query-replace-confirm (from to)
   "Prompt the user to confirm replacing `FROM` with `TO`.
-Highlight the matched text during the query."
+Highlight the matched text during the query. Accept 'y' for yes, 'n' for no, and 'q' to quit."
   (pulse-momentary-highlight-region (match-beginning 0) (match-end 0))
-  (y-or-n-p (format "Replace `%s' with `%s'? " from to)))
+  (let ((response nil))
+    (while (not (member response '(?y ?n ?q)))
+      (setq response (read-char-choice (format "Replace `%s' with `%s'? (y/n/q) " from to) '(?y ?n ?q))))
+    (cond ((eq response ?y) t)
+          ((eq response ?n) nil)
+          ((eq response ?q) 'quit)
+          )
+    )
+  )
+
 (defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional delimited start end)
   "Interactively query replace `REGEXP` with the result of `REPLACE-FN`.
-This optionally skips link URLs where replacement may be undesirable.
+This version continues searching after a 'q' quit signal but skips replacements.
 
 This function skips over Markdown or HTML link URLs when performing the
-replacements if
-`my-markdown-or-html-query-replace-skip-urls` is non-nil. It operates in the
+replacements if `my-markdown-or-html-query-replace-skip-urls` is non-nil. It operates in the
 region between `START` and `END` if both are provided; otherwise, it operates on
 the entire buffer.
 
@@ -1747,20 +1756,28 @@ returns the replacement string.
 Optional argument `DELIMITED`, if non-nil, means replace only matches surrounded
 by word boundaries.
 
+WARNING: This function  handles user input to 'quit' (via 'q') not by stopping the search entirely, but by continuing to search through the remainder of the document without performing any further replacements. This hack works around a problem where quitting a replacement operation would unexpectedly kill the calling command (`fmt`). By setting a `skip-replacement` flag upon a 'quit' signal, somehow it works?
+
 \(fn REGEXP REPLACE-FN &optional DELIMITED START END)"
   (interactive)
-  (let ((replacements 0))
+  (let ((replacements 0)
+        (skip-replacement nil)) ; New flag to control skipping of replacements
     (save-excursion
       (goto-char (or start (point-min)))
       (save-match-data
         (while (re-search-forward regexp end t)
-          (unless (my-markdown-or-html-inside-link-p)
+          (unless (or skip-replacement (my-markdown-or-html-inside-link-p))
             (let* ((from (match-string 0))
-                   (to (funcall replace-fn from)))
-              (when (my-markdown-or-html-query-replace-confirm from to)
-                (replace-match to t t)
-                (setq replacements (1+ replacements))))))))
+                   (to (funcall replace-fn from))
+                   (confirmation (my-markdown-or-html-query-replace-confirm from to)))
+              (cond ((eq confirmation t)
+                     (replace-match to t t)
+                     (setq replacements (1+ replacements)))
+                    ((eq confirmation 'quit)
+                     (setq skip-replacement t))))))) ; Continue searching but skip replacements
     (message "Query replace finished, %d replacements made" replacements)))
+  )
+
 
 ; GPT-4
 (require 'rx)
