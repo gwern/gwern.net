@@ -6213,7 +6213,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     pointer-events: none;
 }
 @media all and (hover: hover) {
-    #page-toolbar.vertical .widget button:hover .label,
+    #page-toolbar.vertical .widget:not(.flashing) button:hover .label,
     #page-toolbar.vertical .widget.show-selected-button-label button.selected .label {
         opacity: 1;
     }
