@@ -176,6 +176,14 @@ Extracts = { ...Extracts,
 				setTimeout(() => {
 					Extracts.disableExtractPopFrames();
 
+					//	Temporarily highlight newly selected option.
+					GW.pageToolbar.getWidget("extracts-mode-selector").classList.add("highlight-selected-button-label");
+					setTimeout(() => {
+						GW.pageToolbar.getWidget("extracts-mode-selector").classList.remove("highlight-selected-button-label");
+					}, Extracts.popFramesDisableWidgetFlashStayDuration
+					 - Extracts.popFramesDisableAutoToggleDelay
+					 + GW.pageToolbar.widgetFlashFallDuration);
+
 					GW.pageToolbar.toggleCollapseState(true, {
 														   delay: GW.pageToolbar.demoCollapseDelay 
 																+ Extracts.popFramesDisableWidgetFlashStayDuration
