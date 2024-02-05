@@ -11061,7 +11061,7 @@ Extracts = { ...Extracts,
         }
     },
 };
-Extracts = { ...Extracts, 
+Extracts = { ...Extracts,
 	/*****************/
 	/*	Configuration.
 	 */
@@ -11072,7 +11072,7 @@ Extracts = { ...Extracts,
 
 	selectedModeOptionNote: " [This option is currently selected.]",
 
-	popFramesDisableDespawnDelay: 2000,
+	popFramesDisableDespawnDelay: 1000,
 	popFramesDisableWidgetFlashStayDuration: 3000,
 	popFramesDisableAutoToggleDelay: 1000,
 
@@ -11115,7 +11115,7 @@ Extracts = { ...Extracts,
 					 title="${desc}"
 					 >`
 						+ `<span class="icon">${(GW.svg(icon))}</span>`
-						+ `<span 
+						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
 							data-unselected-label="${unselectedLabel}"
@@ -11138,9 +11138,9 @@ Extracts = { ...Extracts,
 		// Determine which setting was chosen (ie. which button was clicked).
 		let selectedMode = button.dataset.name;
 
-		/*	We don’t want clicks to go through if the transition 
-			between modes has not completed yet, so we disable the 
-			button temporarily while we’re transitioning between 
+		/*	We don’t want clicks to go through if the transition
+			between modes has not completed yet, so we disable the
+			button temporarily while we’re transitioning between
 			modes.
 		 */
 		doIfAllowed(() => {
@@ -11232,9 +11232,9 @@ Extracts = { ...Extracts,
 			setTimeout(() => {
 				Extracts.popFrameProvider.cleanup();
 
-				GW.pageToolbar.flashWidget("extracts-mode-selector", { 
+				GW.pageToolbar.flashWidget("extracts-mode-selector", {
 					flashStayDuration: Extracts.popFramesDisableWidgetFlashStayDuration,
-					showSelectedButtonLabel: true 
+					showSelectedButtonLabel: true
 				});
 				setTimeout(() => {
 					Extracts.disableExtractPopFrames();
@@ -11248,7 +11248,7 @@ Extracts = { ...Extracts,
 					 + GW.pageToolbar.widgetFlashFallDuration);
 
 					GW.pageToolbar.toggleCollapseState(true, {
-														   delay: GW.pageToolbar.demoCollapseDelay 
+														   delay: GW.pageToolbar.demoCollapseDelay
 																+ Extracts.popFramesDisableWidgetFlashStayDuration
 																- Extracts.popFramesDisableAutoToggleDelay
 																+ GW.pageToolbar.widgetFlashFallDuration
