@@ -11212,16 +11212,13 @@ Extracts = { ...Extracts,
 
 		button.title = `Disable link pop${(Extracts.popFrameTypeSuffix())}s [currently enabled]`;
 		button.innerHTML = Extracts.popFrameProvider == Popups
-						   ? GW.svg("message-lines-regular")
-						   : GW.svg("message-lines-light");
+						   ? GW.svg("eye-slash-solid")
+						   : GW.svg("eye-slash-regular");
 		button.classList.add("extracts-disable-button");
 
 		button.addActivateEvent((event) => {
 			event.stopPropagation();
 
-			button.innerHTML = Extracts.popFrameProvider == Popups
-							   ? GW.svg("message-slash-regular")
-							   : GW.svg("message-slash-light")
 			button.classList.add("disabled");
 
 			GW.pageToolbar.toggleCollapseState(false);
