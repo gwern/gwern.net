@@ -1073,6 +1073,12 @@ GW.pageToolbar = {
 		return widget;
 	},
 
+	/*	Returns the widget with the given ID; or null, if no such widget ID.
+	 */
+	getWidget: (widgetID) => {
+		return GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
+	},
+
 	flashWidget: (widgetID, options = { }) => {
 		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
 		if (widget == null)

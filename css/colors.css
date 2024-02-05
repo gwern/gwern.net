@@ -285,6 +285,7 @@
 	--GW-page-toolbar-button-selected-icon-color: #777;
     --GW-page-toolbar-button-text-color: #666;
     --GW-page-toolbar-button-disabled-text-color: #ccc;
+    --GW-page-toolbar-button-highlighted-text-color: #000;
 
 	/*	Reader mode.
 	 */

@@ -5154,6 +5154,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     #page-toolbar.vertical .widget.show-selected-button-label button.selected .label {
         opacity: 1;
     }
+    #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label {
+    	color: var(--GW-page-toolbar-button-highlighted-text-color);
+    }
+	#page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label::after {
+		content: "!";
+	}
 }
 
 /*  Mobile toolbar layout (reverse vertical).

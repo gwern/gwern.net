@@ -1073,6 +1073,12 @@ GW.pageToolbar = {
 		return widget;
 	},
 
+	/*	Returns the widget with the given ID; or null, if no such widget ID.
+	 */
+	getWidget: (widgetID) => {
+		return GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
+	},
+
 	flashWidget: (widgetID, options = { }) => {
 		let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
 		if (widget == null)
@@ -11232,6 +11238,14 @@ Extracts = { ...Extracts,
 				});
 				setTimeout(() => {
 					Extracts.disableExtractPopFrames();
+
+					//	Temporarily highlight newly selected option.
+					GW.pageToolbar.getWidget("extracts-mode-selector").classList.add("highlight-selected-button-label");
+					setTimeout(() => {
+						GW.pageToolbar.getWidget("extracts-mode-selector").classList.remove("highlight-selected-button-label");
+					}, Extracts.popFramesDisableWidgetFlashStayDuration
+					 - Extracts.popFramesDisableAutoToggleDelay
+					 + GW.pageToolbar.widgetFlashFallDuration);
 
 					GW.pageToolbar.toggleCollapseState(true, {
 														   delay: GW.pageToolbar.demoCollapseDelay 
