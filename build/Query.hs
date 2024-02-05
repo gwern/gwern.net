@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2023-10-05 11:40:23 gwern"
+When:  Time-stamp: "2024-02-05 21:56:26 gwern"
 License: CC-0
 -}
 
@@ -16,10 +16,10 @@ import Interwiki (convertInterwikiLinks)
 import Utils (inlinesToText)
 
 parseMarkdownOrHTML :: Bool -> T.Text -> Pandoc
-parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
+parseMarkdownOrHTML mdp txt = let parsedEither = if mdp then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
                                          else runPure $ readHtml def{readerExtensions = pandocExtensions } txt
                    in case parsedEither of
-                              Left e    -> error $ "Failed to parse document: " ++ show md ++ show txt ++ show e
+                              Left e    -> error $ "Failed to parse document: " ++ show mdp ++ show txt ++ show e
                               Right doc -> doc
 
 -- | Parse one Text string as a Pandoc Markdown (True) or HTML (False) document and return its URLs (as Strings). Note: this can return duplicates.
@@ -45,8 +45,8 @@ extractURLWith rule x@(Link _ anchorText (url, tooltip))
     | otherwise = []
 extractURLWith _ _ = []
 
-extractLinkIDsWith :: (Inline -> Bool) -> T.Text -> Bool -> T.Text -> [(T.Text, T.Text)]
-extractLinkIDsWith rule filename md txt = queryWith extractIDs $ convertInterwikiLinks $ parseMarkdownOrHTML md txt
+extractLinkIDsWith :: (Inline -> Bool) -> T.Text  -> Pandoc -> [(T.Text, T.Text)]
+extractLinkIDsWith rule filename pndc = queryWith extractIDs $ convertInterwikiLinks pndc
   where extractIDs :: Inline -> [(T.Text, T.Text)]
         extractIDs x@(Link ("",_,_) _ (url,_)) = if rule x then [(url, filename)] else []
         extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []

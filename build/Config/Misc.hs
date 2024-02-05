@@ -9,7 +9,7 @@ import System.Directory (setCurrentDirectory)
 import Text.Pandoc.Definition (Inline(Link, Span, Str),
                                Block(Div, Header, Para))
 
-import Utils (anyInfixT, anyPrefixT, anySuffixT)
+import Utils (anyInfixT, anyPrefixT)
 
 root :: FilePath
 root = "/home/gwern/wiki/"
@@ -40,11 +40,8 @@ backlinkBlackList :: T.Text -> Bool
 backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."
 backlinkBlackList e
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "wikipedia.org/wiki/"] = True
-  -- TODO: it would be better to set this as per-page YAML header metadata variables like 'backlink: False' and read it from the page when running generateBacklink.hs, instead of secretly hardwiring it all here
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "/newsletter/", "/changelog", "/mistakes", "/traffic", "/me", "/lorem", "/fiction/clippy",
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/"] = True
                    -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
-                   "/static/404", "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "/confidential/", "/private/", "/secret/"] = True
-  | anySuffixT f ["/index", "/index-long"] = True
   | otherwise = False
   where f = if T.head e == '#' then e else T.takeWhile (/= '#') e -- drop anchors to avoid spurious mismatches eg. '/index#backlink-id-of-some-sort' would bypass a mere '"/index" `isSuffixOf`' check without this.
 

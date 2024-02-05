@@ -52,7 +52,7 @@ main = do C.cd
           ldb <- readListName
           sortDB <- readListSortedMagic
 
-          let chunkSize = 17 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
+          let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
           Prelude.mapM_ (Par.mapM_ (generateDirectory True meta ldb sortDB dirs')) dirChunks
@@ -229,6 +229,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              "importance: 0",
              "cssExtension: dropcaps-de-zs",
              "index: true",
+             "backlink: False",
              "...\n"]
   where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".
 

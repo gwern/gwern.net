@@ -6,9 +6,9 @@
 
 module Main where
 
-import Text.Pandoc (nullMeta,
-                     runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
+import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
+                    runPure, writeHtml5String,
+                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -27,7 +27,7 @@ import LinkID (generateID)
 import LinkMetadata (hasAnnotation, hasAnnotationOrIDInline, isPagePath, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
-import Query (extractLinkIDsWith)
+import Query (extractLinkIDsWith, parseMarkdownOrHTML)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
 import qualified Config.Misc as C (backlinkBlackList, cd)
@@ -136,7 +136,8 @@ generateCaller md target (caller, callers) =
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
-                            let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path False (T.pack abstract)
+                            let doc = parseMarkdownOrHTML False (T.pack abstract)
+                                linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc
                                 linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
                             in
                             linkPairs'
@@ -145,10 +146,15 @@ parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks mdp m = do text <- TIO.readFile m
-
-                             let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path mdp text
-                             let linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b || truncateAnchors a == truncateAnchors b)) linkPairs
-                             return linkPairs'
+                             let pndc@(Pandoc metadata _) = parseMarkdownOrHTML mdp text
+                             -- YAML metadata override: `backlink: False`: whether a page should create backlinks. eg. index pages & newsletter pages should not because they are usually big dumps of links. Should one want them, one can set `backlink: True`. Page-level version of `.backlink-not` <a> link attribute.
+                             case M.lookup "backlink" (unMeta metadata) of
+                               Just (MetaBool False) -> return []
+                               -- we default to 'True' if not explicitly stated to be disabled
+                               _ -> do
+                                 let linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path pndc
+                                 let linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b || truncateAnchors a == truncateAnchors b)) linkPairs
+                                 return linkPairs'
 
                                where m' = localize $ T.pack m
                                      path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
