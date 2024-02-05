@@ -3888,6 +3888,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     padding: 5px;
 }
 
+.popup button.extracts-disable-button {
+	padding: 3px;
+}
+
 .popup.mini-title-bar button.zoom-button,
 .popup.mini-title-bar button.extracts-disable-button {
     display: none;
