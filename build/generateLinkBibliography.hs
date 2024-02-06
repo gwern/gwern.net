@@ -100,7 +100,6 @@ generateLinkBibliographyItems items = let itemsWP = filter (\(u,_) -> "https://e
                                                                             Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
                                                                             OrderedList (1, UpperAlpha, DefaultDelim) (map generateLinkBibliographyItem itemsWP)]]]
                                       )
-
 generateLinkBibliographyItem  :: (String,MetadataItem) -> [Block]
 generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
   let f'

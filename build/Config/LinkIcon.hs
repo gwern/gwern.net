@@ -201,7 +201,7 @@ linkIconRulesDouble u
  | u'' u "www.scientificamerican.com" = ("SA", "text")
  | u'' u "www.stuff.co.nz" = ("NZ", "text,sans") -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'…
  | u'' u "chronopause.com" = ("M.D.", "text,sans") -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' u "vitalik.ca" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("V.B.", "text,sans") -- Vitalik Buterin, similarly
+ | u'' u "vitalik.eth.limo" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("V.B.", "text,sans") -- Vitalik Buterin, similarly
  | u'' u "unenumerated.blogspot.com" || u' u "szabo.best.vwh.net" || u' u "nick-szabo" = ("N.S.", "text,sans") -- Nick Szabo
  | u'' u "scottaaronson.blog" || u'' u "www.scottaaronson.com" = ("S.A.", "text,sans") -- Scott Aaronson
  | u'' u "www.rifters.com" = ("P.W.", "text,sans") -- Peter Watts
@@ -814,7 +814,7 @@ linkIconTestUnitsText =
          , ("https://unsongbook.com/",  "\8501","text")
          , ("https://variety.com/2014/film/news/tokyo-festival-hideaki-anno-warns-of-trouble-ahead-for-japanese-animation-1201339991/", "𝓥", "text")
          , ("https://vimeo.com/28735982", "file-video", "svg")
-         , ("https://vitalik.ca/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
+         , ("https://vitalik.eth.limo/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
          , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "wandb", "svg")
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")

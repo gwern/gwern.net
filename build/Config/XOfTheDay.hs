@@ -124,7 +124,7 @@ siteBlackList = [
           "osf.io", "otago.ourarchive.ac.nz", "ourworldindata.org", "paddlehelix.baidu.com", "pages.jh.edu",
           "pages.ucsd.edu", "pair-code.github.io", "palmerlab.org", "pandoc.org", "papergains.co",
           "papers.nips.cc", "papers.ssrn.com", "papers.tinbergen.nl", "paradise.caltech.edu", "parti.research.google",
-          "pastebin.com", "patch.com", "patch-tag.com", "patents.google.com", "pauillac.inria.fr",
+          "pastebin.com", "patch.com", "patch-tag.com", "patents.google.com",
           "paulfchristiano.com", "pavelfatin.com", "pcdb.santafe.edu", "pdf.guidestar.org", "pdfs.semanticscholar.org",
           "pediatrics.aappublications.org", "peerj.com", "penelope.uchicago.edu", "people.csail.mit.edu", "people.eecs.berkeley.edu",
           "people.idsia.ch", "people.virginia.edu", "personal.lse.ac.uk", "petertodd.org", "pharmacyreviewer.co",

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-06 18:19:11 gwern"
+When:  Time-stamp: "2024-02-06 22:34:46 gwern"
 License: CC-0
 -}
 
@@ -332,8 +332,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- if null abst then return pandoc
                                     else do
-                                          let p = parseRawAllClean $ -- final step: clean up stray <span>s from Inflation
-                                                  walk (linkLive . nominalToRealInflationAdjuster) $
+                                          let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $

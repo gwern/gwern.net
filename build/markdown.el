@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-05 20:15:51 gwern"
+;;; When:  Time-stamp: "2024-02-06 09:47:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -194,13 +194,12 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 
 ; Easy Unicode insertion mnemonics; uses the unusual X modifier key 'Hyper'.
 ; This is not bound by default to a key usually, but on my 102-key US layout, I rebind the useless 'Menu' key to it: `$ modmap -e 'keysym Menu = Hyper_R'`.
-; Then 's-' in `kbd` notation is 'Hyper-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
+; Then 'H-' in `kbd` notation is 'Hyper-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
 ; TODO: for some reason this collides with XMonad keybindings on the Win key, despite that being assigned to 'Super'/mod4Mask and so in theory not being an issue with these Hyper keys?
 (defun hyper-insert (key char)
   "Bind Hyper (H-) plus KEY to insert CHAR."
   (global-set-key (kbd (concat "H-" key)) (lambda () (interactive) (insert char)))  )
-
-(hyper-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "h-'") (lambda () (interactive) (insert "‘")))`
+(hyper-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "H-'") (lambda () (interactive) (insert "‘")))`
 (hyper-insert "\"" "’")
 (hyper-insert ";" "“")
 (hyper-insert ":" "”")
@@ -245,43 +244,6 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
     ("epsilon" "ε" nil 0)
     ("sigma" "σ" nil 0)
     ))
-
-;; (defun smart-toggle-quote (single)
-;;   "Toggle between left and right quotes at point, with context sensitivity.
-;; If SINGLE is non-nil, toggle single quotes, otherwise toggle double quotes.
-;; Inserts right quotation marks if the preceding character is whitespace/newline or punctuation."
-;;   (interactive "P") ; Prefix argument determines single or double quotes
-;;   (let* ((left-single "‘")
-;;          (right-single "’")
-;;          (left-double "“")
-;;          (right-double "”")
-;;          (prev-char (char-before (point)))
-;;          (next-char (char-after (point)))
-;;          (left-quote (if single left-single left-double))
-;;          (right-quote (if single right-single right-double))
-;;          ;; Correctly determine if the context suggests the insertion of a left quote
-;;          (context-suggests-left (or (eq prev-char nil) ; Beginning of buffer
-;;                                     (eq prev-char 10) ; Newline
-;;                                     (member (char-syntax prev-char) '(32 ?- ?\()) ; Whitespace, dash, or open parenthesis
-;;                                     )))
-;;     (cond
-;;      ;; If the previous character is a left quote, and it's not appropriate for a left quote context, change it to right
-;;      ((and (eq prev-char (string-to-char left-quote)) (not context-suggests-left))
-;;       (delete-char -1)
-;;       (insert right-quote))
-;;      ;; If the next character is a right quote and the context doesn't suggest a left quote, keep it as is (move forward)
-;;      ((and (eq next-char (string-to-char right-quote)) (not context-suggests-left))
-;;       (forward-char))
-;;      ;; If context suggests a left quote, insert left quote
-;;      (context-suggests-left
-;;       (insert left-quote))
-;;      ;; Default action is to insert a right quote if context does not suggest left
-;;      (t
-;;       (insert right-quote)))))
-;; ;; Keybindings
-;; (global-set-key (kbd "C-c '") (lambda () (interactive) (smart-toggle-quote t)))
-;; (global-set-key (kbd "C-c \"") (lambda () (interactive) (smart-toggle-quote nil)))
-;; (add-hook 'markdown-mode-hook (lambda () (local-set-key (kbd "C-c '") (lambda () (interactive) (smart-toggle-quote t))))) ; no need to override `C-c '` in YAML or HTML-mode
 
 (defun fmt-range ()
   (interactive

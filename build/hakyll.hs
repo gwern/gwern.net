@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-01-29 15:58:47 gwern"
+When: Time-stamp: "2024-02-06 19:39:37 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -20,7 +20,7 @@ import Data.Char (toLower)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
--- import System.Environment (lookupEnv)
+import System.Environment (lookupEnv)
 import Hakyll (compile, composeRoutes, constField,
                symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
@@ -55,11 +55,11 @@ import Config.Misc (cd)
 
 main :: IO ()
 main =
-    -- arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
-    -- let slow = "true" == fromMaybe "" arg
+ do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
+    let slow = "true" == fromMaybe "" arg
     hakyll $ do
                preprocess cd
-               preprocess testAll
+               when slow $ preprocess testAll
 
                preprocess $ printGreen ("Local archives parsing…" :: String)
                am           <- preprocess readArchiveMetadataAndCheck
@@ -72,10 +72,10 @@ main =
                preprocess $ printGreen ("Begin site compilation…" :: String)
                match "**.page" $ do
                    -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
-                   -- as people keep screwing them up endlessly:
+                   -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
                    route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
                             setExtension ""
-                   -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
+                   -- <https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs>
                    let readerOptions = defaultHakyllReaderOptions
                    compile $ do
                               ident <- getUnderlying

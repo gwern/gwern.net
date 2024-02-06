@@ -18,7 +18,7 @@ linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start wi
        , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai", "chen-igpt-paper")
        , ("/doc/anime/eva/1996-animerica-conscience-otaking", "okada-2011-2")
        , ("/doc/anime/eva/1997-animeland-may-hideakianno-interview-english", "anno-2012-2")
-       , ("/doc/anime/eva/2002-takeda-notenkimemoirs", "takeda-2002-2")
+       , ("/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs", "takeda-2002-2")
        , ("/doc/anime/eva/little-boy/2004-okada",     "okada-morikawa-2004-otaku-talk")
        , ("/doc/anime/eva/little-boy/2004-okada.pdf", "okada-morikawa-2004-otaku-talk-pdf")
        , ("/doc/bitcoin/2008-nakamoto", "nakamoto-2008-2")

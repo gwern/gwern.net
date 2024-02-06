@@ -209,7 +209,7 @@ badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg",
              "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
              "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
              "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked",
-             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter", "media report", "to cry", "A/B test results"]
+             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter", "media report", "to cry", "A/B test results", "white men"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteListDB :: M.Map T.Text [T.Text]
@@ -241,10 +241,10 @@ whiteList = [ ( "/crop#hands"
   , ( "/doc/ai/scaling/hardware/2008-sandberg-wholebrainemulationroadmap.pdf"
     , [ "Sandberg & Bostrom 2008" , "Whole Brain Emulation Roadmap" ]
     )
-  , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
+  , ( "/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs#opening-the-general-products-store"
     , [ "General Products" ]
     )
-  , ( "/doc/anime/eva/2002-takeda-notenkimemoirs#the-daicon-3-decision"
+  , ( "/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
     )
   , ( "/doc/dual-n-back/2010-zhang.pdf"
