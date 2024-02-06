@@ -1,7 +1,8 @@
+;; -*- lexical-binding: t -*-
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-04 20:35:21 gwern"
+;;; When:  Time-stamp: "2024-02-05 20:15:51 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -191,15 +192,96 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
   (let ((word-regexp (concat "\\b" regexp "\\b")))
     (re-search-forward word-regexp bound noerror count)))
 
-;; TODO Abbreviation ideas:
-;; script outputs: https://pastebin.com/rU0TyG5B
-;; (!W → (!Wikipedia)
-;; !Mar → []{.marginnote}
-;; bc → because
-;; iq → intelligence
-;; moda → modafinil
-;; s-s → statistically-significant
-;; /r/g → https://www.reddit.com/r/gwern/
+; Easy Unicode insertion mnemonics; uses the unusual X modifier key 'Hyper'.
+; This is not bound by default to a key usually, but on my 102-key US layout, I rebind the useless 'Menu' key to it: `$ modmap -e 'keysym Menu = Hyper_R'`.
+; Then 's-' in `kbd` notation is 'Hyper-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
+; TODO: for some reason this collides with XMonad keybindings on the Win key, despite that being assigned to 'Super'/mod4Mask and so in theory not being an issue with these Hyper keys?
+(defun hyper-insert (key char)
+  "Bind Hyper (H-) plus KEY to insert CHAR."
+  (global-set-key (kbd (concat "H-" key)) (lambda () (interactive) (insert char)))  )
+
+(hyper-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "h-'") (lambda () (interactive) (insert "‘")))`
+(hyper-insert "\"" "’")
+(hyper-insert ";" "“")
+(hyper-insert ":" "”")
+(hyper-insert "-" "—")
+(hyper-insert "_" "–")
+(hyper-insert "x" "×")
+(hyper-insert "s" "§")
+
+; Abbreviation mode: text shortcuts for common terms, or characters which are hard to input:
+(setq-default abbrev-mode t)
+(define-abbrev-table 'global-abbrev-table '(
+    ("microgram" "µg" nil 0)
+    ("Section" "§" nil 0) ; 'SECTION SIGN'
+    ("bc" "because" nil 0)
+    ("moda" "modafinil" nil 0)
+    ("arrow" "→" nil 0)
+    ("ss" "statistically-significant" nil 0)
+    ("psi" "ψ" nil 0)
+    ("arrowright" "→" nil 0)
+    ("arrowleft" "←" nil 0)
+    ("arrowboth" "↔" nil 0)
+    ("arrowup" "↑" nil 0)
+    ("arrowdown" "↓" nil 0)
+    ("sarcasm?" "⸮" nil 0)
+    ("asterisk" "✱" nil 0) ; 'HEAVY AST​ERISK' to avoid confusion with Markdown
+    ("notequalto" "≠" nil 0)
+    ("bitcoin" "₿" nil 0)
+    ("delta" "Δ" nil 0)
+    ("lessthanorequalto" "≤" nil 0)
+    ("greaterthanorequalto" "≥" nil 0)
+    ("poundsterling" "£" nil 0)
+    ("poundssterling" "£" nil 0)
+    ("poundsign" "£" nil 0)
+    ("yen" "¥" nil 0)
+    ("euro" "€" nil 0)
+    ("degrees" "°" nil 0)
+    ("celsius" "℃" nil 0)
+    ("degreecelsius" "℃" nil 0)
+    ("degreescelsius" "℃" nil 0)
+    ("pi" "π" nil 0)
+    ("bigo" "𝒪" nil 0)
+    ("epsilon" "ε" nil 0)
+    ("sigma" "σ" nil 0)
+    ))
+
+;; (defun smart-toggle-quote (single)
+;;   "Toggle between left and right quotes at point, with context sensitivity.
+;; If SINGLE is non-nil, toggle single quotes, otherwise toggle double quotes.
+;; Inserts right quotation marks if the preceding character is whitespace/newline or punctuation."
+;;   (interactive "P") ; Prefix argument determines single or double quotes
+;;   (let* ((left-single "‘")
+;;          (right-single "’")
+;;          (left-double "“")
+;;          (right-double "”")
+;;          (prev-char (char-before (point)))
+;;          (next-char (char-after (point)))
+;;          (left-quote (if single left-single left-double))
+;;          (right-quote (if single right-single right-double))
+;;          ;; Correctly determine if the context suggests the insertion of a left quote
+;;          (context-suggests-left (or (eq prev-char nil) ; Beginning of buffer
+;;                                     (eq prev-char 10) ; Newline
+;;                                     (member (char-syntax prev-char) '(32 ?- ?\()) ; Whitespace, dash, or open parenthesis
+;;                                     )))
+;;     (cond
+;;      ;; If the previous character is a left quote, and it's not appropriate for a left quote context, change it to right
+;;      ((and (eq prev-char (string-to-char left-quote)) (not context-suggests-left))
+;;       (delete-char -1)
+;;       (insert right-quote))
+;;      ;; If the next character is a right quote and the context doesn't suggest a left quote, keep it as is (move forward)
+;;      ((and (eq next-char (string-to-char right-quote)) (not context-suggests-left))
+;;       (forward-char))
+;;      ;; If context suggests a left quote, insert left quote
+;;      (context-suggests-left
+;;       (insert left-quote))
+;;      ;; Default action is to insert a right quote if context does not suggest left
+;;      (t
+;;       (insert right-quote)))))
+;; ;; Keybindings
+;; (global-set-key (kbd "C-c '") (lambda () (interactive) (smart-toggle-quote t)))
+;; (global-set-key (kbd "C-c \"") (lambda () (interactive) (smart-toggle-quote nil)))
+;; (add-hook 'markdown-mode-hook (lambda () (local-set-key (kbd "C-c '") (lambda () (interactive) (smart-toggle-quote t))))) ; no need to override `C-c '` in YAML or HTML-mode
 
 (defun fmt-range ()
   (interactive
@@ -1561,9 +1643,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) \\* \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
-       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number nil begin end) ; 5+ digit numbers
-       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 1/2, which might be a year like '2023' etc
-       (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number nil begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
+       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number begin end) ; 5+ digit numbers
+       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 1/2, which might be a year like '2023' etc
+       (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
        ; fancy punctuation:
@@ -1685,21 +1767,31 @@ the replacement."
               (query-replace-regexp from to nil (point-min) (point-max)))
           (message "Invalid year"))))))
 
-(defun number-with-commas (num)
-  "Format a number `NUM` with commas."
-  (let ((num-str (number-to-string num))
-        (pos 0)
-        (result ""))
-    (dotimes (i (length num-str))
-      (when (and (> pos 0) (= 0 (mod pos 3)))
-        (setq result (concat "," result)))
-      (setq pos (1+ pos)
-            result (concat (substring num-str (- (length num-str) pos) (- (length num-str) (1- pos))) result)))
-    result))
+;; (defun number-with-commas (num)
+;;   "Format a number `NUM` with commas."
+;;   (let ((num-str (number-to-string num))
+;;         (pos 0)
+;;         (result ""))
+;;     (dotimes (i (length num-str))
+;;       (when (and (> pos 0) (= 0 (mod pos 3)))
+;;         (setq result (concat "," result)))
+;;       (setq pos (1+ pos)
+;;             result (concat (substring num-str (- (length num-str) pos) (- (length num-str) (1- pos))) result)))
+;;     result))
 (defun comma-format-number (num-str)
   "Insert commas into a number string `NUM-STR`."
   (let ((num (string-to-number num-str)))
     (number-with-commas num)))
+
+(defun number-with-commas (num)
+  "Format a number `NUM` with commas."
+  (let ((num-str (reverse (number-to-string num)))  ; Reverse the string to process from the least significant digit
+        (result ""))
+    (dotimes (i (length num-str))
+      (when (and (> i 0) (= 0 (mod i 3)))
+        (setq result (concat result ",")))  ; Insert comma before every group of 3 digits
+      (setq result (concat result (char-to-string (elt num-str i)))))  ; Append current digit
+    (reverse result)))  ; Reverse the result to correct the order
 
 ; implement a URL-skipping `query-replace-regexp`, named `my-markdown-or-html-query-replace-regexp`. Many rewrites need to skip URLs but there's no good way to do it hitherto. This function also takes arbitrary functions to do the rewrite, which can be useful too for more complex rewrites.
 ; GPT-4:
@@ -1741,7 +1833,7 @@ Highlight the matched text during the query. Accept 'y' for yes, 'n' for no, and
     )
   )
 
-(defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional delimited start end)
+(defun my-markdown-or-html-query-replace-regexp (regexp replace-fn &optional start end)
   "Interactively query replace `REGEXP` with the result of `REPLACE-FN`.
 This version continues searching after a 'q' quit signal but skips replacements.
 
@@ -1753,12 +1845,9 @@ the entire buffer.
 `REPLACE-FN` should be a function that accepts a string (the matched text) and
 returns the replacement string.
 
-Optional argument `DELIMITED`, if non-nil, means replace only matches surrounded
-by word boundaries.
-
 WARNING: This function  handles user input to 'quit' (via 'q') not by stopping the search entirely, but by continuing to search through the remainder of the document without performing any further replacements. This hack works around a problem where quitting a replacement operation would unexpectedly kill the calling command (`fmt`). By setting a `skip-replacement` flag upon a 'quit' signal, somehow it works?
 
-\(fn REGEXP REPLACE-FN &optional DELIMITED START END)"
+\(fn REGEXP REPLACE-FN &optional START END)"
   (interactive)
   (let ((replacements 0)
         (skip-replacement nil)) ; New flag to control skipping of replacements
