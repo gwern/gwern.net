@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-02 21:26:52 gwern"
+# When:  Time-stamp: "2024-02-04 18:12:41 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -188,11 +188,11 @@ else
 
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Updating link bibliographies…"
-        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
+        # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N13 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -516,7 +516,7 @@ else
              `## blacklist of fraudsters or bad papers:` \
              grep -F \
                   `### authors:` \
-                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' \
+                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' \
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
@@ -563,6 +563,10 @@ else
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**'; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
+
+    λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
+         find ./metadata/annotation/ -maxdepth 1 -type f | xargs --max-args=500 ./static/build/collapse-checker.py; }
+    wrap λ "Overuse of '.collapse' class in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -E --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | grep -F -v -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
@@ -757,6 +761,9 @@ else
 
     λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | grep -F --invert-match -e 'cattleya幻想写景' -e '緑華野菜子'; }
     wrap λ "Malformed filenames: dangerous characters in them?"
+
+    λ(){ find ./ -type f -name "[12][0-9][0-9]-*" -or -name "[12][0-9][0-9][0-9][0-9]-*"; }
+    wrap λ "Malformed filenames: year prefixes which have one too many or few digits?"
 
     λ(){
         set +e;
