@@ -37,9 +37,9 @@ DarkMode = { ...DarkMode,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
-		[ "light", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
-		[ "dark", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
+		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
+		[ "light", "Dark", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
+		[ "dark", "Light", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -80,7 +80,7 @@ DarkMode = { ...DarkMode,
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
-			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = (   currentMode == "auto"
@@ -89,7 +89,11 @@ DarkMode = { ...DarkMode,
 						  : "";
 			if (name == currentMode)
 				desc += DarkMode.selectedModeOptionNote;
-			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
+			let label = inline
+						? shortLabel
+						: (name == currentMode
+						   ? selectedLabel 
+						   : unselectedLabel);
 			return `<button
 					 type="button"
 					 class="select-mode-${name}${selected}${active}"
@@ -185,9 +189,11 @@ DarkMode = { ...DarkMode,
 			if (button.title.endsWith(DarkMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * DarkMode.selectedModeOptionNote.length));
 
-			//	Reset label text to unselected state.
-			let label = button.querySelector(".label");
-			label.innerHTML = label.dataset.unselectedLabel;
+			if (modeSelector.classList.contains("mode-selector-inline") == false) {
+				//	Reset label text to unselected state.
+				let label = button.querySelector(".label");
+				label.innerHTML = label.dataset.unselectedLabel;
+			}
 		});
 
 		//	Set the correct button to be selected.
@@ -196,9 +202,11 @@ DarkMode = { ...DarkMode,
 			button.disabled = true;
 			button.title += DarkMode.selectedModeOptionNote;
 
-			//	Set label text to selected state.
-			let label = button.querySelector(".label");
-			label.innerHTML = label.dataset.selectedLabel;
+			if (modeSelector.classList.contains("mode-selector-inline") == false) {
+				//	Set label text to selected state.
+				let label = button.querySelector(".label");
+				label.innerHTML = label.dataset.selectedLabel;
+			}
 		});
 
 		/*	Ensure the right button (light or dark) has the “currently active” 
