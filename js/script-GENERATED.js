@@ -14098,7 +14098,8 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropcapsOverlap = (event
 		".list",
 		".collapse",
 		".list-heading",
-		"p[class*='dropcap-']"
+		"p[class*='dropcap-']",
+		"div.sourceCode"
 	].join(", ");
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
