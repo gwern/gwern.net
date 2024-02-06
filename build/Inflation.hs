@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Inflation (nominalToRealInflationAdjuster, inflationDollarTestSuite) where
+module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, inflationDollarTestSuite) where
 
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-01-26 19:07:19 gwern"
+-- When:  Time-stamp: "2024-02-06 18:18:41 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -78,9 +78,33 @@ import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, looku
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Config.Misc (currentYear)
-import MetadataFormat (printDouble)
-import Utils (inlinesToText, replace)
+import MetadataFormat (dateRegex, printDouble)
+import Utils (inlinesToText, replace, sed, toHTML)
+import Text.Regex.TDFA ((=~))
 import Config.Inflation as C
+
+-- ad hoc dollar-only string-munging version of `nominalToRealInflationAdjuster`, which attempts to parse out an amount and adjust it to a specified date.
+-- Intended for use with titles of annotations where dates are available.
+-- WARNING: must be used *after* `typesetHtmlField`  / `titlecase'`, as they may break the inline HTML <span>s.
+nominalToRealInflationAdjusterHTML :: String -> String -> String
+nominalToRealInflationAdjusterHTML _ "" = ""
+nominalToRealInflationAdjusterHTML "" s = s
+nominalToRealInflationAdjusterHTML date s = if not (date =~ dateRegex) then error "nominalToRealInflationAdjusterHTML: passed a malformed date? " date ++ "; s: " ++ s -- NOTE: in theory, this is only called in LinkMetadata.hs & every date read from YAML should have passed `dateRegex` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
+                                            else if '$' `notElem` s then s else
+                                                   let year = "$" ++ take 4 date
+                                                       amount = sed "^.* (\\$[1-9][0-9,.]+).*$" "\\1" s
+                                                       inflated = nominalToRealInflationAdjuster $ Link nullAttr [Str (T.pack amount)] (T.pack year, "")
+                                                       inflatedString = Utils.toHTML inflated
+                                                   in if amount == inflatedString then s else replace amount inflatedString s
+-- nominalToRealInflationAdjusterHTML :: String -> String -> String
+-- nominalToRealInflationAdjusterHTML _ "" = ""
+-- nominalToRealInflationAdjusterHTML "" s = s
+-- nominalToRealInflationAdjusterHTML date s = if not (date =~ dateRegex) then error "nominalToRealInflationAdjusterHTML: passed a malformed date? " date ++ "; s: " ++ s -- NOTE: in theory, this is only called in LinkMetadata.hs & every date read from YAML should have passed `dateRegex` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
+--                                             else if '$' `notElem` s then s else
+--                                                    let year = "$" ++ take 4 date in
+--                                                        sed "^(.* )(\\$[1-9][0-9,.]+)(.*)$"
+--                                                            ("\\1<span data-inflation=\"" ++ year ++ "\">\\2</span>\\3")
+--                                                            s
 
 nominalToRealInflationAdjuster :: Inline -> Inline
 nominalToRealInflationAdjuster x@(Span (a, b, ((k,v):[])) inlines) = if  k /= "inflation" then x

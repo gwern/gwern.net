@@ -20,7 +20,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Text.Regex (subRegex, mkRegex)
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown)
+                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
@@ -64,6 +64,19 @@ toMarkdown abst = let clean = runPure $ do
                                   Left e -> error $ ppShow e ++ ": " ++ abst
                                   Right output -> output
 
+-- write an Inline to a HTML string fragment; strip the `<p></p>` Pandoc wrapper
+-- > toHTML $ Span nullAttr [Str "foo"]
+-- → "<span>foo</span>"
+-- > toHTML $ Str "foo"
+-- → "foo"
+toHTML :: Inline -> String
+toHTML il = let clean = runPure $ do
+                                   md <- writeHtml5String def (Pandoc nullMeta [Para [il]])
+                                   return $ sed "^<span>(.*)</span>$" "\\1" $ sed "^<p>(.*)</p>$" "\\1" $ replace "\n" " " $ T.unpack md
+                             in case clean of
+                                  Left e -> error $ ppShow e ++ ": " ++ show il
+                                  Right output -> output
+
 toPandoc :: String -> Pandoc
 toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtensions} $ T.pack abst
                 in case clean of
@@ -76,6 +89,9 @@ parseRawAllClean = topDown cleanUpDivsEmpty .
                    -- walk (parseRawInline nullAttr) .
                    walk (parseRawBlock nullAttr)
 
+-- WARNING: this is deliberately `readHtml`, even though that will erase some forms of HTML constructs when Pandoc reads it,
+-- because `readMarkdown`, while more permissive in that respect, results in *other* forms of breakage, apparently linked to lingering Raw* blocks
+-- which then disable most downstream rewrites (eg. if you switch, the inflation-adjustments will all spontaneously stop working).
 parseRawBlock :: Attr -> Block -> Block
 parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                           case pandoc of

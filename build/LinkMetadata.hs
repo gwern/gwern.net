@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-01-31 20:12:14 gwern"
+When:  Time-stamp: "2024-02-06 18:19:11 gwern"
 License: CC-0
 -}
 
@@ -45,7 +45,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 
 import System.IO.Unsafe (unsafePerformIO)
 
-import Inflation (nominalToRealInflationAdjuster)
+import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename)
@@ -80,7 +80,7 @@ addPageLink x = x
 -- Run an arbitrary function on the 3 databases to update individual items.
 -- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like:
 --
--- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+-- > walkAndUpdateLinkMetadata True (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
 --
 -- To rewrite a tag, eg. 'conscientiousness' → 'psychology/personality/conscientiousness':
 --
@@ -305,7 +305,7 @@ writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
-writeAnnotationFragment am md onlyMissing u i@(a,b,c,d,ts,abst) =
+writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
@@ -322,17 +322,18 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,d,ts,abst) =
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
                   when (any (not . null) [concat (drop 1 ts), abst, (if blN > 1 then bl else ""), (if slN > 5 then sl else "")]) $ do
-                      let titleHtml    = typesetHtmlField $ titlecase' a
+                      let titleHtml    = nominalToRealInflationAdjusterHTML c $ typesetHtmlField $ titlecase' a
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
                       -- for partials, we skip the heavyweight processing:
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- if null abst then return pandoc
                                     else do
-                                          let p = walk (linkLive . nominalToRealInflationAdjuster) $
+                                          let p = parseRawAllClean $ -- final step: clean up stray <span>s from Inflation
+                                                  walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
