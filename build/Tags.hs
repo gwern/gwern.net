@@ -14,7 +14,7 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 
 import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
-import Utils (anyInfix, replace, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
+import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
 import Config.Tags as C
 
 -- Remind to refine link tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
@@ -99,8 +99,8 @@ listTagsAll = fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInf
 -- Bool argument = whether to include all sub-directories recursively.
 listTagDirectories :: Bool -> [FilePath] -> IO [FilePath]
 listTagDirectories allp direntries' = do
-                       directories <- if allp then mapM (getSubdirsRecursive . sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/") direntries'
-                                      else return [map (sed "^/" "" . sed "/index$" "/" . replace "/index.page" "/") direntries']
+                       directories <- if allp then mapM (getSubdirsRecursive . sed "^/" "" . sed "/index$" "/" . replaceChecked "/index.page" "/") direntries'
+                                      else return [map (sed "^/" "" . sed "/index$" "/" . replaceChecked "/index.page" "/") direntries']
                        let directoriesMi = map (replace "//" "/" . (++"/index")) (concat directories)
                        directoriesVerified <- filterM (\f -> doesFileExist (f++".page")) directoriesMi
                        return $ sort $ map ("/"++) directoriesVerified

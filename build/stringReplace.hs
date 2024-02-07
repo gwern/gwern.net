@@ -31,6 +31,9 @@ main = do (original:new:file) <- getArgs
           Par.mapM_ (replace (T.pack original) (T.pack new)) files
 
 replace :: T.Text -> T.Text -> FilePath -> IO ()
-replace o n f = do old <- TIO.readFile f
-                   let new = T.replace o n old
-                   when (old /= new) $ TIO.writeFile f new
+replace "" _ _ = error "First argument to 'replace' was an empty string, which is meaningless."
+replace _ _ "" = error "Third argument to 'replace', the filename to rewrite, was an empty string, which is meaningless."
+replace o n f  = do when (o == n) $ error $ "First & second arguments to 'replace' were identical and no rewrite can be done: " ++ show o
+                    old <- TIO.readFile f
+                    let new = T.replace o n old
+                    when (old /= new) $ TIO.writeFile f new

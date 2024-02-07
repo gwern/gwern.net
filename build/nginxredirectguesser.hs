@@ -12,7 +12,7 @@ import System.FilePath ((</>), takeFileName)
 
 import Text.EditDistance (levenshteinDistance, defaultEditCosts) -- <https://hackage.haskell.org/package/edit-distance>
 
-import Utils (replace, replaceMany)
+import Utils (replace, replaceChecked, replaceMany)
 
 listFilesRecursivelyWithBasename :: FilePath -> IO [(FilePath, FilePath)]
 listFilesRecursivelyWithBasename dir = do
@@ -23,7 +23,7 @@ listFilesRecursivelyWithBasename dir = do
     isDirectory <- doesDirectoryExist path
     if isDirectory
       then listFilesRecursivelyWithBasename path
-      else return [(takeFileName path, replace "/home/gwern/wiki/" "/" path)]
+      else return [(takeFileName path, replaceChecked "/home/gwern/wiki/" "/" path)]
   return $ concat paths
 
 main :: IO ()

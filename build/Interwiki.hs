@@ -75,7 +75,7 @@ wpURLRewrites ref
 -- NOTE: we match by prefix due to hash-anchors.
 wpURLRedirectRewrites url = let baseURL = T.takeWhile (/='#') url
                                 hits = take 1 $ filter (\(t,_) -> (T.takeWhile (/='#') t) == baseURL) C.redirectDB in
-                              if null hits then url else T.replace baseURL (snd $ head hits) url
+                              if null hits then url else T.replace baseURL (snd $ head hits) url -- TODO: T.replace could be checked further, with a hypothetical `replaceCheckedT`
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
 interwikiTestSuite = let redirectsCircular = map fst C.redirectDB `intersect` map snd C.redirectDB

@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2023-02-12 13:16:55 gwern"
+-- When:  Time-stamp: "2024-02-07 12:18:49 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -75,7 +75,7 @@ addTitlesToFile md filepath = do
                                                                                   else "‘" ++ (replace "’’" "’" t) ++ "’, " ++ authorCite)
                                ) untitled :: [(T.Text, T.Text)]
 
-          let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")")
+          let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")") -- TODO: `replaceCheckedT`
                                                                      (url `T.append` " \"" `T.append` titleNew `T.append` "\")")
                                                                      text)
                              fileContents titled
@@ -106,7 +106,7 @@ addTitlesToHTML md (path,(title,author,date,doi,tags,abstract))
                                                         else "‘" ++ t ++ "’, " ++ authorCite)
                          ) untitled :: [(T.Text, T.Text)]
 
-        updatedAbstract = foldr (\(url,titleNew) text -> T.replace (url `T.append` "\"")
+        updatedAbstract = foldr (\(url,titleNew) text -> T.replace (url `T.append` "\"") -- TODO: `replaceCheckedT`
                                                                (url `T.append` "\" title=\"" `T.append` titleNew `T.append` "\"")
                                                                text)
                        (T.pack abstract) titled

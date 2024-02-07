@@ -285,7 +285,9 @@ replaceT = T.replace
 replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
 replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 
--- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
+-- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
+-- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""`), or 'just in case'.
+-- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
 replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before
 split :: Eq a => [a] -> [a] -> [[a]]
@@ -311,6 +313,19 @@ split delim str =
         where (ys,zs) = spanList func xs
 hasKeyAL :: Eq a => a -> [(a, b)] -> Bool
 hasKeyAL key list = key `elem` map fst list
+
+-- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
+-- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.
+replaceChecked :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
+replaceChecked before after str
+  | any null variables                               = error $ "replaceChecked: some argument or output was null/empty: " ++ variablesS
+  | before == after || after == str || str == before = error $ "replaceChecked: arguments were not unique: " ++ variablesS
+  | not (after `isInfixOf` result)                   = error $ "replaceChecked: replacement did not happen! " ++ variablesS
+  | otherwise                                        = result
+  where result = replace before after str
+        variables = [before, after, str, result]
+        variablesS = show variables
+-- TODO: would it be useful to have a 'replaceDeleteStrict' which allows a "" `after` argument, since that's one of the most common use-cases/
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))

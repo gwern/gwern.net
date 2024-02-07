@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-06 19:39:37 gwern"
+When: Time-stamp: "2024-02-07 12:12:14 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeA
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
+import Utils (printGreen, printRed, replace, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
 import Arrow (upDownArrows)
 import Test (testAll)
 import Config.Misc (cd)
@@ -205,7 +205,7 @@ postCtx md =
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
     escapedTitleField "safeURL" <>
-    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
+    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do

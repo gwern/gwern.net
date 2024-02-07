@@ -1,6 +1,5 @@
 module Annotation.OpenReview where
 
-
 import Data.List (intercalate)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
