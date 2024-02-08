@@ -5896,7 +5896,8 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLinkFull(link))
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
 				//	Maybe it’s an aux-links link?
@@ -5996,7 +5997,8 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLinkFull(link))
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
 				return (   link.pathname.startsWith("/metadata/")
@@ -6064,7 +6066,8 @@ Content = {
 					return false;
 
 				//	Maybe it’s an annotated link?
-				if (Annotations.isAnnotatedLinkFull(link))
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
 				return (   link.pathname.startsWith("/metadata/") == false
