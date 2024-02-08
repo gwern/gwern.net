@@ -225,7 +225,7 @@ Content = {
 				}));
 			},
 
-			contentFromResponse: (response, link = null, loadURL) => {
+			contentFromResponse: (response, link, loadURL) => {
 				return {
 					document: newDocument(response)
 				};
@@ -379,7 +379,7 @@ Content = {
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
 			},
 
-			contentFromResponse: (response, link = null, loadURL) => {
+			contentFromResponse: (response, link, loadURL) => {
 				let codeDocument;
 
 				//	Parse (encoding and wrapping first, if need be).
@@ -418,7 +418,7 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (codePage, link = null) => {
+			referenceDataFromContent: (codePage, link) => {
 				return {
 					content: codePage.document
 				};
@@ -456,7 +456,7 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link = null, loadURL) => {
+			contentFromResponse: (response, link, loadURL) => {
 				let fragment = newDocument(response);
 
 				let auxLinksLinkType = AuxLinks.auxLinksLinkType(loadURL);
@@ -480,12 +480,12 @@ Content = {
 					}
 				}
 
-				//  Fire contentDidLoad event, if need be.
+				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 					source: "Content.contentTypes.localFragment.load",
 					container: fragment,
 					document: fragment,
-					loadLocation: link
+					loadLocation: loadURL
 				});
 
 				return {
@@ -493,13 +493,75 @@ Content = {
 				};
 			},
 
-			referenceDataFromContent: (fragment, link = null) => {
+			referenceDataFromContent: (fragment, link) => {
 				return {
 					content: fragment.document
 				};
 			},
 
 		    permittedContentTypes: [ "text/html" ]
+		},
+
+		localDocument: {
+			matches: (link) => {
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				//	Maybe it’s an annotated link?
+				if (Annotations.isAnnotatedLinkFull(link))
+					return false;
+
+				return (   link.pathname.startsWith("/metadata/") == false
+						&& link.pathname.endsWith(".html"));
+			},
+
+			sourceURLsForLink: (link) => {
+				let url = URLFromString(link.href);
+				url.hash = "";
+				url.search = "";
+
+				return [ url ];
+			},
+
+			contentFromResponse: (response, link, loadURL) => {
+				let page = newDocument(response);
+
+				page.baseLocation = loadURL;
+
+				let pageTitle = page.querySelector("title")?.innerHTML;
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.localDocument.load",
+					container: page,
+					document: page,
+					loadLocation: loadURL
+				});
+
+				return {
+					title:     pageTitle,
+					document:  page
+				};
+			},
+
+			referenceDataFromContent: (page, link) => {
+				let pageContent;
+				if (link.hash > "") {
+					pageContent = newDocument(page.document.querySelector(selectorFromHash(link.hash)));
+				} else {
+					pageContent = newDocument(page.document);
+					pageContent.querySelectorAll([
+						"meta",
+						"title"
+					].join(", ")).forEach(x => x.remove());
+				}
+
+				return {
+					content:    pageContent,
+					pageTitle:  page.title,
+				};
+			},
 		},
 
 		localPage: {
@@ -530,7 +592,7 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link = null, loadURL) => {
+			contentFromResponse: (response, link, loadURL) => {
 				let page = response
 						   ? newDocument(response)
 						   : document;
@@ -576,7 +638,7 @@ Content = {
 				}
 
 				if (response) {
-					//  Fire contentDidLoad event, if need be.
+					//  Fire contentDidLoad event.
 					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 						source: "Content.contentTypes.localPage.load",
 						container: page,
