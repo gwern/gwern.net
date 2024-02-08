@@ -6,7 +6,7 @@ import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Text.IO as TIO (readFile, writeFile)
-import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
+import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
@@ -230,6 +230,33 @@ extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.
 isLocal :: T.Text -> Bool
 isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
 isLocal s = T.head s == '/'
+
+-- throw a fatal error if any entry in a list fails a test
+ensure :: Show a => String -> String -> (a -> Bool) -> [a] -> [a]
+ensure location fString f = map (\i -> if f i then i
+                                       else error (location ++ ": failed property check '" ++ fString ++ "'; input was: " ++ show i))
+
+-- Check if a string is a plausible domain or subdomain
+isDomain :: String -> Bool
+isDomain domain = case parseURI ("http://" ++ domain) of
+    Just uri -> case uriAuthority uri of
+        Just auth -> null (uriPath uri) && not (null (uriRegName auth))
+        Nothing -> False
+    Nothing -> False
+isDomainT :: T.Text -> Bool
+isDomainT = isDomain . T.unpack
+
+-- Check if a string is a valid HTTP or HTTPS URL. To check local paths as well, use `isURIReference`/`isURIReferenceT`.
+isURL :: String -> Bool
+isURL url = case parseURI url of
+    Just uri -> scheme == "http:" || scheme == "https:"
+        where scheme = uriScheme uri
+    Nothing -> False
+isURLT :: T.Text -> Bool
+isURLT = isURL . T.unpack
+
+isURIReferenceT :: T.Text -> Bool
+isURIReferenceT = isURIReference . T.unpack
 
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in

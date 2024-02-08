@@ -26,8 +26,11 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(",".", "Wikipedia link about "] ||
                     elem t badAnchorStrings
-  where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
+  where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+",
+                                                           "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?",
+                                                           "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
 
+-- Testing: unique list
 badAnchorStrings :: [T.Text]
 badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
              "10-50k", "100 days", "100GHz", "100\8211\&1000\215", "12-36 hours",
@@ -215,6 +218,7 @@ badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg",
 whiteListDB :: M.Map T.Text [T.Text]
 whiteListDB = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) whiteList
 
+-- testing: unique keys & values & key-values; first, is URI, second, none are URI
 whiteList :: [(T.Text, [T.Text])]
 whiteList = [ ( "/crop#hands"
     , [ "PALM"
@@ -248,7 +252,7 @@ whiteList = [ ( "/crop#hands"
     , [ "DAICON III" ]
     )
   , ( "/doc/dual-n-back/2010-zhang.pdf"
-    , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"
+    , [ "'Chinese journal finds 31% of submissions plagiarized', Zhang 2010"
       ]
     )
   , ( "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3147063/"

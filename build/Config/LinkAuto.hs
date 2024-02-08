@@ -24,6 +24,7 @@ linkAutoTests =
 
 -- descending order, longest match to shortest (for regex priority):
 -- WARNING: we appear to be hitting some sort of exponential slowdown despite the optimizations. From now on, delete at least one rewrite for every added rewrite. Many are unnecessary.
+-- Testing: all-unique, value is URL
 custom, customSorted :: [(T.Text, T.Text)]
 customSorted = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) custom
 custom = [
