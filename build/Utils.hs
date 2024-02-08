@@ -16,6 +16,7 @@ import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefix
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
+import Control.DeepSeq (deepseq, NFData)
 
 import Text.Regex (subRegex, mkRegex)
 
@@ -231,10 +232,13 @@ isLocal :: T.Text -> Bool
 isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
 isLocal s = T.head s == '/'
 
--- throw a fatal error if any entry in a list fails a test
-ensure :: Show a => String -> String -> (a -> Bool) -> [a] -> [a]
-ensure location fString f = map (\i -> if f i then i
-                                       else error (location ++ ": failed property check '" ++ fString ++ "'; input was: " ++ show i))
+-- throw a fatal error if any entry in a list fails a test; uses `NFData`/`deepseq` to guarantee that the test gets evaluated
+-- and will kill as soon as possible.
+ensure :: (Show a, NFData a) => String -> String -> (a -> Bool) -> [a] -> [a]
+ensure location fString f xs = deepseq evaluatedList evaluatedList
+  where
+    evaluatedList = map (\i -> if f i then i
+                               else error (location ++ ": failed property check '" ++ fString ++ "'; input was: " ++ show i)) xs
 
 -- Check if a string is a plausible domain or subdomain
 isDomain :: String -> Bool

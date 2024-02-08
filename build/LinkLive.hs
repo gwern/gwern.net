@@ -131,6 +131,6 @@ linkLiveTestHeaders = forM_ C.goodLinks
 linkLiveTestUnits :: [(T.Text,Bool)]
 linkLiveTestUnits = map (\u -> (u,True)) good ++
                     map (\u -> (u,False)) bad
-  where good = map (\u -> if "https://" `T.isPrefixOf` u then u else error "LinkLive.linkLiveTestUnits.good.goodLinks: 'http'-only link detected; due to cross-site browser requirements, it is impossible to pop up a HTTP-only web page from the HTTPS gwern.net pages; therefore this cannot be a 'good link'.")
+  where good = map (\u -> if "https://" `T.isPrefixOf` u then u else error "LinkLive.linkLiveTestUnits.good.goodLinks: 'http'-only link detected; due to cross-site browser requirements, it is impossible to pop up a HTTP-only web page from the HTTPS Gwern.net pages; therefore this cannot be a 'good link'.")
           $ ensure "goodLinks" "isURL" isURLT C.goodLinks
         bad  = ensure "badLinks"  "isURL" isURLT C.badLinks

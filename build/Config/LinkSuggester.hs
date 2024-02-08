@@ -218,7 +218,7 @@ badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg",
 whiteListDB :: M.Map T.Text [T.Text]
 whiteListDB = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || isURI (T.unpack k))) whiteList
 
--- testing: unique keys & values & key-values; first, is URI, second, none are URI
+-- testing: unique keys & values & key-values; first, is URI, second, none are URL (cannot require not-isURI because strings like "PALM" parse as valid URIs)
 whiteList :: [(T.Text, [T.Text])]
 whiteList = [ ( "/crop#hands"
     , [ "PALM"

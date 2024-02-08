@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Test where
 
 import Control.Monad (unless)
@@ -10,7 +11,7 @@ import qualified Data.Text as T (unpack)
 import Text.Pandoc (Inline(Link))
 
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
-import Utils (printGreen, printRed, isDomainT, isURLT, isURIReferenceT, ensure)
+import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, ensure)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata)
@@ -35,6 +36,7 @@ import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
 import qualified Config.Tags (shortTagBlacklist, tagsLong2Short, wholeTagRewritesRegexes, tagsShort2LongRewrites, shortTagTestSuite)
 import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases)
 import qualified Config.XOfTheDay (siteBlackList)
+import qualified XOfTheDay as XotD (readTTDB, quoteDBPath, siteDBPath)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
@@ -81,8 +83,14 @@ isUniqueKeys xs
 isUniqueKeys3 :: (Eq a, Ord a, Show a) => [(a,b,c)] -> [(a,b,c)]
 isUniqueKeys3 xs
   | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate keys:" duplicates
+  | otherwise = throwError "Association List contains duplicate keys (ie. 'a' of '(a,b,c)'):" duplicates
   where duplicates = getDuplicates (map (\(a,_,_) -> a) xs)
+
+isUniqueMiddle3 :: (Eq a, Ord a, Ord b, Show b, Show a) => [(a,b,c)] -> [(a,b,c)]
+isUniqueMiddle3 xs
+  | null duplicates = xs
+  | otherwise = throwError "Association List contains duplicate middle-keys (ie. 'b' of '(a,b,c)'):" duplicates
+  where duplicates = getDuplicates (map (\(_,b,_) -> b) xs)
 
 -- 3. isUniqueValues: all values are unique and there are no duplicates
 isUniqueValues :: (Show a, Ord a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
@@ -94,6 +102,15 @@ isUniqueValues xs
 -- 4. isUniqueAll: all keys, values, and key-value pairs are unique
 isUniqueAll :: (Eq a, Ord a, Show a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
 isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
+
+testXotD :: IO ()
+testXotD = do s <- XotD.readTTDB XotD.siteDBPath
+              q <- XotD.readTTDB XotD.quoteDBPath
+              print $ sum [length $ ensure "Test.testXotD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
+                          , length $ isUniqueKeys3 s
+                          , length $ ensure "Test.testXotD.quotes" "not-isURL" (\(qt,a,_) -> not (isURL qt || isURL a)) q
+                          , length $ isUniqueKeys3 q
+                          ]
 
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
@@ -107,26 +124,27 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                map length [isUniqueList Config.LinkIcon.prioritizeLinkIconBlackList
                                            , isUniqueList Config.LinkLive.goodDomainsSub, isUniqueList Config.LinkLive.goodDomainsSimple, isUniqueList Config.LinkLive.badDomainsSub, isUniqueList Config.LinkLive.badDomainsSimple, isUniqueList Config.LinkLive.goodLinks, isUniqueList Config.LinkLive.badLinks
                                            , isUniqueList Config.LinkSuggester.badAnchorStrings
-                                           , isUniqueList Config.XOfTheDay.siteBlackList] ++ -- T.Text
+                                           , isUniqueList Config.XOfTheDay.siteBlackList
+                                           , ensure "Test.XOfTheDay.siteBlackList" "isDomainT" isDomainT Config.XOfTheDay.siteBlackList] ++ -- T.Text
               [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
-               length $ ensure "Test.linkIconTestUnitsText" "isURLT" (\(u,_,_) -> isURLT u) Config.LinkIcon.linkIconTestUnitsText] ++
+               length $ ensure "Test.linkIconTestUnitsText" "isURIReferenceT" (\(u,_,_) -> isURIReferenceT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" (\(_, (Link _ _ (u,_))) -> isURLT u) Config.Interwiki.testCases)
-              , length (ensure "Test.testConfigs.redirectDB" "isURLT (both)" (\(u1,u2) -> isURLT u1 && isURLT u2) Config.Interwiki.redirectDB)
+              , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)
               , length $ isUniqueAll Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "isURIReferenceT" (isURIReferenceT . fst) Config.LinkSuggester.whiteList
-              , length $ ensure "Test.LinkSuggester.whiteList" "not isURIReferenceT" (not . any isURIReferenceT . snd) Config.LinkSuggester.whiteList
+              , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueAll Config.Misc.arrowTestCases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
-              , length $ ensure "Test.LinkAuto.custom" "isURLT" (isURLT . snd) Config.LinkAuto.custom
+              , length $ ensure "Test.LinkAuto.custom" "isURiReferenceT" (isURIReferenceT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
               , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
-                                                                                        let ident' = T.unpack ident in '.' `elem` ident' || not (isAlpha $ head ident'))
+                                                                                        let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
-               , length $ ensure "Test.linkIDOverrides" "URI vs non-URI" (\(u,ident) -> isURIReference u && not (isURIReferenceT ident)) Config.LinkID.linkIDOverrides
+               , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
                 length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
@@ -142,6 +160,18 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
 testAll :: IO ()
 testAll = do Config.Misc.cd
 
+             printGreen ("Tested config rules for uniqueness requirements, verified: " ++ show testConfigs)
+
+             printGreen ("Testing interwiki rewrite rules…" :: String)
+             unless (null interwikiTestSuite) $ printRed ("Interwiki rules have errors in: " ++ show interwikiTestSuite)
+             unless (null interwikiCycleTestSuite) $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestSuite)
+
+             archives <- testLinkRewrites
+             unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
+
+             printGreen ("Testing X-of-the-day data…" :: String)
+             _ <- testXotD
+
              printGreen ("Testing link icon matches…" :: String)
              unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)
 
@@ -155,11 +185,6 @@ testAll = do Config.Misc.cd
 
              printGreen ("Tested HTML/author cleanup rules for infinite loops, verified: " ++ show (length (cleanAbstractsHTMLTest ++ cleanAuthorsTest)))
 
-             printGreen ("Tested config rules for uniqueness requirements, verified: " ++ show testConfigs)
-
-             archives <- testLinkRewrites
-             unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
-
              printGreen ("Testing tag rewrites…" :: String)
              testTags
 
@@ -167,10 +192,6 @@ testAll = do Config.Misc.cd
              unless (null linkLiveTest) $ printRed ("Live link pop rules have errors in: " ++ show linkLiveTest)
              _ <- linkLivePrioritize -- generate testcases for new live-link targets
              -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
-
-             printGreen ("Testing interwiki rewrite rules…" :: String)
-             unless (null interwikiTestSuite) $ printRed ("Interwiki rules have errors in: " ++ show interwikiTestSuite)
-             unless (null interwikiCycleTestSuite) $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestSuite)
 
              unless (null inflationDollarTestSuite) $ printRed ("Inflation-adjustment rules have errors in: " ++ show inflationDollarTestSuite)
 
