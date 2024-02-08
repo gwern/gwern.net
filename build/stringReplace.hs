@@ -1,4 +1,5 @@
 #!/usr/bin/env runghc
+{-# LANGUAGE OverloadedStrings #-}
 
 -- Parallel string literal search-and-replace.
 --

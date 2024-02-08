@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-07 22:19:14 gwern"
+# When:  Time-stamp: "2024-02-08 12:36:40 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -41,6 +41,7 @@ path2File() {
         echo "$ARGS"
     done
 }
+export -f path2File
 
 cloudflare-expire () {
     ARGS=$(path2File "$@")
@@ -96,38 +97,41 @@ pad-black () {
 
 # check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs, often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
 png2JPGQualityCheck () {
-    ARG=$(path2File "$1")
-    QUALITY_THRESHOLD=28 # decibels
-    SIZE_REDUCTION_THRESHOLD=25 # %
-    TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
-    JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
-    JPG="$TMP_DIR/$JPG_BASENAME"
+    for ARGS in "$@"; do
+        ARG=$(path2File "$ARGS")
+        QUALITY_THRESHOLD=28 # decibels
+        SIZE_REDUCTION_THRESHOLD=25 # %
+        TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
+        JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
+        JPG="$TMP_DIR/$JPG_BASENAME"
 
-    # Convert PNG to JPG at 85% quality:
-    convert "$ARG" -quality 85% "$JPG"
+        # Convert PNG to JPG at 85% quality:
+        convert "$ARG" -quality 85% "$JPG"
 
-    # Calculate file sizes
-    PNG_SIZE=$(stat -c%s "$ARG")
-    JPG_SIZE=$(stat -c%s "$JPG")
+        # Calculate file sizes
+        PNG_SIZE=$(stat -c%s "$ARG")
+        JPG_SIZE=$(stat -c%s "$JPG")
 
-    # Calculate size reduction in percentage
-    SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
+        # Calculate size reduction in percentage
+        SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
 
-    # Calculate PSNR
-    PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1)
+        # Calculate PSNR
+        PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1)
 
-    # Check both PSNR quality and size reduction
-    if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
-        echo "$ARG"
-    fi
+        # Check both PSNR quality and size reduction
+        if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
+            echo "$ARG"
+        fi
 
-    # Clean up: Remove the temporary JPG file
-    rm "$JPG"
+        # Clean up: Remove the temporary JPG file
+        rm "$JPG"
+    done
 }
 export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
-cr () { crossref $(path2File "$@") & }
+# cr () { crossref $(path2File "$@") & }
+cr () { crossref "$@" & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""

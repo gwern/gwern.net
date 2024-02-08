@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-07 18:38:06 gwern"
+# When:  Time-stamp: "2024-02-08 11:27:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -121,7 +121,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a>' '</a>:'; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -906,8 +906,8 @@ else
          cr 'https://gwern.net/doc/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://gwern.net/doc/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://gwern.net/doc/longnow/form990-longnowfoundation-2001-12.pdf' 'https://gwern.net/doc/long-now/form990-longnowfoundation-2001-12.pdf'
          cr 'https://gwern.net/doc/eva/2011-house' 'https://gwern.net/doc/anime/eva/2011-house'
-         cr 'https://gwern.net/doc/cs/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash'
-         cr 'https://gwern.net/doc/cs/cryptography/1955-nash' 'https://gwern.net/doc/cs/cryptography/1955-nash' # check www.gwern.net → gwern.net redirect
+         cr 'https://gwern.net/doc/cs/1955-nash' 'https://gwern.net/doc/cs/cryptography/nash/1955-nash'
+         cr 'https://gwern.net/doc/cs/cryptography/nash/1955-nash' 'https://gwern.net/doc/cs/cryptography/nash/1955-nash' # check www.gwern.net → gwern.net redirect
 
        }
     wrap λ "Check that some redirects go where they should"
@@ -915,7 +915,7 @@ else
           ### check key pages:
           ## check every possible extension:
           ## check some random ones:
-          cm "application/epub+zip" 'https://gwern.net/doc/anime/eva/2002-takeda-notenkimemoirs.epub'
+          cm "application/epub+zip" 'https://gwern.net/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs.epub'
           cm "application/font-sfnt" 'https://gwern.net/static/font/dropcap/kanzlei/Kanzlei-Initialen-M.ttf'
           cm "application/javascript" 'https://gwern.net/doc/statistics/order/beanmachine-multistage/script.js'
           cm "application/javascript" 'https://gwern.net/static/js/rewrite.js'
@@ -1173,7 +1173,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)" &
 
-    λ() { find ./doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e 'static/' -e 'doc/www/misc/' | sort | parallel png2JPGQualityCheck; }
+    λ() { find doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e 'static/' -e 'doc/www/misc/' | sort | parallel png2JPGQualityCheck; }
     wrap λ "PNGs that should be JPGs?" &
 
     bold "Running site functionality checks…"
