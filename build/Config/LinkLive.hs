@@ -23,6 +23,7 @@ miscUrlRules u
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise = Nothing
 
+-- all tested using `isDomain` in `Test`, and are unique lists:
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
                    ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org",
@@ -747,10 +748,9 @@ goodDomainsSimple =
     , "mitp-content-server.mit.edu"
     , "allenai.org"
     , "dialnet.unirioja.es"
-    , "garote.bdmonkeys.net"
     ]
 
-badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
+badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
                  ".oxfordjournals.org", ".medium.com", ".translate.goog"]
 badDomainsSimple = [ "2chan.us"
    , "1d4chan.org"
@@ -2289,9 +2289,12 @@ badDomainsSimple = [ "2chan.us"
    , "www.wesjones.com"
    , "vitalik.eth.limo"
    , "memteaimports.com"
+   , "garote.bdmonkeys.net"
    ]
 
-goodLinks = ["https://allenai.org/allennlp"
+-- tested using `isURL` in `LinkLive` & are unique lists:
+goodLinks =
+          [ "https://allenai.org/allennlp"
             , "https://aleph.se/andart2/neuroscience/energetics-of-the-brain-and-ai/"
             , "https://beza1e1.tuxen.de/articles/accidentally_turing_complete.html"
             , "https://courses.csail.mit.edu/6.857/2012/files/nash.py"
@@ -2309,7 +2312,6 @@ goodLinks = ["https://allenai.org/allennlp"
             , "https://neojaponisme.com/"
             , "https://norvig.com/norvigs-law.html"
             , "https://ohtori.nu/creators/contributors.html"
-            , "http://garote.bdmonkeys.net/commandline/"
             , "https://programme.exordo.com/isir2017/delegates/presentation/29/"
             , "https://quinndunki.com/blondihacks/?p=3023"
             , "https://r6.ca/blog/20090522T015739Z.html"
@@ -2708,17 +2710,11 @@ goodLinks = ["https://allenai.org/allennlp"
             , "https://w.atwiki.jp/toho/pages/727.html"
             , "https://wavemotioncannon.com/2017/01/03/yoh-yoshinari-interview-animestyle-032013-part-33/"
             , "https://web.archive.org/web/20100126083055/https://www.unc.edu/courses/2008spring/psyc/270/001/counterbalancing.html"
-            , "https://web.archive.org/web/20110429055151/http://www.google-melange.com/gsoc/project/google/gsoc2011/refold/31001"
-            , "https://web.archive.org/web/20130810215355/http://au.news.yahoo.com/today-tonight/lifestyle/article/-/17821047/online-black-market"
-            , "https://web.archive.org/web/20140114005051/http://packdeps.haskellers.com/reverse/push-notify"
-            , "https://web.archive.org/web/20140128121712/http://articles.latimes.com/1986-07-30/business/fi-18840_1_laser-defense"
             , "https://web.archive.org/web/20140314232216/https://www.zeit.de/2014/12/drogenhandel-silk-road-pfandleiher"
             , "https://web.archive.org/web/20150211211107/https://support.google.com/news/answer/1638638"
             , "https://web.archive.org/web/20150816235023/https://www.thedenverchannel.com/news/colorado-springs-area/air-force-academy-cadet-3rd-class-nathaniel-penalosa-accused-of-using-and-distributing-drugs-on-base"
             , "https://web.archive.org/web/20160205133519/https://www.baka-tsuki.org/project/index.php?title=Utsuro_no_Hako:Volume_1"
             , "https://web.archive.org/web/20170419194138/https://www.princeton.edu/mudd/finding_aids/mathoral/pmcxrota.htm"
-            , "https://web.archive.org/web/20170721094633/http://1731298478.tumblr.com/post/52689158259/sadamoto-i-first-met-him-when-i-worked"
-            , "https://web.archive.org/web/20170722004635/http://silverhandmeadery.com/portfolio-posts/dream-by-the-fire/"
             , "https://web.archive.org/web/20171020041641/http://nitro.biosci.arizona.edu/zbook/NewVolume_2/newvol2.html"
             , "https://web.archive.org/web/20190415123208/https://thiscardoesnotexist.glitch.me/"
             , "https://web.archive.org/web/20230604002332/https://thiseyedoesnotexist.com/story/"
@@ -3005,15 +3001,6 @@ goodLinks = ["https://allenai.org/allennlp"
             ]
 
 badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
-            , "/doc/ai/anime/danbooru/2021-li-dplase-ganlatentspaceeditingvideo.mp4"
-            , "/doc/darknet-market/dnm-archive/2017-02-12-thetimes-darknetdealersdraggedintothelight.html"
-            , "/doc/genetics/editing/1999-tang.pdf"
-            , "/doc/iq/2004-gottfredson.pdf"
-            , "/doc/psychology/cognitive-bias/sunk-cost/2005-parker.pdf"
-            , "/doc/sociology/2013-feldman.pdf"
-            , "/doc/statistics/bayes/2003-korb.pdf"
-            , "/doc/statistics/bias/1995-hoerman.pdf"
-            , "/doc/vitamin-d/2005-grant.pdf"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
             , "http://ascii.textfiles.com/archives/1717"
             , "https://augmentingcognition.com/ltm.html"
@@ -3612,7 +3599,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://reason.com/2017/11/28/in-search-of-the-elusive-bitco/"
             , "https://repository.si.edu/bitstream/handle/10088/18355/nzp_changing_world_mcshea.pdf"
             , "https://repository.uel.ac.uk/download/489cc10ec6c30da0e7bbdfb33898364c46ac9dcc727169bd1850016053e45278/347037/2013_Dawkins_e-cig_survey.pdf"
-            , "/doc/nootropic/2009-farah.pdf"
             , "https://research.facebook.com/blog/2016/03/do-jobs-run-in-families/"
             , "https://reset.me/story/benefits-of-microdosing-with-lsd-and-psilocybin-mushrooms/"
             , "https://risk-engineering.org/concept/Rasmussen-practical-drift"
@@ -4398,7 +4384,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.eoht.info/page/Feynman%27s%20IQ"
             , "http://www.epjournal.net/blog/2011/08/glucose-is-not-willpower-fuel/"
             , "http://www.evalegend.com/interview_anno97.php"
-            , "/doc/nicotine/2012-roh.pdf"
             , "http://www.faqs.org/faqs/compression-faq/"
             , "http://www.ff7citadel.com/press/int_edge.shtml"
             , "http://www.gainax.co.jp/wp/"
@@ -4484,4 +4469,5 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.wesjones.com/eoh.htm"
             , "https://vitalik.eth.limo/general/2019/11/22/progress.html"
             , "https://github.com/fyu/lsun"
+            , "http://garote.bdmonkeys.net/commandline/"
             ]

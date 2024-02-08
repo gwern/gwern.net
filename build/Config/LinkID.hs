@@ -1,14 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.LinkID where
 
-import Data.Char (isAlpha)
-import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (unpack, Text)
+import qualified Data.Text as T (Text)
 
+-- testing: unique keys & values; keys are URIs, values are not URIs (to guard against swaps) & start with letters
 linkIDOverrides :: [(String, T.Text)]
-linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
-                         let ident' = T.unpack ident in
-                              if '.' `elem` ident' || not (isAlpha $ head ident') then error ("Invalid link ID override! " ++ ppShow o) else o)
+linkIDOverrides =
   [
        ("/doc/ai/anime/danbooru/2018-zhang-2.pdf", "zhang-et-al-2018-twostagecolorization")
        , ("/doc/ai/anime/danbooru/2020-akita-2.pdf", "akita-et-al-2020-2")

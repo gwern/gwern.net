@@ -4,6 +4,7 @@ module Config.Interwiki where
 import Text.Pandoc (Inline(..), nullAttr)
 import qualified Data.Text as T (Text, append, isPrefixOf)
 
+-- testing: `Test` checks key-uniqueness & validity of URL in the `Link` output.
 testCases :: [(Inline, Inline)]
 testCases = [
   -- !Wikipedia
@@ -167,6 +168,8 @@ quoteOverrides =  ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli
 -- manual override of a particular WP link A with another target B.
 -- This is useful for skipping redirects & ensuring all variants globally produce the same WP link (which is helpful for LinkSuggester to avoid false negatives).
 -- This can also be used to override links to disambiguation pages: for example, 'Dialysis' is a disambiguation page, even though the other uses are so obscure, so one can force that to point to the always-intended `Kidney_dialysis` instead.
+--
+-- Testing: this is tested in `Test` for: key-uniqueness, graph cycles, and both-valid-as-URLs.
 redirectDB :: [(T.Text, T.Text)]
 redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https://en.wikipedia.org/wiki/" u in
                map (\(a,b) -> (wp a, wp b)) $ [
@@ -1587,7 +1590,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
           , ("Epstein-Barr", "Epstein%E2%80%93Barr_virus")
           , ("Epstein-Barr_virus", "Epstein%E2%80%93Barr_virus")
           , ("Equal_environments_assumption", "Twin_study#Assumptions")
-          , ("Ergonomics", "Human_factors_and_ergonomics")
           , ("Ergot_fungus", "Ergot")
           , ("Eric_Robert_Rudolph", "Eric_Rudolph")
           , ("Erlk%C3%B6nig_(Goethe)", "Erlk%C3%B6nig")
@@ -4993,7 +4995,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
           , ("Transcription_factors", "Transcription_factor")
           , ("Transcriptomics", "Transcriptomics_technologies")
           , ("Transformativeness", "Transformative_use")
-          , ("Transformer_(machine_learning)", "Transformer_(machine_learning_model)")
+          , ("Transformer_(machine_learning)", "Transformer_(deep_learning_architecture)")
           , ("Transformers_(toy_line)", "Transformers:_Generation_1")
           , ("Transhumanist", "Transhumanism")
           , ("Transhumanists", "Transhumanism")
@@ -5589,7 +5591,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
         , ("Central_African", "Central_Africa")
         , ("Chain_of_thought", "Prompt_engineering#Chain-of-thought")
         , ("Charles_Brenner", "Charles_Brenner_(mathematician)")
-        , ("Charles_Stein", "Charles_Stein_(statistician)")
+        , ("Charles_Stein", "Charles_M._Stein")
         , ("Charly", "Charly_(1968_film)")
         , ("Cochlear", "Cochlea")
         , ("Cocoa", "Cocoa_solids")
@@ -5717,7 +5719,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
         , ("Transplant", "Organ_transplantation")
         , ("UKBB", "UK_Biobank")
         , ("Ultra", "Ultra_(cryptography)")
-        , ("UMAP", "Uniform_Manifold_Approximation_and_Projection")
+        , ("UMAP", "Nonlinear_dimensionality_reduction#Uniform_manifold_approximation_and_projection")
         , ("Undecidable", "Undecidable_problem")
         , ("Valerian", "Valerian_(herb)")
         , ("VI", "Vi_(text_editor)")
@@ -5727,4 +5729,44 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
         , ("X.Org", "X.Org_Server")
         , ("Yam", "Yam_(vegetable)")
         , ("Yeezy", "Adidas_Yeezy")
+        , ("Bird_seed", "Bird_food")
+        , ("Charles_Stein_(statistician)", "Charles_M._Stein")
+        , ("Chinatowns_in_Latin_America", "Chinatowns_in_Latin_America_and_the_Caribbean")
+        , ("Cold_plasma", "Nonthermal_plasma")
+        , ("Cold_rolled_steel", "Cold-formed_steel")
+        , ("Computer_algebra_systems", "Computer_algebra_system")
+        , ("DDR3", "DDR3_SDRAM")
+        , ("DDR4", "DDR4_SDRAM")
+        , ("Dengue", "Dengue_fever")
+        , ("Determinants", "Determinant")
+        , ("Disney+", "Disney%2B")
+        , ("Dostoevsky", "Fyodor_Dostoevsky")
+        , ("DRAM", "Dynamic_random-access_memory")
+        , ("Eurasianist", "Eurasianism")
+        , ("General_Certificate_of_Secondary_Education", "GCSE")
+        , ("Github_Copilot", "GitHub_Copilot")
+        , ("Gumilev_Eurasian_National_University", "L._N._Gumilev_Eurasian_National_University")
+        , ("Hot_rolled_steel", "Rolling_(metalworking)##Hot_rolling")
+        , ("Human_factors_and_ergonomics", "Ergonomics")
+        , ("LPDDR4", "LPDDR#LPDDR4")
+        , ("Magnetron", "Cavity_magnetron")
+        , ("Matrices", "Matrix")
+        , ("Ministry_of_Education_of_the_Russian_Federation", "Ministry_of_Education_(Russia)")
+        , ("Nursultan_Nazarbaev", "Nursultan_Nazarbayev")
+        , ("Paramount+", "Paramount%2B")
+        , ("Passionarity", "Lev_Gumilev#Ideas")
+        , ("Poe_(software)", "Quora#Poe")
+        , ("Psychological_development", "Developmental_psychology")
+        , ("Pushkin", "Alexander_Pushkin")
+        , ("Rational_expectations_hypothesis", "Rational_expectations")
+        , ("Rosetta_stone", "Rosetta_Stone")
+        , ("Russian_idea", "Russian_Idea")
+        , ("Social_media_advertising", "Social_media_marketing")
+        , ("Superforecasting", "Superforecasting:_The_Art_and_Science_of_Prediction")
+        , ("Third_Rome", "Succession_of_the_Roman_Empire")
+        , ("Transformer_(machine_learning_model)", "Transformer_(deep_learning_architecture)")
+        , ("Trithemius’s_cipher", "Trithemius%E2%80%99s_cipher")
+        , ("Uniform_Manifold_Approximation_and_Projection", "Nonlinear_dimensionality_reduction#Uniform_manifold_approximation_and_projection")
+        , ("U.S._Department_of_Transportation", "United_States_Department_of_Transportation")
+        , ("Intrasexual_competition", "Female_intrasexual_competition")
         ]

@@ -39,7 +39,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, replaceChecked, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed)
 
 import Config.Misc (currentDay)
 import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, minimumLength, maximumLength, maxDistance, blackList, minimumSuggestions)
@@ -195,7 +195,7 @@ embed edb mdb bdb i@(p,_) =
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: T.Text -> IO (String,[Double])
-oaAPIEmbed doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
+oaAPIEmbed doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replaceChecked "\n" "\\n" $ -- JSON escaping of newlines
                                                                                                    T.unpack doc]
                     case status of
                       ExitFailure err -> error $ "Exit Failure: " ++ intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr]

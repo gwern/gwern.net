@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-02 19:37:12 gwern"
+# When:  Time-stamp: "2024-02-07 22:19:14 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -19,8 +19,31 @@ export N="29"
 
 set -e
 
+path2File() {
+    # This function takes any number of arguments as input paths or URLs
+    # and converts them to a file path under the ~/wiki/ directory.
+
+    # Loop through all arguments passed to the function
+    for arg in "$@"
+    do
+        # Convert the input to the desired file path using sed
+        # The following transformations are applied:
+        # 1. Strip 'wiki/' prefix if present
+        # 2. Replace '~/' with '/home/gwern/wiki/'
+        # 3. Prepend '/home/gwern/wiki/' if the path starts with an alphanumeric character
+        # 4. Remove 'https://gwern.net' if present to support URLs from gwern.net
+        # 5. Special handling for paths starting with '/doc' to ensure they go into the 'doc' subdirectory correctly
+        ARGS=$(echo "$arg" | sed -e 's/^wiki\///' \
+                                 -e 's/\~\//\/home\/gwern\/wiki\//' \
+                                 -e 's/^\([a-zA-Z0-9].*\)/\/home\/gwern\/wiki\/\1/' \
+                                 -e 's/https:\/\/gwern\.net//g' \
+                                 -e 's/^\/doc/\/home\/gwern\/wiki\/doc/')
+        echo "$ARGS"
+    done
+}
+
 cloudflare-expire () {
-    ARGS=$(echo "$@" | sed -e 's/^wiki\///' -e 's/\~\//\/home\/gwern\/wiki\//' -e 's/^\([a-zA-Z0-9].*\)/\/home\/gwern\/wiki\/\1/' -e 's/https:\/\/gwern\.net//g' -e 's/https:\/\/gwern\.net//g' -e 's/^\/doc/\/home\/gwern\/wiki\/doc/')
+    ARGS=$(path2File "$@")
     for FILE in $(realpath $ARGS); do
         URL="$(echo $FILE | sed -e 's/\.page//' -e 's/\/home\/gwern\/wiki\/\(.*\)/https:\/\/gwern\.net\/\1/g' -e 's/\.page//g' | sort )"
         echo -n "Expiring: $FILE → $URL : "
@@ -46,7 +69,7 @@ pdf () {
 
 # delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdfcut` repeatedly quickly with <Up> arrow in bash, of course.)
 pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
-            ORIGINAL=$(echo "$@" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
+            ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
             # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
@@ -58,44 +81,44 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
     for FILE in "$@"; do
-        ORIGINAL=$(echo "$FILE" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
-        mogrify -bordercolor white -border 25 "$FILE"
+        mogrify -bordercolor white -border 25 "$(path2File "$FILE")"
     done
 }
 pad-black () {
     for FILE in "$@"; do
-        ORIGINAL=$(echo "$FILE" | sed -e 's/^\/doc\//\/home\/gwern\/wiki\/doc\//')
-        mogrify -bordercolor black -border 25 "$FILE"
+        mogrify -bordercolor black -border 25 "$(path2File "$FILE")"
     done
 }
 
 # function split_image() {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
 # check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs, often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
 png2JPGQualityCheck () {
+    ARG=$(path2File "$1")
     QUALITY_THRESHOLD=28 # decibels
     SIZE_REDUCTION_THRESHOLD=25 # %
     TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
-    JPG_BASENAME="$(basename "${1%.png}.jpg")"
+    JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
     JPG="$TMP_DIR/$JPG_BASENAME"
 
     # Convert PNG to JPG at 85% quality:
-    convert "$1" -quality 85% "$JPG"
+    convert "$ARG" -quality 85% "$JPG"
 
     # Calculate file sizes
-    PNG_SIZE=$(stat -c%s "$1")
+    PNG_SIZE=$(stat -c%s "$ARG")
     JPG_SIZE=$(stat -c%s "$JPG")
 
     # Calculate size reduction in percentage
     SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
 
     # Calculate PSNR
-    PSNR=$(compare -metric PSNR "$1" "$JPG" null: 2>&1)
+    PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1)
 
     # Check both PSNR quality and size reduction
     if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
-        echo "$1"
+        echo "$ARG"
     fi
 
     # Clean up: Remove the temporary JPG file
@@ -104,7 +127,7 @@ png2JPGQualityCheck () {
 export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
-cr () { crossref "$@" & }
+cr () { crossref $(path2File "$@") & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""
@@ -112,7 +135,7 @@ e () { FILE=""
        if [[ "${1:0:1}" == "-" ]]; then
            FILE="${*: -1}"
        else
-           FILE=$(echo "$1" | sed -e 's/^\/doc/\/home\/gwern\/wiki\/doc/')
+           FILE=$(path2File "$1")
            shift;
        fi
        if [[ -a "$FILE" ]]; then
@@ -158,7 +181,7 @@ gw () {
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.yaml";
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-           grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ | sort --unique  | \
+           grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
            xargs grep -F --color=always --ignore-case --with-filename "$QUERY" | cut -c 1-2548);
     if [ -z "$RESULTS" ]; then
         gwl "$@" # fall back to double-checking IRC logs
@@ -168,7 +191,7 @@ gw () {
 }
 
 ## file names only
-gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; }
+gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
 ## Newsletter only:
 gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
         find ~/wiki/newsletter/ -type f -name "*.page" | \

@@ -472,6 +472,7 @@ linkIconRulesFiletypes u
 --                           ]
 
 -- in /lorem order:
+-- testing: unique-keys, first is URI
 linkIconTestUnitsText :: [(T.Text,T.Text,T.Text)]
 linkIconTestUnitsText =
         [("/static/img/icon/deepmind.svg",  "deepmind","svg")

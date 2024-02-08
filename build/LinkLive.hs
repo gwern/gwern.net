@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-01-26 10:13:41 gwern"
+When:  Time-stamp: "2024-02-07 19:17:49 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -50,7 +50,7 @@ import System.Exit (ExitCode(ExitFailure))
 
 import Interwiki (wpPopupClasses)
 import LinkBacklink (readBacklinksDB, Backlinks)
-import Utils (addClass, host, anySuffixT, printRed, anyInfixT)
+import Utils (addClass, host, anySuffixT, printRed, anyInfixT, ensure, isURLT)
 import qualified Config.LinkLive as C
 import qualified Config.Misc as CM (userAgent)
 
@@ -110,14 +110,14 @@ wikipedia u = Just $ "link-live" `elem` wpPopupClasses u
 url :: T.Text -> Inline
 url u = linkLive (Link nullAttr [] (u,""))
 
--- URLs which fail their test:
+-- URLs which fail their rule test:
 linkLiveTest :: [(T.Text,Bool)]
 linkLiveTest = filter (\(u, bool) -> bool /=
                                        (url u == Link ("",["link-live"], []) [] (u,""))
                       )
                linkLiveTestUnits
 
--- check the live test-cases with curl for X-Frame HTTP headers; the presence of these guarantees liveness no longer works and they need to be updated.
+-- check the live test-cases with curl for `X-Frame` HTTPS headers; the presence of these guarantees liveness no longer works and they need to be updated.
 linkLiveTestHeaders :: IO ()
 linkLiveTestHeaders = forM_ C.goodLinks
   (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--compressed", "--insecure", "--user-agent", CM.userAgent, "--location", "--silent", "--head", T.unpack u]
@@ -129,5 +129,8 @@ linkLiveTestHeaders = forM_ C.goodLinks
   )
 
 linkLiveTestUnits :: [(T.Text,Bool)]
-linkLiveTestUnits = map (\u -> (u,True)) C.goodLinks ++
-                    map (\u -> (u,False)) C.badLinks
+linkLiveTestUnits = map (\u -> (u,True)) good ++
+                    map (\u -> (u,False)) bad
+  where good = map (\u -> if "https://" `T.isPrefixOf` u then u else error "LinkLive.linkLiveTestUnits.good.goodLinks: 'http'-only link detected; due to cross-site browser requirements, it is impossible to pop up a HTTP-only web page from the HTTPS gwern.net pages; therefore this cannot be a 'good link'.")
+          $ ensure "goodLinks" "isURL" isURLT C.goodLinks
+        bad  = ensure "badLinks"  "isURL" isURLT C.badLinks

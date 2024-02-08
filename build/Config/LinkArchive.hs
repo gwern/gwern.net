@@ -254,6 +254,7 @@ whiteList url
   | anyInfix url whiteListMatchesFixed = True
     | otherwise = False
 
+-- TODO: refactor into URLs vs regexps vs domains (so they can be validated & tested)
 whiteListMatchesFixed :: [String]
 whiteListMatchesFixed = [
       "archive.org/details/", "archive.org/download/", "scholar.archive.org"
@@ -1307,4 +1308,5 @@ whiteListMatchesFixed = [
       , "https://bbycroft.net/llm" -- interactive (visualization)
       , "https://gandalf.lakera.ai/" -- interactive (game)
       , "https://google-research.github.io/lingvo-lab/translatotron3/" -- low quality (audio embeds)
+      , "https://smerf-3d.github.io/" -- low quality (video embeds)
       ]

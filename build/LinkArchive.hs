@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-01-28 17:59:07 gwern"
+When:  Time-stamp: "2024-02-07 19:39:24 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -193,6 +193,7 @@ readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/ar
                            Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ take 10000 pdlString
                            Just pdl -> return $ M.fromList pdl
 -- slow path with error-checking:
+-- TODO: refactor into a pure check, which just checks URL/URI, and an IO check, which checks file existences.
 readArchiveMetadataAndCheck :: IO ArchiveMetadata
 readArchiveMetadataAndCheck =
  do pdl <- readArchiveMetadata

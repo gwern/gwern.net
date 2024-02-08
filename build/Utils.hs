@@ -6,7 +6,7 @@ import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Text.IO as TIO (readFile, writeFile)
-import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
+import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
@@ -231,6 +231,33 @@ isLocal :: T.Text -> Bool
 isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
 isLocal s = T.head s == '/'
 
+-- throw a fatal error if any entry in a list fails a test
+ensure :: Show a => String -> String -> (a -> Bool) -> [a] -> [a]
+ensure location fString f = map (\i -> if f i then i
+                                       else error (location ++ ": failed property check '" ++ fString ++ "'; input was: " ++ show i))
+
+-- Check if a string is a plausible domain or subdomain
+isDomain :: String -> Bool
+isDomain domain = case parseURI ("http://" ++ domain) of
+    Just uri -> case uriAuthority uri of
+        Just auth -> null (uriPath uri) && not (null (uriRegName auth))
+        Nothing -> False
+    Nothing -> False
+isDomainT :: T.Text -> Bool
+isDomainT = isDomain . T.unpack
+
+-- Check if a string is a valid HTTP or HTTPS URL. To check local paths as well, use `isURIReference`/`isURIReferenceT`.
+isURL :: String -> Bool
+isURL url = case parseURI url of
+    Just uri -> scheme == "http:" || scheme == "https:"
+        where scheme = uriScheme uri
+    Nothing -> False
+isURLT :: T.Text -> Bool
+isURLT = isURL . T.unpack
+
+isURIReferenceT :: T.Text -> Bool
+isURIReferenceT = isURIReference . T.unpack
+
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in
                                 h == domain || ("/doc/www/"`T.append`domain) `T.isPrefixOf` url
@@ -285,7 +312,9 @@ replaceT = T.replace
 replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
 replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 
--- replace/split/hasKeyAL copied from https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html to avoid MissingH's dependency of regex-compat
+-- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
+-- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""`), or 'just in case'.
+-- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
 replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before
 split :: Eq a => [a] -> [a] -> [[a]]
@@ -311,6 +340,19 @@ split delim str =
         where (ys,zs) = spanList func xs
 hasKeyAL :: Eq a => a -> [(a, b)] -> Bool
 hasKeyAL key list = key `elem` map fst list
+
+-- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
+-- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.
+replaceChecked :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
+replaceChecked before after str
+  | any null variables                               = error $ "replaceChecked: some argument or output was null/empty: " ++ variablesS
+  | before == after || after == str || str == before = error $ "replaceChecked: arguments were not unique: " ++ variablesS
+  | not (after `isInfixOf` result)                   = error $ "replaceChecked: replacement did not happen! " ++ variablesS
+  | otherwise                                        = result
+  where result = replace before after str
+        variables = [before, after, str, result]
+        variablesS = show variables
+-- TODO: would it be useful to have a 'replaceDeleteStrict' which allows a "" `after` argument, since that's one of the most common use-cases/
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))

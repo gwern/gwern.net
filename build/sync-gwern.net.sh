@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-07 10:10:10 gwern"
+# When:  Time-stamp: "2024-02-07 18:38:06 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -69,7 +69,9 @@ else
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
-        pkill checkMetadata || true ; rm ~/METADATA.txt &> /dev/null || true; ./static/build/checkMetadata >~/METADATA.txt 2>&1 || true &
+        pkill checkMetadata || true
+        rm ~/METADATA.txt &> /dev/null || true
+        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >~/"$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)

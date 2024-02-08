@@ -2,10 +2,15 @@ module Test where
 
 import Control.Monad (unless)
 import Data.List (foldl')
+import Network.URI (isURIReference)
 import qualified Data.Set as Set (empty, insert, member)
+import Data.Char (isAlpha)
+import qualified Data.Text as T (unpack)
+
+import Text.Pandoc (Inline(Link))
 
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
-import Utils (printGreen, printRed)
+import Utils (printGreen, printRed, isDomainT, isURLT, isURIReferenceT, ensure)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata)
@@ -23,7 +28,7 @@ import Typography (titleCaseTest)
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
 import qualified Config.Interwiki (testCases, quoteOverrides, redirectDB)
-import qualified Config.LinkArchive (whiteListMatchesFixed)
+import qualified Config.LinkArchive (whiteListMatchesFixed, localizeLinktestCases)
 import qualified Config.LinkIcon (prioritizeLinkIconBlackList, linkIconTestUnitsText)
 import qualified Config.LinkLive (goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks)
 import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
@@ -93,7 +98,8 @@ isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
 testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBadSubstrings, isUniqueList Config.MetadataFormat.filterMetaBadWholes
-                               , isUniqueList Config.GenerateSimilar.blackListURLs
+                               , ensure "Test.GenerateSimilar.blackListURLs" "isURIReference (URL & file)" isURIReference $
+                                 isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
                                , isUniqueList Config.Tags.shortTagBlacklist
                                , isUniqueList Config.Typography.surnameFalsePositivesWhiteList
@@ -102,17 +108,34 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                            , isUniqueList Config.LinkLive.goodDomainsSub, isUniqueList Config.LinkLive.goodDomainsSimple, isUniqueList Config.LinkLive.badDomainsSub, isUniqueList Config.LinkLive.badDomainsSimple, isUniqueList Config.LinkLive.goodLinks, isUniqueList Config.LinkLive.badLinks
                                            , isUniqueList Config.LinkSuggester.badAnchorStrings
                                            , isUniqueList Config.XOfTheDay.siteBlackList] ++ -- T.Text
-              [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText] ++
+              [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
+               length $ ensure "Test.linkIconTestUnitsText" "isURLT" (\(u,_,_) -> isURLT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
+              , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" (\(_, (Link _ _ (u,_))) -> isURLT u) Config.Interwiki.testCases)
+              , length (ensure "Test.testConfigs.redirectDB" "isURLT (both)" (\(u1,u2) -> isURLT u1 && isURLT u2) Config.Interwiki.redirectDB)
               , length $ isUniqueAll Config.LinkSuggester.whiteList
+              , length $ ensure "Test.LinkSuggester.whiteList" "isURIReferenceT" (isURIReferenceT . fst) Config.LinkSuggester.whiteList
+              , length $ ensure "Test.LinkSuggester.whiteList" "not isURIReferenceT" (not . any isURIReferenceT . snd) Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueAll Config.Misc.arrowTestCases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
+              , length $ ensure "Test.LinkAuto.custom" "isURLT" (isURLT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
+              , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
+                                                                                        let ident' = T.unpack ident in '.' `elem` ident' || not (isAlpha $ head ident'))
+                Config.LinkID.linkIDOverrides
+               , length $ ensure "Test.linkIDOverrides" "URI vs non-URI" (\(u,ident) -> isURIReference u && not (isURIReferenceT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
-                length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases]
+                length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases] ++
+              [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
+                                , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
+                                , ensure "badDomainsSimple"  "isDomainT" isDomainT Config.LinkLive.badDomainsSimple
+                                , ensure "badDomainsSub"     "isDomainT" isDomainT Config.LinkLive.badDomainsSub
+                                , ensure "Test.prioritizeLinkIconBlackList" "isDomainT" isDomainT Config.LinkIcon.prioritizeLinkIconBlackList]
+              ] ++
+              [length (ensure "Test.localizeLinktestCases" "URL/URI" (\(u, (af, mv, html, _)) -> isURLT u && isURIReferenceT af && (mv=="" || isURLT mv) && (html=="" || isURLT html)) Config.LinkArchive.localizeLinktestCases)]
 
 -------------------------------------------------------------------------------------------------------------------------------
 

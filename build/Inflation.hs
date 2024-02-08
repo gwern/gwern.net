@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-02-07 10:12:24 gwern"
+-- When:  Time-stamp: "2024-02-07 11:54:11 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -80,7 +80,7 @@ import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Config.Misc (currentYear)
 import MetadataFormat (dateRegex, printDouble)
-import Utils (inlinesToText, replace, sed, toHTML)
+import Utils (inlinesToText, replace, replaceChecked, sed, toHTML)
 import Text.Regex.TDFA ((=~))
 import Config.Inflation as C
 
@@ -102,7 +102,7 @@ nominalToRealInflationAdjusterHTML date s
                             sed "^.*(\\$[1-9][0-9,.]*).*$" "\\1" s
                    inflated = nominalToRealInflationAdjuster $ Link nullAttr [Str (T.pack amount)] (T.pack year, "")
                    inflatedString = Utils.toHTML inflated
-               in if amount == inflatedString then s else replace amount inflatedString s
+               in if amount == inflatedString then s else replaceChecked amount inflatedString s -- NOTE: `replace`/`replaceChecked` requires the arguments to be different to avoid bugs, so we must guarantee that we do not attempt to run an identity transform; and we ensure that the replacement happened.
 
 nominalToRealInflationAdjuster :: Inline -> Inline
 nominalToRealInflationAdjuster x@(Span (a, b, [(k, v)]) inlines) = if  k /= "inflation" then x
