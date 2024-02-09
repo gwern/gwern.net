@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-08 11:27:16 gwern"
+# When:  Time-stamp: "2024-02-09 11:03:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -54,7 +54,6 @@ else
     N=28
     SLOW="true"
     SKIP_DIRECTORIES=""
-    NITTER_PID=""
     TODAY=$(date '+%F')
 
     for ARG in "$@"; do
@@ -65,7 +64,7 @@ else
             *) N="$ARG" ;;
         esac
     done
-    export SLOW SKIP_DIRECTORIES N NITTER_PID
+    export SLOW SKIP_DIRECTORIES N
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
         bold "Checking metadata…"
@@ -78,10 +77,6 @@ else
     (cd ./static/ && git status && timeout 10m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
     if [ "$SLOW" ]; then
-
-        # booting Nitter for making Twitter snapshots as necessary
-        pkill nitter || true
-        cd ~/src/nitter/ && python3 generate-guest.py && ./nitter & NITTER_PID=$!
 
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( s() { gwsed "$@"; }
@@ -209,8 +204,6 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     if [ "$SLOW" ]; then
-
-        kill "$NITTER_PID" || true
 
         bold "Updating X-of-the-day…"
         bold "Updating annotation-of-the-day…"
@@ -889,7 +882,7 @@ else
     if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
 
     # it is rare, but some duplicates might've crept into the X-of-the-day databases:
-    if ((RANDOM % 100 > 99)); then (runghc ./static/build/duplicatequotesitefinder.hs &); fi
+    if ((RANDOM % 100 > 99)); then (runghc -istatic/build/ ./static/build/duplicatequotesitefinder.hs &); fi
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
@@ -1193,7 +1186,7 @@ else
              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
     wrap λ "Site-of-the-day: check for recommendations?" &
 
-    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -fno-code {} \; ) 2>&1 >/dev/null; }
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -Wall -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
