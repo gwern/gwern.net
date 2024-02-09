@@ -4,10 +4,10 @@ module Main where
 import Control.Monad (unless)
 import qualified Data.Text as T (unpack)
 import qualified Data.Text.IO as TIO (getContents)
-import System.Directory (setCurrentDirectory)
 
 import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdown, writeHtml5String)
 
+import Config.Misc as C (cd)
 import LinkMetadata (cleanAbstractsHTML)
 import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks)
@@ -28,7 +28,7 @@ main = do originalMarkdown <- TIO.getContents
           putStrLn html
 
           -- guarantee we are in the right working directory to read the various metadata databases for extracting recommendations from:
-          setCurrentDirectory "/home/gwern/wiki/"
+          C.cd
 
           matchList <- GS.singleShotRecommendations html
           unless (matchList == "") $ putStrLn $ "<div class=\"aux-links-append see-also-append collapse\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++ (replace "'" "’" $ sed "'(.*)'" "‘\\1’" $ sed "<span>(.*)</span>" "\\1" $ T.unpack matchList) ++ "\n</div>"

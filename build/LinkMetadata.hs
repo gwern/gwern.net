@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-07 12:17:08 gwern"
+When:  Time-stamp: "2024-02-09 10:36:40 gwern"
 License: CC-0
 -}
 
@@ -45,6 +45,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 
 import System.IO.Unsafe (unsafePerformIO)
 
+import Config.Misc as C (root)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -58,7 +59,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, replaceChecked, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -146,6 +147,7 @@ readLinkMetadata = do
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
+-- TODO: split out into 3 functions at different levels of intensity: 1 full, 1 half, 1 auto and the composition; many of these functions would be better off in MetadataFormat or somewhere
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
@@ -543,7 +545,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,abst)) =
 -- annotations, like /face, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
-rewriteAnchors f = T.pack . replaceChecked "href=\"#" ("href=\""++f++"#") . T.unpack
+rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 affiliationAnchors :: [String]
 affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
@@ -610,9 +612,9 @@ readYamlFast yamlp = do file <- B.readFile yamlp
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                                if filep then return yaml
-                               else do fileAbsoluteP <- doesFileExist ("/home/gwern/wiki/" ++ yaml)
+                               else do fileAbsoluteP <- doesFileExist (C.root ++ yaml)
                                        if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return yaml
-                                       else return ("/home/gwern/wiki/" ++ yaml)
+                                       else return (C.root ++ yaml)
                    file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
                    allTags <- listTagsAll
                    case file of

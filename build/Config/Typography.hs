@@ -4,6 +4,7 @@ module Config.Typography where
 cycleCount :: Int
 cycleCount = 3
 
+-- testing: unique keys
 titleCaseTestCases :: [(String, String)]
 titleCaseTestCases = [
   ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
@@ -66,6 +67,7 @@ titleCaseTestCases = [
             , ("Fading Hip-Hop Mogul—who’s Been Buffeted by Charges of Sexual Assault—to Salvage", "Fading Hip-Hop Mogul—Who’s Been Buffeted by Charges of Sexual Assault—To Salvage")
               ]
 
+-- testing: unique list
 surnameFalsePositivesWhiteList :: [String]
 surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr",
                                   "April", "At", "Atari", "Atlas", "August", "Aug", "Autumn", "Before", "British", "Challenge", "Chat",

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-09 11:03:42 gwern"
+# When:  Time-stamp: "2024-02-09 11:48:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -70,7 +70,7 @@ else
         bold "Checking metadata…"
         pkill checkMetadata || true
         rm ~/METADATA.txt &> /dev/null || true
-        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >~/"$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
+        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >"$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -126,7 +126,9 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    compile () { ghc -O2 -Wall -rtsopts -threaded --make "$@"; }
+    WARNINGS=""
+    if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
+    compile () { ghc -O2 "$WARNINGS" -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
     if [ -z "$SKIP_DIRECTORIES" ]; then
         compile generateLinkBibliography.hs
@@ -404,28 +406,28 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 15000 ] && echo "$VISIBLE_N" && exit 1; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 36000 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
-         [ "$COMPILED_N" -le 86000 ] && echo "File count: $COMPILED_N" && exit 1;
+         [ "$COMPILED_N" -le 115000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 77000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 102400000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size too small?"
 
-    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 10000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 22000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
-    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 73000 ] && echo "$BACKLINKS_N"; }
+    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 180000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
 
     λ(){ ANNOTATION_FILES_N=$(find ./metadata/annotation/ -maxdepth 1 -type f | wc --lines);
-         [ "$ANNOTATION_FILES_N"   -le 12500 ] && echo "$ANNOTATION_FILES_N"; }
+         [ "$ANNOTATION_FILES_N"   -le 24500 ] && echo "$ANNOTATION_FILES_N"; }
     wrap λ "Annotation files are missing?"
     λ(){ BACKLINKS_FILES_N=$(find ./metadata/annotation/backlink/ -type f | wc --lines);
-         [ "$BACKLINKS_FILES_N"    -le 24500 ] && echo "$BACKLINKS_FILES_N"; }
+         [ "$BACKLINKS_FILES_N"    -le 28500 ] && echo "$BACKLINKS_FILES_N"; }
     wrap λ "Backlinks files are missing?"
     λ(){ SIMILARLINKS_FILES_N=$(find ./metadata/annotation/similar/ -type f | wc --lines);
-         [ "$SIMILARLINKS_FILES_N" -le 9540 ] && echo "$SIMILARLINKS_FILES_N"; }
+         [ "$SIMILARLINKS_FILES_N" -le 12000 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
     ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/note/lion#history#'/'/note/lion##history'/'/note/lion##'/'/note/lion#history#foo' is in fact valid
@@ -1186,7 +1188,7 @@ else
              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
     wrap λ "Site-of-the-day: check for recommendations?" &
 
-    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -Wall -fno-code {} \; ) 2>&1 >/dev/null; }
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc "$WARNINGS" -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }

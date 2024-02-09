@@ -9,6 +9,7 @@ import Data.Map as M (lookup, union, toList, fromList)
 import qualified Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
+import Config.Misc as C (root)
 import LinkID (authorsToCite, generateURL)
 import LinkMetadata (authorsTruncate, sortItemPathDate, readYamlFast)
 import LinkMetadataTypes (MetadataItem)
@@ -17,9 +18,9 @@ import Utils (anyInfix, replace, sed)
 type Path = String
 
 main :: IO ()
-main = do full  <- readYamlFast "/home/gwern/wiki/metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-          half <- readYamlFast "/home/gwern/wiki/metadata/half.yaml" -- tagged but not handwritten/cleaned-up
-          auto    <- readYamlFast "/home/gwern/wiki/metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
+main = do full  <- readYamlFast (C.root ++ "metadata/full.yaml")   -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+          half <- readYamlFast (C.root ++ "metadata/half.yaml")    -- tagged but not handwritten/cleaned-up
+          auto    <- readYamlFast (C.root ++ "metadata/auto.yaml") -- auto-generated cached definitions; can be deleted if gone stale
           let incompleteDB = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
           let finalDB = M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB

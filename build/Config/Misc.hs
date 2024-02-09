@@ -15,7 +15,7 @@ root :: FilePath
 root = "/home/gwern/wiki/"
 
 cd :: IO ()
-cd = setCurrentDirectory Config.Misc.root
+cd = setCurrentDirectory root
 
 currentYear :: Int
 currentYear = 2024
@@ -56,8 +56,9 @@ mininumLinkBibliographyFragment :: Int
 mininumLinkBibliographyFragment = 3
 
 userAgent :: String
-userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/111.0"
+userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/112.0"
 
+-- testing: unique keys
 tooltipToMetadataTestcases :: [((String,String),(String,String,String))]
 tooltipToMetadataTestcases =
     [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
@@ -90,6 +91,7 @@ arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
 arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
 arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
 
+-- testing: unique all
 arrowTestCases :: [([Block], [Block])]
 arrowTestCases =
       [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
@@ -128,6 +130,7 @@ arrowTestCases =
          [Para [Link ("", [], arrowUpKV) [Str "simpleCase"] ("#top", "")]])
       ]
 
+-- testing: unique keys
 cycleTestCases :: [([(Int, Int)], Bool)]
 cycleTestCases = [ ([], False) -- no rules, no cycles
      , ([(1, 2)], False) -- one rule, no cycles

@@ -34,6 +34,7 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
 import qualified Data.Text as T (pack)
 
+import Config.Misc as C (root)
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
 import LinkMetadataTypes (MetadataList, MetadataItem, Failure(Temporary, Permanent))
 import Tags (guessTagFromShort, listTagsAll)
@@ -42,7 +43,7 @@ import Utils (printGreen, replace)
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://gwern.net/" "/") getArgs
+          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace C.root "/" . replace "https://gwern.net/" "/") getArgs
 
           when (length args < 2) $ error "Error: Insufficient arguments (<2)."
           when ("gwt" `elem` args || "t" `elem` args) $ error "Invalid tag/URL 'gwt'/'t' detected! Is this entire command malformed? Exiting immediately."

@@ -12,7 +12,8 @@ import System.FilePath ((</>), takeFileName)
 
 import Text.EditDistance (levenshteinDistance, defaultEditCosts) -- <https://hackage.haskell.org/package/edit-distance>
 
-import Utils (replace, replaceChecked, replaceMany)
+import Config.Misc as C (root)
+import Utils (replaceChecked, replaceMany)
 
 listFilesRecursivelyWithBasename :: FilePath -> IO [(FilePath, FilePath)]
 listFilesRecursivelyWithBasename dir = do
@@ -23,12 +24,12 @@ listFilesRecursivelyWithBasename dir = do
     isDirectory <- doesDirectoryExist path
     if isDirectory
       then listFilesRecursivelyWithBasename path
-      else return [(takeFileName path, replaceChecked "/home/gwern/wiki/" "/" path)]
+      else return [(takeFileName path, replaceChecked C.root "/" path)]
   return $ concat paths
 
 main :: IO ()
 main = do errors <- fmap lines getContents
-          files <- listFilesRecursivelyWithBasename "/home/gwern/wiki/"
+          files <- listFilesRecursivelyWithBasename C.root
           one <- readFile "static/redirect/nginx.conf"
           two <- readFile "static/redirect/nginx-broken.conf"
           let redirects = filter (\(_,b) -> b /= "/static/404\";") $ map (\(a:b:_) -> (a,b)) $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two

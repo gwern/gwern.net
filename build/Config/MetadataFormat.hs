@@ -2,6 +2,7 @@
 
 module Config.MetadataFormat where
 
+-- testing: unique keys
 balancedBracketTestCases :: [(String, String)]
 balancedBracketTestCases =
     [ ("(abc [de] {fg} \"hi\")", "")
@@ -34,9 +35,9 @@ balancedBracketTestCases =
     , ("\"abc(def\"ghi)", ")")
     ]
 
+-- testing: none; no `isUniqueKeys` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc), but we need to test that they print out the same in the test-suite anyway
 printDoubleTests :: [(Double, Int, String)]
 printDoubleTests =
-  -- no `isUnique` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc) but we need to test that they print out the same
             [
             (-0, 0, "0")
             , (-0.0, 0, "0")
@@ -70,6 +71,8 @@ printDoubleTests =
             , (0.224, 2, "0.22")
             ]
 
+-- infix rewrites
+-- Testing: unique keys
 cleanAuthorsRegexps, cleanAuthorsFixedRewrites :: [(String,String)]
 cleanAuthorsRegexps = [
   ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2") -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
@@ -104,6 +107,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
                              (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
                              (" M. D. MMM", "")]
 
+-- testing: unique list
 filterMetaBadSubstrings, filterMetaBadWholes :: [String]
 filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY"
                           , "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf"
@@ -153,6 +157,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5"
                       , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore"]
 
+-- testing: unique keys
 htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexp = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
@@ -300,6 +305,7 @@ htmlRewriteRegexp = [
          ]
 
 -- simple string substitutions:
+-- testing: unique keys
 htmlRewriteFixed =
          [
          ("<strong>One Sentence Summary</strong></p>\n<p>", "<strong>One Sentence Summary</strong>: ")

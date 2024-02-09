@@ -35,22 +35,16 @@ import LinkBacklink (readBacklinksDB)
 import Utils (host, anyInfixT, safeHtmlWriterOptions)
 import LinkArchive (readArchiveMetadata, localizeLink, ArchiveMetadata)
 import LinkIcon (linkIcon)
-import qualified Config.XOfTheDay as C (siteLinkMin, siteBlackList, minAnnotationAbstractLength)
+import qualified Config.XOfTheDay as C (siteLinkMin, siteBlackList, minAnnotationAbstractLength, quoteDBPath, quotePath, siteDBPath, sitePath, annotDayDB, annotPath)
 
 type TTDB = [Snippet]
 type Snippet = (String, String, Bool)
 
-quoteDBPath, quotePath :: FilePath
-quoteDBPath = "metadata/quotes.hs"
-quotePath   = "metadata/today-quote.html"
 quoted :: Snippet -> String
 quoted (quote,attribution,_) = "<div class=\"epigraph quote-of-the-day\" title=\"Quote Of The Day\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
                                (if null attribution then "" else "\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++
                                "</blockquote>\n</div>"
 
-siteDBPath, sitePath :: FilePath
-siteDBPath = "metadata/sites.hs"
-sitePath   = "metadata/today-site.html"
 sited :: Snippet -> String
 sited (site,name,_) = "<div class=\"site-of-the-day\" title=\"Blogroll: Site Of the Day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
 
@@ -86,20 +80,16 @@ generateSnippetAndWriteTTDB dbpath path formatter =
        snegate (a,b,s) = (a,b,not s)
 
 qotd, sotd :: IO ()
-qotd    = generateSnippetAndWriteTTDB   quoteDBPath quotePath quoted
-sotd    = generateSnippetAndWriteTTDB   siteDBPath  sitePath  sited
+qotd    = generateSnippetAndWriteTTDB   C.quoteDBPath C.quotePath quoted
+sotd    = generateSnippetAndWriteTTDB   C.siteDBPath  C.sitePath  sited
 
 -------
 
 aotd :: Metadata -> IO ()
 aotd md = do am <- readArchiveMetadata
-             generateAnnotationOfTheDay md annotDayDB annotPath (annotated am)
+             generateAnnotationOfTheDay md C.annotDayDB C.annotPath (annotated am)
 
 -- same idea: each build, we pick an annotation which hasn't been shown before (uses are tracked in a simple Haskell DB), currently picking by what is the 'longest annotation' (as measured by raw string length) as a crude proxy for 'best', and—tag-directory style—write an `{.annotation-include-partial}` snippet for transcluding into the footer of each page after the quote-of-the-day.
-
-annotDayDB, annotPath :: String
-annotDayDB = "metadata/annotations.hs"
-annotPath = "metadata/today-annotation.html"
 
 type AotD = [String]
 
@@ -143,7 +133,7 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
 -- The original raw results are particularly useful when piped into <https://gwern.net/haskell/lcp.hs> to
 -- get suggested prefixes/domains, or one can just look at the domains by `host`:
 sitePrioritize :: IO [T.Text]
-sitePrioritize = do sotdb <- readTTDB siteDBPath
+sitePrioritize = do sotdb <- readTTDB C.siteDBPath
                     let sotdbl = map (\(u,_,_) -> T.pack u) sotdb
                     b <- LinkBacklink.readBacklinksDB
                     let b' = M.toList $ M.map length b

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-08 12:36:40 gwern"
+# When:  Time-stamp: "2024-02-08 15:49:31 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -26,6 +26,7 @@ path2File() {
     # Loop through all arguments passed to the function
     for arg in "$@"
     do
+        if [ -f "$arg" ]; then echo "$arg"; else
         # Convert the input to the desired file path using sed
         # The following transformations are applied:
         # 1. Strip 'wiki/' prefix if present
@@ -33,12 +34,13 @@ path2File() {
         # 3. Prepend '/home/gwern/wiki/' if the path starts with an alphanumeric character
         # 4. Remove 'https://gwern.net' if present to support URLs from gwern.net
         # 5. Special handling for paths starting with '/doc' to ensure they go into the 'doc' subdirectory correctly
-        ARGS=$(echo "$arg" | sed -e 's/^wiki\///' \
+        ARG=$(echo "$arg" | sed -e 's/^wiki\///' \
                                  -e 's/\~\//\/home\/gwern\/wiki\//' \
                                  -e 's/^\([a-zA-Z0-9].*\)/\/home\/gwern\/wiki\/\1/' \
                                  -e 's/https:\/\/gwern\.net//g' \
                                  -e 's/^\/doc/\/home\/gwern\/wiki\/doc/')
-        echo "$ARGS"
+        echo "$ARG"
+        fi
     done
 }
 export -f path2File
@@ -130,8 +132,7 @@ png2JPGQualityCheck () {
 export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
-# cr () { crossref $(path2File "$@") & }
-cr () { crossref "$@" & }
+cr () { crossref $(path2File "$@") & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""

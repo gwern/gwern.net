@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-02-07 19:39:24 gwern"
+When:  Time-stamp: "2024-02-09 10:47:32 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -154,7 +154,9 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
 -- archive the first _n_ links which are due, and all pending 'cheap' archives.
 -- Can be scripted like `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
 manualArchive :: Int -> IO ()
-manualArchive n = do
+manualArchive n | n < 1 = error $ "manualArchive called with no work to do (n = " ++ show n ++ "); this was probably a mistake?"
+                | otherwise =
+ do
   adb <- readArchiveMetadataAndCheck
   today <- currentDay
   let adbPending = M.filter (archiveItemDue today) adb
@@ -162,7 +164,7 @@ manualArchive n = do
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
   unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)
   let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
-  unless (null sortedItems) $ putStrLn ("N-due: " ++ show sortedItems)
+  unless (null sortedItems) $ putStrLn ("𝑛 due: " ++ show sortedItems)
   let urlsToArchive = nubOrd $ map fst $ cheapItems ++ sortedItems
   adbExecuted <- mapConcurrently archiveItem urlsToArchive
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb

@@ -35,13 +35,14 @@ import qualified Config.LinkLive (goodDomainsSub, goodDomainsSimple, badDomainsS
 import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
 import qualified Config.Tags (shortTagBlacklist, tagsLong2Short, wholeTagRewritesRegexes, tagsShort2LongRewrites, shortTagTestSuite)
 import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases)
-import qualified Config.XOfTheDay (siteBlackList)
-import qualified XOfTheDay as XotD (readTTDB, quoteDBPath, siteDBPath)
+import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
+import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
-import qualified Config.Misc (cd, arrowTestCases, tooltipToMetadataTestcases, cycleTestCases)
+import qualified Config.Misc (cd, arrowTestCases, tooltipToMetadataTestcases, cycleTestCases,)
+import qualified Config.Paragraph (whitelist)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -103,12 +104,12 @@ isUniqueValues xs
 isUniqueAll :: (Eq a, Ord a, Show a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
 isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 
-testXotD :: IO ()
-testXotD = do s <- XotD.readTTDB XotD.siteDBPath
-              q <- XotD.readTTDB XotD.quoteDBPath
-              print $ sum [length $ ensure "Test.testXotD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
+testXOTD :: IO ()
+testXOTD = do s <- XOTD.readTTDB Config.XOfTheDay.siteDBPath
+              q <- XOTD.readTTDB Config.XOfTheDay.quoteDBPath
+              print $ sum [length $ ensure "Test.testXOTD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
                           , length $ isUniqueKeys3 s
-                          , length $ ensure "Test.testXotD.quotes" "not-isURL" (\(qt,a,_) -> not (isURL qt || isURL a)) q
+                          , length $ ensure "Test.testXOTD.quotes" "not-isURL" (\(qt,a,_) -> not (isURL qt || isURL a)) q
                           , length $ isUniqueKeys3 q
                           ]
 
@@ -136,6 +137,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
+              , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
               , length $ isUniqueAll Config.Misc.arrowTestCases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
@@ -145,8 +147,9 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed,
-                length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases] ++
+              , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexp, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed
+              , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
+              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
                                 , ensure "badDomainsSimple"  "isDomainT" isDomainT Config.LinkLive.badDomainsSimple
@@ -170,7 +173,7 @@ testAll = do Config.Misc.cd
              unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
 
              printGreen ("Testing X-of-the-day data…" :: String)
-             _ <- testXotD
+             _ <- testXOTD
 
              printGreen ("Testing link icon matches…" :: String)
              unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)

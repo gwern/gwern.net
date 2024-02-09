@@ -3,6 +3,18 @@ module Config.XOfTheDay where
 
 import qualified Data.Text as T (Text)
 
+quoteDBPath, quotePath :: FilePath
+quoteDBPath = "metadata/quotes.hs"
+quotePath   = "metadata/today-quote.html"
+
+siteDBPath, sitePath :: FilePath
+siteDBPath = "metadata/sites.hs"
+sitePath   = "metadata/today-site.html"
+
+annotDayDB, annotPath :: String
+annotDayDB = "metadata/annotations.hs"
+annotPath = "metadata/today-annotation.html"
+
 -- at >500, yielded 10,046 on 2023-03-08; >2,000 yielded a more reasonable 3,313 (still far above requirements of 1/day)
 minAnnotationAbstractLength :: Int
 minAnnotationAbstractLength = 2000
@@ -10,7 +22,7 @@ minAnnotationAbstractLength = 2000
 siteLinkMin :: Int
 siteLinkMin = 3
 
--- testing: unique list, domain list
+-- testing: unique list, is domain (rather than URI or URL)
 siteBlackList :: [T.Text] -- definitely excluded from recs
 siteBlackList = [
           "07th-expansion.fandom.com", "17th-angel.tumblr.com", "2chan.us", "abandonedfootnotes.blogspot.com", "abcnews.go.com",

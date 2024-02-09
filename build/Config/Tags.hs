@@ -33,6 +33,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     specialCases :: [(String -> Bool, String)]
     specialCases = [(\u -> anyInfix u ["evageeks.org","eva.onegeek.org", "evamonkey.com"], "anime/eva")]
 
+-- testing: unique keys
 wholeTagRewritesRegexes  :: [(String,String)]
 wholeTagRewritesRegexes = [("^cs/", "CS/")
                      , ("^cs$", "CS")
@@ -55,6 +56,7 @@ wholeTagRewritesRegexes = [("^cs/", "CS/")
                      ]
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
+-- testing: unique keys
 tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
 tagsShort2LongRewrites =
    [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot")
@@ -141,11 +143,13 @@ tagsShort2Long = tagsShort2LongRewrites ++
   -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
+-- testing: unique list
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
-                                           "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong",
-                                           "the", "to", "tr", "up", "we"]
+                      "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong",
+                      "the", "to", "tr", "up", "we"]
 
+-- testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing")
           , ("technology/northpaw", "Northpaw compass")
@@ -543,6 +547,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("osciology", "sociology")
           ]
 
+-- testing: unique keys
 shortTagTestSuite :: [(String, String)]
 shortTagTestSuite =
    [("active-learning", "reinforcement-learning/exploration/active-learning")
