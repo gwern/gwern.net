@@ -3,8 +3,9 @@
 
 module MetadataFormat where
 
-import Data.List (intersperse, isPrefixOf)
+import Data.List (intersperse, isSuffixOf, isPrefixOf)
 import Numeric (showFFloat)
+import System.FilePath (takeBaseName)
 import qualified Data.Text as T (pack)
 
 import Text.Regex.TDFA ((=~))
@@ -164,3 +165,28 @@ authorsInitialize aut = let authors = split ", " aut in
                                                -- no middle-name:
                                                , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
                                            if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
+
+
+-- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
+-- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
+--  > guessDateFromLocalSchema "/doc/ai/2020-10-10-barr.png" ""
+-- → "2020-10-10"
+-- > guessDateFromLocalSchema "/doc/ai/2020-barr.pdf" ""
+-- → "2020"
+-- > guessDateFromLocalSchema "http://cnn.com" ""
+-- → ""
+guessDateFromLocalSchema :: String -> String -> String
+guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
+                                    else let f = takeBaseName url in
+                                           if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...
+                                           then date else sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
+
+-- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
+-- (We can make it relatively short because the full author list will be preserved as part of it.)
+authorsTruncate :: String -> String
+authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
+
+dateTruncateBad :: String -> String
+ -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
+-- dates of the form 'YYYY-01-01' (or 'YYYY-01') are invariably lies, and mean just 'YYYY'.
+dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuffixOf` d) then take 4 d else d

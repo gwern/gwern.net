@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-09 10:36:40 gwern"
+When:  Time-stamp: "2024-02-09 22:32:47 gwern"
 License: CC-0
 -}
 
@@ -31,12 +31,12 @@ import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) 
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist)
-import System.FilePath (takeDirectory, takeFileName, takeBaseName)
+import System.FilePath (takeDirectory, takeFileName)
 import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Image, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
+                    Inline(Image, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -45,6 +45,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 
 import System.IO.Unsafe (unsafePerformIO)
 
+import Config.LinkID (affiliationAnchors)
 import Config.Misc as C (root)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
@@ -58,8 +59,8 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Te
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, split, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean)
+import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -531,35 +532,56 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,abst)) =
+generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     -- optional 'literal' view of a link, eg. we show an image link and then we show the image itself in an indented paragraph afterwards:
-                                    transclusion = if not (isImageFilename f) then [] else
-                                      [Para [Image nullAttr [Str $ T.pack tle] (T.pack f,T.pack abst)]]
+                                    transclusionLiteral = generateFileTransclusionBlock (f, x)
                                 in
-                                  [Para [link]] ++ transclusion
+                                  [Para [link]] ++ transclusionLiteral
 
--- annotations, like /face, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
--- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
+-- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
+-- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
+-- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
+generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock (f, (tle,_,_,_,_,abst))
+  | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
+                                                       [Para [Link ("", ["include-content"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
+  | Image.isImageFilename f = [Para [Image nullAttr [RawInline (Format "HTML") $ T.pack imageCaption] (T.pack f,"")]]
+  | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                   "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
+                        titleCaption ++ "</figure>" ] ]
+  | hasExtensionS ".mp4" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                   "<figure><video controls=\"controls\" preload=\"none\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
+  | hasExtensionS ".webm" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                    "<figure><video controls=\"controls\" preload=\"none\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
+  | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
+  | otherwise = []
+  where titleCaption, imageCaption :: String
+        titleCaption = if null tle then "" else "<figcaption>" ++ tle ++ "</figcaption>"
+        imageCaption = tle ++ (if null abst then "" else ": "++abst)
+
+-- document types excluded: doc, docx, ebt, epub, mdb, mht, ods, ttf, xls, xlsx, docs.google.com; cannot be viewed easily in-browser
+isDocumentViewable, isCodeViewable :: FilePath -> Bool
+isDocumentViewable f = anyInfix f [".csv", ".json", ".jsonl", ".opml", ".page", ".txt", ".xml"] || (isLocal (T.pack f) && hasExtensionS ".html" f)
+isCodeViewable     f = anyInfix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+
+-- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
+-- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
-
-affiliationAnchors :: [String]
-affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance", "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google", "google-graphcore", "googledeepmind", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kakao", "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf", "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent", "tensorfork", "twitter", "uber", "yandex"]
 
 -- find all instances where I link "https://arxiv.org/abs/1410.5401" when it should be "https://arxiv.org/abs/1410.5401#deepmind", where they are inconsistent and the hash matches a whitelist of orgs.
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
 findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ map (\(u,_) -> u) $ M.toList md
                                          urlDB = M.fromListWith (++) $ map (\u -> (takeWhile (/= '#') u, [u])) urls
-                                         affiliationURLPatterns = (map (\org -> "#"++org) affiliationAnchors) ++
-                                                                   (map (\org -> "org="++org) affiliationAnchors)
+                                         affiliationURLPatterns = (map (\org -> "#"++org) Config.LinkID.affiliationAnchors) ++
+                                                                   (map (\org -> "org="++org) Config.LinkID.affiliationAnchors)
                                          affiliationWhitelist = ["page=", "lilianweng.github.io"]
                                          affiliationURLs = M.filter (\vs -> any (\v -> anyInfix v affiliationURLPatterns) vs) urlDB
                                      in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
-
 
 -- how do we handle files with appended data, which are linked like '/doc/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/doc/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
@@ -588,7 +610,7 @@ sortItemDate = sortBy (flip compare `on` third)
 sortItemPathDate :: [(Path,(MetadataItem,String))] -> [(Path,(MetadataItem,String))]
 sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 
-third :: MetadataItem -> String
+third :: (a,b,c,d,e,f) -> c
 third (_,_,rd,_,_,_) = rd
 
 writeYaml :: Path -> MetadataList -> IO ()
@@ -634,20 +656,6 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                  stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
                  reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
 
--- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
--- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
---  > guessDateFromLocalSchema "/doc/ai/2020-10-10-barr.png" ""
--- → "2020-10-10"
--- > guessDateFromLocalSchema "/doc/ai/2020-barr.pdf" ""
--- → "2020"
--- > guessDateFromLocalSchema "http://cnn.com" ""
--- → ""
-guessDateFromLocalSchema :: String -> String -> String
-guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
-                                    else let f = takeBaseName url in
-                                           if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...
-                                           then date else sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
-
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
 rewriteLinkMetadata half full yaml
@@ -666,17 +674,3 @@ appendLinkMetadata :: Path -> MetadataItem -> IO ()
 appendLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
                                                       let newYaml = Y.encode [(l,t,a,d,di, intercalate " " ts,abst)]
                                                       B.appendFile "metadata/auto.yaml" newYaml
-
---------------------------------------------
--- String munging and processing
---------------------------------------------
-
--- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
--- (We can make it relatively short because the full author list will be preserved as part of it.)
-authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
-
-dateTruncateBad :: String -> String
- -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
--- dates of the form 'YYYY-01-01' (or 'YYYY-01') are invariably lies, and mean just 'YYYY'.
-dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuffixOf` d) then take 4 d else d
