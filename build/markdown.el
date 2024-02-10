@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-06 09:47:43 gwern"
+;;; When:  Time-stamp: "2024-02-09 15:57:33 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -32,7 +32,7 @@
       (flycheck-mode -1))
 
     ;; Activate yaml-mode
-    ; (yaml-mode)
+    (yaml-mode)
 
     ;; Additional settings if Flycheck is disabled
     (when disable-flycheck
@@ -192,21 +192,22 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
   (let ((word-regexp (concat "\\b" regexp "\\b")))
     (re-search-forward word-regexp bound noerror count)))
 
-; Easy Unicode insertion mnemonics; uses the unusual X modifier key 'Hyper'.
-; This is not bound by default to a key usually, but on my 102-key US layout, I rebind the useless 'Menu' key to it: `$ modmap -e 'keysym Menu = Hyper_R'`.
-; Then 'H-' in `kbd` notation is 'Hyper-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
-; TODO: for some reason this collides with XMonad keybindings on the Win key, despite that being assigned to 'Super'/mod4Mask and so in theory not being an issue with these Hyper keys?
-(defun hyper-insert (key char)
-  "Bind Hyper (H-) plus KEY to insert CHAR."
-  (global-set-key (kbd (concat "H-" key)) (lambda () (interactive) (insert char)))  )
-(hyper-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "H-'") (lambda () (interactive) (insert "‘")))`
-(hyper-insert "\"" "’")
-(hyper-insert ";" "“")
-(hyper-insert ":" "”")
-(hyper-insert "-" "—")
-(hyper-insert "_" "–")
-(hyper-insert "x" "×")
-(hyper-insert "s" "§")
+; Easy Unicode insertion mnemonics; uses the unusual X modifier key 'Super'.
+; This is not bound by default to a key usually, but on my 102-key US layout, I rebind the useless 'Menu' key to it: `$ modmap -e 'keysym Menu = Super_R'`.
+; Then 's-' in `kbd` notation is 'Super-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
+; TODO: for some reason this collides with XMonad keybindings on the Win key, despite that being assigned to 'Super'/mod4Mask and so in theory not being an issue with these Super keys?
+(defun super-insert (key char)
+  "Bind Super (H-) plus KEY to insert CHAR."
+  (global-set-key (kbd (concat "s-" key)) (lambda () (interactive) (insert char)))  )
+(super-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "s-'") (lambda () (interactive) (insert "‘")))
+(super-insert "\"" "’")
+(super-insert ";" "“")
+(super-insert ":" "”")
+(super-insert "-" "—") ; EM DASH
+(super-insert "_" "–") ; EN DASH
+(super-insert "=" "−") ; MINUS SIGN
+(super-insert "x" "×")
+(super-insert "s" "§")
 
 ; Abbreviation mode: text shortcuts for common terms, or characters which are hard to input:
 (setq-default abbrev-mode t)

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-09 11:48:58 gwern"
+# When:  Time-stamp: "2024-02-09 22:36:22 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -128,7 +128,7 @@ else
     cd ./static/build
     WARNINGS=""
     if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
-    compile () { ghc -O2 "$WARNINGS" -rtsopts -threaded --make "$@"; }
+    compile () { ghc -O2 $WARNINGS -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
     if [ -z "$SKIP_DIRECTORIES" ]; then
         compile generateLinkBibliography.hs
@@ -753,6 +753,9 @@ else
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
     wrap λ "Broken anchors in directory indexes."
 
+    λ(){ ls | grep -F -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | grep -E -e '^[014-9]' 2> /dev/null; }
+    wrap λ "Files in root wiki directory which should be in docs/ (perhaps a move gone awry)?"
+
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }
     wrap λ "Malformed filenames: dangerous strings in them?"
 
@@ -1188,7 +1191,7 @@ else
              grep -F --invert-match -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
     wrap λ "Site-of-the-day: check for recommendations?" &
 
-    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc "$WARNINGS" -fno-code {} \; ) 2>&1 >/dev/null; }
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -O0 $WARNINGS -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }

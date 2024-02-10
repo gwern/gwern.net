@@ -225,6 +225,9 @@ addKey _ x = x
 hasExtension :: T.Text -> T.Text -> Bool
 hasExtension ext p = extension p == ext
 
+hasExtensionS :: String -> String -> Bool
+hasExtensionS ext p = hasExtension (T.pack ext) (T.pack p)
+
 extension :: T.Text -> T.Text
 extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
 

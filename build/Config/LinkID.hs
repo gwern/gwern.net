@@ -3,7 +3,16 @@ module Config.LinkID where
 
 import qualified Data.Text as T (Text)
 
--- testing: unique keys & values; keys are URIs, values are not URIs (to guard against swaps) & start with letters
+-- testing: unique list
+affiliationAnchors :: [String]
+affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance"
+                     , "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google"
+                     , "google-graphcore", "googledeepmind", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kakao"
+                     , "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf"
+                     , "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent"
+                     , "tensorfork", "twitter", "uber", "yandex"]
+
+-- testing: unique keys & values; keys are URIs, values are not URIs (to guard against swaps) & start with letters with no periods
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides =
   [
@@ -19,7 +28,20 @@ linkIDOverrides =
        , ("/doc/anime/eva/little-boy/2004-okada",     "okada-morikawa-2004-otaku-talk")
        , ("/doc/anime/eva/little-boy/2004-okada.pdf", "okada-morikawa-2004-otaku-talk-pdf")
        , ("/doc/bitcoin/2008-nakamoto", "nakamoto-2008-2")
-       , ("/doc/borges/1936-borges-thetranslatorsofthethousandandonenights.pdf", "borges-1936-translators-2")
+       , ("/doc/borges/1936-borges-thetranslatorsofthethousandandonenights.pdf", "borges-1936-translators-thetranslatorsofthethousandandonenights")
+       , ("/doc/borges/1932-borges-adefenseofbasilidesthefalse.pdf", "borges-1932-adefenseofbasilidesthefalse")
+       , ("/doc/borges/1932-borges-adefenseofthekabbalah.pdf", "borges-1932-adefenseofthekabbalah")
+       , ("/doc/borges/1932-borges-thehomericversions.pdf", "borges-1932-thehomericversions")
+       , ("/doc/borges/1936-borges-ahistoryofeternity.pdf", "borges-1936-ahistoryofeternity")
+       , ("/doc/borges/1936-borges-thedoctrineofcycles.pdf", "borges-1936-thedoctrineofcycles")
+       , ("/doc/borges/1936-borges-thetranslatorsofthethousandandonenights.pdf", "borges-1936-thetranslatorsofthethousandandonenights")
+       , ("/doc/borges/1951-borges-coleridgesdream.pdf", "borges-1951-coleridgesdream")
+       , ("/doc/borges/1951-borges-kafkaandhisprecursors.pdf", "borges-1951-kafkaandhisprecursors")
+       , ("/doc/borges/1951-borges-pascalssphere.pdf", "borges-1951-pascalssphere")
+       , ("/doc/borges/1951-borges-theargentinewriterandtradition.pdf", "borges-1951-theargentinewriterandtradition")
+       , ("/doc/borges/1951-borges-theenigmaofedwardfitzgerald.pdf", "borges-1951-theenigmaofedwardfitzgerald")
+       , ("/doc/borges/1953-borges-thedialoguesofasceticandking.pdf", "borges-1953-thedialoguesofasceticandking")
+       , ("/doc/borges/1953-borges-thescandinaviandestiny.pdf", "borges-1953-thescandinaviandestiny")
        , ("/doc/cat/psychology/2012-bradshaw-behaviourdomesticcat-ch11-undesiredbehavior.pdf",      "bradshaw-et-al-2012-undesired-behavior")
        , ("/doc/cat/psychology/2012-bradshaw-behaviourdomesticcat-ch12-causesbehavioralchange.pdf", "bradshaw-et-al-2012-causes-behavioral-change")
        , ("/doc/cat/psychology/2012-bradshaw-behaviourdomesticcat-ch3-mechanismsbehaviour.pdf",     "bradshaw-et-al-2012-mechanisms-behaviour")

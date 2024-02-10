@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-02-09 10:47:32 gwern"
+When:  Time-stamp: "2024-02-09 22:25:13 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -154,7 +154,7 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
 -- archive the first _n_ links which are due, and all pending 'cheap' archives.
 -- Can be scripted like `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
 manualArchive :: Int -> IO ()
-manualArchive n | n < 1 = error $ "manualArchive called with no work to do (n = " ++ show n ++ "); this was probably a mistake?"
+manualArchive n | n < 1 = error $ "manualArchive called with no work to do (𝑛 = " ++ show n ++ "); this was probably a mistake?"
                 | otherwise =
  do
   adb <- readArchiveMetadataAndCheck

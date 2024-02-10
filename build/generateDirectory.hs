@@ -263,13 +263,15 @@ listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 -- We generally prefer to reverse this to descending order, to show newest-first.
 -- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
-sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
-sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) ->
-                       if not (null d && null d') then (if d > d' then GT else LT)
-                       else (if head f == '/' && head f' == '/' then (if f > f' then GT else LT) else
-                                if head f == '/' && head f' /= '/' then GT else
-                                  if head f /= '/' && head f' == '/' then LT else
-                                    (if f > f' then LT else GT)))
+sortByDate :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDate = sortBy compareEntries
+  where
+    compareEntries (f, (_, _, d, _, _, _), _) (f', (_, _, d', _, _, _), _)
+      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
+      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f == '/' = LT -- '/' paths come after non '/' paths
+      | head f' == '/' = GT -- non '/' paths come before '/' paths
+      | otherwise = compare f f' -- Alphabetical order for the rest
 
 -- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String

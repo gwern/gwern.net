@@ -1309,4 +1309,5 @@ whiteListMatchesFixed = [
       , "https://gandalf.lakera.ai/" -- interactive (game)
       , "https://google-research.github.io/lingvo-lab/translatotron3/" -- low quality (audio embeds)
       , "https://smerf-3d.github.io/" -- low quality (video embeds)
+      , "https://retool.com/pipes" -- low-quality (too much fancy JS; interactive?)
       ]

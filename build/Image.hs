@@ -26,8 +26,9 @@ import Text.Pandoc (Inline(Image, Link))
 import Utils (addClass, printRed, replace, anySuffix)
 
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
+-- excludes ".psd"
 isImageFilename :: FilePath -> Bool
-isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".psd", ".svg", ".xcf"]
+isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
 
 -------------------------------------------
 -- Dark-mode

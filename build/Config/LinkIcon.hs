@@ -719,7 +719,7 @@ linkIconTestUnitsText =
          , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg")
          , ("https://news.ycombinator.com/item?id=10012625",  "hacker-news","svg")
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text")
-         , ("https://novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
+         , ("https://blog.novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://numinous.productions/ttft/", "MN", "text")
          , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,monospace")
          , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")

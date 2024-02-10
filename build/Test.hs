@@ -39,7 +39,7 @@ import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
 import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
-import qualified Config.LinkID (linkIDOverrides)
+import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexp, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
 import qualified Config.Misc (cd, arrowTestCases, tooltipToMetadataTestcases, cycleTestCases,)
 import qualified Config.Paragraph (whitelist)
@@ -119,6 +119,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                , ensure "Test.GenerateSimilar.blackListURLs" "isURIReference (URL & file)" isURIReference $
                                  isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
+                               , isUniqueList Config.LinkID.affiliationAnchors
                                , isUniqueList Config.Tags.shortTagBlacklist
                                , isUniqueList Config.Typography.surnameFalsePositivesWhiteList
                                ] ++ -- String

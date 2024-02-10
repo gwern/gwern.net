@@ -133,7 +133,8 @@ tagsShort2LongRewrites =
    , ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue")
    , ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism")
    , ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"), ("alphazero", "alphago")
-   , ("steganographic", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")]
+   , ("steganographic", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
+   , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")]
    -- ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -158,6 +159,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("statistics/probability", "probability theory")
           , ("statistics/peer-review", "peer review")
           , ("statistics/causality", "causality")
+          , ("statistics/bias/publication", "publication bias")
           , ("statistics/bias/animal", "animal study methodology")
           , ("statistics/bias", "scientific bias")
           , ("statistics/bayes/hope-function", "hope function")
