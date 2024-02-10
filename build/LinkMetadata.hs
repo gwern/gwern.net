@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-09 22:32:47 gwern"
+When:  Time-stamp: "2024-02-10 10:24:20 gwern"
 License: CC-0
 -}
 
@@ -549,7 +549,7 @@ generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock (f, (tle,_,_,_,_,abst))
   | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
                                                        [Para [Link ("", ["include-content"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
-  | Image.isImageFilename f = [Para [Image nullAttr [RawInline (Format "HTML") $ T.pack imageCaption] (T.pack f,"")]]
+  | Image.isImageFilename f = [Para [Image nullAttr imageCaption (T.pack f,"")]]
   | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
                                    "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
                         titleCaption ++ "</figure>" ] ]
@@ -560,12 +560,12 @@ generateFileTransclusionBlock (f, (tle,_,_,_,_,abst))
   | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
   | otherwise = []
   where titleCaption, imageCaption :: String
-        titleCaption = if null tle then "" else "<figcaption>" ++ tle ++ "</figcaption>"
+        titleCaption = if null tle then [] else [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
         imageCaption = tle ++ (if null abst then "" else ": "++abst)
 
 -- document types excluded: doc, docx, ebt, epub, mdb, mht, ods, ttf, xls, xlsx, docs.google.com; cannot be viewed easily in-browser
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
-isDocumentViewable f = anyInfix f [".csv", ".json", ".jsonl", ".opml", ".page", ".txt", ".xml"] || (isLocal (T.pack f) && hasExtensionS ".html" f)
+isDocumentViewable f = anyInfix f [".csv", ".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml"] || (isLocal (T.pack f) && hasExtensionS ".html" f)
 isCodeViewable     f = anyInfix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
