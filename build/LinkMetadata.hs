@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-10 10:24:20 gwern"
+When:  Time-stamp: "2024-02-11 11:22:27 gwern"
 License: CC-0
 -}
 
@@ -60,7 +60,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean, hasExtensionS, isLocal)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -546,27 +546,28 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock (f, (tle,_,_,_,_,abst))
+generateFileTransclusionBlock (f, (tle,_,_,_,_,_))
   | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
                                                        [Para [Link ("", ["include-content"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
-  | Image.isImageFilename f = [Para [Image nullAttr imageCaption (T.pack f,"")]]
+  | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
   | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
                                    "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
                         titleCaption ++ "</figure>" ] ]
   | hasExtensionS ".mp4" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                   "<figure><video controls=\"controls\" preload=\"none\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
+                                   "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
   | hasExtensionS ".webm" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                    "<figure><video controls=\"controls\" preload=\"none\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
+                                    "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
   | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
   | otherwise = []
-  where titleCaption, imageCaption :: String
-        titleCaption = if null tle then [] else [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
-        imageCaption = tle ++ (if null abst then "" else ": "++abst)
+  where
+        titleCaption = if null tle then "" else "" --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
+        -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
 
--- document types excluded: doc, docx, ebt, epub, mdb, mht, ods, ttf, xls, xlsx, docs.google.com; cannot be viewed easily in-browser
+-- document types excluded: doc, docx, ebt, epub, mdb, mht, ods, ttf, xls, xlsx, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
 isDocumentViewable f = anyInfix f [".csv", ".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml"] || (isLocal (T.pack f) && hasExtensionS ".html" f)
-isCodeViewable     f = anyInfix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+-- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
+isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
