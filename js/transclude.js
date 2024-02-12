@@ -64,7 +64,7 @@
 		(See also the `include-annotation-partial` alias class.)
 
     include-strict
-        By default, include-linked are lazy-loaded. A lazy-loaded include-link
+        By default, include-links are lazy-loaded. A lazy-loaded include-link
         will not trigger (i.e., transclude its content) immediately at load
         time. Instead, it will wait until the user scrolls down to the part of
         the page where the link is located, or pops up a popup that contains
@@ -79,6 +79,20 @@
         collapses blocking strict transclusion can lead to unpredictable 
         breakage when the contents of the transclusion are depended upon by the 
         rest of the page, and collapses are added/removed by editors).
+
+	include-lazy
+		By default, include-links are loaded when they are within some scroll
+		distance away from the view rect of their scroll container (i.e., the
+		viewport, or the frame of a pop-frame, etc.); this is done so that the 
+		transcluded content is likely to already be loaded by the time the user
+		scrolls to the include-link’s position in the document flow.
+
+		`include-lazy` makes the transclusion behavior lazier than usual; an 
+		include-link with this class will trigger only when it crosses the
+		boundary of the viewport (or the scroll container’s view rect).
+
+		Note that if the `include-strict` option is set, then `include-lazy`
+		will have no effect.
 
     include-even-when-collapsed
         Normally, an include-link that is inside a collapsed block will not
@@ -1128,6 +1142,7 @@ Transclude = {
         "include-annotation",
         "include-content",
         "include-strict",
+        "include-lazy",
         "include-even-when-collapsed",
         "include-unwrap",
         "include-block-context",
@@ -1137,7 +1152,7 @@ Transclude = {
 
     transcludeAnnotationsByDefault: true,
 
-    lazyLoadViewportMargin: "100%",
+    defaultLoadViewportMargin: "100%",
 
     /******************************/
     /*  Detection of include-links.
@@ -1633,7 +1648,9 @@ Transclude = {
                     Transclude.transclude(includeLink, true);
                 }, includeLink, {
                 	root: scrollContainerOf(includeLink),
-                	rootMargin: Transclude.lazyLoadViewportMargin
+                	rootMargin: (includeLink.classList.contains("include-lazy")
+                				 ? "0px"
+                				 : Transclude.defaultLoadViewportMargin)
                 });
             });
 
