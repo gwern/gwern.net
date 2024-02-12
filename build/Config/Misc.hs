@@ -45,11 +45,6 @@ backlinkBlackList e
   | otherwise = False
   where f = if T.head e == '#' then e else T.takeWhile (/= '#') e -- drop anchors to avoid spurious mismatches eg. '/index#backlink-id-of-some-sort' would bypass a mere '"/index" `isSuffixOf`' check without this.
 
--- generateDirectory.hs:
--- at what number of links should we auto-collapse the '# Miscellaneous' section because it adds so many entries to the page on load if left uncollapsed?
-miscellaneousLinksCollapseLimit :: Int
-miscellaneousLinksCollapseLimit = 50
-
 -- generateLinkbibliography.hs:
 -- don't waste the user's time if the annotation is not heavily linked, as most are not, or if all the links are WP links:
 mininumLinkBibliographyFragment :: Int

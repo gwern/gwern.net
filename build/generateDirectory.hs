@@ -37,7 +37,7 @@ import Query (extractImages)
 import Typography (identUniquefy)
 import MetadataFormat (extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
-import Config.Misc as C (miscellaneousLinksCollapseLimit, cd)
+import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic, ListName, ListSortedMagic)
 -- import Text.Show.Pretty (ppShow)
 
@@ -166,7 +166,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 ("", ["link-annotated-not"] ++ (if length untitledLinks > C.miscellaneousLinksCollapseLimit then ["collapse"] else []), []) [Str "Miscellaneous"] :
+                 Header 1 ("", ["link-annotated-not", "collapse"], []) [Str "Miscellaneous"] :
                  [untitledLinksSection]) ++
 
                (if null linkBibList then [] else
@@ -264,7 +264,7 @@ listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
 -- We generally prefer to reverse this to descending order, to show newest-first.
 -- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
 sortByDate :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDate = sortBy compareEntries
+sortByDate = reverse . sortBy compareEntries
   where
     compareEntries (f, (_, _, d, _, _, _), _) (f', (_, _, d', _, _, _), _)
       | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
