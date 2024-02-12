@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-11 10:42:52 gwern"
+# When:  Time-stamp: "2024-02-12 11:59:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -251,15 +251,17 @@ else
      echo "</urlset>") >> ./_site/sitemap.xml
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
-    ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke; and we truncate at 1000 lines because such
+    ### We skip full conversion of .json/.jsonl because they are too large & Pandoc will choke; and we truncate at 1000 lines because such
     ### long source files are not readable as popups and their complexity makes browsers choke while rendering them.
     ### (We include plain text files in this in order to get truncated versions of them.)
+    ###
+    #### NOTE: for each new extension, add a `find` name, and an entry in `content.js`/`LinkMetadata.is{Doc,Code}Viewable`
     bold "Generating syntax-highlighted versions of source code files…"
     syntaxHighlight () {
-        #### NOTE: for each new extension, add a `find` name, and an entry in `extracts-content.js`
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown"
                                          # NOTE: we do 'text' to get a 'syntax-highlighted' version which has wrapped columns etc.
-                                         ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
+                                         # NOTE: CSV is unsupported by Pandoc skylighting, so we convert to HTML instead
+                                         ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" )
         LENGTH="2000"
         for FILE in "$@"; do
 
@@ -280,17 +282,29 @@ else
                        --template=./static/template/pandoc/sourcecode.html5 \
                        --metadata title="$(echo $FILE | sed -e 's/_site\///g')"  | \
                 ## delete annoying self-link links: Pandoc/skylighting doesn't make this configurable
-                sed -e 's/<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>//' -e 's/id="mathjax-styles" type="text\/css"/id="mathjax-styles"/' >> $FILE.html || red "Pandoc syntax-highlighting failed on: $FILE $FILEORIGINAL $FILENAME $EXTENSION $LANGUAGE $FILELENGTH"
+                sed -e 's/<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>/<span>/' -e 's/id="mathjax-styles" type="text\/css"/id="mathjax-styles"/' >> $FILE.html || red "Pandoc syntax-highlighting failed on: $FILE $FILEORIGINAL $FILENAME $EXTENSION $LANGUAGE $FILELENGTH"
         done
     }
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f,l -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" -or -name "*.csv"  | \
+    find _site/ -type f,l \
+         -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" | \
         sort |  grep -F --invert-match \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel  --jobs "$N" syntaxHighlight
+
+    # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
+    # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
+    syntaxHighlightByLibreoffice () { for FILE in "$@"; do
+                                         soffice --convert-to html "$FILE" && mv "${FILE%.*}.html" "${FILE}.html";
+                                     done
+                                   }
+    export -f syntaxHighlightByLibreoffice
+    find _site/ -type f,l \
+         -name "*.csv" -or -name ".doc" -or -name ".docx" -or -name ".ods" -or -name ".xls" -or -name ".xlsx" | \
+        sort | parallel  --jobs "$N" syntaxHighlightByLibreoffice
     set -e
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
@@ -881,7 +895,7 @@ else
          fi
      done
 
-    sleep 30s; (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null) & # check the x-of-the-day in a different & cache-free browser instance
+    sleep 30s; (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi

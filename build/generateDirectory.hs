@@ -166,7 +166,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 ("", ["link-annotated-not", "collapse"], []) [Str "Miscellaneous"] :
+                 Header 1 ("", ["link-annotated-not"], []) [Str "Miscellaneous"] :
                  [untitledLinksSection]) ++
 
                (if null linkBibList then [] else
