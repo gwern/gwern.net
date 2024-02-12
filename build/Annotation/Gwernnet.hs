@@ -161,6 +161,8 @@ dropToText _ = True
 
 gwernTOC :: Bool -> Bool -> String -> [Tag String] -> String
 gwernTOC footnotesP indexP p' f =
+   -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
+  (\tc'' -> if not footnotesP then tc'' else sed "</ul>\n? *</div>$" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc'') $
  -- for tags, condense the ToC by removing the See Also & Miscellaneous <h1>s, and the Links wrapper around the individual entries:
  (\tc' -> if not indexP then tc'
    else sedMany [("</li>\n          \n        </ul>",""),
@@ -174,15 +176,13 @@ gwernTOC footnotesP indexP p' f =
                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Link Bibliography</a>\n          </li>", ""),
                  ("class=\"footnote-ref\" role=\"doc-noteref\"", "")
                 ] tc') $
- -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`:
- (\tc -> if not footnotesP then tc else replaceChecked "</ul>\n      </div>" "<li><a href=\"#footnotes\">Footnotes</a></li></ul></div>" tc) $
-        -- add columns class to condense it in popups/tags
+ (\tc -> -- add columns class to condense it in popups/tags
         replaceChecked "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
         -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them. TODO: should be fixed in Pandoc HEAD, so remove this after a full upgrade.
         sed "<span>(.*)</span>" "\\1" $
         (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replaceChecked "<a href=" "<a class=\"id-not\" href=") $
         -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies/backlinks.
-        sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" index
+        sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" tc) index
         where
           index = if length indexType1 > length indexType2 then indexType1 else indexType2
           indexType1 = replace "markdownBody" "" $ replace "directory-indexes" "" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $

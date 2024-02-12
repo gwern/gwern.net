@@ -80,6 +80,7 @@ invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.r
                                   return (invertp, h, w)
               | otherwise = invertImageLocal f
 
+-- unfortunately, this heuristic often fails, eg. all of </doc/ai/nn/diffusion/midjourney/black-sun/*.jpg>
 invertImageLocal :: FilePath -> IO (Bool, String, String)
 invertImageLocal "" = return (False, "0", "0")
 invertImageLocal f = do let f' = takeWhile (/='#') f
@@ -107,12 +108,13 @@ invertImagePreview f = do utcFile <- getModificationTime f
                             void $ runShellCommand "./" Nothing "x-www-browser" [f']
 
 imageMagickColor :: FilePath -> FilePath -> IO Float
-imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
+imageMagickColor f f' = do let temp = if null f' then f else f'
+                           (status,_,bs) <- runShellCommand "./" Nothing "convert" [temp, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
                            case status of
-                             ExitFailure err ->  printRed ("imageMagickColor: " ++ f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
+                             ExitFailure err ->  printRed ("imageMagickColor: " ++ f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ temp) >> return 1.0
                              _ -> do let color = readMaybe (take 4 $ unpack bs) :: Maybe Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                      case color of
-                                       Nothing -> printRed ("imageMagickColor: " ++ f ++ " : ImageMagick parsing error: " ++ show (unpack bs) ++ " " ++ f') >> return 1.0
+                                       Nothing -> printRed ("imageMagickColor: " ++ f ++ " : ImageMagick parsing error: " ++ show (unpack bs) ++ " " ++ temp) >> return 1.0
                                        Just c -> return c
 
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
@@ -171,7 +173,10 @@ addImgDimensions html = do let stream  = parseTags html
 addVideoPoster :: [Tag String] -> IO [Tag String]
 addVideoPoster [] = return []
 addVideoPoster (videoTag@(TagOpen "video" _):sourceTag@(TagOpen "source" sourceAttrs):xs) = do
-    print $ "Image.hs: addVideoPoster: sourceTag: " ++ show sourceTag
+    putStrLn $ "Image.hs: addVideoPoster: videoTag: " ++ show videoTag
+    putStrLn $ "Image.hs: addVideoPoster: sourceTag: " ++ show sourceTag
+  -- Image.hs: addVideoPoster: videoTag: TagOpen "video" [("controls","controls"),("preload","none"),("class","width-full")]
+  -- Image.hs: addVideoPoster: sourceTag: TagOpen "source" [("src","/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm"),("type","video/webm; codecs=\"vp8.0, vorbis\"")]
     updatedVideoTag <- updateVideoTag videoTag sourceAttrs
     rest <- addVideoPoster xs
     return (updatedVideoTag : sourceTag : rest)
@@ -195,7 +200,9 @@ generatePoster :: FilePath -> IO FilePath
 generatePoster videoPath = do
     let posterPath = videoPath ++ "-poster.jpg"
     existsp <- doesFileExist posterPath
-    unless existsp $ void $ runShellCommand "./" Nothing "ffmpeg" ["-i", videoPath, "-vf", "select=eq(n\\,1),scale=iw*sar:ih,setsar=1", "-vframes", "1", posterPath]
+    unless existsp $ do void $ runShellCommand "./" Nothing "ffmpeg" ["-i", videoPath, "-vf", "select=eq(n\\,1),scale=iw*sar:ih,setsar=1", "-vframes", "2", posterPath]
+                               -- posters shouldn't be *too* big or they are wasteful & pointless
+                        void $ runShellCommand "./" Nothing "convert" ["-quality", "20", "-resize", "1700x10000", posterPath]
     return posterPath
 -- | Update the attributes of a given tag by appending the provided new attributes.
 updateTagAttributes :: Tag String -> [(String, String)] -> Tag String

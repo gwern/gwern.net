@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-09 15:57:33 gwern"
+;;; When:  Time-stamp: "2024-02-10 12:24:34 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -206,8 +206,10 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 (super-insert "-" "—") ; EM DASH
 (super-insert "_" "–") ; EN DASH
 (super-insert "=" "−") ; MINUS SIGN
-(super-insert "x" "×")
-(super-insert "s" "§")
+(super-insert "x" "×") ; MULTIPLICATION SIGN
+(super-insert "," "≤") ; LESS-THAN OR EQUAL TO
+(super-insert "." "≥") ; GREATER-THAN OR EQUAL TO
+(super-insert "/" "⁄") ; FRACTION SLASH
 
 ; Abbreviation mode: text shortcuts for common terms, or characters which are hard to input:
 (setq-default abbrev-mode t)
@@ -507,6 +509,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("Elon Musk’s X" . "Elon Musk’s Twitter")
                      (" target=\"_blank\"" . "")
                      ("\\.," . ". ")
+                     ("**: : " . ": ")
+                     (">: : " . ">: ")
                      )
                    )
             )
@@ -1114,7 +1118,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
          (query-replace "\nQuestion " "\n**Question**: " nil begin end)
          (query-replace "Question:" "**Question**: " nil begin end)
-         (replace-all "\n\nPurpose" "\n\n**Purpose**:")
+         (replace-all "\n\nPurpose" "\n\n**Background**:")
          (replace-all "\nFindings " "\n**Findings**: ")
          (replace-all "\nRecent Findings " "\n**Findings**: ")
          (replace-all "\nMeaning " "\n**Meaning**: ")
@@ -1156,7 +1160,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Background\\. " "**Background**: ")
          (replace-all "Abstract:" "**Abstract**: ")
          (replace-all "Context:" "**Context**: ")
-         (replace-all "Purpose:" "**Purpose**: ")
+         (replace-all "Purpose:" "**Background**: ")
          (replace-all "Rationale: " "**Background**: ")
          (replace-all "Rationale\n" "**Background**: ")
          (replace-all "Rationale: " "**Background**: ")
@@ -1296,9 +1300,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Key Messages\n" "**Key Messages**:")
          (replace-all "\nAuthor summary\n\n" "\n\n**Author Summary**: ")
          (replace-all "\nAuthor Summary\n\n" "\n\n**Author Summary**: ")
-         (replace-all "Purpose\n\n" "\n**Purpose**: ")
-         (replace-all "Purpose\n" "**Purpose**: ")
-         (replace-all "Purpose of Review\n" "**Purpose**: ")
+         (replace-all "Purpose\n\n" "\n**Background**: ")
+         (replace-all "Purpose\n" "**Background**: ")
+         (replace-all "Purpose of Review\n" "**Background**: ")
          (replace-all "Design/methodology/approach\n\n" "\n**Method**: ")
          (replace-all "RESEARCH DESIGN AND METHODS " "**Method**: ")
          (replace-all "RESEARCH DESIGN AND METHODS\n\n" "\n**Method**: ")

@@ -83,7 +83,7 @@ tagsShort2LongRewrites =
    , ("alzheimer", "psychiatry/alzheimers"), ("psychedelics", "psychedelic"), ("stylometric", "statistics/stylometry")
    , ("stylometrics", "statistics/stylometry"), ("dune", "fiction/science-fiction/frank-herbert"), ("herbert", "fiction/science-fiction/frank-herbert")
    , ("instruct-tuning", "instruction-tuning"), ("instruction-finetuning", "instruction-tuning"), ("psychopath", "psychology/personality/psychopathy")
-   , ("sociopath", "psychology/personality/psychopathy"), ("psychopathic", "psychology/personality/psychopathy"), ("sociopathic", "psychology/personality/psychopathy")
+   , ("sociopath", "psychology/personality/psychopathy"), ("sociopathy", "psychology/personality/psychopathy"), ("psychopathic", "psychology/personality/psychopathy"), ("sociopathic", "psychology/personality/psychopathy")
    , ("cognitive-biases", "psychology/cognitive-bias"), ("sort", "cs/algorithm/sorting"), ("moe", "ai/scaling/mixture-of-experts")
    , ("ai/datasets", "ai/dataset"), ("ai/gan", "ai/nn/gan"), ("safety", "reinforcement-learning/safe")
    , ("ads", "economics/advertising"), ("rl/scaling", "reinforcement-learning/scaling"), ("rl/scale", "reinforcement-learning/scaling")
@@ -133,8 +133,9 @@ tagsShort2LongRewrites =
    , ("timetravel", "time-travel"), ("inner-monlogue", "inner-monologue")
    , ("narcisism", "narcissism"), ("narcississm", "narcissism"), ("narcissist", "narcissism"), ("narcisist", "narcissism"), ("narcisisst", "narcissism")
    , ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"), ("alphazero", "alphago")
-   , ("steganographic", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
-   , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")]
+   , ("steganographic", "steganography"), ("stenography", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
+   , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
+   , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")]
    -- ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -229,8 +230,11 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("cs/security", "computer security")
           , ("cs/lisp", "Lisp")
           , ("cs/hardware", "computer hardware")
+          , ("cs/cryptography/steganography", "steganography")
           , ("cs/cryptography/nash", "John Nash (cryptography)")
           , ("cs/cryptography/timelock", "timelock crypto")
+          , ("cs/algorithm/information/compression", "compression")
+          , ("cs/algorithm/information", "information theory")
           , ("cs/algorithm/sorting", "sorting")
           , ("cs/algorithm", "algorithms")
           , ("cs/computable", "computability")

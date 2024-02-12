@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-08 15:49:31 gwern"
+# When:  Time-stamp: "2024-02-10 10:10:01 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -235,8 +235,8 @@ gwmv () {
 
         set -x
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
-        OLD=$(echo "$1" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
-        NEW=$(echo "$2" | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
+        OLD=$(echo "$1" | tr -d '  ⁠' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
+        NEW=$(echo "$2" | tr -d ' ⁠ ' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
 
         if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
             echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories."

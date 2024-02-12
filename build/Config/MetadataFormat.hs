@@ -155,7 +155,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "foo", "hcrj901068 151..157", "hred_91_110.42_66", "inhy_60_205.213_218", "ipg1200217a", "jasar08282 841..854", "jcp20186 373..378", "jcp25202 175..179", "jcpp_1798 1192..1199"
                       , "jn169326 872..877", "khan", "mbev_16_1218.1791_1798", "mgs;01jan95", "osteo-1203 257..264", "oup_cercor_bhy157 1..11 ++", "pnas201201895 1..8", "pnp06457 1125..1128", "s00221-005-2334-6ca-web 23..30"
                       , "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5"
-                      , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore"]
+                      , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore", "ÿþ"]
 
 -- testing: unique keys
 htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
