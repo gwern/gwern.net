@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-10 12:24:34 gwern"
+;;; When:  Time-stamp: "2024-02-12 10:33:54 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1549,7 +1549,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\^-\\([[:digit:]]+\\)\\^" "<sup>−\\1</sup>" nil begin end) ; 'foo^-1^' → 'foo<sup>−1</sup>'
        (query-replace-regexp "\\([[:digit:]\\.]+\\)[Ee]-\\([[:digit:]]+\\)" "\\1 × 10<sup>−\\2</sup>" nil begin end) ; 2.0E-26, 2.0e-26
        ; (query-replace-regexp "[x×] ?10--\\([0-9]+\\)" "× 10<sup>−\\1</sup>" nil begin end)
-       (query-replace-regexp "\\([a-zA-Z0-9]\\.\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore"
+       (query-replace-regexp "\\([a-zA-Z0-9][,;\\.]\\)\\([[:digit:]]+\\) \\([A-Za-z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end) ; look for copy-pasted footnotes, like "X works great.13 Therefore" or "possibly biological reasons,4 but"
        (query-replace-regexp "Footnote\\([0-9]+\\)" "<sup>\\1</sup>" nil begin end) ; cambridge.org has footnotes that copypaste like 'Footnote10'
        (query-replace-regexp "\\([a-zA-Z0-9.]\\”\\)\\([[:digit:]]+\\) \\([A-Z]\\)" "\\1<sup>\\2</sup> \\3" nil begin end)
        (query-replace-regexp "\\([[:punct:]]\\)\\[\\([0-9, -]+\\)\\] " "\\1<sup>\\2</sup> " nil begin end) ; Wikipedia-style referencs: "Foo.[33]" or "is around 75%,[83 but varies"

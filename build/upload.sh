@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-02-11 23:03:10 gwern"
+# When:  Time-stamp: "2024-02-12 12:17:33 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -78,7 +78,14 @@ _upload() {
   rename_file "$FILENAME"
 
   if [[ $# -eq 1 || "$2" == "" ]]; then
+      # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
+      if ! [[ "$FILENAME" =~ ^20[2-9][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
+          TIMESTAMPED="$(date '+%F')-$FILENAME"
+          mv "$FILENAME" "$TIMESTAMPED"
+          FILENAME="$TIMESTAMPED"
+      fi
       TARGET=$(basename "$FILENAME")
+
       if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)

@@ -5769,4 +5769,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
         , ("Uniform_Manifold_Approximation_and_Projection", "Nonlinear_dimensionality_reduction#Uniform_manifold_approximation_and_projection")
         , ("U.S._Department_of_Transportation", "United_States_Department_of_Transportation")
         , ("Intrasexual_competition", "Female_intrasexual_competition")
+        , ("Waka", "Waka_(poetry)")
         ]

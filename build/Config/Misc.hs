@@ -1,10 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.Misc where
 
-import Data.Time.Calendar (toModifiedJulianDay)
+import Data.Time.Calendar (toModifiedJulianDay, toGregorian)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory)
+import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc.Definition (Inline(Link, Span, Str),
                                Block(Div, Header, Para))
@@ -18,7 +19,7 @@ cd :: IO ()
 cd = setCurrentDirectory root
 
 currentYear :: Int
-currentYear = 2024
+currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime -- 2024
 
 currentDay :: IO Integer
 currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
