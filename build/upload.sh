@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-02-12 12:17:33 gwern"
+# When:  Time-stamp: "2024-02-13 18:48:15 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -79,7 +79,7 @@ _upload() {
 
   if [[ $# -eq 1 || "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
-      if ! [[ "$FILENAME" =~ ^20[2-9][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
+      if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
           TIMESTAMPED="$(date '+%F')-$FILENAME"
           mv "$FILENAME" "$TIMESTAMPED"
           FILENAME="$TIMESTAMPED"
@@ -147,6 +147,8 @@ _upload() {
                   echo "/$TARGET $URL"
 
                   if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
+                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then image-margin-checker.py ~/wiki/"$TARGET"; fi
+
                   firefox "$URL") &
 
               else echo "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
