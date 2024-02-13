@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-12 11:56:58 gwern"
+When:  Time-stamp: "2024-02-12 20:03:55 gwern"
 License: CC-0
 -}
 
@@ -475,7 +475,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
      -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
-     Just (tle,aut,dt,doi,ts,abst) ->
+     Just x@(tle,aut,dt,doi,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else if "<em>"`isPrefixOf`tle && "</em>"`isSuffixOf`tle then tle else "“"++tle++"”"
            lid = let tmpID = generateID f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
@@ -525,10 +525,11 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                                                          (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
-                       ])
+                       ]) ++
+                generateFileTransclusionBlock (f, x)
     where
       nonAnnotatedLink :: [Block]
-      nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
+      nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++ generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined))
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
@@ -546,22 +547,27 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock (f, (tle,_,_,_,_,_))
-  | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
-                                                       [Para [Link ("", ["include-content"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
-  | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
-  | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                   "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
-                        titleCaption ++ "</figure>" ] ]
-  | hasExtensionS ".mp4" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                   "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
-  | hasExtensionS ".webm" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                    "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
-  | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
-  | otherwise = []
-  where
-        titleCaption = if null tle then "" else "" --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
-        -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
+generateFileTransclusionBlock (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
+                                                     else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+ where
+   titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
+   -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
+   generateFileTransclusionBlock'
+    | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
+                                                         [Para [Link ("", ["include-content", "include-lazy"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
+    | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
+    -- audio:
+    | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                     "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
+                          titleCaption ++ "</figure>" ] ]
+    -- video:
+    | hasExtensionS ".mp4" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                     "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
+    | hasExtensionS ".webm" f = [Para [RawInline (Format "HTML") $ T.pack $
+                                      "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
+    | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
+   -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
+    | otherwise = [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[transclude the link if possible]"] (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
