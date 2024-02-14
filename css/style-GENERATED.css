@@ -2112,9 +2112,21 @@ img::before {
 iframe, object {
 	display: block;
 	width: calc(100% - 2px);
-	height: 100vh;
 	max-height: calc(100vh - 8rem);
 	border: 1px solid var(--GW-embed-border-color);
+}
+
+iframe {
+	aspect-ratio: 1 / 1;
+}
+@media all and (max-width: 649px) {
+	iframe {
+		aspect-ratio: 3 / 2;
+	}
+}
+
+object {
+	aspect-ratio: 8.5 / 11;
 }
 
 
