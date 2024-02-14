@@ -5758,7 +5758,7 @@ Content = {
 			url = URLFromString(url);
 
         if (url.pathname.endsWith(".pdf")) {
-            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
+            let data = url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none";
             return `<object
                         data="${data}"
                             ></object>`;
