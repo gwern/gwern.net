@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-12 20:03:55 gwern"
+When:  Time-stamp: "2024-02-14 16:06:54 gwern"
 License: CC-0
 -}
 
@@ -529,7 +529,8 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                 generateFileTransclusionBlock (f, x)
     where
       nonAnnotatedLink :: [Block]
-      nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++ generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined))
+      nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
+                         generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined))
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
@@ -538,12 +539,13 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
-                                    -- optional 'literal' view of a link, eg. we show an image link and then we show the image itself in an indented paragraph afterwards:
-                                    transclusionLiteral = generateFileTransclusionBlock (f, x)
-                                in
-                                  [Para [link]] ++ transclusionLiteral
+                                in [Para [link]]
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
+--
+-- Collapse behavior: media types are displayed by default everywhere (the user wants to see them immediately because it's easy to see an image etc, and performance-wise they are cheap, because they are either small like images or set to their equivalents of 'lazy loading' like video/audio); document types are collapsed by default everywhere (many users will have no interest and documents like PDFs or HTML can be almost arbitrarily large, like a HTML mirror of "The Forgotten Pixel Art Masterpieces of the PlayStation 1 Era" which due to the animations is fully 183MB!).
+-- We want to display media (particularly images) by default, so tag-directories can serve as informal 'galleries'; many images will never be seen in pages/annotations, nor do I want to constantly update a 'gallery' page with every single minimally-interesting image, and images are highly suitable for browsing very rapidly through, so it is fine to display all images for scrolling through.
+--
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
@@ -567,7 +569,8 @@ generateFileTransclusionBlock (f, (tle,_,_,_,_,_)) = if null generateFileTranscl
                                       "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
     | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
-    | otherwise = [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[transclude the link if possible]"] (T.pack f, "")]]
+    | otherwise = [Div ("",["collapse"],[])
+                   [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[transclude the link if possible]"] (T.pack f, "")]]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
