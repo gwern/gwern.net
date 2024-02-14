@@ -746,6 +746,54 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
+/**********/
+/* EMBEDS */
+/**********/
+
+/****************************************************************************/
+/*	There’s no way to tell whether an <iframe> or <object> has loaded, except
+	to listen for the `load` event. So, we implement our own checkable load 
+	flag, with a class.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
+    GWLog("applyIframeScrollFix", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("iframe.loaded-not, object.loaded-not").forEach(embed => {
+		embed.addEventListener("load", (event) => {
+			embed.classList.remove("loaded-not");
+		});
+	});
+}, "eventListeners");
+
+/**************************************************************************/
+/*	Workaround for a Chrome bug that scrolls the parent page when an iframe 
+	popup has a `src` attribute with a hash and that hash points to an 
+	old-style anchor (`<a name="foo">`).
+ */
+addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventInfo) => {
+    GWLog("applyIframeScrollFix", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(iframe => {
+		let srcURL = URLFromString(iframe.src);
+		if (   srcURL.pathname.endsWith(".html")
+			&& srcURL.hash > "") {
+			srcURL.savedHash = srcURL.hash;
+			srcURL.hash = "";
+			iframe.src = srcURL.href;
+		}
+
+		iframe.addEventListener("load", (event) => {
+			if (srcURL.savedHash) {
+				let selector = selectorFromHash(srcURL.savedHash);
+				let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
+				if (element)
+					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
+			}
+		});
+	});
+}, "eventListeners");
+
+
 /***********/
 /* COLUMNS */
 /***********/

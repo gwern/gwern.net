@@ -36,7 +36,7 @@
 
     /*  Does not get inverted, so should not be in colors.css.
      */
-    --GW-popframes-iframe-background-color: #fff;
+    --GW-iframe-background-color: #fff;
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
@@ -1039,6 +1039,19 @@ img::before {
     text-align: center;
     box-sizing: border-box;
     height: 100%;
+}
+
+
+/**********/
+/* EMBEDS */
+/**********/
+
+iframe, object {
+	display: block;
+	width: calc(100% - 2px);
+	height: 100vh;
+	max-height: calc(100vh - 8rem);
+	border: 1px solid var(--GW-embed-border-color);
 }
 
 
@@ -3558,6 +3571,12 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     margin: auto;
 }
 
+.popframe-body.object iframe,
+.popframe-body.object object {
+    border: unset;
+    max-height: unset;
+}
+
 .popframe-body.object iframe {
     background-color: var(--GW-popframes-iframe-background-color);
 }
@@ -4089,7 +4108,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popup-body.object.zoomed iframe,
-.popup-body.object.zoomed object ,
+.popup-body.object.zoomed object,
 .popup-body.object.resized iframe,
 .popup-body.object.resized object {
     width: 100%;

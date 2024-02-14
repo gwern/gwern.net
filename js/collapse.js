@@ -62,7 +62,7 @@ function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
 
     //  Determine if nearest collapse block needs expanding.
     let collapseBlock = element.closest(".collapse");
-    let expand = isCollapsed(collapseBlock);
+    let expand = (isCollapsed(collapseBlock) == true);
 
     /*  Expand any higher-level collapse blocks.
 		Fire state change event only if we will not have to expand this block
@@ -127,10 +127,13 @@ function collapseCollapseBlock(collapseBlock, fireEvent = true) {
 /*  Returns true if the given collapse block is currently collapsed.
  */
 function isCollapsed(collapseBlock) {
-	if (Array.from(collapseBlock.children).findIndex(child => child.classList.contains("collapse-content-wrapper")) === -1)
+	if (collapseBlock.classList.contains("expanded"))
 		return false;
-
-    return (collapseBlock.classList.contains("expanded-not"));
+		
+	if (collapseBlock.classList.contains("expanded-not"))
+		return true;
+		
+    return undefined;
 }
 
 /*****************************************************************************/
@@ -148,7 +151,8 @@ function isWithinCollapsedBlock(element) {
     /*  If the element is within a collapse block and that collapse block is
         currently collapsed, then the condition is satisfied...
      */
-    if (isCollapsed(collapseParent))
+    if (   isCollapsed(collapseParent) == true
+    	|| isCollapsed(collapseParent) == undefined)
     	return true;
 
     /*  BUT the collapse block that the element is in, even if *it* is not
@@ -470,8 +474,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				return;
 
 			//	Expanding? Collapsing? (For readability and consistency.)
-			let expanding = isCollapsed(collapseBlock);
-			let collapsing = (expanding == false);
+			let expanding = (isCollapsed(collapseBlock) == true);
+			let collapsing = (isCollapsed(collapseBlock) == false);
 
 			//	Keep count of clicks to uncollapse.
 			if (   expanding
@@ -594,7 +598,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	collapseBlock.querySelector(".disclosure-button").remove();
 
 	//	Expand.
-	let wasCollapsed = isCollapsed(collapseBlock);
+	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
 	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content");

@@ -939,12 +939,12 @@ Extracts = { ...Extracts,
 			let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 			//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-			return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
+			return newDocument(Content.objectHTMLForURL(videoEmbedURL,
 				`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
         } else if ([ "vimeo.com" ].includes(target.hostname)) {
 			let videoId = Extracts.vimeoId(target);
 			let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-        	return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
+        	return newDocument(Content.objectHTMLForURL(videoEmbedURL,
         		`allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
 		}
     },
@@ -1264,20 +1264,14 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalDocumentLink: (target) => {
-        if (target.hostname != location.hostname)
-            return false;
-
-        return (   target.pathname.startsWith("/doc/www/")
-                || (   target.pathname.startsWith("/doc/")
-                    && target.pathname.match(/\.(html|pdf)$/i) != null));
+    	return Content.contentTypes.localDocument.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        return newDocument(Extracts.objectHTMLForURL(target,
-            `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -1291,37 +1285,42 @@ Extracts = { ...Extracts,
     		pointless, since the file will download anyway.
     	 */
     	if (   Extracts.popFrameProvider == Popins
-            && target.href.match(/\.pdf(#|$)/) != null)
+            && target.pathname.endsWith(".pdf"))
             return false;
 
         return true;
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame) => {
+    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_DOCUMENT",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         let iframe = popFrame.document.querySelector("iframe");
         if (iframe) {
-        	/*	All of this `srcURL` stuff is necessary as a workaround for a 
-        		Chrome bug that scrolls the parent page when an iframe popup
-        		has a `src` attribute with a hash and that hash points to an
-        		old-style anchor (`<a name="foo">`).
-        	 */
-			let srcURL = URLFromString(iframe.src);
-			if (   srcURL.pathname.endsWith(".html")
-				&& srcURL.hash > "") {
-				srcURL.savedHash = srcURL.hash;
-				srcURL.hash = "";
-				iframe.src = srcURL.href;
-			}
-
             iframe.addEventListener("load", (event) => {
-				if (srcURL.savedHash) {
-					let selector = selectorFromHash(srcURL.savedHash);
-					let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
-					if (element)
-						iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
-				}
-
 				//  Set title of popup from page title.
 				Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
             });
@@ -1425,7 +1424,7 @@ Extracts = { ...Extracts,
 							return;
 
 						Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
-							newDocument(Extracts.objectHTMLForURL(event.target.response.original.url, "sandbox")));
+							newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
 						Extracts.setLoadingSpinner(target.popFrame);
 					},
 					onFailure: (event) => {
@@ -1510,7 +1509,7 @@ Extracts = { ...Extracts,
 			}
 		}
 
-        return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
+        return newDocument(Content.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
@@ -1525,27 +1524,6 @@ Extracts = { ...Extracts,
 /*=------------------=*/
 
 Extracts = { ...Extracts,
-    //  Called by: Extracts.videoForTarget
-    //  Called by: Extracts.localDocumentForTarget
-    //  Called by: Extracts.foreignSiteForTarget
-    objectHTMLForURL: (url, additionalAttributes = null) => {
-		if (typeof url == "string")
-			url = URLFromString(url);
-
-        if (url.href.match(/\.pdf(#|$)/) != null) {
-            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
-            return `<object
-                        data="${data}"
-                            ></object>`;
-        } else {
-            return `<iframe
-                        src="${url.href}"
-                        frameborder="0"
-                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
-                            ></iframe>`;
-        }
-    },
-
 	//	Used in: Extracts.setUpContentLoadEventsWithin
 	contentLoadHoverDelay: 25,
 

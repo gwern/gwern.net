@@ -2523,6 +2523,8 @@ GW.layout = {
 		".columns",
 		".footnote",
 		"figure",
+		"iframe",
+		"object",
 		"hr",
 		"div.sourceCode",
 		".table-wrapper",
@@ -2624,6 +2626,9 @@ GW.layout = {
 
 		[ "figure.outline-not",			 9 ],
 		[ "figure",						10 ],
+
+		[ "iframe",						10 ],
+		[ "object",						10 ],
 
 		[ "blockquote",					10 ],
 

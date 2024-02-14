@@ -6,7 +6,7 @@ Content = {
 	cachedContent: { },
 
 	contentCacheKeyForLink: (link) => {
-		return Content.sourceURLsForLink(link).first.href;
+		return (Content.sourceURLsForLink(link)?.first ?? link).href;
 	},
 
 	cacheContentForLink: (content, link) => {
@@ -54,7 +54,7 @@ Content = {
 	 */
 
 	sourceURLsForLink: (link) => {
-		return Content.contentTypeForLink(link).sourceURLsForLink(link);
+		return Content.contentTypeForLink(link).sourceURLsForLink?.(link);
 	},
 
 	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
@@ -96,11 +96,10 @@ Content = {
         GWLog("Content.load", "content.js", 2);
 
 		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForLink(link);
-		let sourceURL = sourceURLsRemaining.shift();
+		let sourceURL = sourceURLsRemaining?.shift();
 
 		let processResponse = (response) => {
-			let content = Content.contentFromResponse(response, link, sourceURL);
-
+			let content = Content.contentFromLink?.(link) ?? Content.contentFromResponse?.(response, link, sourceURL);
 			if (content) {
 				Content.cacheContentForLink(content, link);
 
@@ -115,11 +114,12 @@ Content = {
 				});
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL + `--could-not-process`, "problematic content");
+				GWServerLogError(link.href + `--could-not-process`, "problematic content");
 			}
 		};
 
-		if (sourceURL.pathname == location.pathname) {
+		if (   sourceURL == null
+			|| sourceURL.pathname == location.pathname) {
 			processResponse();
 		} else {
 			doAjax({
@@ -131,7 +131,7 @@ Content = {
 						&& (   httpContentTypeHeader == null
 							|| contentType.permittedContentTypes.includes(httpContentTypeHeader.match(/(.+?)(?:;|$)/)[1]) == false)) {
 						//	Send request to record failure in server logs.
-						GWServerLogError(includeLink.href + `--bad-content-type`, "bad content type");
+						GWServerLogError(link.href + `--bad-content-type`, "bad content type");
 
 						return;
                     }
@@ -151,7 +151,7 @@ Content = {
 					});
 
 					//	Send request to record failure in server logs.
-					GWServerLogError(sourceURL, "missing content");
+					GWServerLogError(link.href + `--missing-content`, "missing content");
 				}
 			});
 		}
@@ -161,8 +161,12 @@ Content = {
 			Content.waitForDataLoad(link, loadHandler, loadFailHandler);
 	},
 
-	contentFromResponse: (response, link, loadURL) => {
-		return Content.contentTypeForLink(link).contentFromResponse(response, link, loadURL);
+	contentFromLink: (link) => {
+		return Content.contentTypeForLink(link).contentFromLink?.(link);
+	},
+
+	contentFromResponse: (response, link, sourceURL) => {
+		return Content.contentTypeForLink(link).contentFromResponse?.(response, link, sourceURL);
 	},
 
 	/****************************/
@@ -183,15 +187,45 @@ Content = {
 		return Content.contentTypeForLink(link).referenceDataFromContent(content, link);
 	},
 
+	/***********/
+	/*	Helpers.
+	 */
+
+    objectHTMLForURL: (url, additionalAttributes = null) => {
+		if (typeof url == "string")
+			url = URLFromString(url);
+
+        if (url.pathname.endsWith(".pdf")) {
+            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
+            return `<object
+                        data="${data}"
+                            ></object>`;
+        } else {
+            return `<iframe
+                        src="${url.href}"
+                        frameborder="0"
+                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+                            ></iframe>`;
+        }
+    },
+
 	/**************************************************************/
 	/*	CONTENT TYPES
 
-		Each has four necessary members:
+		Each has the following necessary members:
 
-		.matches(URL|Element) => boolean
-		.sourceURLsForLink(URL|Element) => [ URL ]
-		.contentFromResponse(string, URL|Element, URL) => object
-		.referenceDataFromContent(object, URL|Element) => object
+			.matches(URL|Element) => boolean
+			.referenceDataFromContent(object, URL|Element) => object
+			.isPageContent: boolean
+
+		... plus either these two:
+
+			.sourceURLsForLink(URL|Element) => [ URL ]
+			.contentFromResponse(string, URL|Element, URL) => object
+
+		... or this one:
+
+			.contentFromLink(URL|Element) => object
 	 */
 
 	contentTypeForLink: (link) => {
@@ -209,6 +243,8 @@ Content = {
 						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let urls = [ ];
 
@@ -225,7 +261,7 @@ Content = {
 				}));
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				return {
 					document: newDocument(response)
 				};
@@ -363,6 +399,8 @@ Content = {
 				return codeFileURLRegExp.test(link.pathname);
 			},
 
+			isPageContent: false,
+
 			/*  We first try to retrieve a syntax-highlighted version of the
 				given code file, stored on the server as an HTML fragment. If
 				present, we embed that. If there’s no such fragment, then we
@@ -380,7 +418,7 @@ Content = {
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let codeDocument;
 
 				//	Parse (encoding and wrapping first, if need be).
@@ -450,6 +488,8 @@ Content = {
 						&& link.pathname.endsWith(".html"));
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let url = URLFromString(link.href);
 				url.hash = "";
@@ -458,10 +498,10 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let fragment = newDocument(response);
 
-				let auxLinksLinkType = AuxLinks.auxLinksLinkType(loadURL);
+				let auxLinksLinkType = AuxLinks.auxLinksLinkType(sourceURL);
 				if (auxLinksLinkType) {
 					let auxLinksList = fragment.querySelector("ul, ol");
 					if (auxLinksList) {
@@ -476,7 +516,7 @@ Content = {
 								p.classList.add("backlink-source");
 							});
 							auxLinksList.querySelectorAll(".backlink-source a:nth-of-type(2), .backlink-context a").forEach(auxLink => {
-								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
+								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(sourceURL);
 							});
 						}
 					}
@@ -487,7 +527,7 @@ Content = {
 					source: "Content.contentTypes.localFragment.load",
 					container: fragment,
 					document: fragment,
-					loadLocation: loadURL
+					loadLocation: sourceURL
 				});
 
 				return {
@@ -506,65 +546,40 @@ Content = {
 
 		localDocument: {
 			matches: (link) => {
-				//	Maybe it’s a foreign link?
-				if (link.hostname != location.hostname)
-					return false;
-
 				//	Maybe it’s an annotated link?
 				if (   Annotations.isAnnotatedLinkFull(link) == true
 					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
-				return (   link.pathname.startsWith("/metadata/") == false
-						&& link.pathname.endsWith(".html"));
+				//	Account for local archives.
+				let url = URLFromString(link.dataset.urlArchive ?? link.href);
+
+				//	Maybe it’s a foreign link?
+				if (url.hostname != location.hostname)
+					return false;
+
+				return (   url.pathname.startsWith("/metadata/") == false
+						&& url.pathname.endsWithAnyOf([ ".html", ".pdf" ]));
 			},
 
-			sourceURLsForLink: (link) => {
-				let url = URLFromString(link.href);
-				url.hash = "";
-				url.search = "";
+			isPageContent: false,
 
-				return [ url ];
-			},
+			contentFromLink: (link) => {
+				let embedSrc = link.dataset.urlArchive ?? link.href;
+				let embed = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
 
-			contentFromResponse: (response, link, loadURL) => {
-				let page = newDocument(response);
-
-				page.baseLocation = loadURL;
-
-				let pageTitle = page.querySelector("title")?.innerHTML;
-
-				//  Fire contentDidLoad event.
-				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-					source: "Content.contentTypes.localDocument.load",
-					container: page,
-					document: page,
-					loadLocation: loadURL
-				});
+				embed.querySelector("iframe, object").classList.add("loaded-not");
 
 				return {
-					title:     pageTitle,
-					document:  page
+					document: embed
 				};
 			},
 
-			referenceDataFromContent: (page, link) => {
-				let pageContent;
-				if (link.hash > "") {
-					pageContent = newDocument(page.document.querySelector(selectorFromHash(link.hash)));
-				} else {
-					pageContent = newDocument(page.document);
-					pageContent.querySelectorAll([
-						"meta",
-						"title"
-					].join(", ")).forEach(x => x.remove());
-				}
-
+			referenceDataFromContent: (embed, link) => {
 				return {
-					content:    pageContent,
-					pageTitle:  page.title,
+					content: embed.document
 				};
-			},
+			}
 		},
 
 		localPage: {
@@ -587,6 +602,8 @@ Content = {
 						|| link.classList.contains("link-page"));
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let url = URLFromString(link.href);
 				url.hash = "";
@@ -595,13 +612,13 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let page = response
 						   ? newDocument(response)
 						   : document;
 
 				if (response)
-					page.baseLocation = loadURL;
+					page.baseLocation = sourceURL;
 
 				//	Get the body classes.
 				let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
@@ -646,7 +663,7 @@ Content = {
 						source: "Content.contentTypes.localPage.load",
 						container: page,
 						document: page,
-						loadLocation: loadURL
+						loadLocation: sourceURL
 					});
 				}
 

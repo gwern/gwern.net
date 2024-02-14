@@ -5561,7 +5561,7 @@ Content = {
 	cachedContent: { },
 
 	contentCacheKeyForLink: (link) => {
-		return Content.sourceURLsForLink(link).first.href;
+		return (Content.sourceURLsForLink(link)?.first ?? link).href;
 	},
 
 	cacheContentForLink: (content, link) => {
@@ -5609,7 +5609,7 @@ Content = {
 	 */
 
 	sourceURLsForLink: (link) => {
-		return Content.contentTypeForLink(link).sourceURLsForLink(link);
+		return Content.contentTypeForLink(link).sourceURLsForLink?.(link);
 	},
 
 	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
@@ -5651,11 +5651,10 @@ Content = {
         GWLog("Content.load", "content.js", 2);
 
 		sourceURLsRemaining = sourceURLsRemaining ?? Content.sourceURLsForLink(link);
-		let sourceURL = sourceURLsRemaining.shift();
+		let sourceURL = sourceURLsRemaining?.shift();
 
 		let processResponse = (response) => {
-			let content = Content.contentFromResponse(response, link, sourceURL);
-
+			let content = Content.contentFromLink?.(link) ?? Content.contentFromResponse?.(response, link, sourceURL);
 			if (content) {
 				Content.cacheContentForLink(content, link);
 
@@ -5670,11 +5669,12 @@ Content = {
 				});
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL + `--could-not-process`, "problematic content");
+				GWServerLogError(link.href + `--could-not-process`, "problematic content");
 			}
 		};
 
-		if (sourceURL.pathname == location.pathname) {
+		if (   sourceURL == null
+			|| sourceURL.pathname == location.pathname) {
 			processResponse();
 		} else {
 			doAjax({
@@ -5686,7 +5686,7 @@ Content = {
 						&& (   httpContentTypeHeader == null
 							|| contentType.permittedContentTypes.includes(httpContentTypeHeader.match(/(.+?)(?:;|$)/)[1]) == false)) {
 						//	Send request to record failure in server logs.
-						GWServerLogError(includeLink.href + `--bad-content-type`, "bad content type");
+						GWServerLogError(link.href + `--bad-content-type`, "bad content type");
 
 						return;
                     }
@@ -5706,7 +5706,7 @@ Content = {
 					});
 
 					//	Send request to record failure in server logs.
-					GWServerLogError(sourceURL, "missing content");
+					GWServerLogError(link.href + `--missing-content`, "missing content");
 				}
 			});
 		}
@@ -5716,8 +5716,12 @@ Content = {
 			Content.waitForDataLoad(link, loadHandler, loadFailHandler);
 	},
 
-	contentFromResponse: (response, link, loadURL) => {
-		return Content.contentTypeForLink(link).contentFromResponse(response, link, loadURL);
+	contentFromLink: (link) => {
+		return Content.contentTypeForLink(link).contentFromLink?.(link);
+	},
+
+	contentFromResponse: (response, link, sourceURL) => {
+		return Content.contentTypeForLink(link).contentFromResponse?.(response, link, sourceURL);
 	},
 
 	/****************************/
@@ -5738,15 +5742,45 @@ Content = {
 		return Content.contentTypeForLink(link).referenceDataFromContent(content, link);
 	},
 
+	/***********/
+	/*	Helpers.
+	 */
+
+    objectHTMLForURL: (url, additionalAttributes = null) => {
+		if (typeof url == "string")
+			url = URLFromString(url);
+
+        if (url.pathname.endsWith(".pdf")) {
+            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
+            return `<object
+                        data="${data}"
+                            ></object>`;
+        } else {
+            return `<iframe
+                        src="${url.href}"
+                        frameborder="0"
+                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
+                            ></iframe>`;
+        }
+    },
+
 	/**************************************************************/
 	/*	CONTENT TYPES
 
-		Each has four necessary members:
+		Each has the following necessary members:
 
-		.matches(URL|Element) => boolean
-		.sourceURLsForLink(URL|Element) => [ URL ]
-		.contentFromResponse(string, URL|Element, URL) => object
-		.referenceDataFromContent(object, URL|Element) => object
+			.matches(URL|Element) => boolean
+			.referenceDataFromContent(object, URL|Element) => object
+			.isPageContent: boolean
+
+		... plus either these two:
+
+			.sourceURLsForLink(URL|Element) => [ URL ]
+			.contentFromResponse(string, URL|Element, URL) => object
+
+		... or this one:
+
+			.contentFromLink(URL|Element) => object
 	 */
 
 	contentTypeForLink: (link) => {
@@ -5764,6 +5798,8 @@ Content = {
 						&& link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let urls = [ ];
 
@@ -5780,7 +5816,7 @@ Content = {
 				}));
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				return {
 					document: newDocument(response)
 				};
@@ -5918,6 +5954,8 @@ Content = {
 				return codeFileURLRegExp.test(link.pathname);
 			},
 
+			isPageContent: false,
+
 			/*  We first try to retrieve a syntax-highlighted version of the
 				given code file, stored on the server as an HTML fragment. If
 				present, we embed that. If there’s no such fragment, then we
@@ -5935,7 +5973,7 @@ Content = {
 				return [ syntaxHighlightedCodeFileURL, codeFileURL ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let codeDocument;
 
 				//	Parse (encoding and wrapping first, if need be).
@@ -6005,6 +6043,8 @@ Content = {
 						&& link.pathname.endsWith(".html"));
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let url = URLFromString(link.href);
 				url.hash = "";
@@ -6013,10 +6053,10 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let fragment = newDocument(response);
 
-				let auxLinksLinkType = AuxLinks.auxLinksLinkType(loadURL);
+				let auxLinksLinkType = AuxLinks.auxLinksLinkType(sourceURL);
 				if (auxLinksLinkType) {
 					let auxLinksList = fragment.querySelector("ul, ol");
 					if (auxLinksList) {
@@ -6031,7 +6071,7 @@ Content = {
 								p.classList.add("backlink-source");
 							});
 							auxLinksList.querySelectorAll(".backlink-source a:nth-of-type(2), .backlink-context a").forEach(auxLink => {
-								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(loadURL);
+								auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(sourceURL);
 							});
 						}
 					}
@@ -6042,7 +6082,7 @@ Content = {
 					source: "Content.contentTypes.localFragment.load",
 					container: fragment,
 					document: fragment,
-					loadLocation: loadURL
+					loadLocation: sourceURL
 				});
 
 				return {
@@ -6061,65 +6101,40 @@ Content = {
 
 		localDocument: {
 			matches: (link) => {
-				//	Maybe it’s a foreign link?
-				if (link.hostname != location.hostname)
-					return false;
-
 				//	Maybe it’s an annotated link?
 				if (   Annotations.isAnnotatedLinkFull(link) == true
 					&& Transclude.isContentTransclude(link) == false)
 					return false;
 
-				return (   link.pathname.startsWith("/metadata/") == false
-						&& link.pathname.endsWith(".html"));
+				//	Account for local archives.
+				let url = URLFromString(link.dataset.urlArchive ?? link.href);
+
+				//	Maybe it’s a foreign link?
+				if (url.hostname != location.hostname)
+					return false;
+
+				return (   url.pathname.startsWith("/metadata/") == false
+						&& url.pathname.endsWithAnyOf([ ".html", ".pdf" ]));
 			},
 
-			sourceURLsForLink: (link) => {
-				let url = URLFromString(link.href);
-				url.hash = "";
-				url.search = "";
+			isPageContent: false,
 
-				return [ url ];
-			},
+			contentFromLink: (link) => {
+				let embedSrc = link.dataset.urlArchive ?? link.href;
+				let embed = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
 
-			contentFromResponse: (response, link, loadURL) => {
-				let page = newDocument(response);
-
-				page.baseLocation = loadURL;
-
-				let pageTitle = page.querySelector("title")?.innerHTML;
-
-				//  Fire contentDidLoad event.
-				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-					source: "Content.contentTypes.localDocument.load",
-					container: page,
-					document: page,
-					loadLocation: loadURL
-				});
+				embed.querySelector("iframe, object").classList.add("loaded-not");
 
 				return {
-					title:     pageTitle,
-					document:  page
+					document: embed
 				};
 			},
 
-			referenceDataFromContent: (page, link) => {
-				let pageContent;
-				if (link.hash > "") {
-					pageContent = newDocument(page.document.querySelector(selectorFromHash(link.hash)));
-				} else {
-					pageContent = newDocument(page.document);
-					pageContent.querySelectorAll([
-						"meta",
-						"title"
-					].join(", ")).forEach(x => x.remove());
-				}
-
+			referenceDataFromContent: (embed, link) => {
 				return {
-					content:    pageContent,
-					pageTitle:  page.title,
+					content: embed.document
 				};
-			},
+			}
 		},
 
 		localPage: {
@@ -6142,6 +6157,8 @@ Content = {
 						|| link.classList.contains("link-page"));
 			},
 
+			isPageContent: true,
+
 			sourceURLsForLink: (link) => {
 				let url = URLFromString(link.href);
 				url.hash = "";
@@ -6150,13 +6167,13 @@ Content = {
 				return [ url ];
 			},
 
-			contentFromResponse: (response, link, loadURL) => {
+			contentFromResponse: (response, link, sourceURL) => {
 				let page = response
 						   ? newDocument(response)
 						   : document;
 
 				if (response)
-					page.baseLocation = loadURL;
+					page.baseLocation = sourceURL;
 
 				//	Get the body classes.
 				let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
@@ -6201,7 +6218,7 @@ Content = {
 						source: "Content.contentTypes.localPage.load",
 						container: page,
 						document: page,
-						loadLocation: loadURL
+						loadLocation: sourceURL
 					});
 				}
 
@@ -6351,10 +6368,10 @@ Content = {
         A strict include-link, on the other hand, triggers immediately at
         load time.
 
-        `include-strict` implies `include-even-when-collapsed`, because
-        otherwise odd behavior can result (eg. a 'strict' transclusion in the
-        first line or two of a collapse will be visibly untranscluded; and
-        collapses blocking strict transclusion can lead to unpredictable 
+        Note that `include-strict` implies `include-even-when-collapsed`, 
+        because otherwise odd behavior can result (eg. a ‘strict’ transclusion 
+        in the first line or two of a collapse will be visibly untranscluded; 
+        and collapses blocking strict transclusion can lead to unpredictable 
         breakage when the contents of the transclusion are depended upon by the 
         rest of the page, and collapses are added/removed by editors).
 
@@ -6365,12 +6382,15 @@ Content = {
 		transcluded content is likely to already be loaded by the time the user
 		scrolls to the include-link’s position in the document flow.
 
-		`include-lazy` makes the transclusion behavior lazier than usual; an 
-		include-link with this class will trigger only when it crosses the
-		boundary of the viewport (or the scroll container’s view rect).
+		The `include-lazy` option makes the transclusion behavior lazier than 
+		usual; an include-link with this class will trigger only when it crosses
+		the boundary of the viewport (or the scroll container’s view rect).
 
 		Note that if the `include-strict` option is set, then `include-lazy`
-		will have no effect.
+		will have no effect. Similarly, if the `include-even-when-collapsed`
+		option is *not* set (assuming that `include-strict` is also not set), 
+		then `include-lazy` will have no effect if the include-link is within 
+		a collapsed block.
 
     include-even-when-collapsed
         Normally, an include-link that is inside a collapsed block will not
@@ -6383,7 +6403,8 @@ Content = {
         collapses) even if, at such time, it is within a collapsed block.
 
         Note that the `include-strict` and `include-even-when-collapsed` options 
-        are not mutually exclusive, and do not do the same thing.
+        do not do the same thing; the former implies the latter, but not the
+        other way around.
 
     include-unwrap
         Normally, when an include-link’s URL specifies an element ID to
@@ -6874,6 +6895,10 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		&& link.dataset.backlinkTargetUrl)
 		includeLink.dataset.backlinkTargetUrl = link.dataset.backlinkTargetUrl;
 
+	if (   link instanceof HTMLAnchorElement
+		&& link.dataset.urlArchive)
+		includeLink.dataset.urlArchive = link.dataset.urlArchive;
+
 	//	In case no include classes have been added yet...
 	if (Transclude.isIncludeLink(includeLink) == false)
 		includeLink.classList.add("include");
@@ -7055,7 +7080,9 @@ function includeContent(includeLink, content) {
 
     //  Intelligent rectification of surrounding HTML structure.
     if (   replaceContainer == false
-    	&& isBlock(wrapper.firstElementChild)) {
+    	&& (   isBlock(wrapper.firstElementChild)
+    		|| (   wrapper.firstElementChild?.classList.contains("include-wrapper-block")
+    			&& isBlock(wrapper.firstElementChild.firstElementChild)))) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
@@ -7444,6 +7471,16 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
+	isCrossOriginTransclude: (link) => {
+		if (Transclude.isAnnotationTransclude(link))
+			return false;
+
+		if (link.dataset.urlArchive)
+			return (URLFromString(link.dataset.urlArchive).hostname != location.hostname);
+
+		return (link.hostname != location.hostname);
+	},
+
 	isContentTransclude: (link) => {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
@@ -7585,6 +7622,11 @@ Transclude = {
 
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
+		//	If it’s not page content, we don’t delve into its internals.
+		if (   Transclude.dataProviderForLink(includeLink) == Content
+			&& Content.contentTypeForLink(includeLink).isPageContent == false)
+			return newDocument(sourceDocument);
+
         //  If it’s a full page, extract just the page content.
         let pageContent = sourceDocument.querySelector("#markdownBody") ?? sourceDocument.querySelector("body");
         let content = pageContent ? newDocument(pageContent.childNodes) : newDocument(sourceDocument);
@@ -7882,8 +7924,7 @@ Transclude = {
 			comment out the block below to enable cross-origin transcludes.
 			—SA 2022-08-18
 		 */
-        if (   includeLink.hostname != location.hostname
-            && Transclude.isAnnotationTransclude(includeLink) == false) {
+        if (Transclude.isCrossOriginTransclude(includeLink)) {
             Transclude.setLinkStateLoadingFailed(includeLink);
             return;
         }
@@ -10477,12 +10518,12 @@ Extracts = { ...Extracts,
 			let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 			//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-			return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
+			return newDocument(Content.objectHTMLForURL(videoEmbedURL,
 				`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
         } else if ([ "vimeo.com" ].includes(target.hostname)) {
 			let videoId = Extracts.vimeoId(target);
 			let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-        	return newDocument(Extracts.objectHTMLForURL(videoEmbedURL,
+        	return newDocument(Content.objectHTMLForURL(videoEmbedURL,
         		`allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
 		}
     },
@@ -10802,20 +10843,14 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalDocumentLink: (target) => {
-        if (target.hostname != location.hostname)
-            return false;
-
-        return (   target.pathname.startsWith("/doc/www/")
-                || (   target.pathname.startsWith("/doc/")
-                    && target.pathname.match(/\.(html|pdf)$/i) != null));
+    	return Content.contentTypes.localDocument.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        return newDocument(Extracts.objectHTMLForURL(target,
-            `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -10829,37 +10864,42 @@ Extracts = { ...Extracts,
     		pointless, since the file will download anyway.
     	 */
     	if (   Extracts.popFrameProvider == Popins
-            && target.href.match(/\.pdf(#|$)/) != null)
+            && target.pathname.endsWith(".pdf"))
             return false;
 
         return true;
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame) => {
+    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_DOCUMENT",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         let iframe = popFrame.document.querySelector("iframe");
         if (iframe) {
-        	/*	All of this `srcURL` stuff is necessary as a workaround for a 
-        		Chrome bug that scrolls the parent page when an iframe popup
-        		has a `src` attribute with a hash and that hash points to an
-        		old-style anchor (`<a name="foo">`).
-        	 */
-			let srcURL = URLFromString(iframe.src);
-			if (   srcURL.pathname.endsWith(".html")
-				&& srcURL.hash > "") {
-				srcURL.savedHash = srcURL.hash;
-				srcURL.hash = "";
-				iframe.src = srcURL.href;
-			}
-
             iframe.addEventListener("load", (event) => {
-				if (srcURL.savedHash) {
-					let selector = selectorFromHash(srcURL.savedHash);
-					let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
-					if (element)
-						iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
-				}
-
 				//  Set title of popup from page title.
 				Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
             });
@@ -10963,7 +11003,7 @@ Extracts = { ...Extracts,
 							return;
 
 						Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
-							newDocument(Extracts.objectHTMLForURL(event.target.response.original.url, "sandbox")));
+							newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
 						Extracts.setLoadingSpinner(target.popFrame);
 					},
 					onFailure: (event) => {
@@ -11048,7 +11088,7 @@ Extracts = { ...Extracts,
 			}
 		}
 
-        return newDocument(Extracts.objectHTMLForURL(url, "sandbox"));
+        return newDocument(Content.objectHTMLForURL(url, "sandbox"));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
@@ -11063,27 +11103,6 @@ Extracts = { ...Extracts,
 /*=------------------=*/
 
 Extracts = { ...Extracts,
-    //  Called by: Extracts.videoForTarget
-    //  Called by: Extracts.localDocumentForTarget
-    //  Called by: Extracts.foreignSiteForTarget
-    objectHTMLForURL: (url, additionalAttributes = null) => {
-		if (typeof url == "string")
-			url = URLFromString(url);
-
-        if (url.href.match(/\.pdf(#|$)/) != null) {
-            let data = url.href + (url.hash ? "&" : "#") + "view=FitH";
-            return `<object
-                        data="${data}"
-                            ></object>`;
-        } else {
-            return `<iframe
-                        src="${url.href}"
-                        frameborder="0"
-                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
-                            ></iframe>`;
-        }
-    },
-
 	//	Used in: Extracts.setUpContentLoadEventsWithin
 	contentLoadHoverDelay: 25,
 
@@ -12741,6 +12760,54 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 
     wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, false);
 }, "rewrite", (info) => info.fullWidthPossible);
+
+
+/**********/
+/* EMBEDS */
+/**********/
+
+/****************************************************************************/
+/*	There’s no way to tell whether an <iframe> or <object> has loaded, except
+	to listen for the `load` event. So, we implement our own checkable load 
+	flag, with a class.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
+    GWLog("applyIframeScrollFix", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("iframe.loaded-not, object.loaded-not").forEach(embed => {
+		embed.addEventListener("load", (event) => {
+			embed.classList.remove("loaded-not");
+		});
+	});
+}, "eventListeners");
+
+/**************************************************************************/
+/*	Workaround for a Chrome bug that scrolls the parent page when an iframe 
+	popup has a `src` attribute with a hash and that hash points to an 
+	old-style anchor (`<a name="foo">`).
+ */
+addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventInfo) => {
+    GWLog("applyIframeScrollFix", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(iframe => {
+		let srcURL = URLFromString(iframe.src);
+		if (   srcURL.pathname.endsWith(".html")
+			&& srcURL.hash > "") {
+			srcURL.savedHash = srcURL.hash;
+			srcURL.hash = "";
+			iframe.src = srcURL.href;
+		}
+
+		iframe.addEventListener("load", (event) => {
+			if (srcURL.savedHash) {
+				let selector = selectorFromHash(srcURL.savedHash);
+				let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
+				if (element)
+					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
+			}
+		});
+	});
+}, "eventListeners");
 
 
 /***********/
@@ -14464,7 +14531,7 @@ function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
 
     //  Determine if nearest collapse block needs expanding.
     let collapseBlock = element.closest(".collapse");
-    let expand = isCollapsed(collapseBlock);
+    let expand = (isCollapsed(collapseBlock) == true);
 
     /*  Expand any higher-level collapse blocks.
 		Fire state change event only if we will not have to expand this block
@@ -14529,10 +14596,13 @@ function collapseCollapseBlock(collapseBlock, fireEvent = true) {
 /*  Returns true if the given collapse block is currently collapsed.
  */
 function isCollapsed(collapseBlock) {
-	if (Array.from(collapseBlock.children).findIndex(child => child.classList.contains("collapse-content-wrapper")) === -1)
+	if (collapseBlock.classList.contains("expanded"))
 		return false;
-
-    return (collapseBlock.classList.contains("expanded-not"));
+		
+	if (collapseBlock.classList.contains("expanded-not"))
+		return true;
+		
+    return undefined;
 }
 
 /*****************************************************************************/
@@ -14550,7 +14620,8 @@ function isWithinCollapsedBlock(element) {
     /*  If the element is within a collapse block and that collapse block is
         currently collapsed, then the condition is satisfied...
      */
-    if (isCollapsed(collapseParent))
+    if (   isCollapsed(collapseParent) == true
+    	|| isCollapsed(collapseParent) == undefined)
     	return true;
 
     /*  BUT the collapse block that the element is in, even if *it* is not
@@ -14872,8 +14943,8 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 				return;
 
 			//	Expanding? Collapsing? (For readability and consistency.)
-			let expanding = isCollapsed(collapseBlock);
-			let collapsing = (expanding == false);
+			let expanding = (isCollapsed(collapseBlock) == true);
+			let collapsing = (isCollapsed(collapseBlock) == false);
 
 			//	Keep count of clicks to uncollapse.
 			if (   expanding
@@ -14996,7 +15067,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	collapseBlock.querySelector(".disclosure-button").remove();
 
 	//	Expand.
-	let wasCollapsed = isCollapsed(collapseBlock);
+	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
 	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content");

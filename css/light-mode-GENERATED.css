@@ -88,6 +88,10 @@
     --GW-figure-outline-color: #888;
     --GW-figure-caption-outline-color: #888;
 
+	/*	Embeds.
+	 */
+	--GW-embed-border-color: #ddd;
+
     /*  Epigraphs.
      */
     --GW-epigraph-quotation-mark-color: #808080;

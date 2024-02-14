@@ -73,10 +73,10 @@
         A strict include-link, on the other hand, triggers immediately at
         load time.
 
-        `include-strict` implies `include-even-when-collapsed`, because
-        otherwise odd behavior can result (eg. a 'strict' transclusion in the
-        first line or two of a collapse will be visibly untranscluded; and
-        collapses blocking strict transclusion can lead to unpredictable 
+        Note that `include-strict` implies `include-even-when-collapsed`, 
+        because otherwise odd behavior can result (eg. a ‘strict’ transclusion 
+        in the first line or two of a collapse will be visibly untranscluded; 
+        and collapses blocking strict transclusion can lead to unpredictable 
         breakage when the contents of the transclusion are depended upon by the 
         rest of the page, and collapses are added/removed by editors).
 
@@ -87,12 +87,15 @@
 		transcluded content is likely to already be loaded by the time the user
 		scrolls to the include-link’s position in the document flow.
 
-		`include-lazy` makes the transclusion behavior lazier than usual; an 
-		include-link with this class will trigger only when it crosses the
-		boundary of the viewport (or the scroll container’s view rect).
+		The `include-lazy` option makes the transclusion behavior lazier than 
+		usual; an include-link with this class will trigger only when it crosses
+		the boundary of the viewport (or the scroll container’s view rect).
 
 		Note that if the `include-strict` option is set, then `include-lazy`
-		will have no effect.
+		will have no effect. Similarly, if the `include-even-when-collapsed`
+		option is *not* set (assuming that `include-strict` is also not set), 
+		then `include-lazy` will have no effect if the include-link is within 
+		a collapsed block.
 
     include-even-when-collapsed
         Normally, an include-link that is inside a collapsed block will not
@@ -105,7 +108,8 @@
         collapses) even if, at such time, it is within a collapsed block.
 
         Note that the `include-strict` and `include-even-when-collapsed` options 
-        are not mutually exclusive, and do not do the same thing.
+        do not do the same thing; the former implies the latter, but not the
+        other way around.
 
     include-unwrap
         Normally, when an include-link’s URL specifies an element ID to
@@ -596,6 +600,10 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		&& link.dataset.backlinkTargetUrl)
 		includeLink.dataset.backlinkTargetUrl = link.dataset.backlinkTargetUrl;
 
+	if (   link instanceof HTMLAnchorElement
+		&& link.dataset.urlArchive)
+		includeLink.dataset.urlArchive = link.dataset.urlArchive;
+
 	//	In case no include classes have been added yet...
 	if (Transclude.isIncludeLink(includeLink) == false)
 		includeLink.classList.add("include");
@@ -777,7 +785,9 @@ function includeContent(includeLink, content) {
 
     //  Intelligent rectification of surrounding HTML structure.
     if (   replaceContainer == false
-    	&& isBlock(wrapper.firstElementChild)) {
+    	&& (   isBlock(wrapper.firstElementChild)
+    		|| (   wrapper.firstElementChild?.classList.contains("include-wrapper-block")
+    			&& isBlock(wrapper.firstElementChild.firstElementChild)))) {
         let allowedParentTags = [ "SECTION", "DIV" ];
 
         //  Special handling for annotation transcludes in link bibliographies.
@@ -1166,6 +1176,16 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
+	isCrossOriginTransclude: (link) => {
+		if (Transclude.isAnnotationTransclude(link))
+			return false;
+
+		if (link.dataset.urlArchive)
+			return (URLFromString(link.dataset.urlArchive).hostname != location.hostname);
+
+		return (link.hostname != location.hostname);
+	},
+
 	isContentTransclude: (link) => {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
@@ -1307,6 +1327,11 @@ Transclude = {
 
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
+		//	If it’s not page content, we don’t delve into its internals.
+		if (   Transclude.dataProviderForLink(includeLink) == Content
+			&& Content.contentTypeForLink(includeLink).isPageContent == false)
+			return newDocument(sourceDocument);
+
         //  If it’s a full page, extract just the page content.
         let pageContent = sourceDocument.querySelector("#markdownBody") ?? sourceDocument.querySelector("body");
         let content = pageContent ? newDocument(pageContent.childNodes) : newDocument(sourceDocument);
@@ -1604,8 +1629,7 @@ Transclude = {
 			comment out the block below to enable cross-origin transcludes.
 			—SA 2022-08-18
 		 */
-        if (   includeLink.hostname != location.hostname
-            && Transclude.isAnnotationTransclude(includeLink) == false) {
+        if (Transclude.isCrossOriginTransclude(includeLink)) {
             Transclude.setLinkStateLoadingFailed(includeLink);
             return;
         }
