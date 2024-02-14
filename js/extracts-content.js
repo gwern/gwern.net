@@ -1400,120 +1400,44 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
-        if (target.hostname == location.hostname)
-            return false;
-
-        return target.classList.contains("link-live");
+        return (   Content.contentTypes.foreignSite.matches(target)
+        		&& target.classList.contains("link-live"));
     },
-
-    //  Used in: Extracts.foreignSiteForTarget
-    foreignSiteEmbedURLTransforms: [
-        //	Wikimedia commons
-        [	(url) => (   url.hostname == "commons.wikimedia.org" 
-        			  && url.pathname.startsWith("/wiki/File:")),
-        	(url) => {
-        		url.hostname = "api.wikimedia.org";
-        		url.pathname = "/core/v1/commons/file/" + url.pathname.match(/\/(File:.+)$/)[1];
-        	},
-        	(url, target) => {
-				doAjax({
-					location: url.href,
-					responseType: "json",
-					onSuccess: (event) => {
-						if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-							return;
-
-						Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
-							newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
-						Extracts.setLoadingSpinner(target.popFrame);
-					},
-					onFailure: (event) => {
-						Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-					}
-				});
-
-				return newDocument();
-			} ]
-    ],
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-		let url = URLFromString(target.dataset.urlArchive ?? target.dataset.urlHtml ?? target.href);
-
-        //  WARNING: EXPERIMENTAL FEATURE!
-        if (localStorage.getItem("enable-embed-proxy") == "true") {
-            let proxyURL = URLFromString("https://api.obormot.net/embed.php");
-
-            doAjax({
-                location: proxyURL.href,
-                params: { url: url.href },
-                onSuccess: (event) => {
-                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                        return;
-
-                    let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
-                    doc.querySelectorAll("[href], [src]").forEach(element => {
-                        if (element.href) {
-                            let elementURL = URLFromString(element.href);
-                            if (   elementURL.host == location.host
-                                && !element.getAttribute("href").startsWith("#")) {
-                                elementURL.host = url.host;
-                                element.href = elementURL.href;
-                            }
-                        } else if (element.src) {
-                            let elementURL = URLFromString(element.src);
-                            if (elementURL.host == location.host) {
-                                elementURL.host = url.host;
-                                element.src = elementURL.href;
-                            }
-                        }
-                    });
-
-                    if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
-                        doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
-
-                    target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
-
-                    Extracts.postRefreshUpdatePopFrameForTarget(target, true);
-                },
-                onFailure: (event) => {
-                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                        return;
-
-                    Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-                }
-            });
-
-            return newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
-        }
-        //  END EXPERIMENTAL SECTION
-
-		/*	If a special ‘HTML’ URL is specified, use that, sans transformation.
-        	Otherwise, transform URL for embedding.
-         */
-        if (target.dataset.urlHtml == null) {
-			for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
-				if (test(url)) {
-					if (transform) {
-						transform(url);
-					}
-					if (special) {
-						let retval = special(url, target);
-						if (retval)
-							return retval;
-					}
-					break;
-				}
-			}
-		}
-
-        return newDocument(Content.objectHTMLForURL(url, "sandbox"));
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_FOREIGN_SITE: (popFrame) => {
+    rewritePopFrameContent_FOREIGN_SITE: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_FOREIGN_SITE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_FOREIGN_SITE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }

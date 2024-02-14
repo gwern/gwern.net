@@ -750,7 +750,7 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 }
 
 .collapse.bare-content.no-abstract {
-    --collapse-toggle-bottom-height: calc(2.375 * var(--base-font-size));
+    --collapse-toggle-bottom-height: calc(2.5 * var(--base-font-size));
 }
 
 .collapse.bare-content.has-abstract.expanded > .collapse-content-wrapper {
