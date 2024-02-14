@@ -5777,8 +5777,8 @@ Content = {
 		Each has the following necessary members:
 
 			.matches(URL|Element) => boolean
-			.referenceDataFromContent(object, URL|Element) => object
 			.isPageContent: boolean
+			.referenceDataFromContent(object, URL|Element) => object
 
 		... plus either these two:
 
@@ -5799,6 +5799,136 @@ Content = {
 	},
 
 	contentTypes: {
+		foreignSite: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Account for alternate and archive URLs.
+				let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
+
+				return (url.hostname != location.hostname);
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				//  WARNING: EXPERIMENTAL FEATURE!
+// 				if (localStorage.getItem("enable-embed-proxy") == "true") {
+// 					let url = URLFromString(embedSrc);
+// 					let proxyURL = URLFromString("https://api.obormot.net/embed.php");
+// 					doAjax({
+// 						location: proxyURL.href,
+// 						params: { url: url.href },
+// 						onSuccess: (event) => {
+// 							if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+// 								return;
+// 
+// 							let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
+// 							doc.querySelectorAll("[href], [src]").forEach(element => {
+// 								if (element.href) {
+// 									let elementURL = URLFromString(element.href);
+// 									if (   elementURL.host == location.host
+// 										&& !element.getAttribute("href").startsWith("#")) {
+// 										elementURL.host = url.host;
+// 										element.href = elementURL.href;
+// 									}
+// 								} else if (element.src) {
+// 									let elementURL = URLFromString(element.src);
+// 									if (elementURL.host == location.host) {
+// 										elementURL.host = url.host;
+// 										element.src = elementURL.href;
+// 									}
+// 								}
+// 							});
+// 
+// 							if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
+// 								doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
+// 
+// 							target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
+// 
+// 							Extracts.postRefreshUpdatePopFrameForTarget(target, true);
+// 						},
+// 						onFailure: (event) => {
+// 							if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+// 								return;
+// 
+// 							Extracts.postRefreshUpdatePopFrameForTarget(target, false);
+// 						}
+// 					});
+// 
+// 					return newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
+// 				}
+				//  END EXPERIMENTAL SECTION
+
+				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
+				let embed = newDocument(Content.objectHTMLForURL(embedSrc, "sandbox"));
+
+				embed.querySelector("iframe, object").classList.add("loaded-not");
+
+				/*	If a special ‘HTML’ or ‘archive’ URL is specified, use that, 
+					sans transformation. Otherwise, transform URL for embedding.
+				 */
+// 				if (   link.dataset.urlArchive == null
+// 					&& link.dataset.urlHtml == null) {
+// 					for ([ test, transform, special ] of Content.foreignSiteEmbedURLTransforms) {
+// 						if (test(url)) {
+// 							if (transform) {
+// 								transform(url);
+// 							}
+// 							if (special) {
+// 								let retval = special(url, target);
+// 								if (retval)
+// 									return retval;
+// 							}
+// 							break;
+// 						}
+// 					}
+// 				}
+
+				return {
+					document: embed
+				};
+			},
+
+			referenceDataFromContent: (embed, link) => {
+				return {
+					content: embed.document
+				};
+			},
+
+// 			foreignSiteEmbedURLTransforms: [
+// 				//	Wikimedia commons
+// 				[	(url) => (   url.hostname == "commons.wikimedia.org" 
+// 							  && url.pathname.startsWith("/wiki/File:")),
+// 					(url) => {
+// 						url.hostname = "api.wikimedia.org";
+// 						url.pathname = "/core/v1/commons/file/" + url.pathname.match(/\/(File:.+)$/)[1];
+// 					},
+// 					(url, target) => {
+// 						doAjax({
+// 							location: url.href,
+// 							responseType: "json",
+// 							onSuccess: (event) => {
+// 								if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
+// 									return;
+// 
+// 								Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
+// 									newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
+// 								Extracts.setLoadingSpinner(target.popFrame);
+// 							},
+// 							onFailure: (event) => {
+// 								Extracts.postRefreshUpdatePopFrameForTarget(target, false);
+// 							}
+// 						});
+// 
+// 						return newDocument();
+// 					} ]
+// 			]
+		},
+
 		tweet: {
 			matches: (link) => {
 				return (   [ "twitter.com", "x.com" ].includes(link.hostname)
@@ -5934,13 +6064,13 @@ Content = {
 
 		localCodeFile: {
 			matches: (link) => {
-				//	Maybe it’s a foreign link?
-				if (link.hostname != location.hostname)
-					return false;
-
 				//	Maybe it’s an annotated link?
 				if (   Annotations.isAnnotatedLinkFull(link) == true
 					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
 					return false;
 
 				//	Maybe it’s an aux-links link?
@@ -6037,13 +6167,13 @@ Content = {
 
 		localFragment: {
 			matches: (link) => {
-				//	Maybe it’s a foreign link?
-				if (link.hostname != location.hostname)
-					return false;
-
 				//	Maybe it’s an annotated link?
 				if (   Annotations.isAnnotatedLinkFull(link) == true
 					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
 					return false;
 
 				return (   link.pathname.startsWith("/metadata/")
@@ -6114,7 +6244,7 @@ Content = {
 					return false;
 
 				//	Account for local archives.
-				let url = URLFromString(link.dataset.urlArchive ?? link.href);
+				let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
 
 				//	Maybe it’s a foreign link?
 				if (url.hostname != location.hostname)
@@ -6146,13 +6276,13 @@ Content = {
 
 		localPage: {
 			matches: (link) => {
-				//	Maybe it’s a foreign link?
-				if (link.hostname != location.hostname)
-					return false;
-
 				//	Maybe it’s an annotated link?
 				if (   Annotations.isAnnotatedLinkFull(link) == true
 					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
 					return false;
 
 				/*  If it has a period in it, it’s probably not a page, but is 
@@ -7478,16 +7608,6 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
-	isCrossOriginTransclude: (link) => {
-		if (Transclude.isAnnotationTransclude(link))
-			return false;
-
-		if (link.dataset.urlArchive)
-			return (URLFromString(link.dataset.urlArchive).hostname != location.hostname);
-
-		return (link.hostname != location.hostname);
-	},
-
 	isContentTransclude: (link) => {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
@@ -7627,11 +7747,21 @@ Transclude = {
 				: block);
 	},
 
+    //  Called by: Transclude.sliceContentFromDocument
+	isPageContent: (includeLink) => {
+		let dataProvider = Transclude.dataProviderForLink(includeLink);
+		switch (dataProvider) {
+		case Content:
+			return Content.contentTypeForLink(includeLink).isPageContent;
+		case Annotations:
+			return true;
+		}
+	},
+
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
 		//	If it’s not page content, we don’t delve into its internals.
-		if (   Transclude.dataProviderForLink(includeLink) == Content
-			&& Content.contentTypeForLink(includeLink).isPageContent == false)
+		if (Transclude.isPageContent(includeLink) == false)
 			return newDocument(sourceDocument);
 
         //  If it’s a full page, extract just the page content.
@@ -7925,16 +8055,6 @@ Transclude = {
         	"include-loading",
             "include-loading-failed"
         ])) return;
-
-		/*  We exclude cross-origin transclusion for security reasons, but from
-			a technical standpoint there’s no reason it shouldn’t work. Simply
-			comment out the block below to enable cross-origin transcludes.
-			—SA 2022-08-18
-		 */
-        if (Transclude.isCrossOriginTransclude(includeLink)) {
-            Transclude.setLinkStateLoadingFailed(includeLink);
-            return;
-        }
 
 		/*	We do not attempt to transclude annotation transclude links which 
 			do not (according to their set-by-the-server designation) actually 
@@ -10995,120 +11115,44 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
-        if (target.hostname == location.hostname)
-            return false;
-
-        return target.classList.contains("link-live");
+        return (   Content.contentTypes.foreignSite.matches(target)
+        		&& target.classList.contains("link-live"));
     },
-
-    //  Used in: Extracts.foreignSiteForTarget
-    foreignSiteEmbedURLTransforms: [
-        //	Wikimedia commons
-        [	(url) => (   url.hostname == "commons.wikimedia.org" 
-        			  && url.pathname.startsWith("/wiki/File:")),
-        	(url) => {
-        		url.hostname = "api.wikimedia.org";
-        		url.pathname = "/core/v1/commons/file/" + url.pathname.match(/\/(File:.+)$/)[1];
-        	},
-        	(url, target) => {
-				doAjax({
-					location: url.href,
-					responseType: "json",
-					onSuccess: (event) => {
-						if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-							return;
-
-						Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
-							newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
-						Extracts.setLoadingSpinner(target.popFrame);
-					},
-					onFailure: (event) => {
-						Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-					}
-				});
-
-				return newDocument();
-			} ]
-    ],
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-		let url = URLFromString(target.dataset.urlArchive ?? target.dataset.urlHtml ?? target.href);
-
-        //  WARNING: EXPERIMENTAL FEATURE!
-        if (localStorage.getItem("enable-embed-proxy") == "true") {
-            let proxyURL = URLFromString("https://api.obormot.net/embed.php");
-
-            doAjax({
-                location: proxyURL.href,
-                params: { url: url.href },
-                onSuccess: (event) => {
-                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                        return;
-
-                    let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
-                    doc.querySelectorAll("[href], [src]").forEach(element => {
-                        if (element.href) {
-                            let elementURL = URLFromString(element.href);
-                            if (   elementURL.host == location.host
-                                && !element.getAttribute("href").startsWith("#")) {
-                                elementURL.host = url.host;
-                                element.href = elementURL.href;
-                            }
-                        } else if (element.src) {
-                            let elementURL = URLFromString(element.src);
-                            if (elementURL.host == location.host) {
-                                elementURL.host = url.host;
-                                element.src = elementURL.href;
-                            }
-                        }
-                    });
-
-                    if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
-                        doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
-
-                    target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
-
-                    Extracts.postRefreshUpdatePopFrameForTarget(target, true);
-                },
-                onFailure: (event) => {
-                    if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-                        return;
-
-                    Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-                }
-            });
-
-            return newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
-        }
-        //  END EXPERIMENTAL SECTION
-
-		/*	If a special ‘HTML’ URL is specified, use that, sans transformation.
-        	Otherwise, transform URL for embedding.
-         */
-        if (target.dataset.urlHtml == null) {
-			for ([ test, transform, special ] of Extracts.foreignSiteEmbedURLTransforms) {
-				if (test(url)) {
-					if (transform) {
-						transform(url);
-					}
-					if (special) {
-						let retval = special(url, target);
-						if (retval)
-							return retval;
-					}
-					break;
-				}
-			}
-		}
-
-        return newDocument(Content.objectHTMLForURL(url, "sandbox"));
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_FOREIGN_SITE: (popFrame) => {
+    rewritePopFrameContent_FOREIGN_SITE: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_FOREIGN_SITE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_FOREIGN_SITE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
     }

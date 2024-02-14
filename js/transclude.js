@@ -1176,16 +1176,6 @@ Transclude = {
         return Array.from(container.querySelectorAll("a[class*='include']")).filter(link => Transclude.isIncludeLink(link));
     },
 
-	isCrossOriginTransclude: (link) => {
-		if (Transclude.isAnnotationTransclude(link))
-			return false;
-
-		if (link.dataset.urlArchive)
-			return (URLFromString(link.dataset.urlArchive).hostname != location.hostname);
-
-		return (link.hostname != location.hostname);
-	},
-
 	isContentTransclude: (link) => {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
@@ -1325,11 +1315,21 @@ Transclude = {
 				: block);
 	},
 
+    //  Called by: Transclude.sliceContentFromDocument
+	isPageContent: (includeLink) => {
+		let dataProvider = Transclude.dataProviderForLink(includeLink);
+		switch (dataProvider) {
+		case Content:
+			return Content.contentTypeForLink(includeLink).isPageContent;
+		case Annotations:
+			return true;
+		}
+	},
+
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
 		//	If it’s not page content, we don’t delve into its internals.
-		if (   Transclude.dataProviderForLink(includeLink) == Content
-			&& Content.contentTypeForLink(includeLink).isPageContent == false)
+		if (Transclude.isPageContent(includeLink) == false)
 			return newDocument(sourceDocument);
 
         //  If it’s a full page, extract just the page content.
@@ -1623,16 +1623,6 @@ Transclude = {
         	"include-loading",
             "include-loading-failed"
         ])) return;
-
-		/*  We exclude cross-origin transclusion for security reasons, but from
-			a technical standpoint there’s no reason it shouldn’t work. Simply
-			comment out the block below to enable cross-origin transcludes.
-			—SA 2022-08-18
-		 */
-        if (Transclude.isCrossOriginTransclude(includeLink)) {
-            Transclude.setLinkStateLoadingFailed(includeLink);
-            return;
-        }
 
 		/*	We do not attempt to transclude annotation transclude links which 
 			do not (according to their set-by-the-server designation) actually 
