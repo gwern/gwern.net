@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-10 10:10:01 gwern"
+# When:  Time-stamp: "2024-02-13 18:25:57 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -84,12 +84,12 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
     for FILE in "$@"; do
-        mogrify -bordercolor white -border 25 "$(path2File "$FILE")"
+        mogrify -bordercolor white -border 50 "$(path2File "$FILE")"
     done
 }
 pad-black () {
     for FILE in "$@"; do
-        mogrify -bordercolor black -border 25 "$(path2File "$FILE")"
+        mogrify -bordercolor black -border 50 "$(path2File "$FILE")"
     done
 }
 
