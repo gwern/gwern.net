@@ -4980,6 +4980,12 @@ Annotations = { ...Annotations,
 					abstractHTML = abstractDocument.innerHTML;
 				}
 
+				//	File includes (if any).
+				let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
+				let fileIncludesHTML = null;
+				if (fileIncludesElement)
+					fileIncludesHTML = fileIncludesElement.innerHTML;
+
 				//	Pop-frame title text.
 				let popFrameTitle = referenceElement.cloneNode(true);
 				//	Trim quotes.
@@ -5005,6 +5011,7 @@ Annotations = { ...Annotations,
 						auxLinks:                 auxLinksHTML,
 						authorDateAux:            authorDateAuxHTML,
 						abstract:                 abstractHTML,
+						fileIncludes:             fileIncludesHTML
 					},
 					template:                       "annotation-blockquote-inside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
@@ -6579,7 +6586,7 @@ Content = {
 	class="include-annotation-partial"
 
 		class="include-annotation"
-		data-include-selector-not=".annotation-abstract"
+		data-include-selector-not=".annotation-abstract, .file-includes"
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
@@ -6589,7 +6596,7 @@ Content = {
 
 	class="include-annotation include-omit-metadata"
 
-		data-include-selector=".annotation-abstract"
+		data-include-selector=".annotation-abstract, .file-includes"
 
 		Essentially the opposite of .include-annotation-partial; includes only
 		the annotation abstract, omitting metadata. (If there is no abstract - 
@@ -8209,13 +8216,13 @@ addContentInjectHandler(GW.contentInjectHandlers.handleTranscludes = GW.contentL
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract"`
+		`data-include-selector-not=".annotation-abstract, .file-includes"`
 		`data-template-fields="annotationClassSuffix:$"`
 		`data-annotation-class-suffix="-partial"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes";
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"
@@ -8227,13 +8234,13 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 
 /*====================================================*/
 /*	.include-annotation.include-omit-metadata
-		`data-include-selector=".annotation-abstract"`
+		`data-include-selector=".annotation-abstract, .file-includes"`
  */
 Transclude.addIncludeLinkAliasClass("include-omit-metadata", (includeLink) => {
 	if (Transclude.isAnnotatedLinkFull(includeLink) == false)
 		return false;
 
-	includeLink.dataset.includeSelector = ".annotation-abstract";
+	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
 
 	return true;
 });
@@ -8281,6 +8288,9 @@ Transclude.templates = {
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
 	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
+	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
 	<p class="data-field title">
@@ -8300,6 +8310,9 @@ Transclude.templates = {
 	<[IF abstract]>
 	<div class="data-field annotation-abstract"><{abstract}></div>
 	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
+	<[IFEND]>
 </div>`,
 	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
 	<p class="data-field title">
@@ -8318,6 +8331,9 @@ Transclude.templates = {
 	<[IFEND]>
 	<[IF abstract]>
 	<div class="data-field annotation-abstract"><{abstract}></div>
+	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
 	"pop-frame-title-annotation": `<[IF popFrameTitleArchiveLinkHref]>

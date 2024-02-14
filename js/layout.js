@@ -95,6 +95,10 @@ GW.layout = {
 										 1, false ],
 		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
 										 3, false ],
+		[ ".annotation blockquote.data-field.annotation-abstract + .data-field.file-includes .collapse",
+										 5, false ],
+		[ ".data-field.file-includes .collapse + .collapse",
+										 5, false ],
 
 		[ ".aux-links-append + .aux-links-append",
 										 0, false ],

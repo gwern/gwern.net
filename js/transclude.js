@@ -284,7 +284,7 @@
 	class="include-annotation-partial"
 
 		class="include-annotation"
-		data-include-selector-not=".annotation-abstract"
+		data-include-selector-not=".annotation-abstract, .file-includes"
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
@@ -294,7 +294,7 @@
 
 	class="include-annotation include-omit-metadata"
 
-		data-include-selector=".annotation-abstract"
+		data-include-selector=".annotation-abstract, .file-includes"
 
 		Essentially the opposite of .include-annotation-partial; includes only
 		the annotation abstract, omitting metadata. (If there is no abstract - 
@@ -1914,13 +1914,13 @@ addContentInjectHandler(GW.contentInjectHandlers.handleTranscludes = GW.contentL
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract"`
+		`data-include-selector-not=".annotation-abstract, .file-includes"`
 		`data-template-fields="annotationClassSuffix:$"`
 		`data-annotation-class-suffix="-partial"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract";
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes";
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"
@@ -1932,13 +1932,13 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 
 /*====================================================*/
 /*	.include-annotation.include-omit-metadata
-		`data-include-selector=".annotation-abstract"`
+		`data-include-selector=".annotation-abstract, .file-includes"`
  */
 Transclude.addIncludeLinkAliasClass("include-omit-metadata", (includeLink) => {
 	if (Transclude.isAnnotatedLinkFull(includeLink) == false)
 		return false;
 
-	includeLink.dataset.includeSelector = ".annotation-abstract";
+	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
 
 	return true;
 });

@@ -529,6 +529,12 @@ Annotations = { ...Annotations,
 					abstractHTML = abstractDocument.innerHTML;
 				}
 
+				//	File includes (if any).
+				let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
+				let fileIncludesHTML = null;
+				if (fileIncludesElement)
+					fileIncludesHTML = fileIncludesElement.innerHTML;
+
 				//	Pop-frame title text.
 				let popFrameTitle = referenceElement.cloneNode(true);
 				//	Trim quotes.
@@ -554,6 +560,7 @@ Annotations = { ...Annotations,
 						auxLinks:                 auxLinksHTML,
 						authorDateAux:            authorDateAuxHTML,
 						abstract:                 abstractHTML,
+						fileIncludes:             fileIncludesHTML
 					},
 					template:                       "annotation-blockquote-inside",
 					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),

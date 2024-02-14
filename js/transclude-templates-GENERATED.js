@@ -16,6 +16,9 @@ Transclude.templates = {
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
 	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
+	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
 	<p class="data-field title">
@@ -35,6 +38,9 @@ Transclude.templates = {
 	<[IF abstract]>
 	<div class="data-field annotation-abstract"><{abstract}></div>
 	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
+	<[IFEND]>
 </div>`,
 	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
 	<p class="data-field title">
@@ -53,6 +59,9 @@ Transclude.templates = {
 	<[IFEND]>
 	<[IF abstract]>
 	<div class="data-field annotation-abstract"><{abstract}></div>
+	<[IFEND]>
+	<[IF fileIncludes]>
+	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
 	"pop-frame-title-annotation": `<[IF popFrameTitleArchiveLinkHref]>
