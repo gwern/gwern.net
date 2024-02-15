@@ -817,6 +817,79 @@ Content = {
 			audioFileExtensions: [ "mp3" ]
 		},
 
+		localImage: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`));
+			},
+
+			isPageContent: true,
+
+			contentFromLink: (link) => {
+				let styles = ``;
+				if (link.pathname.endsWith(".svg")) {
+					//	Special handling for SVGs.
+					styles = `style="width: 100%; height: 100%"`;
+				} else {
+					let width = link.dataset.imageWidth ?? 0;
+					let height = link.dataset.imageHeight ?? 0;
+
+					//	Constrain dimensions, shrinking proportionally.
+					if (link.dataset.imageMaxWidth) {
+						let maxWidth = parseFloat(link.dataset.imageMaxWidth);
+						if (width > maxWidth) {
+							height *= maxWidth / width;
+							width = maxWidth;
+						}
+					}
+					if (link.dataset.imageMaxHeight) {
+						let maxHeight = parseFloat(link.dataset.imageMaxHeight);
+						if (height > maxHeight) {
+							width *= maxHeight / height;
+							height = maxHeight;
+						}
+					}
+
+					//	Specify dimensions in HTML and CSS.
+					if (   width > 0
+						&& height > 0)
+						styles = `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}" `
+							   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
+				}
+
+
+				/*  Note that we pass in the original image-link’s classes; this
+					is good for classes like ‘invert’.
+				 */
+				let content = newDocument(`<figure><img
+											${styles}
+											class="${link.classList}"
+											src="${link.href}"
+											loading="eager"
+											decoding="sync"
+											></figure>`);
+
+				//	Remove extraneous classes.
+				content.querySelector("img").classList.remove("link-page", 
+					"link-self", "link-annotated", "link-annotated-partial", "has-icon",
+					"has-annotation", "has-annotation-partial", "has-content",
+					"has-indicator-hook");
+
+				return content;
+			},
+
+			imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ]
+		},
+
 		localPage: {
 			matches: (link) => {
 				//	Maybe it’s an annotated link?

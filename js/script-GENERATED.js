@@ -6393,6 +6393,79 @@ Content = {
 			audioFileExtensions: [ "mp3" ]
 		},
 
+		localImage: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`));
+			},
+
+			isPageContent: true,
+
+			contentFromLink: (link) => {
+				let styles = ``;
+				if (link.pathname.endsWith(".svg")) {
+					//	Special handling for SVGs.
+					styles = `style="width: 100%; height: 100%"`;
+				} else {
+					let width = link.dataset.imageWidth ?? 0;
+					let height = link.dataset.imageHeight ?? 0;
+
+					//	Constrain dimensions, shrinking proportionally.
+					if (link.dataset.imageMaxWidth) {
+						let maxWidth = parseFloat(link.dataset.imageMaxWidth);
+						if (width > maxWidth) {
+							height *= maxWidth / width;
+							width = maxWidth;
+						}
+					}
+					if (link.dataset.imageMaxHeight) {
+						let maxHeight = parseFloat(link.dataset.imageMaxHeight);
+						if (height > maxHeight) {
+							width *= maxHeight / height;
+							height = maxHeight;
+						}
+					}
+
+					//	Specify dimensions in HTML and CSS.
+					if (   width > 0
+						&& height > 0)
+						styles = `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}" `
+							   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
+				}
+
+
+				/*  Note that we pass in the original image-link’s classes; this
+					is good for classes like ‘invert’.
+				 */
+				let content = newDocument(`<figure><img
+											${styles}
+											class="${link.classList}"
+											src="${link.href}"
+											loading="eager"
+											decoding="sync"
+											></figure>`);
+
+				//	Remove extraneous classes.
+				content.querySelector("img").classList.remove("link-page", 
+					"link-self", "link-annotated", "link-annotated-partial", "has-icon",
+					"has-annotation", "has-annotation-partial", "has-content",
+					"has-indicator-hook");
+
+				return content;
+			},
+
+			imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ]
+		},
+
 		localPage: {
 			matches: (link) => {
 				//	Maybe it’s an annotated link?
@@ -10966,65 +11039,23 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.isLocalImageLink
-    imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
-
     //  Used in: Extracts.localImageForTarget
     imageMaxWidth: 634.0,
     imageMaxHeight: 453.0,
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalImageLink: (target) => {
-        if (target.hostname != location.hostname)
-            return false;
-
-        let imageFileURLRegExp = new RegExp(
-              '('
-            + Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|")
-            + ')$'
-        , 'i');
-        return (target.pathname.match(imageFileURLRegExp) != null);
+        return Content.contentTypes.localImage.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        let width = target.dataset.imageWidth ?? 0;
-        let height = target.dataset.imageHeight ?? 0;
-
-		//	Constrain dimensions, shrinking proportionally.
-        if (width > Extracts.imageMaxWidth) {
-            height *= Extracts.imageMaxWidth / width;
-            width = Extracts.imageMaxWidth;
-        }
-        if (height > Extracts.imageMaxHeight) {
-            width *= Extracts.imageMaxHeight / height;
-            height = Extracts.imageMaxHeight;
-        }
-
-		//	Specify dimensions in HTML and CSS.
-        let styles = ``;
-        if (   width > 0
-            && height > 0)
-            styles = `width="${(target.dataset.imageWidth)}" `
-            	   + `height="${(target.dataset.imageHeight)}" `
-            	   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
-
-		//	Special handling for SVGs.
-		if (target.pathname.endsWith(".svg"))
-			styles = `style="width: 100%; height: 100%"`;
-
-        /*  Note that we pass in the original image-link’s classes; this is 
-        	good for classes like ‘invert’.
-         */
-        return newDocument(`<figure><img
-                                ${styles}
-                                class="${target.classList}"
-                                src="${target.href}"
-                                loading="eager"
-                                decoding="sync"
-                                    ></figure>`);
+        return newDocument(synthesizeIncludeLink(target), {
+        	"data-image-max-width": Extracts.imageMaxWidth,
+        	"data-image-max-height": Extracts.imageMaxHeight
+        });
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -11048,10 +11079,31 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.rewritePopinContent_LOCAL_IMAGE
     //  Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_IMAGE: (popFrame) => {
-        //  Remove extraneous classes from images in image pop-frames.
-        popFrame.document.querySelector("img").classList.remove("link-page", "link-self",
-            "has-annotation", "has-annotation-partial", "has-content");
+    rewritePopFrameContent_LOCAL_IMAGE: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_IMAGE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_IMAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
 
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
