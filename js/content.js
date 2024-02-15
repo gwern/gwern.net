@@ -523,12 +523,7 @@ Content = {
                 		&& link.pathname.match(/\.(html|pdf)$/i) != null))
                 	return false;
 
-				let codeFileURLRegExp = new RegExp(
-					  '\\.('
-					+ Content.contentTypes.localCodeFile.codeFileExtensions.join("|")
-					+ ')$'
-				, 'i');
-				return codeFileURLRegExp.test(link.pathname);
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localCodeFile.codeFileExtensions.map(x => `.${x}`));
 			},
 
 			isPageContent: false,
@@ -662,6 +657,11 @@ Content = {
 
 		remoteVideo: {
 			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
 					return (Content.contentTypes.remoteVideo.youtubeId(link) != null);
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
@@ -747,7 +747,7 @@ Content = {
 					return false;
 
 				return (   url.pathname.startsWith("/metadata/") == false
-						&& url.pathname.endsWithAnyOf([ ".html", ".pdf" ]));
+						&& url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
 			},
 
 			isPageContent: false,
@@ -760,6 +760,35 @@ Content = {
 
 				return content;
 			},
+
+			documentFileExtensions: [ "html", "pdf" ]
+		},
+
+		localVideo: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localVideo.videoFileExtensions.map(x => `.${x}`));
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				return newDocument(`<figure>`
+								 + `<video controls="controls" preload="none">`
+								 + `<source src="${link.href}">`
+								 + `</video></figure>`);
+						  
+			},
+
+		    videoFileExtensions: [ "mp4", "webm" ]
 		},
 
 		localPage: {

@@ -6099,12 +6099,7 @@ Content = {
                 		&& link.pathname.match(/\.(html|pdf)$/i) != null))
                 	return false;
 
-				let codeFileURLRegExp = new RegExp(
-					  '\\.('
-					+ Content.contentTypes.localCodeFile.codeFileExtensions.join("|")
-					+ ')$'
-				, 'i');
-				return codeFileURLRegExp.test(link.pathname);
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localCodeFile.codeFileExtensions.map(x => `.${x}`));
 			},
 
 			isPageContent: false,
@@ -6238,6 +6233,11 @@ Content = {
 
 		remoteVideo: {
 			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
 					return (Content.contentTypes.remoteVideo.youtubeId(link) != null);
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
@@ -6323,7 +6323,7 @@ Content = {
 					return false;
 
 				return (   url.pathname.startsWith("/metadata/") == false
-						&& url.pathname.endsWithAnyOf([ ".html", ".pdf" ]));
+						&& url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
 			},
 
 			isPageContent: false,
@@ -6336,6 +6336,35 @@ Content = {
 
 				return content;
 			},
+
+			documentFileExtensions: [ "html", "pdf" ]
+		},
+
+		localVideo: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localVideo.videoFileExtensions.map(x => `.${x}`));
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				return newDocument(`<figure>`
+								 + `<video controls="controls" preload="none">`
+								 + `<source src="${link.href}">`
+								 + `</video></figure>`);
+						  
+			},
+
+		    videoFileExtensions: [ "mp4", "webm" ]
 		},
 
 		localPage: {
@@ -10732,31 +10761,16 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.isLocalVideoLink
-    videoFileExtensions: [ "mp4", "webm" ],
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalVideoLink: (target) => {
-        if (target.hostname != location.hostname)
-            return false;
-
-        let videoFileURLRegExp = new RegExp(
-              '('
-            + Extracts.videoFileExtensions.map(ext => `\\.${ext}`).join("|")
-            + ')$'
-        , 'i');
-        return (target.pathname.match(videoFileURLRegExp) != null);
+        return Content.contentTypes.localVideo.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return newDocument(
-              `<figure>`
-            + `<video controls="controls" preload="none">`
-            + `<source src="${target.href}">`
-            + `</video></figure>`);
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -10778,7 +10792,32 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_VIDEO: (popFrame) => {
+    rewritePopFrameContent_LOCAL_VIDEO: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_VIDEO(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_VIDEO",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
     	let video = popFrame.document.querySelector("video");
     	let source = video.querySelector("source");
 
