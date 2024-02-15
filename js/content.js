@@ -778,7 +778,7 @@ Content = {
 				return link.pathname.endsWithAnyOf(Content.contentTypes.localVideo.videoFileExtensions.map(x => `.${x}`));
 			},
 
-			isPageContent: false,
+			isPageContent: true,
 
 			contentFromLink: (link) => {
 				return newDocument(`<figure>`
@@ -789,6 +789,32 @@ Content = {
 			},
 
 		    videoFileExtensions: [ "mp4", "webm" ]
+		},
+
+		localAudio: {
+			matches: (link) => {
+				//	Maybe it’s an annotated link?
+				if (   Annotations.isAnnotatedLinkFull(link) == true
+					&& Transclude.isContentTransclude(link) == false)
+					return false;
+
+				//	Maybe it’s a foreign link?
+				if (link.hostname != location.hostname)
+					return false;
+
+				return link.pathname.endsWithAnyOf(Content.contentTypes.localAudio.audioFileExtensions.map(x => `.${x}`));
+			},
+
+			isPageContent: true,
+
+			contentFromLink: (link) => {
+				return newDocument(`<figure>`
+								 + `<audio controls="controls" preload="none">`
+								 + `<source src="${link.href}">`
+								 + `</video></figure>`);
+			},
+
+			audioFileExtensions: [ "mp3" ]
 		},
 
 		localPage: {

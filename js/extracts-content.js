@@ -875,28 +875,28 @@ Extracts = { ...Extracts,
 /*=---------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "VIDEO",                // Type name
-    "isVideoLink",          // Type predicate function
-    "has-content",          // Target classes to add
-    "videoForTarget",       // Pop-frame fill function
-    "video object"          // Pop-frame classes
+    "REMOTE_VIDEO",          // Type name
+    "isRemoteVideoLink",     // Type predicate function
+    "has-content",           // Target classes to add
+    "remoteVideoForTarget",  // Pop-frame fill function
+    "video object"           // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
-    isVideoLink: (target) => {
+    isRemoteVideoLink: (target) => {
         return Content.contentTypes.remoteVideo.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    videoForTarget: (target) => {
-        GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
+    remoteVideoForTarget: (target) => {
+        GWLog("Extracts.remoteVideoForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_VIDEO: (popup) => {
+    preparePopup_REMOTE_VIDEO: (popup) => {
 		let target = popup.spawningTarget;
 
 		if (Content.contentTypes.remoteVideo.isYoutubeLink(target)) {
@@ -909,12 +909,12 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_VIDEO: (popFrame, injectEventInfo = null) => {
+    rewritePopFrameContent_REMOTE_VIDEO: (popFrame, injectEventInfo = null) => {
         let target = popFrame.spawningTarget;
 
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_VIDEO(popFrame, info);
+				Extracts.rewritePopFrameContent_REMOTE_VIDEO(popFrame, info);
 			}, {
 				phase: "rewrite",
 				condition: (info) => (   info.source == "transclude"
@@ -924,7 +924,7 @@ Extracts = { ...Extracts,
 
 			//	Trigger transcludes.
 			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_VIDEO",
+				source: "Extracts.rewritePopFrameContent_REMOTE_VIDEO",
 				container: popFrame.body,
 				document: popFrame.document,
 				context: "popFrame"
@@ -1041,31 +1041,16 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.isLocalVideoLink
-    audioFileExtensions: [ "mp3" ],
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalAudioLink: (target) => {
-        if (target.hostname != location.hostname)
-            return false;
-
-        let audioFileURLRegExp = new RegExp(
-              '('
-            + Extracts.audioFileExtensions.map(ext => `\\.${ext}`).join("|")
-            + ')$'
-        , 'i');
-        return (target.pathname.match(audioFileURLRegExp) != null);
+        return Content.contentTypes.localAudio.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     localAudioForTarget: (target) => {
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
-        return newDocument(
-        	  `<figure>`
-            + `<audio controls="controls" preload="none">`
-            + `<source src="${target.href}">`
-            + `</audio></figure>`);
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1090,7 +1075,32 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_AUDIO: (popFrame) => {
+    rewritePopFrameContent_LOCAL_AUDIO: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_LOCAL_AUDIO(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_LOCAL_AUDIO",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
     	let audio = popFrame.document.querySelector("audio");
     	let source = audio.querySelector("source");
 
