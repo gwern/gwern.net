@@ -247,7 +247,8 @@ Content = {
 				//	Account for alternate and archive URLs.
 				let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
 
-				return (url.hostname != location.hostname);
+				return (   url.hostname != location.hostname
+        				&& link.classList.contains("link-live"));
 			},
 
 			isPageContent: false,

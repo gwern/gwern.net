@@ -4983,8 +4983,22 @@ Annotations = { ...Annotations,
 				//	File includes (if any).
 				let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
 				let fileIncludesHTML = null;
-				if (fileIncludesElement)
-					fileIncludesHTML = fileIncludesElement.innerHTML;
+				if (fileIncludesElement) {
+					/*	Remove any file embed links that lack a valid content 
+						type (e.g., foreign-site links that have not been 
+						whitelisted for embedding).
+					 */
+					Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
+						if (Content.contentTypeForLink(includeLink) == null)
+							includeLink.remove();
+					});
+
+					/*	Do not include the file includes section if no valid
+						include-links remain.
+					 */
+					if (Transclude.allIncludeLinksInContainer(fileIncludesElement).length > 0)
+						fileIncludesHTML = fileIncludesElement.innerHTML;
+				}
 
 				//	Pop-frame title text.
 				let popFrameTitle = referenceElement.cloneNode(true);
@@ -5809,7 +5823,8 @@ Content = {
 				//	Account for alternate and archive URLs.
 				let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
 
-				return (url.hostname != location.hostname);
+				return (   url.hostname != location.hostname
+        				&& link.classList.contains("link-live"));
 			},
 
 			isPageContent: false,
@@ -11115,8 +11130,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
-        return (   Content.contentTypes.foreignSite.matches(target)
-        		&& target.classList.contains("link-live"));
+        return Content.contentTypes.foreignSite.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
