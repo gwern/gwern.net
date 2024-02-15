@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-14 16:06:54 gwern"
+When:  Time-stamp: "2024-02-15 11:40:03 gwern"
 License: CC-0
 -}
 
@@ -333,15 +333,16 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
                       -- for partials, we skip the heavyweight processing:
                       unless (null abst) $ void $ createAnnotations md pandoc
-                      pandoc' <- if null abst then return pandoc
+                      pandoc' <- walkM (localizeLink am) pandoc
+                      pandoc'' <- if null abst then return pandoc'
                                     else do
                                           let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
-                                                  parseRawAllClean pandoc
-                                          walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
-                      let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
+                                                  parseRawAllClean pandoc'
+                                          walkM (invertImageInline <=< imageLinkHeightWidthSet) p
+                      let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc''
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
@@ -556,7 +557,7 @@ generateFileTransclusionBlock (f, (tle,_,_,_,_,_)) = if null generateFileTranscl
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
    generateFileTransclusionBlock'
     | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
-                                                         [Para [Link ("", ["include-content", "include-lazy"], []) [Str "[document transclusion]"] (T.pack f, "")]]]
+                                                         [Para [Link ("", ["include-content", "include-lazy"], []) [Str "[view document in-browser]"] (T.pack f, "")]]]
     | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
     -- audio:
     | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
@@ -570,7 +571,7 @@ generateFileTransclusionBlock (f, (tle,_,_,_,_,_)) = if null generateFileTranscl
     | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = [Div ("",["collapse"],[])
-                   [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[transclude the link if possible]"] (T.pack f, "")]]]
+                   [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[view link in-browser (if possible)]"] (T.pack f, "")]]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
