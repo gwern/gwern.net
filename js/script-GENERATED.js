@@ -5591,16 +5591,18 @@ Content = {
 
 	cachedContentForLink: (link) => {
 		//	Special case for the link being to the current page.
-		if (link.pathname == location.pathname)
+		if (   link.pathname == location.pathname
+			&& Content.cachedContent[Content.contentCacheKeyForLink(link)] == null)
 			Content.load(link);
 
 		return Content.cachedContent[Content.contentCacheKeyForLink(link)];
 	},
 
 	cachedDocumentForLink: (link) => {
+		let contentType = Content.contentTypeForLink(link);
 		let content = Content.cachedContentForLink(link);
 		return (content && content != "LOADING_FAILED"
-				? content.document 
+				? (contentType.referenceDataFromContent ? content.document : content)
 				: null);
 	},
 
@@ -5760,7 +5762,7 @@ Content = {
 	},
 
 	referenceDataFromContent: (content, link) => {
-		return Content.contentTypeForLink(link).referenceDataFromContent(content, link);
+		return (Content.contentTypeForLink(link).referenceDataFromContent?.(content, link) ?? { content: content });
 	},
 
 	/***********/
@@ -5792,7 +5794,6 @@ Content = {
 
 			.matches(URL|Element) => boolean
 			.isPageContent: boolean
-			.referenceDataFromContent(object, URL|Element) => object
 
 		... plus either these two:
 
@@ -5802,6 +5803,14 @@ Content = {
 		... or this one:
 
 			.contentFromLink(URL|Element) => object
+
+		A content type may also have the following optional members:
+
+			.referenceDataFromContent(object, URL|Element) => object
+
+				NOTE: If this method is not present, then .contentFromResponse
+				or .contentFromLink (whichever is present) should return a 
+				DocumentFragment instead of a dictionary object.
 	 */
 
 	contentTypeForLink: (link) => {
@@ -5879,9 +5888,9 @@ Content = {
 				//  END EXPERIMENTAL SECTION
 
 				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
-				let embed = newDocument(Content.objectHTMLForURL(embedSrc, "sandbox"));
+				let content = newDocument(Content.objectHTMLForURL(embedSrc, "sandbox"));
 
-				embed.querySelector("iframe, object").classList.add("loaded-not");
+				content.querySelector("iframe, object").classList.add("loaded-not");
 
 				/*	If a special ‘HTML’ or ‘archive’ URL is specified, use that, 
 					sans transformation. Otherwise, transform URL for embedding.
@@ -5903,15 +5912,7 @@ Content = {
 // 					}
 // 				}
 
-				return {
-					document: embed
-				};
-			},
-
-			referenceDataFromContent: (embed, link) => {
-				return {
-					content: embed.document
-				};
+				return content;
 			},
 
 // 			foreignSiteEmbedURLTransforms: [
@@ -6126,18 +6127,18 @@ Content = {
 			},
 
 			contentFromResponse: (response, link, sourceURL) => {
-				let codeDocument;
+				let content;
 
 				//	Parse (encoding and wrapping first, if need be).
 				if (   response.slice(0, 1) == "<"
 					&& link.pathname.endsWithAnyOf([ ".html", ".xml", ".svg" ]) == false) {
 					//	Syntax-highlighted code (already HTML-encoded).
-					codeDocument = newDocument(response);
+					content = newDocument(response);
 
 					//	We want <body> contents only, no metadata and such.
-					let nodes = Array.from(codeDocument.childNodes);
-					let codeWrapper = codeDocument.querySelector("div.sourceCode");
-					codeDocument.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
+					let nodes = Array.from(content.childNodes);
+					let codeWrapper = content.querySelector("div.sourceCode");
+					content.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
 
 					//	Mark truncated syntax-highlighted code files.
 					if (codeWrapper.nextElementSibling?.tagName == "P")
@@ -6148,26 +6149,18 @@ Content = {
 						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
 					);
-					codeDocument = newDocument(  `<pre class="raw-code"><code>`
+					content = newDocument(  `<pre class="raw-code"><code>`
 											   + htmlEncodedResponse
 											   + `</code></pre>`);
 				}
 
 				//	Inject line spans.
-				let codeBlock = codeDocument.querySelector("code");
+				let codeBlock = content.querySelector("code");
 				codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
 					line => (`<span class="line">${(line || "&nbsp;")}</span>`)
 				).join("\n");
 
-				return {
-					document: codeDocument
-				};
-			},
-
-			referenceDataFromContent: (codePage, link) => {
-				return {
-					content: codePage.document
-				};
+				return content;
 			},
 
 			codeFileExtensions: [
@@ -6206,11 +6199,11 @@ Content = {
 			},
 
 			contentFromResponse: (response, link, sourceURL) => {
-				let fragment = newDocument(response);
+				let content = newDocument(response);
 
 				let auxLinksLinkType = AuxLinks.auxLinksLinkType(sourceURL);
 				if (auxLinksLinkType) {
-					let auxLinksList = fragment.querySelector("ul, ol");
+					let auxLinksList = content.querySelector("ul, ol");
 					if (auxLinksList) {
 						auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
 						auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
@@ -6232,23 +6225,87 @@ Content = {
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 					source: "Content.contentTypes.localFragment.load",
-					container: fragment,
-					document: fragment,
+					container: content,
+					document: content,
 					loadLocation: sourceURL
 				});
 
-				return {
-					document: fragment
-				};
-			},
-
-			referenceDataFromContent: (fragment, link) => {
-				return {
-					content: fragment.document
-				};
+				return content;
 			},
 
 		    permittedContentTypes: [ "text/html" ]
+		},
+
+		remoteVideo: {
+			matches: (link) => {
+				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
+					return (Content.contentTypes.remoteVideo.youtubeId(link) != null);
+				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
+					return (Content.contentTypes.remoteVideo.vimeoId(link) != null);
+				} else {
+					return false;
+				}
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
+					let srcdocStyles =
+						  `<style>`
+						+ `* { padding: 0; margin: 0; overflow: hidden; } `
+						+ `html, body { height: 100%; } `
+						+ `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } `
+						+ `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }`
+						+ `</style>`;
+
+					let videoId = Content.contentTypes.remoteVideo.youtubeId(link);
+					let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
+					let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+					let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
+					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+
+					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
+						`class="youtube" srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
+				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
+					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
+					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
+						`class="vimeo" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
+				} else {
+					return null;
+				}
+			},
+
+			isYoutubeLink: (link) => {
+				return [ "www.youtube.com", "youtube.com", "youtu.be" ].includes(link.hostname);
+			},
+
+			youtubeId: (url) => {
+				let match = url.href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+				if (   match
+					&& match.length == 3
+					&& match[2].length == 11) {
+					return match[2];
+				} else {
+					return null;
+				}
+			},
+
+			isVimeoLink: (link) => {
+				return [ "vimeo.com" ].includes(link.hostname);
+			},
+
+			vimeoId: (url) => {
+				let match = url.pathname.match(/^\/([0-9]+)$/);
+				if (   match
+					&& match.length == 2) {
+					return match[1];
+				} else {
+					return null;
+				}
+			}
 		},
 
 		localDocument: {
@@ -6273,20 +6330,12 @@ Content = {
 
 			contentFromLink: (link) => {
 				let embedSrc = link.dataset.urlArchive ?? link.href;
-				let embed = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+				let content = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
 
-				embed.querySelector("iframe, object").classList.add("loaded-not");
+				content.querySelector("iframe, object").classList.add("loaded-not");
 
-				return {
-					document: embed
-				};
+				return content;
 			},
-
-			referenceDataFromContent: (embed, link) => {
-				return {
-					content: embed.document
-				};
-			}
 		},
 
 		localPage: {
@@ -10613,84 +10662,61 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    // Called by: Extracts.isVideoLink
-    // Called by: Extracts.videoForTarget
-    youtubeId: (url) => {
-        let match = url.href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (   match
-			&& match.length == 3
-            && match[2].length == 11) {
-            return match[2];
-        } else {
-            return null;
-        }
-    },
-
-    // Called by: Extracts.isVideoLink
-    // Called by: Extracts.videoForTarget
-	vimeoId: (url) => {
-		let match = url.pathname.match(/^\/([0-9]+)$/);
-		if (   match
-			&& match.length == 2) {
-			return match[1];
-		} else {
-			return null;
-		}
-	},
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isVideoLink: (target) => {
-        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-            return (Extracts.youtubeId(target) != null);
-        } else if ([ "vimeo.com" ].includes(target.hostname)) {
-        	return (Extracts.vimeoId(target) != null);
-        } else {
-            return false;
-        }
+        return Content.contentTypes.remoteVideo.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     videoForTarget: (target) => {
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
-        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-			let srcdocStyles =
-				  `<style>`
-				+ `* { padding: 0; margin: 0; overflow: hidden; } `
-				+ `html, body { height: 100%; } `
-				+ `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } `
-				+ `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }`
-				+ `</style>`;
-
-			let videoId = Extracts.youtubeId(target);
-			let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
-			let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-			let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-			let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
-
-			//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-			return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-				`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
-        } else if ([ "vimeo.com" ].includes(target.hostname)) {
-			let videoId = Extracts.vimeoId(target);
-			let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-        	return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-        		`allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
-		}
+		return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_VIDEO: (popup) => {
 		let target = popup.spawningTarget;
 
-		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
+		if (Content.contentTypes.remoteVideo.isYoutubeLink(target)) {
 			Extracts.popFrameProvider.addClassesToPopFrame(popup, "youtube");
-		} else if ([ "vimeo.com" ].includes(target.hostname)) {
+		} else if (Content.contentTypes.remoteVideo.isVimeoLink(target)) {
 			Extracts.popFrameProvider.addClassesToPopFrame(popup, "vimeo");
 		}
 
         return popup;
     },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_VIDEO: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_VIDEO(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_VIDEO",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+        //  Loading spinner.
+        Extracts.setLoadingSpinner(popFrame);
+    }
 };
 
 /*=-----------------------=*/

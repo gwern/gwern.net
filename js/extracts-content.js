@@ -883,84 +883,61 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    // Called by: Extracts.isVideoLink
-    // Called by: Extracts.videoForTarget
-    youtubeId: (url) => {
-        let match = url.href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (   match
-			&& match.length == 3
-            && match[2].length == 11) {
-            return match[2];
-        } else {
-            return null;
-        }
-    },
-
-    // Called by: Extracts.isVideoLink
-    // Called by: Extracts.videoForTarget
-	vimeoId: (url) => {
-		let match = url.pathname.match(/^\/([0-9]+)$/);
-		if (   match
-			&& match.length == 2) {
-			return match[1];
-		} else {
-			return null;
-		}
-	},
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isVideoLink: (target) => {
-        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-            return (Extracts.youtubeId(target) != null);
-        } else if ([ "vimeo.com" ].includes(target.hostname)) {
-        	return (Extracts.vimeoId(target) != null);
-        } else {
-            return false;
-        }
+        return Content.contentTypes.remoteVideo.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
     videoForTarget: (target) => {
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
-        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-			let srcdocStyles =
-				  `<style>`
-				+ `* { padding: 0; margin: 0; overflow: hidden; } `
-				+ `html, body { height: 100%; } `
-				+ `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } `
-				+ `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }`
-				+ `</style>`;
-
-			let videoId = Extracts.youtubeId(target);
-			let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
-			let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-			let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-			let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
-
-			//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-			return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-				`srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
-        } else if ([ "vimeo.com" ].includes(target.hostname)) {
-			let videoId = Extracts.vimeoId(target);
-			let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-        	return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-        		`allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
-		}
+		return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_VIDEO: (popup) => {
 		let target = popup.spawningTarget;
 
-		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
+		if (Content.contentTypes.remoteVideo.isYoutubeLink(target)) {
 			Extracts.popFrameProvider.addClassesToPopFrame(popup, "youtube");
-		} else if ([ "vimeo.com" ].includes(target.hostname)) {
+		} else if (Content.contentTypes.remoteVideo.isVimeoLink(target)) {
 			Extracts.popFrameProvider.addClassesToPopFrame(popup, "vimeo");
 		}
 
         return popup;
     },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_VIDEO: (popFrame, injectEventInfo = null) => {
+        let target = popFrame.spawningTarget;
+
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_VIDEO(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_VIDEO",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+        //  Loading spinner.
+        Extracts.setLoadingSpinner(popFrame);
+    }
 };
 
 /*=-----------------------=*/

@@ -1062,6 +1062,13 @@ iframe {
 	}
 }
 
+iframe.youtube {
+	aspect-ratio: 495 / 310;
+}
+iframe.vimeo {
+	aspect-ratio: 495 / 278;
+}
+
 object {
 	aspect-ratio: 8.5 / 11;
 }
