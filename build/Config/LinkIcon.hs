@@ -662,7 +662,7 @@ linkIconTestUnitsText =
          , ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "FF", "text,sans")
          , ("https://harpers.org/archive/1954/12/the-jet-propelled-couch/?single=1", "H", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
-         , ("https://history.nasa.gov/rogersrep/v2appf.htm",                                    "nasa", "svg")
+         , ("https://www.nasa.gov/history/rogersrep/v2appf.htm",                                    "nasa", "svg")
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg")
          , ("https://hpmor.com/chapter/2", "MoR", "text,tri,italic")
          , ("https://hpmor.com/notes/progress-report-2013-11-01/", "MoR", "text,tri,italic")

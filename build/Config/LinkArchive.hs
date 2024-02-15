@@ -744,7 +744,7 @@ whiteListMatchesFixed = [
       , "cognitivefun.net" -- interactive
       , "groups.google.com" -- low quality
       , "www.impactcybertrust.org" -- stable/service
-      , "old.reddit.com/r/DarkNetMarkets/" -- deleted by Reddit
+      , "old.reddit.com/r/DarkNetMarkets/" -- dead (banned) deleted by Reddit
       , "old.reddit.com/r/afinil/" -- over-18 so logged out SingleFile doesn't work
       , "old.reddit.com/r/SilkRoad/" -- over-18 so logged out SingleFile doesn't work
       , "reddit.com/r/gwern/.rss" -- news/portal
@@ -756,12 +756,9 @@ whiteListMatchesFixed = [
       , "trends.google.com" -- interactive
       , "landing.google.com/sre" -- stable
       , "onlinelibrary.wiley.com" -- low-quality archives
-      , "old.reddit.com/r/MLPtunes/" -- news/portal
-      , "old.reddit.com/r/TOUHOUMUSIC/" -- news/portal
-      , "old.reddit.com/r/Vocaloid/" -- news/portal
       , "thepiratebay." -- service
       , "reddit.com/user/gwern/" -- news/portal
-      , "old.reddit.com/r/gwern/" -- news/portal
+      , "old.reddit.com/r/gwern/" -- private
       , "snpedia.com" -- stable
       , "recapthelaw.org" -- service
       , "dspace.mit.edu" -- stable
@@ -773,11 +770,6 @@ whiteListMatchesFixed = [
       , "www.discoverbooks.com" -- service
       , "camelcamelcamel.com/" -- service
       , "1dollarscan.com/" -- service
-      , "old.reddit.com/r/DataHoarder/" -- news/portal
-      , "old.reddit.com/r/Piracy/" -- news/portal
-      , "old.reddit.com/r/PrequelMemes/" -- news/portal
-      , "old.reddit.com/r/emojipasta/" -- news/portal
-      , "old.reddit.com/r/explorables/" -- news/portal
       , "cryptome.org" -- stable
       , "danluu.com" -- stable
       , "getlamp.com" -- stable
@@ -856,12 +848,10 @@ whiteListMatchesFixed = [
       , "hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/" -- large binaries
       , "fursona.app" -- redirect to Google Colab
       , "old.reddit.com/r/reinforcementlearning/search" -- service
-      , "https://www.reddit.com/r/reinforcementlearning/" -- stable
       , "usesthis.com" -- stable
       , "modafinil-store.com" -- dead
       , "https://huggingface.co/spaces/teven-projects/calculator" -- interactive
       , "sevensecularsermons.org" -- stable
-      , "old.reddit.com/r/NavySealCopypasta/" -- updated/service
       , "listudy.org" -- service
       , "playground.tensorflow.org" -- interactive
       , "ciechanow.ski" -- interactive, JS widgets didn't preserve right
@@ -880,9 +870,6 @@ whiteListMatchesFixed = [
       , "tl.net/blogs/" -- low-quality archiving (screenshots/images break)
       , "metaculus.com" -- updated/service/stable
       , "simplify.so" -- service
-      , "old.reddit.com/r/IncreasinglyVerbose" -- service/updated
-      , "old.reddit.com/r/mlscaling/" -- service/updated
-      , "old.reddit.com/r/Parahumans/" -- service/updated
       , "old.reddit.com/domain/gameprogrammingpatterns.com/" -- service/updated
       , "ctan.org/pkg/" -- stable
       , "magicemail.io" -- service
@@ -1042,8 +1029,6 @@ whiteListMatchesFixed = [
       , "https://free.law/recap" -- homepage
       , "https://dominicfrisby.com/" -- homepage
       , "https://forum.effectivealtruism.org" -- stable
-      , "https://www.reddit.com/r/hangovereffect/" -- homepage
-      , "https://www.reddit.com/r/AnimeResearch/" -- homepage
       , "https://bwc.thelab.dc.gov/" -- low quality
       , "https://www.trubrain.com/" -- homepage
       , "https://energycontrol.org/quienes-somos/proyectos/" -- homepage
@@ -1274,8 +1259,6 @@ whiteListMatchesFixed = [
       , "https://vecta.io/nano" -- service
       , "https://jukebox.openai.com/" -- interactive
       , "https://www.photoprompts.io/" -- interactive
-      , "https://www.reddit.com/r/politics/" -- homepage
-      , "https://www.reddit.com/r/keto/" -- homepage
       , "https://danijar.com/project/dreamerv3/" -- low quality (video embeds)
       , "https://tonyzhaozh.github.io/aloha/" -- low quality (video embeds)
       , "https://maggieappleton.com/transcopyright-dreams#designing-speculative-interfaces" -- low quality (Figma embeds)
@@ -1311,3 +1294,21 @@ whiteListMatchesFixed = [
       , "https://smerf-3d.github.io/" -- low quality (video embeds)
       , "https://retool.com/pipes" -- low-quality (too much fancy JS; interactive?)
       ]
+      -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
+      -- , "https://www.reddit.com/r/politics/" -- homepage
+      -- , "https://www.reddit.com/r/keto/" -- homepage
+      -- , "https://www.reddit.com/r/AnimeResearch/" -- homepage
+      -- , "https://www.reddit.com/r/hangovereffect/" -- homepage
+      -- , "old.reddit.com/r/IncreasinglyVerbose" -- service/updated
+      -- , "old.reddit.com/r/mlscaling/" -- service/updated
+      -- , "old.reddit.com/r/Parahumans/" -- service/updated
+      -- , "https://www.reddit.com/r/reinforcementlearning/" -- stable
+      -- , "old.reddit.com/r/NavySealCopypasta/" -- updated/service
+      -- , "old.reddit.com/r/DataHoarder/" -- news/portal
+      -- , "old.reddit.com/r/Piracy/" -- news/portal
+      -- , "old.reddit.com/r/PrequelMemes/" -- news/portal
+      -- , "old.reddit.com/r/emojipasta/" -- news/portal
+      -- , "old.reddit.com/r/explorables/" -- news/portal
+      -- , "old.reddit.com/r/MLPtunes/" -- news/portal
+      -- , "old.reddit.com/r/TOUHOUMUSIC/" -- news/portal
+      -- , "old.reddit.com/r/Vocaloid/" -- news/portal

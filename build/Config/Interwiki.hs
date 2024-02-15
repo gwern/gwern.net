@@ -171,7 +171,8 @@ quoteOverrides =  ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli
 --
 -- Testing: this is tested in `Test` for: key-uniqueness, graph cycles, and value valid-as-URL. (We cannot require 'key valid as URI or URL', since sometimes we're correcting Unicode-in-URL.)
 redirectDB :: [(T.Text, T.Text)]
-redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https://en.wikipedia.org/wiki/" u in
+redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of arbitrary URLs (eg. other WMF projects, or for deleted articles, IA)
+                        else T.append "https://en.wikipedia.org/wiki/" u in
                map (\(a,b) -> (wp a, wp b)) $ [
           ("WP:RS", "Wikipedia:Reliable_sources")
           , ("%2420", "United_States_twenty-dollar_bill")
@@ -3206,7 +3207,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
           , ("Mohammad_bin_Salman", "Mohammed_bin_Salman")
           , ("Mohammed_Taheri-Azar", "2006_UNC_SUV_attack")
           , ("Mohammed_bin_Zayed_Al_Nahyan", "Mohamed_bin_Zayed_Al_Nahyan")
-          , ("MojoNation", "Mnet_(peer-to-peer_network)#MojoNation")
+          , ("MojoNation", "https://web.archive.org/web/20230423125705/https://en.wikipedia.org/wiki/Mnet_(peer-to-peer_network)")
           , ("Molecular_Point_Groups", "Molecular_symmetry")
           , ("Molecular_weight", "Molecular_mass")
           , ("Moleskines", "Moleskine")
@@ -5770,4 +5771,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u else T.append "https:/
         , ("U.S._Department_of_Transportation", "United_States_Department_of_Transportation")
         , ("Intrasexual_competition", "Female_intrasexual_competition")
         , ("Waka", "Waka_(poetry)")
+        , ("Mnet", "https://web.archive.org/web/20230423125705/https://en.wikipedia.org/wiki/Mnet_(peer-to-peer_network)")
         ]

@@ -135,8 +135,9 @@ tagsShort2LongRewrites =
    , ("ai/diffusion", "ai/nn/diffusion"), ("longevity/semaglutide", "longevity/glp/semaglutide"), ("dnm-archives", "dnm-archive"), ("ants", "ant"), ("alphazero", "alphago")
    , ("steganographic", "steganography"), ("stenography", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
-   , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")]
-   -- ("artificial-selection", "genetics/selection/artificial"), ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
+   , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
+   , ("artificial-selection", "genetics/selection/artificial") ]
+   -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
@@ -484,10 +485,10 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/transformer/gpt/4/nonfiction",       "GPT-4 nonfiction")
           , ("ai/nn/transformer/gpt/4/fiction",          "GPT-4 fiction")
           , ("ai/nn/transformer/gpt/4",                  "GPT-4")
-          , ("ai/nn/transformer/gpt/3",                  "GPT-3")
           , ("ai/nn/transformer/gpt/3/fiction",          "GPT-3 fiction")
           , ("ai/nn/transformer/gpt/3/nonfiction",       "GPT-3 nonfiction")
           , ("ai/nn/transformer/gpt/3/poetry",           "GPT-3 poetry")
+          , ("ai/nn/transformer/gpt/3",                  "GPT-3")
           , ("ai/nn/transformer/gpt/2",                  "GPT-2")
           , ("ai/nn/transformer/gpt/instruction-tuning", "instruct-tuning LMs")
           , ("ai/nn/transformer/gpt/jukebox",            "Jukebox")

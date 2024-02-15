@@ -77,7 +77,7 @@ tooltipToMetadataTestcases =
       , (("","Foo 2020"),        ("", "Foo", "2020"))
       , (("","Foo 2020-06-12"),  ("", "Foo", "2020-06-12"))
       , (("","John Smith 2020"), ("", "John Smith", "2020"))
-      , (("https://pdfobject.com/pdf/pdf_open_parameters_acro8.pdf#page=5","Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)"), ("Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)", "", ""))
+      , (("/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=5","Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)"), ("Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)", "", ""))
       ]
 
 arrowUp, arrowDown :: T.Text
