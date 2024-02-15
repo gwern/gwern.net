@@ -532,8 +532,22 @@ Annotations = { ...Annotations,
 				//	File includes (if any).
 				let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
 				let fileIncludesHTML = null;
-				if (fileIncludesElement)
-					fileIncludesHTML = fileIncludesElement.innerHTML;
+				if (fileIncludesElement) {
+					/*	Remove any file embed links that lack a valid content 
+						type (e.g., foreign-site links that have not been 
+						whitelisted for embedding).
+					 */
+					Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
+						if (Content.contentTypeForLink(includeLink) == null)
+							includeLink.remove();
+					});
+
+					/*	Do not include the file includes section if no valid
+						include-links remain.
+					 */
+					if (Transclude.allIncludeLinksInContainer(fileIncludesElement).length > 0)
+						fileIncludesHTML = fileIncludesElement.innerHTML;
+				}
 
 				//	Pop-frame title text.
 				let popFrameTitle = referenceElement.cloneNode(true);

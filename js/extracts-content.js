@@ -1400,8 +1400,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
-        return (   Content.contentTypes.foreignSite.matches(target)
-        		&& target.classList.contains("link-live"));
+        return Content.contentTypes.foreignSite.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
