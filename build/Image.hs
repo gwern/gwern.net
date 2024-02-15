@@ -30,6 +30,9 @@ import Utils (addClass, printRed, replace, anySuffix)
 isImageFilename :: FilePath -> Bool
 isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
 
+isVideoFilename :: FilePath -> Bool
+isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm"] -- we support only 2 types of video on gwern.net at present
+
 -------------------------------------------
 -- Dark-mode
 
@@ -132,9 +135,10 @@ imageMagickDimensions f =
   in
     do exists <- doesFileExist f'
        if not exists then return ("","") else
-        do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
+        do let f'' = if not (isVideoFilename f') then f' else f' ++ "-poster.jpg"
+           (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f'']
            case status of
-             ExitFailure exit -> error $ f ++ ":" ++ f' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
+             ExitFailure exit -> error $ f ++ ":" ++ f'' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
 
@@ -260,12 +264,12 @@ staticImg x = return x
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageLinkHeightWidthSet :: Inline -> IO Inline
 imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
-                                                        let p' = T.takeWhile (/='#') p in
-                                                         if (".png" `T.isSuffixOf` p' || ".jpg" `T.isSuffixOf` p') &&
+                                                        let p' = T.unpack $ T.takeWhile (/='#') p in
+                                                         if (isImageFilename p' || isVideoFilename p') &&
                                                           ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" $ T.unpack  p'
+                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" p'
                                                             if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
-                                                              do (h,w) <- imageMagickDimensions $ T.unpack p'
+                                                              do (h,w) <- imageMagickDimensions p'
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
                                                                                       ("image-width",T.pack w)])
