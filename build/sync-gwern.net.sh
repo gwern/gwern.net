@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-12 16:35:03 gwern"
+# When:  Time-stamp: "2024-02-13 11:24:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -299,13 +299,13 @@ else
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     syntaxHighlightByLibreoffice () { for FILE in "$@"; do
                                           TARGET=$(basename "$FILE")
-                                         soffice --convert-to html "$FILE" && mv "${TARGET%.*}.html" "${FILE}.html";
+                                         soffice --convert-to html "$FILE" >/dev/null && mv "${TARGET%.*}.html" "${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
                                      done
                                    }
     export -f syntaxHighlightByLibreoffice
     find _site/ -type f,l \
          -name "*.csv" -or -name ".doc" -or -name ".docx" -or -name ".ods" -or -name ".xls" -or -name ".xlsx" | \
-        sort | parallel --jobs "$N" syntaxHighlightByLibreoffice
+        sort | parallel --jobs 1 syntaxHighlightByLibreoffice # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
     set -e
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.

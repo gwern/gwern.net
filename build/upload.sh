@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-02-13 18:48:15 gwern"
+# When:  Time-stamp: "2024-02-14 15:36:08 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -80,12 +80,20 @@ _upload() {
   if [[ $# -eq 1 || "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
       if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
-          TIMESTAMPED="$(date '+%F')-$FILENAME"
-          mv "$FILENAME" "$TIMESTAMPED"
-          FILENAME="$TIMESTAMPED"
+          DIRNAME=$(dirname "$FILENAME")  # Extract the directory path
+          BASENAME=$(basename "$FILENAME")  # Extract the filename
+          TIMESTAMPED="$(date '+%F')-$BASENAME"  # Prefix the filename with the timestamp
+          if [ "$DIRNAME" = "." ]; then
+              # If the file is in the current directory, DIRNAME will be '.'
+              mv "$FILENAME" "$TIMESTAMPED"
+              FILENAME="$TIMESTAMPED"
+          else
+              # Reconstruct the full path with the timestamped filename
+              mv "$FILENAME" "$DIRNAME/$TIMESTAMPED"
+              FILENAME="$DIRNAME/$TIMESTAMPED"
+          fi
       fi
       TARGET=$(basename "$FILENAME")
-
       if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)
@@ -147,7 +155,7 @@ _upload() {
                   echo "/$TARGET $URL"
 
                   if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
-                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then image-margin-checker.py ~/wiki/"$TARGET"; fi
+                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then image-margin-checker.py ~/wiki/"$TARGET" | grep -F " : YES"; fi
 
                   firefox "$URL") &
 
