@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-16 10:40:56 gwern"
+When:  Time-stamp: "2024-02-16 12:05:19 gwern"
 License: CC-0
 -}
 
@@ -563,20 +563,25 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock fallbackP (f, (_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
-                                                     else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
+   titleCaption = if null tle then [] else [Str "[Expand to view “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
    generateFileTransclusionBlock'
-    | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
-                                                         [Para [Link ("", ["include-content", "include-lazy"], []) [Str "[view document in-browser]"] (T.pack f, "")]]]
+    | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
+                                                                  | isDocumentViewable f = [Str "[Expand to view document]"]
+                                                                  | otherwise            = [Str "[Expand to view code/data]"]
+                                                 in [Div ("",["collapse"],[])
+                                                      [Para [Link ("", ["include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
     -- audio/video:
     | Image.isVideoFilename f || hasExtensionS ".mp 3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = if not fallbackP then [] else
-                   [Para [Link ("",["include-content", "include-lazy", "collapse"],[]) [Str "[view link in-browser (if possible)]"] (T.pack f, "")]]
+                   [Para [Link ("",["include-content", "include-lazy", "collapse"],[])
+                          (if titleCaption/=[] then titleCaption else [Str "[Expand to view web page]"])
+                          (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
