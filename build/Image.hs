@@ -3,7 +3,7 @@
 module Image where
 
 import Control.Exception (onException)
-import Control.Monad (unless, void, when) -- (<=<)
+import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
@@ -31,7 +31,7 @@ isImageFilename :: FilePath -> Bool
 isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
 
 isVideoFilename :: FilePath -> Bool
-isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm"] -- we support only 2 types of video on gwern.net at present
+isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm"] -- we support only 2 types of video on Gwern.net at present
 
 -------------------------------------------
 -- Dark-mode
@@ -153,14 +153,15 @@ imageMagickDimensions f =
 addImgDimensions :: String -> IO String
 addImgDimensions html = do let stream  = parseTags html
                            dimensionized <- mapM staticImg stream
-                           posterized    <- addVideoPoster dimensionized
+                           -- posterized    <- addVideoPoster dimensionized
                            let stream' = renderTagsOptions renderOptions{optMinimize=whitelist,
                                                                          optRawTag = (`elem` ["script", "style"]) . map toLower}
-                                         posterized
+                                         dimensionized
                            return stream'
                            -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
+{-
 -- x = "          <section id=\"video\" class=\"level2\">\n            <h2><a href=\"#video\" title=\"Link to section: § 'Video'\">Video</a></h2>\n            <figure>\n              <video controls=\"controls\" preload=\"none\" loop=\"\"><source src=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\" type=\"video/mp4\"></video>\n              <figcaption>\n                <a href=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\">Training montage</a> of the 256px Danbooru2018-1K<a href=\"#fn4\" class=\"footnote-ref\" id=\"fnref4\" role=\"doc-noteref\"><sup>4</sup></a>\n              </figcaption>\n            </figure>\n          </section>"
 
 -- VIDEO POSTER images
@@ -212,6 +213,7 @@ generatePoster videoPath = do
 updateTagAttributes :: Tag String -> [(String, String)] -> Tag String
 updateTagAttributes (TagOpen tagType attrs) newAttrs = TagOpen tagType (attrs ++ newAttrs)
 updateTagAttributes tag _ = tag
+-}
 
 {- example illustration:
  TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
