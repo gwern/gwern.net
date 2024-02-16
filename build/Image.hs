@@ -191,23 +191,28 @@ staticImg x@(TagOpen "img" xs) = do
                 Just width'' -> case height' of
                                  Nothing       -> printRed "staticImg: Image height can't be read: " >> print x >> return x
                                  Just height'' ->
-                                   let -- preserve aspect ratio when we have to shrink to the minimum width:
-                                       imageWidth = width'' `min` 1400
-                                       imageShrunk = width'' /= imageWidth
-                                       imageShrinkRatio = (1400::Float) / (fromIntegral width'' :: Float)
-                                       imageHeight = if not imageShrunk then height'' else round (fromIntegral height'' * imageShrinkRatio)
+                                   let dims = sizeAspectRatioKV width'' height''
                                    in
                                      if (takeExtension p == ".svg") then
                                        -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
-                                       return (TagOpen "img" (uniq (("loading", "lazy"):
-                                                                    ("data-aspect-ratio", show width'' ++ " / " ++ show height''):xs)))
+                                       return $ TagOpen "img" $ uniq $ loading ++ dims ++ xs
                                      else
-                                       return (TagOpen "img" (uniq (loading ++  -- lazy load & async render all images
-                                                                   [("decoding", "async"),
-                                                                     ("height", show imageHeight), ("width", show imageWidth)]++xs)))
+                                       -- lazy load & async render all images
+                                       return $ TagOpen "img" $ uniq $ loading ++ [("decoding", "async")] ++ dims ++ xs
     else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
+
+-- return image dimensions packed into data-aspect-ratio/height/width key-value dictionary suitable for a <a> or <img>:
+sizeAspectRatioKV :: Int -> Int -> [(String,String)]
+sizeAspectRatioKV width height = -- preserve aspect ratio when we have to shrink to the minimum width:
+                             let imageWidth = width `min` 1400
+                                 imageShrunk = width /= imageWidth
+                                 imageShrinkRatio = (1400::Float) / (fromIntegral width :: Float)
+                                 imageHeight = if not imageShrunk then height else round (fromIntegral height * imageShrinkRatio)
+                              in [("data-aspect-ratio", show width ++ " / " ++ show height),
+                                  ("height", show imageHeight),
+                                  ("width", show imageWidth) ]
 
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageLinkHeightWidthSet :: Inline -> IO Inline
@@ -220,11 +225,12 @@ imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
                                                          do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" p'
                                                             if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
                                                               do (h,w) <- imageMagickDimensions p'
+                                                                 let aspectratio = map (\(a,b) -> (T.pack a, T.pack b)) $ take 1 $ sizeAspectRatioKV (read w::Int) (read h::Int)
                                                                  let posterKV = if h/="" && not (isVideoFilename p') then []
                                                                                 else [("video-poster", p `T.append` "-poster.jpg")]
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
-                                                                                      ("image-width",T.pack w)]++posterKV)
+                                                                                      ("image-width",T.pack w)]++aspectratio++posterKV)
                                                                          xs (p,t))
                                                        else return x
 imageLinkHeightWidthSet x = return x
