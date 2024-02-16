@@ -608,6 +608,16 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	if (Transclude.isIncludeLink(includeLink) == false)
 		includeLink.classList.add("include");
 
+	//  Import certain link classes.
+	/*  See corresponding note in annotations.js.
+		—SA 2024-02-16
+	 */
+	if (link instanceof HTMLAnchorElement)
+		[ "link-live" ].forEach(targetClass => {
+			if (link.classList.contains(targetClass))
+				includeLink.classList.add(targetClass);
+		});
+
 	return includeLink;
 }
 
