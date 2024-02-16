@@ -500,8 +500,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_AUX_LINKS_LINK: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_AUX_LINKS_LINK(popFrame, info);
@@ -599,8 +597,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_DROPCAP_LINK: (popup) => {
-        let target = popup.spawningTarget;
-
         //  Mini title bar.
         popup.classList.add("mini-title-bar");
 
@@ -609,8 +605,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_DROPCAP_LINK: (popin) => {
-        let target = popin.spawningTarget;
-
         //  No footer bar.
         popin.classList.add("no-footer-bar");
 
@@ -713,8 +707,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_CITATION: (popin) => {
-        let target = popin.spawningTarget;
-
         //  No footer bar.
         popin.classList.add("no-footer-bar");
 
@@ -815,8 +807,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_CITATION_BACK_LINK: (popin) => {
-        let target = popin.spawningTarget;
-
         //  No footer bar.
         popin.classList.add("no-footer-bar");
 
@@ -910,8 +900,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_REMOTE_VIDEO: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_REMOTE_VIDEO(popFrame, info);
@@ -975,8 +963,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_LOCAL_VIDEO: (popin) => {
-        let target = popin.spawningTarget;
-
         //  No footer bar.
         popin.classList.add("no-footer-bar");
 
@@ -985,8 +971,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_VIDEO: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_VIDEO(popFrame, info);
@@ -1066,8 +1050,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_LOCAL_AUDIO: (popin) => {
-        let target = popin.spawningTarget;
-
         //  No footer bar.
         popin.classList.add("no-footer-bar");
 
@@ -1076,8 +1058,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_AUDIO: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_AUDIO(popFrame, info);
@@ -1132,10 +1112,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.localImageForTarget
-    imageMaxWidth: 634.0,
-    imageMaxHeight: 453.0,
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalImageLink: (target) => {
         return Content.contentTypes.localImage.matches(target);
@@ -1145,10 +1121,7 @@ Extracts = { ...Extracts,
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-        	"data-image-max-width": Extracts.imageMaxWidth,
-        	"data-image-max-height": Extracts.imageMaxHeight
-        });
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1161,20 +1134,14 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_LOCAL_IMAGE: (popin) => {
-        let target = popin.spawningTarget;
-
-        //  No footer bar.
+		//	No footer bar.
         popin.classList.add("no-footer-bar");
 
         return popin;
     },
 
-    //  Called by: Extracts.rewritePopinContent_LOCAL_IMAGE
-    //  Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_IMAGE(popFrame, info);
@@ -1201,27 +1168,8 @@ Extracts = { ...Extracts,
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
 
-		//	We don’t need the full content inject handling, just ImageFocus.
-		ImageFocus.processImagesWithin(popFrame.body);
-    },
-
-    //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopinContent_LOCAL_IMAGE: (popin) => {
-        Extracts.rewritePopFrameContent_LOCAL_IMAGE(popin);
-
-        //  Remove extraneous classes from images in image popins.
-        popin.document.querySelector("img").classList.remove("spawns-popin");
-    },
-
-    //  Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
-    rewritePopupContent_LOCAL_IMAGE: (popup) => {
-        Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup);
-
-        //  Remove extraneous classes from images in image popups.
-        popup.document.querySelector("img").classList.remove("spawns-popup");
-
-        if (popup.document.querySelector("img[width][height]"))
-        	Extracts.popFrameProvider.addClassesToPopFrame(popup, "dimensions-specified");
+        if (popFrame.document.querySelector("img[width][height]"))
+        	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "dimensions-specified");
     },
 };
 
@@ -1269,8 +1217,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popFrame, info);
@@ -1334,8 +1280,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_LOCAL_CODE_FILE(popFrame, info);
@@ -1388,8 +1332,6 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_FOREIGN_SITE: (popFrame, injectEventInfo = null) => {
-        let target = popFrame.spawningTarget;
-
 		if (injectEventInfo == null) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				Extracts.rewritePopFrameContent_FOREIGN_SITE(popFrame, info);
