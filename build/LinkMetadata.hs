@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-16 12:05:19 gwern"
+When:  Time-stamp: "2024-02-16 17:52:57 gwern"
 License: CC-0
 -}
 
@@ -55,7 +55,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive)
-import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath)
+import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
@@ -586,8 +586,8 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = [Div ("", ["aux-l
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
 isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
-                       anyInfix f [".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml", -- Pandoc or native-browser
-                                   ".csv", ".doc", ".docx", ".ods", ".xls", ".xlsx"] -- LibreOffice
+                       anyInfix f [".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
+                       hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 

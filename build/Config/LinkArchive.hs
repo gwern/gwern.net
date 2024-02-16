@@ -6,11 +6,11 @@ import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find, delete)
 import Utils (sed, anyInfix, anyPrefix, anySuffix, replace)
 import Network.URI (parseURI, uriAuthority, uriFragment, uriPath, uriQuery, uriRegName, uriToString, URI, URIAuth)
 import Network.HTTP.Types.URI (parseQuery, renderQuery)
-import Data.ByteString.Char8 (pack, unpack)
-import Data.Text as T (Text)
+import qualified Data.ByteString.Char8 as C8 (pack, unpack)
+import qualified Data.Text as T (Text)
 import qualified Data.Map.Strict as M (fromList)
 
-import LinkMetadataTypes (ArchiveMetadata)
+import LinkMetadataTypes (ArchiveMetadata, hasHTMLSubstitute)
 
 archiveDelay :: Integer
 archiveDelay = 60
@@ -56,6 +56,8 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
   . transformURItoGW
   . transformWPtoMobileWP
   . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2"
+  -- have HTML substitutes (not syntax-highlighted versions); see LinkMetadata.isDocumentViewable filetypes
+  . (\u -> if not $ hasHTMLSubstitute u then u else u ++ ".html")
 
 -- called by `LinkArchive.testLinkRewrites`:
 localizeLinktestCases :: [(T.Text, -- original URL
@@ -152,10 +154,10 @@ transformURItoGW uri = fromMaybe uri $ do
 
     handleCommentId :: URI -> URI
     handleCommentId uri' =
-        let query = parseQuery . pack $ uriQuery uri'
+        let query = parseQuery . C8.pack $ uriQuery uri'
         in case lookup "commentId" query of
-            Just commentId -> uri' { uriPath = uriPath uri' ++ "/comment/" ++ unpack (fromJust commentId)
-                                  , uriQuery = unpack $ renderQuery True $ delete ("commentId", commentId) query }
+            Just commentId -> uri' { uriPath = uriPath uri' ++ "/comment/" ++ C8.unpack (fromJust commentId)
+                                  , uriQuery = C8.unpack $ renderQuery True $ delete ("commentId", commentId) query }
             Nothing -> uri'
 
     shouldTransform :: String -> String -> Bool
@@ -1293,6 +1295,7 @@ whiteListMatchesFixed = [
       , "https://google-research.github.io/lingvo-lab/translatotron3/" -- low quality (audio embeds)
       , "https://smerf-3d.github.io/" -- low quality (video embeds)
       , "https://retool.com/pipes" -- low-quality (too much fancy JS; interactive?)
+      , "https://nap.nationalacademies.org/read/10668/chapter/1" -- interactive
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage
