@@ -5888,7 +5888,14 @@ Content = {
 				//  END EXPERIMENTAL SECTION
 
 				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
-				let content = newDocument(Content.objectHTMLForURL(embedSrc, "sandbox"));
+				let additionalAttributes = [ ];
+
+				//	Determine sandbox settings.
+				additionalAttributes.push(Content.contentTypes.foreignSite.scriptsEnabledOnHosts.includes(link.hostname)
+										  ? `sandbox="allow-scripts allow-same-origin"`
+										  : `sandbox`);
+
+				let content = newDocument(Content.objectHTMLForURL(embedSrc, additionalAttributes.join(" ")));
 
 				content.querySelector("iframe, object").classList.add("loaded-not");
 
@@ -5942,7 +5949,11 @@ Content = {
 // 
 // 						return newDocument();
 // 					} ]
-// 			]
+// 			],
+
+			scriptsEnabledOnHosts: [
+				"docs.google.com"
+			]
 		},
 
 		tweet: {
