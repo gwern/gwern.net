@@ -13518,13 +13518,14 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 }, "rewrite", (info) => (info.container == document.body));
 
 /***************************************************************************/
-/*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
+/*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links
+	(only in the page-level TOC).
  */
 addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
     unwrapAll(".TOC li a > span:not([class])", eventInfo.container);
-}, "rewrite");
+}, "rewrite", (info) => (info.container == document.body));
 
 /**************************************************************************/
 /*  Update main page TOC with any sections within the initially loaded page
@@ -14154,8 +14155,8 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
 /*	Designate containers wherein colors (e.g. link colors) should be inverted
 	(because the container has a dark background).
  */
-addContentLoadHandler(GW.contentLoadHandlers.designatedColorInvertedContainers = (eventInfo) => {
-    GWLog("designatedColorInvertedContainers", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.designateColorInvertedContainers = (eventInfo) => {
+    GWLog("designateColorInvertedContainers", "rewrite.js", 1);
 
 	let selector = [
 		".admonition.warning",
