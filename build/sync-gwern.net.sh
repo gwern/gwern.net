@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-15 18:48:18 gwern"
+# When:  Time-stamp: "2024-02-16 10:48:45 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -307,6 +307,14 @@ else
          -name "*.csv" -or -name ".doc" -or -name ".docx" -or -name ".ods" -or -name ".xls" -or -name ".xlsx" | \
         sort | parallel --jobs 1 syntaxHighlightByLibreoffice & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
     set -e
+
+    # make sure all videos have 'poster' preview images:
+    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm"); do
+        POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
+                                        echo "Generating poster image for $VIDEO…"
+                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,1),scale=iw*sar:ih,setsar=1" -vframes 2 "$POSTER";
+                                    fi;
+    done &
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"

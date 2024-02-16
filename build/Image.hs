@@ -7,7 +7,7 @@ import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
-import Data.Maybe (isNothing)
+import Data.Maybe (isJust, isNothing)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
@@ -17,7 +17,7 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (isPrefixOf, isSuffixOf, pack, takeWhile, unpack, Text)
+import qualified Data.Text as T (append, isPrefixOf, isSuffixOf, pack, takeWhile, unpack, Text)
 
 import Data.FileStore.Utils (runShellCommand)
 
@@ -161,60 +161,6 @@ addImgDimensions html = do let stream  = parseTags html
                            -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
-{-
--- x = "          <section id=\"video\" class=\"level2\">\n            <h2><a href=\"#video\" title=\"Link to section: § 'Video'\">Video</a></h2>\n            <figure>\n              <video controls=\"controls\" preload=\"none\" loop=\"\"><source src=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\" type=\"video/mp4\"></video>\n              <figcaption>\n                <a href=\"/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4\">Training montage</a> of the 256px Danbooru2018-1K<a href=\"#fn4\" class=\"footnote-ref\" id=\"fnref4\" role=\"doc-noteref\"><sup>4</sup></a>\n              </figcaption>\n            </figure>\n          </section>"
-
--- VIDEO POSTER images
--- use tagsoup to go through a list of HTML tags looking for a `<video>` tag set of the form
--- "... <figure><video controls='controls' preload='none' loop><source src='/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4' type='video/mp4'></video><figcaption><a href='/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4'>Training montage</a> of the 256px Danbooru2018-1K^[Footnote 9.]</figcaption></figure> ..."
--- where the `<source>` can be parsed for the `src` attribute specifying the absolute video filepath. Then ffmpeg is called on it to dump the second frame (to avoid initial black frames), to filepath+"-poster.jpg".
--- This lets readers see what a video looks like beforehand, and also helps avoid layout shift when there is no poster & the video starts with much larger dimensions than the browser guessed.
---
--- | Process a list of HTML tags, looking for consecutive <video> and <source> tags.
--- If found, extract the video file path from the <source> tag and generate a poster image
--- from the second frame of the video. Then, add the poster image as an attribute to the <video> tag,
--- along with the image dimensions.
--- (GPT-4-rewritten.)
-addVideoPoster :: [Tag String] -> IO [Tag String]
-addVideoPoster [] = return []
-addVideoPoster (videoTag@(TagOpen "video" _):sourceTag@(TagOpen "source" sourceAttrs):xs) = do
-    putStrLn $ "Image.hs: addVideoPoster: videoTag: " ++ show videoTag
-    putStrLn $ "Image.hs: addVideoPoster: sourceTag: " ++ show sourceTag
-  -- Image.hs: addVideoPoster: videoTag: TagOpen "video" [("controls","controls"),("preload","none"),("class","width-full")]
-  -- Image.hs: addVideoPoster: sourceTag: TagOpen "source" [("src","/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm"),("type","video/webm; codecs=\"vp8.0, vorbis\"")]
-    updatedVideoTag <- updateVideoTag videoTag sourceAttrs
-    rest <- addVideoPoster xs
-    return (updatedVideoTag : sourceTag : rest)
-addVideoPoster (x:xs) = (x :) <$> addVideoPoster xs
--- | Update the given 'videoTag' with a poster attribute and dimensions, if a valid 'sourceAttrs' is provided.
--- Extract the video file path from 'sourceAttrs', generate a poster image, and add the poster image
--- and dimensions as attributes to the 'videoTag'.
-updateVideoTag :: Tag String -> [(String, String)] -> IO (Tag String)
-updateVideoTag videoTag sourceAttrs =
-    case lookup "src" sourceAttrs of
-        Nothing -> error "Image.hs: addVideoPoster: updateVideoTag: video-path not found in source tag."
-        Just videoPath | head videoPath == '/' -> do
-            posterPath <- generatePoster (tail videoPath)
-            (height, width) <- imageMagickDimensions ("/" ++ posterPath)
-            let updatedAttrs = [("poster", "/" ++ posterPath), ("height", height), ("width", width)]
-            return $ updateTagAttributes videoTag updatedAttrs
-        Just videoPath -> error $ "Image.hs: addVideoPoster: updateVideoTag: video-path (" ++ videoPath ++ ") didn't start with a '/'. Videos must be localized."
--- | Generate the poster image for the given video path.
--- If the poster image file does not already exist, use ffmpeg to create it from the second frame of the video.
-generatePoster :: FilePath -> IO FilePath
-generatePoster videoPath = do
-    let posterPath = videoPath ++ "-poster.jpg"
-    existsp <- doesFileExist posterPath
-    unless existsp $ do void $ runShellCommand "./" Nothing "ffmpeg" ["-i", videoPath, "-vf", "select=eq(n\\,1),scale=iw*sar:ih,setsar=1", "-vframes", "2", posterPath]
-                               -- posters shouldn't be *too* big or they are wasteful & pointless
-                        void $ runShellCommand "./" Nothing "convert" ["-quality", "20", "-resize", "1700x10000", posterPath]
-    return posterPath
--- | Update the attributes of a given tag by appending the provided new attributes.
-updateTagAttributes :: Tag String -> [(String, String)] -> Tag String
-updateTagAttributes (TagOpen tagType attrs) newAttrs = TagOpen tagType (attrs ++ newAttrs)
-updateTagAttributes tag _ = tag
--}
-
 {- example illustration:
  TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
@@ -225,7 +171,7 @@ staticImg x@(TagOpen "img" xs) = do
   let h = lookup "height" xs
   let w = lookup "width" xs
   let lazy = lookup "loading" xs
-  let loading = if isNothing lazy then [("loading","lazy")] else [] -- don't override a loading="eager"
+  let loading = if isJust lazy then [] else [("loading","lazy")] -- don't override a loading="eager"
   let Just p = lookup "src" xs
   if (isNothing h || isNothing w || isNothing lazy) &&
      not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
@@ -266,15 +212,19 @@ staticImg x = return x
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageLinkHeightWidthSet :: Inline -> IO Inline
 imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
+  let dimensionp = lookup "image-height" kvs in
+    if isJust dimensionp then return x else
                                                         let p' = T.unpack $ T.takeWhile (/='#') p in
                                                          if (isImageFilename p' || isVideoFilename p') &&
                                                           ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
                                                          do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" p'
                                                             if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
                                                               do (h,w) <- imageMagickDimensions p'
+                                                                 let posterKV = if h/="" && not (isVideoFilename p') then []
+                                                                                else [("video-poster", p `T.append` "-poster.jpg")]
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
-                                                                                      ("image-width",T.pack w)])
+                                                                                      ("image-width",T.pack w)]++posterKV)
                                                                          xs (p,t))
                                                        else return x
 imageLinkHeightWidthSet x = return x
@@ -283,5 +233,5 @@ imageLinkHeightWidthSet x = return x
 -- Negation: `loading="eager"`
 addLazyLoadingImage :: Inline -> Inline
 addLazyLoadingImage i@(Image (c, t, pairs) inlines (target, title)) = let lazy = lookup "loading" pairs in
-                                                                      if isNothing lazy then Image (c, t, ("loading","lazy"):pairs) inlines (target, title) else i
+                                                                      if isJust lazy then i else Image (c, t, ("loading","lazy"):pairs) inlines (target, title)
 addLazyLoadingImage x = x
