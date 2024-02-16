@@ -1132,10 +1132,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Used in: Extracts.localImageForTarget
-    imageMaxWidth: 634.0,
-    imageMaxHeight: 453.0,
-
     //  Called by: extracts.js (as `predicateFunctionName`)
     isLocalImageLink: (target) => {
         return Content.contentTypes.localImage.matches(target);
@@ -1145,10 +1141,7 @@ Extracts = { ...Extracts,
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-        	"data-image-max-width": Extracts.imageMaxWidth,
-        	"data-image-max-height": Extracts.imageMaxHeight
-        });
+        return newDocument(synthesizeIncludeLink(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1161,16 +1154,12 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
     preparePopin_LOCAL_IMAGE: (popin) => {
-        let target = popin.spawningTarget;
-
-        //  No footer bar.
+		//	No footer bar.
         popin.classList.add("no-footer-bar");
 
         return popin;
     },
 
-    //  Called by: Extracts.rewritePopinContent_LOCAL_IMAGE
-    //  Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_IMAGE: (popFrame, injectEventInfo = null) => {
         let target = popFrame.spawningTarget;
@@ -1201,27 +1190,8 @@ Extracts = { ...Extracts,
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
 
-		//	We don’t need the full content inject handling, just ImageFocus.
-		ImageFocus.processImagesWithin(popFrame.body);
-    },
-
-    //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopinContent_LOCAL_IMAGE: (popin) => {
-        Extracts.rewritePopFrameContent_LOCAL_IMAGE(popin);
-
-        //  Remove extraneous classes from images in image popins.
-        popin.document.querySelector("img").classList.remove("spawns-popin");
-    },
-
-    //  Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
-    rewritePopupContent_LOCAL_IMAGE: (popup) => {
-        Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup);
-
-        //  Remove extraneous classes from images in image popups.
-        popup.document.querySelector("img").classList.remove("spawns-popup");
-
-        if (popup.document.querySelector("img[width][height]"))
-        	Extracts.popFrameProvider.addClassesToPopFrame(popup, "dimensions-specified");
+        if (popFrame.document.querySelector("img[width][height]"))
+        	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "dimensions-specified");
     },
 };
 

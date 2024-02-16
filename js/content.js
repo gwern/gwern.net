@@ -781,11 +781,20 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
-				return newDocument(`<figure>`
-								 + `<video controls="controls" preload="none">`
-								 + `<source src="${link.href}">`
-								 + `</video></figure>`);
-						  
+				let content = newDocument(`<figure>`
+										+ `<video controls="controls" preload="none">`
+										+ `<source src="${link.href}">`
+										+ `</video></figure>`);
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.localVideo.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
 			},
 
 		    videoFileExtensions: [ "mp4", "webm" ]
@@ -808,10 +817,20 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
-				return newDocument(`<figure>`
-								 + `<audio controls="controls" preload="none">`
-								 + `<source src="${link.href}">`
-								 + `</video></figure>`);
+				let content = newDocument(`<figure>`
+										+ `<audio controls="controls" preload="none">`
+										+ `<source src="${link.href}">`
+										+ `</video></figure>`);
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.localAudio.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
 			},
 
 			audioFileExtensions: [ "mp3" ]
@@ -834,44 +853,16 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
-				let styles = ``;
-				if (link.pathname.endsWith(".svg")) {
-					//	Special handling for SVGs.
-					styles = `style="width: 100%; height: 100%"`;
-				} else {
-					let width = link.dataset.imageWidth ?? 0;
-					let height = link.dataset.imageHeight ?? 0;
-
-					//	Constrain dimensions, shrinking proportionally.
-					if (link.dataset.imageMaxWidth) {
-						let maxWidth = parseFloat(link.dataset.imageMaxWidth);
-						if (width > maxWidth) {
-							height *= maxWidth / width;
-							width = maxWidth;
-						}
-					}
-					if (link.dataset.imageMaxHeight) {
-						let maxHeight = parseFloat(link.dataset.imageMaxHeight);
-						if (height > maxHeight) {
-							width *= maxHeight / height;
-							height = maxHeight;
-						}
-					}
-
-					//	Specify dimensions in HTML and CSS.
-					if (   width > 0
-						&& height > 0)
-						styles = `width="${(link.dataset.imageWidth)}" `
-							   + `height="${(link.dataset.imageHeight)}" `
-							   + `style="width: ${width}px; height: ${height}px; aspect-ratio: ${width} / ${height}"`;
-				}
-
+				//	Import specified dimensions / aspect ratio.
+				let dimensions = link.pathname.endsWith(".svg")
+								 ? `data-aspect-ratio="${(link.dataset.imageAspectRatio)}"`
+								 : `width="${(link.dataset.imageWidth)}" height="${(link.dataset.imageHeight)}"`;
 
 				/*  Note that we pass in the original image-link’s classes; this
 					is good for classes like ‘invert’.
 				 */
 				let content = newDocument(`<figure><img
-											${styles}
+											${dimensions}
 											class="${link.classList}"
 											src="${link.href}"
 											loading="eager"
@@ -880,9 +871,18 @@ Content = {
 
 				//	Remove extraneous classes.
 				content.querySelector("img").classList.remove("link-page", 
-					"link-self", "link-annotated", "link-annotated-partial", "has-icon",
+					"link-self", "link-annotated", "link-annotated-partial", 
 					"has-annotation", "has-annotation-partial", "has-content",
-					"has-indicator-hook");
+					"has-icon", "has-indicator-hook", "spawns-popup", 
+					"spawns-popin");
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.localImage.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
 
 				return content;
 			},
