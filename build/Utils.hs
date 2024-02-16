@@ -194,6 +194,11 @@ inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", T
                -- fall through with a blank:
                _        -> " "::T.Text
 
+inline2Path :: Inline -> T.Text
+inline2Path (Link _ _ (path,_)) = path
+inline2Path (Image _ _ (path,_)) = path
+inline2Path x = error $ "Utils.inline2Path: called on an Inline for which there is no filepath target‽ " ++ show x
+
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
 addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code  (i, clss:clsses, ks) code

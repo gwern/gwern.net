@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-15 22:14:46 gwern"
+When:  Time-stamp: "2024-02-16 10:40:56 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower, isSpace, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text, isInfixOf)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -60,7 +60,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, inline2Path)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -472,9 +472,16 @@ addHasAnnotation _ z = z
 
 -- was this link given either a partial or full annotation?
 wasAnnotated :: Inline -> Bool
-wasAnnotated x@Link{} = hasClass "link-annotated" x || hasClass "link-annotated-partial" x
-wasAnnotated x@Image{} = hasClass "link-annotated" x || hasClass "link-annotated-partial" x
+wasAnnotated x@Link{}  = isAnnotatedLinkOrImage x
+wasAnnotated x@Image{} = isAnnotatedLinkOrImage x
 wasAnnotated x = error $ "LinkMetadata.wasAnnotated: tried to get annotation status of a non-Link/Image element, which makes no sense? " ++ show x
+isAnnotatedLinkOrImage :: Inline -> Bool
+isAnnotatedLinkOrImage x = let f = inline2Path x in
+                            hasClass "link-annotated" x ||
+                            hasClass "link-annotated-partial" x ||
+                            isVideoFilename (T.unpack f) ||
+                            "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
+                           ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
 
 generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
@@ -533,11 +540,11 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
-                generateFileTransclusionBlock (f, x)
+                generateFileTransclusionBlock True (f, x)
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock True (f, ("",undefined,undefined,undefined,undefined,undefined))
 
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
@@ -546,7 +553,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
-                                in [Para [link]] ++ (if wasAnnotated link then [] else generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined)))
+                                in [Para [link]] ++ (if wasAnnotated link then [] else generateFileTransclusionBlock False (f, ("",undefined,undefined,undefined,undefined,undefined)))
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
@@ -555,8 +562,8 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
-generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock (f, (_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
+generateFileTransclusionBlock :: Bool -> (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock fallbackP (f, (_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
                                                      else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
@@ -568,8 +575,8 @@ generateFileTransclusionBlock (f, (_,_,_,_,_,_)) = if null generateFileTransclus
     -- audio/video:
     | Image.isVideoFilename f || hasExtensionS ".mp 3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
-    | otherwise = [Div ("",["collapse"],[])
-                   [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[view link in-browser (if possible)]"] (T.pack f, "")]]]
+    | otherwise = if not fallbackP then [] else
+                   [Para [Link ("",["include-content", "include-lazy", "collapse"],[]) [Str "[view link in-browser (if possible)]"] (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
