@@ -595,7 +595,7 @@ Content = {
 
 			codeFileExtensions: [
 				//	Truncated at 1000 lines for preview.
-				"bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js",
+				"bash", "c", "conf", "css", "diff", "hs", "html", "js",
 				"json", "jsonl", "opml", "page", "patch", "php", "py", "R",
 				"sh", "xml", "yaml",
 				//	Non-syntax highlighted (due to lack of known format), but truncated:
@@ -764,7 +764,7 @@ Content = {
 			isPageContent: false,
 
 			contentFromLink: (link) => {
-				let embedSrc = link.dataset.urlArchive ?? link.href;
+				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
 				let content = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
 
 				content.querySelector("iframe, object").classList.add("loaded-not");
@@ -772,7 +772,7 @@ Content = {
 				return content;
 			},
 
-			documentFileExtensions: [ "html", "pdf" ]
+			documentFileExtensions: [ "html", "pdf", "csv", "doc", "docx", "ods", "xls", "xlsx" ]
 		},
 
 		localVideo: {
