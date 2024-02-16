@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-15 11:40:03 gwern"
+When:  Time-stamp: "2024-02-15 22:14:46 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower, isSpace, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -50,7 +50,7 @@ import Config.Misc as C (root)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
-import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename)
+import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
@@ -60,7 +60,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, parseRawAllClean, hasExtensionS, isLocal)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -348,7 +348,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
-                        Right finalHTML -> do finalHTML' <- if not ("<img " `T.isInfixOf` finalHTML) then return finalHTML else fmap T.pack $ addImgDimensions $ T.unpack finalHTML -- try to add image height=/width= attributes to `<img>` elements for faster rendering for annotations
+                        Right finalHTML -> do finalHTML' <- fmap T.pack $ addImgDimensions $ T.unpack finalHTML -- try to add image height=/width= attributes to `<img>` elements for faster rendering for annotations
                                               writeUpdatedFile "annotation" filepath' finalHTML'
              -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
              -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
@@ -470,6 +470,12 @@ addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))
     x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
 
+-- was this link given either a partial or full annotation?
+wasAnnotated :: Inline -> Bool
+wasAnnotated x@Link{} = hasClass "link-annotated" x || hasClass "link-annotated-partial" x
+wasAnnotated x@Image{} = hasClass "link-annotated" x || hasClass "link-annotated-partial" x
+wasAnnotated x = error $ "LinkMetadata.wasAnnotated: tried to get annotation status of a non-Link/Image element, which makes no sense? " ++ show x
+
 generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
   case ann of
@@ -540,7 +546,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
-                                in [Para [link]]
+                                in [Para [link]] ++ (if wasAnnotated link then [] else generateFileTransclusionBlock (f, ("",undefined,undefined,undefined,undefined,undefined)))
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
@@ -550,25 +556,17 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
+generateFileTransclusionBlock (f, (_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then []
                                                      else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
-   titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
+   -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
    generateFileTransclusionBlock'
     | isDocumentViewable f || isCodeViewable f = [Div ("",["collapse"],[])
                                                          [Para [Link ("", ["include-content", "include-lazy"], []) [Str "[view document in-browser]"] (T.pack f, "")]]]
     | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
-    -- audio:
-    | hasExtensionS ".mp3" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                     "<figure> <audio controls preload=\"none\" src=\"" ++ f ++ "\"></audio>" ++
-                          titleCaption ++ "</figure>" ] ]
-    -- video:
-    | hasExtensionS ".mp4" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                     "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type=\"video/mp4\"></video>" ++ titleCaption ++ "</figure>"]]
-    | hasExtensionS ".webm" f = [Para [RawInline (Format "HTML") $ T.pack $
-                                      "<figure><video controls=\"controls\" preload=\"none\" class=\"width-full\"><source src=\"" ++ f ++ "\" type='video/webm; codecs=\"vp8.0, vorbis\"'></video>" ++ titleCaption ++"</figure>"]]
-    | "https://www.youtube.com/watch?v=" `isPrefixOf` f = [Para [Link ("", ["include-content"], []) [Str "[YouTube video embed]"] (T.pack f, "")]]
+    -- audio/video:
+    | Image.isVideoFilename f || hasExtensionS ".mp 3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = [Div ("",["collapse"],[])
                    [Para [Link ("",["include-content", "include-lazy"],[]) [Str "[view link in-browser (if possible)]"] (T.pack f, "")]]]
