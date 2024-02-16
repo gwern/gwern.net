@@ -194,33 +194,39 @@ inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", T
                -- fall through with a blank:
                _        -> " "::T.Text
 
--- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
--- is not a Link/Span.
+-- Add or remove a class to a Link or Span; this is a null op if the class is already present or it is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
 addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code  (i, clss:clsses, ks) code
 addClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Image (i, clss:clsses, ks) s (url, tt)
 addClass clss x@(Link  (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link  (i, clss:clsses, ks) s (url, tt)
 addClass clss x@(Span  (i, clsses, ks) s)           = if clss `elem` clsses then x else Span  (i, clss:clsses, ks) s
-addClass _    x = x
+addClass clss x = error $ "Utils.addClass: attempted to add a class of an Inline where that makes no sense? " ++ show clss ++ " : " ++ show x
 removeClass :: T.Text -> Inline -> Inline
 removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsses then x else Code  (i, filter (/=clss) clsses, ks) code
 removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Image (i, filter (/=clss) clsses, ks) s (url, tt)
 removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link  (i, filter (/=clss) clsses, ks) s (url, tt)
 removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span  (i, filter (/=clss) clsses, ks) s
-removeClass _    x = x
+removeClass clss x = error $ "Utils.removeClass: attempted to remove a class of an Inline where that makes no sense? " ++ show clss ++ " : " ++ show x
+
+hasClass :: T.Text -> Inline -> Bool
+hasClass clss (Code  (_, clsses, _) _)   = clss `elem` clsses
+hasClass clss (Image (_, clsses, _) _ _) = clss `elem` clsses
+hasClass clss (Link (_, clsses, _) _ _)  = clss `elem` clsses
+hasClass clss (Span (_, clsses, _) _)    = clss `elem` clsses
+hasClass clss x = error $ "Utils.hasClass: attempted to check the class of an Inline where that makes no sense? " ++ show clss ++ " : " ++ show x
 
 removeKey :: T.Text -> Inline -> Inline
 removeKey key (Code  (i, cl, ks) code)        = Code  (i, cl, filter (\(k,_) -> k/=key) ks) code
 removeKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, filter (\(k,_) -> k/=key) ks) s (url, tt)
 removeKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, filter (\(k,_) -> k/=key) ks) s (url, tt)
 removeKey key (Span  (i, cl, ks) s)           = Span  (i, cl, filter (\(k,_) -> k/=key) ks) s
-removeKey _ x = x
+removeKey key x = error $ "Utils.removeKey: attempted to remove a key from the key-value dict of an Inline where that makes no sense? " ++ show key ++ " : " ++ show x
 addKey :: (T.Text,T.Text) -> Inline -> Inline
 addKey key (Code  (i, cl, ks) code)        = Code  (i, cl, nubOrd (key : ks)) code
 addKey key (Image (i, cl, ks) s (url, tt)) = Image (i, cl, nubOrd (key : ks)) s (url, tt)
 addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nubOrd (key : ks)) s (url, tt)
 addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nubOrd (key : ks)) s
-addKey _ x = x
+addKey key x = error $ "Utils.addKey: attempted to add a key from the key-value dict of an Inline where that makes no sense? " ++ show key ++ " : " ++ show x
 
 hasExtension :: T.Text -> T.Text -> Bool
 hasExtension ext p = extension p == ext

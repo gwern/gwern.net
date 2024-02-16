@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-07 12:12:14 gwern"
+When: Time-stamp: "2024-02-15 14:55:20 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -247,7 +247,7 @@ imageDimensionWidth d = field d $ \item -> do
                   metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
                   let (h,w) = case metadataMaybe of
                         Nothing -> ("530","441") -- /static/img/logo/logo-whitebg-large-border.png-530px.jpg dimensions
-                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath
+                        Just thumbnailPath -> let x@(result,_) = unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath in if result/="" then x else error ("failed to read dimensions of an image‽ " ++ show thumbnailPath ++ " : " ++ show x)
                   if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context String

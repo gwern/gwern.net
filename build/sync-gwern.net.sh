@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-13 11:24:49 gwern"
+# When:  Time-stamp: "2024-02-15 18:48:18 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -305,7 +305,7 @@ else
     export -f syntaxHighlightByLibreoffice
     find _site/ -type f,l \
          -name "*.csv" -or -name ".doc" -or -name ".docx" -or -name ".ods" -or -name ".xls" -or -name ".xlsx" | \
-        sort | parallel --jobs 1 syntaxHighlightByLibreoffice # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
+        sort | parallel --jobs 1 syntaxHighlightByLibreoffice & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
     set -e
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the codeblocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
@@ -403,7 +403,7 @@ else
 
     # essays only:
     ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
-    PAGES="$(find . -type f -name "*.page" | grep -F --invert-match -e '_site/' -e 'index' | sort -u)"
+    PAGES="$(find . -type f -name "*.page" | grep -F --invert-match -e '_site/' -e 'index' | sort --unique)"
     # essays+tags+annotations+similars+backlinks:
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
     PAGES_ALL="$(find ./ -type f -name "*.page" | grep -F --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
@@ -466,7 +466,7 @@ else
 
     ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
     λ(){ find metadata/annotation/ -name "*.html" \
-             | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort -u | \
+             | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique | \
              grep -E --invert-match -e '^see-also-append$' -e '^archive-not$' -e '^archive-local$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
                    -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
@@ -1114,6 +1114,9 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
+    λ(){ find ./doc/www/ -type f -not -name "*.html"  -and -not -name "*.pdf" -and -not -name "*.txt" -and -not -wholename "*www/misc*"; }
+    wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
+
     bold "Checking for PDF anomalies…"
     λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
                                 grep --invert-match 'PDF document' | cut -d ':' -f 1)"
@@ -1242,14 +1245,14 @@ else
     if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
         for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
-                         grep -E -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
+                         grep -E -e '^/' | cut --delimiter=' ' --field=1 | sort --unique); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
         for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
-                         grep -E -e '^https://gwern.net' | sort -u); do
+                         grep -E -e '^https://gwern.net' | sort --unique); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
