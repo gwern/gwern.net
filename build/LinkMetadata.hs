@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-16 17:52:57 gwern"
+When:  Time-stamp: "2024-02-17 12:50:38 gwern"
 License: CC-0
 -}
 
@@ -331,18 +331,15 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                       let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
-                      -- for partials, we skip the heavyweight processing:
                       unless (null abst) $ void $ createAnnotations md pandoc
-                      pandoc' <- walkM (localizeLink am) pandoc
-                      pandoc'' <- if null abst then return pandoc'
-                                    else do
-                                          let p = walk (linkLive . nominalToRealInflationAdjuster) $
+                      pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
-                                                  parseRawAllClean pandoc'
-                                          walkM (invertImageInline <=< imageLinkHeightWidthSet) p
-                      let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc''
+                                                  parseRawAllClean pandoc
+                                    walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
+                      let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
+
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
                                                           putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
@@ -576,7 +573,7 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = [Div ("", ["aux-l
                                                       [Para [Link ("", ["include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
     -- audio/video:
-    | Image.isVideoFilename f || hasExtensionS ".mp 3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
+    | Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = if not fallbackP then [] else
                    [Para [Link ("",["include-content", "include-lazy", "collapse"],[])
@@ -585,7 +582,7 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = [Div ("", ["aux-l
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
-isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
+isDocumentViewable f = -- (isLocal (T.pack f) && hasExtensionS ".html" f) ||
                        anyInfix f [".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
                        hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
