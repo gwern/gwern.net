@@ -15401,16 +15401,30 @@ document.addEventListener("selectionchange", GW.selectionChangedRevealElement = 
 			revealElement(element);
 	}
 });
-/* sidenotes.js: standalone JS library for parsing HTML documents with Pandoc-style footnotes and dynamically repositioning them into the left/right margins, when browser windows are wide enough.
-Sidenotes (see https://gwern.net/Sidenotes ) are superior to footnotes where possible because they enable the reader to immediately look at them without requiring user action to 'go to' or 'pop up' the footnotes; even floating footnotes require effort by the reader.
-sidenotes.js is inspired by the Tufte-CSS sidenotes (https://edwardtufte.github.io/tufte-css/#sidenotes), but where Tufte-CSS uses static footnotes inlined into the body of the page (requiring modifications to Pandoc's compilation), which doesn't always work well for particularly long or frequent sidenotes, sidenotes.js will rearrange sidenotes to fit as best as possible, and will respond to window changes.
-Particularly long sidenotes are also partially 'collapsed'.
-Styling (especially for oversized-sidenotes which must scroll) is done in /static/css/default.css "SIDENOTES" section.
+/*	sidenotes.js: standalone JS library for parsing HTML documents with 
+	Pandoc-style footnotes and dynamically repositioning them into the 
+	left/right margins, when browser windows are wide enough.
 
-Author: Said Achmiz
-2019-03-11
-license: MIT (derivative of footnotes.js, which is PD)
-*/
+	Sidenotes (see https://gwern.net/Sidenotes ) are superior to footnotes where 
+	possible because they enable the reader to immediately look at them without 
+	requiring user action to “go to” or “pop up” the footnotes; even floating 
+	footnotes require effort by the reader.
+
+	sidenotes.js is inspired by the Tufte-CSS sidenotes 
+	(https://edwardtufte.github.io/tufte-css/#sidenotes), but where Tufte-CSS 
+	uses static footnotes inlined into the body of the page (requiring 
+	modifications to Pandoc’s compilation), which doesn’t always work well for 
+	particularly long or frequent sidenotes, sidenotes.js will rearrange 
+	sidenotes to fit as best as possible, and will respond to window changes.
+
+	Particularly long sidenotes are also partially “collapsed”. Styling 
+	(especially for oversized-sidenotes which must scroll) is done in 
+	/static/css/default.css “SIDENOTES” section.
+
+	Author: Said Achmiz
+	2019-03-11
+	license: MIT (derivative of footnotes.js, which is PD)
+ */
 
 /*****************/
 /*	Configuration.
@@ -15419,16 +15433,16 @@ Sidenotes = {
 	/*  The `sidenoteSpacing` constant defines the minimum vertical space that
 		is permitted between adjacent sidenotes; any less, and they are
 		considered to be overlapping.
-		*/
+	 */
 	sidenoteSpacing: 60.0,
 
 	/*	This includes the border width.
-		*/
+	 */
 	sidenotePadding: 13.0,
 
 	/*	Elements which occupy (partially or fully) the sidenote columns, and
 		which can thus collide with sidenotes.
-		*/
+	 */
 	potentiallyOverlappingElementsSelectors: [
 		".width-full img",
 		".width-full video",
@@ -15457,7 +15471,7 @@ Sidenotes = {
  */
 Sidenotes = { ...Sidenotes,
 	/*  Media query objects (for checking and attaching listeners).
-		*/
+	 */
 	mediaQueries: {
 		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`)
 	},
@@ -15502,7 +15516,7 @@ Sidenotes = { ...Sidenotes,
 		its counterpart is the in-text citation. We want a target counterpart to be
 		highlighted along with the target itself; therefore we apply a special
 		‘targeted’ class to the target counterpart.
-		*/
+	 */
 	updateTargetCounterpart: () => {
 		GWLog("Sidenotes.updateTargetCounterpart", "sidenotes.js", 1);
 
@@ -15557,7 +15571,7 @@ Sidenotes = { ...Sidenotes,
 
 	/*  Hide sidenotes within currently-collapsed collapse blocks. Show
 		sidenotes not within currently-collapsed collapse blocks.
-		*/
+	 */
 	updateSidenotesInCollapseBlocks: () => {
 		GWLog("Sidenotes.updateSidenotesInCollapseBlocks", "sidenotes.js", 1);
 
@@ -15582,13 +15596,13 @@ Sidenotes = { ...Sidenotes,
 	},
 
 	/*  This function actually calculates and sets the positions of all sidenotes.
-		*/
+	 */
 	updateSidenotePositions: () => {
 		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
 
 		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
 			don’t do anything.
-			*/
+		 */
 		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
 			return;
 
@@ -15599,7 +15613,7 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.sidenotes.forEach(sidenote => {
 			/*  Check whether the sidenote is currently hidden (i.e., within a 
 				currently-collapsed collapse block or similar). If so, skip it.
-				*/
+			 */
 			if (sidenote.classList.contains("hidden")) {
 				Sidenotes.hiddenSidenoteStorage.append(sidenote);
 				return;
@@ -15628,20 +15642,20 @@ Sidenotes = { ...Sidenotes,
 			side.append(sidenote);
 
 			/*  Mark sidenotes which are cut off vertically.
-				*/
+			 */
 			let sidenoteOuterWrapper = sidenote.firstElementChild;
 			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
 		});
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
-			*/
+		 */
 		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
 		/*  Examine all potentially overlapping elements (ie. non-sidenote
 			elements that may appear in, or extend into, the side columns).
-			*/
+		 */
 		let proscribedVerticalRangesLeft = [ ];
 		let proscribedVerticalRangesRight = [ ];
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelectors.join(", ")).forEach(potentiallyOverlappingElement => {
@@ -15752,7 +15766,7 @@ Sidenotes = { ...Sidenotes,
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its
 				citation is within a currently-collapsed collapse block)? If so,
 				skip it.
-				*/
+			 */
 			if (sidenote.classList.contains("hidden")) {
 				Sidenotes.hiddenSidenoteStorage.append(sidenote);
 				continue;
@@ -15770,7 +15784,7 @@ Sidenotes = { ...Sidenotes,
 
 			/*	These functions are used to sort layout cells by best fit for 
 				placing the current sidenote.
-			*/
+			 */
 			let vDistanceToCell = (cell) => {
 				if (   citationBoundingRect.top > cell.rect.top 
 					&& citationBoundingRect.top < cell.rect.bottom)
@@ -15910,7 +15924,7 @@ Sidenotes = { ...Sidenotes,
 	},
 
 	/*  Destroys the HTML structure of the sidenotes.
-		*/
+	 */
 	deconstructSidenotes: () => {
 		GWLog("Sidenotes.deconstructSidenotes", "sidenotes.js", 1);
 
@@ -15932,13 +15946,13 @@ Sidenotes = { ...Sidenotes,
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
-		*/
+	 */
 	constructSidenotes: () => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
 		/*  Do nothing if constructSidenotes() somehow gets run extremely early 
 			in the page load process.
-			*/
+		 */
 		let markdownBody = document.querySelector("#markdownBody");
 		if (markdownBody == null)
 			return;
@@ -15963,7 +15977,7 @@ Sidenotes = { ...Sidenotes,
 		}));
 
 		/*  Create and inject the sidenotes.
-			*/
+		 */
 		Sidenotes.sidenotes = [ ];
 		//  The footnote references (citations).
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
@@ -15990,7 +16004,7 @@ Sidenotes = { ...Sidenotes,
 
 			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
 				numbers).
-				*/
+			 */
 			sidenote.append(newElement("A", { 
 				"class": "sidenote-self-link",
 				"href": `#sn${noteNumber}` 
@@ -16016,7 +16030,7 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		/*  Bind sidenote mouse-hover events.
-			*/
+		 */
 		Sidenotes.citations.forEach(citation => {
 			let sidenote = Sidenotes.counterpart(citation);
 
@@ -16087,13 +16101,13 @@ Sidenotes = { ...Sidenotes,
 		GWLog("Sidenotes.cleanup", "sidenotes.js", 1);
 
 		/*	Deactivate active media queries.
-			*/
+		 */
 		cancelDoWhenMatchMedia("Sidenotes.rewriteHashForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.rewriteCitationTargetsForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.addOrRemoveEventHandlersForCurrentMode");
 
 		/*	Remove sidenotes & auxiliaries from HTML.
-			*/
+		 */
 		Sidenotes.deconstructSidenotes();
 
 		GW.notificationCenter.fireEvent("Sidenotes.cleanupDidComplete");
@@ -16110,7 +16124,7 @@ Sidenotes = { ...Sidenotes,
 
 		… and, of course, correct layout of the sidenotes, even in tricky cases
 		where the citations are densely packed and the sidenotes are long.
-		*/
+	 */
 	setup: () => {
 		GWLog("Sidenotes.setup", "sidenotes.js", 1);
 
@@ -16120,7 +16134,7 @@ Sidenotes = { ...Sidenotes,
 			end up scrolled to the appropriate element - footnote or sidenote). 
 			Add an active media query to rewrite the hash whenever the viewport 
 			width media query changes.
-			*/
+		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
 			let regex = new RegExp(mediaQuery.matches ? "^#fn[0-9]+$" : "^#sn[0-9]+$");
 			let prefix = (mediaQuery.matches ? "#sn" : "#fn");
@@ -16145,14 +16159,14 @@ Sidenotes = { ...Sidenotes,
 
 		/*	We do not bother to construct sidenotes on mobile clients, and so
 			the rest of this is also irrelevant.
-			*/
+		 */
 		if (GW.isMobile())
 			return;
 
 		/*	Update the margin note style, and add event listener to re-update it
 			when the viewport width changes. Also add event handler to update
 			margin note style in transcluded content and pop-frames.
-			*/
+		 */
 		addContentLoadHandler((info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				Sidenotes.setMarginNoteStyle(info);
@@ -16192,7 +16206,7 @@ Sidenotes = { ...Sidenotes,
 			We also add an active media query to rewrite the links if a change
 			in viewport width results in switching modes, as well as an event
 			handler to rewrite footnote reference links in transcluded content.
-			*/
+		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				citation.href = (mediaQuery.matches ? "#sn" : "#fn") + Notes.noteNumberFromHash(citation.hash);
@@ -16271,12 +16285,12 @@ Sidenotes = { ...Sidenotes,
 			/*  After the hash updates, properly highlight everything, if needed.
 				Also, if the hash points to a sidenote whose citation is in a
 				collapse block, expand it and all collapse blocks enclosing it.
-				*/
+			 */
 			GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when full-width media lazy-loads.
-				*/
+			 */
 			GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (info) => {
 				if (isWithinCollapsedBlock(info.mediaElement))
 					return;
@@ -16286,21 +16300,21 @@ Sidenotes = { ...Sidenotes,
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when collapse blocks are expanded/collapsed.
-				*/
+			 */
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (info) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, { condition: (info) => (info.collapseBlock.closest("#markdownBody") != null) });
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when new content is loaded (e.g. via transclusion).
-				*/
+			 */
 			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (info) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, { condition: (info) => (info.document == document) });
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.
-				*/
+			 */
 			addWindowResizeListener(Sidenotes.windowResized = (event) => {
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
@@ -16332,7 +16346,7 @@ Sidenotes = { ...Sidenotes,
 			}, "Sidenotes.unSlideSidenotesOnScroll", { defer: true });
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
-				*/
+			 */
 			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
@@ -16342,7 +16356,7 @@ Sidenotes = { ...Sidenotes,
 			removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
-				*/
+			 */
 			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
 			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
@@ -16371,7 +16385,7 @@ Sidenotes = { ...Sidenotes,
 
 		/*  Construct the sidenotes whenever content is injected into the main
 			page (including the initial page load).
-			*/
+		 */
 		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
