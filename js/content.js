@@ -792,12 +792,37 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
+				//	Import specified dimensions / aspect ratio.
+				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+							   + `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}"`;
+
+				//	Determine video type and poster pathname.
 				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
 				let posterPathname = link.pathname + "-poster.jpg";
-				let content = newDocument(`<figure>`
-										+ `<video controls="controls" preload="none" poster="${posterPathname}">`
-										+ `<source src="${link.href}" type="video/${videoFileExtension}">`
+
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
+				 */
+				let content = newDocument(`<figure><video 
+											${dimensions}
+											class="${link.classList}"
+											controls="controls" 
+											preload="none" 
+											poster="${posterPathname}"
+											>`
+										+ `<source 
+											src="${link.href}" 
+											type="video/${videoFileExtension}"
+											>`
 										+ `</video></figure>`);
+
+				//	Remove extraneous classes.
+				content.querySelector("video").classList.remove("link-page", 
+					"link-self", "link-annotated", "link-annotated-partial", 
+					"has-annotation", "has-annotation-partial", "has-content",
+					"has-icon", "has-indicator-hook", "spawns-popup", 
+					"spawns-popin");
 
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -867,12 +892,12 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = link.pathname.endsWith(".svg")
-								 ? `data-aspect-ratio="${(link.dataset.imageAspectRatio)}"`
-								 : `width="${(link.dataset.imageWidth)}" height="${(link.dataset.imageHeight)}"`;
+				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+							   + `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}"`;
 
-				/*  Note that we pass in the original image-link’s classes; this
-					is good for classes like ‘invert’.
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
 				let content = newDocument(`<figure><img
 											${dimensions}

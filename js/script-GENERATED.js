@@ -92,6 +92,18 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 	return `<span class="placeholder" data-uuid="${uuid}"></span>`;
 }
 
+/*****************************************************************************/
+/*	Generate new UUIDs for any placeholder elements in the given container. 
+	(Necessary when using a DocumentFragment to make a copy of a subtree; 
+	 otherwise - since inject triggers are deleted after triggering once - any 
+	 placeholders in the copied subtree will never get replaced.)
+ */
+function regeneratePlaceholderIds(container) {
+	container.querySelectorAll(".placeholder").forEach(placeholder => {
+		placeholder.dataset.uuid = onInject(null, GW.elementInjectTriggers[placeholder.dataset.uuid]);
+	});
+}
+
 
 /**********/
 /* ASSETS */
@@ -6368,12 +6380,37 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
+				//	Import specified dimensions / aspect ratio.
+				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+							   + `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}"`;
+
+				//	Determine video type and poster pathname.
 				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
 				let posterPathname = link.pathname + "-poster.jpg";
-				let content = newDocument(`<figure>`
-										+ `<video controls="controls" preload="none" poster="${posterPathname}">`
-										+ `<source src="${link.href}" type="video/${videoFileExtension}">`
+
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
+				 */
+				let content = newDocument(`<figure><video 
+											${dimensions}
+											class="${link.classList}"
+											controls="controls" 
+											preload="none" 
+											poster="${posterPathname}"
+											>`
+										+ `<source 
+											src="${link.href}" 
+											type="video/${videoFileExtension}"
+											>`
 										+ `</video></figure>`);
+
+				//	Remove extraneous classes.
+				content.querySelector("video").classList.remove("link-page", 
+					"link-self", "link-annotated", "link-annotated-partial", 
+					"has-annotation", "has-annotation-partial", "has-content",
+					"has-icon", "has-indicator-hook", "spawns-popup", 
+					"spawns-popin");
 
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -6443,12 +6480,12 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = link.pathname.endsWith(".svg")
-								 ? `data-aspect-ratio="${(link.dataset.imageAspectRatio)}"`
-								 : `width="${(link.dataset.imageWidth)}" height="${(link.dataset.imageHeight)}"`;
+				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+							   + `width="${(link.dataset.imageWidth)}" `
+							   + `height="${(link.dataset.imageHeight)}"`;
 
-				/*  Note that we pass in the original image-link’s classes; this
-					is good for classes like ‘invert’.
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
 				let content = newDocument(`<figure><img
 											${dimensions}
@@ -12810,8 +12847,8 @@ addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (event
     });
 }, "rewrite");
 
-/********************************************************************/
-/*  Designate full-width figures as such (with a ‘width-full’ class).
+/***********************************************************************/
+/*  Prepare full-width (class `width-full`) figures; add listeners, etc.
  */
 addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (eventInfo) => {
     GWLog("prepareFullWidthFigures", "rewrite.js", 1);
@@ -12840,11 +12877,12 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         }, { once: true });
     });
 
-    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause
-        re-layout of e.g. sidenotes). Do this only after page layout is
-        complete, to avoid spurious re-layout at initial page load.
-     */
     doWhenPageLayoutComplete(() => {
+		/*  Update ‘load’ listener for any lazy-loaded media which has not 
+			already loaded (as it might cause re-layout of e.g. sidenotes). Do 
+			this only after page layout is complete, to avoid spurious re-layout
+			at initial page load.
+		 */
         allFullWidthMedia.forEach(fullWidthMedia => {
             constrainCaptionWidth(fullWidthMedia);
             if (fullWidthMedia.loadListener) {
@@ -12857,6 +12895,7 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
                 }, { once: true });
             }
         });
+
         //  Add listener to update caption max-width when window resizes.
         addWindowResizeListener(event => {
             allFullWidthMedia.forEach(constrainCaptionWidth);
@@ -13249,15 +13288,26 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
         removeFullWidthBlockMargins();
     }, () => {
         allFullWidthBlocks.forEach(fullWidthBlock => {
+			//	Compensate for block indentation due to nesting (e.g., lists).
+        	let additionalLeftAdjustmentPx = "0px";
+        	let enclosingListItem = fullWidthBlock.closest("li");
+        	if (enclosingListItem) {
+				let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
+				let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
+				additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
+        	}
+
             fullWidthBlock.style.marginLeft = `calc(
                                                     (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
                                                   + (var(--GW-full-width-block-layout-side-margin))
                                                   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+                                                  + (${additionalLeftAdjustmentPx} / 2.0)
                                                 )`;
             fullWidthBlock.style.marginRight = `calc(
                                                      (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
                                                    + (var(--GW-full-width-block-layout-side-margin))
                                                    - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+                                                   - (${additionalLeftAdjustmentPx} / 2.0)
                                                 )`;
         });
     });
@@ -15990,17 +16040,19 @@ Sidenotes = { ...Sidenotes,
 			let noteNumber = Notes.noteNumberFromHash(citation.hash);
 
 			//  Create the sidenote outer containing block...
-			let sidenote = newElement("DIV", { "class": "sidenote", "id": `sn${noteNumber}` });
+			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
-			sidenote.innerHTML = `<div class="sidenote-outer-wrapper"><div class="sidenote-inner-wrapper">` 
-							   + (referencedFootnote 
-							   	  ? referencedFootnote.innerHTML 
-							   	  : "Loading sidenote contents, please wait…")
-							   + `</div></div>`;
-			sidenote.outerWrapper = sidenote.querySelector(".sidenote-outer-wrapper");
-			sidenote.innerWrapper = sidenote.querySelector(".sidenote-inner-wrapper");
+			let sidenoteContents = newDocument(referencedFootnote 
+											   ? referencedFootnote.childNodes 
+											   : "Loading sidenote contents, please wait…");
+			regeneratePlaceholderIds(sidenoteContents);
+			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
+				class: "sidenote-outer-wrapper" 
+			})).appendChild(sidenote.innerWrapper = newElement("DIV", { 
+				class: "sidenote-inner-wrapper" 
+			})).append(sidenoteContents);
 
 			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
 				numbers).

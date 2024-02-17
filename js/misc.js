@@ -92,6 +92,18 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 	return `<span class="placeholder" data-uuid="${uuid}"></span>`;
 }
 
+/*****************************************************************************/
+/*	Generate new UUIDs for any placeholder elements in the given container. 
+	(Necessary when using a DocumentFragment to make a copy of a subtree; 
+	 otherwise - since inject triggers are deleted after triggering once - any 
+	 placeholders in the copied subtree will never get replaced.)
+ */
+function regeneratePlaceholderIds(container) {
+	container.querySelectorAll(".placeholder").forEach(placeholder => {
+		placeholder.dataset.uuid = onInject(null, GW.elementInjectTriggers[placeholder.dataset.uuid]);
+	});
+}
+
 
 /**********/
 /* ASSETS */
