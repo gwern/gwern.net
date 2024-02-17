@@ -6368,9 +6368,11 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
+				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
+				let posterPathname = link.pathname + "-poster.jpg";
 				let content = newDocument(`<figure>`
-										+ `<video controls="controls" preload="none">`
-										+ `<source src="${link.href}">`
+										+ `<video controls="controls" preload="none" poster="${posterPathname}">`
+										+ `<source src="${link.href}" type="video/${videoFileExtension}">`
 										+ `</video></figure>`);
 
 				//  Fire contentDidLoad event.
