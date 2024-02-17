@@ -14952,7 +14952,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseBlock.classList.add("expand-on-hover");
 
 		let collapseWrapper;
-		if ([ "DIV", "SECTION", "SPAN" ].includes(collapseBlock.tagName)) {
+		if ([ "DIV", "SECTION", "SPAN", "A" ].includes(collapseBlock.tagName)) {
+			//	Handle collapse-inducing include-links.
+			if (collapseBlock.tagName == "A")
+				collapseBlock = wrapElement(wrapElement(collapseBlock, null, "P", true, [ "collapse", "expand-on-hover" ]),
+											null, "DIV", true, [ "collapse", "expand-on-hover" ]);
+
 			//	No additional wrapper needed for these tag types.
 			collapseWrapper = collapseBlock;
 
