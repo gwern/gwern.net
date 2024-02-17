@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-16 10:48:45 gwern"
+# When:  Time-stamp: "2024-02-17 12:47:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -51,7 +51,7 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N=28
+    N=25
     SLOW="true"
     SKIP_DIRECTORIES=""
     TODAY=$(date '+%F')
@@ -191,7 +191,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N9 -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -312,7 +312,22 @@ else
     for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm"); do
         POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
                                         echo "Generating poster image for $VIDEO…"
-                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,1),scale=iw*sar:ih,setsar=1" -vframes 2 "$POSTER";
+                                        # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles. User has no idea what it is until they click to begin download the (possibly huge) video file. This also causes layout shift as the `<video>` element expands to the proper size of the video.
+                                        #
+                                        # We would like user to see, on load, preview of video: a single frame, displayed as still image (usually first frame is fine). (Even if the first frame or whatever frame we choose is uninformative, in any case this solves the layout shift problem.)
+                                        #
+                                        # Solution: the `poster="foo.jpg"` attribute of the HTML <video> element. Its value is URL of image file, to be shown as preview (and used for layout sizing of video element), prior to the user clicking to download and play video. Example:
+                                        #
+                                        # <video controls="controls" preload="none" loop="" poster="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png"><source src="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4" type="video/mp4"></video>
+                                        #
+                                        # How to generate poster image file? Use ffmpeg:
+                                        #
+                                        # ffmpeg -i 2019-06-03-gwern-biggan-danbooru1k-256px.mp4 -vf "select=eq(n\,0),scale=iw*sar:ih,setsar=1" -vframes 1 2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png
+                                        #
+                                        # (A frame other than the first can be extracted by putting in a higher number in the `select=eq(n\,0)` part of the command, e.g. `select=eq(n\,99)` would give the 100th frame.) We then heavily compress them quality-wise (they're just placeholders).
+                                        # Solved? No. Because posters are still reasonably large (eg. /face could load >1MB of posters because it has so many videos in it!), and because `<img>` lazy-loading doesn't apply to posters (due to poorly-conceived standards <https://github.com/whatwg/html/issues/6636> which short-sightedly implemented `poster=` as a hack without thinking about how this is reinventing `<img>` badly), we have a problem with bandwidth usage. So, we don't actually use `poster=` per se, we instead use a data attribute `data-video-poster` to store it, and hand-implement lazy-loading with IntersectionObservers /sigh).
+                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,2),scale=iw*sar:ih,setsar=1" -vframes 1 "$POSTER";
+                                        mogrify -quality 15 "$POSTER"
                                     fi;
     done &
 
@@ -536,7 +551,7 @@ else
              `## blacklist of fraudsters or bad papers:` \
              grep -F \
                   `### authors:` \
-                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' \
+                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' -e 'Changhwan Yoon' -e 'Sam Yoon' \
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
@@ -577,6 +592,21 @@ else
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | grep -F --invert-match -e '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
     wrap λ "Empty files somewhere."
+
+    λ(){ check_dirs() {
+             for dir in "$@"; do
+                 if [ -d "$dir" ]; then
+                     if find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.page" | read; then
+                         echo "Directory $dir contains files other than 'index.page':"
+                         find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.page"
+                     fi
+                 else
+                     echo "$dir is not a valid directory!"
+                 fi
+             done
+         }
+         check_dirs "./doc/www/" "./doc/newest/" "./doc/newsletter/"; }
+    wrap λ "Stray files in ./doc/ subdirectories that should not contain any files besides the 'index.page' tag-directory file."
 
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "grep -F --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
