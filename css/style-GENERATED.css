@@ -5434,6 +5434,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     min-height: var(--GW-popups-video-popup-min-height);
 }
 
+.popup-body.video video {
+    max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
+    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+    object-fit: contain;
+    outline: none;
+}
+
 .popup-body.video.youtube iframe {
     width: var(--GW-popups-video-youtube-iframe-width);
     height: var(--GW-popups-video-youtube-iframe-height);
