@@ -17,13 +17,13 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (append, isPrefixOf, isSuffixOf, pack, takeWhile, unpack, Text)
+import qualified Data.Text as T (append, isSuffixOf, pack, takeWhile, unpack, Text, replace)
 
 import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
-import Utils (addClass, printRed, replace, anySuffix)
+import Utils (addClass, printRed, replace, anySuffix, isLocal)
 
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
 -- excludes ".psd"
@@ -219,10 +219,10 @@ imageLinkHeightWidthSet :: Inline -> IO Inline
 imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
   let dimensionp = lookup "image-height" kvs in
     if isJust dimensionp then return x else
-                                                        let p' = T.unpack $ T.takeWhile (/='#') p in
+                                                        let p' = T.unpack $ T.takeWhile (/='#') $ T.replace "https://gwern.net/" "/" p in
                                                          if (isImageFilename p' || isVideoFilename p') &&
-                                                          ("https://gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ replace "https://gwern.net" "" p'
+                                                          isLocal (T.pack p') then
+                                                         do exists <- doesFileExist $ tail p'
                                                             if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
                                                               do (h,w) <- imageMagickDimensions p'
                                                                  let aspectratio = map (\(a,b) -> (T.pack a, T.pack b)) $ take 1 $ sizeAspectRatioKV (read w::Int) (read h::Int)
