@@ -602,8 +602,8 @@ addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (event
     });
 }, "rewrite");
 
-/********************************************************************/
-/*  Designate full-width figures as such (with a ‘width-full’ class).
+/***********************************************************************/
+/*  Prepare full-width (class `width-full`) figures; add listeners, etc.
  */
 addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (eventInfo) => {
     GWLog("prepareFullWidthFigures", "rewrite.js", 1);
@@ -632,11 +632,12 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         }, { once: true });
     });
 
-    /*  Re-add ‘load’ listener for lazy-loaded media (as it might cause
-        re-layout of e.g. sidenotes). Do this only after page layout is
-        complete, to avoid spurious re-layout at initial page load.
-     */
     doWhenPageLayoutComplete(() => {
+		/*  Update ‘load’ listener for any lazy-loaded media which has not 
+			already loaded (as it might cause re-layout of e.g. sidenotes). Do 
+			this only after page layout is complete, to avoid spurious re-layout
+			at initial page load.
+		 */
         allFullWidthMedia.forEach(fullWidthMedia => {
             constrainCaptionWidth(fullWidthMedia);
             if (fullWidthMedia.loadListener) {
@@ -649,6 +650,7 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
                 }, { once: true });
             }
         });
+
         //  Add listener to update caption max-width when window resizes.
         addWindowResizeListener(event => {
             allFullWidthMedia.forEach(constrainCaptionWidth);
@@ -1041,15 +1043,26 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
         removeFullWidthBlockMargins();
     }, () => {
         allFullWidthBlocks.forEach(fullWidthBlock => {
+			//	Compensate for block indentation due to nesting (e.g., lists).
+        	let additionalLeftAdjustmentPx = "0px";
+        	let enclosingListItem = fullWidthBlock.closest("li");
+        	if (enclosingListItem) {
+				let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
+				let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
+				additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
+        	}
+
             fullWidthBlock.style.marginLeft = `calc(
                                                     (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
                                                   + (var(--GW-full-width-block-layout-side-margin))
                                                   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+                                                  + (${additionalLeftAdjustmentPx} / 2.0)
                                                 )`;
             fullWidthBlock.style.marginRight = `calc(
                                                      (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
                                                    + (var(--GW-full-width-block-layout-side-margin))
                                                    - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+                                                   - (${additionalLeftAdjustmentPx} / 2.0)
                                                 )`;
         });
     });
