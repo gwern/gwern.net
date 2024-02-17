@@ -6161,6 +6161,13 @@ Content = {
 					//	Mark truncated syntax-highlighted code files.
 					if (codeWrapper.nextElementSibling?.tagName == "P")
 						codeWrapper.classList.add("truncated");
+
+					//	Set ‘line’ class and fix blank lines.
+					Array.from(content.querySelector("code").children).forEach(lineSpan => {
+						lineSpan.classList.add("line");
+						if (lineSpan.innerHTML.length == 0)
+							lineSpan.innerHTML = "&nbsp;";
+					});
 				} else {
 					//	“Raw” code.
 					let htmlEncodedResponse = response.replace(
@@ -6168,15 +6175,15 @@ Content = {
 						c => ('&#' + c.charCodeAt(0) + ';')
 					);
 					content = newDocument(  `<pre class="raw-code"><code>`
-											   + htmlEncodedResponse
-											   + `</code></pre>`);
-				}
+										  + htmlEncodedResponse
+										  + `</code></pre>`);
 
-				//	Inject line spans.
-				let codeBlock = content.querySelector("code");
-				codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
-					line => (`<span class="line">${(line || "&nbsp;")}</span>`)
-				).join("\n");
+					//	Inject line spans.
+					let codeBlock = content.querySelector("code");
+					codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
+						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
+					).join("\n");
+				}
 
 				return content;
 			},
