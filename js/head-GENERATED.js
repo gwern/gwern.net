@@ -411,14 +411,14 @@ function newElement(tagName, attributes = { }, properties = { }) {
         an empty DocumentFragment
 
     a DocumentFragment
-        a DocumentFragment containing the given DocumentFragment’s children
+        a DocumentFragment containing the given DocumentFragment’s child nodes
 
     a string
         a DocumentFragment containing the HTML content that results from parsing
         the string
 
     a Node
-        a DocumentFragment containing the Node
+        a DocumentFragment containing the node
 
     a NodeList
         a DocumentFragment containing the nodes

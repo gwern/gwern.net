@@ -92,6 +92,18 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 	return `<span class="placeholder" data-uuid="${uuid}"></span>`;
 }
 
+/*****************************************************************************/
+/*	Generate new UUIDs for any placeholder elements in the given container. 
+	(Necessary when using a DocumentFragment to make a copy of a subtree; 
+	 otherwise - since inject triggers are deleted after triggering once - any 
+	 placeholders in the copied subtree will never get replaced.)
+ */
+function regeneratePlaceholderIds(container) {
+	container.querySelectorAll(".placeholder").forEach(placeholder => {
+		placeholder.dataset.uuid = onInject(null, GW.elementInjectTriggers[placeholder.dataset.uuid]);
+	});
+}
+
 
 /**********/
 /* ASSETS */
@@ -15990,17 +16002,19 @@ Sidenotes = { ...Sidenotes,
 			let noteNumber = Notes.noteNumberFromHash(citation.hash);
 
 			//  Create the sidenote outer containing block...
-			let sidenote = newElement("DIV", { "class": "sidenote", "id": `sn${noteNumber}` });
+			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
-			sidenote.innerHTML = `<div class="sidenote-outer-wrapper"><div class="sidenote-inner-wrapper">` 
-							   + (referencedFootnote 
-							   	  ? referencedFootnote.innerHTML 
-							   	  : "Loading sidenote contents, please wait…")
-							   + `</div></div>`;
-			sidenote.outerWrapper = sidenote.querySelector(".sidenote-outer-wrapper");
-			sidenote.innerWrapper = sidenote.querySelector(".sidenote-inner-wrapper");
+			let sidenoteContents = newDocument(referencedFootnote 
+											   ? referencedFootnote.childNodes 
+											   : "Loading sidenote contents, please wait…");
+			regeneratePlaceholderIds(sidenoteContents);
+			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
+				class: "sidenote-outer-wrapper" 
+			})).appendChild(sidenote.innerWrapper = newElement("DIV", { 
+				class: "sidenote-inner-wrapper" 
+			})).append(sidenoteContents);
 
 			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
 				numbers).
