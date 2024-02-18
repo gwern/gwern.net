@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-17 21:36:42 gwern"
+When:  Time-stamp: "2024-02-17 21:39:49 gwern"
 License: CC-0
 -}
 
@@ -572,9 +572,8 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
                                                                   | otherwise            = [Str "[Expand to view code/data]"]
                                                  in [Div ("",["collapse"],[])
                                                       [Para [Link ("", ["include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
-    | Image.isImageFilename f = [Para [Image ("",["width-full"],[]) [] (T.pack f,"")]]
-    -- audio/video:
-    | Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
+    -- image/video/audio:
+    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = if not fallbackP then [] else
                    [Para [Link ("",["include-content", "include-lazy", "collapse"],[])
