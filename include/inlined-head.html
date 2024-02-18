@@ -862,6 +862,16 @@ img:not(.invert):not(.invert-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
+
+img[src$=".svg"].invert,
+img[src$=".svg"].invert-auto {
+	background-color: transparent;
+}
+img[src$=".svg"].invert:hover,
+img[src$=".svg"].invert-auto:hover {
+    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
+}
+
 /*	Image alt-text.
  */
 img.invert::before,
@@ -941,6 +951,6 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 	background-color: var(--GW-wikipedia-image-background-color);
 }
 </style>
-<link rel="stylesheet" href="/static/css/head.css?v=1708275027">
-<script src="/static/js/head.js?v=1708275027"></script>
+<link rel="stylesheet" href="/static/css/head.css?v=1708284645">
+<script src="/static/js/head.js?v=1708284645"></script>
 <link rel="preload" href="/static/img/icon/icons.svg?v=1707106059" as="image">

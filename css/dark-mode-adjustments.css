@@ -195,6 +195,16 @@ img:not(.invert):not(.invert-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
+
+img[src$=".svg"].invert,
+img[src$=".svg"].invert-auto {
+	background-color: transparent;
+}
+img[src$=".svg"].invert:hover,
+img[src$=".svg"].invert-auto:hover {
+    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
+}
+
 /*	Image alt-text.
  */
 img.invert::before,
