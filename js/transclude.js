@@ -222,7 +222,7 @@
 	2. Include template
 	-------------------
 
-	The `data-include-template` attribute allows selection of include template
+	The `data-include-template` attribute allows selection of include template 
 	to use. (Note that some include data sources specify a template by default;
 	the `data-include-template` attribute overrides the default in such cases.)
 	If a template is specified, the included content is treated as a template

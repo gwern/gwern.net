@@ -6903,7 +6903,7 @@ Content = {
 	2. Include template
 	-------------------
 
-	The `data-include-template` attribute allows selection of include template
+	The `data-include-template` attribute allows selection of include template 
 	to use. (Note that some include data sources specify a template by default;
 	the `data-include-template` attribute overrides the default in such cases.)
 	If a template is specified, the included content is treated as a template
@@ -9730,7 +9730,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation",
-			"data-template": "annotation-blockquote-not"
+			"data-include-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -9854,7 +9854,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial",
-			"data-template": "annotation-blockquote-not"
+			"data-include-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -9899,7 +9899,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-template": "annotation-blockquote-not"
+		"data-include-template": "annotation-blockquote-not"
 	}));
 
 	//	Add the whole thing to the pop-frame.
