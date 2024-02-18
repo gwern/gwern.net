@@ -3,12 +3,11 @@
 @ini_set('memory_limit', "256M");
 
 $input_file_path = $argv[1];
-$output_file_suffix = $argv[2] ?? '-deconstructed';
-
 $input_file = file_get_contents($input_file_path);
 
-preg_match('/^(.+)(\.[^\.]+)$/', $input_file_path, $m);
-$output_file_path = "{$m[1]}{$output_file_suffix}{$m[2]}";
+preg_match('/^(.+\/)?([^\/]+)\.html$/', $input_file_path, $m);
+$asset_directory = "{$m[1]}{$m[2]}";
+$asset_base_name = $m[2];
 
 $asset_type_map = [
 	'application/font-woff' => 'woff',
@@ -58,7 +57,7 @@ $asset_count = 0;
 // $output_file .= substr($input_file, $offset);
 
 $output_file = preg_replace_callback('/([\'"]?)data:([^;]+);base64,([^\'"\)\s]+)(\1)/', function ($m) {
-	global $input_file_path, $asset_type_map, $asset_count;
+	global $input_file_path, $asset_directory, $asset_base_name, $asset_type_map, $asset_count;
 
 	$type = $m[2];
 	$data = $m[3];
@@ -66,21 +65,29 @@ $output_file = preg_replace_callback('/([\'"]?)data:([^;]+);base64,([^\'"\)\s]+)
 
 	$asset_suffix = '-asset-' . (++$asset_count);
 	$asset_extension = $asset_type_map[$type] ?? 'dat';
-	$asset_path = "{$input_file_path}{$asset_suffix}.{$asset_extension}";
+	$asset_name = "{$asset_base_name}{$asset_suffix}.{$asset_extension}";
+	$asset_path = "{$asset_directory}/{$asset_name}";
 
-	$encoded_length = strlen($data);
-// 	echo "Saving asset #{$asset_count} (encoded length: {$encoded_length} bytes)...\n";
+	file_force_contents($asset_path, base64_decode($data));
 
-	file_put_contents($asset_path, base64_decode($data));
-
-	preg_match('/[^\/]+$/', $asset_path, $m);
-	$asset_name = $m[0];
-
-	return "{$quote}{$asset_name}{$quote}";
+	return "{$quote}{$asset_base_name}/{$asset_name}{$quote}";
 }, $input_file);
 
-// echo "Saving output file...\n";
+$output_file = preg_replace('/<img/', '<img loading="lazy" decoding="async"', $output_file);
 
-file_put_contents($output_file_path, $output_file);
+`mv {$input_file_path} {$input_file_path}.bak`;
+file_put_contents($input_file_path, $output_file);
+
+## FUNCTIONS
+
+function file_force_contents($path, $contents){
+	$parts = explode('/', $path);
+	$file = array_pop($parts);
+	$path = '';
+	foreach ($parts as $part)
+		if (!is_dir($path .= "{$part}/"))
+			mkdir($path);
+	file_put_contents("{$path}{$file}", $contents);
+}
 
 ?>

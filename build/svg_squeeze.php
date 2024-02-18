@@ -57,9 +57,9 @@ function file_force_contents($path, $contents){
 	$file = array_pop($parts);
 	$path = '';
 	foreach ($parts as $part)
-		if (!is_dir($path .= "/{$part}"))
+		if (!is_dir($path .= "{$part}/"))
 			mkdir($path);
-	file_put_contents("{$path}/{$file}", $contents);
+	file_put_contents("{$path}{$file}", $contents);
 }
 
 ?>
