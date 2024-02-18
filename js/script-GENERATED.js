@@ -3252,6 +3252,11 @@ Popups = {
 
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
+
+		requestAnimationFrame(() => {
+			//	Set scroll view height.
+			popup.body.style.setProperty("--popframe-scroll-view-height", popup.scrollView.clientHeight + "px");
+		});
 	},
 
 	/****************/
@@ -4301,6 +4306,9 @@ Popins = {
 			//	Disable rendering progress indicator (spinner).
 			if (target.popin)
 				Popins.removeClassesFromPopFrame(target.popin, "rendering");
+
+			//	Set scroll view height.
+			popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
 		});
 	},
 

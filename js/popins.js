@@ -462,6 +462,9 @@ Popins = {
 			//	Disable rendering progress indicator (spinner).
 			if (target.popin)
 				Popins.removeClassesFromPopFrame(target.popin, "rendering");
+
+			//	Set scroll view height.
+			popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
 		});
 	},
 

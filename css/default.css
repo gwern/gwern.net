@@ -3455,6 +3455,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     vertical-align: text-top;
 }
 
+.popframe-body:not(.object) iframe,
+.popframe-body:not(.object) object {
+	max-height: calc(var(--popframe-scroll-view-height) - 6 * var(--base-font-size));
+}
+
 /*=-----------------=*/
 /*= POP-FRAME TYPES =*/
 /*=-----------------=*/
