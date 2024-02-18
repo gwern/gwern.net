@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-13 18:25:57 gwern"
+# When:  Time-stamp: "2024-02-17 22:15:01 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -415,5 +415,12 @@ mvuri () {
   echo "$SOURCE" "$DESTINATION"
   # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
   is_downloading "$SOURCE"
-  mv "$SOURCE" "$DESTINATION"
+  if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
+      mv "$SOURCE" "$DESTINATION"
+      php ./static/build/deconstruct_singlefile.php "$DESTINATION"
+  else
+      mv "$SOURCE" "$DESTINATION"
+  fi
+
+
 }
