@@ -5008,7 +5008,7 @@ Annotations = { ...Annotations,
 					/*	Do not include the file includes section if no valid
 						include-links remain.
 					 */
-					if (Transclude.allIncludeLinksInContainer(fileIncludesElement).length > 0)
+					if (isNodeEmpty(fileIncludesElement) == false)
 						fileIncludesHTML = fileIncludesElement.innerHTML;
 				}
 
