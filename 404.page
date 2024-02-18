@@ -14,7 +14,7 @@ error404: true
 backlink: False
 ...
 
-![You went too far.](/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg "Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’."){.float-right .outline-not width="452" height="452"}
+![You went too far.](/static/img/logo/logo-unifrakturmaguntia-lowercase-h.svg "Image of blackletter lowercase letter ‘H’, alluding to the ‘G’ Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the ‘G’."){.float-right .outline-not width="452" height="452" loading="eager" .invert .image-focus-not}
 
 <div class="epigraph">
 > Every shrub, every tree—<br />if one has not forgotten<br />where they were planted—<br />has beneath the fallen snow<br />some vestige of its form.
@@ -72,7 +72,7 @@ Or look at a list of **pages by traffic**:
 - [Darknet Market mortality risks](/dnm-survival "Branwen 2013"){.backlink-not .icon-not}
 - [LSD microdosing RCT](/lsd-microdosing "Branwen 2012"){.backlink-not .icon-not}
 - [DNM-related arrests, 2011–2015](/dnm-arrest "Branwen 2012"){.backlink-not .icon-not}
-- [`/docs/newsletter/index`](/doc/newsletter/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/newsletter/index`](/doc/newsletter/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [Complexity no Bar to AI](/complexity "Branwen 2014"){.backlink-not .icon-not}
 - [GPT-2 Folk Music](/gpt-2-music "Branwen & Presser 2019"){.backlink-not .icon-not}
 - [Evolution as Backstop for Reinforcement Learning](/backstop "Branwen 2018"){.backlink-not .icon-not}
@@ -129,7 +129,7 @@ Or look at a list of **pages by traffic**:
 - [`/newsletter/2021/02`](/newsletter/2021/02 "‘February 2021 News’, Branwen 2020"){.backlink-not .icon-not}
 - [Timing Technology: Lessons From _The Media Lab_](/timing "Branwen 2012"){.backlink-not .icon-not}
 - [The Kelly Coin-Flipping Game: Exact Solutions](/coin-flip "Branwen et al 2017"){.backlink-not .icon-not}
-- [`/docs/nootropic/quantified-self/index`](/doc/nootropic/quantified-self/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/nootropic/quantified-self/index`](/doc/nootropic/quantified-self/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [Iodine and Adult IQ meta-analysis](/iodine "Branwen 2012"){.backlink-not .icon-not}
 - [Dual _n_-Back Meta-Analysis](/dnb-meta-analysis "Branwen 2012"){.backlink-not .icon-not}
 - [When Should I Check The Mail?](/mail-delivery "Branwen 2015"){.backlink-not .icon-not}
@@ -139,7 +139,7 @@ Or look at a list of **pages by traffic**:
 - [The "Screwfly Solution" Solution: Bi-Sexuality](/screwfly){.backlink-not .icon-not}
 - [Predicting Google closures](/google-shutdown "Branwen 2013"){.backlink-not .icon-not}
 - [`/narrowing-circle`](/narrowing-circle "‘The Narrowing Circle’, Branwen 2012"){.backlink-not .icon-not}
-- [The Notenki Memoirs: Studio Gainax And The Men Who Created Evangelion](/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs "Takeda 2010"){.backlink-not .icon-not}
+- [_The Notenki Memoirs: Studio Gainax And The Men Who Created Evangelion_](/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs "Takeda 2010"){.backlink-not .icon-not}
 - [Who Wrote The _Death Note_ Script?](/death-note-script "Branwen 2009"){.backlink-not .icon-not}
 - [Rubrication Design Examples](/red "Branwen 2019"){.backlink-not .icon-not}
 - [Longevity decision analysis](/longevity "‘Life Extension Cost-Benefits’, Branwen 2015"){.backlink-not .icon-not}
@@ -156,7 +156,7 @@ Or look at a list of **pages by traffic**:
 - [GPT-2 Preference Learning for Music Generation](/gpt-2-preference-learning "Branwen 2019"){.backlink-not .icon-not}
 - [Hafu in anime](/hafu "‘Hafu Gender Ratios in Anime’, Branwen 2011"){.backlink-not .icon-not}
 - [`/komm-susser-tod`](/komm-susser-tod){.backlink-not .icon-not}
-- [`/docs/bitcoin/index`](/doc/bitcoin/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/bitcoin/index`](/doc/bitcoin/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [CO2/ventilation sleep experiment](/zeo/co2 "Branwen 2016"){.backlink-not .icon-not}
 - [ZMA Sleep Experiment](/zeo/zma "Branwen 2017"){.backlink-not .icon-not}
 - [_MLP_: Immanetizing The Equestrian](/review/mlp "Branwen 2018"){.backlink-not .icon-not}
@@ -168,16 +168,16 @@ Or look at a list of **pages by traffic**:
 - [Caffeine wakeup experiment](/zeo/caffeine "Branwen 2013"){.backlink-not .icon-not}
 - [Terrorism is not Effective](/terrorism-is-not-effective){.backlink-not .icon-not}
 - ["Shiny Balls of Mud"](/doc/japan/art/2002-gibson "‘Shiny balls of Mud: William Gibson Looks at Japanese Pursuits of Perfection’, Gibson 2012"){.backlink-not .icon-not}
-- [`/docs/anime/index`](/doc/anime/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/anime/index`](/doc/anime/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [SMPY Bibliography](/smpy "Branwen 2018"){.backlink-not .icon-not}
 - [Cat Psychology & Domestication: Are We Good Owners?](/review/cat "Branwen 2018"){.backlink-not .icon-not}
 - [Wooden pillows](/wood-pillow "‘Wooden Pillow’, Branwen 2008"){.backlink-not .icon-not}
-- [`/docs/psychology/index`](/doc/psychology/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/psychology/index`](/doc/psychology/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [`/note/scaling`](/note/scaling "‘Machine Learning Scaling’, Branwen 2021"){.backlink-not .icon-not}
 - [Origins of Innovation: Bakewell & Breeding](/review/bakewell "Branwen 2018"){.backlink-not .icon-not}
 - [Conscientiousness and online education](/conscientiousness "‘Conscientiousness & Online Education’, Branwen 2012"){.backlink-not .icon-not}
 - [The Ups and Downs of the Hope Function](/doc/statistics/bayes/1994-falk "‘The Ups and Downs of the Hope Function In a Fruitless Search’, Falk et al 2012"){.backlink-not .icon-not}
-- [`/docs/ai/nn/transformer/gpt/index`](/doc/ai/nn/transformer/gpt/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/ai/nn/transformer/gpt/index`](/doc/ai/nn/transformer/gpt/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - ["Loyal to the Group of Seventeen’s Story—The Just Man"](/doc/culture/1983-wolfe-thecitadeloftheautarch-thejustman "Wolfe 2018"){.backlink-not .icon-not}
 - [Charity is not about helping](/charity-is-not-about-helping){.backlink-not .icon-not}
 - [Slowing Moore’s Law: How It Could Happen](/slowing-moores-law "Branwen 2012"){.backlink-not .icon-not}
@@ -193,8 +193,8 @@ Or look at a list of **pages by traffic**:
 - [What Is The Collecting Mindset?](/collecting){.backlink-not .icon-not}
 - [Tea Reviews](/review/tea "Branwen 2011"){.backlink-not .icon-not}
 - [On the (Non) Existence of Powerful Natural Languages](/language "Branwen 2016"){.backlink-not .icon-not}
-- [`/docs/insight-porn/index`](/doc/insight-porn/index "'Essays', N/A 2009"){.backlink-not .icon-not}
-- [`/docs/index`](/doc/index "Documents, N/A 2009"){.backlink-not .icon-not}
+- [`/doc/insight-porn/index`](/doc/insight-porn/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/index`](/doc/index "Documents, N/A 2009"){.backlink-not .icon-not}
 - [Fake Journal Club: Teaching Critical Reading](/fake-journal-club "Branwen 2022"){.backlink-not .icon-not}
 - [Wikipedia resume](/wikipedia-resume "‘Wikipedia Résumé’, Branwen 2010"){.backlink-not .icon-not}
 - [Choosing Software](/choosing-software){.backlink-not .icon-not}
@@ -203,13 +203,13 @@ Or look at a list of **pages by traffic**:
 - [Efficient Attention: Breaking The Quadratic Transformer Bottleneck](/note/attention "Branwen 2020"){.backlink-not .icon-not}
 - [May 1997 _AnimeLand_ Interview with Hideaki Anno (English)](/doc/anime/eva/1997-anno-english "Anno 2012"){.backlink-not .icon-not}
 - [RNN Metadata for Mimicking Author Style](/rnn-metadata "Branwen 2015"){.backlink-not .icon-not}
-- [`/docs/japan/poetry/teika/teika`](/doc/japan/poetry/teika/teika "‘The Poems of Fujiwara no Teika’, Teika 2011"){.backlink-not .icon-not}
+- [`/doc/japan/poetry/teika/teika`](/doc/japan/poetry/teika/teika "‘The Poems of Fujiwara no Teika’, Teika 2011"){.backlink-not .icon-not}
 - [Lithium in ground-water and well-being](/lithium "Branwen 2010"){.backlink-not .icon-not}
 - [Making Anime With BigGAN](/biggan "Branwen 2019"){.backlink-not .icon-not}
 - [Superrationality, Hofstadter 1985](/doc/existential-risk/1985-hofstadter "‘Metamagical Themas: Sanity and Survival’, Hofstadter 2012"){.backlink-not .icon-not}
 - [Music and distraction](/music-distraction){.backlink-not .icon-not}
 - [Dune notes](/dune "Branwen 2010"){.backlink-not .icon-not}
-- [`/docs/nootropic/index`](/doc/nootropic/index "'Essays', N/A 2009"){.backlink-not .icon-not}
+- [`/doc/nootropic/index`](/doc/nootropic/index "'Essays', N/A 2009"){.backlink-not .icon-not}
 - [_Radiance: A Novel_](/doc/radiance/2002-scholz-radiance "Scholz et al 2013"){.backlink-not .icon-not}
 - [Catnip immunity and alternatives](/catnip "Branwen 2015"){.backlink-not .icon-not}
 </div>
