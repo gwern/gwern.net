@@ -12955,7 +12955,7 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (ev
 addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventInfo) => {
     GWLog("lazyLoadVideoPosters", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("video").forEach(video => {
+	eventInfo.container.querySelectorAll("video:not([poster])").forEach(video => {
 		lazyLoadObserver(() => {
 			video.poster = video.dataset.videoPoster;
 		}, video, {
