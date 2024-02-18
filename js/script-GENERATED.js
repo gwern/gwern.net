@@ -8429,7 +8429,7 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName = includeLink.dataset.template || dataProvider.referenceDataForLink(includeLink).template;
+			let templateName = includeLink.dataset.includeTemplate || dataProvider.referenceDataForLink(includeLink).template;
 			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
