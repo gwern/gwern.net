@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-17 12:47:34 gwern"
+# When:  Time-stamp: "2024-02-18 10:06:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -191,7 +191,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N9 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -1152,7 +1152,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f -not -name "*.html"  -and -not -name "*.pdf" -and -not -name "*.txt" -and -not -wholename "*www/misc*"; }
+    λ(){ find ./doc/www/ -type f | grep -F -v -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.png' -e '.dat' -e '.bak' -e '.woff'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     bold "Checking for PDF anomalies…"
@@ -1220,6 +1220,10 @@ else
     bold "Compressing new PNGs…"
     png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | grep -F --invert-match -e './doc/www/misc/') &
 
+    # TODO: compress GIFs in the WWW split archives using `gifsicle`: eg `gifsicle --batch --colors 256 --optimize=3 *.gif`
+    # bold "Compressing new GIFs…"
+    # gifsicle --batch --optimize=3 $(find ./doc/www/ -type f -name "*.gif" -mtime -3) &
+
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | grep -F --invert-match -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
@@ -1230,7 +1234,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)" &
 
-    λ() { find doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e 'static/' -e 'doc/www/misc/' | sort | parallel png2JPGQualityCheck; }
+    λ() { find doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e 'static/' -e 'doc/www/' | sort | parallel png2JPGQualityCheck; }
     wrap λ "PNGs that should be JPGs?" &
 
     bold "Running site functionality checks…"
