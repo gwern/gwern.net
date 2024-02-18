@@ -1551,10 +1551,6 @@ figure.outline-not .caption-wrapper {
     outline: none;
 }
 
-video + .caption-wrapper {
-    margin-top: 2px;
-}
-
 /***********************************************************************/
 /*  Enable the various `![caption](/doc/foo/bar.jpg){.width-full}` uses;
     analogous to width-full tables
