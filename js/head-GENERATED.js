@@ -732,8 +732,9 @@ function isOnlyChild(node) {
 
 	Permissible options:
 
-		excludeTags [array]
-		alsoExcludeTags [array]
+		excludeTags: array
+		alsoExcludeTags: array
+		excludeIdentifiedElements: boolean
  */
 function isNodeEmpty(node, options = { }) {
 	if (node == null)
