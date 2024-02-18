@@ -3252,6 +3252,11 @@ Popups = {
 
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
+
+		requestAnimationFrame(() => {
+			//	Set scroll view height.
+			popup.body.style.setProperty("--popframe-scroll-view-height", popup.scrollView.clientHeight + "px");
+		});
 	},
 
 	/****************/
@@ -4301,6 +4306,9 @@ Popins = {
 			//	Disable rendering progress indicator (spinner).
 			if (target.popin)
 				Popins.removeClassesFromPopFrame(target.popin, "rendering");
+
+			//	Set scroll view height.
+			popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
 		});
 	},
 
@@ -6903,7 +6911,7 @@ Content = {
 	2. Include template
 	-------------------
 
-	The `data-include-template` attribute allows selection of include template
+	The `data-include-template` attribute allows selection of include template 
 	to use. (Note that some include data sources specify a template by default;
 	the `data-include-template` attribute overrides the default in such cases.)
 	If a template is specified, the included content is treated as a template
@@ -8429,7 +8437,7 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName = includeLink.dataset.template || dataProvider.referenceDataForLink(includeLink).template;
+			let templateName = includeLink.dataset.includeTemplate || dataProvider.referenceDataForLink(includeLink).template;
 			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
@@ -8661,8 +8669,8 @@ Transclude.templates = {
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF abstract & !authorDateAux ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 abstract]>:<[IF2END]><[IFEND]>
+		<[IF [ abstract | fileIncludes ] & !authorDateAux ]>:<[IFEND]>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] ]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
@@ -9730,7 +9738,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation",
-			"data-template": "annotation-blockquote-not"
+			"data-include-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -9854,7 +9862,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial",
-			"data-template": "annotation-blockquote-not"
+			"data-include-template": "annotation-blockquote-not"
 		}));
     },
 
@@ -9899,7 +9907,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-template": "annotation-blockquote-not"
+		"data-include-template": "annotation-blockquote-not"
 	}));
 
 	//	Add the whole thing to the pop-frame.
@@ -12953,6 +12961,23 @@ addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventIn
 		}, video, {
 			root: scrollContainerOf(video),
 			rootMargin: "100%"
+		});
+	});
+}, "eventListeners");
+
+/******************************************************************************/
+/*	Enable clicking anywhere on a video (that has not yet loaded and started to
+	play) to load it and start playing it. (Otherwise, only clicking the ‘play’
+	button causes the video to load and play.)
+ */
+addContentInjectHandler(GW.contentInjectHandlers.enableVideoClickToPlay = (eventInfo) => {
+    GWLog("enableVideoClickToPlay", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("video").forEach(video => {
+		video.addEventListener("click", video.clickToPlayEvent = (event) => {
+			video.play();
+			video.removeEventListener("click", video.clickToPlayEvent);
+			video.clickToPlayEvent = null;
 		});
 	});
 }, "eventListeners");

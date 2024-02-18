@@ -1048,6 +1048,10 @@ img::before {
 /* EMBEDS */
 /**********/
 
+video {
+	cursor: pointer;
+}
+
 iframe, object {
 	display: block;
 	width: calc(100% - 2px);
@@ -3453,6 +3457,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popframe-body .footnotes .footnote-back {
     vertical-align: text-top;
+}
+
+.popframe-body:not(.object) iframe,
+.popframe-body:not(.object) object {
+	max-height: calc(var(--popframe-scroll-view-height) - 6 * var(--base-font-size));
 }
 
 /*=-----------------=*/

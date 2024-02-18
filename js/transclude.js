@@ -222,7 +222,7 @@
 	2. Include template
 	-------------------
 
-	The `data-include-template` attribute allows selection of include template
+	The `data-include-template` attribute allows selection of include template 
 	to use. (Note that some include data sources specify a template by default;
 	the `data-include-template` attribute overrides the default in such cases.)
 	If a template is specified, the included content is treated as a template
@@ -1748,7 +1748,7 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName = includeLink.dataset.template || dataProvider.referenceDataForLink(includeLink).template;
+			let templateName = includeLink.dataset.includeTemplate || dataProvider.referenceDataForLink(includeLink).template;
 			if (templateName) {
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)

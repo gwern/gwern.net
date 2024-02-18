@@ -705,6 +705,23 @@ addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventIn
 	});
 }, "eventListeners");
 
+/******************************************************************************/
+/*	Enable clicking anywhere on a video (that has not yet loaded and started to
+	play) to load it and start playing it. (Otherwise, only clicking the ‘play’
+	button causes the video to load and play.)
+ */
+addContentInjectHandler(GW.contentInjectHandlers.enableVideoClickToPlay = (eventInfo) => {
+    GWLog("enableVideoClickToPlay", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("video").forEach(video => {
+		video.addEventListener("click", video.clickToPlayEvent = (event) => {
+			video.play();
+			video.removeEventListener("click", video.clickToPlayEvent);
+			video.clickToPlayEvent = null;
+		});
+	});
+}, "eventListeners");
+
 /****************************************************************/
 /*  Account for interaction between image-focus.js and popups.js.
  */
