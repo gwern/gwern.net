@@ -688,6 +688,23 @@ addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (ev
         container.insertBefore(initialFigure, container.firstElementChild);
 }, "rewrite");
 
+/******************************************************************************/
+/*	There is no browser native lazy loading for <video> tag `poster` attribute,
+	so we implement it ourselves.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventInfo) => {
+    GWLog("lazyLoadVideoPosters", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("video").forEach(video => {
+		lazyLoadObserver(() => {
+			video.poster = video.dataset.videoPoster;
+		}, video, {
+			root: scrollContainerOf(video),
+			rootMargin: "100%"
+		});
+	});
+}, "eventListeners");
+
 /****************************************************************/
 /*  Account for interaction between image-focus.js and popups.js.
  */

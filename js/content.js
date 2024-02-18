@@ -816,7 +816,7 @@ Content = {
 											class="${link.classList}"
 											controls="controls" 
 											preload="none" 
-											poster="${posterPathname}"
+											data-video-poster="${posterPathname}"
 											>`
 										+ `<source 
 											src="${link.href}" 
