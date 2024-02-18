@@ -2111,6 +2111,10 @@ img::before {
 /* EMBEDS */
 /**********/
 
+video {
+	cursor: pointer;
+}
+
 iframe, object {
 	display: block;
 	width: calc(100% - 2px);
