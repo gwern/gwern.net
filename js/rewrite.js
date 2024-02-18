@@ -486,7 +486,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
 		return;
 
-    eventInfo.container.querySelectorAll("figure img[width][height]").forEach(image => {
+    eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])").forEach(image => {
         let fixWidth = (   eventInfo.contentType == "annotation"
                         && (   image.classList.containsAnyOf([ "float-left", "float-right" ])
                         	|| image.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
@@ -506,7 +506,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
 addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventInfo) => {
     GWLog("updateImageDimensions", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figure img[width][height][loading='lazy']").forEach(image => {
+    eventInfo.container.querySelectorAll("figure img[width][height][loading='lazy']:not([src$='.svg'])").forEach(image => {
         setImageDimensions(image, true);
     });
 }, "rewrite");
@@ -517,7 +517,7 @@ addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventI
 addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimensionUpdateEvents = (eventInfo) => {
     GWLog("addOrientationChangeImageDimensionUpdateEvents", "rewrite.js", 1);
 
-	let images = eventInfo.container.querySelectorAll("figure img[width][height]");
+	let images = eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])");
 
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
 		images.forEach(image => {

@@ -381,10 +381,21 @@
 	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
 }
 
-/* some SVGs used in annotations/essays (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) were authored as transparent SVGs, assuming a *white* background. In dark-mode, with a black background set, they are illegible.
-So, in dark mode only, impose a white background on SVGs in <figure>s.
-(This is scoped narrowly to only apply to SVGs which are displayed in <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part of the site design, and will have been designed to work with dark mode; forcing a white background on them may have unpredictable bad effects. If it turns out that this is still too broad, we may have to instead manually edit SVGs to force a white background, or selectively whitelist them for a white background.) */
-figure img[src$=".svg"] {
+/*	Some SVGs used in annotations/essays 
+	(eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) 
+	were authored as transparent SVGs, assuming a *white* background. In dark 
+	mode, with a black background set, they are illegible.
+
+	So, in dark mode only, impose a white background on SVGs in <figure>s. 
+	(This is scoped narrowly to only apply to SVGs which are displayed in 
+	<figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part 
+	of the site design, and will have been designed to work with dark mode; 
+	forcing a white background on them may have unpredictable bad effects. If 
+	it turns out that this is still too broad, we may have to instead manually 
+	edit SVGs to force a white background, or selectively whitelist them for a 
+	white background.)
+ */
+figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
 	background-color: var(--GW-transparent-svg-background-color);
 }
 
@@ -540,7 +551,9 @@ img.invert-auto:hover {
     diagrams with multiple subtly-different colors matched to a legend/caption),
     the color is important and shouldn’t be faded out by default.
  */
-#markdownBody img.invert-not { filter: none; }
+#markdownBody img.invert-not {
+	filter: none;
+}
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
     and made more visible in dark mode.
