@@ -95,7 +95,7 @@ GW.layout = {
 										 1, false ],
 		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
 										 3, false ],
-		[ ".annotation .data-field + .data-field.file-includes .collapse",
+		[ ".annotation .data-field + .annotation .collapse",
 										 5, false ],
 		[ ".data-field.file-includes .collapse + .collapse",
 										 5, false ],
