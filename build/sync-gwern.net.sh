@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-18 10:06:59 gwern"
+# When:  Time-stamp: "2024-02-19 10:09:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -1152,7 +1152,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | grep -F --invert-match -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs grep -F --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f | grep -F -v -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.png' -e '.dat' -e '.bak' -e '.woff'; }
+    λ(){ find ./doc/www/ -type f | grep -F -v -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     bold "Checking for PDF anomalies…"
@@ -1209,7 +1209,7 @@ else
     λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | grep -F --invert-match -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | grep -F ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')" &
 
-    λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
+    λ(){ find ./ -type f -name "*.gif" | grep -F --invert-match -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | parallel --max-args=500 identify | grep -E '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | grep -F -v -e 'doc/www/misc/' | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | grep -E -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"

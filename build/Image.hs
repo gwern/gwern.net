@@ -212,7 +212,7 @@ sizeAspectRatioKV width height = -- preserve aspect ratio when we have to shrink
                                  imageShrinkRatio = (1400::Float) / (fromIntegral width :: Float)
                                  imageRatioReduced = imageWidth % imageHeight
                                  imageHeight = if not imageShrunk then height else round (fromIntegral height * imageShrinkRatio)
-                              in [("aspect-ratio", show (R.numerator imageRatioReduced) ++ " / " ++ show (R.denominator imageRatioReduced)),
+                              in [("data-aspect-ratio", show (R.numerator imageRatioReduced) ++ " / " ++ show (R.denominator imageRatioReduced)),
                                   ("height", show imageHeight),
                                   ("width", show imageWidth) ]
 

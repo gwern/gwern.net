@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-18 20:13:08 gwern"
+When:  Time-stamp: "2024-02-19 10:44:31 gwern"
 License: CC-0
 -}
 
@@ -548,7 +548,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock False (f, ("",undefined,undefined,undefined,undefined,undefined))
-                                    linkColon = if wasAnnotated link then [] else [Str ":"]
+                                    linkColon = if wasAnnotated link || null fileTransclude then [] else [Str ":"]
                                 in [Para [Strong (link:linkColon)]] ++ fileTransclude
                            --  isVideoFilename (T.unpack f) ||
                            --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
@@ -574,12 +574,12 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
                                                                   | isDocumentViewable f = [Str "[Expand to view document]"]
                                                                   | otherwise            = [Str "[Expand to view code/data]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para [Link ("", ["include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
+                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     -- image/video/audio:
     | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = if not fallbackP then [] else
-                   [Para [Link ("",["include-content", "include-lazy", "collapse"],[])
+                   [Para [Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
                           (if titleCaption/=[] then titleCaption else [Str "[Expand to view web page]"])
                           (T.pack f, "")]]
 
