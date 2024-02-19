@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-17 22:15:01 gwern"
+# When:  Time-stamp: "2024-02-19 10:57:47 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -81,23 +81,34 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
           (crossref "$ORIGINAL" &);
           }
 
+
+# trim whitespace from around JPG/PNG images
+crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then
+        nice convert $(path2File "$@") -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
+crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
+# WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
+export -f crop
+
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
     for FILE in "$@"; do
-        mogrify -bordercolor white -border 50 "$(path2File "$FILE")"
+        mogrify -bordercolor white -border 25 "$(path2File "$FILE")"
     done
 }
 pad-black () {
     for FILE in "$@"; do
-        mogrify -bordercolor black -border 50 "$(path2File "$FILE")"
+        mogrify -bordercolor black -border 25 "$(path2File "$FILE")"
     done
 }
+crop-pad () { crop "$@" && pad "$@"; }
+crop-pad-black () { crop "$@" && pad-black "$@"; }
 
 # function split_image() {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
 # check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs, often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
+# (This does not rename or convert as it is still experimental and automatically renaming gwern.net files is dangerous due to the need for global search-and-replace & defining nginx redirects.)
 png2JPGQualityCheck () {
     for ARGS in "$@"; do
         ARG=$(path2File "$ARGS")
@@ -107,8 +118,8 @@ png2JPGQualityCheck () {
         JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
         JPG="$TMP_DIR/$JPG_BASENAME"
 
-        # Convert PNG to JPG at 85% quality:
-        convert "$ARG" -quality 85% "$JPG"
+        # Convert PNG to JPG at 20% quality (to ensure any artifacts show up clearly):
+        convert "$ARG" -quality 20% "$JPG"
 
         # Calculate file sizes
         PNG_SIZE=$(stat -c%s "$ARG")
