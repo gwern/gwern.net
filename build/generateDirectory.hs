@@ -145,7 +145,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
                  abstractp <- doesFileExist (tail abstractf ++ ".page") -- check existence of (relative) file, 'note/catnip.page'
                  essayp <- doesFileExist (tagBase ++ ".page")
                  return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
-                          else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation", "include-replace-container"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
+                          else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                else []
 
   let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),lb) -> not (null lb)) links

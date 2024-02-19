@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-19 10:44:31 gwern"
+When:  Time-stamp: "2024-02-19 12:16:29 gwern"
 License: CC-0
 -}
 
@@ -529,9 +529,9 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
                                                    else
-                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-replace-container include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong></a>:]</p>\n</div>")) `T.append`
-                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
-                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed include-replace-container\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
+                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong></a>:]</p>\n</div>")) `T.append`
+                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p>[<a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\">Similar links for this annotation</a>.]</p>\n</div>")) `T.append`
+                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
                 generateFileTransclusionBlock True (f, x)
@@ -545,7 +545,7 @@ generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
-                                    link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
+                                    link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock False (f, ("",undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str ":"]
