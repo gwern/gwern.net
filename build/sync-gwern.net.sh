@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-19 10:09:30 gwern"
+# When:  Time-stamp: "2024-02-19 15:56:47 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -250,6 +250,19 @@ else
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
+    # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
+    # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
+    syntaxHighlightByLibreoffice () { for FILE in "$@"; do
+                                          TARGET=$(basename "$FILE")
+                                         soffice --convert-to html "$FILE" >/dev/null && mv "${TARGET%.*}.html" "${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                     done
+                                   }
+    export -f syntaxHighlightByLibreoffice
+    find _site/ -type f,l \
+         | grep -F -e ".csv" -e ".doc" -e ".docx" -e ".ods" -e ".xls" -e ".xlsx" | \
+        sort | parallel --jobs 1 syntaxHighlightByLibreoffice & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
+    set -e
+
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
     ### We skip full conversion of .json/.jsonl because they are too large & Pandoc will choke; and we truncate at 1000 lines because such
     ### long source files are not readable as popups and their complexity makes browsers choke while rendering them.
@@ -294,19 +307,6 @@ else
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
-
-    # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
-    # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
-    syntaxHighlightByLibreoffice () { for FILE in "$@"; do
-                                          TARGET=$(basename "$FILE")
-                                         soffice --convert-to html "$FILE" >/dev/null && mv "${TARGET%.*}.html" "${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
-                                     done
-                                   }
-    export -f syntaxHighlightByLibreoffice
-    find _site/ -type f,l \
-         -name "*.csv" -or -name ".doc" -or -name ".docx" -or -name ".ods" -or -name ".xls" -or -name ".xlsx" | \
-        sort | parallel --jobs 1 syntaxHighlightByLibreoffice & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
-    set -e
 
     # make sure all videos have 'poster' preview images:
     for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm"); do
