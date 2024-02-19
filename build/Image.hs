@@ -8,6 +8,7 @@ import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
 import Data.Maybe (isJust, isNothing)
+import Data.Ratio as R (denominator, numerator, (%))
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
@@ -209,8 +210,9 @@ sizeAspectRatioKV width height = -- preserve aspect ratio when we have to shrink
                              let imageWidth = width `min` 1400
                                  imageShrunk = width /= imageWidth
                                  imageShrinkRatio = (1400::Float) / (fromIntegral width :: Float)
+                                 imageRatioReduced = imageWidth % imageHeight
                                  imageHeight = if not imageShrunk then height else round (fromIntegral height * imageShrinkRatio)
-                              in [("data-aspect-ratio", show width ++ " / " ++ show height),
+                              in [("aspect-ratio", show (R.numerator imageRatioReduced) ++ " / " ++ show (R.denominator imageRatioReduced)),
                                   ("height", show imageHeight),
                                   ("width", show imageWidth) ]
 
