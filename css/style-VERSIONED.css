@@ -3869,8 +3869,8 @@ blockquote .TOC {
 
 /*  “Aux links” (see also, similars, backlinks, link bibliography).
  */
-.annotation .aux-links-list p {
-    text-align: left;
+.annotation .aux-links-list > li > p {
+    --text-alignment: left;
 }
 
 /*  “Aux links” in link bibliographies, directory indexes, and other transcluded
