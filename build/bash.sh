@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-19 10:57:47 gwern"
+# When:  Time-stamp: "2024-02-19 15:23:06 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -112,14 +112,14 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 png2JPGQualityCheck () {
     for ARGS in "$@"; do
         ARG=$(path2File "$ARGS")
-        QUALITY_THRESHOLD=28 # decibels
-        SIZE_REDUCTION_THRESHOLD=25 # %
+        QUALITY_THRESHOLD=31 # decibels
+        SIZE_REDUCTION_THRESHOLD=30 # %
         TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
         JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
         JPG="$TMP_DIR/$JPG_BASENAME"
 
-        # Convert PNG to JPG at 20% quality (to ensure any artifacts show up clearly):
-        convert "$ARG" -quality 20% "$JPG"
+        # Convert PNG to JPG at 15% quality (to ensure any artifacts show up clearly):
+        convert "$ARG" -quality 15% "$JPG"
 
         # Calculate file sizes
         PNG_SIZE=$(stat -c%s "$ARG")
