@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-17 21:39:49 gwern"
+When:  Time-stamp: "2024-02-18 20:13:08 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 import qualified Data.ByteString as B (appendFile, readFile)
 import Data.Char (isPunctuation, toLower, isSpace, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text, isInfixOf)
+import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -36,7 +36,7 @@ import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Image, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+                    Inline(Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -60,7 +60,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, inline2Path)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 
@@ -469,16 +469,13 @@ addHasAnnotation _ z = z
 
 -- was this link given either a partial or full annotation?
 wasAnnotated :: Inline -> Bool
-wasAnnotated x@Link{}  = isAnnotatedLinkOrImage x
-wasAnnotated x@Image{} = isAnnotatedLinkOrImage x
+wasAnnotated x@Link{}  = isAnnotatedInline x
+wasAnnotated x@Image{} = isAnnotatedInline x
 wasAnnotated x = error $ "LinkMetadata.wasAnnotated: tried to get annotation status of a non-Link/Image element, which makes no sense? " ++ show x
-isAnnotatedLinkOrImage :: Inline -> Bool
-isAnnotatedLinkOrImage x = let f = inline2Path x in
+isAnnotatedInline :: Inline -> Bool
+isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated" x ||
-                            hasClass "link-annotated-partial" x ||
-                            isVideoFilename (T.unpack f) ||
-                            "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
-                           ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
+                            hasClass "link-annotated-partial" x
 
 generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
@@ -550,7 +547,13 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = addHasAnnotation x $ Link ("", ["id-not", "include-annotation", "include-replace-container"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
-                                in [Para [link]] ++ (if wasAnnotated link then [] else generateFileTransclusionBlock False (f, ("",undefined,undefined,undefined,undefined,undefined)))
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock False (f, ("",undefined,undefined,undefined,undefined,undefined))
+                                    linkColon = if wasAnnotated link then [] else [Str ":"]
+                                in [Para [Strong (link:linkColon)]] ++ fileTransclude
+                           --  isVideoFilename (T.unpack f) ||
+                           --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
+                           -- ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
+
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
