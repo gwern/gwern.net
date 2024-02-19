@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-02-07 19:17:49 gwern"
+When:  Time-stamp: "2024-02-19 16:53:59 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -34,7 +34,7 @@ For an independent JS NPM library implementation, see <https://github.com/Stvad/
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveString, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
+module LinkLive (linkLive, linkLiveString, alreadyLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
 
 import Control.Monad (forM_, when, unless)
 import Data.Char (toLower)
@@ -50,7 +50,7 @@ import System.Exit (ExitCode(ExitFailure))
 
 import Interwiki (wpPopupClasses)
 import LinkBacklink (readBacklinksDB, Backlinks)
-import Utils (addClass, host, anySuffixT, printRed, anyInfixT, ensure, isURLT)
+import Utils (addClass, hasClass, host, anySuffixT, printRed, anyInfixT, ensure, isURLT)
 import qualified Config.LinkLive as C
 import qualified Config.Misc as CM (userAgent)
 
@@ -67,6 +67,9 @@ linkLive x@(Link (_,cl,kvs) _ (u, _))
  where aL :: Inline -> Inline
        aL = addClass "link-live"
 linkLive x = x
+
+alreadyLive :: Inline -> Bool
+alreadyLive = hasClass "link-live"
 
 linkLiveString :: String -> Inline
 linkLiveString u = linkLive (Link nullAttr [] (T.pack u,""))
