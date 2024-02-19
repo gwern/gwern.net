@@ -800,7 +800,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
 							   + `width="${(link.dataset.imageWidth)}" `
 							   + `height="${(link.dataset.imageHeight)}"`;
 
@@ -899,7 +899,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.imageAspectRatio)}" `
+				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
 							   + `width="${(link.dataset.imageWidth)}" `
 							   + `height="${(link.dataset.imageHeight)}"`;
 
