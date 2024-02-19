@@ -102,8 +102,8 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
 
   triplets  <- listFiles md direntries'
 
-  let linksSelf = nubOrd $ reverse $ sortByDate taggedSelf  -- newest first, to show recent additions
-  let linksAll = nubOrd $ reverse $ sortByDate $ triplets++tagged'
+  let linksSelf = reverse . sortByDate $ taggedSelf  -- newest first, to show recent additions
+  let linksAll  = reverse $ sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` f)) linksAll
   let linksWP = linksAll \\ links

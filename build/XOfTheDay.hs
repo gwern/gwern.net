@@ -26,7 +26,7 @@ import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (isInfixOf, pack, unpack, Text)
 import qualified Data.Map.Strict as M (toList, filterWithKey, map, fromListWith)
 import Data.List (isSuffixOf, sortOn, sort)
-import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullMeta, Block(Div,BlockQuote,Para))
+import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullMeta, Block(Div,Para))
 import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
 import LinkMetadataTypes (Metadata)

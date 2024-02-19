@@ -232,7 +232,7 @@ imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
                                                                                 else [("video-poster", p `T.append` "-poster.jpg")]
                                                                  return (Link (htmlid, classes,
                                                                                kvs++[("image-height",T.pack h),
-                                                                                      ("image-width",T.pack w)]++aspectratio++posterKV)
+                                                                                     ("image-width", T.pack w)] ++ aspectratio ++ posterKV)
                                                                          xs (p,t))
                                                        else return x
 imageLinkHeightWidthSet x = return x

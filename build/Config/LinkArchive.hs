@@ -474,7 +474,7 @@ whiteListMatchesFixed = [
       , "cse.google.com"
       , "translate.google.com"
       , "drive.google.com"
-      , "colab.research.google.com"
+      , "colab.research.google.com" -- highly interactive/complex
       , "powersearchingwithgoogle.com"
       , "scholar.google.com"
       , "docs.google.com"
@@ -793,7 +793,7 @@ whiteListMatchesFixed = [
       , "facebook.com" -- low quality (too JS-heavy, requires log-in etc)
       , "bellroy.com"
       , "mruniversity.com" -- videos
-      , "imgur.com"
+      -- , "imgur.com"
       , "proofofexistence.com" -- service
       , "sifter.org" -- service
       , "drmaciver.com" -- stable
@@ -1052,7 +1052,7 @@ whiteListMatchesFixed = [
       , "https://laion.ai/laion-400-open-dataset/" -- video embed
       , "https://wy-lang.org/" -- homepage
       , "https://ali-design.github.io/gan_steerability/" -- video embed
-      , "https://github.com/" -- stable
+      -- , "https://github.com/" -- stable
       , "https://xbpeng.github.io/projects/VDB/index.html" -- video embed
       , "https://news.ycombinator.com/newest" -- updated
       , "https://news.ycombinator.com/news" -- updated
@@ -1296,6 +1296,7 @@ whiteListMatchesFixed = [
       , "https://smerf-3d.github.io/" -- low quality (video embeds)
       , "https://retool.com/pipes" -- low-quality (too much fancy JS; interactive?)
       , "https://nap.nationalacademies.org/read/10668/chapter/1" -- interactive
+      , "https://dreamtuner-diffusion.github.io/" -- size/low-quality: final video broke, 199MB
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage
