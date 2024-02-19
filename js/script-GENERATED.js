@@ -6838,12 +6838,30 @@ Content = {
 			consideration as containing blocks.
 
     include-replace-container
+    data-replace-container-selector
         Normally, when transclusion occurs, the transcluded content replaces the
         include-link in the page, leaving any surrounding elements untouched.
         When the `include-replace-container` option is used, the include-link’s
         parent element, instead of just the include-link itself, is replaced by
         the transcluded content. (This means that any other contents of the
-        include-link’s parent element are also discarded.)
+        include-link’s parent element are also discarded.) If the include-link
+        has no parent element (if, for example, it is an immediate child node of
+        a DocumentFragment), then it will simply behave normally (as if the 
+        `include-replace-container option was not set at all).
+
+		The `data-replace-container-selector` attribute allows specification of
+		a CSS selector that should be used to locate the ‘container’ element to
+		be replaced by the transcluded content (rather than simply using the 
+		include-link’s immediate parent). Note that if a value is specified, but
+		no containing element matching the given selector is found, then the 
+		include-link will behave normally (as if the `include-replace-container` 
+		option was not set at all).
+
+	include-rectify-not
+		Normally, when transclusion occurs, the surrounding HTML structure is
+		intelligently rectified, to preserve block containment rules and so on.
+		When the `include-rectify-not` option is used, this rectification is
+		not done.
 
     include-identify-not
         Normally, if the include-link has a nonempty ‘id’ attribute, and that
@@ -7342,11 +7360,14 @@ function includeContent(includeLink, content) {
 	])) return;
 
 	//	Where to inject?
-    let replaceContainer = (   includeLink.parentElement != null
-                            && includeLink.classList.contains("include-replace-container"));
-    let insertWhere = replaceContainer
-                      ? includeLink.parentElement
-                      : includeLink;
+	let insertWhere = includeLink;
+	if (includeLink.classList.contains("include-replace-container")) {
+		let replacedContainer = includeLink.dataset.replaceContainerSelector
+								? includeLink.closest(includeLink.dataset.replaceContainerSelector)
+								: includeLink.parentElement;
+		if (replacedContainer)
+			insertWhere = replacedContainer; 
+	}
 
     /*  Just in case, do nothing if the element-to-be-replaced (either the
     	include-link itself, or its container, as appropriate) isn’t attached
@@ -7361,9 +7382,6 @@ function includeContent(includeLink, content) {
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
     let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
-
-    //  Save reference for potential removal later.
-    let includeLinkParentElement = includeLink.parentElement;
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
@@ -7444,32 +7462,8 @@ function includeContent(includeLink, content) {
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
 
-	//	Distribute backlinks, if need be.
-	if (   transcludingIntoFullPage
-		&& AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
-		&& wrapper.closest("#backlinks-section") != null)
-		distributeSectionBacklinks(includeLink, wrapper);
-
-    //  Update footnotes, if need be, when transcluding into a full page.
-    if (   transcludingIntoFullPage
-    	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
-
-	//  Update TOC, if need be, when transcluding into the base page.
-    if (   containingDocument == document
-    	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updatePageTOCIfNeeded(includeLink.eventInfo);
-
-	//	Aggregate margin notes.
-	aggregateMarginNotesIfNeeded(includeLink.eventInfo);
-
-	//	Import style sheets, if need be.
-	if (   containingDocument == document
-		|| containingDocument instanceof ShadowRoot)
-		importStylesAfterTransclusion(includeLink, wrapper);
-
     //  Remove extraneous text node after link, if any.
-    if (   replaceContainer == false
+    if (   includeLink.classList.contains("include-replace-container") == false
         && includeLink.nextSibling
         && includeLink.nextSibling.nodeType == Node.TEXT_NODE) {
         let cleanedNodeContents = Typography.processString(includeLink.nextSibling.textContent, Typography.replacementTypes.CLEAN);
@@ -7478,30 +7472,16 @@ function includeContent(includeLink, content) {
 	        includeLink.parentNode.removeChild(includeLink.nextSibling);
     }
 
-    //  Remove link.
-    if (replaceContainer == false)
-        includeLink.remove();
+    //  Remove include-link (along with container, if specified).
+    insertWhere.remove();
 
     //  Intelligent rectification of surrounding HTML structure.
-    if (   replaceContainer == false
-    	&& (   isBlock(wrapper.firstElementChild)
-    		|| (   wrapper.firstElementChild?.classList.contains("include-wrapper-block")
-    			&& isBlock(wrapper.firstElementChild.firstElementChild)))) {
-        let allowedParentTags = [ "SECTION", "DIV" ];
-
-        //  Special handling for annotation transcludes in link bibliographies.
-		/*	NOTE: Provisionally disabling this conditional to determine whether
-			it can be removed, and "LI" added to the allowedParentTags array
-			unconditionally.
-			—SA 2023-04-18
-		 */
-//         if (   wrapper.parentElement != null
-//         	&& wrapper.parentElement.closest(".link-bibliography-list") != null)
-            allowedParentTags.push("LI");
-
+    if (   includeLink.classList.contains("include-rectify-not") == false
+    	&& firstBlockOf(wrapper) != null) {
+        let allowedParentTags = [ "SECTION", "DIV", "LI", "BLOCKQUOTE" ];
         while (   wrapper.parentElement != null
-               && wrapper.parentElement.parentElement != null
-        	   && false == allowedParentTags.includes(wrapper.parentElement.tagName)) {
+               && allowedParentTags.includes(wrapper.parentElement.tagName) == false
+               && wrapper.parentElement.parentElement != null) {
             let nextNode = wrapper.nextSibling;
 
             wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
@@ -7532,17 +7512,37 @@ function includeContent(includeLink, content) {
         }
     }
 
+	//	Distribute backlinks, if need be.
+	if (   transcludingIntoFullPage
+		&& AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
+		&& wrapper.closest("#backlinks-section") != null)
+		distributeSectionBacklinks(includeLink, wrapper);
+
+    //  Update footnotes, if need be, when transcluding into a full page.
+    if (   transcludingIntoFullPage
+    	&& Transclude.isAnnotationTransclude(includeLink) == false)
+        updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
+
+	//  Update TOC, if need be, when transcluding into the base page.
+    if (   containingDocument == document
+    	&& Transclude.isAnnotationTransclude(includeLink) == false)
+        updatePageTOCIfNeeded(includeLink.eventInfo);
+
+	//	Aggregate margin notes.
+	aggregateMarginNotesIfNeeded(includeLink.eventInfo);
+
+	//	Import style sheets, if need be.
+	if (   containingDocument == document
+		|| containingDocument instanceof ShadowRoot)
+		importStylesAfterTransclusion(includeLink);
+
+	//	OTHER MODIFICATIONS END
+
 	//	Retain reference to nodes.
 	let addedNodes = Array.from(wrapper.childNodes);
 
     //  Unwrap.
     unwrap(wrapper);
-
-    //  Remove include-link’s container, if specified.
-    if (replaceContainer)
-        includeLinkParentElement.remove();
-
-	//	OTHER MODIFICATIONS END
 
     //  Prevent race condition, part II.
     includeLink.classList.add("include-complete");
@@ -7659,7 +7659,7 @@ function documentHasStyleSheet(doc, selector) {
 /*****************************************************************************/
 /*	Imports needed styles (<style> and/or <link> elements) after transclusion.
  */
-function importStylesAfterTransclusion(includeLink, wrapper) {
+function importStylesAfterTransclusion(includeLink) {
 	let containingDocument = includeLink.eventInfo.document;
 	let newContentSourceDocument = Transclude.dataProviderForLink(includeLink).cachedDocumentForLink(includeLink);
 
@@ -12706,51 +12706,56 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     }, null, eventInfo.container);
 }, "rewrite");
 
-/*****************************************************************************/
-/*  Sets, in CSS, the image dimensions that are specified in HTML.
+/******************************************************************************/
+/*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
  */
-function setImageDimensions(image, fixWidth = false, fixHeight = false) {
-    let width = image.getAttribute("width");
-    let height = image.getAttribute("height");
+function setMediaElementDimensions(mediaElement, fixWidth = false, fixHeight = false) {
+    let width = mediaElement.getAttribute("width");
+    let height = mediaElement.getAttribute("height");
 
-    image.style.aspectRatio = `${width} / ${height}`;
+    mediaElement.style.aspectRatio = mediaElement.dataset.aspectRatio ?? `${width} / ${height}`;
 
-	if (image.maxHeight == null) {
+	if (mediaElement.maxHeight == null) {
 		//	This should match `1rem`.
 		let baseFontSize = GW.isMobile() ? "18" : "20";
 
 		/*	This should match the `max-height` property value for all images in
 			figures (the `figure img` selector; see initial.css).
 		 */
-		image.maxHeight = window.innerHeight - (8 * baseFontSize);
+		mediaElement.maxHeight = window.innerHeight - (8 * baseFontSize);
 	}
 
-    if (image.maxHeight)
-        width = Math.round(Math.min(width, image.maxHeight * (width/height)));
+    if (mediaElement.maxHeight)
+        width = Math.round(Math.min(width, mediaElement.maxHeight * (width/height)));
 
     if (fixWidth) {
-        image.style.width = `${width}px`;
+        mediaElement.style.width = `${width}px`;
     }
     if (fixHeight) {
         //  Nothing, for now.
     }
 }
 
+GW.dimensionSpecifiedMediaElementSelector = [
+	"img[width][height]:not([src$='.svg'])",
+	"video[width][height]"
+].map(x => `figure ${x}`).join(", ");
+
 /**********************************************************/
 /*  Prevent reflow in annotations, reduce reflow elsewhere.
  */
-addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) => {
-    GWLog("setImageDimensions", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
+    GWLog("setMediaElementDimensions", "rewrite.js", 1);
 
 	//	Do not set image dimensions in sidenotes.
 	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
 		return;
 
-    eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])").forEach(image => {
+    eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         let fixWidth = (   eventInfo.contentType == "annotation"
-                        && (   image.classList.containsAnyOf([ "float-left", "float-right" ])
-                        	|| image.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
-        setImageDimensions(image, fixWidth);
+                        && (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
+                        	|| mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
+        setMediaElementDimensions(mediaElement, fixWidth);
     });
 
     //  Also ensure that SVGs get rendered as big as possible.
@@ -12760,33 +12765,33 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
     });
 }, "rewrite");
 
-/********************************************/
-/*  Prevent reflow due to lazy-loaded images.
+/************************************************************/
+/*  Prevent reflow due to lazy-loaded media (images, videos).
  */
-addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventInfo) => {
-    GWLog("updateImageDimensions", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = (eventInfo) => {
+    GWLog("updateMediaElementDimensions", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figure img[width][height][loading='lazy']:not([src$='.svg'])").forEach(image => {
-        setImageDimensions(image, true);
+    eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
+        setMediaElementDimensions(mediaElement, true);
     });
 }, "rewrite");
 
-/*********************************************************/
-/*  Ensure image dimensions update when device is rotated.
+/************************************************************************/
+/*  Ensure media (image, video) dimensions update when device is rotated.
  */
-addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimensionUpdateEvents = (eventInfo) => {
-    GWLog("addOrientationChangeImageDimensionUpdateEvents", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElementDimensionUpdateEvents = (eventInfo) => {
+    GWLog("addOrientationChangeMediaElementDimensionUpdateEvents", "rewrite.js", 1);
 
-	let images = eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])");
+	let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
 
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
-		images.forEach(image => {
-			image.maxHeight = null;
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
+		mediaElements.forEach(mediaElement => {
+			mediaElement.maxHeight = null;
 		});
 		requestAnimationFrame(() => {
-			images.forEach(image => {
-				image.style.width = "";
-				setImageDimensions(image, true);
+			mediaElements.forEach(mediaElement => {
+				mediaElement.style.width = "";
+				setMediaElementDimensions(mediaElement, true);
 			});
 		});
 	});

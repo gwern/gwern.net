@@ -446,51 +446,56 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     }, null, eventInfo.container);
 }, "rewrite");
 
-/*****************************************************************************/
-/*  Sets, in CSS, the image dimensions that are specified in HTML.
+/******************************************************************************/
+/*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
  */
-function setImageDimensions(image, fixWidth = false, fixHeight = false) {
-    let width = image.getAttribute("width");
-    let height = image.getAttribute("height");
+function setMediaElementDimensions(mediaElement, fixWidth = false, fixHeight = false) {
+    let width = mediaElement.getAttribute("width");
+    let height = mediaElement.getAttribute("height");
 
-    image.style.aspectRatio = `${width} / ${height}`;
+    mediaElement.style.aspectRatio = mediaElement.dataset.aspectRatio ?? `${width} / ${height}`;
 
-	if (image.maxHeight == null) {
+	if (mediaElement.maxHeight == null) {
 		//	This should match `1rem`.
 		let baseFontSize = GW.isMobile() ? "18" : "20";
 
 		/*	This should match the `max-height` property value for all images in
 			figures (the `figure img` selector; see initial.css).
 		 */
-		image.maxHeight = window.innerHeight - (8 * baseFontSize);
+		mediaElement.maxHeight = window.innerHeight - (8 * baseFontSize);
 	}
 
-    if (image.maxHeight)
-        width = Math.round(Math.min(width, image.maxHeight * (width/height)));
+    if (mediaElement.maxHeight)
+        width = Math.round(Math.min(width, mediaElement.maxHeight * (width/height)));
 
     if (fixWidth) {
-        image.style.width = `${width}px`;
+        mediaElement.style.width = `${width}px`;
     }
     if (fixHeight) {
         //  Nothing, for now.
     }
 }
 
+GW.dimensionSpecifiedMediaElementSelector = [
+	"img[width][height]:not([src$='.svg'])",
+	"video[width][height]"
+].map(x => `figure ${x}`).join(", ");
+
 /**********************************************************/
 /*  Prevent reflow in annotations, reduce reflow elsewhere.
  */
-addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) => {
-    GWLog("setImageDimensions", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
+    GWLog("setMediaElementDimensions", "rewrite.js", 1);
 
 	//	Do not set image dimensions in sidenotes.
 	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
 		return;
 
-    eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])").forEach(image => {
+    eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         let fixWidth = (   eventInfo.contentType == "annotation"
-                        && (   image.classList.containsAnyOf([ "float-left", "float-right" ])
-                        	|| image.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
-        setImageDimensions(image, fixWidth);
+                        && (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
+                        	|| mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
+        setMediaElementDimensions(mediaElement, fixWidth);
     });
 
     //  Also ensure that SVGs get rendered as big as possible.
@@ -500,33 +505,33 @@ addContentLoadHandler(GW.contentLoadHandlers.setImageDimensions = (eventInfo) =>
     });
 }, "rewrite");
 
-/********************************************/
-/*  Prevent reflow due to lazy-loaded images.
+/************************************************************/
+/*  Prevent reflow due to lazy-loaded media (images, videos).
  */
-addContentInjectHandler(GW.contentInjectHandlers.updateImageDimensions = (eventInfo) => {
-    GWLog("updateImageDimensions", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = (eventInfo) => {
+    GWLog("updateMediaElementDimensions", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figure img[width][height][loading='lazy']:not([src$='.svg'])").forEach(image => {
-        setImageDimensions(image, true);
+    eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
+        setMediaElementDimensions(mediaElement, true);
     });
 }, "rewrite");
 
-/*********************************************************/
-/*  Ensure image dimensions update when device is rotated.
+/************************************************************************/
+/*  Ensure media (image, video) dimensions update when device is rotated.
  */
-addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeImageDimensionUpdateEvents = (eventInfo) => {
-    GWLog("addOrientationChangeImageDimensionUpdateEvents", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElementDimensionUpdateEvents = (eventInfo) => {
+    GWLog("addOrientationChangeMediaElementDimensionUpdateEvents", "rewrite.js", 1);
 
-	let images = eventInfo.container.querySelectorAll("figure img[width][height]:not([src$='.svg'])");
+	let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
 
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateImageDimensionsWhenOrientationChanges", (mediaQuery) => {
-		images.forEach(image => {
-			image.maxHeight = null;
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
+		mediaElements.forEach(mediaElement => {
+			mediaElement.maxHeight = null;
 		});
 		requestAnimationFrame(() => {
-			images.forEach(image => {
-				image.style.width = "";
-				setImageDimensions(image, true);
+			mediaElements.forEach(mediaElement => {
+				mediaElement.style.width = "";
+				setMediaElementDimensions(mediaElement, true);
 			});
 		});
 	});
