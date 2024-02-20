@@ -1992,6 +1992,15 @@ del {
 
 
 /*************/
+/* AUX-LINKS */
+/*************/
+
+#link-bibliography-section > .list > li > p {
+	--text-alignment: left;
+}
+
+
+/*************/
 /* DROPCAPS */
 /*************/
 /*  "dropcaps"/"initials" (https://en.wikipedia.org/wiki/Initial
