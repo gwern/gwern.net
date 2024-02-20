@@ -28,7 +28,10 @@ ImageFocus = {
 
 	hideUITimerDuration: (GW.isMobile() ? 5000 : 3000),
 
-	dropShadowFilterForImages: " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
+	dropShadowFilterForImages: "drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
+
+	hoverCaptionWidth: 100,
+	hoverCaptionHeight: 75,
 
 	/*****************/
 	/* Infrastructure.
@@ -179,6 +182,12 @@ ImageFocus = {
 
 			if (ImageFocus.imageGalleryInclusionTest(image))
 				image.classList.add("gallery-image");
+
+			let width = image.getAttribute("width");
+			let height = image.getAttribute("height");
+			if (   width  < ImageFocus.hoverCaptionWidth
+				|| height < ImageFocus.hoverCaptionHeight)
+				image.classList.add("small-image");
 		});
 
 		//  Add the listener to all focusable images.
@@ -188,7 +197,7 @@ ImageFocus = {
 
 		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
-			wrapElement(image, "image-wrapper focusable", "SPAN");
+			wrapElement(image, "image-wrapper focusable", "SPAN", false, [ "small-image" ]);
 		});
 	},
 
@@ -259,7 +268,7 @@ ImageFocus = {
 		ImageFocus.imageInFocus.loading = "eager";
 		ImageFocus.imageInFocus.decoding = "sync";
 		ImageFocus.imageInFocus.style = "";
-		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + ImageFocus.dropShadowFilterForImages;
+		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages;
 		ImageFocus.imageInFocus.removeAttribute("title");
 
 		//	Allow for styling based on loading state.

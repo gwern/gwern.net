@@ -2360,18 +2360,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5278,14 +5278,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5426,7 +5426,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5893,14 +5893,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6449,6 +6449,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
     --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
     --SA-image-focus-image-hover-tooltip-text-color: #fff;
+    --SA-image-focus-image-hover-tooltip-inverted-background-color: rgba(255, 255, 255, 0.6);
 
     --SA-image-focus-overlay-background-color: #000;
     --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
@@ -6817,7 +6818,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#question');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7023,6 +7024,21 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     opacity: 0.0;
     transition: opacity 0.15s ease;
     pointer-events: none;
+}
+.image-wrapper.focusable.small-image::after {
+	content: "";
+    background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
+	background-image: url('/static/img/icon/icons.svg?v=1708452971#magnifying-glass-plus-light');
+	background-origin: content-box;
+	background-repeat: no-repeat;
+	background-position: center;
+	filter: invert(1);
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	padding: 0.5em;
+	box-sizing: border-box;
+	border-radius: 0;
 }
 .image-wrapper,
 .image-wrapper::after {
@@ -7377,7 +7393,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1707106059#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7452,7 +7468,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1707106059#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1708452971#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

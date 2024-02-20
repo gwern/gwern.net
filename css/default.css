@@ -5386,6 +5386,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
     --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
     --SA-image-focus-image-hover-tooltip-text-color: #fff;
+    --SA-image-focus-image-hover-tooltip-inverted-background-color: rgba(255, 255, 255, 0.6);
 
     --SA-image-focus-overlay-background-color: #000;
     --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
@@ -5960,6 +5961,21 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     opacity: 0.0;
     transition: opacity 0.15s ease;
     pointer-events: none;
+}
+.image-wrapper.focusable.small-image::after {
+	content: "";
+    background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
+	background-image: url('/static/img/icon/icons.svg#magnifying-glass-plus-light');
+	background-origin: content-box;
+	background-repeat: no-repeat;
+	background-position: center;
+	filter: invert(1);
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	padding: 0.5em;
+	box-sizing: border-box;
+	border-radius: 0;
 }
 .image-wrapper,
 .image-wrapper::after {
