@@ -5919,57 +5919,8 @@ Content = {
 
 				content.querySelector("iframe, object").classList.add("loaded-not");
 
-				/*	If a special ‘HTML’ or ‘archive’ URL is specified, use that, 
-					sans transformation. Otherwise, transform URL for embedding.
-				 */
-// 				if (   link.dataset.urlArchive == null
-// 					&& link.dataset.urlHtml == null) {
-// 					for ([ test, transform, special ] of Content.foreignSiteEmbedURLTransforms) {
-// 						if (test(url)) {
-// 							if (transform) {
-// 								transform(url);
-// 							}
-// 							if (special) {
-// 								let retval = special(url, target);
-// 								if (retval)
-// 									return retval;
-// 							}
-// 							break;
-// 						}
-// 					}
-// 				}
-
 				return content;
 			},
-
-// 			foreignSiteEmbedURLTransforms: [
-// 				//	Wikimedia commons
-// 				[	(url) => (   url.hostname == "commons.wikimedia.org" 
-// 							  && url.pathname.startsWith("/wiki/File:")),
-// 					(url) => {
-// 						url.hostname = "api.wikimedia.org";
-// 						url.pathname = "/core/v1/commons/file/" + url.pathname.match(/\/(File:.+)$/)[1];
-// 					},
-// 					(url, target) => {
-// 						doAjax({
-// 							location: url.href,
-// 							responseType: "json",
-// 							onSuccess: (event) => {
-// 								if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
-// 									return;
-// 
-// 								Extracts.popFrameProvider.setPopFrameContent(target.popFrame, 
-// 									newDocument(Content.objectHTMLForURL(event.target.response.original.url, "sandbox")));
-// 								Extracts.setLoadingSpinner(target.popFrame);
-// 							},
-// 							onFailure: (event) => {
-// 								Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-// 							}
-// 						});
-// 
-// 						return newDocument();
-// 					} ]
-// 			],
 
 			scriptsEnabledOnHosts: [
 				"docs.google.com"
