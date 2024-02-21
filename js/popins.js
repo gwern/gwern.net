@@ -445,26 +445,28 @@ Popins = {
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
 
-		//	Adjust popin position.
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+
+		//	Post-inject adjustments.
 		requestAnimationFrame(() => {
+			if (target.popin == null)
+				return;
+
+			//	Adjust popin position.
 			if (target.adjustPopinWidth)
 				target.adjustPopinWidth(target.popin);
+
+			//	Disable rendering progress indicator (spinner).
+			Popins.removeClassesFromPopFrame(target.popin, "rendering");
+
+			//	Set scroll view height.
+			target.popin.body.style.setProperty("--popframe-scroll-view-height", target.popin.scrollView.clientHeight + "px");
 
 			//  Scroll page so that entire popin is visible, if need be.
 			requestAnimationFrame(() => {
 				Popins.scrollPopinIntoView(target.popin);
 			});
-		});
-
-		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
-
-		requestAnimationFrame(() => {
-			//	Disable rendering progress indicator (spinner).
-			if (target.popin)
-				Popins.removeClassesFromPopFrame(target.popin, "rendering");
-
-			//	Set scroll view height.
-			popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
 		});
 	},
 
