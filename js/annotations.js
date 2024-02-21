@@ -542,6 +542,13 @@ Annotations = { ...Annotations,
 							includeLink.remove();
 					});
 
+					//	On mobile, remove any embeds that are unsupported.
+					if (GW.isMobile()) {
+						fileIncludesElement.querySelectorAll(".mobile-not").forEach(element => {
+							element.remove();
+						});
+					}
+
 					/*	Do not include the file includes section if no valid
 						include-links remain.
 					 */
