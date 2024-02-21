@@ -1612,8 +1612,20 @@ pre code {
     background-color: transparent;
 }
 
+/*	Truncated code blocks.
+ */
+div.sourceCode.truncated .truncation-notice {
+    font-family: var(--GW-sans-serif-font-stack);
+    text-align: center;
+    height: 2em;
+    line-height: 2;
+    border-style: solid;
+    border-color: var(--GW-pre-element-border-color);
+    border-width: 0 1px 1px 1px;
+}
+
 /*  Horizontal scroll bar styles (for WebKit/Blink).
-    */
+ */
 pre::-webkit-scrollbar {
     height: 16px;
     background-color: var(--GW-pre-element-scrollbar-track-color);
@@ -1633,7 +1645,7 @@ pre::-webkit-scrollbar-thumb:hover {
 }
 
 /*  Horizontal scroll bar styles (for Firefox).
-    */
+ */
 pre {
     scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
 }
@@ -3528,12 +3540,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Truncated syntax-highlighted code pop-frames, and the note at their end.
  */
 .popframe-body.local-code-file div.sourceCode.truncated {
-    height: calc(100% - 1.75em);
+    height: calc(100% - 2em);
 }
-.popframe-body.local-code-file div.sourceCode.truncated + p {
-    font-family: var(--GW-sans-serif-font-stack);
-    height: 1.75em;
-    text-align: center;
+.popframe-body.local-code-file div.sourceCode.truncated .truncation-notice {
+    border-width: 1px 0 0 0;
 }
 
 .popframe-body.local-code-file pre {

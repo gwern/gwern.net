@@ -511,8 +511,7 @@ Content = {
 				let content;
 
 				//	Parse (encoding and wrapping first, if need be).
-				if (   response.slice(0, 1) == "<"
-					&& link.pathname.endsWithAnyOf([ ".html", ".xml", ".svg" ]) == false) {
+				if (sourceURL.pathname == link.pathname + ".html") {
 					//	Syntax-highlighted code (already HTML-encoded).
 					content = newDocument(response);
 
@@ -521,9 +520,16 @@ Content = {
 					let codeWrapper = content.querySelector("div.sourceCode");
 					content.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
 
-					//	Mark truncated syntax-highlighted code files.
-					if (codeWrapper.nextElementSibling?.tagName == "P")
+					//	Handle truncated syntax-highlighted code files.
+					if (codeWrapper.nextElementSibling?.tagName == "P") {
 						codeWrapper.classList.add("truncated");
+
+						let truncationNotice = codeWrapper.nextElementSibling;
+						truncationNotice.classList.add("truncation-notice");
+						truncationNotice.querySelector("a").classList.add("extract-not");
+
+						codeWrapper.append(truncationNotice);
+					}
 
 					//	Set ‘line’ class and fix blank lines.
 					Array.from(content.querySelector("code").children).forEach(lineSpan => {
@@ -537,9 +543,11 @@ Content = {
 						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
 					);
-					content = newDocument(  `<pre class="raw-code"><code>`
+					content = newDocument(  `<div class="sourceCode">`
+										  + `<pre class="raw-code"><code>`
 										  + htmlEncodedResponse
-										  + `</code></pre>`);
+										  + `</code></pre>`
+										  + `</div>`);
 
 					//	Inject line spans.
 					let codeBlock = content.querySelector("code");
@@ -552,7 +560,7 @@ Content = {
 			},
 
 			codeFileExtensions: [
-				//	Truncated at 1000 lines for preview.
+				//	Truncated at 2000 lines for preview.
 				"bash", "c", "conf", "css", "diff", "hs", "html", "js",
 				"json", "jsonl", "opml", "page", "patch", "php", "py", "R",
 				"sh", "xml", "yaml",
