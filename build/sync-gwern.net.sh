@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-21 10:23:34 gwern"
+# When:  Time-stamp: "2024-02-21 18:28:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -280,7 +280,7 @@ else
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     syntaxHighlightByLibreoffice () { for FILE in "$@"; do
                                           TARGET=$(basename "$FILE")
-                                         soffice --convert-to html "$FILE" >/dev/null && mv "${TARGET%.*}.html" "${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                         soffice --headless --convert-to html:HTML:EmbedImages "$FILE" >/dev/null && mv "${TARGET%.*}.html" "${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
                                      done
                                    }
     export -f syntaxHighlightByLibreoffice
