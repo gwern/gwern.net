@@ -1388,6 +1388,7 @@ table {
 
 table caption {
     --text-hyphenation: none;
+    --text-alignment: center;
 
     padding: 0.25em 0.75em;
     font-style: italic;
