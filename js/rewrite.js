@@ -1311,6 +1311,39 @@ addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnn
 
 
 /*********************/
+/* DIRECTORY INDEXES */
+/*********************/
+
+/******************************************************************************/
+/*	On directory index pages, remove invalid include-links in file-append 
+	sections; if no valid includes remain, delete the entire file-append block.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInfo) => {
+    GWLog("stripInvalidFileAppends", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
+		/*	Remove any file embed links that lack a valid content type (e.g., 
+			foreign-site links that have not been whitelisted for embedding).
+		 */
+		Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
+			if (Content.contentTypeForLink(includeLink) == null)
+				includeLink.remove();
+		});
+
+		//	If no valid include-links remain, delete the whole block.
+		if (isNodeEmpty(fileAppendBlock)) {
+			//	Delete colon.
+			if (fileAppendBlock.previousElementSibling.lastTextNode.nodeValue == ":")
+				fileAppendBlock.previousElementSibling.lastTextNode.remove();
+
+			fileAppendBlock.remove();
+		}
+	});
+}, "rewrite", (info) => (   info.container == document.body
+                         && /\/(index)?$/.test(location.pathname)));
+
+
+/*********************/
 /* LINK BIBLIOGRAPHY */
 /*********************/
 

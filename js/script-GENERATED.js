@@ -5015,13 +5015,6 @@ Annotations = { ...Annotations,
 							includeLink.remove();
 					});
 
-					//	On mobile, remove any embeds that are unsupported.
-					if (GW.isMobile()) {
-						fileIncludesElement.querySelectorAll(".mobile-not").forEach(element => {
-							element.remove();
-						});
-					}
-
 					/*	Do not include the file includes section if no valid
 						include-links remain.
 					 */
@@ -5658,7 +5651,7 @@ Content = {
 	 */
 
 	sourceURLsForLink: (link) => {
-		return Content.contentTypeForLink(link).sourceURLsForLink?.(link);
+		return Content.contentTypeForLink(link)?.sourceURLsForLink?.(link);
 	},
 
 	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
@@ -5766,11 +5759,11 @@ Content = {
 	},
 
 	contentFromLink: (link) => {
-		return Content.contentTypeForLink(link).contentFromLink?.(link);
+		return Content.contentTypeForLink(link)?.contentFromLink?.(link);
 	},
 
 	contentFromResponse: (response, link, sourceURL) => {
-		return Content.contentTypeForLink(link).contentFromResponse?.(response, link, sourceURL);
+		return Content.contentTypeForLink(link)?.contentFromResponse?.(response, link, sourceURL);
 	},
 
 	/****************************/
@@ -6323,6 +6316,11 @@ Content = {
 
 				//	Maybe it’s a foreign link?
 				if (url.hostname != location.hostname)
+					return false;
+
+				//	On mobile, we cannot embed PDFs.
+				if (   GW.isMobile()
+					&& url.pathname.endsWith(".pdf"))
 					return false;
 
 				return (   url.pathname.startsWith("/metadata/") == false
@@ -13548,6 +13546,39 @@ addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnn
         }
     });
 }, "eventListeners");
+
+
+/*********************/
+/* DIRECTORY INDEXES */
+/*********************/
+
+/******************************************************************************/
+/*	On directory index pages, remove invalid include-links in file-append 
+	sections; if no valid includes remain, delete the entire file-append block.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInfo) => {
+    GWLog("stripInvalidFileAppends", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
+		/*	Remove any file embed links that lack a valid content type (e.g., 
+			foreign-site links that have not been whitelisted for embedding).
+		 */
+		Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
+			if (Content.contentTypeForLink(includeLink) == null)
+				includeLink.remove();
+		});
+
+		//	If no valid include-links remain, delete the whole block.
+		if (isNodeEmpty(fileAppendBlock)) {
+			//	Delete colon.
+			if (fileAppendBlock.previousElementSibling.lastTextNode.nodeValue == ":")
+				fileAppendBlock.previousElementSibling.lastTextNode.remove();
+
+			fileAppendBlock.remove();
+		}
+	});
+}, "rewrite", (info) => (   info.container == document.body
+                         && /\/(index)?$/.test(location.pathname)));
 
 
 /*********************/

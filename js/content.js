@@ -56,7 +56,7 @@ Content = {
 	 */
 
 	sourceURLsForLink: (link) => {
-		return Content.contentTypeForLink(link).sourceURLsForLink?.(link);
+		return Content.contentTypeForLink(link)?.sourceURLsForLink?.(link);
 	},
 
 	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
@@ -164,11 +164,11 @@ Content = {
 	},
 
 	contentFromLink: (link) => {
-		return Content.contentTypeForLink(link).contentFromLink?.(link);
+		return Content.contentTypeForLink(link)?.contentFromLink?.(link);
 	},
 
 	contentFromResponse: (response, link, sourceURL) => {
-		return Content.contentTypeForLink(link).contentFromResponse?.(response, link, sourceURL);
+		return Content.contentTypeForLink(link)?.contentFromResponse?.(response, link, sourceURL);
 	},
 
 	/****************************/
@@ -721,6 +721,11 @@ Content = {
 
 				//	Maybe it’s a foreign link?
 				if (url.hostname != location.hostname)
+					return false;
+
+				//	On mobile, we cannot embed PDFs.
+				if (   GW.isMobile()
+					&& url.pathname.endsWith(".pdf"))
 					return false;
 
 				return (   url.pathname.startsWith("/metadata/") == false

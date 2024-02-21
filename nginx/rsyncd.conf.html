@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <!-- INLINED-STANDALONE-BEGIN -->
+  <!--#include virtual="/static/include/inlined-standalone.html" -->
+  <!-- INLINED-STANDALONE-END -->
+
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>/static/nginx/rsyncd.conf (syntax-highlighted preview)</title>
+</head>
+<body class="file-preview-source-code"> <!-- TODO: we should probably have a special prefix to properly namespace these sort of 'meta' body classes, to distinguish them from the page-title-derived body classes we use to CSS-style specific pages. -->
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode Bash"><code class="sourceCode bash"><span><span class="co"># global settings</span></span>
+<span></span>
+<span><span class="ex">log</span> file = /var/log/rsyncd.log</span>
+<span></span>
+<span><span class="co"># modules</span></span>
+<span></span>
+<span><span class="ex">[danbooru2021]</span></span>
+<span>   <span class="ex">path</span> = /home/danbooru/torrent/danbooru2021/</span>
+<span>   <span class="ex">comment</span> = Danbooru2021 mirror <span class="er">(</span><span class="ex">see</span> https://gwern.net/danbooru2021 <span class="kw">)</span></span>
+<span>   <span class="ex">list</span> = yes</span>
+<span>   <span class="bu">read</span> <span class="va">only</span> <span class="op">=</span> <span class="va">yes</span></span>
+<span>   <span class="fu">timeout</span> = 6000</span>
+<span></span>
+<span><span class="ex">[dnmarchives]</span></span>
+<span>   <span class="ex">path</span> = /home/danbooru/torrent/dnmarchives/</span>
+<span>   <span class="ex">comment</span> = DNM Archives <span class="er">(</span><span class="ex">2011-2015</span><span class="kw">)</span> <span class="ex">mirror</span></span>
+<span>   <span class="ex">list</span> = yes</span>
+<span>   <span class="bu">read</span> <span class="va">only</span> <span class="op">=</span> <span class="va">yes</span></span>
+<span>   <span class="fu">timeout</span> = 6000</span>
+<span></span>
+<span><span class="ex">[biggan]</span></span>
+<span>   <span class="ex">path</span> = /home/danbooru/biggan/</span>
+<span>   <span class="ex">comment</span> = Neural Net resources: model checkpoints <span class="kw">&amp;</span> <span class="ex">datasets</span> <span class="er">(</span><span class="ex">BigGAN,</span> GPT-2, StyleGAN, etc<span class="kw">)</span></span>
+<span>   <span class="ex">list</span> = yes</span>
+<span>   <span class="bu">read</span> <span class="va">only</span> <span class="op">=</span> <span class="va">yes</span></span>
+<span>   <span class="fu">timeout</span> = 6000</span>
+<span></span>
+<span><span class="ex">[twdne]</span></span>
+<span>   <span class="ex">path</span> = /home/gwern/thiswaifudoesnotexist.net/</span>
+<span>   <span class="ex">comment</span> = ThisWaifuDoesNotExist.net full site mirror <span class="er">(</span><span class="ex">all</span> JPGs and text files<span class="kw">)</span></span>
+<span>   <span class="ex">list</span> = yes</span>
+<span>   <span class="bu">read</span> <span class="va">only</span> <span class="op">=</span> <span class="va">yes</span></span>
+<span>   <span class="fu">timeout</span> = 6000</span></code></pre></div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <!-- INLINED-STANDALONE-BEGIN -->
+  <!--#include virtual="/static/include/inlined-standalone.html" -->
+  <!-- INLINED-STANDALONE-END -->
+
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>/static/font/font_spec.php (syntax-highlighted preview)</title>
+</head>
+<body class="file-preview-source-code"> <!-- TODO: we should probably have a special prefix to properly namespace these sort of 'meta' body classes, to distinguish them from the page-title-derived body classes we use to CSS-style specific pages. -->
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode PHP"><code class="sourceCode php"><span><span class="kw">&lt;?php</span></span>
+<span><span class="co">/*  See /static/build/build_font_css.php for details on the format of this file.</span></span>
+<span></span>
+<span><span class="co">    Font overview:</span></span>
+<span></span>
+<span><span class="co">    - Source Serif Pro</span></span>
+<span><span class="co">        workhorse font for body text</span></span>
+<span><span class="co">    - Source Sans Pro</span></span>
+<span><span class="co">        for ToC and UI elements; primarily intended for Mac/iOS users</span></span>
+<span><span class="co">    - IBM Plex Mono</span></span>
+<span><span class="co">        for code blocks</span></span>
+<span><span class="co">    - Initial-capital fonts </span></span>
+<span><span class="co">        for 5 kinds of dropcaps; enabled in /static/css/default.css</span></span>
+<span><span class="co">        - Deutsche Zierschrift</span></span>
+<span><span class="co">            for general pages</span></span>
+<span><span class="co">        - Yinit</span></span>
+<span><span class="co">            for technical/scientific pages</span></span>
+<span><span class="co">            https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8</span></span>
+<span><span class="co">        - Goudy</span></span>
+<span><span class="co">            for humanities/literature/history</span></span>
+<span><span class="co">            https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Goudy+Initialen</span></span>
+<span><span class="co">        - Cheshire</span></span>
+<span><span class="co">        - Kanzlei</span></span>
+<span><span class="co">    - Quivira and Noto Emoji</span></span>
+<span><span class="co">        for specific symbols; e.g. Unicode linkicons</span></span>
+<span></span>
+<span><span class="co">    </span><span class="al">NOTE</span><span class="co"> on ‘font-display: swap’:</span></span>
+<span><span class="co">    We display text as soon as possible (e.g., for body text, system font such </span></span>
+<span><span class="co">    as Baskerville; see font stacks defined in /static/css/initial.css)</span></span>
+<span><span class="co">    and re-render with webfont (e.g. Source Serif Pro) whenever it downloads:</span></span>
+<span><span class="co">    https://developers.google.com/web/updates/2016/02/font-display</span></span>
+<span><span class="co">    https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display</span></span>
+<span><span class="co">    https://caniuse.com/#search=font-display</span></span>
+<span><span class="co"> */</span></span>
+<span><span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="op">!</span>inline</span>
+<span><span class="cn">S</span>ource <span class="cn">S</span>erif <span class="cn">P</span>ro</span>
+<span>italic  <span class="op">-</span></span>
+<span><span class="st">`400    *</span></span>
+<span><span class="st">`</span><span class="dv">600</span>    <span class="op">*</span></span>
+<span><span class="st">`700    *</span></span>
+<span></span>
+<span><span class="st">!inline</span></span>
+<span><span class="st">Source Serif Pro</span></span>
+<span><span class="st">italic  +</span></span>
+<span><span class="st">`</span><span class="dv">400</span>    <span class="op">*</span></span>
+<span></span>
+<span><span class="op">!</span>inline</span>
+<span><span class="cn">S</span>ource <span class="cn">S</span>ans <span class="cn">P</span>ro</span>
+<span>italic  <span class="op">-</span></span>
+<span><span class="st">`400    *</span></span>
+<span><span class="st">`</span><span class="dv">700</span>    <span class="op">*</span></span>
+<span></span>
+<span><span class="op">!</span>inline</span>
+<span><span class="cn">S</span>ource <span class="cn">S</span>ans <span class="cn">P</span>ro</span>
+<span>italic  <span class="op">+</span></span>
+<span><span class="st">`400    *</span></span>
+<span></span>
+<span><span class="st">Source Serif Pro</span></span>
+<span><span class="st">/static/font/ssfp/SourceSerifPro-BASIC-</span></span>
+<span><span class="st">ttf</span></span>
+<span><span class="st">font-display    swap</span></span>
+<span><span class="st">italic          /$/     Italic</span></span>
+<span><span class="st">unicode-range   U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212</span></span>
+<span><span class="st">`</span><span class="dv">200</span>    <span class="cn">E</span>xtraLight</span>
+<span><span class="st">`300    Light</span></span>
+<span><span class="st">`</span><span class="dv">400</span>    <span class="cn">R</span>egular</span>
+<span><span class="st">`600    Semibold</span></span>
+<span><span class="st">`</span><span class="dv">700</span>    <span class="cn">B</span>old</span>
+<span><span class="st">`900    Black</span></span>
+<span></span>
+<span><span class="st">Source Sans Pro</span></span>
+<span><span class="st">/static/font/ssp/SourceSansPro-BASIC-</span></span>
+<span><span class="st">ttf</span></span>
+<span><span class="st">font-display    swap</span></span>
+<span><span class="st">italic          /$/     Italic</span></span>
+<span><span class="st">unicode-range   U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212</span></span>
+<span><span class="st">`</span><span class="dv">200</span>    <span class="cn">E</span>xtraLight</span>
+<span><span class="st">`300    Light</span></span>
+<span><span class="st">`</span><span class="dv">400</span>    <span class="cn">R</span>egular</span>
+<span><span class="st">`600    Semibold</span></span>
+<span><span class="st">`</span><span class="dv">700</span>    <span class="cn">B</span>old</span>
+<span><span class="st">`900    Black</span></span>
+<span></span>
+<span><span class="st">IBM Plex Mono</span></span>
+<span><span class="st">/static/font/ibm-plex-mono/IBMPlexMono-</span></span>
+<span><span class="st">otf</span></span>
+<span><span class="st">font-display    swap</span></span>
+<span><span class="st">italic          /$/     Italic</span></span>
+<span><span class="st">`</span>normal         <span class="cn">R</span>egular</span>
+<span><span class="st">`bold           Bold</span></span>
+<span></span>
+<span><span class="st">Quivira</span></span>
+<span><span class="st">/static/font/quivira/Quivira-</span></span>
+<span><span class="st">ttf</span></span>
+<span><span class="st">font-display    swap</span></span>
+<span><span class="st">`</span>normal         <span class="cn">SUBSETTED</span></span>
+<span></span>
+<span><span class="cn">N</span>oto <span class="cn">E</span>moji</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>noto<span class="op">-</span>emoji<span class="op">/</span><span class="cn">N</span>otoEmoji<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="st">`normal         Bold-SUBSETTED</span></span>
+<span></span>
+<span><span class="st">&lt;?php</span></span>
+<span><span class="st">/*  Each dropcap font is subsetted into A-Z, so only *one* letter needs to be </span></span>
+<span><span class="st">    loaded (at a cost of 8-16KB), rather than 200-700KB or worse.</span></span>
+<span><span class="st"> */</span></span>
+<span><span class="st">function all_the_letters() {</span></span>
+<span><span class="st">    for (</span><span class="va">$c</span><span class="st"> = 0x41; </span><span class="va">$c</span><span class="st"> &lt;= 0x5A; </span><span class="va">$c</span><span class="st">++) {</span></span>
+<span><span class="st">        /*  Example (sans leading tabs; backtick is at line start):</span></span>
+<span><span class="st">            `</span>   <span class="cn">A</span></span>
+<span>                unicode<span class="op">-</span><span class="fu">range</span>   <span class="cn">U</span><span class="op">+</span><span class="bn">0041</span></span>
+<span>         <span class="op">*/</span></span>
+<span>        <span class="kw">echo</span> <span class="st">&quot;` &quot;</span><span class="op">.</span> <span class="fu">chr</span>(<span class="va">$c</span>) <span class="op">.</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span><span class="ot">;</span></span>
+<span>        <span class="kw">echo</span> <span class="st">&quot;  unicode-range   U+00&quot;</span> <span class="op">.</span> <span class="fu">strtoupper</span>(<span class="fu">dechex</span>(<span class="va">$c</span>)) <span class="op">.</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span><span class="ot">;</span></span>
+<span>    }</span>
+<span>}</span>
+<span><span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="cn">D</span>eutsche <span class="cn">Z</span>ierschrift</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>dropcap<span class="op">/</span>de<span class="op">-</span>zs<span class="op">/</span><span class="cn">D</span>eutscheZierschrift<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="op">&lt;</span><span class="ot">?</span>php all_the_letters()<span class="ot">;</span> <span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="cn">Y</span>init</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>dropcap<span class="op">/</span>yinit<span class="op">/</span><span class="cn">Y</span>init<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="op">&lt;</span><span class="ot">?</span>php all_the_letters()<span class="ot">;</span> <span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="cn">G</span>oudy <span class="cn">I</span>nitialen</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>dropcap<span class="op">/</span>goudy<span class="op">/</span><span class="cn">G</span>oudyInitialen<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="op">&lt;</span><span class="ot">?</span>php all_the_letters()<span class="ot">;</span> <span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="cn">C</span>heshire <span class="cn">I</span>nitials</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>dropcap<span class="op">/</span>cheshire<span class="op">/</span><span class="cn">C</span>heshire<span class="op">-</span><span class="cn">I</span>nitials<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="op">&lt;</span><span class="ot">?</span>php all_the_letters()<span class="ot">;</span> <span class="kw">?&gt;</span></span>
+<span></span>
+<span><span class="cn">K</span>anzlei <span class="cn">I</span>nitialen</span>
+<span><span class="op">/</span><span class="kw">static</span><span class="op">/</span>font<span class="op">/</span>dropcap<span class="op">/</span>kanzlei<span class="op">/</span><span class="cn">K</span>anzlei<span class="op">-</span><span class="cn">I</span>nitialen<span class="op">-</span></span>
+<span>ttf</span>
+<span>font<span class="op">-</span>display    swap</span>
+<span><span class="op">&lt;</span><span class="ot">?</span>php all_the_letters()<span class="ot">;</span> <span class="kw">?&gt;</span></span></code></pre></div>
+</body>
+</html>
