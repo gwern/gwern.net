@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-19 21:21:00 gwern"
+When:  Time-stamp: "2024-02-21 14:02:33 gwern"
 License: CC-0
 -}
 
@@ -564,8 +564,9 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", "aux-links-transclude-file":mobilep, []) generateFileTransclusionBlock']
  where
+   mobilep = if ".pdf" `isInfixOf` f then ["mobile-not"] else [] -- PDF files usually cannot be viewed 'in-browser' on mobile, sadly, so we have to hide them specially
    -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
    titleCaption = if null tle then [] else [Str "[Expand to view “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
