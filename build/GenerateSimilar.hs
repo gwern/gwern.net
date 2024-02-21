@@ -219,7 +219,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "embeddings2Forest called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 30 3 32 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 15 3 31 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -232,7 +232,7 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
-      randSeed = 12
+      randSeed = 13
   in
     runIdentity $
     forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $

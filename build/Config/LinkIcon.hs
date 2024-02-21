@@ -500,7 +500,7 @@ linkIconTestUnitsText =
          , ("/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf", "V.B.", "text,sans")
          , ("/doc/fiction/poetry/2011-yvain-iliadaslawsuit.html",  "SSC","text,tri")
          , ("/doc/genetics/heritable/2015-mosing-supplement.docx",  "word-doc","svg")
-         , ("/doc/iq/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
+         , ("/doc/iq/ses/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg")
          , ("/doc/iq/2014-tenijenhuis-supplement.doc",  "word-doc","svg")
          , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg")
          , ("/doc/personal/google-cse.xml",  "alphabet","svg")

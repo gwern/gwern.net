@@ -6,6 +6,7 @@ module Main where
 import Control.Monad (unless, when)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
+import Data.List.Split (chunksOf)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
 import Data.Map.Strict as M (fromList, lookup, keys, filter)
@@ -24,6 +25,8 @@ main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
           let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
+          let chunkSize = 25
+          let mdlChunks = chunksOf chunkSize mdl
           bdb <- readBacklinksDB
           edb <- readEmbeddings
           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
@@ -65,7 +68,8 @@ main = do Config.Misc.cd
           sortDB <- readListSortedMagic
           unless (args == ["--only-embed"]) $ do
               printGreen "Begin computing & writing out missing similarity-rankings…"
-              Par.mapM_ (\f -> do exists <- similaritemExistsP f
+              Par.mapM_ (mapM_
+                        (\f -> do exists <- similaritemExistsP f
                                   unless exists $
                                                case M.lookup f edbDB of
                                                  Nothing        -> return ()
@@ -75,18 +79,19 @@ main = do Config.Misc.cd
                                                                       let nmatchesSorted = (path, hitsSorted)
                                                                       when (f `elem` todoLinks) $ expireMatches (snd nmatchesSorted)
                                                                       writeOutMatch md bdb nmatchesSorted
-                        )
-                mdl
+                        ))
+                mdlChunks
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
                 printGreen "Rewriting all embeddings…"
                 Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
-                Par.mapM_ (\f -> case M.lookup f edbDB of
+                Par.mapM_ (mapM_ (\f ->
+                                    case M.lookup f edbDB of
                                        Nothing        -> return ()
                                        Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                             hitsSorted <- sortSimilars edb sortDB (head hits) hits
                                                             let nmatchesSorted = (path, hitsSorted)
                                                             writeOutMatch md bdb nmatchesSorted
-                                      )
-                  mdl
+                                      ))
+                  mdlChunks
                 printGreen "Done."

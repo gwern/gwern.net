@@ -136,7 +136,7 @@ tagsShort2LongRewrites =
    , ("steganographic", "steganography"), ("stenography", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
-   , ("artificial-selection", "genetics/selection/artificial") ]
+   , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -178,7 +178,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/writing", "writing psychology")
           , ("psychology/willpower", "willpower")
           , ("psychology/vision/dream", "dreams")
-          , ("psychology/vision", "seeing")
+          , ("psychology/vision", "sight")
           , ("psychology/smell/human", "human olfaction")
           , ("psychology/smell/perfume", "perfume")
           , ("psychology/smell", "smelling")
@@ -198,6 +198,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("personal/2013-cicadas", "2013 cicadas")
           , ("personal/2011-gwern-yourmorals.org", "Gwern’s YourMorals surveys")
           , ("nootropic/caffeine", "caffeine")
+          , ("nootropic/bacopa", "Bacopa")
           , ("math/humor", "STEM humor")
           , ("longevity/fasting", "fasting")
           , ("longevity/epigenetics", "epigenetics (aging)")
@@ -217,9 +218,9 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("existential-risk/nuclear/hofstadter", "nuclear war (Hofstadter)")
           , ("existential-risk/nuclear", "nuclear war")
           , ("economics/perpetuities", "perpetuities")
-          , ("economics/copyright", "copyright (economics)")
+          , ("economics/copyright", "copyright")
           , ("economics/automation/metcalfes-law", "Metcalfe’s Law")
-          , ("economics/automation", "automation (economics)")
+          , ("economics/automation", "tech economics")
           , ("economics/mechanism-design/quadratic-voting", "quadratic voting")
           , ("economics/mechanism-design/auction", "auctions")
           , ("economics/mechanism-design", "mechanism design")
@@ -265,7 +266,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/diffusion/midjourney/dropcap/dropcat", "Dropcat dropcaps")
           , ("ai/nn/diffusion/midjourney/dropcap", "dropcaps (AI typography)")
           , ("ai/nn/diffusion/midjourney/black-sun", "‘black sun’ sigil")
-          , ("ai/nn/diffusion/midjourney/landscape", "‘Midjourney landscapes")
+          , ("ai/nn/diffusion/midjourney/landscape", "Midjourney landscapes")
           , ("ai/nn/diffusion/midjourney", "Midjourney")
           , ("ai/highleyman", "Highleyman’s AI")
           , ("psychology/neuroscience/tcs", "TDCS")
@@ -506,6 +507,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/transformer/gpt/non-fiction",        "GPT non-fiction")
           , ("ai/nn/transformer/gpt",                    "GPT")
           , ("ai/fiction", "fiction by AI")
+          , ("ai/nn/gan/stylegan/anime", "StyleGAN (anime)")
           , ("ai/nn/gan/stylegan", "StyleGAN")
           , ("ai/nn/gan/biggan", "BigGAN")
           , ("ai/nn/gan", "GAN")

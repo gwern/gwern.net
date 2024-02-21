@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2022-11-03 17:15:27 gwern"
+# When:  Time-stamp: "2024-02-21 10:18:57 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited
@@ -19,7 +19,7 @@
 # This paper reviews previous research on the physiological effects of Shinrin-yoku (taking in the forest atmosphere or forest bathing), and presents new results from field experiments conducted in 24 forests across Japan. The term Shinrin-yoku was coined by the Japanese Ministry of Agriculture, Forestry, and Fisheries in 1982, and can be defined as making contact with and taking in the atmosphere of the forest. In order to clarify the physiological effects of Shinrin-yoku, we conducted field experiments in 24 forests across Japan. In each experiment, 12 subjects (280 total; ages 21.7 ± 1.5 year) walked in and viewed a forest or city area. On the first day, six subjects were sent to a forest area, and the others to a city area. On the second day, each group was sent to the other area as a cross-check. Salivary cortisol, blood pressure, pulse rate, and heart rate variability were used as indices. These indices were measured in the morning at the accommodation facility before breakfast and also both before and after the walking (for 16 ± 5 min) and viewing (for 14 ± 2 min). The R–R interval was also measured during the walking and viewing periods. The results show that forest environments promote lower concentrations of cortisol, lower pulse rate, lower blood pressure, greater parasympathetic nerve activity, and lower sympathetic nerve activity than do city environments. These results will contribute to the development of a research field dedicated to forest medicine, which may be used as a strategy for preventive medicine.
 #
 # NOTE: Pubmed rate-limits the public API; to reduce the risk of being blacklisted, get an API key
-# and set it in R with something lik `Sys.setenv(ENTREZ_KEY="fe7ca39604a5de176be4c2a1cbd2b2902108")`
+# and set it in R with something like `Sys.setenv(ENTREZ_KEY="fe7ca39604a5de176be4c2a1cbd2b2902108")`
 #
 # PLOS example (NOTE: ' ' thin spaces are used in the formatting):
 #

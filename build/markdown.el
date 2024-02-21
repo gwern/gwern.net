@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-12 10:33:54 gwern"
+;;; When:  Time-stamp: "2024-02-20 10:01:12 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -210,6 +210,7 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 (super-insert "," "≤") ; LESS-THAN OR EQUAL TO
 (super-insert "." "≥") ; GREATER-THAN OR EQUAL TO
 (super-insert "/" "⁄") ; FRACTION SLASH
+(super-insert "o" "𝒪") ; MATHEMATICAL SCRIPT CAPITAL O
 
 ; Abbreviation mode: text shortcuts for common terms, or characters which are hard to input:
 (setq-default abbrev-mode t)

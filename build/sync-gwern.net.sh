@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-19 20:04:27 gwern"
+# When:  Time-stamp: "2024-02-21 10:23:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
@@ -39,7 +39,9 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
           -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) && \
-          -n $(command -v static/build/generateSimilarLinks.hs) ]] && \
+          -n $(command -v static/build/generateSimilarLinks.hs) && \
+          -n $(command -v gifsicle) && \
+          -n $(command -v soffice) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -96,7 +98,7 @@ else
           s ',”' '”,'; s ",’" "’,";
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He ';
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like ';
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
@@ -203,6 +205,30 @@ else
 
     cd ~/wiki/ # go to site root
     bold "Building site…"
+
+    # make sure all videos have 'poster' preview images:
+    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm"); do
+        POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
+                                        echo "Generating poster image for $VIDEO…"
+                                        # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles. User has no idea what it is until they click to begin download the (possibly huge) video file. This also causes layout shift as the `<video>` element expands to the proper size of the video.
+                                        #
+                                        # We would like user to see, on load, preview of video: a single frame, displayed as still image (usually first frame is fine). (Even if the first frame or whatever frame we choose is uninformative, in any case this solves the layout shift problem.)
+                                        #
+                                        # Solution: the `poster="foo.jpg"` attribute of the HTML <video> element. Its value is URL of image file, to be shown as preview (and used for layout sizing of video element), prior to the user clicking to download and play video. Example:
+                                        #
+                                        # <video controls="controls" preload="none" loop="" poster="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png"><source src="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4" type="video/mp4"></video>
+                                        #
+                                        # How to generate poster image file? Use ffmpeg:
+                                        #
+                                        # ffmpeg -i 2019-06-03-gwern-biggan-danbooru1k-256px.mp4 -vf "select=eq(n\,0),scale=iw*sar:ih,setsar=1" -vframes 1 2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png
+                                        #
+                                        # (A frame other than the first can be extracted by putting in a higher number in the `select=eq(n\,0)` part of the command, e.g. `select=eq(n\,99)` would give the 100th frame.) We then heavily compress them quality-wise (they're just placeholders).
+                                        # Solved? No. Because posters are still reasonably large (eg. /face could load >1MB of posters because it has so many videos in it!), and because `<img>` lazy-loading doesn't apply to posters (due to poorly-conceived standards <https://github.com/whatwg/html/issues/6636> which short-sightedly implemented `poster=` as a hack without thinking about how this is reinventing `<img>` badly), we have a problem with bandwidth usage. So, we don't actually use `poster=` per se, we instead use a data attribute `data-video-poster` to store it, and hand-implement lazy-loading with IntersectionObservers /sigh).
+                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,5),scale=iw*sar:ih,setsar=1" -vframes 1 "$POSTER";
+                                        mogrify -quality 15 "$POSTER"
+                                    fi;
+    done &
+
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     if [ "$SLOW" ]; then
@@ -307,29 +333,6 @@ else
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
-
-    # make sure all videos have 'poster' preview images:
-    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm"); do
-        POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
-                                        echo "Generating poster image for $VIDEO…"
-                                        # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles. User has no idea what it is until they click to begin download the (possibly huge) video file. This also causes layout shift as the `<video>` element expands to the proper size of the video.
-                                        #
-                                        # We would like user to see, on load, preview of video: a single frame, displayed as still image (usually first frame is fine). (Even if the first frame or whatever frame we choose is uninformative, in any case this solves the layout shift problem.)
-                                        #
-                                        # Solution: the `poster="foo.jpg"` attribute of the HTML <video> element. Its value is URL of image file, to be shown as preview (and used for layout sizing of video element), prior to the user clicking to download and play video. Example:
-                                        #
-                                        # <video controls="controls" preload="none" loop="" poster="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png"><source src="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4" type="video/mp4"></video>
-                                        #
-                                        # How to generate poster image file? Use ffmpeg:
-                                        #
-                                        # ffmpeg -i 2019-06-03-gwern-biggan-danbooru1k-256px.mp4 -vf "select=eq(n\,0),scale=iw*sar:ih,setsar=1" -vframes 1 2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png
-                                        #
-                                        # (A frame other than the first can be extracted by putting in a higher number in the `select=eq(n\,0)` part of the command, e.g. `select=eq(n\,99)` would give the 100th frame.) We then heavily compress them quality-wise (they're just placeholders).
-                                        # Solved? No. Because posters are still reasonably large (eg. /face could load >1MB of posters because it has so many videos in it!), and because `<img>` lazy-loading doesn't apply to posters (due to poorly-conceived standards <https://github.com/whatwg/html/issues/6636> which short-sightedly implemented `poster=` as a hack without thinking about how this is reinventing `<img>` badly), we have a problem with bandwidth usage. So, we don't actually use `poster=` per se, we instead use a data attribute `data-video-poster` to store it, and hand-implement lazy-loading with IntersectionObservers /sigh).
-                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,5),scale=iw*sar:ih,setsar=1" -vframes 1 "$POSTER";
-                                        mogrify -quality 15 "$POSTER"
-                                    fi;
-    done &
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the code-blocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"
@@ -708,7 +711,7 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -- ./metadata/*.yaml | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -- ./metadata/*.yaml | \
              grep -F --invert-match 'popular_shelves';
        }
     wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
