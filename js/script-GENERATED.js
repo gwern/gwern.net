@@ -15010,7 +15010,10 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			 */
 			if (   collapseWrapper.tagName == "SPAN"
 				&& containsBlockChildren(collapseWrapper))
-				collapseWrapper = rewrapContents(collapseWrapper, null, "DIV", true, true);
+				collapseWrapper = rewrapContents(collapseWrapper, "div", {
+					useExistingWrapper: true,
+					moveClasses: true
+				});
 
 			//	Designate collapse type (block or inline).
 			if ([ "SPAN" ].includes(collapseWrapper.tagName))
