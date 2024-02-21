@@ -7099,9 +7099,15 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		//	Comparison.
 		/\s*(\S+)\s+(\S+)\s*/,
 		(match, leftOperand, rightOperand) => {
-			let literalRegExp = new RegExp(/^<<(.*)>>$/);
-			if (   literalRegExp.test(leftOperand)
-				|| literalRegExp.test(rightOperand)) {
+			let constantRegExp = new RegExp(/^_(\S*)_$/);
+			if (   constantRegExp.test(leftOperand)
+				|| constantRegExp.test(rightOperand)) {
+				return (   evaluateTemplateExpression(leftOperand, valueFunction)
+						== evaluateTemplateExpression(rightOperand, valueFunction)
+						? "_TRUE_"
+						: "_FALSE_");
+			} else {
+				let literalRegExp = new RegExp(/^<<(.*)>>$/);
 				leftOperand = literalRegExp.test(leftOperand)
 							  ? decodeURIComponent(leftOperand.slice(2, -2))
 							  : valueFunction(leftOperand);
@@ -7109,11 +7115,6 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 							   ? decodeURIComponent(rightOperand.slice(2, -2))
 							   : valueFunction(rightOperand);
 				return (leftOperand == rightOperand
-						? "_TRUE_"
-						: "_FALSE_");
-			} else {
-				return (   evaluateTemplateExpression(leftOperand, valueFunction)
-						== evaluateTemplateExpression(rightOperand, valueFunction)
 						? "_TRUE_"
 						: "_FALSE_");
 			}
