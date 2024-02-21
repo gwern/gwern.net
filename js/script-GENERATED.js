@@ -14540,18 +14540,18 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropcapsOverlap = (event
     GWLog("preventDropcapsOverlap", "rewrite.js", 1);
 
 	let blocksNotToBeOverlappedSelector = [
+		"p[class*='dropcap-']",
 		"section",
 		"blockquote",
-		".list",
 		".collapse",
 		".list-heading",
-		"p[class*='dropcap-']",
+		".in-list",
 		"div.sourceCode"
 	].join(", ");
 
 	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
 		container.querySelectorAll("p[class*='dropcap-']").forEach(dropcapBlock => {
-			let nextBlock = nextBlockOf(dropcapBlock, { alsoBlockElements: [ ".list" ] });
+			let nextBlock = nextBlockOf(dropcapBlock);
 			if (   nextBlock == null
 				|| nextBlock.matches(blocksNotToBeOverlappedSelector))
 				dropcapBlock.classList.add("overlap-not");
