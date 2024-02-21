@@ -1064,7 +1064,7 @@ iframe {
 }
 @media all and (max-width: 649px) {
 	iframe {
-		aspect-ratio: 3 / 2;
+		aspect-ratio: 3 / 5;
 	}
 }
 
