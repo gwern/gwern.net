@@ -233,11 +233,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseBlock.classList.add("expand-on-hover");
 
 		let collapseWrapper;
+		let wrapOptions = {
+			useExistingWrapper: true, 
+			moveClasses: [ "collapse", "expand-on-hover" ]
+		};
 		if ([ "DIV", "SECTION", "SPAN", "A" ].includes(collapseBlock.tagName)) {
 			//	Handle collapse-inducing include-links.
 			if (collapseBlock.tagName == "A")
-				collapseBlock = wrapElement(wrapElement(collapseBlock, null, "P", true, [ "collapse", "expand-on-hover" ]),
-											null, "DIV", true, [ "collapse", "expand-on-hover" ]);
+				collapseBlock = wrapElement(wrapElement(collapseBlock, "p", wrapOptions), "div", wrapOptions);
 
 			//	No additional wrapper needed for these tag types.
 			collapseWrapper = collapseBlock;
@@ -291,14 +294,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
-			//	Additional wrapper is required for most tag types.
-			collapseWrapper = wrapElement(collapseBlock, null, "DIV", true, [ "collapse", "expand-on-hover" ]);
-
-			//	This is a block collapse.
-			collapseWrapper.classList.add("collapse-block");
-
-			//	Collapse blocks of this type never have abstracts.
-			collapseWrapper.classList.add("no-abstract");
+			/*	Additional wrapper is required for most tag types. We use a 
+				block collapse here. Collapse blocks of this type never have 
+				abstracts.
+			 */
+			collapseWrapper = wrapElement(collapseBlock, "div.collapse-block.no-abstract", wrapOptions);
 		}
 
 		//	Slight HTML structure rectification.

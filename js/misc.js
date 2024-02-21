@@ -1487,7 +1487,7 @@ GW.floatingHeader = {
             let index = 0;
             chainLinks.forEach(link => {
             	link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
-            	let span = wrapElement(link, "link", "SPAN", false, true);
+            	let span = wrapElement(link, "span.link", { moveClasses: true });
             	span.style.setProperty("--link-index", index++);
             });
 

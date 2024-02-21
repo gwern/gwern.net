@@ -197,7 +197,7 @@ ImageFocus = {
 
 		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
-			wrapElement(image, "image-wrapper focusable", "SPAN", false, [ "small-image" ]);
+			wrapElement(image, "span.image-wrapper.focusable", { moveClasses: [ "small-image" ] });
 		});
 	},
 

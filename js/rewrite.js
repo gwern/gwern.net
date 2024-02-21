@@ -347,16 +347,27 @@ addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo
 addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     GWLog("wrapTables", "rewrite.js", 1);
 
-    wrapAll("table", "table-wrapper", "DIV", eventInfo.container, true);
-    wrapAll("table", "table-scroll-wrapper", "DIV", eventInfo.container, false);
+    wrapAll("table", ".table-wrapper", {
+    	useExistingWrapper: true,
+    	root: eventInfo.container
+    });
+    wrapAll("table", ".table-scroll-wrapper", { 
+    	useExistingWrapper: false,
+    	root: eventInfo.container
+    });
 
+	/*	Move .width-full class from the outer .table-wrapper down to the inner
+		.table-scroll-wrapper. (This is done so that the `wrapFullWidthTables`
+		content inject handler may work properly.)
+	 */
     eventInfo.container.querySelectorAll(".table-scroll-wrapper").forEach(tableScrollWrapper => {
-        transferClasses(tableScrollWrapper.closest(".table-wrapper"), tableScrollWrapper, [ "width-full" ]);
+    	let tableWrapper = tableScrollWrapper.closest(".table-wrapper");
+        transferClasses(tableWrapper, tableScrollWrapper, [ "width-full" ]);
     });
 }, "rewrite");
 
-/********************************************************************/
-/*  Rectify wrapper structure of full-width tables:
+/****************************************************/
+/*  Rectify full-width table wrapper class structure:
 
     div.table-wrapper.table.width-full
         div.table-scroll-wrapper
@@ -369,10 +380,14 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
             div.table-scroll-wrapper
                 table
  */
-addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthTables = (eventInfo) => {
-    GWLog("wrapFullWidthTables", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStructure = (eventInfo) => {
+    GWLog("rectifyFullWidthTableWrapperStructure", "rewrite.js", 1);
 
-    wrapAll(".table-wrapper .width-full", "table width-full", "DIV", eventInfo.container, true, [ "width-full" ]);
+	wrapAll(".table-scroll-wrapper.width-full", ".table", {
+		useExistingWrapper: true,
+		moveClasses: [ "width-full" ],
+		root: eventInfo.container
+	});
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -431,7 +446,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
         unwrap(image.parentElement);
     });
 
-    let exclusionSelector = ".footnote-back, td, th";
+    let exclusionSelector = [
+    	"td",
+    	"th",
+    	".footnote-back"
+    ].join(", ");
     wrapAll("img", (image) => {
         if (   image.classList.contains("figure-not")
             || image.closest(exclusionSelector))
@@ -442,8 +461,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
             && figure.querySelector("figcaption") != null)
             return;
 
-        wrapElement(image, null, "FIGURE", true, false);
-    }, null, eventInfo.container);
+        wrapElement(image, "figure", { useExistingWrapper: true });
+    }, {
+    	root: eventInfo.container
+    });
 }, "rewrite");
 
 /******************************************************************************/
@@ -751,7 +772,10 @@ GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", 
 addContentLoadHandler(GW.contentLoadHandlers.wrapPreBlocks = (eventInfo) => {
     GWLog("wrapPreBlocks", "rewrite.js", 1);
 
-	wrapAll("pre", "sourceCode", "DIV", eventInfo.container, true, false);
+	wrapAll("pre", ".sourceCode", {
+		useExistingWrapper: true,
+		root: eventInfo.container
+	});
 }, "rewrite");
 
 /*****************************************************************************/
@@ -783,7 +807,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyCodeBlockClasses = (eventInf
 addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (eventInfo) => {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    wrapAll("pre.width-full", "width-full", "DIV", eventInfo.container, true, false);
+    wrapAll("pre.width-full", ".width-full", {
+    	useExistingWrapper: true,
+		root: eventInfo.container
+	});
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -1370,7 +1397,9 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
-    unwrapAll(".TOC li a > span:not([class])", eventInfo.container);
+    unwrapAll(".TOC li a > span:not([class])", {
+    	root: eventInfo.container
+    });
 }, "rewrite", (info) => (info.container == document.body));
 
 /**************************************************************************/

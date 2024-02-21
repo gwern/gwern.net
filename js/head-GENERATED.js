@@ -460,90 +460,124 @@ function elementFromHTML(elementHTML) {
 
 /***************************************************************************/
 /*	Transfer any of the given CSS classes that the source has to the target.
+	(If no classes are specified, then transfer all classes the source has.)
  */
 function transferClasses(source, target, classes) {
-	classes.forEach(cssClass => {
-		if (source.classList.contains(cssClass)) {
-			source.classList.remove(cssClass);
-			target.classList.add(cssClass);
-		}
-	});
-	if (source.className == "")
-		source.removeAttribute("class");
+	if (classes) {
+		classes.forEach(cssClass => {
+			if (source.classList.contains(cssClass)) {
+				source.classList.remove(cssClass);
+				target.classList.add(cssClass);
+			}
+		});
+		if (source.className == "")
+			source.removeAttribute("class");
+	} else {
+        target.classList.add(...(source.classList));
+        source.removeAttribute("class");
+	}
 }
 
 /****************************************/
 /*  Wrap an element in a wrapper element.
+
+	The value of the `wrapperSpec` argument should be in the form "tagName" or 
+	"tagName.class-name-1.class-name-2" (etc.) or ".class-name-1.class-name-2"
+	(in which case the tag name will default to "div").
+
+	(Example: "span.foo-bar.baz-quux", which makes the wrapper
+	 `<span class="foo-bar baz-quux"></span>`.)
+
+	Available options fields are:
+
+	useExistingWrapper
+		If the given element is already the only element child of an element
+		with the same tag name as the specified wrapper, then do not inject any
+		additional wrapper. If wrapper classes are specified, apply them to this
+		existing wrapper.
+
+	moveClasses
+		If the value of this option field is `true`, then all classes are moved
+		(not copied!) from the given element to the wrapper. If, instead, the 
+		value of this option field is an array, then all classes which are in 
+		the array are moved (not copied!) from the given element to the wrapper.
  */
-function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper = false, moveClasses = false) {
-    if (   useExistingWrapper
-        && element.parentElement
-        && element.parentElement.tagName == wrapTagName
-        && element.parentElement.children.length == 1) {
-        if (wrapClass > "")
-            element.parentElement.classList.add(...(wrapClass.split(" ")));
+function wrapElement(element, wrapperSpec = "", options = { }) {
+	let [ wrapperTagName, ...wrapperClasses ] = wrapperSpec.split(".");
+
+	//	Default wrapper tag to <div>; capitalize tag name.
+	wrapperTagName = (wrapperTagName == "" ? "div" : wrapperTagName).toUpperCase();
+
+    if (   options.useExistingWrapper
+        && element.parentElement?.tagName == wrapperTagName
+        && isOnlyChild(element)) {
+        if (wrapperClasses.length > 0)
+            element.parentElement.classList.add(...wrapperClasses);
     } else {
-        let wrapper = newElement(wrapTagName);
-        if (wrapClass > "")
-            wrapper.classList.add(...(wrapClass.split(" ")));
+        let wrapper = newElement(wrapperTagName);
+        if (wrapperClasses.length > 0)
+            wrapper.classList.add(...wrapperClasses);
         element.parentNode.insertBefore(wrapper, element);
         wrapper.appendChild(element);
     }
 
-    if (moveClasses === false)
-        return element.parentElement;
-
-    if (moveClasses === true) {
-        element.parentElement.classList.add(...(element.classList));
-        element.removeAttribute("class");
-        return element.parentElement;
+    if (options.moveClasses === true) {
+    	transferClasses(element, element.parentElement);
+    } else if (options.moveClasses instanceof Array) {
+        transferClasses(element, element.parentElement, options.moveClasses);
     }
-
-    if (moveClasses instanceof Array)
-        transferClasses(element, element.parentElement, moveClasses);
 
 	return element.parentElement;
 }
 
-/*****************************************************/
+/****************************************************************************/
 /*  Wrap all elements specified by the given selector.
- */
-function wrapAll(selector, 
-				 wrapClassOrFunction, 
-				 wrapTagName = "DIV", 
-				 container = document.body, 
-				 useExistingWrappers = false, 
-				 moveClasses = false) {
-    let wrapperFunction;
-    if (typeof wrapClassOrFunction == "function") {
-        wrapperFunction = wrapClassOrFunction;
-    } else {
-        wrapperFunction = (element) => {
-            wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers, moveClasses);
-        };
-    }
 
-    container.querySelectorAll(selector).forEach(wrapperFunction);
+	See the wrapElement() function for details on the `wrapperSpec` and 
+	`options` arguments.
+
+	Available option fields (in addition to those used by wrapElement()) are:
+
+	root
+		The value of this option field should be an element, Document, or
+		DocumentFragment, within which (but not including which) the given
+		selector will be looked for. (The default value is `document`.)
+
+	NOTE: The `wrapperSpec` argument may be a wrap function, in which case all 
+	option fields that pertain to the wrapElement() function are ignored (as 
+	that function is not called in such a case).
+ */
+function wrapAll(selector, wrapperSpec, options = { }) {
+	let root = options.root ?? document;
+    let wrapperFunction = typeof wrapperSpec == "function"
+    					  ? wrapperSpec
+    					  : (element) => { wrapElement(element, wrapperSpec, options); };
+
+    root.querySelectorAll(selector).forEach(wrapperFunction);
 }
 
 /**************************************************************************/
 /*  Replace an element with its contents. Returns array of unwrapped nodes.
 
-	Options:
+	Available options fields are:
 
-		moveID
+	moveID
+		If the value of this option field is `true`, and the wrapper has only a
+		single child element, then that element is assigned the `id` attribute
+		of the wrapper (if any).
 
-		moveClasses
-		classesToMove
+	moveClasses
+		If the value of this option field is `true`, then all classes are moved
+		from the wrapper to each unwrapped child element. If, instead, the value
+		of this option field is an array, then all classes which are in the 
+		array are moved from the wrapper to each element child.
 
-		preserveBlockSpacing
+	preserveBlockSpacing
+		If the value of this option field is `true`, then the value of the 
+		`--bsm` CSS property of the wrapper (if any) is assigned to the first
+		child element of the wrapper.
  */
-function unwrap(wrapper, options = {
-	moveID: false,
-	moveClasses: false,
-	classesToMove: null,
-	preserveBlockSpacing: false
-}) {
+function unwrap(wrapper, options = { }) {
 	if (wrapper == null)
 		return;
 
@@ -577,14 +611,9 @@ function unwrap(wrapper, options = {
 
 		//	Move classes, if specified.
 		if (options.moveClasses === true) {
-			if (options.classesToMove == null) {
-				child.classList.add(...(wrapper.classList));
-			} else {
-				options.classesToMove.forEach(cssClass => {
-					if (wrapper.classList.contains(cssClass))
-						child.classList.add(cssClass);
-				});
-			}
+			transferClasses(wrapper, child);
+		} else if (options.moveClasses instanceof Array) {
+			transferClasses(wrapper, child, options.moveClasses);
 		}
     }
 
@@ -602,10 +631,18 @@ function rewrapContents(...args) {
 	return wrapper;
 }
 
-/*******************************************************/
+/*************************************************************************/
 /*  Unwrap all elements specified by the given selector.
+
+	Available option fields (in addition to those used by unwrap()) are:
+
+	root
+		The value of this option field should be an element, Document, or
+		DocumentFragment, within which (but not including which) the given
+		selector will be looked for. (The default value is `document`.)
  */
-function unwrapAll(selector, root = document, options = { }) {
+function unwrapAll(selector, options = { }) {
+	let root = options.root ?? document;
     root.querySelectorAll(selector).forEach(element => {
         unwrap(element, options);
     });

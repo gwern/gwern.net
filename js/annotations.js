@@ -610,10 +610,7 @@ Annotations = { ...Annotations,
 				let pageDescriptionClass = "page-description-annotation";
 				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
 				if (pageDescription)
-					unwrap(pageDescription, {
-						moveClasses: true,
-						classesToMove: [ pageDescriptionClass ]
-					});
+					unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
 			},
 
 			basePathname: "/metadata/annotation/",
@@ -754,7 +751,7 @@ Annotations.dataSources.wikipedia = {
 
 					//	Get heading, parse as HTML, and unwrap links.
 					let heading = headingElement.cloneNode(true);
-					heading.querySelectorAll("a").forEach(link => { unwrap(link); });
+					heading.querySelectorAll("a").forEach(unwrap);
 
 					//	Construct TOC entry.
 					responseHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
@@ -1098,7 +1095,7 @@ Annotations.dataSources.wikipedia = {
 			let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
 			if (firstGrafAfterInfobox)
 				referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
-			wrapElement(firstInfobox, "collapse");
+			wrapElement(firstInfobox, ".collapse");
 		}
 
 		//	Apply section classes.
