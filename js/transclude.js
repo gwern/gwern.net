@@ -417,20 +417,6 @@ function templateDataFromHTML(html) {
 	return dataObject;
 }
 
-/***************************************************************************/
-/*	Returns true or false, based on the value of defined template expression
-	constants. (Returns false for unknown constant name.)
- */
-function evaluateTemplateExpressionConstant(constant) {
-	if (constant == "_TRUE_")
-		return true;
-
-	if (constant == "_FALSE_")
-		return false;
-
-	return false;
-}
-
 /************************************************************************/
 /*	Return either true or false, having evaluated the template expression
 	(used in conditionals, e.g. `<[IF !foo & bar]>baz<[IFEND]>`).
@@ -442,7 +428,12 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	if (expr == "_FALSE_")
 		return false;
 
-	return evaluateTemplateExpressionConstant(expr.replace(
+	return evaluateTemplateExpression(expr.replace(
+		//	Quotes.
+		/(['"])(.*?)(\1)/g,
+		(match, leftQuote, quotedExpr, rightQuote) => 
+		"<<" + fixedEncodeURIComponent(quotedExpr) + ">>"
+	).replace(
 		//	Brackets.
 		/\s*\[\s*(.+?)\s*\]\s*/g,
 		(match, bracketedExpr) =>
@@ -451,7 +442,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		 : "_FALSE_")
 	).replace(
 		//	Boolean AND, OR.
-		/^\s*([^&|]+?)\s*([&|])\s*(.+?)\s*$/,
+		/\s*([^&|]+?)\s*([&|])\s*(.+)\s*/g,
 		(match, leftOperand, operator, rightOperand) => {
 			let leftOperandTrue = evaluateTemplateExpression(leftOperand, valueFunction);
 			let rightOperandTrue = evaluateTemplateExpression(rightOperand, valueFunction);
@@ -462,16 +453,40 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		}
 	).replace(
 		//	Boolean NOT.
-		/^\s*!\s*(.+?)\s*$/,
+		/\s*!\s*(\S+)\s*/g,
 		(match, operand) =>
 		(evaluateTemplateExpression(operand, valueFunction)
 		 ? "_FALSE_"
 		 : "_TRUE_")
-	).replace(/^\s*(.+)\s*$/g,
-		(match, fieldName) =>
-		(/^_(.*)_$/.test(fieldName)
-		 ? fieldName
-		 : (valueFunction(fieldName) == null
+	).replace(
+		//	Comparison.
+		/\s*(\S+)\s+(\S+)\s*/,
+		(match, leftOperand, rightOperand) => {
+			let literalRegExp = new RegExp(/^<<(.*)>>$/);
+			if (   literalRegExp.test(leftOperand)
+				|| literalRegExp.test(rightOperand)) {
+				leftOperand = literalRegExp.test(leftOperand)
+							  ? decodeURIComponent(leftOperand.slice(2, -2))
+							  : valueFunction(leftOperand);
+				rightOperand = literalRegExp.test(rightOperand)
+							   ? decodeURIComponent(rightOperand.slice(2, -2))
+							   : valueFunction(rightOperand);
+				return (leftOperand == rightOperand
+						? "_TRUE_"
+						: "_FALSE_");
+			} else {
+				return (   evaluateTemplateExpression(leftOperand, valueFunction)
+						== evaluateTemplateExpression(rightOperand, valueFunction)
+						? "_TRUE_"
+						: "_FALSE_");
+			}
+		}
+	).replace(/\s*(\S+)\s*/g,
+		//	Constant or field name.
+		(match, constantOrFieldName) =>
+		(/^_(\S*)_$/.test(constantOrFieldName)
+		 ? constantOrFieldName
+		 : (valueFunction(constantOrFieldName) == null
 			? "_FALSE_"
 			: "_TRUE_"))
 	));
@@ -1708,7 +1723,6 @@ Transclude = {
 		let processData = (template) => {
 			//	Reference data.
 			let referenceData = dataProvider.referenceDataForLink(includeLink);
-			let templateData = referenceData.content;
 
 			let content = null;
 			if (template) {
@@ -1726,7 +1740,7 @@ Transclude = {
 				};
 
 				//	Fill template.
-				content = fillTemplate(template, templateData, context, options);
+				content = fillTemplate(template, referenceData.content, context, options);
 			} else if (referenceData.content instanceof DocumentFragment) {
 				content = referenceData.content;
 			}

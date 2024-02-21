@@ -10,8 +10,8 @@ Transclude.templates = {
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF [ abstract | fileIncludes ] & !authorDateAux ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] ]>:<[IF2END]><[IFEND]>
+		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
@@ -29,7 +29,7 @@ Transclude.templates = {
 		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
 		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\\
+			   ><{fullTitleHTML}></a>\\
 		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
 	</p>
 	<[IF authorDateAux]>

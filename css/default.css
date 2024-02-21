@@ -4023,14 +4023,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         var(--popups-popup-box-shadow);
 }
 
-.popup .partial-annotation-append-container .data-field {
-    display: inline;
-}
-
-.popup .partial-annotation-append-container .data-field.title {
-    margin-right: 0.25em;
-}
-
 /*┌────────────────────┐*/
 /*│ Popup scroll view. │*/
 /*└────────────────────┘*/
