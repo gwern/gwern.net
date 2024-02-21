@@ -22,6 +22,9 @@ build/link-suggester
 build/preprocess-markdown
 build/**/*.html
 css/**/*.html
+font/**/*.html
 js/**/*.html
+nginx/**/*.html
+redirect/**/*.html
 /.htaccess
 /asset.log
