@@ -3361,15 +3361,16 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	/*	If any of a list’s list items have multiple non-list children, then
 		it is a “big list” (with consequences for block spacing).
 	 */
+	let listItemChildBlocksOptions = {
+		notWrapperElements: [ ".list" ],
+		cacheKey: "notWrappers_lists"
+	};
 	let isBigList = (list) => {
 		if (list.matches(".list") != true)
 			return false;
 
 		for (let listItem of list.children) {
-			if (childBlocksOf(listItem, {
-					notWrapperElements: [ ".list" ],
-					cacheKey: "notWrappers_lists"
-				}).filter(x => x.matches(".list") != true).length > 1)
+			if (childBlocksOf(listItem, listItemChildBlocksOptions).filter(x => x.matches(".list") != true).length > 1)
 				return true;
 		}
 
@@ -3389,10 +3390,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		 });
 		 if (container?.matches("li")) {
 		 	for (let listItem of container.parentElement.children) {
-				if (childBlocksOf(listItem, {
-						notWrapperElements: [ ".list" ],
-						cacheKey: "notWrappers_lists"
-					}).findIndex(x => isBigList(x)) != -1) {
+				if (childBlocksOf(listItem, listItemChildBlocksOptions).findIndex(x => isBigList(x)) != -1) {
 					bigList = true;
 					break;
 				}
