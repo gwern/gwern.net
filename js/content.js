@@ -59,7 +59,6 @@ Content = {
 		return Content.contentTypeForLink(link)?.sourceURLsForLink?.(link);
 	},
 
-	//	Called by: Extracts.handleIncompleteReferenceData (extracts.js)
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
 		if (Content.cachedContentForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)

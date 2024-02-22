@@ -490,32 +490,17 @@ Extracts = {
 		if (objectOfSomeSort == null)
 			return;
 
-        //  When loading ends (in success or failure)...
-        if ([ "IFRAME" ].includes(objectOfSomeSort.tagName)) {
-            //  Iframes do not fire ‘error’ on server error.
-            objectOfSomeSort.onload = (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(target, true);
+        /*	We refresh as if loading were successful, but note that the ‘load’
+        	event on an <iframe> does not mean that the load was successful,
+        	because <iframe> elements do not fire ‘error’ on server error or
+        	load fail.
+         */        
+		objectOfSomeSort.onload = (event) => {
+			Extracts.postRefreshUpdatePopFrameForTarget(target, true);
+		};
 
-                /*  We do this for local documents only. Cross-origin
-                    protections prevent us from accessing the content of
-                    an iframe with a foreign site, so we do nothing special
-                    and simply let the foreign site’s server show its usual
-                    404 page (or whatever) if the linked page is not found.
-                 */
-                if (   target.hostname == location.hostname
-                    && Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title)) {
-					Extracts.postRefreshUpdatePopFrameForTarget(target, false);
-                }
-            };
-        } else if ([ "IMG" ].includes(objectOfSomeSort.tagName)) {
-            //  Images fire ‘error’ on server error or load fail.
-            objectOfSomeSort.onload = (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(target, true);
-            };
-        }
-
-        /*  We set an ‘error’ handler for *all* types of entity, even
-            iframes, just in case.
+        /*  We set an ‘error’ handler for both <img> and <iframe>, just in case,
+        	but we only expect the former to work (see above).
          */
         if ([ "IFRAME", "IMG" ].includes(objectOfSomeSort.tagName)) {
 			objectOfSomeSort.onerror = (event) => {
@@ -524,36 +509,6 @@ Extracts = {
 			};
         }
     },
-
-	/*	If the reference data is not yet available, we either queue the
-		refresh-pop-frame callbacks for when it does load or fail (in the case
-		where the network request hasn’t come back yet), or mark the pop-frame
-		as “loading failed” and do nothing (if the load has failed).
-	 */
-	//	Called by: Extracts.localPageForTarget
-	//	Called by: Extracts.localCodeFileForTarget
-	//	Called by: Extracts.annotationForTarget
-	handleIncompleteReferenceData: (target, referenceData, dataProvider) => {
-        if (referenceData == null) {
-            /*  If the content has yet to be loaded, we’ll trust that it has
-            	been asked to load, and meanwhile wait, and do nothing yet.
-             */
-			target.popFrame.classList.toggle("loading", true);
-
-			dataProvider.waitForDataLoad(dataProvider.targetIdentifier(target),
-			   (identifier) => {
-				Extracts.postRefreshSuccessUpdatePopFrameForTarget(target);
-			}, (identifier) => {
-				Extracts.postRefreshFailureUpdatePopFrameForTarget(target);
-			});
-        } else if (referenceData == "LOADING_FAILED") {
-            /*  If we’ve already tried and failed to load the content, we
-                will not try loading again, and just show the “loading failed”
-                message.
-             */
-            target.popFrame.classList.add("loading-failed");
-        }
-	},
 
 	//	Called by: Extracts.setLoadingSpinner
 	postRefreshUpdatePopFrameForTarget: (target, success) => {
@@ -569,7 +524,7 @@ Extracts = {
 		if (!success)
 			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 
-		//  Re-spawn, or fill and rewrite, the pop-frame.
+		//  Update pop-frame position.
 		if (Extracts.popFrameProvider == Popups)
 			Popups.positionPopup(popFrame);
 		else if (Extracts.popFrameProvider == Popins)

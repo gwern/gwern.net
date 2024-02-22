@@ -1170,6 +1170,7 @@ Extracts = { ...Extracts,
 		//	Loading spinner.
 		Extracts.setLoadingSpinner(popFrame);
 
+		//	Mark sized image pop-frame.
         if (popFrame.document.querySelector("img[width][height]"))
         	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "dimensions-specified");
     },

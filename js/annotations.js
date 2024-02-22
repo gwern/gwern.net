@@ -198,7 +198,6 @@ Annotations = { ...Annotations,
 		return Annotations.dataSourceForLink(link).sourceURLForLink(link);
 	},
 
-	//	Called by: extracts.annotationForTarget (extracts-annotations.js)
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
 		/*	If the data source for this link delegates its functionality to
 			a different data source, the delegate’s provider object should
