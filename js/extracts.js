@@ -743,9 +743,6 @@ Extracts = {
 
         let target = popin.spawningTarget;
 
-        //  Update the title.
-        Extracts.updatePopFrameTitle(popin);
-
         //  Special handling for certain popin types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;
         let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
@@ -759,16 +756,6 @@ Extracts = {
 
 		//	Register copy processors in popin.
 		registerCopyProcessorsForDocument(popin.document);
-
-        //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.document.querySelector("iframe, img, video");
-        if (objectOfSomeSort) {
-            objectOfSomeSort.addEventListener("load", (event) => {
-                requestAnimationFrame(() => {
-                    Popins.scrollPopinIntoView(popin);
-                });
-            });
-        }
     },
 
     /**********/

@@ -7288,27 +7288,25 @@ function synthesizeIncludeLink(link, attributes, properties) {
 			 || link instanceof URL)
 		includeLink.href = link.href;
 
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.backlinkTargetUrl)
-		includeLink.dataset.backlinkTargetUrl = link.dataset.backlinkTargetUrl;
-
-	if (   link instanceof HTMLAnchorElement
-		&& link.dataset.urlArchive)
-		includeLink.dataset.urlArchive = link.dataset.urlArchive;
-
-	//	In case no include classes have been added yet...
-	if (Transclude.isIncludeLink(includeLink) == false)
-		includeLink.classList.add("include");
-
-	//  Import certain link classes.
-	/*  See corresponding note in annotations.js.
-		—SA 2024-02-16
-	 */
-	if (link instanceof HTMLAnchorElement)
+	if (link instanceof HTMLAnchorElement) {
+		//	Import certain data attributes.
+		[ "backlinkTargetUrl", "urlArchive", "urlHtml" ].forEach(dataAttributeName => {
+			if (link.dataset[dataAttributeName])
+				includeLink.dataset[dataAttributeName] = link.dataset[dataAttributeName];
+		});
+		//  Import certain link classes.
+		/*  See corresponding note in annotations.js.
+			—SA 2024-02-16
+		 */
 		[ "link-live" ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
+	}
+
+	//	In case no include classes have been added yet...
+	if (Transclude.isIncludeLink(includeLink) == false)
+		includeLink.classList.add("include");
 
 	return includeLink;
 }
@@ -9475,9 +9473,6 @@ Extracts = {
 
         let target = popin.spawningTarget;
 
-        //  Update the title.
-        Extracts.updatePopFrameTitle(popin);
-
         //  Special handling for certain popin types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;
         let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
@@ -9491,16 +9486,6 @@ Extracts = {
 
 		//	Register copy processors in popin.
 		registerCopyProcessorsForDocument(popin.document);
-
-        //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.document.querySelector("iframe, img, video");
-        if (objectOfSomeSort) {
-            objectOfSomeSort.addEventListener("load", (event) => {
-                requestAnimationFrame(() => {
-                    Popins.scrollPopinIntoView(popin);
-                });
-            });
-        }
     },
 
     /**********/
