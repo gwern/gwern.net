@@ -3623,13 +3623,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-height: unset;
 }
 
-.popframe-body.object iframe {
+.popframe-body.object iframe,
+.popframe-body.object object {
     background-color: var(--GW-popframes-iframe-background-color);
 }
 
 /*  Don’t show when loading failed.
  */
-.popframe-body.object.loading-failed iframe {
+.popframe-body.object.loading-failed iframe,
+.popframe-body.object.loading-failed object {
     visibility: hidden;
 }
 

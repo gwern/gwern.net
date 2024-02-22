@@ -994,10 +994,11 @@ Extracts = { ...Extracts,
 
 		//	REAL REWRITES BEGIN HERE
 
+        //  Loading spinner.
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
     	let video = popFrame.document.querySelector("video");
     	let source = video.querySelector("source");
-
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
 
 		doAjax({
 			location: source.src,
@@ -1081,10 +1082,11 @@ Extracts = { ...Extracts,
 
 		//	REAL REWRITES BEGIN HERE
 
+        //  Loading spinner.
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
     	let audio = popFrame.document.querySelector("audio");
     	let source = audio.querySelector("source");
-
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
 
 		doAjax({
 			location: source.src,
@@ -1249,7 +1251,20 @@ Extracts = { ...Extracts,
         }
 
         //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
+		let src = (popFrame.document.querySelector("iframe")?.src ?? popFrame.document.querySelector("object")?.data);
+
+		doAjax({
+			location: src,
+			method: "HEAD",
+			onSuccess: (event) => {
+				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+			},
+			onFailure: (event) => {
+                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+			}
+		});
     }
 };
 
