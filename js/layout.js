@@ -1135,6 +1135,17 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 });
 
 /****************************************************************************/
+/*	Apply block layout classes to the main document, prior to rewrites. (This
+	is necessary in browsers that delay MutationObserver firing until after
+	DOMContentLoaded.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocument = (eventInfo) => {
+    GWLog("applyBlockLayoutClassesInMainDocument", "layout.js", 1);
+
+	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
+}, "<rewrite", (info) => (info.container == document.body));
+
+/****************************************************************************/
 /*	Apply block layout classes to a document fragment, to make them available
 	to any other load handlers (rewrite functions).
  */
