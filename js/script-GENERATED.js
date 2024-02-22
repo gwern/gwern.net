@@ -5788,22 +5788,24 @@ Content = {
 	/*	Helpers.
 	 */
 
-    objectHTMLForURL: (url, additionalAttributes = null) => {
+    objectHTMLForURL: (url, options = { }) => {
 		if (typeof url == "string")
 			url = URLFromString(url);
 
-        if (url.pathname.endsWith(".pdf")) {
-            let data = url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none";
-            return `<object
-                        data="${data}"
-                            ></object>`;
-        } else {
-            return `<iframe
-                        src="${url.href}"
-                        frameborder="0"
-                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
-                            ></iframe>`;
-        }
+		let src = url.pathname.endsWith(".pdf")
+				  ? url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none"
+				  : url.href;
+		let cssClass = "loaded-not"
+					 + (url.pathname.endsWith(".pdf")
+					    ? " pdf"
+					    : "");
+					 + (options.additionalClasses ?? "")
+		return `<iframe
+					src="${src}"
+					frameborder="0"
+					class="${cssClass}"
+					${(options.additionalAttributes ?? "")}
+						></iframe>`;
     },
 
 	/**************************************************************/
@@ -5914,11 +5916,9 @@ Content = {
 										  ? `sandbox="allow-scripts allow-same-origin"`
 										  : `sandbox`);
 
-				let content = newDocument(Content.objectHTMLForURL(embedSrc, additionalAttributes.join(" ")));
-
-				content.querySelector("iframe, object").classList.add("loaded-not");
-
-				return content;
+				return newDocument(Content.objectHTMLForURL(embedSrc, {
+					additionalAttributes: additionalAttributes.join(" ")
+				}));
 			},
 
 			scriptsEnabledOnHosts: [
@@ -6262,13 +6262,17 @@ Content = {
 					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-						`class="youtube" srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+						additionalClasses: "youtube",
+						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`
+					}));
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
 					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
 					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-						`class="vimeo" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+						additionalClasses: "vimeo",
+						additionalAttributes: `allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`
+					}));
 				} else {
 					return null;
 				}
@@ -6331,11 +6335,15 @@ Content = {
 
 			contentFromLink: (link) => {
 				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
-				let content = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+				let additionalAttributes = [ ];
 
-				content.querySelector("iframe, object").classList.add("loaded-not");
+				//	Determine sandbox settings.
+				if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
+					additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
 
-				return content;
+				return newDocument(Content.objectHTMLForURL(embedSrc, {
+					additionalAttributes: additionalAttributes.join(" ")
+				}));
 			},
 
 			documentFileExtensions: [ "html", "pdf", "csv", "doc", "docx", "ods", "xls", "xlsx" ]
@@ -9212,7 +9220,7 @@ Extracts = {
 
         popFrame.classList.toggle("loading", true);
 
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img");
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, img");
 		if (objectOfSomeSort == null)
 			return;
 
@@ -9233,8 +9241,8 @@ Extracts = {
 					Extracts.postRefreshUpdatePopFrameForTarget(target, false);
                 }
             };
-        } else if ([ "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
-            //  Objects & images fire ‘error’ on server error or load fail.
+        } else if ([ "IMG" ].includes(objectOfSomeSort.tagName)) {
+            //  Images fire ‘error’ on server error or load fail.
             objectOfSomeSort.onload = (event) => {
                 Extracts.postRefreshUpdatePopFrameForTarget(target, true);
             };
@@ -9243,7 +9251,7 @@ Extracts = {
         /*  We set an ‘error’ handler for *all* types of entity, even
             iframes, just in case.
          */
-        if ([ "IFRAME", "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
+        if ([ "IFRAME", "IMG" ].includes(objectOfSomeSort.tagName)) {
 			objectOfSomeSort.onerror = (event) => {
 				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
 				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
@@ -9532,7 +9540,7 @@ Extracts = {
 		registerCopyProcessorsForDocument(popin.document);
 
         //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.document.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popin.document.querySelector("iframe, img, video");
         if (objectOfSomeSort) {
             objectOfSomeSort.addEventListener("load", (event) => {
                 requestAnimationFrame(() => {
@@ -11213,10 +11221,8 @@ Extracts = { ...Extracts,
         //  Loading spinner.
 		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
 
-		let src = (popFrame.document.querySelector("iframe")?.src ?? popFrame.document.querySelector("object")?.data);
-
 		doAjax({
-			location: src,
+			location: popFrame.document.querySelector("iframe").src,
 			method: "HEAD",
 			onSuccess: (event) => {
 				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
@@ -13071,15 +13077,15 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 /* EMBEDS */
 /**********/
 
-/****************************************************************************/
-/*	There’s no way to tell whether an <iframe> or <object> has loaded, except
-	to listen for the `load` event. So, we implement our own checkable load 
-	flag, with a class.
+/******************************************************************************/
+/*	There’s no way to tell whether an <iframe> has loaded, except to listen for 
+	the `load` event. So, we implement our own checkable load flag, with a 
+	class.
  */
 addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
     GWLog("applyIframeScrollFix", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("iframe.loaded-not, object.loaded-not").forEach(embed => {
+	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
 		embed.addEventListener("load", (event) => {
 			embed.classList.remove("loaded-not");
 		});

@@ -1052,7 +1052,7 @@ video {
 	cursor: pointer;
 }
 
-iframe, object {
+iframe {
 	display: block;
 	width: calc(100% - 2px);
 	max-height: calc(100vh - 8rem);
@@ -1074,8 +1074,7 @@ iframe.youtube {
 iframe.vimeo {
 	aspect-ratio: 495 / 278;
 }
-
-object {
+iframe.pdf {
 	aspect-ratio: 8.5 / 11;
 }
 
@@ -3477,8 +3476,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     vertical-align: text-top;
 }
 
-.popframe-body:not(.object) iframe,
-.popframe-body:not(.object) object {
+.popframe-body:not(.object) iframe {
 	max-height: calc(var(--popframe-scroll-view-height) - 6 * var(--base-font-size));
 }
 
@@ -3611,27 +3609,23 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popframe-body.object img,
 .popframe-body.object video,
 .popframe-body.object audio,
-.popframe-body.object iframe,
-.popframe-body.object object {
+.popframe-body.object iframe {
     display: block;
     margin: auto;
 }
 
-.popframe-body.object iframe,
-.popframe-body.object object {
+.popframe-body.object iframe {
     border: unset;
     max-height: unset;
 }
 
-.popframe-body.object iframe,
-.popframe-body.object object {
+.popframe-body.object iframe {
     background-color: var(--GW-popframes-iframe-background-color);
 }
 
 /*  Don’t show when loading failed.
  */
-.popframe-body.object.loading-failed iframe,
-.popframe-body.object.loading-failed object {
+.popframe-body.object.loading-failed iframe {
     visibility: hidden;
 }
 
@@ -4148,9 +4142,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popup-body.object.zoomed iframe,
-.popup-body.object.zoomed object,
-.popup-body.object.resized iframe,
-.popup-body.object.resized object {
+.popup-body.object.resized iframe {
     width: 100%;
     height: 100%;
 }
@@ -4311,8 +4303,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popup-body.object iframe,
-.popup-body.object object {
+.popup-body.object iframe {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
@@ -4919,8 +4910,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 /*│ Object popins. │*/
 /*└────────────────┘*/
 
-.popin-body.object iframe,
-.popin-body.object object {
+.popin-body.object iframe {
     width: 100%;
     height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }

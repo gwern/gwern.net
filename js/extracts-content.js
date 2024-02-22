@@ -1253,10 +1253,8 @@ Extracts = { ...Extracts,
         //  Loading spinner.
 		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
 
-		let src = (popFrame.document.querySelector("iframe")?.src ?? popFrame.document.querySelector("object")?.data);
-
 		doAjax({
-			location: src,
+			location: popFrame.document.querySelector("iframe").src,
 			method: "HEAD",
 			onSuccess: (event) => {
 				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);

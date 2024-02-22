@@ -2562,7 +2562,6 @@ GW.layout = {
 		".footnote",
 		"figure",
 		"iframe",
-		"object",
 		"hr",
 		"div.sourceCode",
 		".table-wrapper",
@@ -2668,7 +2667,6 @@ GW.layout = {
 		[ "figure",						10 ],
 
 		[ "iframe",						10 ],
-		[ "object",						10 ],
 
 		[ "blockquote",					10 ],
 

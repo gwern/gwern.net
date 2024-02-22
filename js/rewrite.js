@@ -818,15 +818,15 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 /* EMBEDS */
 /**********/
 
-/****************************************************************************/
-/*	There’s no way to tell whether an <iframe> or <object> has loaded, except
-	to listen for the `load` event. So, we implement our own checkable load 
-	flag, with a class.
+/******************************************************************************/
+/*	There’s no way to tell whether an <iframe> has loaded, except to listen for 
+	the `load` event. So, we implement our own checkable load flag, with a 
+	class.
  */
 addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
     GWLog("applyIframeScrollFix", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("iframe.loaded-not, object.loaded-not").forEach(embed => {
+	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
 		embed.addEventListener("load", (event) => {
 			embed.classList.remove("loaded-not");
 		});

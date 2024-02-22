@@ -193,22 +193,24 @@ Content = {
 	/*	Helpers.
 	 */
 
-    objectHTMLForURL: (url, additionalAttributes = null) => {
+    objectHTMLForURL: (url, options = { }) => {
 		if (typeof url == "string")
 			url = URLFromString(url);
 
-        if (url.pathname.endsWith(".pdf")) {
-            let data = url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none";
-            return `<object
-                        data="${data}"
-                            ></object>`;
-        } else {
-            return `<iframe
-                        src="${url.href}"
-                        frameborder="0"
-                        ${(additionalAttributes ? (" " + additionalAttributes) : "")}
-                            ></iframe>`;
-        }
+		let src = url.pathname.endsWith(".pdf")
+				  ? url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none"
+				  : url.href;
+		let cssClass = "loaded-not"
+					 + (url.pathname.endsWith(".pdf")
+					    ? " pdf"
+					    : "");
+					 + (options.additionalClasses ?? "")
+		return `<iframe
+					src="${src}"
+					frameborder="0"
+					class="${cssClass}"
+					${(options.additionalAttributes ?? "")}
+						></iframe>`;
     },
 
 	/**************************************************************/
@@ -319,11 +321,9 @@ Content = {
 										  ? `sandbox="allow-scripts allow-same-origin"`
 										  : `sandbox`);
 
-				let content = newDocument(Content.objectHTMLForURL(embedSrc, additionalAttributes.join(" ")));
-
-				content.querySelector("iframe, object").classList.add("loaded-not");
-
-				return content;
+				return newDocument(Content.objectHTMLForURL(embedSrc, {
+					additionalAttributes: additionalAttributes.join(" ")
+				}));
 			},
 
 			scriptsEnabledOnHosts: [
@@ -667,13 +667,17 @@ Content = {
 					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-						`class="youtube" srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`));
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+						additionalClasses: "youtube",
+						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`
+					}));
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
 					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
 					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL,
-						`class="vimeo" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`));
+					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+						additionalClasses: "vimeo",
+						additionalAttributes: `allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`
+					}));
 				} else {
 					return null;
 				}
@@ -736,11 +740,15 @@ Content = {
 
 			contentFromLink: (link) => {
 				let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
-				let content = newDocument(Content.objectHTMLForURL(embedSrc, `sandbox="allow-same-origin" referrerpolicy="same-origin"`));
+				let additionalAttributes = [ ];
 
-				content.querySelector("iframe, object").classList.add("loaded-not");
+				//	Determine sandbox settings.
+				if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
+					additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
 
-				return content;
+				return newDocument(Content.objectHTMLForURL(embedSrc, {
+					additionalAttributes: additionalAttributes.join(" ")
+				}));
 			},
 
 			documentFileExtensions: [ "html", "pdf", "csv", "doc", "docx", "ods", "xls", "xlsx" ]

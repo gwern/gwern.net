@@ -486,7 +486,7 @@ Extracts = {
 
         popFrame.classList.toggle("loading", true);
 
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, object, img");
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, img");
 		if (objectOfSomeSort == null)
 			return;
 
@@ -507,8 +507,8 @@ Extracts = {
 					Extracts.postRefreshUpdatePopFrameForTarget(target, false);
                 }
             };
-        } else if ([ "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
-            //  Objects & images fire ‘error’ on server error or load fail.
+        } else if ([ "IMG" ].includes(objectOfSomeSort.tagName)) {
+            //  Images fire ‘error’ on server error or load fail.
             objectOfSomeSort.onload = (event) => {
                 Extracts.postRefreshUpdatePopFrameForTarget(target, true);
             };
@@ -517,7 +517,7 @@ Extracts = {
         /*  We set an ‘error’ handler for *all* types of entity, even
             iframes, just in case.
          */
-        if ([ "IFRAME", "OBJECT", "IMG" ].includes(objectOfSomeSort.tagName)) {
+        if ([ "IFRAME", "IMG" ].includes(objectOfSomeSort.tagName)) {
 			objectOfSomeSort.onerror = (event) => {
 				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
 				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
@@ -806,7 +806,7 @@ Extracts = {
 		registerCopyProcessorsForDocument(popin.document);
 
         //  For object popins, scroll popin into view once object loads.
-        let objectOfSomeSort = popin.document.querySelector("iframe, object, img, video");
+        let objectOfSomeSort = popin.document.querySelector("iframe, img, video");
         if (objectOfSomeSort) {
             objectOfSomeSort.addEventListener("load", (event) => {
                 requestAnimationFrame(() => {
