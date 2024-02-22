@@ -609,7 +609,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

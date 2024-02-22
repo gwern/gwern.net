@@ -289,8 +289,8 @@ Extracts = { ...Extracts,
 		}
 
 		//	Make first image load eagerly.
-		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
-						  || popFrame.body.querySelector("figure img"))
+		let firstImage = (   popFrame.document.querySelector(".page-thumbnail")
+						  || popFrame.document.querySelector("figure img"))
 		if (firstImage) {
 			firstImage.loading = "eager";
 			firstImage.decoding = "sync";

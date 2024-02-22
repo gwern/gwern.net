@@ -528,7 +528,7 @@ Notes = {
         let allNotes = Array.from(document.querySelectorAll(selector)
         			   ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
         			   ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame =>
-									Array.from(popFrame.body.querySelectorAll(selector)))
+									Array.from(popFrame.document.querySelectorAll(selector)))
         			   ).unique();
         /*  We must check to ensure that the note in question is from the same
             page as the citation (to distinguish between main document and any
@@ -9612,7 +9612,7 @@ Extracts = {
 Extracts.additionalRewrites.push(Extracts.lazyLoadImages = (popFrame) => {
     GWLog("Extracts.lazyLoadImages", "extracts.js", 2);
 
-	popFrame.body.querySelectorAll("img[loading='lazy']").forEach(image => {
+	popFrame.document.querySelectorAll("img[loading='lazy']").forEach(image => {
 		lazyLoadObserver(() => {
 			image.loading = "eager";
 			image.decoding = "sync";
@@ -9747,6 +9747,33 @@ Extracts = { ...Extracts,
         Extracts.updatePopFrameTitle(popFrame);
     }
 };
+
+/*	Expand-lock collapsed file includes when they’re expanded.
+ */
+Extracts.additionalRewrites.push(Extracts.unwrapAnnotationFileIncludeCollapses = (popFrame) => {
+    GWLog("Extracts.unwrapAnnotationFileIncludeCollapses", "extracts.js", 2);
+
+	let target = popFrame.spawningTarget;
+	if (!   Extracts.targetTypeInfo(target).typeName == "ANNOTATION"
+		 || Extracts.targetTypeInfo(target).typeName == "ANNOTATION_PARTIAL")
+		return;
+
+	popFrame.document.querySelectorAll(".file-includes.collapse, .file-includes .collapse").forEach(collapseBlock => {
+		GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
+			let includeLink = collapseBlock.querySelector("a");
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
+				injectEventInfo.container.firstElementChild.scrollIntoView();
+			}, {
+				once: true,
+				condition: (info) => (info.includeLink == includeLink)
+			});
+			expandLockCollapseBlock(collapseBlock);
+		}, {
+			once: true,
+			condition: (info) => (info.collapseBlock == collapseBlock)
+		});
+	});
+});
 
 /*=-----------------------=*/
 /*= ANNOTATIONS (PARTIAL) =*/
@@ -10195,8 +10222,8 @@ Extracts = { ...Extracts,
 		}
 
 		//	Make first image load eagerly.
-		let firstImage = (   popFrame.body.querySelector(".page-thumbnail")
-						  || popFrame.body.querySelector("figure img"))
+		let firstImage = (   popFrame.document.querySelector(".page-thumbnail")
+						  || popFrame.document.querySelector("figure img"))
 		if (firstImage) {
 			firstImage.loading = "eager";
 			firstImage.decoding = "sync";
@@ -15375,7 +15402,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

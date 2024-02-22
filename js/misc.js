@@ -528,7 +528,7 @@ Notes = {
         let allNotes = Array.from(document.querySelectorAll(selector)
         			   ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
         			   ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame =>
-									Array.from(popFrame.body.querySelectorAll(selector)))
+									Array.from(popFrame.document.querySelectorAll(selector)))
         			   ).unique();
         /*  We must check to ensure that the note in question is from the same
             page as the citation (to distinguish between main document and any

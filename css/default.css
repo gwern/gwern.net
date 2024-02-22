@@ -3477,7 +3477,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body:not(.object) iframe {
-	max-height: calc(var(--popframe-scroll-view-height) - 6 * var(--base-font-size));
+	max-height: calc(var(--popframe-scroll-view-height) - 2em);
 }
 
 /*=-----------------=*/

@@ -882,7 +882,7 @@ Extracts = {
 Extracts.additionalRewrites.push(Extracts.lazyLoadImages = (popFrame) => {
     GWLog("Extracts.lazyLoadImages", "extracts.js", 2);
 
-	popFrame.body.querySelectorAll("img[loading='lazy']").forEach(image => {
+	popFrame.document.querySelectorAll("img[loading='lazy']").forEach(image => {
 		lazyLoadObserver(() => {
 			image.loading = "eager";
 			image.decoding = "sync";
