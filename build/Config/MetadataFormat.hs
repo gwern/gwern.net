@@ -299,7 +299,7 @@ htmlRewriteRegexp = [
          , ("<jats:title>([a-zA-Z0-9_]+)\\.</jats:title><jats:p>", "<p><strong>\\1</strong>: ")
          , ("<jats:styled-content style=\"fixed-case\">([A-Z.]+)</jats:styled-content>", "\\1") -- odd acronym markup
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\">", "")
-         , ("<sec id=\"[a-zA-Z0-9_]+\">", "")
+         , ("<sec id=\"[a-zA-Z0-9_-]+\">", "")
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
          , (" © [0-9]+ European Association of Personality Psychology", "")
          ]

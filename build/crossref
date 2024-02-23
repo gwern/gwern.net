@@ -13,7 +13,7 @@
 
 set -e
 
-TARGET_ORIGINAL="$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/doc/doc/g' -e 's/.*wiki\/doc/doc/g' -e 's/^\/doc/doc/g' -e 's/^\///' -e 's/https:\/\/gwern\.net\///' )"
+TARGET_ORIGINAL="$@" # "$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/doc/doc/g' -e 's/.*wiki\/doc/doc/g' -e 's/^\/doc/doc/g' -e 's/^\///' -e 's/https:\/\/gwern\.net\///' )"
 
 if [[ ! -f "$TARGET_ORIGINAL" ]]; then
     TARGET="/home/gwern/wiki/$TARGET_ORIGINAL"

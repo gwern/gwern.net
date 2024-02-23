@@ -136,7 +136,7 @@ tagsShort2LongRewrites =
    , ("steganographic", "steganography"), ("stenography", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
-   , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime") ]
+   , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++

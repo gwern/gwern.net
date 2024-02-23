@@ -1297,6 +1297,7 @@ whiteListMatchesFixed = [
       , "https://retool.com/pipes" -- low-quality (too much fancy JS; interactive?)
       , "https://nap.nationalacademies.org/read/10668/chapter/1" -- interactive
       , "https://dreamtuner-diffusion.github.io/" -- size/low-quality: final video broke, 199MB
+      , "https://hanlab.mit.edu/projects/tsm" -- low-quality (YouTube video embeds)
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-19 15:23:06 gwern"
+# When:  Time-stamp: "2024-02-22 19:57:00 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -273,6 +273,8 @@ gwmv () {
             # preserve the git history by stashing the converted JPG, doing a `git mv` to tell git about the file renaming, and then overwriting the 'JPG' (actually the original PNG) with an actual JPG
             TMP="$(mktemp /tmp/XXXXX.jpg)"
             convert "$HOME/wiki$OLD" "$TMP"
+            compressJPG2 "$TMP"
+            feh "$HOME/wiki$OLD" "$TMP" &
             git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
             mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then
@@ -428,7 +430,7 @@ mvuri () {
   is_downloading "$SOURCE"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
       mv "$SOURCE" "$DESTINATION"
-      php ./static/build/deconstruct_singlefile.php "$DESTINATION"
+      php ~/wiki/static/build/deconstruct_singlefile.php "$DESTINATION"
   else
       mv "$SOURCE" "$DESTINATION"
   fi
