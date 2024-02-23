@@ -32,11 +32,11 @@
 /*******************/
 
 :root {
-    --GW-sidenotes-max-width: 550px;
-
     /*  Does not get inverted, so should not be in colors.css.
      */
     --GW-iframe-background-color: #fff;
+
+    --GW-sidenotes-max-width: 550px;
 
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
@@ -1057,6 +1057,7 @@ iframe {
 	width: calc(100% - 2px);
 	max-height: calc(100vh - 8rem);
 	border: 1px solid var(--GW-embed-border-color);
+	background-color: var(--GW-iframe-background-color);
 }
 
 iframe {
