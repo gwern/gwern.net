@@ -212,6 +212,24 @@ Content = {
 						></iframe>`;
     },
 
+	figcaptionHTMLForMediaLink: (link) => {
+		let captionHTML = ``;
+		if (Annotations.isAnnotatedLink(link))
+			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
+				"class": "include-annotation",
+				"data-include-selector": ".annotation-abstract > *",
+				"data-include-template": "annotation-blockquote-not"
+			}).outerHTML + "</figcaption>";
+		return captionHTML;
+	},
+
+	removeExtraneousClassesFromMediaElement: (media) => {
+		media.classList.remove("link-page", "link-live", 
+			"link-annotated", "link-annotated-partial", 
+			"has-annotation", "has-annotation-partial", "has-content",
+			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+	},
+
 	/**************************************************************/
 	/*	CONTENT TYPES
 
@@ -249,9 +267,8 @@ Content = {
 	contentTypes: {
 		foreignSite: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
+				//	Some foreign-site links are handled specially.
+				if (Content.contentTypes.tweet.matches(link))
 					return false;
 
 				//	Account for alternate and archive URLs.
@@ -465,11 +482,6 @@ Content = {
 
 		localCodeFile: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -570,11 +582,6 @@ Content = {
 
 		localFragment: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -633,11 +640,6 @@ Content = {
 
 		remoteVideo: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
 					return (Content.contentTypes.remoteVideo.youtubeId(link) != null);
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
@@ -714,12 +716,7 @@ Content = {
 
 		localDocument: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
-				//	Account for local archives.
+				//	Account for alternate and archive URLs.
 				let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
 
 				//	Maybe it’s a foreign link?
@@ -755,11 +752,6 @@ Content = {
 
 		localVideo: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -779,6 +771,9 @@ Content = {
 				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
 				let posterPathname = link.pathname + "-poster.jpg";
 
+				//	Use annotation abstract (if any) as figure caption.
+				let caption = Content.figcaptionHTMLForMediaLink(link);
+
 				/*  Note that we pass in the original link’s classes; this
 					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
@@ -793,14 +788,10 @@ Content = {
 											src="${link.href}" 
 											type="video/${videoFileExtension}"
 											>`
-										+ `</video></figure>`);
+										+ `</video>${caption}</figure>`);
 
 				//	Remove extraneous classes.
-				content.querySelector("video").classList.remove("link-page", 
-					"link-self", "link-annotated", "link-annotated-partial", 
-					"has-annotation", "has-annotation-partial", "has-content",
-					"has-icon", "has-indicator-hook", "spawns-popup", 
-					"spawns-popin");
+				Content.removeExtraneousClassesFromMediaElement(content.querySelector("video"));
 
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -818,11 +809,6 @@ Content = {
 
 		localAudio: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -833,10 +819,22 @@ Content = {
 			isPageContent: true,
 
 			contentFromLink: (link) => {
-				let content = newDocument(`<figure>`
-										+ `<audio controls="controls" preload="none">`
+				//	Use annotation abstract (if any) as figure caption.
+				let caption = Content.figcaptionHTMLForMediaLink(link);
+
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
+				 */
+				let content = newDocument(`<figure><audio 
+											class="${link.classList}"
+											controls="controls" 
+											preload="none"
+											>`
 										+ `<source src="${link.href}">`
-										+ `</video></figure>`);
+										+ `</audio>${caption}</figure>`);
+
+				//	Remove extraneous classes.
+				Content.removeExtraneousClassesFromMediaElement(content.querySelector("audio"));
 
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -854,11 +852,6 @@ Content = {
 
 		localImage: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;
@@ -874,6 +867,9 @@ Content = {
 							   + `width="${(link.dataset.imageWidth)}" `
 							   + `height="${(link.dataset.imageHeight)}"`;
 
+				//	Use annotation abstract (if any) as figure caption.
+				let caption = Content.figcaptionHTMLForMediaLink(link);
+
 				/*  Note that we pass in the original link’s classes; this
 					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
@@ -883,14 +879,10 @@ Content = {
 											src="${link.href}"
 											loading="eager"
 											decoding="sync"
-											></figure>`);
+											>${caption}</figure>`);
 
 				//	Remove extraneous classes.
-				content.querySelector("img").classList.remove("link-page", 
-					"link-self", "link-annotated", "link-annotated-partial", 
-					"has-annotation", "has-annotation-partial", "has-content",
-					"has-icon", "has-indicator-hook", "spawns-popup", 
-					"spawns-popin");
+				Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
 
 				//  Fire contentDidLoad event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -908,11 +900,6 @@ Content = {
 
 		localPage: {
 			matches: (link) => {
-				//	Maybe it’s an annotated link?
-				if (   Annotations.isAnnotatedLinkFull(link) == true
-					&& Transclude.isContentTransclude(link) == false)
-					return false;
-
 				//	Maybe it’s a foreign link?
 				if (link.hostname != location.hostname)
 					return false;

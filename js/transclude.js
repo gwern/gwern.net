@@ -624,11 +624,14 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	if (link == null)
 		return includeLink;
 
-	if (typeof link == "string")
+	if (typeof link == "string") {
 		includeLink.href = link;
-	else if (   link instanceof HTMLAnchorElement
-			 || link instanceof URL)
+	} else if (   link instanceof HTMLAnchorElement
+			   || link instanceof URL) {
 		includeLink.href = link.href;
+	} else {
+		return null;
+	}
 
 	if (link instanceof HTMLAnchorElement) {
 		//	Import certain data attributes.
@@ -640,7 +643,7 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		/*  See corresponding note in annotations.js.
 			—SA 2024-02-16
 		 */
-		[ "link-live" ].forEach(targetClass => {
+		[ "link-live", "link-page", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
@@ -803,7 +806,7 @@ function includeContent(includeLink, content) {
     //  Intelligent rectification of surrounding HTML structure.
     if (   includeLink.classList.contains("include-rectify-not") == false
     	&& firstBlockOf(wrapper) != null) {
-        let allowedParentTags = [ "SECTION", "DIV", "LI", "BLOCKQUOTE" ];
+        let allowedParentTags = [ "SECTION", "DIV", "LI", "BLOCKQUOTE", "FIGCAPTION" ];
         while (   wrapper.parentElement != null
                && allowedParentTags.includes(wrapper.parentElement.tagName) == false
                && wrapper.parentElement.parentElement != null) {
