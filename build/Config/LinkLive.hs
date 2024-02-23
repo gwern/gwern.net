@@ -2396,7 +2396,7 @@ goodLinks =
             , "https://davidepstein.com/david-epstein-the-sports-gene/"
             , "https://defector.com/in-the-future-of-collecting-is-anyone-having-fun"
             , "https://demos.obormot.net/these-waifus-do-not-exist-v2-alt"
-            , "https://dialnet.unirioja.es/servlet/articulo?codigo=3425319"
+            , "/doc/zeo/2011-cladellas.pdf"
             , "https://diff.wikimedia.org/2012/03/27/analysis-of-the-quality-of-newcomers-in-wikipedia-over-time/"
             , "https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext"
             , "https://distill.pub/2017/aia/"

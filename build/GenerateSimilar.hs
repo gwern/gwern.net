@@ -1,4 +1,3 @@
-#!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
 -- dependencies: pandoc, filestore, vector, rp-tree...
