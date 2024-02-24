@@ -1518,7 +1518,6 @@ figure audio:hover {
 
 figcaption {
     font-size: 0.9em;
-    font-weight: bold;
     line-height: 1.50;
     margin: auto;
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
@@ -1531,8 +1530,12 @@ figcaption {
     }
 }
 
-.markdownBody figcaption p {
-    text-align: center;
+.markdownBody figcaption {
+    --text-alignment: left;
+}
+
+figcaption p:first-of-type {
+	font-weight: bold;
 }
 
 figcaption strong {

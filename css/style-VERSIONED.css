@@ -7025,6 +7025,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 	content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
 	background-image: url('/static/img/icon/icons.svg?v=1708452971#magnifying-glass-plus-light');
+	background-size: 56px 56px;
 	background-origin: content-box;
 	background-repeat: no-repeat;
 	background-position: center;
