@@ -1245,6 +1245,26 @@ addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages 
 }, "rewrite", (info) => (info.contentType == "annotation"));
 
 /***************************************************************************/
+/*	Apply proper classes to inline file-include collapses, both on directory 
+	index pages and in annotations.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eventInfo) => {
+    GWLog("rectifyFileAppendClasses", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".aux-links-transclude-file, .file-includes").forEach(fileIncludesBlock => {
+		//	Get all collapses within the file include block...
+		let fileIncludeCollapseBlocks = Array.from(fileIncludesBlock.querySelectorAll(".collapse"));
+		//	The file-include block itself may be a collapse!
+		if (fileIncludesBlock.matches(".collapse"))
+			fileIncludeCollapseBlocks.push(fileIncludesBlock);
+		//	Apply standard class.
+		fileIncludeCollapseBlocks.forEach(fileIncludeCollapse => {
+			fileIncludeCollapse.classList.add("file-include-collapse");
+		});
+	});
+}, "rewrite");
+
+/***************************************************************************/
 /*  Because annotations transclude aux-links, we make the aux-links links in
     the metadata line of annotations scroll down to the appended aux-links
     blocks.

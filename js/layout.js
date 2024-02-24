@@ -103,7 +103,7 @@ GW.layout = {
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + *",
 										 0, false ],
-		[ ".aux-links-append + .file-includes",
+		[ ".aux-links-append + .file-include-collapse",
 										 0, false ],
 
 		[ ".interview .exchange",		 4, false ],
