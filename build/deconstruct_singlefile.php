@@ -41,6 +41,7 @@ $asset_type_map = [
 	'image/jpm'                   => 'jp2',
 	'image/jpeg'                  => 'jpg',
 	'image/pjpeg'                 => 'jpg',
+	'application/javascript'      => 'js',
 	'audio/x-m4a'                 => 'm4a',
 	'audio/mp4'                   => 'm4a',
 	'audio/midi'                  => 'mid',
@@ -118,12 +119,15 @@ $asset_count = 0;
 // 
 // $output_file .= substr($input_file, $offset);
 
-$output_file = preg_replace_callback('/([\'"]?)data:([^;]+);base64,([^\'"\)\s]+)(\1)/', function ($m) {
+$output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
 	global $input_file_path, $asset_directory, $asset_base_name, $asset_type_map, $asset_count;
 
 	$type = $m[2];
 	$data = $m[3];
 	$quote = strlen($m[1]) > 0 ? $m[1] : '"';
+
+	if ($asset_count > 11)
+		return $m[0];
 
 	$asset_suffix = '-asset-' . (++$asset_count);
 	$asset_extension = $asset_type_map[$type] ?? 'dat';
@@ -137,7 +141,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([^;]+);base64,([^\'"\)\s]+)
 
 $output_file = preg_replace('/<img/', '<img loading="lazy" decoding="async"', $output_file);
 
-`mv {$input_file_path} {$input_file_path}.bak`;
+`mv "{$input_file_path}" "{$input_file_path}.bak"`;
 file_put_contents($input_file_path, $output_file);
 
 ## FUNCTIONS
