@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-19 21:21:00 gwern"
+When:  Time-stamp: "2024-02-23 20:02:25 gwern"
 License: CC-0
 -}
 
@@ -523,7 +523,7 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                        similarlink ++
                        linkBibliography ++
                        [Str ")"] ++
-                       (if null abst then [] else [Str ":"])
+                       (if null abst then [] else [Str "\8288:"])
                 ))] ++
                 (if null abst then []
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
@@ -549,7 +549,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     livep = alreadyLive link -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock livep (f, ("",undefined,undefined,undefined,undefined,undefined))
-                                    linkColon = if wasAnnotated link || null fileTransclude then [] else [Str ":"]
+                                    linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
                                 in [Para [Strong (link:linkColon)]] ++ fileTransclude
                            --  isVideoFilename (T.unpack f) ||
                            --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||

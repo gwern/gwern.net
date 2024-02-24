@@ -65,7 +65,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let color' = if "invert" `elem` thumbnailCSS || "invert-not" `elem` thumbnailCSS then ""
                                          else if color then "invert-auto" else "invert-not"
                         let thumbnailFigure = if thumbnail'=="" then "" else
-                              let imgClass =  "class=\"float-right page-thumbnail " ++ color' ++ unwords thumbnailCSS ++ "\""
+                              let imgClass =  "class=\"float-right page-thumbnail " ++ color' ++ " " ++ unwords thumbnailCSS ++ "\""
                               in ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
@@ -122,7 +122,8 @@ gwernAbstract _ p' description toc f =
                                       else if description == "" && abstrct' /= "" then abstrct'
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
                                                 else ""
-      abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
+      abstrct''' = replace "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" "" $
+                   trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = linkAutoHtml5String $ sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else
        if "scrape-abstract-not" `isInfixOf` renderTags abstrctRw then (t,"") else

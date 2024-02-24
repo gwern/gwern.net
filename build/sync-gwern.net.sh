@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-23 10:47:47 gwern"
+# When:  Time-stamp: "2024-02-23 18:43:11 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1107,6 +1107,9 @@ else
 
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
+
+    λ() { find . -executable -type f | gfv -e 'static/build/' -e 'haskell/lcp.hs'; }
+    wrap λ "Executable bit set on files that shouldn't be executable?"
 
     λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors, or failed scrapes in auto.yaml."
