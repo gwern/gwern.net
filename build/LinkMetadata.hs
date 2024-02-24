@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-23 20:02:25 gwern"
+When:  Time-stamp: "2024-02-24 14:12:51 gwern"
 License: CC-0
 -}
 
@@ -567,13 +567,13 @@ generateFileTransclusionBlock :: Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
-   titleCaption = if null tle then [] else [Str "[Expand to view “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
+   titleCaption = if null tle then [] else [Strong [Str "[Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
-                                                                  | isDocumentViewable f = [Str "[Expand to view document]"]
-                                                                  | otherwise            = [Str "[Expand to view code/data]"]
+                                                                  | isDocumentViewable f = [Str "[", Strong [Str "Expand to view document"], Str "]"]
+                                                                  | otherwise            = [Str "[", Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
                                                       [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     -- image/video/audio:
@@ -581,7 +581,7 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
    -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
     | otherwise = if not fallbackP then [] else
                    [Para [Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
-                          (if titleCaption/=[] then titleCaption else [Str "[Expand to view web page]"])
+                          (if titleCaption/=[] then titleCaption else [Str "[", Strong [Str "Expand to view web page"], Str "]"])
                           (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
