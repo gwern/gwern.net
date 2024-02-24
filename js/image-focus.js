@@ -167,12 +167,23 @@ ImageFocus = {
 		GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
 	},
 
+	designateSmallImageIfNeeded: (image) => {
+		let width = image.getAttribute("width");
+		let height = image.getAttribute("height");
+		if (   (   width  !== null
+				&& height !== null)
+			&& (   width  < ImageFocus.hoverCaptionWidth
+				|| height < ImageFocus.hoverCaptionHeight))
+			image.classList.add("small-image");
+	},
+
 	processImagesWithin: (container) => {
 		GWLog("ImageFocus.processImagesWithin", "image-focus.js", 1);
 
 		/*	Add ‘focusable’ class to all focusable images; add ‘gallery-image’
 			class to all focusable images that are to be included in the main
-			image gallery.
+			image gallery; add ‘small-image’ class to all images that are too
+			small to show the usual “Click to enlarge” overlay.
 		 */
 		container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
 			if (image.closest(ImageFocus.excludedContainerElementsSelector))
@@ -183,11 +194,7 @@ ImageFocus = {
 			if (ImageFocus.imageGalleryInclusionTest(image))
 				image.classList.add("gallery-image");
 
-			let width = image.getAttribute("width");
-			let height = image.getAttribute("height");
-			if (   width  < ImageFocus.hoverCaptionWidth
-				|| height < ImageFocus.hoverCaptionHeight)
-				image.classList.add("small-image");
+			ImageFocus.designateSmallImageIfNeeded(image);
 		});
 
 		//  Add the listener to all focusable images.

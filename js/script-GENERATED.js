@@ -12727,6 +12727,7 @@ addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventI
 	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
 		return;
 
+	//	Set specified dimensions in CSS.
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         let fixWidth = (   eventInfo.contentType == "annotation"
                         && (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
@@ -12751,6 +12752,33 @@ addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = 
         setMediaElementDimensions(mediaElement, true);
     });
 }, "rewrite");
+
+/************************************************************************/
+/*	Set image dimensions from inline-specified image data (e.g., base64).
+ */
+addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData = (eventInfo) => {
+	/*	If an image doesn’t have dimensions set, but image data is already 
+		available (because the source is a data: URI), we can determine 
+		dimensions once the image “loads” (i.e., ‘load’ event fires, when 
+		browser parses the data: attribute).
+	 */
+	eventInfo.container.querySelectorAll("figure img:not([width])[src^='data:']").forEach(image => {
+		if (image.loadHandler)
+			return;
+
+		image.addEventListener("load", image.loadHandler = (event) => {
+			image.setAttribute("width", image.naturalWidth);
+			image.setAttribute("height", image.naturalHeight);
+			image.setAttribute("data-aspect-ratio", `${image.naturalWidth} / ${image.naturalHeight}`);
+
+			setMediaElementDimensions(image);
+
+			//	Ensure proper interaction with image-focus.
+			if (image.classList.contains("focusable"))
+				ImageFocus.designateSmallImageIfNeeded(image);
+		});
+	});
+}, "eventListeners");
 
 /************************************************************************/
 /*  Ensure media (image, video) dimensions update when device is rotated.
@@ -16827,12 +16855,23 @@ ImageFocus = {
 		GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
 	},
 
+	designateSmallImageIfNeeded: (image) => {
+		let width = image.getAttribute("width");
+		let height = image.getAttribute("height");
+		if (   (   width  !== null
+				&& height !== null)
+			&& (   width  < ImageFocus.hoverCaptionWidth
+				|| height < ImageFocus.hoverCaptionHeight))
+			image.classList.add("small-image");
+	},
+
 	processImagesWithin: (container) => {
 		GWLog("ImageFocus.processImagesWithin", "image-focus.js", 1);
 
 		/*	Add ‘focusable’ class to all focusable images; add ‘gallery-image’
 			class to all focusable images that are to be included in the main
-			image gallery.
+			image gallery; add ‘small-image’ class to all images that are too
+			small to show the usual “Click to enlarge” overlay.
 		 */
 		container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
 			if (image.closest(ImageFocus.excludedContainerElementsSelector))
@@ -16843,11 +16882,7 @@ ImageFocus = {
 			if (ImageFocus.imageGalleryInclusionTest(image))
 				image.classList.add("gallery-image");
 
-			let width = image.getAttribute("width");
-			let height = image.getAttribute("height");
-			if (   width  < ImageFocus.hoverCaptionWidth
-				|| height < ImageFocus.hoverCaptionHeight)
-				image.classList.add("small-image");
+			ImageFocus.designateSmallImageIfNeeded(image);
 		});
 
 		//  Add the listener to all focusable images.
