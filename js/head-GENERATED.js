@@ -2633,6 +2633,8 @@ GW.layout = {
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + *",
 										 0, false ],
+		[ ".aux-links-append + .file-includes",
+										 0, false ],
 
 		[ ".interview .exchange",		 4, false ],
 		[ ".interview .utterance",		 2, false ],
