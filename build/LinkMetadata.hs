@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-24 14:12:51 gwern"
+When:  Time-stamp: "2024-02-24 18:50:08 gwern"
 License: CC-0
 -}
 
@@ -539,7 +539,6 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
                          generateFileTransclusionBlock True (f, ("",undefined,undefined,undefined,undefined,undefined))
-
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
@@ -571,6 +570,7 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
    -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
+    | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
                                                                   | isDocumentViewable f = [Str "[", Strong [Str "Expand to view document"], Str "]"]
                                                                   | otherwise            = [Str "[", Strong [Str "Expand to view code/data"], Str "]"]
