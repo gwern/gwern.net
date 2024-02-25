@@ -496,7 +496,7 @@ Extracts = {
         	load fail.
          */        
 		objectOfSomeSort.onload = (event) => {
-			Extracts.postRefreshUpdatePopFrameForTarget(target, true);
+			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 		};
 
         /*  We set an ‘error’ handler for both <img> and <iframe>, just in case,
@@ -511,10 +511,8 @@ Extracts = {
     },
 
 	//	Called by: Extracts.setLoadingSpinner
-	postRefreshUpdatePopFrameForTarget: (target, success) => {
-        GWLog("Extracts.postRefreshUpdatePopFrameForTarget", "extracts.js", 2);
-
-		let popFrame = target.popFrame;
+	postRefreshUpdatePopFrame: (popFrame, success) => {
+        GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
 
 		if (Extracts.popFrameProvider.isSpawned(popFrame) == false)
 			return;
