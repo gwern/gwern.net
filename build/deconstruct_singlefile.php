@@ -1,6 +1,6 @@
 <?php
 
-@ini_set('memory_limit', "256M");
+@ini_set('memory_limit', "2048M");
 
 $input_file_path = $argv[1];
 $input_file = file_get_contents($input_file_path);
@@ -90,33 +90,33 @@ $asset_count = 0;
 // while ($startpos = strpos($input_file, $start_text, $offset)) {
 // 	$output_file .= substr($input_file, $offset, $startpos - $offset);
 // 	$output_file .= 'url(';
-// 
+//
 // 	$endpos = strpos($input_file, $end_text, $startpos);
-// 
+//
 // 	$offset = $startpos + strlen($start_text);
 // 	$data_plus_type = substr($input_file, $offset, $endpos - $offset);
-// 
+//
 // 	preg_match('/([^;]+);base64,(.+)/', $data_plus_type, $m);
-// 
+//
 // 	$type = $m[1];
 // 	$data = $m[2];
-// 
+//
 // 	global $input_file_path, $asset_type_map;
-// 
+//
 // 	$asset_suffix = '-asset-' . (++$asset_count);
 // 	$asset_extension = $asset_type_map[$type] ?? 'dat';
 // 	$asset_path = "{$input_file_path}{$asset_suffix}.{$asset_extension}";
-// 
+//
 // 	file_put_contents($asset_path, base64_decode($data));
-// 
+//
 // 	preg_match('/[^\/]+$/', $asset_path, $m);
 // 	$asset_name = $m[0];
-// 
+//
 // 	$output_file .= $asset_name;
-// 
+//
 // 	$offset = $endpos;
 // }
-// 
+//
 // $output_file .= substr($input_file, $offset);
 
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
