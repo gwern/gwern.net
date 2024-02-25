@@ -861,6 +861,63 @@ Extracts = { ...Extracts,
 };
 
 /*=---------------=*/
+/*= REMOTE IMAGES =*/
+/*=---------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+	"REMOTE_IMAGE",          // Type name
+	"isRemoteImageLink",     // Type predicate function
+	"has-content",           // Target classes to add
+	"remoteImageForTarget",  // Pop-frame fill function
+	"image object"           // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isRemoteImageLink: (target) => {
+        return Content.contentTypes.remoteImage.matches(target);
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    remoteImageForTarget: (target) => {
+        GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
+
+		return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_REMOTE_IMAGE: (popFrame, injectEventInfo = null) => {
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_REMOTE_IMAGE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_REMOTE_IMAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+        //  Loading spinner.
+        Extracts.setLoadingSpinner(popFrame);
+    }
+};
+
+/*=---------------=*/
 /*= REMOTE VIDEOS =*/
 /*=---------------=*/
 
@@ -950,7 +1007,9 @@ Extracts = { ...Extracts,
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1035,7 +1094,9 @@ Extracts = { ...Extracts,
     localAudioForTarget: (target) => {
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -1123,7 +1184,9 @@ Extracts = { ...Extracts,
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	"data-include-selector-not": ".caption-wrapper"
+        }));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)

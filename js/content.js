@@ -216,7 +216,7 @@ Content = {
 		let captionHTML = ``;
 		if (Annotations.isAnnotatedLink(link))
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
-				"class": "include-annotation",
+				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
 				"data-include-template": "annotation-blockquote-not"
 			}).outerHTML + "</figcaption>";
@@ -224,10 +224,11 @@ Content = {
 	},
 
 	removeExtraneousClassesFromMediaElement: (media) => {
-		media.classList.remove("link-page", "link-live", 
+		media.classList.remove("no-popup", "icon-not", "link-page", "link-live", 
 			"link-annotated", "link-annotated-partial", 
 			"has-annotation", "has-annotation-partial", "has-content",
-			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin",
+			"include-content", "include-loading", "include-spinner");
 	},
 
 	/**************************************************************/
@@ -268,7 +269,10 @@ Content = {
 		foreignSite: {
 			matches: (link) => {
 				//	Some foreign-site links are handled specially.
-				if (Content.contentTypes.tweet.matches(link))
+				if ([ "tweet", 
+					  "remoteVideo", 
+					  "remoteImage" 
+					  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
 					return false;
 
 				//	Account for alternate and archive URLs.
@@ -638,6 +642,54 @@ Content = {
 		    permittedContentTypes: [ "text/html" ]
 		},
 
+		remoteImage: {
+			matches: (link) => {
+				if (Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+
+			isPageContent: true,
+
+			contentFromLink: (link) => {
+				if ((Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) == false)
+					return null;
+
+				//	Use annotation abstract (if any) as figure caption.
+				let caption = Content.figcaptionHTMLForMediaLink(link);
+
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
+				 */
+				let content = newDocument(`<figure><img
+											class="${link.classList}"
+											src="${link.href}"
+											loading="eager"
+											decoding="sync"
+											>${caption}</figure>`);
+
+				//	Remove extraneous classes.
+				Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.remoteImage.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
+			},
+
+			isWikimediaUploadsImageLink: (link) => {
+				return (   link.hostname == "upload.wikimedia.org"
+						&& link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`)));
+			}
+		},
+
 		remoteVideo: {
 			matches: (link) => {
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
@@ -649,9 +701,11 @@ Content = {
 				}
 			},
 
-			isPageContent: false,
+			isPageContent: true,
 
 			contentFromLink: (link) => {
+				let content = null;
+
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
 					let srcdocStyles =
 						  `<style>`
@@ -668,20 +722,21 @@ Content = {
 					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "youtube",
 						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`
 					}));
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
 					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
 					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+
+					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "vimeo",
 						additionalAttributes: `allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`
 					}));
-				} else {
-					return null;
 				}
+
+				return content;
 			},
 
 			isYoutubeLink: (link) => {

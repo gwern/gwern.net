@@ -769,8 +769,8 @@ function isOnlyChild(node) {
 
 	Permissible options:
 
-		excludeTags: array
-		alsoExcludeTags: array
+		excludeSelector: string
+		alsoExcludeSelector: string
 		excludeIdentifiedElements: boolean
  */
 function isNodeEmpty(node, options = { }) {
@@ -784,13 +784,12 @@ function isNodeEmpty(node, options = { }) {
 		if (   options.excludeIdentifiedElements
 			&& node.id > "") {
 			return false;
-		} else if (options.excludeTags != null) {
-			if (options.excludeTags.includes(node.tagName.toUpperCase()))
-				return false;
-		} else {
-			if (   [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase())
-				|| options.alsoExcludeTags?.includes(node.tagName.toUpperCase()))
-				return false;
+		} else if (   options.excludeSelector != null
+				   && node.matches(options.excludeSelector)) {
+			return false;
+		} else if (   [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase())
+				   || node.matches(options.alsoExcludeSelector)) {
+			return false;
 		}
 	}
 
@@ -798,7 +797,7 @@ function isNodeEmpty(node, options = { }) {
         return true;
 
     for (childNode of node.childNodes)
-        if (isNodeEmpty(childNode) == false)
+        if (isNodeEmpty(childNode, options) == false)
             return false;
 
     return true;
@@ -823,7 +822,7 @@ function paragraphizeTextNodesOfElement(element) {
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
 	let node;
-	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeTags: [ "A" ], excludeIdentifiedElements: true });
+	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeSelector: "a", excludeIdentifiedElements: true });
 	do {
 		node = nodes.shift();
 

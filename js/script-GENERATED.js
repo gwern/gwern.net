@@ -5810,7 +5810,7 @@ Content = {
 		let captionHTML = ``;
 		if (Annotations.isAnnotatedLink(link))
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
-				"class": "include-annotation",
+				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
 				"data-include-template": "annotation-blockquote-not"
 			}).outerHTML + "</figcaption>";
@@ -5818,10 +5818,11 @@ Content = {
 	},
 
 	removeExtraneousClassesFromMediaElement: (media) => {
-		media.classList.remove("link-page", "link-live", 
+		media.classList.remove("no-popup", "icon-not", "link-page", "link-live", 
 			"link-annotated", "link-annotated-partial", 
 			"has-annotation", "has-annotation-partial", "has-content",
-			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin",
+			"include-content", "include-loading", "include-spinner");
 	},
 
 	/**************************************************************/
@@ -5862,7 +5863,10 @@ Content = {
 		foreignSite: {
 			matches: (link) => {
 				//	Some foreign-site links are handled specially.
-				if (Content.contentTypes.tweet.matches(link))
+				if ([ "tweet", 
+					  "remoteVideo", 
+					  "remoteImage" 
+					  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
 					return false;
 
 				//	Account for alternate and archive URLs.
@@ -6232,6 +6236,54 @@ Content = {
 		    permittedContentTypes: [ "text/html" ]
 		},
 
+		remoteImage: {
+			matches: (link) => {
+				if (Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+
+			isPageContent: true,
+
+			contentFromLink: (link) => {
+				if ((Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) == false)
+					return null;
+
+				//	Use annotation abstract (if any) as figure caption.
+				let caption = Content.figcaptionHTMLForMediaLink(link);
+
+				/*  Note that we pass in the original link’s classes; this
+					is good for classes like ‘invert’, ‘width-full’, etc.
+				 */
+				let content = newDocument(`<figure><img
+											class="${link.classList}"
+											src="${link.href}"
+											loading="eager"
+											decoding="sync"
+											>${caption}</figure>`);
+
+				//	Remove extraneous classes.
+				Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.remoteImage.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
+			},
+
+			isWikimediaUploadsImageLink: (link) => {
+				return (   link.hostname == "upload.wikimedia.org"
+						&& link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`)));
+			}
+		},
+
 		remoteVideo: {
 			matches: (link) => {
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
@@ -6243,9 +6295,11 @@ Content = {
 				}
 			},
 
-			isPageContent: false,
+			isPageContent: true,
 
 			contentFromLink: (link) => {
+				let content = null;
+
 				if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
 					let srcdocStyles =
 						  `<style>`
@@ -6262,20 +6316,21 @@ Content = {
 					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
 					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "youtube",
 						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`
 					}));
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
 					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
 					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
-					return newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+
+					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "vimeo",
 						additionalAttributes: `allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`
 					}));
-				} else {
-					return null;
 				}
+
+				return content;
 			},
 
 			isYoutubeLink: (link) => {
@@ -10784,6 +10839,63 @@ Extracts = { ...Extracts,
 };
 
 /*=---------------=*/
+/*= REMOTE IMAGES =*/
+/*=---------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+	"REMOTE_IMAGE",          // Type name
+	"isRemoteImageLink",     // Type predicate function
+	"has-content",           // Target classes to add
+	"remoteImageForTarget",  // Pop-frame fill function
+	"image object"           // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+    isRemoteImageLink: (target) => {
+        return Content.contentTypes.remoteImage.matches(target);
+    },
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+    remoteImageForTarget: (target) => {
+        GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
+
+		return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
+    },
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_REMOTE_IMAGE: (popFrame, injectEventInfo = null) => {
+		if (injectEventInfo == null) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				Extracts.rewritePopFrameContent_REMOTE_IMAGE(popFrame, info);
+			}, {
+				phase: "rewrite",
+				condition: (info) => (   info.source == "transclude"
+									  && info.document == popFrame.document),
+				once: true
+			});
+
+			//	Trigger transcludes.
+			Transclude.triggerTranscludesInContainer(popFrame.body, {
+				source: "Extracts.rewritePopFrameContent_REMOTE_IMAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+
+			return;
+		}
+
+		//	REAL REWRITES BEGIN HERE
+
+        //  Loading spinner.
+        Extracts.setLoadingSpinner(popFrame);
+    }
+};
+
+/*=---------------=*/
 /*= REMOTE VIDEOS =*/
 /*=---------------=*/
 
@@ -10873,7 +10985,9 @@ Extracts = { ...Extracts,
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -10958,7 +11072,9 @@ Extracts = { ...Extracts,
     localAudioForTarget: (target) => {
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target), {
+        	"data-include-selector-not": ".caption-wrapper"
+        });
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -11046,7 +11162,9 @@ Extracts = { ...Extracts,
     localImageForTarget: (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	"data-include-selector-not": ".caption-wrapper"
+        }));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -12757,12 +12875,14 @@ addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = 
 /*	Set image dimensions from inline-specified image data (e.g., base64).
  */
 addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData = (eventInfo) => {
+    GWLog("setImageDimensionsFromImageData", "rewrite.js", 1);
+
 	/*	If an image doesn’t have dimensions set, but image data is already 
 		available (because the source is a data: URI), we can determine 
 		dimensions once the image “loads” (i.e., ‘load’ event fires, when 
 		browser parses the data: attribute).
 	 */
-	eventInfo.container.querySelectorAll("figure img:not([width])[src^='data:']").forEach(image => {
+	eventInfo.container.querySelectorAll("figure img:not([width])").forEach(image => {
 		if (image.loadHandler)
 			return;
 
@@ -12833,6 +12953,20 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         //  Re-insert the wrapped caption into the figure.
         innerWrapper.appendChild(captionWrapper);
     });
+}, "rewrite");
+
+/******************************************************************************/
+/*	Figure captions might be empty if they are generated by including the 
+	annotation abstract of an annotated media include link, but the abstract is
+	actually empty (because it’s a partial annotation).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.remoteEmptyFigureCaptions = (eventInfo) => {
+    GWLog("wrapFigures", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("figcaption").forEach(figcaption => {
+		if (isNodeEmpty(figcaption, { alsoExcludeSelector: "a" }))
+			figcaption.remove();
+	});
 }, "rewrite");
 
 /*****************************************************************************/
