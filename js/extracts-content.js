@@ -1063,10 +1063,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+                Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }
@@ -1153,10 +1153,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }
@@ -1321,10 +1321,10 @@ Extracts = { ...Extracts,
 			location: popFrame.document.querySelector("iframe").src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+                Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }

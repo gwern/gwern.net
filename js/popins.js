@@ -556,8 +556,8 @@ Popins = {
 	},
 
 	isSpawned: (popin) => {
-		return (   popin
-				&& popin.parentElement);
+		return (   popin != null
+				&& popin.parentElement != null);
 	},
 
 	/*******************/

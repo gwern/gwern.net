@@ -552,8 +552,8 @@ Popups = {
 	},
 
 	isSpawned: (popup) => {
-		return (   popup
-				&& popup.parentElement
+		return (   popup != null
+				&& popup.parentElement != null
 				&& popup.classList.contains("fading") == false);
 	},
 

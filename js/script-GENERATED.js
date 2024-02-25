@@ -2275,8 +2275,8 @@ Popups = {
 	},
 
 	isSpawned: (popup) => {
-		return (   popup
-				&& popup.parentElement
+		return (   popup != null
+				&& popup.parentElement != null
 				&& popup.classList.contains("fading") == false);
 	},
 
@@ -4400,8 +4400,8 @@ Popins = {
 	},
 
 	isSpawned: (popin) => {
-		return (   popin
-				&& popin.parentElement);
+		return (   popin != null
+				&& popin.parentElement != null);
 	},
 
 	/*******************/
@@ -6311,6 +6311,8 @@ Content = {
 
 					let videoId = Content.contentTypes.remoteVideo.youtubeId(link);
 					let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
+					if (link.search > "")
+						videoEmbedURL.search = link.search;
 					let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 					let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
 					let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
@@ -6318,11 +6320,13 @@ Content = {
 					//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
 					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "youtube",
-						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin" allowfullscreen`
+						additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen`
 					}));
 				} else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
 					let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
 					let videoEmbedURL = URLFromString(`https://player.vimeo.com/video/${videoId}`);
+					if (link.search > "")
+						videoEmbedURL.search = link.search;
 
 					content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
 						additionalClasses: "vimeo",
@@ -9271,7 +9275,7 @@ Extracts = {
         	load fail.
          */        
 		objectOfSomeSort.onload = (event) => {
-			Extracts.postRefreshUpdatePopFrameForTarget(target, true);
+			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 		};
 
         /*  We set an ‘error’ handler for both <img> and <iframe>, just in case,
@@ -9286,10 +9290,8 @@ Extracts = {
     },
 
 	//	Called by: Extracts.setLoadingSpinner
-	postRefreshUpdatePopFrameForTarget: (target, success) => {
-        GWLog("Extracts.postRefreshUpdatePopFrameForTarget", "extracts.js", 2);
-
-		let popFrame = target.popFrame;
+	postRefreshUpdatePopFrame: (popFrame, success) => {
+        GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
 
 		if (Extracts.popFrameProvider.isSpawned(popFrame) == false)
 			return;
@@ -11041,10 +11043,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+                Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }
@@ -11131,10 +11133,10 @@ Extracts = { ...Extracts,
 			location: source.src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }
@@ -11299,10 +11301,10 @@ Extracts = { ...Extracts,
 			location: popFrame.document.querySelector("iframe").src,
 			method: "HEAD",
 			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, true);
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
 			},
 			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrameForTarget(popFrame.spawningTarget, false);
+                Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			}
 		});
     }
