@@ -5808,8 +5808,7 @@ Content = {
 
 	figcaptionHTMLForMediaLink: (link) => {
 		let captionHTML = ``;
-		if (   Annotations.isAnnotatedLink(link)
-			&& link.classList.contains("include-caption-not") == false)
+		if (Annotations.isAnnotatedLink(link))
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
 				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
@@ -6887,13 +6886,6 @@ Content = {
         DIV element, which will be given the ID of the include-link. When the
         `include-identify-not` option is used, this will not be done.
 
-	include-caption-not
-		Normally, media (image, video, audio) include-links which have 
-		annotations will, when transcluded, get a <figcaption> whose contents 
-		are the abstract of the annotation. If the `include-caption-not` class
-		is set, the caption is omitted. (This class has no effect if applied to
-		include-links of non-media content types.)
-
 	include-spinner
     include-spinner-not
         Shows or hides the “loading spinner” that is shown at the site of the
@@ -7042,6 +7034,16 @@ Content = {
 		the content of the section; the <section> will be unwrapped, and the 
 		heading discarded. (If applied in some other case, behavior may be
 		unpredictable.)
+
+	class="include-caption-not"
+
+		data-include-selector-not=".caption-wrapper"
+
+		Normally, media (image, video, audio) include-links which have 
+		annotations will, when transcluded, get a <figcaption> whose contents 
+		are the abstract of the annotation. If the `include-caption-not` class
+		is set, the caption is omitted. (This class has no effect if applied to
+		include-links of non-media content types.)
  */
 
 /******************************************************************************/
@@ -7897,8 +7899,7 @@ Transclude = {
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
-        "include-identify-not",
-        "include-caption-not"
+        "include-identify-not"
     ],
 
     transcludeAnnotationsByDefault: true,
@@ -8695,6 +8696,16 @@ Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) =
 	includeLink.classList.add("include-unwrap");
 	includeLink.dataset.includeSelectorNot = "h1, h2, h3, h4, h5, h6";
 	includeLink.dataset.includeSelectorNotOptions = "first";
+
+	return true;
+});
+
+/*==========================================================*/
+/*	.include-caption-not
+		`data-include-selector-not=".caption-wrapper"`
+ */
+Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
+	includeLink.dataset.includeSelectorNot = ".caption-wrapper";
 
 	return true;
 });

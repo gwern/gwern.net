@@ -214,8 +214,7 @@ Content = {
 
 	figcaptionHTMLForMediaLink: (link) => {
 		let captionHTML = ``;
-		if (   Annotations.isAnnotatedLink(link)
-			&& link.classList.contains("include-caption-not") == false)
+		if (Annotations.isAnnotatedLink(link))
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
 				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
