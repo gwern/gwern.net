@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-24 13:47:53 gwern"
+# When:  Time-stamp: "2024-02-25 15:42:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -42,6 +42,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/generateSimilarLinks.hs) && \
           -n $(command -v gifsicle) && \
           -n $(command -v soffice) ]] && \
+        -n $(command -v elinks) &&
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -527,7 +528,8 @@ else
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
                    -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; }
+                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; \
+                   -e 'years-since' -e 'date-range'; } # subscript experiments
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | xargs --max-args=500 gf --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -788,7 +790,7 @@ else
     λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
     wrap λ "Superscript abbreviations are weirdly capitalized?"
 
-    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.yaml | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' ; }
+    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.yaml | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' -e '<sup>242m</sup>Am' -e '<sup>31</sup>P' -e '<sup>60</sup>Co' ; }
     wrap λ "Superscripts/subscripts have spaces in front?"
 
     λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.yaml; }
@@ -1086,6 +1088,15 @@ else
     }
     wrap λ "Canary token was downloadable; nginx password-protection security failed?"
 
+    λ() { OUTPUT=$(./static/nginx/memoriam.sh)
+          if [[ ! -z "$OUTPUT" ]]; then
+              HEADER=$(curl --header --silent 'https://gwern.net/index' | gf --case-insensitive 'X-Clacks-Overhead')
+              if [[ -z "$HEADER" ]]; then
+                  echo "$OUTPUT"
+              fi
+          fi; }
+    wrap λ "X-Clacks-Overhead HTTP header check failed."
+
     ## did any of the key pages mysteriously vanish from the live version?
     linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/' &
     ## - traffic checks/alerts are done in Google Analytics: alerts on <900 pageviews/daily, <40s average session length/daily.
@@ -1108,7 +1119,7 @@ else
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ() { find . -executable -type f | gfv -e 'static/build/' -e 'nginx/memoriam.sh' -e 'haskell/lcp.hs'; }
+    λ() { find . -executable -type f | gfv -e 'static/build/' -e 'nginx/memoriam.sh' -e 'haskell/lcp.hs' -e '.git/hooks/post-commit'; }
     wrap λ "Executable bit set on files that shouldn't be executable?"
 
     λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.yaml; }
@@ -1159,7 +1170,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg'; }
+    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     bold "Checking for PDF anomalies…"
@@ -1192,7 +1203,7 @@ else
         export -f checkSpamHeader
         find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | sort | parallel checkSpamHeader
     }
-    wrap λ "Remove academic-publisher wrapper junk from PDFs." &
+    wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy initial pages to the end.)" &
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then
@@ -1213,8 +1224,8 @@ else
     λ(){ find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data'; }
     wrap λ "Corrupted PNGs" &
 
-    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | gf ' false'; }
-    wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')" &
+    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | xargs mogrify -background white -alpha remove -alpha off; }
+    wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
@@ -1264,7 +1275,7 @@ else
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -O0 $WARNINGS -fno-code {} \; ) 2>&1 >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
-    λ() { find ./static/build/ -type f -name "*.hs" -exec gf 'nub ' {} \; ; }
+    λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
     wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' instead)."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.

@@ -338,6 +338,7 @@ htmlRewriteFixed =
          , ("<p><strong>Main Outcomes & Measures</strong></p>\n<p>", "<p><strong>Outcomes & Measures</strong>: ")
          , ("<p>[<strong>Keywords</strong>: ]</p>", "")
          , ("<strong>Null</strong>: ", "")
+         , ("&amp;gt;", "&gt;")
          , ("&lt;=", "≤")
          , ("&gt;=", "≥")
          , (" >= ", " ≥ ")
