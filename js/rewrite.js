@@ -428,10 +428,20 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyImageAuxText = (eventInfo) =
             return element.textContent.trim();
         });
 
-        if (titleText == captionText)
+		/*	If the ‘title’ attribute merely duplicates the caption, but the 
+			‘alt’ attribute has something different (and nonempty), then copy
+			the ‘alt’ to the ‘title’.
+		 */
+        if (   titleText == captionText
+        	&& altText != captionText
+        	&& altText > "")
             image.title = altText;
 
-        if (altText == captionText)
+		/*	As above, but vice-versa (copy ‘title’ to ‘alt’, if appropriate).
+		 */
+        if (   altText == captionText
+        	&& titleText != captionText
+        	&& titleText > "")
             image.alt = titleText;
     });
 }, "rewrite");
@@ -2091,6 +2101,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
     });
 }, "eventListeners");
 
+GW.defaultImageAuxText = "[Image]";
+
 /***************************************************************************/
 /*  Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
     right? Yeah, right...)
@@ -2102,7 +2114,7 @@ addContentLoadHandler(GW.contentLoadHandlers.cleanUpImageAltText = (eventInfo) =
         if present; otherwise, a default string (“Image”).
      */
     eventInfo.container.querySelectorAll("img:not([alt])").forEach(image => {
-        image.alt = (image.title || "[Image]");
+        image.alt = (image.title || GW.defaultImageAuxText);
     });
 
     //  URL-encode ‘%’ signs in image alt text.
