@@ -181,6 +181,13 @@
         DIV element, which will be given the ID of the include-link. When the
         `include-identify-not` option is used, this will not be done.
 
+	include-caption-not
+		Normally, media (image, video, audio) include-links which have 
+		annotations will, when transcluded, get a <figcaption> whose contents 
+		are the abstract of the annotation. If the `include-caption-not` class
+		is set, the caption is omitted. (This class has no effect if applied to
+		include-links of non-media content types.)
+
 	include-spinner
     include-spinner-not
         Shows or hides the “loading spinner” that is shown at the site of the
@@ -1184,7 +1191,8 @@ Transclude = {
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
-        "include-identify-not"
+        "include-identify-not",
+        "include-caption-not"
     ],
 
     transcludeAnnotationsByDefault: true,
