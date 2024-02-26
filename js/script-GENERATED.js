@@ -5812,6 +5812,7 @@ Content = {
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
 				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
+				"data-include-selector-not": ".aux-links-append",
 				"data-include-template": "annotation-blockquote-not"
 			}).outerHTML + "</figcaption>";
 		return captionHTML;
