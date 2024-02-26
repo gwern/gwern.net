@@ -28,7 +28,7 @@ import qualified Data.Text as T (pack, unpack)
 import System.Directory (doesFileExist, getModificationTime)
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space, Span, Strong), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, RawInline, Str, Space, Span, Strong), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkBacklink (getLinkBibLink)
@@ -127,7 +127,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
     if t=="" then
       Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author) : transcludeTarget
     else
-      Para (Link linkAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author) : transcludeTarget
+      Para (Link linkAttr [Str "“", RawInline (Format "HTML") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author) : transcludeTarget
 -- long items:
 generateLinkBibliographyItem (f,a) = generateAnnotationTransclusionBlock (f,a)
 

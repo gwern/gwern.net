@@ -105,7 +105,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
   let linksSelf = reverse . sortByDate $ taggedSelf  -- newest first, to show recent additions
   let linksAll  = reverse $ sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
-  let links = filter (\(f,_,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` f)) linksAll
+  let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isPrefixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
 
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
