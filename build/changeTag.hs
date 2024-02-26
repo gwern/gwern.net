@@ -43,7 +43,7 @@ import Utils (printGreen, printRed, replace)
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace C.root "/" . replace "https://gwern.net/" "/") getArgs
+          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . replace ".md" "" . replace C.root "/" . replace "https://gwern.net/" "/") getArgs
 
           when (length args == 0) $ printRed "Error: 0 arguments (need 2)." >> error ""
           when (length args == 1) $ printRed $ "Error: only 1 argument (need ≥2): " >> error (show (head args))

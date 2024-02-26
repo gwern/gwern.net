@@ -5,7 +5,7 @@ import qualified Data.Text as T (isPrefixOf, isInfixOf, Text)
 
 -- local relative path of Markdown source file to append links to via `writeLinkLiveTestcase` for manual review:
 testPage :: FilePath
-testPage = "lorem.page"
+testPage = "lorem.md"
 
 linkLivePrioritizeBlacklist :: [T.Text]
 linkLivePrioritizeBlacklist = ["omega.albany.edu"]

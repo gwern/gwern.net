@@ -45,7 +45,7 @@ main' = do
   bldb <- readBacklinksDB
   md <- readLinkMetadata
   -- check that all backlink targets/callers are valid:
-  let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
+  let dotPageFy f = if '.' `elem` f then f else f++".md" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.md` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
         filter (\f -> not (anyInfix f ["/index","/link-bibliography/"])) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
@@ -57,7 +57,7 @@ main' = do
   _ <- M.traverseWithKey (writeOutCallers md) bldb
   fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
 
-  let markdown = filter (".page" `isSuffixOf`) fs
+  let markdown = filter (".md" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- Par.mapM (parseFileForLinks False) html
@@ -160,7 +160,7 @@ parseFileForLinks mdp m = do text <- TIO.readFile m
                                      path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
 
 localize :: T.Text -> T.Text
-localize = T.replace "https://gwern.net/" "/" . T.replace ".page" ""
+localize = T.replace "https://gwern.net/" "/" . T.replace ".md" ""
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool

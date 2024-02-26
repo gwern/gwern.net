@@ -193,7 +193,7 @@ readLinkMetadataAndCheck = do
              let urlsCP = map fst (full ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
 
-             let ensureExtension f = if '.' `elem` f then f else f ++ ".page"
+             let ensureExtension f = if '.' `elem` f then f else f ++ ".md"
              let checkFile f = fmap not $ doesFileExist $ ensureExtension f
              fileChecks <- Par.mapM checkFile files
              let missingFiles = map fst $ filter snd $ zip files fileChecks
@@ -381,9 +381,9 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
      when (head target'' == '/' && not ("/metadata/annotation/" `isPrefixOf` target'')) $
        do isDirectory <- doesDirectoryExist (tail target'')
           when isDirectory $ error ("Attempted to annotate a directory, which is not allowed (links must be to files or $DIRECTORY/index): " ++ target' ++ " : " ++ target ++ " (" ++ show x ++ ")")
-          let target''' = (\f -> if '.' `notElem` f then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+          let target''' = (\f -> if '.' `notElem` f then f ++ ".md" else f) $ takeWhile (/='#') $ tail target''
 
-          unless (takeFileName target''' == "index" || takeFileName target''' == "index.page") $
+          unless (takeFileName target''' == "index" || takeFileName target''' == "index.md") $
              do exist <- doesFileExist target'''
                 unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
 
@@ -587,7 +587,7 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
 isDocumentViewable f = -- (isLocal (T.pack f) && hasExtensionS ".html" f) ||
-                       anyInfix f [".json", ".jsonl", ".opml", ".page", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
+                       anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
                        hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
@@ -616,9 +616,9 @@ lookupFallback m u = case M.lookup u m of
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
                                              u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
                                          in
-                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
+                                               (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
-                                                  -- '/review/cat.page' will trigger a fallback to /review/cat#fuzz-testing'; the
+                                                  -- '/review/cat.md' will trigger a fallback to /review/cat#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in

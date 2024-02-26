@@ -424,7 +424,7 @@ siteBlackList = [
           "jkff.info", "jgeer.com", "jgeekstudies.org", "jessic.at", "jerrygood0703.github.io",
           "jeremykun.com", "jenniferdoleac.com", "jdlm.info", "jaypsong.blog", "jasoncrawford.org",
           "jangirrishabh.github.io", "jakevdp.github.io", "jadagul.tumblr.com", "jacksonwcrawford.com", "izbicki.me",
-          "isteve.blogspot.com", "irp.fas.org", "iranhrdc.org", "ir.vervetx.com", "instant.page",
+          "isteve.blogspot.com", "irp.fas.org", "iranhrdc.org", "ir.vervetx.com", "instant.md",
           "innsbigdata.wordpress.com", "infidels.org", "img2.timg.co.il", "imdevsoftware.wordpress.com", "image-net.org",
           "ilgiardinodeglispecchi.bandcamp.com", "ijem.in", "idl.cs.washington.edu", "identitydesigned.com", "icare.hse.ru",
           "iang.org", "hyperdiscordia.church", "humancompatible.ai", "href.cool", "horvath.genetics.ucla.edu",

@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2023-01-27 22:22:06 gwern"
+When:  Time-stamp: "2024-02-26 16:36:17 gwern"
 License: CC-0
 Dependencies: Gwern.net Hakyll libraries
 
@@ -21,7 +21,7 @@ short entries.
 Simple use: (because it uses the LinkMetadata module, invoking it from a different directory than
 inside static/build/ is a bit tricky)
 
-$ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runghc -istatic/build/ ./static/build/link-prioritize.hs
+$ ~/wiki/static/build/link-extractor.hs dnb-faq.md | runghc -istatic/build/ ./static/build/link-prioritize.hs
 175 : !W
 4 : https://groups.google.com/g/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
 4 : #jaeggi-2010
@@ -33,7 +33,7 @@ $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runghc -istatic/build/ ./
 
 More complex use:
 
-$ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/link-extractor.hs | grep -E '^http' | ./haskell/link-prioritize.hs
+$ find ~/wiki/ -name "*.md" -type f -print0 | parallel --null ~/wiki/static/build/link-extractor.hs | grep -E '^http' | ./static/build/link-prioritize.hs
 65 https://www.patreon.com/gwern
 15 https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis
 12 http://forum.evageeks.org/viewtopic.php?p=366709#366709

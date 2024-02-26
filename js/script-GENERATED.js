@@ -5819,8 +5819,8 @@ Content = {
 	},
 
 	removeExtraneousClassesFromMediaElement: (media) => {
-		media.classList.remove("no-popup", "icon-not", "link-page", "link-live", 
-			"link-annotated", "link-annotated-partial", 
+		media.classList.remove("no-popup", "icon-not", "link-page", "link-live",
+			"link-annotated", "link-annotated-partial",
 			"has-annotation", "has-annotation-partial", "has-content",
 			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin",
 			"include-content", "include-loading", "include-spinner");
@@ -5848,7 +5848,7 @@ Content = {
 			.referenceDataFromContent(object, URL|Element) => object
 
 				NOTE: If this method is not present, then .contentFromResponse
-				or .contentFromLink (whichever is present) should return a 
+				or .contentFromLink (whichever is present) should return a
 				DocumentFragment instead of a dictionary object.
 	 */
 
@@ -5864,9 +5864,9 @@ Content = {
 		foreignSite: {
 			matches: (link) => {
 				//	Some foreign-site links are handled specially.
-				if ([ "tweet", 
-					  "remoteVideo", 
-					  "remoteImage" 
+				if ([ "tweet",
+					  "remoteVideo",
+					  "remoteImage"
 					  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
 					return false;
 
@@ -5890,7 +5890,7 @@ Content = {
 // 						onSuccess: (event) => {
 // 							if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
 // 								return;
-// 
+//
 // 							let doc = newElement("DIV", null, { "innerHTML": event.target.responseText });
 // 							doc.querySelectorAll("[href], [src]").forEach(element => {
 // 								if (element.href) {
@@ -5908,22 +5908,22 @@ Content = {
 // 									}
 // 								}
 // 							});
-// 
+//
 // 							if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
 // 								doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
-// 
+//
 // 							target.popFrame.document.querySelector("iframe").srcdoc = doc.innerHTML;
-// 
+//
 // 							Extracts.postRefreshUpdatePopFrameForTarget(target, true);
 // 						},
 // 						onFailure: (event) => {
 // 							if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
 // 								return;
-// 
+//
 // 							Extracts.postRefreshUpdatePopFrameForTarget(target, false);
 // 						}
 // 					});
-// 
+//
 // 					return newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
 // 				}
 				//  END EXPERIMENTAL SECTION
@@ -5992,8 +5992,8 @@ Content = {
 				let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
 				let avatarImgSrc = avatarImgElement.getAttribute("src");
 				if (avatarImgSrc.startsWith("data:image/svg+xml")) {
-					avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style") 
-														   + ";" 
+					avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style")
+														   + ";"
 														   + tweetPage.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
 					let avatarImgSrcVar = avatarImgElement.style.getPropertyValue("background-image").match(/var\((.+?)\)/)[1];
 					avatarImgSrc = avatarImgElement.style.getPropertyValue(avatarImgSrcVar).match(/url\("(.+?)"\)/)[1];
@@ -6007,9 +6007,9 @@ Content = {
 
 				//	Link to tweet.
 				let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
-				let tweetDateString = ("" + tweetDate.getFullYear()) 
-									+ "-" 
-									+ ("" + tweetDate.getMonth()).padStart(2, '0') 
+				let tweetDateString = ("" + tweetDate.getFullYear())
+									+ "-"
+									+ ("" + tweetDate.getMonth()).padStart(2, '0')
 									+ "-"
 									+ ("" + tweetDate.getDate()).padStart(2, '0');
 				let tweetLinkURL = URLFromString(link.href);
@@ -6172,7 +6172,7 @@ Content = {
 			codeFileExtensions: [
 				//	Truncated at 2000 lines for preview.
 				"bash", "c", "conf", "css", "diff", "hs", "html", "js",
-				"json", "jsonl", "opml", "page", "patch", "php", "py", "R",
+				"json", "jsonl", "md", "opml", "patch", "php", "py", "R",
 				"sh", "xml", "yaml",
 				//	Non-syntax highlighted (due to lack of known format), but truncated:
 				"txt"
@@ -6431,15 +6431,15 @@ Content = {
 				/*  Note that we pass in the original link’s classes; this
 					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
-				let content = newDocument(`<figure><video 
+				let content = newDocument(`<figure><video
 											${dimensions}
 											class="${link.classList}"
-											controls="controls" 
-											preload="none" 
+											controls="controls"
+											preload="none"
 											data-video-poster="${posterPathname}"
 											>`
-										+ `<source 
-											src="${link.href}" 
+										+ `<source
+											src="${link.href}"
 											type="video/${videoFileExtension}"
 											>`
 										+ `</video>${caption}</figure>`);
@@ -6479,9 +6479,9 @@ Content = {
 				/*  Note that we pass in the original link’s classes; this
 					is good for classes like ‘invert’, ‘width-full’, etc.
 				 */
-				let content = newDocument(`<figure><audio 
+				let content = newDocument(`<figure><audio
 											class="${link.classList}"
-											controls="controls" 
+											controls="controls"
 											preload="none"
 											>`
 										+ `<source src="${link.href}">`
@@ -6558,8 +6558,8 @@ Content = {
 				if (link.hostname != location.hostname)
 					return false;
 
-				/*  If it has a period in it, it’s probably not a page, but is 
-					something else, like a file of some sort, or a locally 
+				/*  If it has a period in it, it’s probably not a page, but is
+					something else, like a file of some sort, or a locally
 					archived document. Still, we allow for explicit overrides.
 				 */
 				return (   link.pathname.match(/\./) == null

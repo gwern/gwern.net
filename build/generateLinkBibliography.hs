@@ -58,7 +58,7 @@ writeLinkBibliographyFragment md path =
       let essay = head path == '/' && '.' `notElem` path
       shouldWrite <- if essay then -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
                                    if not lbExists then return True else
-                                     do essayLastModified <- getModificationTime (tail (takeWhile (/='#') path) ++ ".page")
+                                     do essayLastModified <- getModificationTime (tail (takeWhile (/='#') path) ++ ".md")
                                         lbLastModified    <- getModificationTime path'
                                         return (essayLastModified >= lbLastModified)
                       else return True
@@ -70,7 +70,7 @@ parseExtractCompileWrite md path path' self selfAbsolute abstract = do
         linksRaw <- if head path == '/' && '.'`notElem`path then
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
                       else
-                        extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".page") -- Markdown essay
+                        extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".md") -- Markdown essay
                     else return $ map T.unpack $ nubOrd $ extractLinks False (T.pack abstract) -- annotation
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
         let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw

@@ -292,7 +292,7 @@ Links = {
  */
 Links.fileLinkTypes = [
     //  Textfiles.
-    [ "txt",            "svg",      "opml txt xml json jsonl page"          ],
+    [ "txt",            "svg",      "opml txt xml json jsonl md"            ],
 
     //  Code, scripts, etc.
     [ "code",           "svg",      "css hs js conf sh r patch diff"        ],

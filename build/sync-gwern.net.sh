@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-25 15:42:59 gwern"
+# When:  Time-stamp: "2024-02-26 16:28:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -105,7 +105,7 @@ else
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep -E`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
-          for file in $(find . -name "*.page" -or -name "*.yaml"); do
+          for file in $(find . -name "*.md" -or -name "*.yaml"); do
               if grep -qE "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
               fi
@@ -155,15 +155,15 @@ else
     λ(){ gf -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.yaml || true; }
     wrap λ "Malformed empty link in annotations?"
 
-    # another early fatal check: if there is a Markdown file 'foo.page' and also a subdirectory 'foo/' in the same directory, then this will result in, later, a fatal error when one tries to compile 'foo.page' → 'foo' (the HTML file) but 'foo' (the directory) already exists.
-    # Check if any files collide with directories of the same name (without the .page extension).
+    # another early fatal check: if there is a Markdown file 'foo.md' and also a subdirectory 'foo/' in the same directory, then this will result in, later, a fatal error when one tries to compile 'foo.md' → 'foo' (the HTML file) but 'foo' (the directory) already exists.
+    # Check if any files collide with directories of the same name (without the .md extension).
     # Usage: find_colliding_files [path]
     function find_colliding_files() { # GPT-3 written:
       set -euo pipefail
       path="${1:-.}"
-      find "$path" -depth -type f -name "*.page" -exec sh -c '
+      find "$path" -depth -type f -name "*.md" -exec sh -c '
         for file do
-          path="$(dirname "$file")/$(basename "$file" ".page")"
+          path="$(dirname "$file")/$(basename "$file" ".md")"
           if [ -e "$path" ] && [ ! -L "$path" ]; then
             if [ -d "$path" ]; then
               printf "Fatal error: Directory exists with the same name as file %s\n" "$file" >&2
@@ -267,12 +267,12 @@ else
     ## NOTE: we generate the sitemap *before* generating syntax-highlighted .html files of everything to avoid having to exclude those (which would be tricky because how do we know if any given 'foo.html' a standalone HTML file or merely a syntax-highlighted snippet?)
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/ _site/static/ -not -name "*.page" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
+     find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
-     find -L _site/ -not -name "*.page" -type f | gfv -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '.page.html' -e 'private/' | \
-         gev -e '/.*/index' -e '.page$' | \
+     find -L _site/ -not -name "*.md" -type f | gfv -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '.md.html' -e 'private/' | \
+         gev -e '/.*/index' -e '.md$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
@@ -298,7 +298,7 @@ else
     #### NOTE: for each new extension, add a `find` name, and an entry in `content.js`/`LinkMetadata.is{Doc,Code}Viewable`
     bold "Generating syntax-highlighted versions of source code files…"
     syntaxHighlight () {
-        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown"
+        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["md"]="Markdown"
                                          # NOTE: we do 'text' to get a 'syntax-highlighted' version which has wrapped columns etc.
                                          # NOTE: CSV is unsupported by Pandoc skylighting, so we convert to HTML instead
                                          ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" )
@@ -311,7 +311,7 @@ else
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
-            if [ $EXTENSION == "page" ] || [ $EXTENSION == "txt" ] ; then # the very long lines look bad in narrow popups, so we fold:
+            if [ $EXTENSION == "md" ] || [ $EXTENSION == "txt" ] ; then # the very long lines look bad in narrow popups, so we fold:
                 cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head "-$LENGTH";
             else
                 cat "$FILE" | head "-$LENGTH";
@@ -329,10 +329,10 @@ else
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f,l \
-         -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" | \
+         -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" | \
         sort |  gfv \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
-                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.page' \
+                 -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.md' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the code-blocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
@@ -343,7 +343,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    find ./ -path ./_site -prune -type f -o -name "*.page" | gfv -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanCodeblockSelflinks || true
+    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanCodeblockSelflinks || true
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
@@ -353,7 +353,7 @@ else
     tidyUpWhole () {    tidy -indent -wrap 0 --merge-divs no --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no --fix-style-tags no -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
     find ./_site/metadata/annotation/ -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | gfv -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
+    find ./ -path ./_site -prune -type f -o -name "*.md" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | gfv -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html installation: `npm install --prefix ~/src/ mathjax-node-page`
@@ -374,7 +374,7 @@ else
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | gfv -e '#' | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
+    (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotation/ -name '*.html') | shuf | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
@@ -404,12 +404,12 @@ else
     #                           `# Big O notation: '𝒪(n)' in some browsers like my Chromium will touch the O/parenthesis (particularly noticeable in /Problem-14's abstract), so add a THIN SPACE (HAIR SPACE is not enough for the highly-tilted italic):` \
     #                           -e 's/𝒪(/𝒪 (/g' \
     #                         "$@"; }; export -f nonbreakSpace;
-    # find ./ -path ./_site -prune -type f -o -name "*.page" | gfv -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
+    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
     # find ./_site/metadata/annotation/ -type f -name "*.html" | sort | parallel --max-args=500 nonbreakSpace || true
 
     bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
-    find ./ -path ./_site -prune -type f -o -name "*.page" | gfv -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
+    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
     cleanClasses () {
@@ -420,7 +420,7 @@ else
                -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
-    find ./ -path ./_site -prune -type f -o -name "*.page" | gfv -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
+    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
 
@@ -429,11 +429,11 @@ else
     set +e
 
     # essays only:
-    ## eg. './2012-election.page \n...\n ./doc/cs/cryptography/1955-nash.page \n...\n ./newsletter/2022/09.page \n...\n ./review/mcnamara.page \n...\n ./wikipedia-and-knol.page \n...\n ./zeo/zma.page'
-    PAGES="$(find . -type f -name "*.page" | gfv -e '_site/' -e 'index' | sort --unique)"
+    ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
+    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' | sort --unique)"
     # essays+tags+annotations+similars+backlinks:
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | xargs gf -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      gfv -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
@@ -486,7 +486,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | gfv -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -539,16 +539,18 @@ else
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
-    λ(){  find . -name "*.page" -exec ge --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
+    # λ(){ echo "$PAGES_ALL" | xargs --max-args=100 elinks -dump |
+
+    λ(){  find . -name "*.md" -exec ge --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
     λ(){ ge 'http.*http' metadata/archive.hs  | gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html'; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide)."
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '<div>' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '<div>' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
     λ(){
@@ -564,23 +566,23 @@ else
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
-     λ(){ find ./ -type f -name "*.page" | gfv '/variable' | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=500 gf --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" -type f -exec ge -e 'cssExtension:' {} \; | \
+    λ(){ find ./ -type f -name "*.md" -type f -exec ge -e 'cssExtension:' {} \; | \
        gfv -e 'cssExtension: dropcaps-cheshire' -e 'cssExtension: dropcaps-cheshire reader-mode' -e 'cssExtension: dropcaps-de-zs' -e 'cssExtension: dropcaps-goudy' -e 'cssExtension: dropcaps-goudy reader-mode' -e 'cssExtension: dropcaps-kanzlei' -e 'cssExtension: "dropcaps-kanzlei reader-mode"' -e 'cssExtension: dropcaps-yinit' -e 'cssExtension: dropcaps-dropcat' -e 'cssExtension: dropcaps-gene-wolfe'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | gfv -e 'lorem-code.page' -e 'ab-test.page' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.page's deliberate CSS test-case use of it in the syntax-highlighting section
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
 
-    λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "gf --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
+    λ(){ find ./ -type f -name "*.md" | parallel --max-args=500 "gf --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
     wrap λ "Incorrect use of 'supsub' name (should be 'subsup')."
 
-    λ(){ find ./ -type f -name "*.page" | parallel --max-args=500 "gf --with-filename -e 'class=\"subsup\"><sup>'"; }
+    λ(){ find ./ -type f -name "*.md" | parallel --max-args=500 "gf --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
     λ(){ ge -e '<div class="admonition .*\?">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' -e '<span><div>' $PAGES; }
@@ -601,9 +603,9 @@ else
     λ(){ check_dirs() {
              for dir in "$@"; do
                  if [ -d "$dir" ]; then
-                     if find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.page" | read; then
-                         echo "Directory $dir contains files other than 'index.page':"
-                         find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.page"
+                     if find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md" | read; then
+                         echo "Directory $dir contains files other than 'index.md':"
+                         find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md"
                      fi
                  else
                      echo "$dir is not a valid directory!"
@@ -611,19 +613,19 @@ else
              done
          }
          check_dirs "./doc/www/" "./doc/newest/" "./doc/newsletter/"; }
-    wrap λ "Stray files in ./doc/ subdirectories that should not contain any files besides the 'index.page' tag-directory file."
+    wrap λ "Stray files in ./doc/ subdirectories that should not contain any files besides the 'index.md' tag-directory file."
 
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 gf --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 gf --with-filename --color=always -e '](/​image/​' -e '](/image/' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**'; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
          find ./metadata/annotation/ -maxdepth 1 -type f | xargs --max-args=500 ./static/build/collapse-checker.py; }
     wrap λ "Overuse of '.collapse' class in compiled HTML?"
 
-    λ(){ find ./ -type f -name "*.page" | gfv '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gf -e 'default "";'; }
@@ -831,7 +833,7 @@ else
         IFS=$(echo -en "\n\b");
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
-            HTML="${PAGE%.page}"
+            HTML="${PAGE%.md}"
             TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
                        gfv -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
                              -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
@@ -887,7 +889,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | gfv -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-site.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | gfv -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' | xargs ls -t 2>/dev/null | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-site.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -906,7 +908,7 @@ else
      # Loop over for number of checks
      for ((i=1; i<=CHECKS_N; i++))
      do
-         CHECK_RANDOM_PAGE=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+         CHECK_RANDOM_PAGE=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                             | shuf | head -1)
          CHECK_RANDOM_PAGE_ENCODED=$(echo "$CHECK_RANDOM_PAGE" | xargs urlencode)
          # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
@@ -1039,9 +1041,9 @@ else
           cm "text/html; charset=utf-8" 'https://gwern.net/backfire-effect'
           cm "text/html; charset=utf-8" 'https://gwern.net/console-insurance'
           cm "text/xml" 'https://gwern.net/sitemap.xml'
-          cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.page'
-          cm "text/markdown; charset=utf-8" 'https://gwern.net/dnm-archive.page'
-          cm "text/markdown; charset=utf-8" 'https://gwern.net/gpt-3.page'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.md'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/dnm-archive.md'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/gpt-3.md'
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirect/nginx.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
@@ -1113,7 +1115,7 @@ else
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ./* -type d | gev -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/misc') | gfv -e 'bytes each' -e 'trimfill.png' | gev -e 'doc/www/.*/.*\.woff2'; }
     wrap λ "Duplicate file check"
 
-    λ(){ find ./ -type f | gfv -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.page' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/dropcap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | gev -e '^ +1 ' | sort --numeric-sort; }
+    λ(){ find ./ -type f | gfv -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.md' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'font/dropcap/' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | gev -e '^ +1 ' | sort --numeric-sort; }
     wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }
@@ -1134,7 +1136,7 @@ else
     λ(){ find . -type f | gfv -e '.'; }
     wrap λ "Every file should have at least one period in them (extension)."
 
-    λ(){ find . -type f -name "*\.*\.page" | gfv -e '404.page'; }
+    λ(){ find . -type f -name "*\.*\.md" | gfv -e '404.md'; }
     wrap λ "Markdown files should have exactly one period in them."
 
     λ(){ find . -type f -name "*.html.html.html"; }
@@ -1238,9 +1240,9 @@ else
     bold "Compressing new PNGs…"
     png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/') &
 
-    # TODO: compress GIFs in the WWW split archives using `gifsicle`: eg `gifsicle --batch --colors 256 --optimize=3 *.gif`
-    # bold "Compressing new GIFs…"
-    # gifsicle --batch --colors=256 --optimize=3 $(find ./doc/www/ -type f -name "*.gif" -mtime -3) &
+    # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
+    bold "Compressing new GIFs…"
+    gifsicle --batch --colors=256 --optimize=3 $(find ./doc/www/ -type f -name "*.gif" -mtime -3) &
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | gfv -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' ); do
@@ -1292,7 +1294,7 @@ else
         done
 
         # check for any pages that could use multi-columns now:
-        λ(){ (find . -name "*.page"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | shuf | \
+        λ(){ (find . -name "*.md"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | shuf | \
                  parallel --max-args=500 runghc -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
@@ -1304,14 +1306,14 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^/' | cut --delimiter=' ' --field=1 | sort --unique); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^https://gwern.net' | sort --unique); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;

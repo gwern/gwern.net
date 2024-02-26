@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-20 10:01:12 gwern"
+;;; When:  Time-stamp: "2024-02-26 16:14:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2147,7 +2147,7 @@ To save effort, we add those as well."
 (setq langtool-language-tool-jar "~/bin/bin/LanguageTool-4.7/languagetool-commandline.jar")
 (setq langtool-default-language "en-US")
 ; <http://wiki.languagetool.org/command-line-options> <https://community.languagetool.org/rule/list> ; can look up in there or run a command like
-; $ java -jar languagetool-commandline.jar -b --line-by-line --language en-US  --disable "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE" ~/wiki/research-criticism.page
+; $ java -jar languagetool-commandline.jar -b --line-by-line --language en-US  --disable "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE" ~/wiki/research-criticism.md
 ; to disable specific rules
 (setq langtool-user-arguments '("-b" "--line-by-line" "--disable" "EN_QUOTES,MULTIPLICATION_SIGN,WORD_CONTAINS_UNDERSCORE,ET_AL,SENTENCE_WHITESPACE,DASH_RULE,MORFOLOGIK_RULE_EN_US,EN_UNPAIRED_BRACKETS,WHITESPACE_RULE,UNIT_SPACE,TR"))
 

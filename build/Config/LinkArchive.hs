@@ -960,7 +960,7 @@ whiteListMatchesFixed = [
       , "tuftandneedle.com" -- homepage
       , "www.microcovid.org" -- service
       , "grantland.com/features/" -- stable
-      , "instant.page" -- stable
+      , "instant.md" -- stable
       , "support.google.com" -- updated
       , "competicionmental.appspot.com" -- app/game/interactive
       , "lair.lighton.ai/akronomicon/" -- updated

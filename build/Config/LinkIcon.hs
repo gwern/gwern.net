@@ -441,7 +441,7 @@ linkIconRulesSVG u
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
 linkIconRulesFiletypes u
  | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = ("archive", "svg")
- | iE u ["opml", "txt", "xml", "json", "jsonl", "page"] || u'' u "pastebin.com" = ("txt", "svg")
+ | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg")
  | iE u ["css", "hs", "js", "conf", "sh", "r", "R", "patch", "diff"] = ("code", "svg")
  | iE u ["doc", "docx"] = ("word-doc", "svg")
  | iE u ["xls", "xlsx", "ods"] = ("spreadsheet", "svg")
@@ -1028,7 +1028,7 @@ linkIconTestUnitsText =
          , ("http://www.thelancet.com/journals/lancet/article/PIIS0140-6736%2811%2960693-4/abstract", "L", "text")
          , ("http://www.usagi.org/doi/seiyuu/tv/1997eva.html", "NGE", "text,tri")
          , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans")
-         , ("/lorem.page",  "txt","svg")
+         , ("/lorem.md",  "txt","svg")
          , ("/static/build/anchor-checker.php",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
          , ("/static/build/linkAbstract.R",  "code","svg")

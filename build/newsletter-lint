@@ -5,7 +5,7 @@ set -e
 # check latest edition of gwern.net newsletter for Markdown errors, local URLs which will break when used in the email, any dead links, and view in browser for any issues:
 # use: $ newsletter-lint 2016/10
 
-NEWSLETTER="/home/gwern/wiki/newsletter/$1.page"
+NEWSLETTER="/home/gwern/wiki/newsletter/$1.md"
 
 cloudflare-expire "$NEWSLETTER"
 

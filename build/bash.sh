@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-24 19:32:37 gwern"
+# When:  Time-stamp: "2024-02-26 16:13:56 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -48,7 +48,7 @@ export -f path2File
 cloudflare-expire () {
     ARGS=$(path2File "$@")
     for FILE in $(realpath $ARGS); do
-        URL="$(echo $FILE | sed -e 's/\.page//' -e 's/\/home\/gwern\/wiki\/\(.*\)/https:\/\/gwern\.net\/\1/g' -e 's/\.page//g' | sort )"
+        URL="$(echo $FILE | sed -e 's/\.md//' -e 's/\/home\/gwern\/wiki\/\(.*\)/https:\/\/gwern\.net\/\1/g' -e 's/\.md//g' | sort )"
         echo -n "Expiring: $FILE → $URL : "
         curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_TARGET/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \
@@ -60,8 +60,8 @@ cloudflare-expire () {
 }
 export -f cloudflare-expire
 cloudflare-expire-all () {
-    (find ~/wiki/ -name "*.page" -type f -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | sort; find ~/wiki/static/ -type f | sort) | \
-        sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | sort | parallel cloudflare-expire;
+    (find ~/wiki/ -name "*.md" -type f -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | sort; find ~/wiki/static/ -type f | sort) | \
+        sed -e 's/\.md//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | sort | parallel cloudflare-expire;
     }
 
 pdf () {
@@ -201,7 +201,7 @@ gw () {
     if [ $# == 0 ]; then echo "Missing search query."; return 2; fi
 
     QUERY="$*";
-    RESULTS=$( (find ~/wiki/ -type f -name "*.page";
+    RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs;
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.yaml";
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml" -or -name "*.py" -or -name "*.sh";
@@ -219,7 +219,7 @@ gw () {
 gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
 ## Newsletter only:
 gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
-        find ~/wiki/newsletter/ -type f -name "*.page" | \
+        find ~/wiki/newsletter/ -type f -name "*.md" | \
              grep -F -v -e '.#' |
             sort --unique  | xargs grep -E --ignore-case --color=always --with-filename "$QUERY" | cut --characters 1-2048; }
 ## Annotations:
@@ -246,7 +246,7 @@ gwhttp () {
 export -f gwhttp
 
 ## Move a file and sync it and update all callers:
-## TODO: handle pages/essays, not just files? see <rename.hs> for a sketch.
+## TODO: handle pages/essays, not just files? see </static/build/rename.hs> for a sketch.
 gwmv () {
     if [ $# != 2 ]; then
         echo "Need two arguments: OLD file and NEW file! Only got: \"$@\""
@@ -321,11 +321,11 @@ gwmvdir () {
     NEW="$(readlink --canonicalize "$NEW" | cut -d '/' -f 5-)"
     mkdir -p "$NEW"
     git add "$NEW"
-    for FILE in $(ls "$OLD"/* | grep -F -v 'index.page'); do
+    for FILE in $(ls "$OLD"/* | grep -F -v 'index.md'); do
         echo $FILE
         gwmv "$FILE" "$NEW/$(basename $FILE)"
     done
-    rm "$OLD/index.page" || true
+    rm "$OLD/index.md" || true
     rmdir "$OLD"
 }
 

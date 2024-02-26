@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-18 20:04:14 gwern"
+When: Time-stamp: "2024-02-26 16:23:31 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ main =
                                writeAnnotationFragments am meta True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
-               match "**.page" $ do
+               match "**.md" $ do
                    -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                    -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
                    route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
@@ -88,7 +88,7 @@ main =
                let static        = route idRoute >> compile copyFileCompiler
                version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
 
-               -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
+               -- handle the simple static non-.md files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
                let staticSymlink = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
                version "static" $ mapM_ (`match` staticSymlink) [
                                        "doc/**",
@@ -96,14 +96,14 @@ main =
                                        "**.sh",
                                        "**.txt",
                                        "**.html",
-                                       "**.page",
+                                       "**.md",
                                        "**.css",
                                        "**.R",
                                        "**.conf",
                                        "**.php",
                                        "**.svg",
                                        "**.png",
-                                       "**.jpg",
+                                       "**.jpg",em
                                        "**.yaml",
                                        -- skip "static/build/**" because of the temporary files
                                        "static/css/**",
@@ -182,7 +182,7 @@ postCtx md =
     descField False "title" "title" <>
     descField True "description" "descriptionEscaped" <>
     descField False "description" "description" <>
-    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
+    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
     boolField "backlinksYes" (check notNewsletterOrIndex getBackLinkCheck)    <>
@@ -205,11 +205,11 @@ postCtx md =
     imageDimensionWidth "thumbnailWidth" <>
     -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
     escapedTitleField "safeURL" <>
-    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
+    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.md' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.md' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do
-  let path = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier item)
+  let path = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return Nothing
     Just (_,_,_,_,tags,_) -> return $ Just tags
@@ -240,7 +240,7 @@ notNewsletterOrIndex :: String -> Bool
 notNewsletterOrIndex p = not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 pageIdentifierToPath :: Item a -> String
-pageIdentifierToPath i = "/" ++ replace ".page" "" (toFilePath $ itemIdentifier i)
+pageIdentifierToPath i = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier i)
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
@@ -251,7 +251,7 @@ imageDimensionWidth d = field d $ \item -> do
                   if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context String
-escapedTitleField = mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField
+escapedTitleField = mapContext (map toLower . replace "/" "-" . replace ".md" "") . pathField
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display

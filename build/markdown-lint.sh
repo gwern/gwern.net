@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2023-12-27 13:36:19 gwern"
+# When:  Time-stamp: "2024-02-26 16:19:45 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -16,7 +16,7 @@ egp () { grep -E --ignore-case --context=1 --line-number --color=always "$@"; }
 
 for PAGE in "$@"
 do
-    if [[ $PAGE == *.page ]]; then
+    if [[ $PAGE == *.md ]]; then
 
         λ(){ file "$PAGE" | fgp --invert-match 'text'; }
         wrap λ "Not text, perhaps due to bad copy-paste"

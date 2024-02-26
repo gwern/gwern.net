@@ -46,7 +46,7 @@ main = do C.cd
 
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.page" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.md" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
           ldb <- readListName
@@ -67,7 +67,7 @@ main = do C.cd
 generateDirectory :: Bool -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp md ldb sortDB dirs dir'' = do
 
-  -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.page', after all.
+  -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
@@ -83,7 +83,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
   -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
   let parentDirectory' = if parentDirectory == "." then "/index" else "/" ++ parentDirectory ++ "/index"
-  direntries <- fmap (filter (/="index.page")) $ -- filter out self
+  direntries <- fmap (filter (/="index.md")) $ -- filter out self
                 listDirectory dir''
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
@@ -142,8 +142,8 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
   -- (If we desire to transclude an annotation but the top-level essay file does not exactly coincidence with the tag-name, then the workaround is to simply create a `/note/basename($TAG)` which contains only a .include-annotation link in it.)
   abstract <- do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
                  let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
-                 abstractp <- doesFileExist (tail abstractf ++ ".page") -- check existence of (relative) file, 'note/catnip.page'
-                 essayp <- doesFileExist (tagBase ++ ".page")
+                 abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file, 'note/catnip.md'
+                 essayp <- doesFileExist (tagBase ++ ".md")
                  return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
                           else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                else []
@@ -181,7 +181,7 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
     Left e   -> printRed (show e)
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
-                   writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
+                   writeUpdatedFile "directory" (dir'' ++ "index.md") contentsNew
   -- putStrLn $ "dir'' done: " ++ dir''
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> [Block]
@@ -236,7 +236,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (replace ".page" "") . filter ('#' `notElem`)) files
+                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (replace ".md" "") . filter ('#' `notElem`)) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`. This is also true of PDF page-anchors.
                    linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
