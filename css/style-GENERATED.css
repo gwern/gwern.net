@@ -6858,14 +6858,14 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 
 #image-focus-overlay .help-overlay p {
-    margin: 0;
+    margin: 0 0 0.75em 0;
     text-indent: -2em;
     padding-left: 2em;
     max-width: 100%;
     overflow: hidden;
 }
-#image-focus-overlay .help-overlay p + p {
-    margin: 0.75em 0 0 0;
+#image-focus-overlay .help-overlay p:last-of-type {
+    margin: 0;
 }
 #image-focus-overlay .help-overlay.hidden {
     bottom: -2.25em;

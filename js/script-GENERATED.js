@@ -13131,15 +13131,19 @@ addContentInjectHandler(GW.contentInjectHandlers.enableVideoClickToPlay = (event
 /****************************************************************/
 /*  Account for interaction between image-focus.js and popups.js.
  */
-GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
-    if (Extracts.popFrameProvider == Popups)
-        Popups.hidePopupContainer();
-});
-GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
-    if (Extracts.popFrameProvider == Popups)
-        Popups.unhidePopupContainer();
-});
-
+if (Extracts.popFrameProvider == Popups) {
+	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
+		Popups.hidePopupContainer();
+	});
+	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
+		Popups.unhidePopupContainer();
+	});
+	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageDidFocus", (info) => {
+		let popup = Popups.containingPopFrame(info.image);
+		if (popup)
+			Popups.pinPopup(popup);
+	});
+}
 
 
 /***************/
