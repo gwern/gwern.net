@@ -121,35 +121,42 @@ Extracts = { ...Extracts,
 
         //  Update the title.
         Extracts.updatePopFrameTitle(popFrame);
-    }
-};
 
-/*	Expand-lock collapsed file includes when they’re expanded.
- */
-Extracts.additionalRewrites.push(Extracts.unwrapAnnotationFileIncludeCollapses = (popFrame) => {
-    GWLog("Extracts.unwrapAnnotationFileIncludeCollapses", "extracts.js", 2);
-
-	let target = popFrame.spawningTarget;
-	if (!   Extracts.targetTypeInfo(target).typeName == "ANNOTATION"
-		 || Extracts.targetTypeInfo(target).typeName == "ANNOTATION_PARTIAL")
-		return;
-
-	popFrame.document.querySelectorAll(".file-includes.collapse, .file-includes .collapse").forEach(collapseBlock => {
-		GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-			let includeLink = collapseBlock.querySelector("a");
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
-				injectEventInfo.container.firstElementChild.scrollIntoView();
+		//	Expand-lock collapsed file includes when they’re expanded.
+		popFrame.document.querySelectorAll(".file-include-collapse").forEach(collapseBlock => {
+			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
+				let includeLink = collapseBlock.querySelector("a");
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
+					injectEventInfo.container.firstElementChild.scrollIntoView();
+				}, {
+					once: true,
+					condition: (info) => (info.includeLink == includeLink)
+				});
+				expandLockCollapseBlock(collapseBlock);
 			}, {
 				once: true,
-				condition: (info) => (info.includeLink == includeLink)
+				condition: (info) => (info.collapseBlock == collapseBlock)
 			});
-			expandLockCollapseBlock(collapseBlock);
-		}, {
-			once: true,
-			condition: (info) => (info.collapseBlock == collapseBlock)
 		});
-	});
-});
+
+		/*	For annotated media, rearrange annotation content so that the media
+			itself follows the abstract (but precedes the aux-links), and the
+			caption is not unnecessarily duplicated.
+		 */
+		if ([ "remoteImage", 
+			  "localImage", 
+			  "localVideo", 
+			  "localAudio" 
+			  ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1) {
+			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
+			let fileIncludes = popFrame.document.querySelector(".file-includes");
+			let includeLink = fileIncludes.querySelector("a");
+			includeLink.classList.add("include-caption-not");
+			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
+			fileIncludes.remove();
+		}
+    }
+};
 
 /*=-----------------------=*/
 /*= ANNOTATIONS (PARTIAL) =*/

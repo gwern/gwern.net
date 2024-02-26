@@ -883,7 +883,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -1008,7 +1008,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -1095,7 +1095,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -1185,7 +1185,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target, {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         }));
     },
 

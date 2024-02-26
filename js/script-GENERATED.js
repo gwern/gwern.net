@@ -5808,7 +5808,8 @@ Content = {
 
 	figcaptionHTMLForMediaLink: (link) => {
 		let captionHTML = ``;
-		if (Annotations.isAnnotatedLink(link))
+		if (   Annotations.isAnnotatedLink(link)
+			&& link.classList.contains("include-caption-not") == false)
 			captionHTML = "<figcaption>" + synthesizeIncludeLink(link, {
 				"class": "include-annotation include-strict",
 				"data-include-selector": ".annotation-abstract > *",
@@ -6886,6 +6887,13 @@ Content = {
         DIV element, which will be given the ID of the include-link. When the
         `include-identify-not` option is used, this will not be done.
 
+	include-caption-not
+		Normally, media (image, video, audio) include-links which have 
+		annotations will, when transcluded, get a <figcaption> whose contents 
+		are the abstract of the annotation. If the `include-caption-not` class
+		is set, the caption is omitted. (This class has no effect if applied to
+		include-links of non-media content types.)
+
 	include-spinner
     include-spinner-not
         Shows or hides the “loading spinner” that is shown at the site of the
@@ -7889,7 +7897,8 @@ Transclude = {
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
-        "include-identify-not"
+        "include-identify-not",
+        "include-caption-not"
     ],
 
     transcludeAnnotationsByDefault: true,
@@ -9793,35 +9802,42 @@ Extracts = { ...Extracts,
 
         //  Update the title.
         Extracts.updatePopFrameTitle(popFrame);
-    }
-};
 
-/*	Expand-lock collapsed file includes when they’re expanded.
- */
-Extracts.additionalRewrites.push(Extracts.unwrapAnnotationFileIncludeCollapses = (popFrame) => {
-    GWLog("Extracts.unwrapAnnotationFileIncludeCollapses", "extracts.js", 2);
-
-	let target = popFrame.spawningTarget;
-	if (!   Extracts.targetTypeInfo(target).typeName == "ANNOTATION"
-		 || Extracts.targetTypeInfo(target).typeName == "ANNOTATION_PARTIAL")
-		return;
-
-	popFrame.document.querySelectorAll(".file-includes.collapse, .file-includes .collapse").forEach(collapseBlock => {
-		GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-			let includeLink = collapseBlock.querySelector("a");
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
-				injectEventInfo.container.firstElementChild.scrollIntoView();
+		//	Expand-lock collapsed file includes when they’re expanded.
+		popFrame.document.querySelectorAll(".file-include-collapse").forEach(collapseBlock => {
+			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
+				let includeLink = collapseBlock.querySelector("a");
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
+					injectEventInfo.container.firstElementChild.scrollIntoView();
+				}, {
+					once: true,
+					condition: (info) => (info.includeLink == includeLink)
+				});
+				expandLockCollapseBlock(collapseBlock);
 			}, {
 				once: true,
-				condition: (info) => (info.includeLink == includeLink)
+				condition: (info) => (info.collapseBlock == collapseBlock)
 			});
-			expandLockCollapseBlock(collapseBlock);
-		}, {
-			once: true,
-			condition: (info) => (info.collapseBlock == collapseBlock)
 		});
-	});
-});
+
+		/*	For annotated media, rearrange annotation content so that the media
+			itself follows the abstract (but precedes the aux-links), and the
+			caption is not unnecessarily duplicated.
+		 */
+		if ([ "remoteImage", 
+			  "localImage", 
+			  "localVideo", 
+			  "localAudio" 
+			  ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1) {
+			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
+			let fileIncludes = popFrame.document.querySelector(".file-includes");
+			let includeLink = fileIncludes.querySelector("a");
+			includeLink.classList.add("include-caption-not");
+			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
+			fileIncludes.remove();
+		}
+    }
+};
 
 /*=-----------------------=*/
 /*= ANNOTATIONS (PARTIAL) =*/
@@ -10864,7 +10880,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -10989,7 +11005,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -11076,7 +11092,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target), {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         });
     },
 
@@ -11166,7 +11182,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target, {
-        	"data-include-selector-not": ".caption-wrapper"
+			"class": "include-caption-not"
         }));
     },
 
