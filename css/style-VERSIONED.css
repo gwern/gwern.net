@@ -4527,7 +4527,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     margin-left: 0;
 }
 
-.popframe-body figure {
+.popframe-body figure:not(.float) {
 	max-width: calc(100% - 2px);
 }
 
