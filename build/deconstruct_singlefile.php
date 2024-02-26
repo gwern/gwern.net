@@ -1,9 +1,9 @@
 <?php
 
-## Usage:
+## Usage (default 1024MB memory limit):
 ##   php deconstruct_singlefile.php foo.html
-##   php deconstruct_singlefile.php -m 512M foo.html
-##   php deconstruct_singlefile.php --memory-limit 512M foo.html
+##   php deconstruct_singlefile.php -m 2048M foo.html
+##   php deconstruct_singlefile.php --memory-limit 2048M foo.html
 
 $args = [ ];
 for ($i = 1; $i < $argc; $i++) {
@@ -19,7 +19,7 @@ for ($i = 1; $i < $argc; $i++) {
 	}
 }
 
-$memory_limit = $args['-m'] ?? $args['--memory-limit'] ?? '256M';
+$memory_limit = $args['-m'] ?? $args['--memory-limit'] ?? '1024M';
 @ini_set('memory_limit', $memory_limit);
 
 $input_file_path = $args['file'];
