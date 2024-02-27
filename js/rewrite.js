@@ -813,8 +813,15 @@ if (Extracts.popFrameProvider == Popups) {
 		Popups.unhidePopupContainer();
 	});
 	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageDidFocus", (info) => {
+		/*	Pin a popup when clicking to image-focus an image within it
+			(unless it’s a popup that contains *only* the image, and nothing 
+			 else - no metadata, no other content, nothing - in which case,
+			 pinning is unnecessary).
+		 */
 		let popup = Popups.containingPopFrame(info.image);
-		if (popup)
+		if (   popup
+			&& (   popup.classList.contains("object")
+				&& Annotations.isAnnotatedLink(popup.spawningTarget) == false) == false)
 			Popups.pinPopup(popup);
 	});
 }
