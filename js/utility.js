@@ -778,7 +778,7 @@ function isNodeEmpty(node, options = { }) {
 		return undefined;
 
     if (node.nodeType == Node.TEXT_NODE)
-        return (node.textContent.match(/\S/) == null);
+        return (/^[\s\u2060]*$/.test(node.textContent));
 
 	if (node.nodeType == Node.ELEMENT_NODE) {
 		if (   options.excludeIdentifiedElements
