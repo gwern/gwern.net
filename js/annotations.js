@@ -1074,6 +1074,11 @@ Annotations.dataSources.wikipedia = {
 			figureBlock.remove();
 		});
 
+		//	Float all figures right.
+		referenceEntry.querySelectorAll("figure").forEach(figure => {
+			figure.classList.add("float-right");
+		});
+
 		//	Mark certain images as not to be wrapped in figures.
 		let noFigureImagesSelector = [
 			".mwe-math-element",
