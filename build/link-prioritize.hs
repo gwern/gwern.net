@@ -4,15 +4,15 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2024-02-26 16:36:17 gwern"
+When:  Time-stamp: "2024-02-28 17:28:19 gwern"
 License: CC-0
 Dependencies: Gwern.net Hakyll libraries
 
 For writing manual link annotations, a simple way to go is count un-annotated links by frequency.
 Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not
-appearing in the manual annotation database `/metadata/full.yaml` doesn't mean a link needs to be
+appearing in the manual annotation database `/metadata/full.gtx` doesn't mean a link needs to be
 annotated, because it could be one of the good auto-generated links in `/metadata/auto.hs` so we
-can't simply `grep $URL full.yaml` for each URL & `sort --unique | sort --numeric-sort`; the list
+can't simply `grep $URL full.gtx` for each URL & `sort --unique | sort --numeric-sort`; the list
 of good auto-generated links also may change over time, because a query failed or new domains become
 supported.
 So instead we take a more heavyweight approach of explicitly parsing both and checking for no or

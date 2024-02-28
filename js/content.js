@@ -579,7 +579,7 @@ Content = {
 				//	Truncated at 2000 lines for preview.
 				"bash", "c", "conf", "css", "diff", "hs", "html", "js",
 				"json", "jsonl", "md", "opml", "patch", "php", "py", "R",
-				"sh", "xml", "yaml",
+				"sh", "xml",
 				//	Non-syntax highlighted (due to lack of known format), but truncated:
 				"txt"
 			]

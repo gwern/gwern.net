@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Do fixed-string rewrites across the Gwern.net source corpus, inclusive of both code & generated snippets & YAML & Markdown.
+# Do fixed-string rewrites across the Gwern.net source corpus, inclusive of both code & generated snippets & GTX & Markdown.
 # Needs to handle a number of special cases like affiliation anchors.
 
 if [ $# -eq 4 ]; then
@@ -29,7 +29,7 @@ else
         else
             # proceed with trying to do a normal sitewide replacement:
             FILES=$((find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
-                                                       -name "*.yaml" -or -name "*.hs" -or -name "*.html"; ) | \
+                                                       -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
                         grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/build/Config/MetadataFormat.hs' | \
                         xargs grep -F --files-with-matches "$1" | sort)
             if [ -z "$FILES" ]; then
@@ -40,8 +40,8 @@ else
                 echo "$FILES" | stringReplace "$1" "$2";
                 stringReplace "$1" "$2" ~/wiki/metadata/archive.hs # for some reason, archive.hs doesn't seem to update properly with just one gwsed call; I'm not sure why.
                 gw () { ( find ~/wiki/ -type f -name "*.md"
-                          find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.yaml"
-                          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml"
+                          find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
+                          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
                             grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
                             sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }

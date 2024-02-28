@@ -60,7 +60,7 @@ main = do C.cd
           -- Par.mapM_ (generateDirectory True meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
-          -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.yaml/partial.yaml TODO: actually track annotation creation dates...)
+          -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.gtx/partial.gtx TODO: actually track annotation creation dates...)
           metaNewest <- readLinkMetadataNewest 100
           generateDirectory False metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 

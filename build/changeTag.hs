@@ -35,7 +35,8 @@ import Text.Pandoc (Inline(Link), nullAttr)
 import qualified Data.Text as T (pack)
 
 import Config.Misc as C (root)
-import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml)
+import LinkMetadata (annotateLink, readLinkMetadata)
+import Gtx (readGtxFast, writeGtx)
 import LinkMetadataTypes (MetadataList, MetadataItem, Failure(Temporary, Permanent))
 import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, printRed, replace)
@@ -75,33 +76,33 @@ changeOneTag link tag = do
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
-          [full,half,auto] <- mapM readYaml ["metadata/full.yaml", "metadata/half.yaml", "metadata/auto.yaml"]
+          [full,half,auto] <- mapM readGtxFast ["metadata/full.gtx", "metadata/half.gtx", "metadata/auto.gtx"]
           printGreen ("Executing: " ++ tag ++ " tag on link: " ++ link'')
           changeAndWriteTags tag link'' full half auto
 
--- If an annotation is in full.yaml, we only want to write that. If it's in half.yaml,
--- likewise. If it's in auto.yaml, now that we've added a tag to it, it is no longer disposable and
--- must be preserved by moving it from auto.yaml to half.yaml. If it's not in any metadata file
--- (such as a Wikipedia link, which is normally suppressed), then we add it to half.yaml.
+-- If an annotation is in full.gtx, we only want to write that. If it's in half.gtx,
+-- likewise. If it's in auto.gtx, now that we've added a tag to it, it is no longer disposable and
+-- must be preserved by moving it from auto.gtx to half.gtx. If it's not in any metadata file
+-- (such as a Wikipedia link, which is normally suppressed), then we add it to half.gtx.
 changeAndWriteTags :: String -> String -> MetadataList -> MetadataList -> MetadataList -> IO ()
 changeAndWriteTags t i c p a = do let cP = hasItem i c
                                       pP = hasItem i p
                                       aP = hasItem i a
-                                  if cP then writeUpdatedYaml c "metadata/full.yaml" (changeTag i c t) else
-                                    if pP then writeUpdatedYaml p "metadata/half.yaml" (changeTag i p t) else
-                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedYaml a "metadata/auto.yaml" autoNew >> writeUpdatedYaml a "metadata/half.yaml" (changeTag i halfNew t)
+                                  if cP then writeUpdatedGtx c "metadata/full.gtx" (changeTag i c t) else
+                                    if pP then writeUpdatedGtx p "metadata/half.gtx" (changeTag i p t) else
+                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedGtx a "metadata/auto.gtx" autoNew >> writeUpdatedGtx a "metadata/half.gtx" (changeTag i halfNew t)
                                       else addNewLink t i
 
-writeUpdatedYaml :: MetadataList -> String -> MetadataList -> IO ()
-writeUpdatedYaml oldList target newList = when (oldList /= newList) $ writeYaml target newList
+writeUpdatedGtx :: MetadataList -> String -> MetadataList -> IO ()
+writeUpdatedGtx oldList target newList = when (oldList /= newList) $ writeGtx target newList
 
--- what if a link is completely new and is not in either full.yaml (handwritten) or auto.yaml
--- (often auto-annotated)? If we write it directly into half.yaml, then for many links like
+-- what if a link is completely new and is not in either full.gtx (handwritten) or auto.gtx
+-- (often auto-annotated)? If we write it directly into half.gtx, then for many links like
 -- Arxiv/BioRxiv, we'd skip creating an automatic annotation!
 --
 -- So instead we hook back into the main link annotation workflow, create a new annotation for that
--- (which will be in auto.yaml), and then run changeTag.hs *again*, so this time it has an annotation
--- to work with (and will do auto.yaml → half.yaml).
+-- (which will be in auto.gtx), and then run changeTag.hs *again*, so this time it has an annotation
+-- to work with (and will do auto.gtx → half.gtx).
 addNewLink :: String -> String -> IO ()
 addNewLink tag p = do md <- readLinkMetadata
                       returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))

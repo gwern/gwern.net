@@ -11,16 +11,17 @@ import Data.Text.IO as TIO (getContents)
 
 import Config.Misc as C (root)
 import LinkID (authorsToCite, generateURL)
-import LinkMetadata (authorsTruncate, sortItemPathDate, readYamlFast)
+import LinkMetadata (authorsTruncate, sortItemPathDate)
+import Gtx (readGtxFast)
 import LinkMetadataTypes (MetadataItem)
 import Utils (anyInfix, replace, sed)
 
 type Path = String
 
 main :: IO ()
-main = do full  <- readYamlFast (C.root ++ "metadata/full.yaml")   -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-          half <- readYamlFast (C.root ++ "metadata/half.yaml")    -- tagged but not handwritten/cleaned-up
-          auto    <- readYamlFast (C.root ++ "metadata/auto.yaml") -- auto-generated cached definitions; can be deleted if gone stale
+main = do full  <- readGtxFast (C.root ++ "metadata/full.gtx")   -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use Gtx:
+          half <- readGtxFast (C.root ++ "metadata/half.gtx")    -- tagged but not handwritten/cleaned-up
+          auto    <- readGtxFast (C.root ++ "metadata/auto.gtx") -- auto-generated cached definitions; can be deleted if gone stale
           let incompleteDB = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
           let finalDB = M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB

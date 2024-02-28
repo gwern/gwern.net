@@ -2,16 +2,18 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-26 16:14:17 gwern"
-;;; Words: GNU Emacs, Markdown, HTML, YAML, Gwern.net, typography
+;;; When:  Time-stamp: "2024-02-28 18:07:58 gwern"
+;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
-;;; Helper files for editing Markdown, HTML, and HTML-in-YAML, particularly reformatting & editing annotations in the Gwern.net house style.
+;;; Helper files for editing Markdown, HTML, and HTML-in-GTX, particularly reformatting & editing annotations in the Gwern.net house style.
 ;;; Additional functions include error-checking and prettifying confusable characters like dashes.
 
 ; since I hardly ever write elisp, and often start writing things in the *scratch* buffer, save time by defaulting to Markdown.
 (setq initial-major-mode 'markdown-mode)
 (setq initial-scratch-message "")
+
+(push '("\\.gtx$" . html-mode) auto-mode-alist)
 
 ; I do much of my editing in gwern.net files, so save myself some tab-completion hassle:
 (setq default-directory "~/wiki/")
@@ -20,26 +22,26 @@
 (add-to-list 'load-path "~/src/markdown-mode/")
 (require 'markdown-mode)
 
-; Metadata files are stored in YAML; but yaml-mode may be too slow to use given how large they have become...
-(require 'yaml-mode)
-(defun my/yaml-mode-decision ()
-  "Activate yaml-mode with conditionally disabled Flycheck."
-  (let (
-        (disable-flycheck (or (string-prefix-p (expand-file-name "~/wiki/metadata/") (buffer-file-name))
-                              (> (nth 7 (file-attributes (buffer-file-name))) 1000000))))
-    ;; Disable Flycheck if the file is large or in a specific directory
-    (when disable-flycheck
-      (flycheck-mode -1))
+;; ; Metadata files are stored in YAML; but yaml-mode may be too slow to use given how large they have become...
+;; (require 'yaml-mode)
+;; (defun my/yaml-mode-decision ()
+;;   "Activate yaml-mode with conditionally disabled Flycheck."
+;;   (let (
+;;         (disable-flycheck (or (string-prefix-p (expand-file-name "~/wiki/metadata/") (buffer-file-name))
+;;                               (> (nth 7 (file-attributes (buffer-file-name))) 1000000))))
+;;     ;; Disable Flycheck if the file is large or in a specific directory
+;;     (when disable-flycheck
+;;       (flycheck-mode -1))
 
-    ;; Activate yaml-mode
-    (yaml-mode)
+;;     ;; Activate yaml-mode
+;;     (yaml-mode)
 
-    ;; Additional settings if Flycheck is disabled
-    (when disable-flycheck
-      (font-lock-mode -1)
-      (message "Custom YAML mode settings applied for large file/specific directory"))))
-(add-hook 'yaml-mode-hook 'my/yaml-mode-decision)
-; (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+;;     ;; Additional settings if Flycheck is disabled
+;;     (when disable-flycheck
+;;       (font-lock-mode -1)
+;;       (message "Custom YAML mode settings applied for large file/specific directory"))))
+;; (add-hook 'yaml-mode-hook 'my/yaml-mode-decision)
+;; ; (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
@@ -53,19 +55,21 @@
               (font-lock-add-keywords nil '(
                   (" significant" 0 'taylor-special-words-warning t)
                   (" significance" 0 'taylor-special-words-warning t)
-              ))))
+              ))
+              (setq show-trailing-whitespace t)
+              ))
 (add-hook 'html-mode-hook
             (lambda ()
               (font-lock-add-keywords nil '(
                   (" significant" 0 'taylor-special-words-warning t)
                   (" significance" 0 'taylor-special-words-warning t)
               ))))
-(add-hook 'yaml-mode-hook
-            (lambda ()
-              (font-lock-add-keywords nil '(
-                  (" significant" 0 'taylor-special-words-warning t)
-                  (" significance" 0 'taylor-special-words-warning t)
-              ))))
+;; (add-hook 'yaml-mode-hook
+;;             (lambda ()
+;;               (font-lock-add-keywords nil '(
+;;                   (" significant" 0 'taylor-special-words-warning t)
+;;                   (" significance" 0 'taylor-special-words-warning t)
+;;               ))))
 
 ;I like unusual semantic punctuation!
 (defun interrobang () (interactive (insert-char ?‽ 1))) ;; interrobang: ‽ for replacing "?!"\"!?"
@@ -1671,7 +1675,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "8*" "**" nil begin end)
        (query-replace "!{" "![" nil begin end)
        (query-replace "].(" ".](" nil begin end)
-       (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
+       ; (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
 
        ; do this at the end to minimize errors from things that would've been fixed
@@ -1910,7 +1914,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
                         ))))))))
 
 (defun markdown-annotation-compile ()
-  "Turn a Markdown buffer into a HTML5 snippet without newlines and with escaped quotes, suitable for using as a YAML string inside annotated gwern.net links (see full.yaml)."
+  "Turn a Markdown buffer into a HTML5 snippet without newlines and with escaped quotes, suitable for using as a GTX string inside annotated gwern.net links (see `full.gtx`)."
   (interactive)
   (call-interactively #'fmt)
   (save-window-excursion
@@ -1930,8 +1934,8 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (html-mode)
 
       ; (replace-all "\n" " ")
-      (let ((begin (if (region-active-p) (region-beginning) (+ $pos 1)))
-            (end (if (region-active-p) (region-end) (point-max)))
+      (let ( ; (begin (if (region-active-p) (region-beginning) (+ $pos 1)))
+             ; (end (if (region-active-p) (region-end) (point-max)))
             )
       (replace-all "<p> " "<p>")
       (replace-all " </p>" "</p>")
@@ -1950,7 +1954,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (replace-all "%3Csup%3Erd%3C/sup%3E" "rd")
       (replace-all "<!-- -->" "")
       ; unescaped single quotation marks will often break the YAML, so they need to either be replaced with the intended Unicode, or double-quoted to 'escape' them
-      (query-replace "'" "''" nil begin end)
+      ; (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
       (ding)
@@ -1972,6 +1976,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 (defun markdown-paragraphize ()
   "Automatically paragraphize single-paragraph abstracts. Intended for Markdown mode with double-newlines for newlines; may malfunction if run on other formats like HTML (where `</p><p>` pairs can come in many forms, not to mention other block elements like blockquotes)."
   (interactive)
+  (delete-trailing-whitespace)
   (let ((double-newline-found nil))
           (save-excursion
         (goto-char (point-min))
@@ -1992,18 +1997,18 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 (add-hook 'post-command-hook #'markdown-paragraphize-hook)
 
 ; add new-line / paragraph snippet
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map (kbd "<C-return>")  (lambda () (interactive)
-                                                            (if (= ?\s (preceding-char)) (delete-char -1))
-                                                            (insert "</p> <p>")
-                                                            (if (= ?\s (following-char)) (delete-char 1)))
-            )
-          ))
+;; (add-hook 'yaml-mode-hook
+;;           (lambda ()
+;;             (define-key yaml-mode-map (kbd "<C-return>")  (lambda () (interactive)
+;;                                                             (if (= ?\s (preceding-char)) (delete-char -1))
+;;                                                             (insert "</p> <p>")
+;;                                                             (if (= ?\s (following-char)) (delete-char 1)))
+;;             )
+;;           ))
 
 (add-hook 'markdown-mode-hook   'visual-fill-column-mode)
 
-;; Markup editing shortcuts for HTML/Markdown/YAML annotation editing.
+;; Markup editing shortcuts for HTML/Markdown/GTX annotation editing.
 ;; Functions to easily add italics, bold, Wikipedia links, smallcaps, & margin-note syntax.
 (defun surround-region-or-word (start-tag end-tag)
   "Surround selected region (or next word if no region) with START-TAG and END-TAG."
@@ -2099,15 +2104,15 @@ To save effort, we add those as well."
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
-;;; YAML: (the YAML files store raw HTML snippets, so insert HTML rather than Markdown markup)
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ s"    'html-insert-smallcaps)))
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
-(add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
+;; ;;; YAML: (the YAML files store raw HTML snippets, so insert HTML rather than Markdown markup)
+;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
+;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))
+;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ s"    'html-insert-smallcaps)))
+;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
+;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
 
 ;sp
-(add-hook 'markdown-mode-hook 'flyspell)
+; (add-hook 'markdown-mode-hook 'flyspell)
 ;for toggling visibility of sections - makes big pages easier to work with
 (add-hook 'markdown-mode-hook 'outline-minor-mode)
 ;In Markdown files, there are few excuses for unbalanced delimiters, and unbalance almost always indicates a link syntax error; in cases where quoted text must contain unbalanced delimiters (eg diffs, or neural-net-generated text or redirects fixing typos), a matching delimiter can be added in a comment like '<!-- () [] -->' to make it add up.
@@ -2137,7 +2142,14 @@ To save effort, we add those as well."
 ; NOTE: aside from the 'flycheck' package (from MELPA), you also need a CLI tool to do the actual checking, either <https://github.com/markdownlint/markdownlint/> (`mdl`, Ruby) or <https://github.com/DavidAnson/markdownlint> + <https://github.com/igorshubovych/markdownlint-cli> (`markdown-lint-cli`, a Node.js clone/fork)
 ; (load "~/src/flycheck/flycheck.el") ; the MELPA package is out of date and does not have either Markdown or proselint support as of 18 Nov 2019, so we have to load from the Github repo
 (require 'flycheck)
+(defun my/flycheck-disable-for-gtx-files ()
+  "Disable flycheck for files ending with '.gtx'."
+  (let ((filename (buffer-file-name)))
+    (when (and filename (string-match "\\.gtx\\'" filename))
+      (flycheck-mode -1))))
+
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'flycheck-before-syntax-check-hook #'my/flycheck-disable-for-gtx-files)
 ; syntax checkers must be whitelisted/enabled individually, so turn on proselint & mdl
 (add-to-list 'flycheck-checkers 'proselint) ; configured in ~/.proselintrc
 (add-to-list 'flycheck-checkers 'markdown-mdl) ; configured in ~/.mdlrc ; list & explanation of rules: <https://github.com/markdownlint/markdownlint/blob/master/docs/RULES.md>
@@ -2154,8 +2166,8 @@ To save effort, we add those as well."
 ; mismatched quotes are no good either
 ; <http://stackoverflow.com/questions/9527593/customizing-check-parens-to-check-double-quotes>
 (add-hook 'markdown-mode-hook (lambda () (modify-syntax-entry ?\" "$" markdown-mode-syntax-table)))
-(add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?{  "(" markdown-mode-syntax-table) (modify-syntax-entry ?} ")" markdown-mode-syntax-table)))
-(add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?\( "(" markdown-mode-syntax-table) (modify-syntax-entry ?\) ")" markdown-mode-syntax-table)))
+;; (add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?{  "(" markdown-mode-syntax-table) (modify-syntax-entry ?} ")" markdown-mode-syntax-table)))
+;; (add-hook 'yaml-mode-hook (lambda () (modify-syntax-entry ?\( "(" markdown-mode-syntax-table) (modify-syntax-entry ?\) ")" markdown-mode-syntax-table)))
 
 ; We visually highlight '\[' in Markdown files to emphasize that they are part of editorial insertions (like '[sic]') and *not* the ubiquitous Markdown link syntax. Confusing them can cause problems.
 (global-prettify-symbols-mode 1)
@@ -2168,15 +2180,15 @@ To save effort, we add those as well."
            ("—" . ?⸺) ; em-dashes
            ("−" . ?━) ; MINUS SIGN
            ))))
-(add-hook 'yaml-mode-hook (lambda ()
-   (mapc (lambda (pair) (push pair prettify-symbols-alist))
-         '(
-           ("\\[" . ?〖)
-           ("\\]" . ?〗)
-           ("–" . ?ˉ) ; highlight EN DASH because they look so much like regular hyphens
-           ("—" . ?⸺) ; EM DASH
-           ("−" . ?━) ; MINUS SIGN
-           ))))
+;; (add-hook 'yaml-mode-hook (lambda ()
+;;    (mapc (lambda (pair) (push pair prettify-symbols-alist))
+;;          '(
+;;            ("\\[" . ?〖)
+;;            ("\\]" . ?〗)
+;;            ("–" . ?ˉ) ; highlight EN DASH because they look so much like regular hyphens
+;;            ("—" . ?⸺) ; EM DASH
+;;            ("−" . ?━) ; MINUS SIGN
+;;            ))))
 
 ;; for line-by-line incrementing IDs; useful for popup links.
 ;; (defun add-html-spans (start end)

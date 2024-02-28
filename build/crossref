@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # crossref: query a PDF for its metadata, reformat it, strip encryption,
-# check if Crossref can provide a useful abstract, and print out available metadata in the format of a Gwern.net annotation YAML entry,
-# suitable for appending to `/metadata/full.yaml` & editing.
+# check if Crossref can provide a useful abstract, and print out available metadata in the format of a Gwern.net annotation GTX entry,
+# suitable for appending to `/metadata/full.gtx` & editing.
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01

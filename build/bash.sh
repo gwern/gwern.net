@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-26 16:13:56 gwern"
+# When:  Time-stamp: "2024-02-28 17:39:31 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -203,8 +203,8 @@ gw () {
     QUERY="$*";
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs;
-         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.yaml";
-         find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.yaml" -or -name "*.py" -or -name "*.sh";
+         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
+         find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
            grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
            xargs grep -F --color=always --ignore-case --with-filename "$QUERY" | cut -c 1-2548);
@@ -337,9 +337,9 @@ alias t="gwtag"
 gwtag () { (
              wait; # just in case another tool might be running (eg. gwtag or gwsed)
              cd ~/wiki/ &&
-                     # echo "---" && grep -F -- "$1" ./metadata/*.yaml || true
+                     # echo "---" && grep -F -- "$1" ./metadata/*.gtx || true
                      timeout 20m nice ./static/build/changeTag "$@"; echo "" # &&
-                         # echo "---" && grep -F -- "$1" ./metadata/*.yaml
+                         # echo "---" && grep -F -- "$1" ./metadata/*.gtx
          ); }
 
 # eg. `"ai ai/anime ai/anime/danbooru ... ai/scaling ai/scaling/economics ... japan/poetry/shotetsu japan/poetry/teika ... technology/digital-antiquarian ... zeo/short-sleeper"`

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-26 16:28:16 gwern"
+# When:  Time-stamp: "2024-02-28 17:32:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -105,7 +105,7 @@ else
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep -E`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
-          for file in $(find . -name "*.md" -or -name "*.yaml"); do
+          for file in $(find . -name "*.md" -or -name "*.gtx"); do
               if grep -qE "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
               fi
@@ -124,7 +124,7 @@ else
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
         ) &> /dev/null &
-    sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.yaml;
+    sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.gtx;
     fi
 
     bold "Compiling…"
@@ -152,7 +152,7 @@ else
     ghci -istatic/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
-    λ(){ gf -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.yaml || true; }
+    λ(){ gf -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.gtx || true; }
     wrap λ "Malformed empty link in annotations?"
 
     # another early fatal check: if there is a Markdown file 'foo.md' and also a subdirectory 'foo/' in the same directory, then this will result in, later, a fatal error when one tries to compile 'foo.md' → 'foo' (the HTML file) but 'foo' (the directory) already exists.
@@ -301,7 +301,7 @@ else
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["md"]="Markdown"
                                          # NOTE: we do 'text' to get a 'syntax-highlighted' version which has wrapped columns etc.
                                          # NOTE: CSV is unsupported by Pandoc skylighting, so we convert to HTML instead
-                                         ["txt"]="default" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" )
+                                         ["txt"]="default" ["jsonl"]="JSON" ["json"]="JSON" )
         LENGTH="2000"
         for FILE in "$@"; do
 
@@ -329,7 +329,7 @@ else
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f,l \
-         -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" | \
+         -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.gtx" -or -name "*.xml" | \
         sort |  gfv \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.md' \
@@ -473,14 +473,14 @@ else
     wrap λ "Similar-links files are missing?"
 
     ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/note/lion#history#'/'/note/lion##history'/'/note/lion##'/'/note/lion#history#foo' is in fact valid
-    λ(){ ge -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs | gev -e '#[[:alnum:]-]+#$'; }
+    λ(){ ge -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.gtx metadata/*.hs | gev -e '#[[:alnum:]-]+#$'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
-    λ(){ ge -- '/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
+    λ(){ ge -- '/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.gtx ./metadata/*.hs || true;
          gf -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
-    λ(){ gf -e 'http' ./metadata/*.hs ./metadata/*.yaml | gfv -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | gf -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
+    λ(){ gf -e 'http' ./metadata/*.hs ./metadata/*.gtx | gfv -e 'https://en.wikipedia.org/wiki/' -e '10/arc-1-gestation/1' -e 'the-elves-leave-middle-earth-' -e '2011/05/from-the-bookcase-no-2' -e 'd-a-rovinskiis-collection-of-russian-lubki-18th' -e 'commons.wikimedia.org/wiki/File:Flag_of_the_NSDAP_' | gf -e "%E2%80%93" -e "%E2%80%94" -e "%E2%88%92"; }
     wrap λ "*Escaped* En/em/minus dashes in URLs?"
 
     λ(){ gf -e '\\' ./static/css/*.css; }
@@ -631,7 +631,7 @@ else
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gf -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
-    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/full.yaml"'; }
+    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeGTX "metadata/full.gtx"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs." &
 
     λ(){ gwa | gf -- '[]' | gfv -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | gev --perl-regexp '\e\[36ma\e\[0m: '
@@ -643,34 +643,34 @@ else
     λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:" &
 
-    λ(){ ge -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.yaml | \
+    λ(){ ge -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.gtx | \
          gfv -e 'https://web.archive.org/web/'; }
-    wrap λ "Check possible typo in YAML metadata database."
+    wrap λ "Check possible typo in GTX metadata database."
 
-    λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.yaml ./metadata/half.yaml; }
+    λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.gtx ./metadata/half.gtx; }
     wrap λ "Look for en-dash abuse."
 
-    λ(){ gf -e ' ?' ./metadata/full.yaml; }
+    λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -- ./metadata/full.yaml ./metadata/half.yaml | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -- ./metadata/full.gtx ./metadata/half.gtx | \
              ge -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
-    λ(){ gev '^- - http' ./metadata/*.yaml | ge '[a-zA-Z0-9>]-$'; }
-    wrap λ "Look for YAML line breaking at a hyphen."
+    λ(){ gev '^- - http' ./metadata/*.gtx | ge '[a-zA-Z0-9>]-$'; }
+    wrap λ "Look for GTX line breaking at a hyphen."
 
-    λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.yaml | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
+    λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside."
 
-    λ(){ gf -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.yaml ./metadata/half.yaml | gfv '_search_algorithm'; } # need to exclude 'A* search'
+    λ(){ gf -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv '_search_algorithm'; } # need to exclude 'A* search'
     wrap λ "Look for italics errors."
 
-    λ(){ gf -e 'amp#' -- ./metadata/*.yaml; }
+    λ(){ gf -e 'amp#' -- ./metadata/*.gtx; }
     wrap λ "Unicode/HTML entity encoding error?"
 
-    λ(){ gf --color=always -e 'en.m.wikipedia.org' -- ./metadata/full.yaml; }
-    wrap λ "Check possible syntax errors in full.yaml YAML metadata database (fixed string matches)."
+    λ(){ gf --color=always -e 'en.m.wikipedia.org' -- ./metadata/full.gtx; }
+    wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed string matches)."
 
     λ(){ ge --color=always -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
@@ -680,8 +680,8 @@ else
             -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
             -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
             `# match both single & double-quotation versions of erroneous inflation-adjusters like "<a href='$2022'>148,749</a>":` \
-            -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]' -e '<ul>[ a-zA-Z][ a-zA-Z]' -- ./metadata/*.yaml; }
-    wrap λ "Check possible syntax errors in YAML metadata database (regexp matches)."
+            -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]' -e '<ul>[ a-zA-Z][ a-zA-Z]' -- ./metadata/*.gtx; }
+    wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 
     λ(){ gf --color=always -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
             -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '/p&gt;' -e '<i><i' -e '</e>' -e '>>' \
@@ -689,16 +689,16 @@ else
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
-            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -- ./metadata/*.yaml; }
-    wrap λ "#1: Check possible syntax errors in YAML metadata database (fixed string matches)."
+            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -- ./metadata/*.gtx; }
+    wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gf --color=always -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
             -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e '<em>Figure' \
             -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="W"' -e 'href="(' -e '>/em>' -e '<figure>[' \
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
-            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.yaml; }
-    wrap λ "#2: Check possible syntax errors in YAML metadata database (fixed string matches)."
+            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx; }
+    wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gf --color=always -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age' -e '….' -e '((' -e ' %' \
             -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
@@ -715,12 +715,12 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -- ./metadata/*.yaml | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -- ./metadata/*.gtx | \
              gfv 'popular_shelves';
        }
-    wrap λ "#3: Check possible syntax errors in YAML metadata database (fixed string matches)."
+    wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)."
 
-    λ(){ ge -e ' [0-9]/[0-9]+ ' -- ./metadata/*.yaml | gfv -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11' -e 'TRFK 31/8' -e 'TRFK 303/577' -e 'TRFK 6/8'; }
+    λ(){ ge -e ' [0-9]/[0-9]+ ' -- ./metadata/*.gtx | gfv -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11' -e 'TRFK 31/8' -e 'TRFK 303/577' -e 'TRFK 6/8'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
 
     λ(){ gf -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
@@ -752,14 +752,14 @@ else
        ge 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
 
-    λ(){ gf -e '""' -- ./metadata/*.yaml | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
-    wrap λ "Doubled double-quotes in YAML, usually an error."
+    λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
+    wrap λ "Doubled double-quotes in GTX, usually an error."
 
-    λ(){ gf -e "'''" -- ./metadata/full.yaml ./metadata/half.yaml; }
-    wrap λ "Triple quotes in YAML, should be curly quotes for readability/safety."
+    λ(){ gf -e "'''" -- ./metadata/full.gtx ./metadata/half.gtx; }
+    wrap λ "Triple quotes in GTX, should be curly quotes for readability/safety."
 
-    λ(){ gev '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
-    wrap λ "Markdown hyphen problems in YAML metadata database"
+    λ(){ gev '^- - ' -- ./metadata/*.gtx | gf -e ' -- ' -e '---'; }
+    wrap λ "Markdown hyphen problems in GTX metadata database"
 
     λ(){ ge -e '^    - _' $PAGES | gfv -e '_Additional Poems_' -e '_Aim for the Top!_' -e '_[Cognitive Surplus](!W)_' \
                                               -e '_Fontemon_' -e '_Forbes_' -e '_[Four Major Plays of Chikamatsu](!W)_' \
@@ -779,35 +779,35 @@ else
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
     wrap λ "Metadata HTML files: garbage or control characters detected?"
 
-    λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.yaml; }
-    wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
+    λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.gtx; }
+    wrap λ "Wikipedia annotations in GTX metadata database, but will be ignored by popups! Override with non-WP URL?"
 
-    λ(){ ge -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
-    wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
+    λ(){ ge -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.gtx; }
+    wrap λ "Wrong filepaths in GTX metadata database—missing prefix?"
 
-    λ(){ ge -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
+    λ(){ ge -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.gtx | \
              gfv -e '%' -e '<figure>' -e 'alt="Figure ' -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
-    wrap λ "Missing superscript abbreviations in YAML metadata database"
+    wrap λ "Missing superscript abbreviations in GTX metadata database"
 
-    λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
+    λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
     wrap λ "Superscript abbreviations are weirdly capitalized?"
 
-    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.yaml | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' -e '<sup>242m</sup>Am' -e '<sup>31</sup>P' -e '<sup>60</sup>Co' ; }
+    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gf -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e ' <sup>31</sup>P-Magnetic' -e '<sup>242m</sup>Am' -e '<sup>31</sup>P' -e '<sup>60</sup>Co' ; }
     wrap λ "Superscripts/subscripts have spaces in front?"
 
-    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.yaml; }
-    wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
+    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
+    wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database"
 
-    λ(){ gf -e ' significant'  ./metadata/full.yaml; }
-    wrap λ "Misleading language in full.yaml"
+    λ(){ gf -e ' significant'  ./metadata/full.gtx; }
+    wrap λ "Misleading language in full.gtx"
 
-    λ(){ gf -e '/doc/www/'  ./metadata/full.yaml; }
+    λ(){ gf -e '/doc/www/'  ./metadata/full.gtx; }
     wrap λ "Generated local archive links showing up in manual annotations."
 
     λ(){ gf -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
-    λ(){ ge -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.yaml; }
+    λ(){ ge -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.gtx; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
@@ -868,6 +868,7 @@ else
 
     # Sync:
     set -e
+    wait;
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ./ -type d) &
     chmod --recursive a+r ./* &
@@ -969,6 +970,7 @@ else
          cr 'https://gwern.net/doc/eva/2011-house' 'https://gwern.net/doc/anime/eva/2011-house'
          cr 'https://gwern.net/doc/cs/1955-nash' 'https://gwern.net/doc/cs/cryptography/nash/1955-nash'
          cr 'https://gwern.net/doc/cs/cryptography/nash/1955-nash' 'https://gwern.net/doc/cs/cryptography/nash/1955-nash' # check www.gwern.net → gwern.net redirect
+         cr 'https://gwern.net/dropcap.page' 'https://gwern.net/dropcap.md'
 
        }
     wrap λ "Check that some redirects go where they should"
@@ -1044,6 +1046,7 @@ else
           cm "text/markdown; charset=utf-8" 'https://gwern.net/2014-spirulina.md'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/dnm-archive.md'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/gpt-3.md'
+          cm "text/markdown; charset=utf-8" 'https://gwern.net/catitecture.md'
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirect/nginx.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
@@ -1052,7 +1055,7 @@ else
           cm "text/x-patch; charset=utf-8" 'https://gwern.net/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://gwern.net/static/build/linkAbstract.R'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
-          cm "text/yaml; charset=utf-8" 'https://gwern.net/metadata/full.yaml'
+          cm "text/x-gtx; charset=utf-8" 'https://gwern.net/metadata/full.gtx'
           cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://gwern.net/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://gwern.net/doc/cs/security/lobel-frogandtoadtogether-thebox-crop.jpg'
@@ -1124,8 +1127,8 @@ else
     λ() { find . -executable -type f | gfv -e 'static/build/' -e 'nginx/memoriam.sh' -e 'haskell/lcp.hs' -e '.git/hooks/post-commit'; }
     wrap λ "Executable bit set on files that shouldn't be executable?"
 
-    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.yaml; }
-    wrap λ "Broken links, corrupt authors, or failed scrapes in auto.yaml."
+    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.gtx; }
+    wrap λ "Broken links, corrupt authors, or failed scrapes in auto.gtx."
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | gfv -e metadata/annotation/; }
     wrap λ "No files should have double hyphens or tildes in their names."
@@ -1172,7 +1175,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | xargs gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg'; }
+    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.js'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     bold "Checking for PDF anomalies…"

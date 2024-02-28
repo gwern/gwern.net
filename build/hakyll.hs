@@ -5,11 +5,11 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-26 16:23:31 gwern"
+When: Time-stamp: "2024-02-28 17:27:55 gwern"
 License: CC-0
 
 Debian dependencies:
-$ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev libghc-yaml-dev imagemagick rsync git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
+$ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev imagemagick rsync git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
 
 (GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and rsync for the server/git upload to hosting/Github respectively.)
 Demo command (for the full script, with all static checks & generation & optimizations, see `sync-gwern.net.sh`):
@@ -103,8 +103,7 @@ main =
                                        "**.php",
                                        "**.svg",
                                        "**.png",
-                                       "**.jpg",em
-                                       "**.yaml",
+                                       "**.jpg",
                                        -- skip "static/build/**" because of the temporary files
                                        "static/css/**",
                                        "static/font/**",

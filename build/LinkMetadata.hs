@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-28 16:58:03 gwern"
+When:  Time-stamp: "2024-02-28 18:36:44 gwern"
 License: CC-0
 -}
 
@@ -14,25 +14,21 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeYAML, dateTruncateBad, typesetHtmlField, lookupFallback) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGtxFast, writeGtx, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
-import qualified Data.ByteString as B (appendFile, readFile)
-import Data.Char (isPunctuation, toLower, isSpace, isNumber)
+import Data.Char (isPunctuation, toLower, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
-import Data.List (intercalate, intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.HT (search)
-import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
-import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist, getFileSize)
 import System.FilePath (takeDirectory, takeFileName, takeExtension)
-import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
@@ -46,7 +42,6 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import Config.Misc as C (root)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -58,12 +53,13 @@ import LinkLive (linkLive, alreadyLive)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
-import Tags (uniqTags, guessTagFromShort, tag2TagsWithDefault, guessTagFromShort, tag2Default, pages2Tags, listTagsAll, tagsToLinksSpan)
-import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, cleanAuthors, guessDateFromLocalSchema, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
+import Tags (listTagsAll, tagsToLinksSpan)
+import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, authorsTruncate, dateTruncateBad)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
+import Gtx (appendLinkMetadata, readGtxFast, rewriteLinkMetadata, writeGtx)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -94,38 +90,38 @@ addPageLink x = x
 --
 -- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataYaml f "metadata/full.yaml"
-                                       walkAndUpdateLinkMetadataYaml f "metadata/half.yaml"
-                                       walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
-                                       when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting.")
+walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGtx f "metadata/full.gtx"
+                                       walkAndUpdateLinkMetadataGtx f "metadata/half.gtx"
+                                       walkAndUpdateLinkMetadataGtx f "metadata/auto.gtx"
+                                       when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting.")
 
-walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
-walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
-                                          db' <-  mapM f db
-                                          writeYaml file db'
-                                          printGreen $ "Updated " ++ file
+walkAndUpdateLinkMetadataGtx :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
+walkAndUpdateLinkMetadataGtx f file = do db <- readGtxFast file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
+                                         db' <-  mapM f db
+                                         writeGtx file db'
+                                         printGreen $ "Updated " ++ file
 
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = do rescrapeYAML gwernEntries "metadata/full.yaml"
-                        rescrapeYAML gwernEntries "metadata/half.yaml"
-                        rescrapeYAML gwernEntries "metadata/auto.yaml"
-                        readLinkMetadataAndCheck >> printGreen "Validated all YAML post-update; exiting…"
+updateGwernEntries = do rescrapeGTX gwernEntries "metadata/full.gtx"
+                        rescrapeGTX gwernEntries "metadata/half.gtx"
+                        rescrapeGTX gwernEntries "metadata/auto.gtx"
+                        readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting…"
   where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)
 
--- eg. to rescrape a specific abstract: `rescrapeYAML (\p -> p == "/notes/Attention") "metadata/half.yaml"`
-rescrapeYAML :: (Path -> Bool) -> Path -> IO ()
-rescrapeYAML filterF yamlpath = do dbl <- readYaml yamlpath
-                                   let paths = filter filterF $ map fst dbl
-                                   foldM_ (rescrapeItem yamlpath) dbl paths
+-- eg. to rescrape a specific abstract: `rescrapeGTX (\p -> p == "/notes/Attention") "metadata/half.gtx"`
+rescrapeGTX :: (Path -> Bool) -> Path -> IO ()
+rescrapeGTX filterF gtxpath = do dbl <- readGtxFast gtxpath
+                                 let paths = filter filterF $ map fst dbl
+                                 foldM_ (rescrapeItem gtxpath) dbl paths
 
 rescrapeItem :: Path -> [(Path, MetadataItem)] -> Path -> IO MetadataList
-rescrapeItem yaml dblist path =
+rescrapeItem gtx dblist path =
   case lookup path dblist of
    Just old -> do new <- updateGwernEntry (path,old)
                   if (path,old) /= new then do let dblist' = new : filter ((/=) path . fst) dblist
-                                               writeYaml yaml dblist'
-                                               readYaml yaml
+                                               writeGtx gtx dblist'
+                                               readGtxFast gtx
                    else return dblist
    Nothing -> return dblist
 
@@ -141,9 +137,9 @@ updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
-             full  <- readYaml "metadata/full.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             half <- readYaml "metadata/half.yaml" -- tagged but not handwritten/cleaned-up
-             auto    <- readYaml "metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
+             full <- readGtxFast "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+             half <- readGtxFast "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
+             auto <- readGtxFast "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
@@ -152,44 +148,44 @@ readLinkMetadata = do
 -- TODO: split out into 3 functions at different levels of intensity: 1 full, 1 half, 1 auto and the composition; many of these functions would be better off in MetadataFormat or somewhere
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
-             -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             full <- readYaml "metadata/full.yaml"
+             -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+             full <- readGtxFast "metadata/full.gtx"
 
              -- Quality checks:
              -- requirements:
-             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but full.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
+             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.gtx may have stale entries, but full.gtx should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
-             -- - annotations must exist and be unique inside full.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
+             -- - annotations must exist and be unique inside full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst full
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
-             when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.yaml: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) full
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
-                 unless (null badDoisDash) $ error $ "full.yaml: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
+                 unless (null badDoisDash) $ error $ "full.gtx: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
              let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
-               unless (null badDois) $ error $ "full.yaml: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
+               unless (null badDois) $ error $ "full.gtx: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
-             unless (null emptyCheck) $ error $ "full.yaml: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
+             unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) full in
                when (length (nubOrd (sort annotations)) /= length annotations) $ error $
-               "full.yaml:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
+               "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
-             -- intermediate link annotations: not finished, like 'full.yaml' entries, but also not fully auto-generated.
-             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.yaml' without destroying all of the checks' validity.
-             half <- readYaml "metadata/half.yaml"
+             -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
+             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.gtx' without destroying all of the checks' validity.
+             half <- readGtxFast "metadata/half.gtx"
              let (fullPaths,halfPaths) = (map fst full, map fst half)
              let redundantHalfs = fullPaths `intersect` halfPaths
-             unless (null redundantHalfs) (printRed "Redundant entries in half.yaml & full.yaml: " >> printGreen (show redundantHalfs))
+             unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & full.gtx: " >> printGreen (show redundantHalfs))
 
              let urlsCP = map fst (full ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
@@ -203,8 +199,8 @@ readLinkMetadataAndCheck = do
              mapM_ printError missingFiles
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata half full "metadata/auto.yaml" -- do auto-cleanup  first
-             auto <- readYaml "metadata/auto.yaml"
+             rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup  first
+             auto <- readGtxFast "metadata/auto.gtx"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
@@ -217,15 +213,15 @@ readLinkMetadataAndCheck = do
                                             ('—' `elem` u) -- EM DASH
                                           )
                                    urlsFinal
-             unless (null brokenUrlsFinal) $ error $ "YAML: Broken URLs: " ++ show brokenUrlsFinal
+             unless (null brokenUrlsFinal) $ error $ "GTX: Broken URLs: " ++ show brokenUrlsFinal
 
              let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
                                              count > 0 && (count `mod` 2 == 1) ) finalL
-             unless (null balancedQuotes) $ error $ "YAML: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
+             unless (null balancedQuotes) $ error $ "GTX: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
              let balancedBrackets = map (\(p,(title',_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $
                                      filter (\(_,(title,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
-             unless (null balancedBrackets) $ do printRed "YAML: Link Annotation Error: unbalanced brackets!"
+             unless (null balancedBrackets) $ do printRed "GTX: Link Annotation Error: unbalanced brackets!"
                                                  printGreen $ ppShow balancedBrackets
 
              -- check validity of all external links:
@@ -240,7 +236,7 @@ readLinkMetadataAndCheck = do
 
              let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
-             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in YAMLs!: " >> printGreen (show (titles \\ nubOrd titles))
+             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
@@ -259,7 +255,7 @@ readLinkMetadataAndCheck = do
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
-             -- check tags (not just full but all of them, including half.yaml)
+             -- check tags (not just full but all of them, including half.gtx)
              let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
              tagsAll <- listTagsAll
              let tagsBad = tagsSet \\ tagsAll
@@ -280,10 +276,10 @@ readLinkMetadataAndCheck = do
              return final
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
--- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.yaml/half.yaml, and so the newest n are the last n from full+half. (auto.yaml is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.yaml entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.yaml instead.)
+-- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.gtx/half.gtx, and so the newest n are the last n from full+half. (auto.gtx is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.gtx entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.gtx instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/full.yaml"
-                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readYaml "metadata/half.yaml"
+readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxFast "metadata/full.gtx"
+                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxFast "metadata/half.gtx"
                               let ratio = fromIntegral (length full) / fromIntegral (length (full++half)) :: Double
                               let n1 = round (fromIntegral n * ratio)
                               let full' = take n1 full
@@ -296,11 +292,11 @@ readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,ab
     interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
     interleave _        _        = []
 
--- read a YAML database and look for annotations that need to be paragraphized.
-warnParagraphizeYAML :: FilePath -> IO ()
-warnParagraphizeYAML path = do yaml <- readYaml path
-                               let unparagraphized = filter (\(f,(_,_,_,_,_,abst)) -> not (paragraphized f abst)) yaml
-                               unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
+-- read a GTX database and look for annotations that need to be paragraphized.
+warnParagraphizeGTX :: FilePath -> IO ()
+warnParagraphizeGTX path = do gtx <- readGtxFast path
+                              let unparagraphized = filter (\(f,(_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
+                              unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 250
@@ -655,65 +651,3 @@ sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 
 third :: (a,b,c,d,e,f) -> c
 third (_,_,rd,_,_,_) = rd
-
-writeYaml :: Path -> MetadataList -> IO ()
-writeYaml path yaml = GL.lock $ do
-  let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate " " (filter (/=defTag) ts),f)) $ yaml
-  writeUpdatedFile "hakyll-yaml" path newYaml
-
--- skip all of the checks, validations, tag creation etc
-readYamlFast :: Path -> IO MetadataList
-readYamlFast yamlp = do file <- B.readFile yamlp
-                        let yaml = Y.decodeEither' file :: Either ParseException [[String]]
-                        case yaml of
-                           Left  e -> error (show e)
-                           Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
-                where
-                 convertListToMetadataFast :: [String] -> MetadataList
-                 convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,tag2TagsWithDefault u "", s))]
-                 convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,tag2TagsWithDefault u ts, s))]
-                 convertListToMetadataFast                        e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
-
-readYaml :: Path -> IO MetadataList
-readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
-                               if filep then return yaml
-                               else do fileAbsoluteP <- doesFileExist (C.root ++ yaml)
-                                       if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return yaml
-                                       else return (C.root ++ yaml)
-                   file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
-                   allTags <- listTagsAll
-                   case file of
-                     Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                     Right y -> (return $ concatMap (convertListToMetadata allTags) y) :: IO MetadataList
-                where
-                 -- we can enforce various rewrite constraints on metadata in a single location by doing it on read, instead of sprinkling them around everywhere that could be producing an annotation
-                 convertListToMetadata :: [String] -> [String] -> MetadataList
-                 convertListToMetadata allTags' [u, t, a, d, di,     s] = [(stripUnicodeWhitespace u,
-                     (reformatTitle t,cleanAuthors a,guessDateFromLocalSchema u d,di,
-                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata allTags' [u, t, a, d, di, ts, s] = [(stripUnicodeWhitespace u,
-                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d,di,
-                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata _                     e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
-                 stripUnicodeWhitespace, reformatTitle :: String -> String
-                 stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
-                 reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
-
--- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
-rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
-rewriteLinkMetadata half full yaml
-  = do old <- readYaml yaml
-       -- de-duplicate by removing anything in auto.yaml which has been promoted to full/half:
-       let (halfURLs,fullURLs) = (map fst half, map fst full)
-       let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
-       let old' = filter (\(p,_) -> p `notElem` betterURLs) old
-       let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-       let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate " " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
-                     M.toList new
-       writeUpdatedFile "yaml" yaml newYaml
-
--- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
-appendLinkMetadata :: Path -> MetadataItem -> IO ()
-appendLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
-                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate " " ts,abst)]
-                                                      B.appendFile "metadata/auto.yaml" newYaml

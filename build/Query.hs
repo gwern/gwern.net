@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2024-02-05 21:56:26 gwern"
+When:  Time-stamp: "2024-02-26 21:36:36 gwern"
 License: CC-0
 -}
 
@@ -45,10 +45,11 @@ extractURLWith rule x@(Link _ anchorText (url, tooltip))
     | otherwise = []
 extractURLWith _ _ = []
 
+-- Note: does not count images; for that, see `extractImages`
 extractLinkIDsWith :: (Inline -> Bool) -> T.Text  -> Pandoc -> [(T.Text, T.Text)]
 extractLinkIDsWith rule filename pndc = queryWith extractIDs $ convertInterwikiLinks pndc
   where extractIDs :: Inline -> [(T.Text, T.Text)]
-        extractIDs x@(Link ("",_,_) _ (url,_)) = if rule x then [(url, filename)] else []
+        extractIDs x@(Link ("",_,_)    _ (url,_)) = if rule x then [(url, filename)] else []
         extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []
         extractIDs _ = []
 
@@ -91,6 +92,8 @@ extractImages = queryWith extractImages'
  where extractImages' :: Inline -> [Inline]
        extractImages' x@Image{} = [x]
        extractImages' _ = []
+
+-- TODO: an extractImages which operates like `extractLinkIDsWith`, and can be used in generateBacklinks so images count as links; this is useful for annotations *of* image files, to get their origins. (eg. we annotate /doc/2022-foo-figure1.jpg for the annotation of /doc/2022-foo.pdf, and we make the JPG an annotation due to its long complex caption; obviously, the annotation of the JPG should in some way point back to /doc/2022-foo.pdf, and we'd rather not hardwire a reference inside the image caption, as that would be weird when one reads the annotation of /doc/2022-foo.pdf - it's linking to itself...?)
 
 extractLinksInlines :: Pandoc -> [Inline] -- [Link]
 extractLinksInlines = queryWith extractLinksInlines'
