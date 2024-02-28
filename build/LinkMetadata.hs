@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-24 18:50:08 gwern"
+When:  Time-stamp: "2024-02-27 20:09:29 gwern"
 License: CC-0
 -}
 
@@ -63,6 +63,7 @@ import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicali
 import Utils (writeUpdatedFile, printGreen, printRed, sed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
+import LinkIcon (linkIcon)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -544,7 +545,7 @@ generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
-                                    link = linkLive $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
+                                    link = linkIcon $ linkLive $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     livep = alreadyLive link -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock livep (f, ("",undefined,undefined,undefined,undefined,undefined))
@@ -553,7 +554,6 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                            --  isVideoFilename (T.unpack f) ||
                            --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
                            -- ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
-
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
