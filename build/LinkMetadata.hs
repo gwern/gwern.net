@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-27 20:09:29 gwern"
+When:  Time-stamp: "2024-02-27 22:31:32 gwern"
 License: CC-0
 -}
 
@@ -30,8 +30,8 @@ import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
-import System.Directory (doesFileExist, doesDirectoryExist)
-import System.FilePath (takeDirectory, takeFileName)
+import System.Directory (doesFileExist, doesDirectoryExist, getFileSize)
+import System.FilePath (takeDirectory, takeFileName, takeExtension)
 import System.GlobalLock as GL (lock)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
@@ -535,11 +535,11 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
-                generateFileTransclusionBlock True (f, x)
+                generateFileTransclusionBlock True False (f, x)
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock True (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock True False (f, ("",undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
@@ -548,7 +548,7 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
                                     link = linkIcon $ linkLive $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     livep = alreadyLive link -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
-                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock livep (f, ("",undefined,undefined,undefined,undefined,undefined))
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock livep livep (f, ("",undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
                                 in [Para [Strong (link:linkColon)]] ++ fileTransclude
                            --  isVideoFilename (T.unpack f) ||
@@ -562,12 +562,20 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (MP4, WebM, YouTube, except SWF); archive/binary (none)
-generateFileTransclusionBlock :: Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock :: Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
-   -- titleCaption = if null tle then "" else tle --  [RawInline (Format "HTML") $ T.pack $ "<figcaption>" ++ tle ++ "</figcaption>"]
+   localP = isLocal (T.pack f)
    titleCaption = if null tle then [] else [Strong [Str "[Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
-   -- imageCaption = tle ++ (if null abst then "" else ": "++abst)
+   minFileSizeWarning = 20 -- at what megabyte size should we warn readers about a file before uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >20MB for now.
+   fileSizeMB = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f) / (1000000::Double)) :: Int
+   fileSizeMBString = if fileSizeMB < minFileSizeWarning then "" else show fileSizeMB++"MB"
+   fileTypeDescription = fileExtensionToEnglish $ takeExtension f
+   fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else if liveP && not localP then "external link" else "HTML"
+   fileDescription = Para [Span ("",["text-center"],[]) [Str $ T.pack
+                            ("(" ++ fileTypeDescriptionString
+                              ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
+                              ++ fileSizeMBString ++ ")")]]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
@@ -575,14 +583,16 @@ generateFileTransclusionBlock fallbackP (f, (tle,_,_,_,_,_)) = if null generateF
                                                                   | isDocumentViewable f = [Str "[", Strong [Str "Expand to view document"], Str "]"]
                                                                   | otherwise            = [Str "[", Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
+                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]
+                                                    , fileDescription]
     -- image/video/audio:
-    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]]
-   -- TODO: how do we handle transclusions of URLs which are live-links or local archives, and should be transcludable (either as iframes or as local files)? to test out the feature, we will do a blind write here of all URLs which haven't matched yet, and count on later passes to appropriately rewrite it... but then that will leave occasional non-transcludable URLs...? do we want to complicate this by repeating archiving/live logic, or what?
+    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]
+                                                                                     , fileDescription]
     | otherwise = if not fallbackP then [] else
                    [Para [Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
                           (if titleCaption/=[] then titleCaption else [Str "[", Strong [Str "Expand to view web page"], Str "]"])
-                          (T.pack f, "")]]
+                          (T.pack f, "")]
+                   , fileDescription]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
@@ -591,6 +601,18 @@ isDocumentViewable f = -- (isLocal (T.pack f) && hasExtensionS ".html" f) ||
                        hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+
+-- convert a file extension like 'webm' to a human-readable name like 'WebM' (not always simply an upcase)
+fileExtensionToEnglish :: String -> String
+fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMapping of
+                               Just name -> name
+                               Nothing   -> ""
+  where extensionMapping = map (\(a,b) -> ("."++a,b)) $ [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
+                           , ("pdf", "PDF"), ("txt", "text"), ("xml", "XML"), ("R", "R code"), ("css", "CSS")
+                           , ("hs", "Haskell"), ("js", "Javascript"), ("patch", "patch"), ("sh", "Bash")
+                           , ("php", "PHP"), ("conf", "configuration"), ("mp3", "MP3"), ("webm", "WebM")
+                           , ("mp4", "MP4"), ("bmp", "bitmap"), ("gif", "GIF"), ("ico", "icon"), ("jpg", "JPG")
+                           , ("png", "PNG"), ("svg", "SVG"), ("xcf", "XCF (GIMP)"), ("html", "HTML")]
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
