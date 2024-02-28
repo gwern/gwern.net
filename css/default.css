@@ -2923,6 +2923,7 @@ ol.link-bibliography-list-compact > li::before {
 .annotation.wikipedia-entry .side-box {
     border: 1px dotted currentColor;
     float: right;
+    clear: right;
     padding: 0.5em 0.75em;
     max-width: calc(50% - 2em);
     margin: 0 0 1em 1em;

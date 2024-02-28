@@ -30,7 +30,7 @@ ImageFocus = {
 
 	dropShadowFilterForImages: "drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
 
-	hoverCaptionWidth: 100,
+	hoverCaptionWidth: 175,
 	hoverCaptionHeight: 75,
 
 	/*****************/
