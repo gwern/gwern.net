@@ -5318,7 +5318,7 @@ Annotations.dataSources.wikipedia = {
         ".sidebar",
         ".ambox",
 		".unicode.haudio",
-		"span[typeof='mw:File']",
+// 		"span[typeof='mw:File']",
 	],
 
 	/*  CSS properties to preserve when stripping inline styles.
@@ -5431,8 +5431,9 @@ Annotations.dataSources.wikipedia = {
 		});
 
 		//  Un-linkify images.
-		referenceEntry.querySelectorAll("a img").forEach(imageLink => {
-			imageLink.parentElement.outerHTML = imageLink.outerHTML;
+		referenceEntry.querySelectorAll("a img").forEach(linkedImage => {
+			let enclosingLink = linkedImage.closest("a");
+			enclosingLink.parentElement.replaceChild(linkedImage, enclosingLink);
 		});
 
 		//	Fix chemical formulas.
@@ -5470,34 +5471,26 @@ Annotations.dataSources.wikipedia = {
 			while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
 				thumbnailContainer = thumbnailContainer.parentElement;
 
-			//	Save references to thumbnails’ parent elements.
-			let thumbnailParents = [ ];
-
 			//  Create the figure and move the thumbnail(s) into it.
 			let figure = newElement("FIGURE", { "class": "thumbnail float-right" });
 			thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
 				if (image.closest("figure") == figure)
 					return;
 
-				thumbnailParents.push(image.parentElement);
-
-				let closestRow = image.parentElement;
-				while (   closestRow != null
-					   && !(   closestRow.tagName == "TR" 
-					   		|| closestRow.style.display == "table-row")) {
-					closestRow = closestRow.parentElement.closest("tr, [style*='display']");
-				}
+				let closestRow = image.closest("tr, .trow, [style*='display:table-row']");
 				if (closestRow == null)
 					return;
 
 				let allImagesInRow = closestRow.querySelectorAll("img");
 				if (allImagesInRow.length > 1) {
-					let rowWrapper = newElement("SPAN", { "class": "image-wrapper image-row-wrapper" });
+					let rowWrapper = newElement("SPAN", { "class": "image-row-wrapper" });
 					rowWrapper.append(...allImagesInRow);
 					figure.append(rowWrapper);
 				} else {
 					figure.append(allImagesInRow[0]);
 				}
+
+				closestRow.remove();
 			});
 
 			//  Create the caption, if need be.
@@ -5510,12 +5503,7 @@ Annotations.dataSources.wikipedia = {
 			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
 
 			//  Rectify classes.
-			thumbnailParents.first?.closest("table")?.classList.toggle("infobox", true);
-
-			//  Remove the whole row where each thumbnail was.
-			thumbnailParents.forEach(thumbnailParent => {
-				thumbnailParent.closest("tr")?.remove();
-			});
+			thumbnailContainer.closest("table")?.classList.toggle("infobox", true);
 		} else if (   thumbnail
 				   && thumbnail.closest("figure")) {
 			let figure = thumbnail.closest("figure");
@@ -5545,6 +5533,11 @@ Annotations.dataSources.wikipedia = {
 
 			figureBlock.parentNode.insertBefore(figure, figureBlock);
 			figureBlock.remove();
+		});
+
+		//	Float all figures right.
+		referenceEntry.querySelectorAll("figure").forEach(figure => {
+			figure.classList.add("float-right");
 		});
 
 		//	Mark certain images as not to be wrapped in figures.
@@ -12826,15 +12819,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     ].join(", ");
     wrapAll("img", (image) => {
         if (   image.classList.contains("figure-not")
-            || image.closest(exclusionSelector))
+            || image.closest(exclusionSelector) != null
+            || image.closest("figure") != null)
             return;
 
-        let figure = image.closest("figure");
-        if (   figure
-            && figure.querySelector("figcaption") != null)
-            return;
-
-        wrapElement(image, "figure", { useExistingWrapper: true });
+        wrapElement(image, "figure");
     }, {
     	root: eventInfo.container
     });
@@ -16925,7 +16914,7 @@ ImageFocus = {
 
 	dropShadowFilterForImages: "drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)",
 
-	hoverCaptionWidth: 100,
+	hoverCaptionWidth: 175,
 	hoverCaptionHeight: 75,
 
 	/*****************/

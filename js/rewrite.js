@@ -463,15 +463,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     ].join(", ");
     wrapAll("img", (image) => {
         if (   image.classList.contains("figure-not")
-            || image.closest(exclusionSelector))
+            || image.closest(exclusionSelector) != null
+            || image.closest("figure") != null)
             return;
 
-        let figure = image.closest("figure");
-        if (   figure
-            && figure.querySelector("figcaption") != null)
-            return;
-
-        wrapElement(image, "figure", { useExistingWrapper: true });
+        wrapElement(image, "figure");
     }, {
     	root: eventInfo.container
     });
