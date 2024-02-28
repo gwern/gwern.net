@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-27 22:31:32 gwern"
+When:  Time-stamp: "2024-02-28 16:58:03 gwern"
 License: CC-0
 -}
 
@@ -572,27 +572,24 @@ generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null gen
    fileSizeMBString = if fileSizeMB < minFileSizeWarning then "" else show fileSizeMB++"MB"
    fileTypeDescription = fileExtensionToEnglish $ takeExtension f
    fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else if liveP && not localP then "external link" else "HTML"
-   fileDescription = Para [Span ("",["text-center"],[]) [Str $ T.pack
-                            ("(" ++ fileTypeDescriptionString
+   fileDescription = Str $ T.pack $
+                            "(" ++ fileTypeDescriptionString
                               ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
-                              ++ fileSizeMBString ++ ")")]]
+                              ++ fileSizeMBString ++ ") "
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
-                                                                  | isDocumentViewable f = [Str "[", Strong [Str "Expand to view document"], Str "]"]
-                                                                  | otherwise            = [Str "[", Strong [Str "Expand to view code/data"], Str "]"]
+                                                                  | isDocumentViewable f = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
+                                                                  | otherwise            = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]
-                                                    , fileDescription]
+                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     -- image/video/audio:
-    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[view multimedia in-browser]"] (T.pack f, "")]
-                                                                                     , fileDescription]
+    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f, "")]]
     | otherwise = if not fallbackP then [] else
                    [Para [Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
-                          (if titleCaption/=[] then titleCaption else [Str "[", Strong [Str "Expand to view web page"], Str "]"])
-                          (T.pack f, "")]
-                   , fileDescription]
+                          (if titleCaption/=[] then titleCaption else [Str "[", fileDescription, Strong [Str "Expand to view web page"], Str "]"])
+                          (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
