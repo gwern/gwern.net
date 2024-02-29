@@ -673,10 +673,11 @@ Annotations.dataSources.wikipedia = {
 		}
 
 		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
+		let pageTitleElementHTML = unescapeHTML(response.querySelector("title").innerHTML);
 		if (wholePage) {
 			responseHTML = response.innerHTML;
-			titleHTML = unescapeHTML(response.querySelector("title").innerHTML);
-			fullTitleHTML = titleHTML;
+			titleHTML = pageTitleElementHTML;
+			fullTitleHTML = pageTitleElementHTML;
 		} else if (articleLink.hash > "") {
 			let targetHeading = response.querySelector(selectorFromHash(articleLink.hash));
 
@@ -719,11 +720,13 @@ Annotations.dataSources.wikipedia = {
 
 			//	Cleaned section title.
 			titleHTML = targetHeading.innerHTML;
-			fullTitleHTML = `${titleHTML} (${(response.querySelector("title").innerHTML)})`;
+			console.log(titleHTML);
+			fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+			console.log(fullTitleHTML);
 		} else {
 			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
-			titleHTML = unescapeHTML(response.querySelector("title").innerHTML);
-			fullTitleHTML = titleHTML;
+			titleHTML = pageTitleElementHTML;
+			fullTitleHTML = pageTitleElementHTML;
 
 			//	Build TOC.
 			let sections = Array.from(response.querySelectorAll("section")).slice(1);
@@ -769,7 +772,7 @@ Annotations.dataSources.wikipedia = {
 
 		//	Pop-frame title text. Mark sections with ‘§’ symbol.
 		let popFrameTitleHTML = (articleLink.hash > ""
-								 ? `${(response.querySelector("title").innerHTML)} &#x00a7; ${titleHTML}`
+								 ? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
