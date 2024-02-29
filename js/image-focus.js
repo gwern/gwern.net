@@ -211,9 +211,9 @@ ImageFocus = {
 	focusedImgSrcForImage: (image) => {
 		if (image.srcset > "") {
 			return Array.from(image.srcset.matchAll(/(\S+?)\s+(\S+?)(,|$)/g)).sort((a, b) => {
-				if (parseInt(a[2]) < parseInt(b[2]))
+				if (parseFloat(a[2]) < parseFloat(b[2]))
 					return -1;
-				if (parseInt(a[2]) > parseInt(b[2]))
+				if (parseFloat(a[2]) > parseFloat(b[2]))
 					return 1;
 				return 0;
 			}).last[1];
@@ -291,26 +291,14 @@ ImageFocus = {
 			revealElement(ImageFocus.currentlyFocusedImage);
 
 		//  Create the focused version of the image.
-		ImageFocus.imageInFocus = imageToFocus.cloneNode(true);
+		ImageFocus.imageInFocus = newElement("IMG");
 		ImageFocus.imageInFocus.loading = "eager";
 		ImageFocus.imageInFocus.decoding = "sync";
 		ImageFocus.imageInFocus.style = "";
 		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages;
-		ImageFocus.imageInFocus.removeAttribute("title");
-
-		//	Allow for styling based on loading state.
-		ImageFocus.imageInFocus.classList.add("loading");
-		ImageFocus.imageInFocus.addEventListener("load", (event) => {
-			event.target.classList.remove("loading");
-		}, { once: true });
 
 		//	We want the full-sized image, if it’s available, not a thumbnail.
-		let fullSizeImageSrc = ImageFocus.focusedImgSrcForImage(imageToFocus);
-		if (fullSizeImageSrc != imageToFocus.src) {
-			ImageFocus.imageInFocus.src = ImageFocus.focusedImgSrcForImage(imageToFocus);
-			ImageFocus.imageInFocus.removeAttribute("width");
-			ImageFocus.imageInFocus.removeAttribute("height");
-		}
+		ImageFocus.imageInFocus.src = ImageFocus.focusedImgSrcForImage(imageToFocus);
 
 		//  Add the image to the overlay.
 		ImageFocus.overlay.insertBefore(ImageFocus.imageInFocus, ImageFocus.overlay.querySelector(".loading-spinner"));
@@ -359,22 +347,19 @@ ImageFocus = {
 			}
 		} else {
 			//	Non-SVGs have intrinsic size.
+			if (updateOnLoad) {
+				//	Reset on load.
+				ImageFocus.imageInFocus.classList.add("loading");
+				ImageFocus.imageInFocus.addEventListener("load", (event) => {
+					ImageFocus.imageInFocus.classList.remove("loading");
+					ImageFocus.resetFocusedImagePosition();
+				}, { once: true });
+
+				return;
+			}
+
 			imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
 			imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
-
-			if (imageWidth * imageHeight == 0) {
-				if (updateOnLoad == true) {
-					//	Reset on load.
-					ImageFocus.imageInFocus.addEventListener("load", (event) => {
-						ImageFocus.resetFocusedImagePosition(false);
-					}, { once: true });
-
-					return;
-				} else {
-					//	This shouldn’t happen. Display an error?
-					return;
-				}
-			}
 		}
 
 		//	Constrain dimensions proportionally.
