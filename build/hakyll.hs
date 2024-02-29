@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-28 17:27:55 gwern"
+When: Time-stamp: "2024-02-29 11:56:58 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -44,7 +44,7 @@ import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
-import LinkMetadata (addPageLinkWalk, readLinkMetadata, readLinkMetadata, writeAnnotationFragments, createAnnotations, hasAnnotation,)
+import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
@@ -65,7 +65,7 @@ main =
                am           <- preprocess readArchiveMetadataAndCheck
 
                preprocess $ printGreen ("Popup annotations parsing…" :: String)
-               meta <- preprocess readLinkMetadata
+               meta <- preprocess readLinkMetadataSlow
                preprocess $ do printGreen ("Writing missing annotations…" :: String)
                                writeAnnotationFragments am meta True
 
@@ -132,6 +132,7 @@ main =
                                        "static/**.py",
                                        "static/**.wasm",
                                        "static/**.el",
+                                       "static/LICENSE",
                                        "static/build/.htaccess",
                                        "static/build/upload",
                                        "static/build/newsletter-lint",
