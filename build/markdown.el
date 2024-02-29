@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-28 18:07:58 gwern"
+;;; When:  Time-stamp: "2024-02-28 21:37:52 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1997,14 +1997,14 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
 (add-hook 'post-command-hook #'markdown-paragraphize-hook)
 
 ; add new-line / paragraph snippet
-;; (add-hook 'yaml-mode-hook
-;;           (lambda ()
-;;             (define-key yaml-mode-map (kbd "<C-return>")  (lambda () (interactive)
-;;                                                             (if (= ?\s (preceding-char)) (delete-char -1))
-;;                                                             (insert "</p> <p>")
-;;                                                             (if (= ?\s (following-char)) (delete-char 1)))
-;;             )
-;;           ))
+(add-hook 'html-mode-hook
+          (lambda ()
+            (define-key html-mode-map (kbd "<C-return>")  (lambda () (interactive)
+                                                            (if (= ?\s (preceding-char)) (delete-char -1))
+                                                            (insert "</p> <p>")
+                                                            (if (= ?\s (following-char)) (delete-char 1)))
+            )
+          ))
 
 (add-hook 'markdown-mode-hook   'visual-fill-column-mode)
 
