@@ -17178,7 +17178,6 @@ ImageFocus = {
 		ImageFocus.imageInFocus = newElement("IMG");
 		ImageFocus.imageInFocus.loading = "eager";
 		ImageFocus.imageInFocus.decoding = "sync";
-		ImageFocus.imageInFocus.style = "";
 		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages;
 
 		//	We want the full-sized image, if it’s available, not a thumbnail.
