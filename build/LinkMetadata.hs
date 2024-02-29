@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-28 18:36:44 gwern"
+When:  Time-stamp: "2024-02-28 20:02:30 gwern"
 License: CC-0
 -}
 
@@ -579,11 +579,11 @@ generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null gen
                                                                   | isDocumentViewable f = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
                                                                   | otherwise            = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para [Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
+                                                      [Para [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     -- image/video/audio:
     | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f, "")]]
     | otherwise = if not fallbackP then [] else
-                   [Para [Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
+                   [Para [linkIcon $ Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
                           (if titleCaption/=[] then titleCaption else [Str "[", fileDescription, Strong [Str "Expand to view web page"], Str "]"])
                           (T.pack f, "")]]
 
