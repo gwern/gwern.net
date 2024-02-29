@@ -291,14 +291,12 @@ ImageFocus = {
 			revealElement(ImageFocus.currentlyFocusedImage);
 
 		//  Create the focused version of the image.
-		ImageFocus.imageInFocus = newElement("IMG");
-		ImageFocus.imageInFocus.loading = "eager";
-		ImageFocus.imageInFocus.decoding = "sync";
-		ImageFocus.imageInFocus.style = "";
-		ImageFocus.imageInFocus.style.filter = imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages;
-
-		//	We want the full-sized image, if it’s available, not a thumbnail.
-		ImageFocus.imageInFocus.src = ImageFocus.focusedImgSrcForImage(imageToFocus);
+		ImageFocus.imageInFocus = newElement("IMG", {
+			src: ImageFocus.focusedImgSrcForImage(imageToFocus),
+			loading: "eager",
+			decoding: "sync",
+			style: ("filter: " + imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages)
+		});
 
 		//  Add the image to the overlay.
 		ImageFocus.overlay.insertBefore(ImageFocus.imageInFocus, ImageFocus.overlay.querySelector(".loading-spinner"));
