@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-29 12:41:03 gwern"
+When:  Time-stamp: "2024-02-29 18:18:40 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import System.FilePath (takeDirectory, takeFileName, takeExtension)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Code, Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+                    Inline(Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -571,8 +571,8 @@ generateFileTransclusionBlock :: Bool -> Bool -> (FilePath, MetadataItem) -> [Bl
 generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    localP = isLocal (T.pack f)
-   titleCaption = if null tle then [] else [RawInline (Format "HTML") $ T.pack $ "“"++tle++"”"]
-   minFileSizeWarning = 20 -- at what megabyte size should we warn readers about a file before uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >20MB for now.
+   titleCaption = if null tle then [] else [Strong [Str "[Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
+   minFileSizeWarning = 15 -- at what megabyte size should we warn readers about a file before uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >15MB for now.
    fileSizeMB = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f) / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < minFileSizeWarning then "" else show fileSizeMB++"MB"
    fileTypeDescription = fileExtensionToEnglish $ takeExtension f
@@ -584,22 +584,17 @@ generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null gen
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
-    | isDocumentViewable f || isCodeViewable f = let titleDocCode -- | titleCaption/=[]     = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
-                                                                  | isDocumentViewable f = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str " "]
-                                                                  | otherwise            = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str " "]
+    | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
+                                                                  | isDocumentViewable f = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
+                                                                  | otherwise            = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para (titleDocCode ++ [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) (if titleCaption/=[] then titleCaption else [Code nullAttr $ T.pack f]) (T.pack f, "")] ++ [Str "]"])
-                                                      ]
-                                                    ]
+                                                      [Para [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
     -- image/video/audio:
     | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f, "")]]
     | otherwise = if not fallbackP then [] else
-                   [Para [Str "[", fileDescription, Strong [Str "Expand to view"], Str " ",
-                           linkIcon $ Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
-                              (if titleCaption/=[] then titleCaption else [Strong [Str "web page"]])
-                           (T.pack f, "")
-                         , Str "]"]
-                   ]
+                   [Para [linkIcon $ Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
+                          (if titleCaption/=[] then titleCaption else [Str "[", fileDescription, Strong [Str "Expand to view web page"], Str "]"])
+                          (T.pack f, "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
