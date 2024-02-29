@@ -32,7 +32,7 @@ isImageFilename :: FilePath -> Bool
 isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
 
 isVideoFilename :: FilePath -> Bool
-isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm"] -- we support only 2 types of video on Gwern.net at present
+isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm", ".avi"] -- we support only 2 types of video on Gwern.net at present
 
 -------------------------------------------
 -- Dark-mode
