@@ -17115,6 +17115,14 @@ ImageFocus = {
 		}
 	},
 
+	expectedDimensionsForImage: (image) => {
+		let width = parseInt(image.getAttribute("data-image-width") ?? image.getAttribute("data-file-width") ?? image.getAttribute("width"));
+		let height = parseInt(image.getAttribute("data-image-height") ?? image.getAttribute("data-file-height") ?? image.getAttribute("height"));
+		return (width && height
+				? { width: width, height: height }
+				: null);
+	},
+
 	preloadImage: (image) => {
 		let originalSrc = image.src;
 		image.src = ImageFocus.focusedImgSrcForImage(image);
@@ -17245,13 +17253,29 @@ ImageFocus = {
 					ImageFocus.imageInFocus.classList.remove("loading");
 					ImageFocus.resetFocusedImagePosition();
 				}, { once: true });
-
-				return;
 			}
 
-			imageWidth = ImageFocus.imageInFocus.naturalWidth || ImageFocus.imageInFocus.getAttribute("width");
-			imageHeight = ImageFocus.imageInFocus.naturalHeight || ImageFocus.imageInFocus.getAttribute("height");
+			//	If the image hasn’t loaded yet, these will both be 0.
+			imageWidth = ImageFocus.imageInFocus.naturalWidth;
+			imageHeight = ImageFocus.imageInFocus.naturalHeight;
+
+			/*	If we don’t have the image’s actual dimensions yet (because we
+				are still waiting for it to load), we nevertheless try to size
+				the image element according to what information we have about
+				how big the image will be when it loads.
+			 */
+			if (imageWidth * imageHeight == 0) {
+				let expectedDimensions = ImageFocus.expectedDimensionsForImage(ImageFocus.currentlyFocusedImage);
+				if (expectedDimensions) {
+					imageWidth = expectedDimensions.width;
+					imageHeight = expectedDimensions.height;
+				}
+			}
 		}
+
+		//	If we have no size info at all (yet), we do nothing.
+		if (imageWidth * imageHeight == 0)
+			return;
 
 		//	Constrain dimensions proportionally.
 		let constrainedWidth = Math.min(imageWidth, window.innerWidth * ImageFocus.shrinkRatio);
