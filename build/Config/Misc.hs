@@ -146,3 +146,30 @@ cycleTestCases = [ ([], False) -- no rules, no cycles
      , ([(1, 2), (1, 3), (2, 4), (3, 4), (4, 1)], True) -- where there are multiple paths leading to a node that is part of a cycle.
      , ([(1, 1), (2, 2), (3, 3)], True) --where every node in the list points to itself (simple loop for every node)
      ]
+
+-- convert a file extension like 'webm' to a human-readable name like 'WebM' (not always simply an upcase).
+fileExtensionToEnglish :: String -> String
+fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMapping of
+                               Just name -> name
+                               Nothing   -> ""
+  where extensionMapping = map (\(a,b) -> ("."++a,b)) $ [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
+                           , ("pdf", "PDF"), ("txt", "text"), ("xml", "XML"), ("R", "R code"), ("css", "CSS")
+                           , ("hs", "Haskell"), ("js", "Javascript"), ("patch", "patch"), ("sh", "Bash")
+                           , ("php", "PHP"), ("conf", "configuration"), ("mp3", "MP3"), ("webm", "WebM")
+                           , ("mp4", "MP4"), ("bmp", "bitmap"), ("gif", "GIF"), ("ico", "icon"), ("jpg", "JPG")
+                           , ("png", "PNG"), ("svg", "SVG"), ("xcf", "XCF (GIMP)"), ("html", "HTML")
+                           , ("csv", "CSV")
+                           , ("dat", "data archive"), ("doc", "Word document"), ("docx", "Word document"), ("el", "Elisp")
+                           , ("epub", "Epub"), ("ebt", "EBT document"), ("avi", "AVI video"), ("mkv", "video"),
+                             ("gtx", "GTX text file"), ("htm", "HTML"), ("maff", "HTML archive"), ("mht", "HTML archive"),
+                             ("ods", "OpenOffice spreadsheet"), ("odt", "OpenOffice doc")
+                           , ("psd", "Photoshop"), ("py", "Python"), ("swf", "Flash"), ("tar", "tar archive"), ("tmpl", "HTML template")
+                           , ("wasm", "WASM"), ("webp", "WebP"), ("otf", "font"), ("ttf", "font")
+                           , ("woff", "font"), ("woff2", "font"), ("eot", "font")
+                           , ("xls", "spreadsheet"), ("xlsx", "spreadsheet")
+                           , ("xz", "XZ archive"), ("zip", "ZIP")
+                           ]
+
+-- What is a 'dangerous' file size? At what megabyte size should we warn readers about a file before they download it, eg. by uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >15MB for now.
+minFileSizeWarning :: Int
+minFileSizeWarning = 15

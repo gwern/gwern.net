@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-29 18:18:40 gwern"
+When:  Time-stamp: "2024-02-29 19:45:32 gwern"
 License: CC-0
 -}
 
@@ -42,6 +42,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -571,16 +572,16 @@ generateFileTransclusionBlock :: Bool -> Bool -> (FilePath, MetadataItem) -> [Bl
 generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    localP = isLocal (T.pack f)
-   titleCaption = if null tle then [] else [Strong [Str "[Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
-   minFileSizeWarning = 15 -- at what megabyte size should we warn readers about a file before uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >15MB for now.
+
    fileSizeMB = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f) / (1000000::Double)) :: Int
-   fileSizeMBString = if fileSizeMB < minFileSizeWarning then "" else show fileSizeMB++"MB"
-   fileTypeDescription = fileExtensionToEnglish $ takeExtension f
+   fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
+   fileTypeDescription = C.fileExtensionToEnglish $ takeExtension f
    fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else if liveP && not localP then "external link" else "HTML"
    fileDescription = Str $ T.pack $
                             "(" ++ fileTypeDescriptionString
                               ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
                               ++ fileSizeMBString ++ ") "
+   titleCaption = if null tle then [] else [Str "[", fileDescription, Strong [Str "Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
@@ -603,29 +604,6 @@ isDocumentViewable f = -- (isLocal (T.pack f) && hasExtensionS ".html" f) ||
                        hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
-
--- convert a file extension like 'webm' to a human-readable name like 'WebM' (not always simply an upcase)
-fileExtensionToEnglish :: String -> String
-fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMapping of
-                               Just name -> name
-                               Nothing   -> ""
-  where extensionMapping = map (\(a,b) -> ("."++a,b)) $ [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
-                           , ("pdf", "PDF"), ("txt", "text"), ("xml", "XML"), ("R", "R code"), ("css", "CSS")
-                           , ("hs", "Haskell"), ("js", "Javascript"), ("patch", "patch"), ("sh", "Bash")
-                           , ("php", "PHP"), ("conf", "configuration"), ("mp3", "MP3"), ("webm", "WebM")
-                           , ("mp4", "MP4"), ("bmp", "bitmap"), ("gif", "GIF"), ("ico", "icon"), ("jpg", "JPG")
-                           , ("png", "PNG"), ("svg", "SVG"), ("xcf", "XCF (GIMP)"), ("html", "HTML")
-                           , ("csv", "CSV")
-                           , ("dat", "data archive"), ("doc", "Word document"), ("docx", "Word document"), ("el", "Elisp")
-                           , ("epub", "Epub"), ("ebt", "EBT document"), ("avi", "AVI video"), ("mkv", "video"),
-                             ("gtx", "GTX text file"), ("htm", "HTML"), ("maff", "HTML archive"), ("mht", "HTML archive"),
-                             ("ods", "OpenOffice spreadsheet"), ("odt", "OpenOffice doc")
-                           , ("psd", "Photoshop"), ("py", "Python"), ("swf", "Flash"), ("tar", "tar archive"), ("tmpl", "HTML template")
-                           , ("wasm", "WASM"), ("webp", "WebP"), ("otf", "font"), ("ttf", "font")
-                           , ("woff", "font"), ("woff2", "font"), ("eot", "font")
-                           , ("xls", "spreadsheet"), ("xlsx", "spreadsheet")
-                           , ("xz", "XZ archive"), ("zip", "ZIP")
-                           ]
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
