@@ -250,13 +250,14 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
-  | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
+  | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing CiteSeerx links, set this rule to False
   | anyPrefix url ["/", "./", "../", "https://gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/doc/"] = True
   | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
   | anyInfix url whiteListMatchesFixed = True
     | otherwise = False
 
 -- TODO: refactor into URLs vs regexps vs domains (so they can be validated & tested)
+-- TODO: begin removing 'stable' because now we reuse local-archives for file-transcludes and so there's a reason to make local-archives beyond avoiding linkrot
 whiteListMatchesFixed :: [String]
 whiteListMatchesFixed = [
       "archive.org/details/", "archive.org/download/", "scholar.archive.org"
@@ -269,66 +270,15 @@ whiteListMatchesFixed = [
       , ".png"
       , ".ogg"
       , ".jpg"
-      , "halshs.archives-ouvertes.fr/"
-      , "apenwarr.ca"
-      , "distill.pub"
-      , "thegradient.pub"
-      , "perma.cc"
-      , "nips.cc"
-      , "youtu.be"
-      , "nomeata.de"
-      , "ccc.de"
-      , "your-server.de"
-      , "philosopher.life"
-      , "blog.google"
-      , "leme.me/"
-      , "bakabt.me"
-      , "fullfrontal.moe"
-      , "girls.moe"
-      , "google.com/cse"
-      , "aleph.se"
-      , "grok.se"
-      , "w3.org"
-      , "wikimedia.org"
-      , "wikipedia.org"
-      , "scholarpedia.org"
-      , "mozilla.org"
+      -- , "distill.pub" -- interactive?
+      -- , "thegradient.pub" -- interactive?
+      , "bakabt.me" -- login
+      , "girls.moe" -- interactive (DL model)
+      , "wikimedia.org" -- WP: handled by specialcase popups
+      , "wikipedia.org" -- WP: handled by specialcase popups
       , "r-inla.org"
       , "coursera.org"
       , "ourworldindata.org"
-      , "isfdb.org"
-      , "tor2web.org"
-      , "mementoweb.org"
-      , "cdlib.org"
-      , "econlib.org"
-      , "ssgac.org"
-      , "davidsongifted.org"
-      , "projecteuclid.org"
-      , "erowid.org"
-      , "rand.org"
-      , "cato-unbound.org"
-      , "bellard.org"
-      , "straighttalkonevidence.org"
-      , "intelligence.org"
-      , "wikisource.org"
-      , "edge.org"
-      , "gmane.org"
-      , "sciencebasedmedicine.org"
-      , "plosmedicine.org"
-      , "waybackmachine.org"
-      , "psychiatryonline.org"
-      , "plosone.org"
-      , "antipope.org"
-      , "nixnote.org"
-      , "wikiquote.org"
-      , "philarchive.org"
-      , "httparchive.org"
-      , "ietf.org"
-      , "sciencemag.org"
-      , "racket-lang.org"
-      , "fightaging.org"
-      , "royalsocietypublishing.org"
-      , "gutenberg.org"
       , "familysearch.org"
       , "rcpsych.org"
       , "jneurosci.org"
@@ -512,94 +462,37 @@ whiteListMatchesFixed = [
       , "peerj.com"
       , "wsj.com"
       , "dual-n-back.com"
-      , "equilibriabook.com"
-      , "unsongbook.com"
-      , "predictionbook.com"
-      , "johndcook.com"
-      , "jamanetwork.com"
-      , "animenewsnetwork.com"
-      , "whichfaceisreal.com"
-      , "bioethicsjournal.com"
-      , "biologicalpsychiatryjournal.com"
-      , "biomedcentral.com"
-      , "psychcentral.com"
-      , "nintil.com"
-      , "cell.com"
-      , "learnyouahaskell.com"
-      , "codeschool.com"
-      , "eepurl.com"
-      , "paulgraham.com"
-      , "fandom.com"
-      , "nickbostrom.com"
-      , "ribbonfarm.com"
-      , "scientificamerican.com"
-      , "theguardian.com"
-      , "andrewgelman.com"
-      , "statmodeling.stat.columbia.edu"
-      , "marginalrevolution.com"
       , "clickotron.com"
-      , "patrickcollison.com"
       , "amazon.com" -- service
       , "amzn.to" -- service redirect
       , "amzn.com"
-      , "sparkfun.com"
-      , "greenspun.com"
-      , "shawwn.com"
-      , "gizmodo.com"
       , "vimeo.com"
       , "duckduckgo.com"
       , "duolingo.com"
-      , "projectrho.com"
-      , "rocketpunk-manifesto.com"
-      , "tarsnap.com"
       , "bandcamp.com"
-      , "oup.com"
-      , "gnxp.com"
       , "artbreeder.com" -- interactive/service
       , "beeminder.com" -- interactive/service
-      , "springer.com"
-      , "schneier.com"
       , "pcpartpicker.com" -- interactive
-      , "newyorker.com" -- stable
       , "talktotransformer.com" -- interactive
       , "feedburner.com" -- service
-      , "metafilter.com" -- stable
       , "kickstarter.com" -- service
       , "kill-the-newsletter.com" -- service
-      , "tinyletter.com" -- service
-      , "vanityfair.com" -- stable
       , "flickr.com" -- stable
-      , "hpmor.com" -- stable
       , "cryonicscalculator.com" -- interactive/service
-      , "wikifur.com" -- stable
       , "waifulabs.com" -- interactive/service
       , "rpubs.com"
-      , "smbc-comics.com"
-      , "goodreads.com"
-      , "longreads.com"
-      , "idlewords.com"
       , "cambridgebrainsciences.com"
-      , "nytimes.com"
-      , "motherjones.com"
-      , "snopes.com"
-      , "scienceblogs.com"
       , "googleapis.com"
       , "goproblems.com"
       , "r-bloggers.com"
-      , "rifters.com" -- stable
       , "thepharmacyexpress.com" -- interactive/service
       , "inklingmarkets.com" -- interactive/service
       , "academictorrents.com" -- interactive/service
-      , "kalzumeus.com"
-      , "sciencedirect.com" -- stable or needs manual archiving
-      , "meltingasphalt.com"
       , "dropboxusercontent.com" -- needs manual archiving
-      , "dafont.com" -- stable
       , "millionshort.com" -- service
       , "cogtest.com" -- service
       , "iqtest.com" -- service
       , "proquest.com" -- needs manual archiving
-      , "economist.com" -- stable - I think? TODO: does The Economist paywall?
       , "thesecatsdonotexist.com" -- interactive/service
       , "thiseyedoesnotexist.com" -- interactive/service
       , "thismarketingblogdoesnotexist.com" -- interactive/service
@@ -610,30 +503,13 @@ whiteListMatchesFixed = [
       , "thisstorydoesnotexist.com" -- interactive/service
       , "thiswaifudoesnotexist.net" -- interactive/service
       , "thisanimedoesnotexist.ai" -- interactive/service
-      , "washingtonpost.com" -- stable
       , "iqout.com"  -- interactive/service
-      , "ubuntu.com" -- stable
       , "psyarxiv.com" -- stable
       , "stackroboflow.com"
-      , "stackoverflow.com" -- stable
-      , "slatestarcodex.com" -- stable
       , "wikiwix.com" -- archive/mirror
       , "dropbox.com" -- needs manual archiving
       , "dl.dropbox.com" -- needs manual archiving
-      , "vox.com" -- stable
-      , "psychologytoday.com" -- stable
       , "gratipay.com" -- dead
-      , "berkshirehathaway.com" -- stable
-      , "evamonkey.com" -- stable
-      , "wiley.com" -- stable or needs manual archiving
-      , "guzey.com" -- stable
-      , "europeanneuropsychopharmacology.com" -- stable
-      , "genomebiology.com" -- stable
-      , "sciencedaily.com" -- stable
-      , "philanthropy.com" -- stable
-      , "urbandictionary.com" -- stable
-      , "qwantz.com" -- stable
-      , "pinboard.in" -- stable
       , "otokei-dou.in" -- dead
       , "bl3j73taluhwidx5.onion" -- dead
       , "thehub7dnl5nmcz5.onion" -- dead
@@ -650,7 +526,6 @@ whiteListMatchesFixed = [
       , "i25c62nvu4cgeqyz.onion" -- dead
       , "gitcoin.co"
       , "gitlab.io" -- stable
-      , "osf.io" -- stable
       , "libgen.io" -- archive
       , "websitedownloader.io" -- service/source code
       , "webrecorder.io" -- service/source code
@@ -659,10 +534,8 @@ whiteListMatchesFixed = [
       , "archivebox.io" -- archive
       , "toranoana.jp" -- click-walled
       , "intrade.com/jsp" -- dead
-      , "isciii.es"
       , "archive.is" -- archive
       , "books.google.com/books"
-      , "buzzricksons" -- stable
       , "reddit.com/r/AgMarketplace/" -- dead (banned)
       , "reddit.com/r/BlackBank/" -- dead (banned)
       , "reddit.com/r/DarkNetDeals/" -- dead (banned)
@@ -678,40 +551,24 @@ whiteListMatchesFixed = [
       , "reddit.com/r/modup/" -- dead (banned)
       , "reddit.com/r/sanitariummarket/" -- dead (banned)
       , "reddit.com/r/themarketplace/" -- dead (banned)
-      , "donmai.us" -- stable
-      , "hutter1.net" -- stable
+      , "donmai.us" -- stable/NSFW
       , "anidb.net" -- stable
       , "ankiweb.net"
-      , "johnmacfarlane.net" -- stable
-      , "filfre.net" -- stable
       , "researchgate.net" -- needs to be replaced by hand
-      , "boingboing.net" -- stable
       , "nearlyfreespeech.net" -- service
-      , "urth.net" -- stable
-      , "scp-wiki.net" -- stable
-      , "touhouwiki.net" -- stable
       , "epjournal.net"
       , "gwern.net" -- redundant
-      , "lwn.net" -- stable
-      , "incompleteideas.net" -- stable
       , "videolectures.net" -- service/interactive
-      , "torservers.net" -- stable
       , "ankisrs.net" -- stable
-      , "sethroberts.net" -- stable
       , "cloudfront.net" -- service
       , "obormot.net" -- stable
       , "personalitytest.net" -- interactive
       , "myanimelist.net" -- stable
       , "mathoverflow.net" -- stable
-      , "bitcoin.it" -- stable
       , "http://get.tt/" -- archive/dead
       , "academia.edu" -- need to be replaced by hand
-      , "nih.gov" -- stable
-      , "clinicaltrials.gov" -- stable
-      , "bls.gov" -- stable
       , "ndcourts.gov" -- interactive/service
       , "uscourts.gov" -- interactive/service
-      , "census.gov" -- stable
       , "treasurydirect.gov" -- service
       , "twitch.tv"  -- service
       , "archive.today" -- archive
@@ -730,14 +587,7 @@ whiteListMatchesFixed = [
       , "nyaa.si" -- service
       , "modup.net" -- service
       , "flutterguy.org" -- service
-      , "abandonedfootnotes.blogspot.com" -- stable
-      , "jacurutu.com" -- stable
-      , "fanfiction.net" -- stable
       , "patreon.com/" -- service
-      , "practicaltypography.com" -- stable
-      , "oglaf.com" -- stable
-      , "catb.org" -- stable
-      , "ascii.textfiles.com" -- stable
       , "ricon.dev" -- service
       , "kanotype.iptime.org:8003" -- service (DeepDanbooru)
       , "sourceforge.net" -- service/source code

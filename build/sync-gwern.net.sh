@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-29 12:59:08 gwern"
+# When:  Time-stamp: "2024-02-29 18:06:29 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -27,8 +27,8 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/generateBacklinks.hs) && \
           -n $(command -v static/build/generateSimilarLinks.hs) && \
           -n $(command -v gifsicle) && \
-          -n $(command -v soffice) ]] && \
-        -n $(command -v elinks) &&
+          -n $(command -v libreoffice) && \
+          -n $(command -v elinks) ]] &&
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -265,15 +265,25 @@ else
 
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
-    syntaxHighlightByLibreoffice () { for FILE in "$@"; do
+    syntaxHighlightByLibreofficeDoc () { for FILE in "$@"; do
                                           TARGET=$(basename "$FILE")
-                                         soffice --headless --convert-to html:HTML:EmbedImages "$FILE" >/dev/null && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                          libreoffice --convert-to html:HTML:EmbedImages "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
                                      done
                                    }
-    export -f syntaxHighlightByLibreoffice
+    export -f syntaxHighlightByLibreofficeDoc
     find ./ -type f \
-         | gf -e ".csv" -e ".doc" -e ".docx" -e ".ods" -e ".xls" -e ".xlsx" | \
-        sort | parallel --jobs 1 syntaxHighlightByLibreoffice & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
+         | gf -e ".doc" -e ".docx" | \
+        sort | parallel --jobs 1 syntaxHighlightByLibreofficeDoc & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
+    # HACK: Libreoffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also Libreoffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...
+    syntaxHighlightByLibreofficeSpreadsheet () { for FILE in "$@"; do
+                                          TARGET=$(basename "$FILE")
+                                          libreoffice --convert-to html "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                     done
+                                   }
+    export -f syntaxHighlightByLibreofficeSpreadsheet
+    find ./ -type f \
+         | gf -e ".csv" -e ".ods" -e ".xls" -e ".xlsx" | \
+        sort | parallel --jobs 1 syntaxHighlightByLibreofficeSpreadsheet &
     set -e
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:

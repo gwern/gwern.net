@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-28 17:39:31 gwern"
+# When:  Time-stamp: "2024-02-29 09:45:38 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -18,6 +18,22 @@ source /usr/share/bash-completion/bash_completion # useful for better `upload` t
 export N="29"
 
 set -e
+
+bold () { echo -e "\033[1m$@\033[0m"; }
+red  () { echo -e "\e[41m$@\e[0m"; }
+## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
+wrap () { OUTPUT=$($1 2>&1)
+          WARN="$2"
+          if [ -n "$OUTPUT" ]; then
+              echo -n "Begin: "; red "$WARN";
+              echo -e "$OUTPUT";
+              echo -n "End: "; red "$WARN";
+          fi; }
+ge  () { grep -E "$@"; } #  --color=always
+gev () { ge --invert-match "$@"; }
+gf  () { grep -F "$@"; }
+gfv () { gf --invert-match "$@"; }
+export -f bold red wrap ge gev gf gfv
 
 path2File() {
     # This function takes any number of arguments as input paths or URLs
