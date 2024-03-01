@@ -28,6 +28,7 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMar
                     Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import Text.Pandoc.Walk (walk)
 
+import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkID (generateID, authorsToCite)
 import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback)
 import LinkMetadataTypes (Metadata, MetadataItem)
@@ -49,23 +50,24 @@ main = do C.cd
           let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.md" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
+          am <- readArchiveMetadata
           ldb <- readListName
           sortDB <- readListSortedMagic
 
           let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
-          Prelude.mapM_ (Par.mapM_ (generateDirectory True meta ldb sortDB dirs')) dirChunks
+          Prelude.mapM_ (Par.mapM_ (generateDirectory True am meta ldb sortDB dirs')) dirChunks
 
-          -- Par.mapM_ (generateDirectory True meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.gtx/partial.gtx TODO: actually track annotation creation dates...)
           metaNewest <- readLinkMetadataNewest 100
-          generateDirectory False metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+          generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
-generateDirectory :: Bool -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
-generateDirectory filterp md ldb sortDB dirs dir'' = do
+generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
+generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
@@ -123,9 +125,9 @@ generateDirectory filterp md ldb sortDB dirs dir'' = do
                         -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
                        else sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks
 
-  let selfLinksSection = generateSections' 2 selfTitledLinks
-  let titledLinksSections   = generateSections  titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
-  let untitledLinksSection  = generateListItems untitledLinks
+  let selfLinksSection = generateSections' am 2 selfTitledLinks
+  let titledLinksSections   = generateSections am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
+  let untitledLinksSection  = generateListItems am untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
@@ -314,14 +316,14 @@ generateDirectoryItems parent current ds =
                                     [Space, RawInline (Format "html") $ "<span class=\"doc-index-tag-short\">" `T.append` abbreviateTag dir `T.append` "</span>"])
 
 -- for links without a full annotation:
-generateListItems :: [(FilePath, MetadataItem)] -> Block
-generateListItems p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock (f,a)) p)
+generateListItems :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> Block
+generateListItems am p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock am (f,a)) p)
 
-generateSections :: [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
-generateSections links linksSorted linkswp = (if null links then [] else annotated) ++
-                                             (if length linksSorted < minTagAuto then [] else sorted) ++
-                                             (if null linkswp then [] else wp)
-    where annotated = generateSections' 2 links
+generateSections :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
+generateSections am links linksSorted linkswp = (if null links then [] else annotated) ++
+                                                (if length linksSorted < minTagAuto then [] else sorted) ++
+                                                (if null linkswp then [] else wp)
+    where annotated = (generateSections' am) 2 links
           sorted
             = [Header 2 ("", ["link-annotated-not"], [])
                  [Str "Sort By Magic"]] ++
@@ -335,7 +337,7 @@ generateSections links linksSorted linkswp = (if null links then [] else annotat
             = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
                  [Str "Wikipedia"],
                OrderedList (1, DefaultStyle, DefaultDelim)
-                 (map LM.generateAnnotationTransclusionBlock linkswp)]
+                 (map (LM.generateAnnotationTransclusionBlock am) linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
@@ -346,8 +348,8 @@ generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
                                                       in [Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]
                                                        ) items
-generateSections' :: Int -> [(FilePath, MetadataItem)] -> [Block]
-generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
+generateSections' :: ArchiveMetadata -> Int -> [(FilePath, MetadataItem)] -> [Block]
+generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
@@ -357,5 +359,5 @@ generateSections' headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  Header headerLevel (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]
-                                 : LM.generateAnnotationTransclusionBlock (f,a))
+                                 : LM.generateAnnotationTransclusionBlock am (f,a))
    where twitterTitle u dte = let username = extractTwitterUsername u in username ++ (if null dte then "" else " @ " ++ show dte)

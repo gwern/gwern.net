@@ -31,6 +31,7 @@ import Control.Monad.Parallel as Par (mapM_)
 import Text.Pandoc (Inline(Code, Link, RawInline, Str, Space, Span, Strong), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
+import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkBacklink (getLinkBibLink)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
@@ -42,11 +43,12 @@ import qualified Config.Misc as C (mininumLinkBibliographyFragment)
 
 main :: IO ()
 main = do md <- readLinkMetadata
+          am <- readArchiveMetadata
           -- build HTML fragments for each page or annotation link, containing just the list and no header/full-page wrapper, so they are nice to transclude *into* popups:
-          Par.mapM_ (writeLinkBibliographyFragment md) $ sort $ M.keys md
+          Par.mapM_ (writeLinkBibliographyFragment am md) $ sort $ M.keys md
 
-writeLinkBibliographyFragment :: Metadata -> FilePath -> IO ()
-writeLinkBibliographyFragment md path =
+writeLinkBibliographyFragment :: ArchiveMetadata -> Metadata -> FilePath -> IO ()
+writeLinkBibliographyFragment am md path =
   case M.lookup path md of
     Nothing -> return ()
     Just (_,_,_,_,_,"") -> return ()
@@ -62,10 +64,10 @@ writeLinkBibliographyFragment md path =
                                         lbLastModified    <- getModificationTime path'
                                         return (essayLastModified >= lbLastModified)
                       else return True
-      when shouldWrite $ parseExtractCompileWrite md path path' self selfAbsolute abstract
+      when shouldWrite $ parseExtractCompileWrite am md path path' self selfAbsolute abstract
 
-parseExtractCompileWrite :: Metadata -> String -> FilePath -> String -> String -> String -> IO ()
-parseExtractCompileWrite md path path' self selfAbsolute abstract = do
+parseExtractCompileWrite :: ArchiveMetadata -> Metadata -> String -> FilePath -> String -> String -> String -> IO ()
+parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
         -- toggle between parsing the full original Markdown page, and just the annotation abstract:
         linksRaw <- if head path == '/' && '.'`notElem`path then
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
@@ -78,7 +80,7 @@ parseExtractCompileWrite md path path' self selfAbsolute abstract = do
           do
 
              let pairs = linksToAnnotations md links
-                 body = [Para [Strong [Str "Link Bibliography"], Str ":"], generateLinkBibliographyItems pairs]
+                 body = [Para [Strong [Str "Link Bibliography"], Str ":"], (generateLinkBibliographyItems am) pairs]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
@@ -88,20 +90,20 @@ parseExtractCompileWrite md path path' self selfAbsolute abstract = do
                Right p' -> do when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
                               writeUpdatedFile "link-bibliography-fragment" path' p'
 
-generateLinkBibliographyItems :: [(String,MetadataItem)] -> Block
-generateLinkBibliographyItems [] = Para []
-generateLinkBibliographyItems items = let itemsWP = filter (\(u,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
-                                          itemsPrimary =  items \\ itemsWP
+generateLinkBibliographyItems :: ArchiveMetadata -> [(String,MetadataItem)] -> Block
+generateLinkBibliographyItems _ [] = Para []
+generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
+                                             itemsPrimary =  items \\ itemsWP
                                     in OrderedList (1, LowerAlpha, DefaultDelim)
-                                      (map generateLinkBibliographyItem itemsPrimary ++
+                                      (map (generateLinkBibliographyItem am) itemsPrimary ++
                                           -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
                                           if null itemsWP then [] else [
                                                                         [Div ("",["collapse"],[]) [
                                                                             Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
-                                                                            OrderedList (1, UpperAlpha, DefaultDelim) (map generateLinkBibliographyItem itemsWP)]]]
+                                                                            OrderedList (1, UpperAlpha, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
-generateLinkBibliographyItem  :: (String,MetadataItem) -> [Block]
-generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
+generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]
+generateLinkBibliographyItem _ (f,(t,aut,_,_,_,""))  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
@@ -129,7 +131,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = -- short:
     else
       Para (Link linkAttr [Str "“", RawInline (Format "HTML") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author) : transcludeTarget
 -- long items:
-generateLinkBibliographyItem (f,a) = generateAnnotationTransclusionBlock (f,a)
+generateLinkBibliographyItem am (f,a) = generateAnnotationTransclusionBlock am (f,a)
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' string argument—this should never happen!"

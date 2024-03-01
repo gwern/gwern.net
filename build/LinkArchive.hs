@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-02-09 22:25:13 gwern"
+When:  Time-stamp: "2024-02-29 21:05:38 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -91,7 +91,7 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, ArchiveMetadata) where
+module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, localizeLinkURL, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
 import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter)
@@ -117,7 +117,7 @@ import Control.Concurrent.Async (mapConcurrently)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Config.Misc (currentDay)
+import Config.Misc as CM (cd, currentDay)
 import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
@@ -135,6 +135,13 @@ localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescript
   let archiveAnnotatedLink = Link (identifier, classes', nubOrd (pairs++archiveAttributes)) b (targetURL, targetDescription)
   return archiveAnnotatedLink
 localizeLink _ x = return x
+
+-- simplified `localizeLink`: simply return the value of `data-url-archive` if it would exist when a Link with a given URL is rewritten by `localizeLink`.
+localizeLinkURL :: ArchiveMetadata -> FilePath -> IO FilePath
+localizeLinkURL adb url = do (Link (_,_,kvs) _ _) <- localizeLink adb (Link nullAttr [] (T.pack url,""))
+                             case lookup "data-url-archive" kvs of
+                               Nothing   -> return url
+                               Just url' -> return $ T.unpack url'
 
 testLinkRewrites :: IO [(Inline, Inline)]
 testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
@@ -158,7 +165,7 @@ manualArchive n | n < 1 = error $ "manualArchive called with no work to do (𝑛
                 | otherwise =
  do
   adb <- readArchiveMetadataAndCheck
-  today <- currentDay
+  today <- CM.currentDay
   let adbPending = M.filter (archiveItemDue today) adb
   let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
@@ -190,7 +197,8 @@ writeArchiveMetadata adb = writeUpdatedFile "archive-metadata-auto.db.hs" "metad
 
 -- fast path:
 readArchiveMetadata :: IO ArchiveMetadata
-readArchiveMetadata = do pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
+readArchiveMetadata = do CM.cd
+                         pdlString <- (fmap T.unpack $ TIO.readFile "metadata/archive.hs") :: IO String
                          case (readMaybe pdlString :: Maybe ArchiveMetadataList) of
                            Nothing -> error $ "Failed to read metadata/archive.hs. First 10k characters of read string: " ++ take 10000 pdlString
                            Just pdl -> return $ M.fromList pdl

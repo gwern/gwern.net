@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-29 19:45:32 gwern"
+When:  Time-stamp: "2024-02-29 22:06:13 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGtxFast, writeGtx, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationBlock, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGtxFast, writeGtx, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -47,7 +47,7 @@ import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
-import LinkArchive (localizeLink, ArchiveMetadata)
+import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive, alreadyLive)
@@ -192,7 +192,7 @@ readLinkMetadataAndCheck = do
 
              -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.gtx' without destroying all of the checks' validity.
-             half <- readGtxFast "metadata/half.gtx"
+             half <- readGtxSlow "metadata/half.gtx"
              let (fullPaths,halfPaths) = (map fst full, map fst half)
              let redundantHalfs = fullPaths `intersect` halfPaths
              unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & full.gtx: " >> printGreen (show redundantHalfs))
@@ -210,7 +210,7 @@ readLinkMetadataAndCheck = do
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup  first
-             auto <- readGtxFast "metadata/auto.gtx"
+             auto <- readGtxSlow "metadata/auto.gtx"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
@@ -288,8 +288,8 @@ readLinkMetadataAndCheck = do
 -- return the n most recent/newest annotations, in terms of created, not publication date.
 -- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.gtx/half.gtx, and so the newest n are the last n from full+half. (auto.gtx is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.gtx entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.gtx instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxFast "metadata/full.gtx"
-                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxFast "metadata/half.gtx"
+readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
+                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
                               let ratio = fromIntegral (length full) / fromIntegral (length (full++half)) :: Double
                               let n1 = round (fromIntegral n * ratio)
                               let full' = take n1 full
@@ -337,7 +337,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
@@ -484,8 +484,8 @@ isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated" x ||
                             hasClass "link-annotated-partial" x
 
-generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
+generateAnnotationBlock :: ArchiveMetadata -> Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
   case ann of
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
@@ -541,20 +541,20 @@ generateAnnotationBlock truncAuthorsp annotationP (f, ann) blp slp lb =
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
-                generateFileTransclusionBlock True False (f, x)
+                generateFileTransclusionBlock am True False (f, x)
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock True False (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock am True False (f, ("",undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
-generateAnnotationTransclusionBlock :: (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
+generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
+generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = linkIcon $ linkLive $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
                                     livep = alreadyLive link -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
-                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock livep livep (f, ("",undefined,undefined,undefined,undefined,undefined))
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am livep livep (f, ("",undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
                                 in [Para [Strong (link:linkColon)]] ++ fileTransclude
                            --  isVideoFilename (T.unpack f) ||
@@ -568,34 +568,35 @@ generateAnnotationTransclusionBlock (f, x@(tle,_,_,_,_,_)) =
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
-generateFileTransclusionBlock :: Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock am fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
-   localP = isLocal (T.pack f)
+   f'     = unsafePerformIO $ localizeLinkURL am f
+   localP = isLocal (T.pack f')
 
-   fileSizeMB = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f) / (1000000::Double)) :: Int
+   fileSizeMB       = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
-   fileTypeDescription = C.fileExtensionToEnglish $ takeExtension f
+   fileTypeDescription       = C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else if liveP && not localP then "external link" else "HTML"
-   fileDescription = Str $ T.pack $
-                            "(" ++ fileTypeDescriptionString
-                              ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
-                              ++ fileSizeMBString ++ ") "
+   fileDescription           = Str $ T.pack $
+                              "(" ++ fileTypeDescriptionString
+                                  ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
+                                  ++ fileSizeMBString ++ ") "
    titleCaption = if null tle then [] else [Str "[", fileDescription, Strong [Str "Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
    generateFileTransclusionBlock'
-    | isPagePath (T.pack f) = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
-    | "wikipedia.org/wiki/" `isInfixOf` f = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
-    | isDocumentViewable f || isCodeViewable f = let titleDocCode | titleCaption/=[]     = titleCaption
-                                                                  | isDocumentViewable f = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
-                                                                  | otherwise            = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
+    | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
+    | "wikipedia.org/wiki/" `isInfixOf` f' = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
+    | isDocumentViewable f' || isCodeViewable f' = let titleDocCode | titleCaption/=[]      = titleCaption
+                                                                    | isDocumentViewable f' = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
+                                                                    | otherwise             = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
                                                  in [Div ("",["collapse"],[])
-                                                      [Para [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f, "")]]]
+                                                      [Para [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f', "")]]]
     -- image/video/audio:
-    | Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f, "")]]
+    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f', "")]]
     | otherwise = if not fallbackP then [] else
                    [Para [linkIcon $ Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
                           (if titleCaption/=[] then titleCaption else [Str "[", fileDescription, Strong [Str "Expand to view web page"], Str "]"])
-                          (T.pack f, "")]]
+                          (T.pack f', "")]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
