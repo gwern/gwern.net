@@ -17456,10 +17456,10 @@ ImageFocus = {
 			)].join("") 
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
-		  	  + (ImageFocus.currentlyFocusedImage.src.startsWith("data:")
+		  	  + (ImageFocus.imageInFocus.src.startsWith("data:")
 		  	     ? ``
 		  	     : (  `<code class="url">`
-					+ truncatedURLString(ImageFocus.currentlyFocusedImage.src)
+					+ truncatedURLString(ImageFocus.imageInFocus.src)
 					+ `</code>`))
 			  + `<span class="icon-container">`
 				  + `<span class="icon normal">`
