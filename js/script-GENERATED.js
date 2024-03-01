@@ -17096,7 +17096,13 @@ ImageFocus = {
 	},
 
 	focusedImgSrcForImage: (image) => {
-		if (image.srcset > "") {
+		let imageSrcURL = URLFromString(image.src);
+		if (   imageSrcURL.hostname == "upload.wikimedia.org"
+			&& imageSrcURL.pathname.includes("/thumb/")) {
+			let parts = /(.+)thumb\/(.+)\/[^\/]+$/.exec(imageSrcURL.pathname);
+			imageSrcURL.pathname = parts[1] + parts[2];
+			return imageSrcURL.href;
+		} else if (image.srcset > "") {
 			return Array.from(image.srcset.matchAll(/(\S+?)\s+(\S+?)(,|$)/g)).sort((a, b) => {
 				if (parseFloat(a[2]) < parseFloat(b[2]))
 					return -1;
