@@ -8,7 +8,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 200;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLight.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLight.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -16,7 +16,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 200;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLightItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-ExtraLightItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -24,7 +24,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 300;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Light.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Light.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -32,7 +32,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 300;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-LightItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-LightItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -40,7 +40,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 400;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -48,7 +48,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 400;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -56,7 +56,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 600;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -64,7 +64,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 600;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -72,7 +72,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 700;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -80,7 +80,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 700;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -88,7 +88,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 900;
 	font-style: normal;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Black.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-Black.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -96,7 +96,7 @@
 	font-family: 'Source Serif Pro';
 	font-weight: 900;
 	font-style: italic;
-	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BlackItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssfp/SourceSerifPro-BASIC-BlackItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -109,7 +109,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 200;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLight.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLight.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -117,7 +117,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 200;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLightItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-ExtraLightItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -125,7 +125,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 300;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-Light.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Light.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -133,7 +133,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 300;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-LightItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-LightItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -141,7 +141,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 400;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -149,7 +149,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 400;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -157,7 +157,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 600;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -165,7 +165,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 600;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-SemiboldItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-SemiboldItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -173,7 +173,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 700;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -181,7 +181,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 700;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-BoldItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BoldItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -189,7 +189,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 900;
 	font-style: normal;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-Black.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-Black.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -197,7 +197,7 @@
 	font-family: 'Source Sans Pro';
 	font-weight: 900;
 	font-style: italic;
-	src: url('/static/font/ssp/SourceSansPro-BASIC-BlackItalic.ttf?v=1604173830') format('truetype');
+	src: url('/static/font/ssp/SourceSansPro-BASIC-BlackItalic.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
@@ -242,7 +242,7 @@
 @font-face {
 	font-family: 'Quivira';
 	font-weight: normal;
-	src: url('/static/font/quivira/Quivira-SUBSETTED.ttf?v=1648781861') format('truetype');
+	src: url('/static/font/quivira/Quivira-SUBSETTED.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 }
 
@@ -253,7 +253,7 @@
 @font-face {
 	font-family: 'Noto Emoji';
 	font-weight: normal;
-	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1651378359') format('truetype');
+	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1708747185') format('truetype');
 	font-display: swap;
 }
 
@@ -2396,18 +2396,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4606,28 +4606,24 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Collapses in annotations.
  */
 .popframe-body > .annotation > .annotation-abstract > .collapse-block,
-.popframe-body > .annotation > .file-includes > .collapse-block {
+.popframe-body > .annotation > .file-includes > .collapse-block,
+.popframe-body > .annotation > .annotation-abstract > .file-includes > .collapse-block {
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
 }
 
-/*  Aux-links collapses in annotations.
+/*  Aux-links and file include collapses in annotations.
  */
-.popframe-body > .annotation > .annotation-abstract > .collapse-block.aux-links-append {
+.popframe-body > .annotation > .annotation-abstract > .collapse-block.aux-links-append,
+.popframe-body > .annotation > .file-includes > .collapse-block.file-include-collapse,
+.popframe-body > .annotation > .annotation-abstract > .file-includes > .collapse-block.file-include-collapse {
     padding-right: 0.5em;
     border-right: 1px solid var(--GW-aux-links-collapse-border-color);
 }
-.popframe-body > .annotation > .annotation-abstract:last-child > .collapse-block.aux-links-append:last-child {
-    border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
-}
-
-/*	File-include collapses in annotations.
- */
-.popframe-body > .annotation > .file-includes > .collapse-block.file-include-collapse {
-    padding-right: 0.5em;
-    border-right: 1px solid var(--GW-aux-links-collapse-border-color);
-}
-.popframe-body > .annotation > .file-includes:last-child > .collapse-block.file-include-collapse:last-child {
+.popframe-body > .annotation > .annotation-abstract:last-child > .collapse-block.aux-links-append:last-child,
+.popframe-body > .annotation > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,
+.popframe-body > .annotation > .annotation-abstract:last-child > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,
+.popframe-body > .annotation .collapse-block.last-collapse {
     border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
@@ -5328,14 +5324,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popups).
  */
 .popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -5475,7 +5471,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -5942,14 +5938,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner (for object popins).
  */
 .popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#circle-notch-light');
     animation: fa-spin 2s infinite linear;
 }
 
 /*  Rendering spinner.
  */
 .popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#spinner-third-light');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#spinner-third-light');
     animation: fa-spin 3s infinite linear;
 }
 
@@ -6866,7 +6862,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#question');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7076,7 +7072,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 .image-wrapper.focusable.small-image::after {
 	content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-	background-image: url('/static/img/icon/icons.svg?v=1708452971#magnifying-glass-plus-light');
+	background-image: url('/static/img/icon/icons.svg?v=1709357831#magnifying-glass-plus-light');
 	background-size: 56px 56px;
 	background-origin: content-box;
 	background-repeat: no-repeat;
@@ -7442,7 +7438,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1708452971#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1709357831#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7517,7 +7513,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1708452971#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1709357831#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
