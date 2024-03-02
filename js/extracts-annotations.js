@@ -130,10 +130,10 @@ Extracts = { ...Extracts,
 					let embed = injectEventInfo.container.firstElementChild;
 
 					//	Scroll into view.
-					embed.scrollIntoView();
+					scrollElementIntoView(embed);
 					if (embed.tagName == "IFRAME")
 						embed.addEventListener("load", (event) => {
-							embed.scrollIntoView();
+							scrollElementIntoView(embed);
 						});
 
 					//	Designate now-last collapse for styling.
