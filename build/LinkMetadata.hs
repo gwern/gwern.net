@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-02 11:30:30 gwern"
+When:  Time-stamp: "2024-03-02 17:10:30 gwern"
 License: CC-0
 -}
 
@@ -586,8 +586,9 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null gen
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
+    -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"],[])
-                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
+                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"]++(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
     -- image/video/audio:
     | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para $ (if alwaysLabelP then [Strong [Str "Expand to view ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]
     | otherwise = if not liveP && not localP then [] else
