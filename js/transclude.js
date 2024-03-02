@@ -150,6 +150,7 @@
 
     include-replace-container
     data-replace-container-selector
+    data-replace-container-options
         Normally, when transclusion occurs, the transcluded content replaces the
         include-link in the page, leaving any surrounding elements untouched.
         When the `include-replace-container` option is used, the include-link’s
@@ -161,12 +162,31 @@
         `include-replace-container option was not set at all).
 
 		The `data-replace-container-selector` attribute allows specification of
-		a CSS selector that should be used to locate the ‘container’ element to
-		be replaced by the transcluded content (rather than simply using the 
-		include-link’s immediate parent). Note that if a value is specified, but
-		no containing element matching the given selector is found, then the 
-		include-link will behave normally (as if the `include-replace-container` 
-		option was not set at all).
+		a list of CSS selectors that should be used to locate the ‘container’ 
+		element to be replaced by the transcluded content (rather than simply 
+		using the include-link’s immediate parent). The value of this attribute 
+		is a pipe (`|`) separated list of CSS selectors. Each selector is 
+		checked in turn; if no containing element matching the given selector is 
+		found, the next selector is checked, and so on. If no containing element 
+		matching any of the given selectors is found, then the include-link will 
+		default to replacing its immediate parent element (as if the 
+		`data-replace-container-selector` attribute were absent). (But see the 
+		`strict` option of the `data-replace-container-options` attribute, 
+		below).
+
+		The `data-replace-container-options` attribute allows various options to 
+		be specified for how container replacement should proceed. The value of 
+		this attribute is a pipe (`|`) separated list of option fields. The 
+		following options may be specified:
+
+		strict
+			If this option is specified, and a value is provided for the 
+			`data-replace-container-selector` attribute, and no containing 
+			element matching any of the specified selectors is found, then the
+			include-link will *not* default to replacing its immediate parent
+			(as is the default behavior), but will instead replace nothing 
+			(i.e., it will behave as if the `include-replace-selector` option
+			were not specified at all).
 
 	include-rectify-not
 		Normally, when transclusion occurs, the surrounding HTML structure is
@@ -680,6 +700,14 @@ function loadLocationForIncludeLink(includeLink) {
     }
 }
 
+/*****************************************************************/
+/*	Standardized parsing for a pipe (`|`) separated options field.
+	(Returns null if no non-whitespace options are provided.)
+ */
+function parsePipedOptions(attributeValue) {
+	return attributeValue?.split("|").map(x => x.trim()).filter(x => x > "");
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -700,9 +728,39 @@ function includeContent(includeLink, content) {
 	//	Where to inject?
 	let insertWhere = includeLink;
 	if (includeLink.classList.contains("include-replace-container")) {
-		let replacedContainer = includeLink.dataset.replaceContainerSelector
-								? includeLink.closest(includeLink.dataset.replaceContainerSelector)
-								: includeLink.parentElement;
+		/*	This code block implements the `include-replace-container` class
+			and the `data-replace-container-selector` and
+			`data-replace-container-options` attributes.
+			(See documentation, at the start of this file, for details.)
+		 */
+
+		//	Parse `data-replace-container-options` attribute.
+		let replaceContainerOptions = parsePipedOptions(includeLink.dataset.replaceContainerOptions);
+
+		//	Find the container to replace.
+		let replacedContainer = null;
+		let replaceContainerSelectors = parsePipedOptions(includeLink.dataset.replaceContainerSelector);
+		if (replaceContainerSelectors) {
+			/*	If `data-replace-container-selector` is specified, we try each 
+				specified selector in turn...
+			 */
+			while (   replacedContainer == null
+				   && replaceContainerSelectors.length > 0)
+				replacedContainer = includeLink.closest(replaceContainerSelectors.shift());
+
+			/*	... and if they all fail, we default to the immediate parent, 
+				or else no replacement at all (the `strict` option).
+			 */
+			if (   replacedContainer == null
+				&& replaceContainerOptions?.includes("strict") != true)
+				replacedContainer = includeLink.parentElement;
+		} else {
+			/*	If `data-replace-container-selector` is not specified, we simply
+				replace the immediate parent.
+			 */
+			replacedContainer = includeLink.parentElement;
+		}
+
 		if (replacedContainer)
 			insertWhere = replacedContainer; 
 	}
@@ -1328,7 +1386,7 @@ Transclude = {
 			include-link. (See documentation for the .include-block-context
 			class for details.)
 		 */
-		let options = includeLink.dataset.blockContextOptions?.split("|");
+		let options = parsePipedOptions(includeLink.dataset.blockContextOptions);
 
 		//	Expanded mode.
 		if (options?.includes("expanded")) {
@@ -1556,12 +1614,8 @@ Transclude = {
 				by the include-link. (See documentation for selector-based
 				inclusion for details.)
 			 */
-			let options;
-			if (   includeLink.dataset.includeSelectorNotOptions
-				|| includeLink.dataset.includeSelectorGeneralOptions)
-				options = (   includeLink.dataset.includeSelectorNotOptions
-						   || includeLink.dataset.includeSelectorGeneralOptions).split("|");
-
+			let options = parsePipedOptions(   includeLink.dataset.includeSelectorNotOptions
+											|| includeLink.dataset.includeSelectorGeneralOptions);
 			let elementsToExclude = [ ];
 			if (options?.includes("first")) {
 				let element = content.querySelector(includeLink.dataset.includeSelectorNot);
@@ -1584,12 +1638,8 @@ Transclude = {
 				by the include-link. (See documentation for selector-based
 				inclusion for details.)
 			 */
-			let options;
-			if (   includeLink.dataset.includeSelectorOptions
-				|| includeLink.dataset.includeSelectorGeneralOptions)
-				options = (   includeLink.dataset.includeSelectorOptions
-						   || includeLink.dataset.includeSelectorGeneralOptions).split("|");
-
+			let options = parsePipedOptions(   includeLink.dataset.includeSelectorOptions
+											|| includeLink.dataset.includeSelectorGeneralOptions);
 			let elementsToInclude = [ ];
 			if (options?.includes("first")) {
 				let element = content.querySelector(includeLink.dataset.includeSelector);
