@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-01 23:28:02 gwern"
+When:  Time-stamp: "2024-03-02 11:30:30 gwern"
 License: CC-0
 -}
 
@@ -541,11 +541,11 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
-                generateFileTransclusionBlock am (f, x)
+                generateFileTransclusionBlock am True (f, x)
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock am (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock am True (f, ("",undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
@@ -554,12 +554,9 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
                                     link = linkIcon $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
 
-                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am (f, ("",undefined,undefined,undefined,undefined,undefined))
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am False (f, ("",undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
                                 in Para [Strong (link:linkColon)] : fileTransclude
-                           --  isVideoFilename (T.unpack f) ||
-                           --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
-                           -- ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
@@ -568,31 +565,32 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
-generateFileTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock am (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
-   localP = isLocal (T.pack f')
-   liveP = alreadyLive $ linkLiveString f' -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
-   fileSizeMB       = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
+   localP = isLocal $ T.pack f'
+   liveP  = alreadyLive $ linkLiveString f' -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
+   fileSizeMB       = if not localP then 0 else
+                        round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
    fileTypeDescription       = C.fileExtensionToEnglish $ takeExtension f'
-   fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else
-                                 if liveP && not localP then "external link"
-                                 else "HTML"
+   fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
+                              | liveP && not localP     = "external link"
+                              | otherwise               = "HTML"
    fileDescription           = Str $ T.pack $
                                      fileTypeDescriptionString
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
-   title = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ "“" ++ tle ++ "”"
+   title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ "“" ++ tle ++ "”"
    titleCaption = [Strong [Str "Expand to view ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
-    | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
+    | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"],[])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
     -- image/video/audio:
-    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para [Strong [Str "Expand to view ", fileDescription], Str ": ", Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]
-    | otherwise = if (not liveP && not localP) then [] else
+    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para $ (if alwaysLabelP then [Strong [Str "Expand to view ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]
+    | otherwise = if not liveP && not localP then [] else
         [Div ("",["collapse"],[])
           [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
 
