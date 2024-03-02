@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-02-29 22:06:13 gwern"
+When:  Time-stamp: "2024-03-01 23:28:02 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import System.FilePath (takeDirectory, takeFileName, takeExtension)
 import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     def, writeHtml5String, runPure, pandocExtensions,
                     readHtml, nullAttr, nullMeta,
-                    Inline(Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+                    Inline(Code, Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
@@ -50,7 +50,7 @@ import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isIm
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
-import LinkLive (linkLive, alreadyLive)
+import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
@@ -541,22 +541,22 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
                                                           (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong></a>:</p>\n</div>")))
                                                               )]
                        ]) ++
-                generateFileTransclusionBlock am True False (f, x)
+                generateFileTransclusionBlock am (f, x)
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock am True False (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock am (f, ("",undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
-                                    link = linkIcon $ linkLive $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
+                                    link = linkIcon $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
-                                    livep = alreadyLive link -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
-                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am livep livep (f, ("",undefined,undefined,undefined,undefined,undefined))
+
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am (f, ("",undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
-                                in [Para [Strong (link:linkColon)]] ++ fileTransclude
+                                in Para [Strong (link:linkColon)] : fileTransclude
                            --  isVideoFilename (T.unpack f) ||
                            --  "https://www.youtube.com/watch?v=" `T.isPrefixOf` f ||
                            -- ("https://twitter.com/" `T.isPrefixOf` f && "/status/" `T.isInfixOf` f)
@@ -568,35 +568,33 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
-generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock am fallbackP liveP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
+generateFileTransclusionBlock am (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
    localP = isLocal (T.pack f')
-
+   liveP = alreadyLive $ linkLiveString f' -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
    fileSizeMB       = if not localP then 0 else round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
    fileTypeDescription       = C.fileExtensionToEnglish $ takeExtension f'
-   fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else if liveP && not localP then "external link" else "HTML"
+   fileTypeDescriptionString = if fileTypeDescription/="" then fileTypeDescription else
+                                 if liveP && not localP then "external link"
+                                 else "HTML"
    fileDescription           = Str $ T.pack $
-                              "(" ++ fileTypeDescriptionString
-                                  ++ (if fileTypeDescriptionString/="" && fileSizeMBString/="" then "; " else "")
-                                  ++ fileSizeMBString ++ ") "
-   titleCaption = if null tle then [] else [Str "[", fileDescription, Strong [Str "Expand to view"], Str " “", RawInline (Format "HTML") $ T.pack tle, Str "”]"]
+                                     fileTypeDescriptionString
+                                  ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
+   title = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ "“" ++ tle ++ "”"
+   titleCaption = [Strong [Str "Expand to view ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is just a plain bad idea.
     | "wikipedia.org/wiki/" `isInfixOf` f' = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
-    | isDocumentViewable f' || isCodeViewable f' = let titleDocCode | titleCaption/=[]      = titleCaption
-                                                                    | isDocumentViewable f' = [Str "[", fileDescription, Strong [Str "Expand to view document"], Str "]"]
-                                                                    | otherwise             = [Str "[", fileDescription, Strong [Str "Expand to view code/data"], Str "]"]
-                                                 in [Div ("",["collapse"],[])
-                                                      [Para [linkIcon $ Link ("", ["id-not", "include-content", "include-lazy"], []) titleDocCode (T.pack f', "")]]]
+    | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"],[])
+                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
     -- image/video/audio:
-    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para [Link ("",["include-content", "width-full"],[]) [Str "[", fileDescription, Str "view multimedia in-browser]"] (T.pack f', "")]]
-    | otherwise = if not fallbackP then [] else
-                   [Para [linkIcon $ Link ("",["id-not", "include-content", "include-lazy", "collapse"],[])
-                          (if titleCaption/=[] then titleCaption else [Str "[", fileDescription, Strong [Str "Expand to view web page"], Str "]"])
-                          (T.pack f', "")]]
+    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para [Strong [Str "Expand to view ", fileDescription], Str ": ", Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]
+    | otherwise = if (not liveP && not localP) then [] else
+        [Div ("",["collapse"],[])
+          [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
