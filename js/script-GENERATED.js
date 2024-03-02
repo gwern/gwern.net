@@ -3,6 +3,7 @@
 /*******************/
 
 GW.elementInjectTriggers = { };
+GW.defunctElementInjectTriggers = { };
 
 /****************************************************************************/
 /*	Register element inject trigger for the given uuid. (In other words, when
@@ -32,10 +33,10 @@ function observeInjectedElementsInDocument(doc) {
 		if (Object.entries(GW.elementInjectTriggers).length == 0)
 			return;
 
-		let doTrigger = (node, f) => {
-			delete GW.elementInjectTriggers[node.dataset.uuid];
-			f(node);
-			node.dataset.uuid = null;
+		let doTrigger = (element, f) => {
+			GW.defunctElementInjectTriggers[element.dataset.uuid] = f;
+			delete GW.elementInjectTriggers[element.dataset.uuid];
+			f(element);
 		};
 
 		for (mutationRecord of mutationsList) {
@@ -73,19 +74,10 @@ observeInjectedElementsInDocument(document);
 	used to, e.g., delay replacement, by passing a suitable doWhen function
 	as the wrapper.)
  */
-function placeholder(replaceFunction, wrapperFunction = null) {
-	let transform;
-	if (wrapperFunction) {
-		transform = (element) => {
-			wrapperFunction(() => {
-				element.replaceWith(replaceFunction(element));
-			});
-		};
-	} else {
-		transform = (element) => {
-			element.replaceWith(replaceFunction(element));
-		};
-	}
+function placeholder(replaceFunction, wrapperFunction) {
+	let transform = wrapperFunction
+					? (element) => { wrapperFunction(() => { element.replaceWith(replaceFunction(element)); }); }
+					: (element) => { element.replaceWith(replaceFunction(element)); }
 
 	let uuid = onInject(null, transform);
 
@@ -95,12 +87,13 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 /*****************************************************************************/
 /*	Generate new UUIDs for any placeholder elements in the given container. 
 	(Necessary when using a DocumentFragment to make a copy of a subtree; 
-	 otherwise - since inject triggers are deleted after triggering once - any 
-	 placeholders in the copied subtree will never get replaced.)
+	 otherwise - since inject triggers are deleted after triggering once - 
+	 any placeholders in the copied subtree will never get replaced.)
  */
 function regeneratePlaceholderIds(container) {
 	container.querySelectorAll(".placeholder").forEach(placeholder => {
-		placeholder.dataset.uuid = onInject(null, GW.elementInjectTriggers[placeholder.dataset.uuid]);
+		placeholder.dataset.uuid = onInject(null, (   GW.elementInjectTriggers[placeholder.dataset.uuid] 
+												   ?? GW.defunctElementInjectTriggers[placeholder.dataset.uuid]));
 	});
 }
 
@@ -9880,35 +9873,6 @@ Extracts = { ...Extracts,
         //  Update the title.
         Extracts.updatePopFrameTitle(popFrame);
 
-		//	Properly handle file includes when their include-link fires.
-		popFrame.document.querySelectorAll(".file-include-collapse").forEach(collapseBlock => {
-			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-				let includeLink = collapseBlock.querySelector("a");
-				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
-					let embed = injectEventInfo.container.firstElementChild;
-
-					//	Scroll into view.
-					embed.scrollIntoView();
-					if (embed.tagName == "IFRAME")
-						embed.addEventListener("load", (event) => {
-							embed.scrollIntoView();
-						});
-
-					//	Designate now-last collapse for styling.
-					let previousBlock = previousBlockOf(embed);
-					if (   embed.closest(".collapse") == null
-						&& previousBlock.classList.contains("collapse-block"))
-						previousBlock.classList.add("last-collapse");
-				}, {
-					once: true,
-					condition: (info) => (info.includeLink == includeLink)
-				});
-			}, {
-				once: true,
-				condition: (info) => (info.collapseBlock == collapseBlock)
-			});
-		});
-
 		/*	For annotated media, rearrange annotation content so that the media
 			itself follows the abstract (but precedes the aux-links), and the
 			caption is not unnecessarily duplicated.
@@ -13738,6 +13702,37 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
 		});
 	});
 }, "rewrite");
+
+/******************************************************************************/
+/*	Properly handle file includes in annotations when their include-link fires.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAnnotations = (eventInfo) => {
+    GWLog("handleFileIncludeUncollapseInAnnotations", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".file-include-collapse").forEach(fileIncludeCollapse => {
+		let includeLink = fileIncludeCollapse.querySelector("a");
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (embedInjectEventInfo) => {
+			let embed = embedInjectEventInfo.container.firstElementChild;
+
+			//	Scroll into view.
+			scrollElementIntoView(embed);
+			if (   embed.tagName == "IFRAME"
+				&& Extracts.popFrameProvider.containingPopFrame(embed) != null)
+				embed.addEventListener("load", (event) => {
+					scrollElementIntoView(embed);
+				});
+
+			//	Designate now-last collapse for styling.
+			let previousBlock = previousBlockOf(embed);
+			if (   embed.closest(".collapse") == null
+				&& previousBlock.classList.contains("collapse-block"))
+				previousBlock.classList.add("last-collapse");
+		}, {
+			once: true,
+			condition: (info) => (info.includeLink == includeLink)
+		});
+	});
+}, "eventListeners", (info) => (info.contentType == "annotation"));
 
 /***************************************************************************/
 /*  Because annotations transclude aux-links, we make the aux-links links in

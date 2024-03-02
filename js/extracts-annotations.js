@@ -122,35 +122,6 @@ Extracts = { ...Extracts,
         //  Update the title.
         Extracts.updatePopFrameTitle(popFrame);
 
-		//	Properly handle file includes when their include-link fires.
-		popFrame.document.querySelectorAll(".file-include-collapse").forEach(collapseBlock => {
-			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-				let includeLink = collapseBlock.querySelector("a");
-				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
-					let embed = injectEventInfo.container.firstElementChild;
-
-					//	Scroll into view.
-					embed.scrollIntoView();
-					if (embed.tagName == "IFRAME")
-						embed.addEventListener("load", (event) => {
-							embed.scrollIntoView();
-						});
-
-					//	Designate now-last collapse for styling.
-					let previousBlock = previousBlockOf(embed);
-					if (   embed.closest(".collapse") == null
-						&& previousBlock.classList.contains("collapse-block"))
-						previousBlock.classList.add("last-collapse");
-				}, {
-					once: true,
-					condition: (info) => (info.includeLink == includeLink)
-				});
-			}, {
-				once: true,
-				condition: (info) => (info.collapseBlock == collapseBlock)
-			});
-		});
-
 		/*	For annotated media, rearrange annotation content so that the media
 			itself follows the abstract (but precedes the aux-links), and the
 			caption is not unnecessarily duplicated.
