@@ -437,7 +437,10 @@ Annotations = { ...Annotations,
 				//	Special data attributes for the title link.
 				let titleLinkDataAttributes = [ 
 					"urlHtml", 
-					"urlArchive"
+					"urlArchive",
+					"imageWidth",
+					"imageHeight",
+					"aspectRatio"
 				].map(attr => 
 					referenceElement.dataset[attr] 
 					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
@@ -604,6 +607,11 @@ Annotations = { ...Annotations,
 					if (listLabel)
 						listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 				}
+
+				//	Prevent erroneous collapse class.
+				referenceEntry.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
+					auxLinksAppendCollapse.classList.add("bare-content-not");
+				});
 
 				//	Unwrap more extraneous <div>s, if present.
 				let pageDescriptionClass = "page-description-annotation";

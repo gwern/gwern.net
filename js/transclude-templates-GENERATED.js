@@ -14,10 +14,16 @@ Transclude.templates = {
 		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
-	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
-	<[IFEND]>
-	<[IF fileIncludes]>
-	<div class="data-field file-includes"><{fileIncludes}></div>
+	<blockquote class="data-field annotation-abstract">
+		<{abstract}>
+		<[IF2 fileIncludes]>
+		<div class="data-field file-includes"><{fileIncludes}></div>
+		<[IF2END]>
+	</blockquote>
+	<[ELSE]>
+		<[IF2 fileIncludes]>
+		<div class="data-field file-includes"><{fileIncludes}></div>
+		<[IF2END]>
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">

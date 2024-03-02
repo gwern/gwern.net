@@ -289,11 +289,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			}
 
 			//	Designate “bare content” collapse blocks.
-			if (collapseWrapper.classList.contains("collapse-block")) {
+			if (   collapseWrapper.classList.contains("collapse-block") == true
+				&& collapseWrapper.classList.contains("bare-content-not") == false) {
 				let bareContentTags = [ "P", "UL", "OL" ];
 				if (   bareContentTags.includes(collapseWrapper.firstElementChild.tagName)
 					|| (   collapseWrapper.classList.contains("has-abstract")
-						&& bareContentTags.includes(collapseWrapper.firstElementChild.firstElementChild.tagName)))
+						&& bareContentTags.includes(collapseWrapper.querySelector(".abstract-collapse").firstElementChild.tagName)))
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
@@ -609,7 +610,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "expanded", "expanded-not");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "file-include-collapse", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 
@@ -623,12 +624,10 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Unwrap subordinate containers.
 	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
 	
-	//	Unwrap collapse block itself if it’s a div with no remaining classes.
-	if (   collapseBlock.tagName == "DIV"
-		&& collapseBlock.className == ""
-		&& isOnlyChild(collapseBlock.firstElementChild)) {
+	//	Unwrap collapse block itself if it’s a bare wrapper.
+	if (   isBareWrapper(collapseBlock)
+		&& isOnlyChild(collapseBlock.firstElementChild))
 		unwrap(collapseBlock);
-	}
 
 	//	Fire event.
 	if (wasCollapsed) {

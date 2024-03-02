@@ -4910,7 +4910,10 @@ Annotations = { ...Annotations,
 				//	Special data attributes for the title link.
 				let titleLinkDataAttributes = [ 
 					"urlHtml", 
-					"urlArchive"
+					"urlArchive",
+					"imageWidth",
+					"imageHeight",
+					"aspectRatio"
 				].map(attr => 
 					referenceElement.dataset[attr] 
 					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
@@ -5077,6 +5080,11 @@ Annotations = { ...Annotations,
 					if (listLabel)
 						listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 				}
+
+				//	Prevent erroneous collapse class.
+				referenceEntry.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
+					auxLinksAppendCollapse.classList.add("bare-content-not");
+				});
 
 				//	Unwrap more extraneous <div>s, if present.
 				let pageDescriptionClass = "page-description-annotation";
@@ -5814,12 +5822,26 @@ Content = {
 		return captionHTML;
 	},
 
+	mediaDimensionsHTMLForMediaLink: (link) => {
+		let parts = [ ];
+		if (link.dataset.aspectRatio)
+			parts.push(`data-aspect-ratio="${(link.dataset.aspectRatio)}"`);
+		if (link.dataset.imageWidth)
+			parts.push(`width="${(link.dataset.imageWidth)}"`);
+		if (link.dataset.imageHeight)
+			parts.push(`height="${(link.dataset.imageHeight)}"`);
+		return parts.join(" ");
+	},
+
 	removeExtraneousClassesFromMediaElement: (media) => {
+		//	Remove various link classes.
 		media.classList.remove("no-popup", "icon-not", "link-page", "link-live",
-			"link-annotated", "link-annotated-partial",
+			"link-annotated", "link-annotated-partial", "link-annotated-not",
 			"has-annotation", "has-annotation-partial", "has-content",
-			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin",
-			"include-content", "include-loading", "include-spinner");
+			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+
+		//	Remove all `include-` classes.
+		media.classList.remove(...(Array.from(media.classList).filter(x => x.startsWith("include-"))));
 	},
 
 	/**************************************************************/
@@ -6148,18 +6170,14 @@ Content = {
 					let htmlEncodedResponse = response.replace(
 						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
-					);
+					).split("\n").map(
+						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
+					).join("\n");
 					content = newDocument(  `<div class="sourceCode">`
 										  + `<pre class="raw-code"><code>`
 										  + htmlEncodedResponse
 										  + `</code></pre>`
 										  + `</div>`);
-
-					//	Inject line spans.
-					let codeBlock = content.querySelector("code");
-					codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
-						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
-					).join("\n");
 				}
 
 				return content;
@@ -6413,9 +6431,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
-							   + `width="${(link.dataset.imageWidth)}" `
-							   + `height="${(link.dataset.imageHeight)}"`;
+				let dimensions = Content.mediaDimensionsHTMLForMediaLink(link);
 
 				//	Determine video type and poster pathname.
 				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
@@ -6513,9 +6529,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
-							   + `width="${(link.dataset.imageWidth)}" `
-							   + `height="${(link.dataset.imageHeight)}"`;
+				let dimensions = Content.mediaDimensionsHTMLForMediaLink(link);
 
 				//	Use annotation abstract (if any) as figure caption.
 				let caption = Content.figcaptionHTMLForMediaLink(link);
@@ -8721,10 +8735,16 @@ Transclude.templates = {
 		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
-	<blockquote class="data-field annotation-abstract"><{abstract}></blockquote>
-	<[IFEND]>
-	<[IF fileIncludes]>
-	<div class="data-field file-includes"><{fileIncludes}></div>
+	<blockquote class="data-field annotation-abstract">
+		<{abstract}>
+		<[IF2 fileIncludes]>
+		<div class="data-field file-includes"><{fileIncludes}></div>
+		<[IF2END]>
+	</blockquote>
+	<[ELSE]>
+		<[IF2 fileIncludes]>
+		<div class="data-field file-includes"><{fileIncludes}></div>
+		<[IF2END]>
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
@@ -9810,17 +9830,29 @@ Extracts = { ...Extracts,
         //  Update the title.
         Extracts.updatePopFrameTitle(popFrame);
 
-		//	Expand-lock collapsed file includes when they’re expanded.
+		//	Properly handle file includes when their include-link fires.
 		popFrame.document.querySelectorAll(".file-include-collapse").forEach(collapseBlock => {
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
 				let includeLink = collapseBlock.querySelector("a");
 				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (injectEventInfo) => {
-					injectEventInfo.container.firstElementChild.scrollIntoView();
+					let embed = injectEventInfo.container.firstElementChild;
+
+					//	Scroll into view.
+					embed.scrollIntoView();
+					if (embed.tagName == "IFRAME")
+						embed.addEventListener("load", (event) => {
+							embed.scrollIntoView();
+						});
+
+					//	Designate now-last collapse for styling.
+					let previousBlock = previousBlockOf(embed);
+					if (   embed.closest(".collapse") == null
+						&& previousBlock.classList.contains("collapse-block"))
+						previousBlock.classList.add("last-collapse");
 				}, {
 					once: true,
 					condition: (info) => (info.includeLink == includeLink)
 				});
-				expandLockCollapseBlock(collapseBlock);
 			}, {
 				once: true,
 				condition: (info) => (info.collapseBlock == collapseBlock)
@@ -13644,14 +13676,15 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
     GWLog("rectifyFileAppendClasses", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".aux-links-transclude-file, .file-includes").forEach(fileIncludesBlock => {
-		//	Get all collapses within the file include block...
-		let fileIncludeCollapseBlocks = Array.from(fileIncludesBlock.querySelectorAll(".collapse"));
-		//	The file-include block itself may be a collapse!
+		//	The file-include block itself may be a collapse! If so, wrap it.
 		if (fileIncludesBlock.matches(".collapse"))
-			fileIncludeCollapseBlocks.push(fileIncludesBlock);
-		//	Apply standard class.
-		fileIncludeCollapseBlocks.forEach(fileIncludeCollapse => {
-			fileIncludeCollapse.classList.add("file-include-collapse");
+			fileIncludesBlock = wrapElement(fileIncludesBlock, "div.file-includes", { moveClasses: [ "data-field", "file-includes" ] });
+		//	Rectify class.
+		fileIncludesBlock.swapClasses([ "aux-links-transclude-file", "file-includes" ], 1);
+		//	Apply standard class to all collapses within the includes block.
+		fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
+			fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
+			fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
 		});
 	});
 }, "rewrite");
@@ -15299,11 +15332,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			}
 
 			//	Designate “bare content” collapse blocks.
-			if (collapseWrapper.classList.contains("collapse-block")) {
+			if (   collapseWrapper.classList.contains("collapse-block") == true
+				&& collapseWrapper.classList.contains("bare-content-not") == false) {
 				let bareContentTags = [ "P", "UL", "OL" ];
 				if (   bareContentTags.includes(collapseWrapper.firstElementChild.tagName)
 					|| (   collapseWrapper.classList.contains("has-abstract")
-						&& bareContentTags.includes(collapseWrapper.firstElementChild.firstElementChild.tagName)))
+						&& bareContentTags.includes(collapseWrapper.querySelector(".abstract-collapse").firstElementChild.tagName)))
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
@@ -15619,7 +15653,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "expanded", "expanded-not");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "file-include-collapse", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 
@@ -15633,12 +15667,10 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Unwrap subordinate containers.
 	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
 	
-	//	Unwrap collapse block itself if it’s a div with no remaining classes.
-	if (   collapseBlock.tagName == "DIV"
-		&& collapseBlock.className == ""
-		&& isOnlyChild(collapseBlock.firstElementChild)) {
+	//	Unwrap collapse block itself if it’s a bare wrapper.
+	if (   isBareWrapper(collapseBlock)
+		&& isOnlyChild(collapseBlock.firstElementChild))
 		unwrap(collapseBlock);
-	}
 
 	//	Fire event.
 	if (wasCollapsed) {

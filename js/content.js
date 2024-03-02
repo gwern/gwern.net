@@ -224,12 +224,26 @@ Content = {
 		return captionHTML;
 	},
 
+	mediaDimensionsHTMLForMediaLink: (link) => {
+		let parts = [ ];
+		if (link.dataset.aspectRatio)
+			parts.push(`data-aspect-ratio="${(link.dataset.aspectRatio)}"`);
+		if (link.dataset.imageWidth)
+			parts.push(`width="${(link.dataset.imageWidth)}"`);
+		if (link.dataset.imageHeight)
+			parts.push(`height="${(link.dataset.imageHeight)}"`);
+		return parts.join(" ");
+	},
+
 	removeExtraneousClassesFromMediaElement: (media) => {
+		//	Remove various link classes.
 		media.classList.remove("no-popup", "icon-not", "link-page", "link-live",
-			"link-annotated", "link-annotated-partial",
+			"link-annotated", "link-annotated-partial", "link-annotated-not",
 			"has-annotation", "has-annotation-partial", "has-content",
-			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin",
-			"include-content", "include-loading", "include-spinner");
+			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+
+		//	Remove all `include-` classes.
+		media.classList.remove(...(Array.from(media.classList).filter(x => x.startsWith("include-"))));
 	},
 
 	/**************************************************************/
@@ -558,18 +572,14 @@ Content = {
 					let htmlEncodedResponse = response.replace(
 						/[<>]/g,
 						c => ('&#' + c.charCodeAt(0) + ';')
-					);
+					).split("\n").map(
+						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
+					).join("\n");
 					content = newDocument(  `<div class="sourceCode">`
 										  + `<pre class="raw-code"><code>`
 										  + htmlEncodedResponse
 										  + `</code></pre>`
 										  + `</div>`);
-
-					//	Inject line spans.
-					let codeBlock = content.querySelector("code");
-					codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
-						line => (`<span class="line">${(line || "&nbsp;")}</span>`)
-					).join("\n");
 				}
 
 				return content;
@@ -823,9 +833,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
-							   + `width="${(link.dataset.imageWidth)}" `
-							   + `height="${(link.dataset.imageHeight)}"`;
+				let dimensions = Content.mediaDimensionsHTMLForMediaLink(link);
 
 				//	Determine video type and poster pathname.
 				let videoFileExtension = /\.(\w+?)$/.exec(link.pathname)[1];
@@ -923,9 +931,7 @@ Content = {
 
 			contentFromLink: (link) => {
 				//	Import specified dimensions / aspect ratio.
-				let dimensions = `data-aspect-ratio="${(link.dataset.aspectRatio)}" `
-							   + `width="${(link.dataset.imageWidth)}" `
-							   + `height="${(link.dataset.imageHeight)}"`;
+				let dimensions = Content.mediaDimensionsHTMLForMediaLink(link);
 
 				//	Use annotation abstract (if any) as figure caption.
 				let caption = Content.figcaptionHTMLForMediaLink(link);

@@ -3196,6 +3196,19 @@ function childBlocksOf(element, options) {
 	});
 }
 
+/****************************************************************************/
+/*	Returns true if the element is a “bare wrapper”, i.e. a <div> or <span> 
+	with no classes (or, in the <div> case, possibly just the ‘block’ class); 
+	false otherwise.
+ */
+function isBareWrapper(element) {
+	return (   (   element.tagName == "DIV"
+				&& (   element.className.trim() == ""
+					|| element.className.trim() == "block"))
+			|| (   element.tagName == "SPAN"
+				&& element.className.trim() == ""));
+}
+
 /**************************************************************************/
 /*	Returns assembled and appropriately prefixed selector from given parts.
  */
@@ -3852,7 +3865,7 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1708452971",
+	"/static/img/icon/icons.svg": "1709357831",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
