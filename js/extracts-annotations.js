@@ -140,7 +140,7 @@ Extracts = { ...Extracts,
 					let previousBlock = previousBlockOf(embed);
 					if (   embed.closest(".collapse") == null
 						&& previousBlock.classList.contains("collapse-block"))
-						previousBlock.classList.add("last-collapse")
+						previousBlock.classList.add("last-collapse");
 				}, {
 					once: true,
 					condition: (info) => (info.includeLink == includeLink)
