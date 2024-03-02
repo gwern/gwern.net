@@ -667,6 +667,19 @@ function childBlocksOf(element, options) {
 	});
 }
 
+/****************************************************************************/
+/*	Returns true if the element is a “bare wrapper”, i.e. a <div> or <span> 
+	with no classes (or, in the <div> case, possibly just the ‘block’ class); 
+	false otherwise.
+ */
+function isBareWrapper(element) {
+	return (   (   element.tagName == "DIV"
+				&& (   element.className.trim() == ""
+					|| element.className.trim() == "block"))
+			|| (   element.tagName == "SPAN"
+				&& element.className.trim() == ""));
+}
+
 /**************************************************************************/
 /*	Returns assembled and appropriately prefixed selector from given parts.
  */

@@ -1285,14 +1285,15 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
     GWLog("rectifyFileAppendClasses", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".aux-links-transclude-file, .file-includes").forEach(fileIncludesBlock => {
-		//	Get all collapses within the file include block...
-		let fileIncludeCollapseBlocks = Array.from(fileIncludesBlock.querySelectorAll(".collapse"));
-		//	The file-include block itself may be a collapse!
+		//	The file-include block itself may be a collapse! If so, wrap it.
 		if (fileIncludesBlock.matches(".collapse"))
-			fileIncludeCollapseBlocks.push(fileIncludesBlock);
-		//	Apply standard class.
-		fileIncludeCollapseBlocks.forEach(fileIncludeCollapse => {
-			fileIncludeCollapse.classList.add("file-include-collapse");
+			fileIncludesBlock = wrapElement(fileIncludesBlock, "div.file-includes", { moveClasses: [ "data-field", "file-includes" ] });
+		//	Rectify class.
+		fileIncludesBlock.swapClasses([ "aux-links-transclude-file", "file-includes" ], 1);
+		//	Apply standard class to all collapses within the includes block.
+		fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
+			fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
+			fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
 		});
 	});
 }, "rewrite");
