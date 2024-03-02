@@ -3,6 +3,7 @@
 /*******************/
 
 GW.elementInjectTriggers = { };
+GW.defunctElementInjectTriggers = { };
 
 /****************************************************************************/
 /*	Register element inject trigger for the given uuid. (In other words, when
@@ -32,10 +33,10 @@ function observeInjectedElementsInDocument(doc) {
 		if (Object.entries(GW.elementInjectTriggers).length == 0)
 			return;
 
-		let doTrigger = (node, f) => {
-			delete GW.elementInjectTriggers[node.dataset.uuid];
-			f(node);
-			node.dataset.uuid = null;
+		let doTrigger = (element, f) => {
+			GW.defunctElementInjectTriggers[element.dataset.uuid] = f;
+			delete GW.elementInjectTriggers[element.dataset.uuid];
+			f(element);
 		};
 
 		for (mutationRecord of mutationsList) {
@@ -73,19 +74,10 @@ observeInjectedElementsInDocument(document);
 	used to, e.g., delay replacement, by passing a suitable doWhen function
 	as the wrapper.)
  */
-function placeholder(replaceFunction, wrapperFunction = null) {
-	let transform;
-	if (wrapperFunction) {
-		transform = (element) => {
-			wrapperFunction(() => {
-				element.replaceWith(replaceFunction(element));
-			});
-		};
-	} else {
-		transform = (element) => {
-			element.replaceWith(replaceFunction(element));
-		};
-	}
+function placeholder(replaceFunction, wrapperFunction) {
+	let transform = wrapperFunction
+					? (element) => { wrapperFunction(() => { element.replaceWith(replaceFunction(element)); }); }
+					: (element) => { element.replaceWith(replaceFunction(element)); }
 
 	let uuid = onInject(null, transform);
 
@@ -95,12 +87,13 @@ function placeholder(replaceFunction, wrapperFunction = null) {
 /*****************************************************************************/
 /*	Generate new UUIDs for any placeholder elements in the given container. 
 	(Necessary when using a DocumentFragment to make a copy of a subtree; 
-	 otherwise - since inject triggers are deleted after triggering once - any 
-	 placeholders in the copied subtree will never get replaced.)
+	 otherwise - since inject triggers are deleted after triggering once - 
+	 any placeholders in the copied subtree will never get replaced.)
  */
 function regeneratePlaceholderIds(container) {
 	container.querySelectorAll(".placeholder").forEach(placeholder => {
-		placeholder.dataset.uuid = onInject(null, GW.elementInjectTriggers[placeholder.dataset.uuid]);
+		placeholder.dataset.uuid = onInject(null, (   GW.elementInjectTriggers[placeholder.dataset.uuid] 
+												   ?? GW.defunctElementInjectTriggers[placeholder.dataset.uuid]));
 	});
 }
 
