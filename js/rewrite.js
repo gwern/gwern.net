@@ -1298,6 +1298,37 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
 	});
 }, "rewrite");
 
+/******************************************************************************/
+/*	Properly handle file includes in annotations when their include-link fires.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAnnotations = (eventInfo) => {
+    GWLog("handleFileIncludeUncollapseInAnnotations", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".file-include-collapse").forEach(fileIncludeCollapse => {
+		let includeLink = fileIncludeCollapse.querySelector("a");
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (embedInjectEventInfo) => {
+			let embed = embedInjectEventInfo.container.firstElementChild;
+
+			//	Scroll into view.
+			scrollElementIntoView(embed);
+			if (   embed.tagName == "IFRAME"
+				&& Extracts.popFrameProvider.containingPopFrame(embed) != null)
+				embed.addEventListener("load", (event) => {
+					scrollElementIntoView(embed);
+				});
+
+			//	Designate now-last collapse for styling.
+			let previousBlock = previousBlockOf(embed);
+			if (   embed.closest(".collapse") == null
+				&& previousBlock.classList.contains("collapse-block"))
+				previousBlock.classList.add("last-collapse");
+		}, {
+			once: true,
+			condition: (info) => (info.includeLink == includeLink)
+		});
+	});
+}, "eventListeners", (info) => (info.contentType == "annotation"));
+
 /***************************************************************************/
 /*  Because annotations transclude aux-links, we make the aux-links links in
     the metadata line of annotations scroll down to the appended aux-links

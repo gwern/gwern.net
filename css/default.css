@@ -840,6 +840,9 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     padding: 0.5em 0 0.5em 2px;
 }
 
+.annotation .collapse-block.last-collapse:not(:last-child) {
+    border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
+}
 
 /*********************************************************************/
 /*	File includes in link bibliographies, directory indexes, and other
@@ -3559,8 +3562,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 .popframe-body > .annotation > .annotation-abstract:last-child > .collapse-block.aux-links-append:last-child,
 .popframe-body > .annotation > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,
-.popframe-body > .annotation > .annotation-abstract:last-child > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,
-.popframe-body > .annotation .collapse-block.last-collapse {
+.popframe-body > .annotation > .annotation-abstract:last-child > .file-includes:last-child > .collapse-block.file-include-collapse:last-child {
     border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
