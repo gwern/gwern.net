@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-29 09:45:38 gwern"
+# When:  Time-stamp: "2024-03-02 17:04:23 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -273,13 +273,19 @@ gwmv () {
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
         OLD=$(echo "$1" | tr -d '  ⁠' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | tr -d ' ⁠ ' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
+        # Check if the parent directory of the NEW path exists
+        NEW_DIR=$(dirname "$HOME/wiki$NEW")
+        if [ ! -d "$NEW_DIR" ]; then
+            echo "Target directory $NEW_DIR does not exist. Operation aborted."
+            return 7
+        fi
 
         if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
             echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories."
             return 3
         elif [ ! -f "$HOME/wiki$OLD" ] && [ ! -f "${OLD:1}" ]; then
             echo "File $OLD not found in current directory or ~/wiki"
-            return 3
+            return 4
         fi
 
         # strip any slash prefix like '/doc/psychology/2021-foo.pdf' → 'doc/psychology/2021-foo.pdf' to turn it into a local relative link
@@ -290,7 +296,7 @@ gwmv () {
         cd ~/wiki/
         if [[ -a ~/wiki$NEW ]]; then
             echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first."
-            return 4
+            return 5
         fi
 
         # Check if OLD is a PNG and NEW is a JPG for conversion
@@ -299,7 +305,8 @@ gwmv () {
             TMP="$(mktemp /tmp/XXXXX.jpg)"
             convert "$HOME/wiki$OLD" "$TMP"
             compressJPG2 "$TMP"
-            feh "$HOME/wiki$OLD" "$TMP" &
+            feh "$HOME/wiki$OLD" "$TMP" || return 6
+            wait
             git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
             mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then
@@ -450,7 +457,7 @@ mvuri () {
       inotifywait --quiet --event create ~/
     fi
   done
-  echo "$SOURCE" "$DESTINATION"
+  echo "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
   is_downloading "$SOURCE"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
@@ -460,5 +467,5 @@ mvuri () {
       mv "$SOURCE" "$DESTINATION"
   fi
 
-
+  echo -n -e '\a'; # ring bell because done
 }

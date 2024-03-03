@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-02-25 17:08:29 gwern"
+# When:  Time-stamp: "2024-03-01 20:03:16 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -150,7 +150,7 @@ else
                         if [[ $(stat -c%s "./doc/www/$DOMAIN/$HASH.html") -ge 10000000 ]]; then
                             php ./static/build/deconstruct_singlefile.php "./doc/www/$DOMAIN/$HASH.html"
                             cp "./doc/www/$DOMAIN/$HASH.html.bak" "/tmp/$HASH.html"
-                            x-www-browser "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "/tmp/$HASH.html#original" "$URL" &
+                            x-www-browser "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "/tmp/$HASH.html" "$URL" &
                         else
                             x-www-browser "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "$URL" &
                         fi

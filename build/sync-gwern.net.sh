@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-02-29 18:06:29 gwern"
+# When:  Time-stamp: "2024-03-02 17:55:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -176,7 +176,7 @@ else
 
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Updating link bibliographies…"
-        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS || true
+        # ./static/build/generateLinkBibliography +RTS -N"$N" -RTS || true
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
@@ -194,7 +194,7 @@ else
     bold "Building site…"
 
     # make sure all videos have 'poster' preview images:
-    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm" -or -name "*.avi"); do
+    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm" -or -name "*.avi" | gfv "doc/www/"); do # we skip posters for videos in /doc/www/* archives from split archives because nothing sets a poster on them, so just a waste of space
         POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
                                         echo "Generating poster image for $VIDEO…"
                                         # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles. User has no idea what it is until they click to begin download the (possibly huge) video file. This also causes layout shift as the `<video>` element expands to the proper size of the video.
@@ -266,22 +266,26 @@ else
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     syntaxHighlightByLibreofficeDoc () { for FILE in "$@"; do
-                                          TARGET=$(basename "$FILE")
-                                          libreoffice --convert-to html:HTML:EmbedImages "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                             if [ ! -f "_site/${FILE}.html" ]; then
+                                                 TARGET=$(basename "$FILE")
+                                                 libreoffice --headless --convert-to html:HTML:EmbedImages "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                             fi
                                      done
                                    }
     export -f syntaxHighlightByLibreofficeDoc
-    find ./ -type f \
+    find ./doc/ -type f \
          | gf -e ".doc" -e ".docx" | \
-        sort | parallel --jobs 1 syntaxHighlightByLibreofficeDoc & # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
+        sort | parallel --jobs 1 syntaxHighlightByLibreofficeDoc # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
     # HACK: Libreoffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also Libreoffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...
     syntaxHighlightByLibreofficeSpreadsheet () { for FILE in "$@"; do
-                                          TARGET=$(basename "$FILE")
-                                          libreoffice --convert-to html "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                                     if [ ! -f "_site/${FILE}.html" ]; then
+                                                         TARGET=$(basename "$FILE")
+                                                         libreoffice --headless --convert-to html "$FILE" && mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
+                                                     fi
                                      done
                                    }
     export -f syntaxHighlightByLibreofficeSpreadsheet
-    find ./ -type f \
+    find ./doc/ -type f \
          | gf -e ".csv" -e ".ods" -e ".xls" -e ".xlsx" | \
         sort | parallel --jobs 1 syntaxHighlightByLibreofficeSpreadsheet &
     set -e
@@ -1324,4 +1328,5 @@ else
     wait
 
     bold "Sync successful: $(date)"
+    echo -n -e '\a'; # ring bell because done
 fi

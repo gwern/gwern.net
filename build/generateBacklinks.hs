@@ -160,7 +160,7 @@ parseFileForLinks mdp m = do text <- TIO.readFile m
                                      path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
 
 localize :: T.Text -> T.Text
-localize = T.replace "https://gwern.net/" "/" . T.replace ".md" ""
+localize = T.replace "https://gwern.net/" "/" -- . T.replace ".md" ""
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool

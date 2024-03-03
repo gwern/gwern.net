@@ -15,7 +15,7 @@ import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
 import MetadataFormat (checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
-import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceChecked, replaceMany, safeHtmlWriterOptions, sed, sedMany, split, trim)
+import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, safeHtmlWriterOptions, sed, sedMany, split, trim)
 import Tags (listTagDirectoriesAll, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
 import Query (truncateTOCHTML)
@@ -178,10 +178,10 @@ gwernTOC footnotesP indexP p' f =
                  ("class=\"footnote-ref\" role=\"doc-noteref\"", "")
                 ] tc') $
  (\tc -> -- add columns class to condense it in popups/tags
-        replaceChecked "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
+        replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
         -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them. TODO: should be fixed in Pandoc HEAD, so remove this after a full upgrade.
         sed "<span>(.*)</span>" "\\1" $
-        (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replaceChecked "<a href=" "<a class=\"id-not\" href=") $
+        (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
         -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies/backlinks.
         sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" tc) index
         where
