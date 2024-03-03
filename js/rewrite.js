@@ -839,6 +839,25 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapPreBlocks = (eventInfo) => {
 	});
 }, "rewrite");
 
+/********************************************************/
+/*	EXPERIMENTAL: Highlight-on-hover for all code blocks.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.addCodeBlockLineClasses = (eventInfo) => {
+    GWLog("addCodeBlockLineClasses", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("code.sourceCode > span:not(.line)").forEach(lineSpan => {
+		lineSpan.classList.add("line");
+		if (lineSpan.innerHTML.length == 0)
+			lineSpan.innerHTML = "&nbsp;";
+	});
+
+	eventInfo.container.querySelectorAll("pre code:not(.sourceCode)").forEach(codeBlock => {
+		codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
+			line => `<span class="line">${(line || "&nbsp;")}</span>`
+		).join("\n");
+	});
+}, "rewrite");
+
 /*****************************************************************************/
 /*	Allow for specifying code block classes by setting classes on the <pre>.
 	(Workaround for a Pandoc peculiarity where classes set on a code block
