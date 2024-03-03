@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-02 17:10:30 gwern"
+When:  Time-stamp: "2024-03-03 14:59:58 gwern"
 License: CC-0
 -}
 
@@ -574,7 +574,9 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null gen
    fileSizeMB       = if not localP then 0 else
                         round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
-   fileTypeDescription       = C.fileExtensionToEnglish $ takeExtension f'
+   fileTypeDescription = if "https://www.youtube.com/watch?v=" `isPrefixOf` f then "YouTube video"
+                         else if "https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f then "Tweet"
+                              else C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
                               | liveP && not localP     = "external link"
                               | otherwise               = "HTML"
@@ -582,22 +584,23 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null gen
                                      fileTypeDescriptionString
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
    title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ "“" ++ tle ++ "”"
-   titleCaption = [Strong [Str "Expand to view ", fileDescription], Str ":"]
+   titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
-    | "wikipedia.org/wiki/" `isInfixOf` f' = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
+    | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"],[])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"]++(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
     -- image/video/audio:
-    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' = [Para $ (if alwaysLabelP then [Strong [Str "Expand to view ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]
-    | otherwise = if not liveP && not localP then [] else
+    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
+        [Para $ (if alwaysLabelP then [Strong [Str "View ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[]) [title] (T.pack f', "")]]
+    | otherwise = if not liveP then [] else
         [Div ("",["collapse"],[])
           [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
-isDocumentViewable f = -- (isLocal (T.pack f) && hasExtensionS ".html" f) ||
+isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
                        anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
                        hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
