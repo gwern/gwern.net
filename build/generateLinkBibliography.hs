@@ -58,6 +58,7 @@ writeLinkBibliographyFragment am md path =
       let (path',_) = getLinkBibLink path
       lbExists <- doesFileExist path
       let essay = head path == '/' && '.' `notElem` path
+      -- TODO: this is still slow because we have to write out all the annotation link-bibs too, regardless of change. need to check for the annotation HTML fragment's timestamp, not just essay timestamps
       shouldWrite <- if essay then -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
                                    if not lbExists then return True else
                                      do essayLastModified <- getModificationTime (tail (takeWhile (/='#') path) ++ ".md")

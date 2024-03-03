@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-02-28 21:37:52 gwern"
+;;; When:  Time-stamp: "2024-03-02 10:53:30 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -203,8 +203,8 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
 (defun super-insert (key char)
   "Bind Super (H-) plus KEY to insert CHAR."
   (global-set-key (kbd (concat "s-" key)) (lambda () (interactive) (insert char)))  )
-(super-insert "'" "‘") ; eg equivalent to `(global-set-key (kbd "s-'") (lambda () (interactive) (insert "‘")))
-(super-insert "\"" "’")
+(super-insert "\"" "‘") ; eg equivalent to `(global-set-key (kbd "s-'") (lambda () (interactive) (insert "‘")))
+(super-insert "'" "’")
 (super-insert ";" "“")
 (super-insert ":" "”")
 (super-insert "-" "—") ; EM DASH
@@ -1931,7 +1931,6 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       (insert "\n---------------\n")
       (yank)
       (goto-char $pos)
-      (html-mode)
 
       ; (replace-all "\n" " ")
       (let ( ; (begin (if (region-active-p) (region-beginning) (+ $pos 1)))
@@ -1957,6 +1956,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
       ; (query-replace "'" "''" nil begin end)
       (delete-trailing-whitespace)
       (forward-line)
+      (html-mode)
       (ding)
       (message "Done.")
       )

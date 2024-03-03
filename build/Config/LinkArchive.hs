@@ -40,6 +40,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://medium.com" "https://scribe.rip" -- clean Medium frontend; can also handle custom domains with a bit more work: <https://scribe.rip/faq#custom-domains>
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
                             . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
+                            . transformURItoGW
 
 -- `data-href-mobile`:
 transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://browse.arxiv.org/html/\\1?fallback=original\\2" .
@@ -321,56 +322,19 @@ whiteListMatchesFixed = [
       , "escholarship.org"
       , "winehq.org"
       , "semanticscholar.org"
-      , "iacr.org"
-      , "nber.org"
-      , "jstor.org"
-      , "npr.org"
-      , "pnas.org"
       , "tools.wmflabs.org"
-      , "sciencepubs.org"
-      , "genetics.org"
-      , "plosgenetics.org"
-      , "elifesciences.org"
-      , "tvtropes.org"
-      , "mayoclinicproceedings.org"
-      , "evageeks.org"
-      , "wikibooks.org"
-      , "annals.org"
-      , "esajournals.org"
-      , "oxfordjournals.org"
       , "yourmorals.org"
-      , "creativecommons.org"
       , "tasvideos.org"
-      , "plos.org"
       , "philpapers.org"
-      , "80000hours.org"
-      , "rootsofprogress.org"
-      , "humanprogress.org"
-      , "longbets.org"
-      , "cogprints.org"
-      , "annualreviews.org"
-      , "sciencenews.org"
       , "r-project.org"
       , "metafor-project.org"
       , "torproject.org"
       , "personality-project.org"
-      , "ieet.org"
       , "jstatsoft.org"
-      , "archive-it.org"
-      , "slashdot.org"
       , "hathitrust.org"
-      , "nongnu.org"
       , "safebooru.org"
       , "derpibooru.org"
-      , "biorxiv.org" -- stable
-      , "medrxiv.org" -- stable
-      , "publicdomainreview.org" -- stable
-      , "biomedicalcomputationreview.org"
-      , "theparisreview.org"
       , "usenix.org"
-      , "archlinux.org"
-      , "html-tidy.org"
-      , "plosbiology.org"
       , "scipy.org"
       , "wiktionary.org"
       , "wellcomelibrary.org"
@@ -447,26 +411,14 @@ whiteListMatchesFixed = [
       , "darknetlive.com"
       , "docsdrive.com"
       , "tineye.com"
-      , "smithsonianmag.com"
-      , "nymag.com"
-      , "norvig.com"
-      , "librarything.com"
-      , "greaterwrong.com"
-      , "lesswrong.com"
-      , "farnamstreetblog.com"
       , "bloomberg.com"
-      , "f1000research.com"
       , "patch.com"
-      , "mdpi.com"
-      , "bmj.com"
-      , "peerj.com"
-      , "wsj.com"
       , "dual-n-back.com"
       , "clickotron.com"
       , "amazon.com" -- service
       , "amzn.to" -- service redirect
       , "amzn.com"
-      , "vimeo.com"
+      , "vimeo.com" -- video, need yt-dl or similar
       , "duckduckgo.com"
       , "duolingo.com"
       , "bandcamp.com"
@@ -1148,6 +1100,7 @@ whiteListMatchesFixed = [
       , "https://nap.nationalacademies.org/read/10668/chapter/1" -- interactive
       , "https://dreamtuner-diffusion.github.io/" -- size/low-quality: final video broke, 199MB
       , "https://hanlab.mit.edu/projects/tsm" -- low-quality (YouTube video embeds)
+      , "https://abagames.github.io/crisp-game-lib-11-games/?pakupaku" -- inactive (game) / low-quality (broken in snapshot?)
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage
