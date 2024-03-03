@@ -17221,12 +17221,10 @@ ImageFocus = {
 
 	preloadImage: (image) => {
 		let originalSrc = image.src;
-		image.src = ImageFocus.focusedImgSrcForImage(image);
 
-		if (image.naturalWidth == 0) {
-			image.loading = "eager";
-			image.decoding = "sync";
-		}
+		image.loading = "eager";
+		image.decoding = "sync";
+		image.src = ImageFocus.focusedImgSrcForImage(image);
 
 		requestAnimationFrame(() => {
 			image.src = originalSrc;
