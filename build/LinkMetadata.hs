@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-03 14:59:58 gwern"
+When:  Time-stamp: "2024-03-03 22:17:32 gwern"
 License: CC-0
 -}
 
@@ -549,7 +549,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
 generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
-                                let tle' = if null tle then "<code>"++f++"</code>" else "“" ++ tle ++ "”"
+                                let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = linkIcon $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
@@ -578,12 +578,12 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null gen
                          else if "https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f then "Tweet"
                               else C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
-                              | liveP && not localP     = "external link"
+                              | liveP && not localP     = "External Link"
                               | otherwise               = "HTML"
    fileDescription           = Str $ T.pack $
                                      fileTypeDescriptionString
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
-   title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ "“" ++ tle ++ "”"
+   title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack $ tle
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
