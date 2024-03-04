@@ -11,86 +11,11 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://gwern.net/newsletter/2019/07
 
 Extracts = {
-    /*  Target containers.
-     */
-    contentContainersSelector: [
-    	".markdownBody",
-    	"#TOC",
-    	"#page-metadata",
-    	"#sidebar"
-    ].join(", "),
-
-	/*	Don’t display indicator hooks on links in these containers.
-	 */
-	hooklessLinksContainersSelector: [
-		"body.index #markdownBody",
-		"#sidebar",
-		".TOC",
-		".floating-header"
-	].join(", "),
-
-    /*  Targets.
-     */
-    targets: {
-        targetElementsSelector: "a[href]",
-        excludedElementsSelector: [
-            ".section-self-link",
-            ".footnote-self-link",
-            ".sidenote-self-link",
-            "[aria-hidden='true']",
-            "[href$='#top']",
-            ".extract-not"
-        ].join(", "),
-        excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
-        //  See comment at Extracts.isLocalPageLink for info on this function.
-        //  Called by: pop-frame providers (popins.js or popups.js).
-        testTarget: (target) => {
-            let targetTypeInfo = Extracts.targetTypeInfo(target);
-            if (targetTypeInfo) {
-                let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
-                if (   specialTestFunction
-                	&& specialTestFunction(target) == false)
-                    return false;
-
-                //  Do not allow pop-frames to spawn themselves.
-                let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
-                if (   containingPopFrame
-                	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
-                    return false;
-
-				//	Don’t spawn duplicate popins.
-				if (Extracts.popFrameProvider == Popins) {
-					let popinStack = Popins.allSpawnedPopins();
-					if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
-						return false;
-				}
-
-                //  Added specified classes to the target.
-                if (targetTypeInfo.targetClasses) {
-                	if (typeof targetTypeInfo.targetClasses == "string")
-	                    target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
-	                else if (typeof targetTypeInfo.targetClasses == "function")
-	                	target.classList.add(...(targetTypeInfo.targetClasses(target).split(" ")));
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-    },
-
-    /*  Misc. configuration.
-     */
-    server404PageTitles: [
-        "404 Not Found"
-    ],
-
-    rootDocument: document,
-
     /******************/
     /*  Infrastructure.
      */
+
+    rootDocument: document,
 
     //  Can be ‘Popups’ or ‘Popins’, currently.
     popFrameProviderName: null,
@@ -101,8 +26,7 @@ Extracts = {
     /*  General.
      */
 
-	//	Called by: popups.js and popins.js when removing a target
-	//	(see Extracts.removeTargetsWithin)
+	//	Called by: Extracts.removeTargetsWithin
 	restoreTarget: (target) => {
 		//  Restore title attribute, if any.
 		if (target.dataset.attributeTitle) {
@@ -117,7 +41,18 @@ Extracts = {
     removeTargetsWithin: (container) => {
         GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
-        Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, Extracts.restoreTarget);
+		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
+			if (   target.matches(Extracts.config.excludedElementsSelector)
+				|| target.closest(Extracts.config.excludedContainerElementsSelector) != null)
+				return;
+
+			if (Extracts.testTarget(target) == false)
+				return;
+
+			Extracts.restoreTarget(target);
+
+			Extracts.popFrameProvider.removeTarget(target);
+		});
     },
 
     //  Called by: extracts-options.js
@@ -125,13 +60,13 @@ Extracts = {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
 		//	Remove pop-frame indicator hooks.
-		document.querySelectorAll(".has-indicator-hook").forEach(link => {
+		Extracts.rootDocument.querySelectorAll(".has-indicator-hook").forEach(link => {
 			link.querySelector(".indicator-hook").remove();
 			link.classList.remove("has-indicator-hook");
 		});
 
         //  Unbind event listeners and restore targets.
-        document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+        Extracts.rootDocument.querySelectorAll(Extracts.config.contentContainersSelector).forEach(container => {
             Extracts.removeTargetsWithin(container);
         });
 
@@ -154,11 +89,24 @@ Extracts = {
     addTargetsWithin: (container) => {
         GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
-        if (Extracts.popFrameProvider == Popups) {
-            Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget, Extracts.restoreTarget);
-        } else if (Extracts.popFrameProvider == Popins) {
-            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget, Extracts.restoreTarget);
-        }
+		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
+			if (   target.matches(Extracts.config.excludedElementsSelector)
+				|| target.closest(Extracts.config.excludedContainerElementsSelector) != null)
+				return;
+
+			if (Extracts.testTarget(target) == false)
+				return;
+
+			if (Extracts.popFrameProvider == Popups)
+				Extracts.preparePopupTarget(target);
+			else // if (Extracts.popFrameProvider == Popins)
+				Extracts.preparePopinTarget(target);
+
+			let popFramePrepareFunction = (Extracts.popFrameProvider == Popups
+										   ? Extracts.preparePopup
+										   : Extracts.preparePopin);
+			Extracts.popFrameProvider.addTarget(target, popFramePrepareFunction);
+		});
 
 		Extracts.setUpAnnotationLoadEventsWithin(container);
 		Extracts.setUpContentLoadEventsWithin(container);
@@ -195,7 +143,7 @@ Extracts = {
 		//	Inject mode selectors, if need be.
 		if (Extracts.modeSelector == null) {
 			Extracts.injectModeSelector();
-			document.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
+			Extracts.rootDocument.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
 				Extracts.injectModeSelector(element);
 			});
 		}
@@ -249,10 +197,10 @@ Extracts = {
 
 		if (   container instanceof DocumentFragment
 			|| (   container instanceof Element
-			    && container.closest(Extracts.contentContainersSelector))) {
+			    && container.closest(Extracts.config.contentContainersSelector))) {
 			Extracts.addTargetsWithin(container);
 		} else {
-            container.querySelectorAll(Extracts.contentContainersSelector).forEach(contentContainer => {
+            container.querySelectorAll(Extracts.config.contentContainersSelector).forEach(contentContainer => {
                 Extracts.addTargetsWithin(contentContainer);
             });
         }
@@ -285,6 +233,43 @@ Extracts = {
     /***********/
     /*  Content.
      */
+
+	//  See comment at Extracts.isLocalPageLink for info on this function.
+	//  Called by: Extracts.addTargetsWithin
+	testTarget: (target) => {
+		let targetTypeInfo = Extracts.targetTypeInfo(target);
+		if (targetTypeInfo) {
+			let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
+			if (   specialTestFunction
+				&& specialTestFunction(target) == false)
+				return false;
+
+			//  Do not allow pop-frames to spawn themselves.
+			let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
+			if (   containingPopFrame
+				&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
+				return false;
+
+			//	Don’t spawn duplicate popins.
+			if (Extracts.popFrameProvider == Popins) {
+				let popinStack = Popins.allSpawnedPopins();
+				if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
+					return false;
+			}
+
+			//  Add specified classes to the target.
+			if (targetTypeInfo.targetClasses) {
+				if (typeof targetTypeInfo.targetClasses == "string")
+					target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
+				else if (typeof targetTypeInfo.targetClasses == "function")
+					target.classList.add(...(targetTypeInfo.targetClasses(target).split(" ")));
+			}
+
+			return true;
+		}
+
+		return false;
+	},
 
 	/*  This array defines the types of ‘targets’ (ie. annotated links,
 		links pointing to available content such as images or code files,
@@ -661,9 +646,7 @@ Extracts = {
         return (localStorage.getItem(Extracts.popinsDisabledLocalStorageItemKey) != "true");
     },
 
-    /*  Called by popins.js when adding a target.
-     */
-    //  (See Extracts.addTargetsWithin)
+    //  Called by: Extracts.addTargetsWithin
 	preparePopinTarget: (target) => {
 		target.adjustPopinWidth = (popin) => {
 			let leftMargin, rightMargin;
@@ -775,9 +758,7 @@ Extracts = {
                 && Popups.popupIsPinned(popup) == false);
     },
 
-    /*  Called by popups.js when adding a target.
-     */
-    //  (See Extracts.addTargetsWithin)
+    //  Called by: Extracts.addTargetsWithin
     preparePopupTarget: (target) => {
         //  Remove the title attribute (saving it first);
         if (target.title) {

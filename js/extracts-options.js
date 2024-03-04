@@ -235,6 +235,6 @@ Extracts = { ...Extracts,
 		/*  Since the main document has already loaded, we must trigger the
 			processing of targets manually.
 		 */
-		Extracts.processTargetsInContainer(document.body);
+		Extracts.processTargetsInContainer(Extracts.rootDocument);
 	},
 };
