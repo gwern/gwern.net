@@ -8971,12 +8971,13 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		container.querySelectorAll(".has-content").forEach(link => {
-			link.classList.toggle("has-indicator-hook",
-								  (link.closest(Extracts.hooklessLinksContainersSelector) == null));
+			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
+				return;
 
 			if (link.querySelector(".indicator-hook") != null)
 				return;
 
+			//	Inject indicator hook span.
 			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
 
 			/*	Inject U+2060 WORD JOINER at start of first text node of the
@@ -8989,6 +8990,8 @@ Extracts = {
 			let linkFirstTextNode = link.firstTextNode;
 			if (linkFirstTextNode)
 				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+
+			link.classList.add("has-indicator-hook");
 		});
     },
 
