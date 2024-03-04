@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-02 17:04:23 gwern"
+# When:  Time-stamp: "2024-03-03 17:03:45 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -35,7 +35,8 @@ gf  () { grep -F "$@"; }
 gfv () { gf --invert-match "$@"; }
 export -f bold red wrap ge gev gf gfv
 
-path2File() {
+file2Path () { echo "$1" | sed -e 's/~\/wiki//' -e 's/\/home\/gwern\/wiki\//\//' -e 's/\.\//\//' -e 's/https:\/\/gwern\.net//g' -e 's/^/\//' -e 's/^\/\//\//'; }
+path2File () {
     # This function takes any number of arguments as input paths or URLs
     # and converts them to a file path under the ~/wiki/ directory.
 
@@ -168,7 +169,7 @@ png2JPGQualityCheck () {
 export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
-cr () { crossref $(path2File "$@") & }
+cr() { crossref "$@" & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""
@@ -457,9 +458,9 @@ mvuri () {
       inotifywait --quiet --event create ~/
     fi
   done
-  echo "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
   is_downloading "$SOURCE"
+  echo "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
       mv "$SOURCE" "$DESTINATION"
       php ~/wiki/static/build/deconstruct_singlefile.php "$DESTINATION"

@@ -13,7 +13,10 @@
 
 set -e
 
-TARGET_ORIGINAL="$@" # "$(echo "$@" | sed -e 's/\/home\/gwern\/wiki\/doc/doc/g' -e 's/.*wiki\/doc/doc/g' -e 's/^\/doc/doc/g' -e 's/^\///' -e 's/https:\/\/gwern\.net\///' )"
+. ~/wiki/static/build/bash.sh # for path2file
+
+TARGET_ORIGINAL="$(path2File "$1")"
+URL="$(file2Path "$1")"
 
 if [[ ! -f "$TARGET_ORIGINAL" ]]; then
     TARGET="/home/gwern/wiki/$TARGET_ORIGINAL"
@@ -31,7 +34,7 @@ if [ "${*##*.}" = "pdf" ]; then
                     tr -d '\n')
     echo ""
     echo "---"
-    echo "$TARGET_ORIGINAL"
+    echo "$URL"
     echo "$TITLE";
 
     ## Check if 'Author' is prefix of 'Creator', in which case 'Creator is probably the 'real' list of authors
@@ -57,8 +60,8 @@ if [ "${*##*.}" = "pdf" ]; then
     timeout 8s curl -s -L 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
     echo ""
 
-        ( if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$(basename "$@")" -e "$TITLE" || true;
-          else gwa "$(basename "$@")" || true;
+        ( if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
+          else gwa "$URL" || true;
           fi; ) &
 
     echo "---"

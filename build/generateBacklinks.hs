@@ -10,9 +10,10 @@ import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
                     runPure, writeHtml5String,
                     Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, Text)
+import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, stripSuffix, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
+import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter, filterWithKey)
 import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
@@ -160,7 +161,7 @@ parseFileForLinks mdp m = do text <- TIO.readFile m
                                      path = if not (anyPrefixT m' ["/", "https://", "http://"]) then "/" `T.append` m' else m'
 
 localize :: T.Text -> T.Text
-localize = T.replace "https://gwern.net/" "/" -- . T.replace ".md" ""
+localize text = T.replace "https://gwern.net/" "/" $ fromMaybe text $ T.stripSuffix ".md" text
 
 -- filter out links with the 'backlink-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool
