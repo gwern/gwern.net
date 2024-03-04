@@ -352,7 +352,7 @@ Content = {
 				let additionalAttributes = [ ];
 
 				//	Determine sandbox settings.
-				additionalAttributes.push(Content.contentTypes.foreignSite.scriptsEnabledOnHosts.includes(link.hostname)
+				additionalAttributes.push(Content.contentTypes.foreignSite.shouldEnableScriptsForURL(URLFromString(embedSrc))
 										  ? `sandbox="allow-scripts allow-same-origin"`
 										  : `sandbox`);
 
@@ -361,9 +361,16 @@ Content = {
 				}));
 			},
 
-			scriptsEnabledOnHosts: [
-				"docs.google.com"
-			]
+			shouldEnableScriptsForURL: (url) => {
+				if (url.hostname == "docs.google.com")
+					return true;
+
+				if (   url.hostname == "archive.org"
+					&& url.pathname.startsWith("/details/"))
+					return true;
+
+				return false;
+			}
 		},
 
 		tweet: {
