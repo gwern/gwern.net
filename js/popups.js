@@ -45,18 +45,20 @@ Popups = {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
         //  Remove popups container.
-        document.querySelectorAll(`#${Popups.popupContainerID}`).forEach(element => element.remove());
+        Popups.popupContainer?.remove();
 		Popups.popupContainer = null;
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
-
+		//	Remove mousemove listener.
+		window.removeEventListener("mousemove", Popups.windowMouseMove);
 		//	Remove scroll listener.
 		removeScrollListener("updatePopupsEventStateScrollListener");
 		//	Remove popup-spawn event handler.
 		GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned);
-		//	Remove mousemove listener.
-		window.removeEventListener("mousemove", Popups.windowMouseMove);
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popups.cleanupDidComplete");
 	},
 
 	setup: () => {
@@ -87,115 +89,64 @@ Popups = {
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
 
+		//	Add mousemove listener, to enable hover on mouse move.
+		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
+			Popups.hoverEventsActive = true;
+		});
+
 		//	Add scroll listener, to disable hover on scroll.
 		addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
 			Popups.hoverEventsActive = false;
 		}, "disablePopupHoverEventsOnScrollListener");
+
 		/*	Add event handler to add scroll listener to spawned popups, to
 			disable hover events when scrolling within a popup.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 			addScrollListener(Popups.disableHoverEventsOnScroll, null, null, info.popup.scrollView);
 		});
-		//	Add mousemove listener, to enable hover on mouse move.
-		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
-			Popups.hoverEventsActive = true;
-		});
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
-		GWLog("Popups.addTargetsWithin", "popups.js", 1);
+	addTarget: (target, prepareFunction) => {
+		GWLog("Popups.addTarget", "popups.js", 1);
 
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+		//	Bind mouseenter/mouseleave/mousedown events.
+		target.addEventListener("mouseenter", Popups.targetMouseEnter);
+		target.addEventListener("mouseleave", Popups.targetMouseLeave);
+		target.addEventListener("mousedown", Popups.targetMouseDown);
 
-		if (contentContainer == null)
-			return;
+		//  Set prepare function.
+		target.preparePopup = prepareFunction;
 
-		//	Get all targets.
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popup", true);
-				return;
-			}
-
-			//  Apply the test function to the target.
-			if (targets.testTarget(target) == false) {
-				target.classList.toggle("no-popup", true);
-				targetRestoreFunction(target);
-				return;
-			}
-
-			//	Bind mouseenter/mouseleave/mousedown events.
-			target.addEventListener("mouseenter", Popups.targetMouseEnter);
-			target.addEventListener("mouseleave", Popups.targetMouseLeave);
-			target.addEventListener("mousedown", Popups.targetMouseDown);
-
-			//  Set prepare function.
-			target.preparePopup = prepareFunction;
-
-			//	Set target restore function.
-			target.restoreTarget = targetRestoreFunction;
-
-			//  Run any custom processing.
-			if (targetPrepareFunction)
-				targetPrepareFunction(target);
-
-			//  Mark target as spawning a popup.
-			target.classList.toggle("spawns-popup", true);
-		});
+		//  Mark target as spawning a popup.
+		target.classList.toggle("spawns-popup", true);
 	},
 
 	//	Called by: extracts.js
-	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
-		GWLog("Popups.removeTargetsWithin", "popups.js", 1);
+	removeTarget: (target) => {
+		GWLog("Popups.removeTarget", "popups.js", 1);
 
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+		//	Unbind existing mouseenter/mouseleave/mousedown events, if any.
+		target.removeEventListener("mouseenter", Popups.targetMouseEnter);
+		target.removeEventListener("mouseleave", Popups.targetMouseLeave);
+		target.removeEventListener("mousedown", Popups.targetMouseDown);
 
-		if (contentContainer == null)
-			return;
+		//  Clear timers for target.
+		Popups.clearPopupTimers(target);
 
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popup", false);
-				return;
-			}
+		//  Remove spawned popup for target, if any.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
 
-			//  Apply the test function to the target.
-			if (targets.testTarget(target) == false) {
-				target.classList.toggle("no-popup", false);
-				return;
-			}
+		//  Unset popup prepare function.
+		target.preparePopup = null;
 
-			//	Unbind existing mouseenter/mouseleave/mousedown events, if any.
-			target.removeEventListener("mouseenter", Popups.targetMouseEnter);
-			target.removeEventListener("mouseleave", Popups.targetMouseLeave);
-			target.removeEventListener("mousedown", Popups.targetMouseDown);
-
-			//  Clear timers for target.
-			Popups.clearPopupTimers(target);
-
-			//  Remove spawned popup for target, if any.
-			if (target.popup)
-				Popups.despawnPopup(target.popup);
-
-			//  Unset popup prepare function.
-			target.preparePopup = null;
-
-			//  Un-mark target as spawning a popup.
-			target.classList.toggle("spawns-popup", false);
-
-			//  Run any custom processing.
-			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
-			if (targetRestoreFunction)
-				targetRestoreFunction(target);
-		});
+		//  Un-mark target as spawning a popup.
+		target.classList.toggle("spawns-popup", false);
 	},
 
 	/*******************/

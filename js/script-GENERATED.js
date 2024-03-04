@@ -1761,18 +1761,20 @@ Popups = {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
         //  Remove popups container.
-        document.querySelectorAll(`#${Popups.popupContainerID}`).forEach(element => element.remove());
+        Popups.popupContainer?.remove();
 		Popups.popupContainer = null;
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
-
+		//	Remove mousemove listener.
+		window.removeEventListener("mousemove", Popups.windowMouseMove);
 		//	Remove scroll listener.
 		removeScrollListener("updatePopupsEventStateScrollListener");
 		//	Remove popup-spawn event handler.
 		GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned);
-		//	Remove mousemove listener.
-		window.removeEventListener("mousemove", Popups.windowMouseMove);
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popups.cleanupDidComplete");
 	},
 
 	setup: () => {
@@ -1803,115 +1805,64 @@ Popups = {
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
 
+		//	Add mousemove listener, to enable hover on mouse move.
+		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
+			Popups.hoverEventsActive = true;
+		});
+
 		//	Add scroll listener, to disable hover on scroll.
 		addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
 			Popups.hoverEventsActive = false;
 		}, "disablePopupHoverEventsOnScrollListener");
+
 		/*	Add event handler to add scroll listener to spawned popups, to
 			disable hover events when scrolling within a popup.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 			addScrollListener(Popups.disableHoverEventsOnScroll, null, null, info.popup.scrollView);
 		});
-		//	Add mousemove listener, to enable hover on mouse move.
-		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
-			Popups.hoverEventsActive = true;
-		});
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
-		GWLog("Popups.addTargetsWithin", "popups.js", 1);
+	addTarget: (target, prepareFunction) => {
+		GWLog("Popups.addTarget", "popups.js", 1);
 
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+		//	Bind mouseenter/mouseleave/mousedown events.
+		target.addEventListener("mouseenter", Popups.targetMouseEnter);
+		target.addEventListener("mouseleave", Popups.targetMouseLeave);
+		target.addEventListener("mousedown", Popups.targetMouseDown);
 
-		if (contentContainer == null)
-			return;
+		//  Set prepare function.
+		target.preparePopup = prepareFunction;
 
-		//	Get all targets.
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popup", true);
-				return;
-			}
-
-			//  Apply the test function to the target.
-			if (targets.testTarget(target) == false) {
-				target.classList.toggle("no-popup", true);
-				targetRestoreFunction(target);
-				return;
-			}
-
-			//	Bind mouseenter/mouseleave/mousedown events.
-			target.addEventListener("mouseenter", Popups.targetMouseEnter);
-			target.addEventListener("mouseleave", Popups.targetMouseLeave);
-			target.addEventListener("mousedown", Popups.targetMouseDown);
-
-			//  Set prepare function.
-			target.preparePopup = prepareFunction;
-
-			//	Set target restore function.
-			target.restoreTarget = targetRestoreFunction;
-
-			//  Run any custom processing.
-			if (targetPrepareFunction)
-				targetPrepareFunction(target);
-
-			//  Mark target as spawning a popup.
-			target.classList.toggle("spawns-popup", true);
-		});
+		//  Mark target as spawning a popup.
+		target.classList.toggle("spawns-popup", true);
 	},
 
 	//	Called by: extracts.js
-	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
-		GWLog("Popups.removeTargetsWithin", "popups.js", 1);
+	removeTarget: (target) => {
+		GWLog("Popups.removeTarget", "popups.js", 1);
 
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+		//	Unbind existing mouseenter/mouseleave/mousedown events, if any.
+		target.removeEventListener("mouseenter", Popups.targetMouseEnter);
+		target.removeEventListener("mouseleave", Popups.targetMouseLeave);
+		target.removeEventListener("mousedown", Popups.targetMouseDown);
 
-		if (contentContainer == null)
-			return;
+		//  Clear timers for target.
+		Popups.clearPopupTimers(target);
 
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popup", false);
-				return;
-			}
+		//  Remove spawned popup for target, if any.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
 
-			//  Apply the test function to the target.
-			if (targets.testTarget(target) == false) {
-				target.classList.toggle("no-popup", false);
-				return;
-			}
+		//  Unset popup prepare function.
+		target.preparePopup = null;
 
-			//	Unbind existing mouseenter/mouseleave/mousedown events, if any.
-			target.removeEventListener("mouseenter", Popups.targetMouseEnter);
-			target.removeEventListener("mouseleave", Popups.targetMouseLeave);
-			target.removeEventListener("mousedown", Popups.targetMouseDown);
-
-			//  Clear timers for target.
-			Popups.clearPopupTimers(target);
-
-			//  Remove spawned popup for target, if any.
-			if (target.popup)
-				Popups.despawnPopup(target.popup);
-
-			//  Unset popup prepare function.
-			target.preparePopup = null;
-
-			//  Un-mark target as spawning a popup.
-			target.classList.toggle("spawns-popup", false);
-
-			//  Run any custom processing.
-			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
-			if (targetRestoreFunction)
-				targetRestoreFunction(target);
-		});
+		//  Un-mark target as spawning a popup.
+		target.classList.toggle("spawns-popup", false);
 	},
 
 	/*******************/
@@ -3866,6 +3817,9 @@ Popins = {
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popins.keyUp);
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popins.cleanupDidComplete");
 	},
 
 	//	Called by: popins.js (doWhenPageLoaded)
@@ -3878,87 +3832,36 @@ Popins = {
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popins.keyUp);
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+	addTarget: (target, prepareFunction) => {
+		//  Bind activate event.
+		target.onclick = Popins.targetClicked;
 
-		if (contentContainer == null)
-			return;
+		//  Set prepare function.
+		target.preparePopin = prepareFunction;
 
-		//	Get all targets.
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popin", true);
-				return;
-			}
-
-			if (!targets.testTarget(target)) {
-				target.classList.toggle("no-popin", true);
-				targetRestoreFunction(target);
-				return;
-			}
-
-			//  Bind activate event.
-			target.onclick = Popins.targetClicked;
-
-			//  Set prepare function.
-			target.preparePopin = prepareFunction;
-
-			//	Set target restore function.
-			target.restoreTarget = targetRestoreFunction;
-
-			//  Run any custom processing.
-			if (targetPrepareFunction)
-				targetPrepareFunction(target);
-
-			//  Mark target as spawning a popin.
-			target.classList.toggle("spawns-popin", true);
-		});
+		//  Mark target as spawning a popin.
+		target.classList.toggle("spawns-popin", true);
 	},
 
 	//	Called by: extracts.js
-	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+	removeTarget: (target) => {
+		//  Remove the popin (if any).
+		if (target.popin)
+			Popins.removePopin(target.popin);
 
-		if (contentContainer == null)
-			return;
+		//  Unbind existing activate events, if any.
+		target.onclick = null;
 
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popin", false);
-				return;
-			}
+		//  Unset popin prepare function.
+		target.preparePopin = null;
 
-			if (!targets.testTarget(target)) {
-				target.classList.toggle("no-popin", false);
-				return;
-			}
-
-			//  Unbind existing activate events, if any.
-			target.onclick = null;
-
-			//  Remove the popin (if any).
-			if (target.popin)
-				Popins.removePopin(target.popin);
-
-			//  Unset popin prepare function.
-			target.preparePopin = null;
-
-			//  Un-mark target as spawning a popin.
-			target.classList.toggle("spawns-popin", false);
-
-			//  Run any custom processing.
-			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
-			if (targetRestoreFunction)
-				targetRestoreFunction(target);
-		});
+		//  Un-mark target as spawning a popin.
+		target.classList.toggle("spawns-popin", false);
 	},
 
 	/***********/
@@ -8870,86 +8773,11 @@ Transclude.templates = {
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://gwern.net/newsletter/2019/07
 
 Extracts = {
-    /*  Target containers.
-     */
-    contentContainersSelector: [
-    	".markdownBody",
-    	"#TOC",
-    	"#page-metadata",
-    	"#sidebar"
-    ].join(", "),
-
-	/*	Don’t display indicator hooks on links in these containers.
-	 */
-	hooklessLinksContainersSelector: [
-		"body.index #markdownBody",
-		"#sidebar",
-		".TOC",
-		".floating-header"
-	].join(", "),
-
-    /*  Targets.
-     */
-    targets: {
-        targetElementsSelector: "a[href]",
-        excludedElementsSelector: [
-            ".section-self-link",
-            ".footnote-self-link",
-            ".sidenote-self-link",
-            "[aria-hidden='true']",
-            "[href$='#top']",
-            ".extract-not"
-        ].join(", "),
-        excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
-        //  See comment at Extracts.isLocalPageLink for info on this function.
-        //  Called by: pop-frame providers (popins.js or popups.js).
-        testTarget: (target) => {
-            let targetTypeInfo = Extracts.targetTypeInfo(target);
-            if (targetTypeInfo) {
-                let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
-                if (   specialTestFunction
-                	&& specialTestFunction(target) == false)
-                    return false;
-
-                //  Do not allow pop-frames to spawn themselves.
-                let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
-                if (   containingPopFrame
-                	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
-                    return false;
-
-				//	Don’t spawn duplicate popins.
-				if (Extracts.popFrameProvider == Popins) {
-					let popinStack = Popins.allSpawnedPopins();
-					if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
-						return false;
-				}
-
-                //  Added specified classes to the target.
-                if (targetTypeInfo.targetClasses) {
-                	if (typeof targetTypeInfo.targetClasses == "string")
-	                    target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
-	                else if (typeof targetTypeInfo.targetClasses == "function")
-	                	target.classList.add(...(targetTypeInfo.targetClasses(target).split(" ")));
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-    },
-
-    /*  Misc. configuration.
-     */
-    server404PageTitles: [
-        "404 Not Found"
-    ],
-
-    rootDocument: document,
-
     /******************/
     /*  Infrastructure.
      */
+
+    rootDocument: document,
 
     //  Can be ‘Popups’ or ‘Popins’, currently.
     popFrameProviderName: null,
@@ -8960,8 +8788,7 @@ Extracts = {
     /*  General.
      */
 
-	//	Called by: popups.js and popins.js when removing a target
-	//	(see Extracts.removeTargetsWithin)
+	//	Called by: Extracts.removeTargetsWithin
 	restoreTarget: (target) => {
 		//  Restore title attribute, if any.
 		if (target.dataset.attributeTitle) {
@@ -8976,7 +8803,18 @@ Extracts = {
     removeTargetsWithin: (container) => {
         GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
-        Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, Extracts.restoreTarget);
+		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
+			if (   target.matches(Extracts.config.excludedElementsSelector)
+				|| target.closest(Extracts.config.excludedContainerElementsSelector) != null)
+				return;
+
+			if (Extracts.testTarget(target) == false)
+				return;
+
+			Extracts.restoreTarget(target);
+
+			Extracts.popFrameProvider.removeTarget(target);
+		});
     },
 
     //  Called by: extracts-options.js
@@ -8984,13 +8822,13 @@ Extracts = {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
 		//	Remove pop-frame indicator hooks.
-		document.querySelectorAll(".has-indicator-hook").forEach(link => {
+		Extracts.rootDocument.querySelectorAll(".has-indicator-hook").forEach(link => {
 			link.querySelector(".indicator-hook").remove();
 			link.classList.remove("has-indicator-hook");
 		});
 
         //  Unbind event listeners and restore targets.
-        document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+        Extracts.rootDocument.querySelectorAll(Extracts.config.contentContainersSelector).forEach(container => {
             Extracts.removeTargetsWithin(container);
         });
 
@@ -9013,11 +8851,24 @@ Extracts = {
     addTargetsWithin: (container) => {
         GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
-        if (Extracts.popFrameProvider == Popups) {
-            Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget, Extracts.restoreTarget);
-        } else if (Extracts.popFrameProvider == Popins) {
-            Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.preparePopinTarget, Extracts.restoreTarget);
-        }
+		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
+			if (   target.matches(Extracts.config.excludedElementsSelector)
+				|| target.closest(Extracts.config.excludedContainerElementsSelector) != null)
+				return;
+
+			if (Extracts.testTarget(target) == false)
+				return;
+
+			if (Extracts.popFrameProvider == Popups)
+				Extracts.preparePopupTarget(target);
+			else // if (Extracts.popFrameProvider == Popins)
+				Extracts.preparePopinTarget(target);
+
+			let popFramePrepareFunction = (Extracts.popFrameProvider == Popups
+										   ? Extracts.preparePopup
+										   : Extracts.preparePopin);
+			Extracts.popFrameProvider.addTarget(target, popFramePrepareFunction);
+		});
 
 		Extracts.setUpAnnotationLoadEventsWithin(container);
 		Extracts.setUpContentLoadEventsWithin(container);
@@ -9054,7 +8905,7 @@ Extracts = {
 		//	Inject mode selectors, if need be.
 		if (Extracts.modeSelector == null) {
 			Extracts.injectModeSelector();
-			document.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
+			Extracts.rootDocument.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
 				Extracts.injectModeSelector(element);
 			});
 		}
@@ -9108,10 +8959,10 @@ Extracts = {
 
 		if (   container instanceof DocumentFragment
 			|| (   container instanceof Element
-			    && container.closest(Extracts.contentContainersSelector))) {
+			    && container.closest(Extracts.config.contentContainersSelector))) {
 			Extracts.addTargetsWithin(container);
 		} else {
-            container.querySelectorAll(Extracts.contentContainersSelector).forEach(contentContainer => {
+            container.querySelectorAll(Extracts.config.contentContainersSelector).forEach(contentContainer => {
                 Extracts.addTargetsWithin(contentContainer);
             });
         }
@@ -9144,6 +8995,43 @@ Extracts = {
     /***********/
     /*  Content.
      */
+
+	//  See comment at Extracts.isLocalPageLink for info on this function.
+	//  Called by: Extracts.addTargetsWithin
+	testTarget: (target) => {
+		let targetTypeInfo = Extracts.targetTypeInfo(target);
+		if (targetTypeInfo) {
+			let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
+			if (   specialTestFunction
+				&& specialTestFunction(target) == false)
+				return false;
+
+			//  Do not allow pop-frames to spawn themselves.
+			let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
+			if (   containingPopFrame
+				&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
+				return false;
+
+			//	Don’t spawn duplicate popins.
+			if (Extracts.popFrameProvider == Popins) {
+				let popinStack = Popins.allSpawnedPopins();
+				if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
+					return false;
+			}
+
+			//  Add specified classes to the target.
+			if (targetTypeInfo.targetClasses) {
+				if (typeof targetTypeInfo.targetClasses == "string")
+					target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
+				else if (typeof targetTypeInfo.targetClasses == "function")
+					target.classList.add(...(targetTypeInfo.targetClasses(target).split(" ")));
+			}
+
+			return true;
+		}
+
+		return false;
+	},
 
 	/*  This array defines the types of ‘targets’ (ie. annotated links,
 		links pointing to available content such as images or code files,
@@ -9182,8 +9070,6 @@ Extracts = {
     },
 
     //  Called by: Extracts.targetsMatch
-    //  Called by: Extracts.fillPopFrame
-    //  Called by: extracts-annotations.js
     targetIdentifier: (target) => {
     	return Extracts.isAnnotatedLink(target)
     		   ? Annotations.targetIdentifier(target)
@@ -9520,9 +9406,7 @@ Extracts = {
         return (localStorage.getItem(Extracts.popinsDisabledLocalStorageItemKey) != "true");
     },
 
-    /*  Called by popins.js when adding a target.
-     */
-    //  (See Extracts.addTargetsWithin)
+    //  Called by: Extracts.addTargetsWithin
 	preparePopinTarget: (target) => {
 		target.adjustPopinWidth = (popin) => {
 			let leftMargin, rightMargin;
@@ -9634,9 +9518,7 @@ Extracts = {
                 && Popups.popupIsPinned(popup) == false);
     },
 
-    /*  Called by popups.js when adding a target.
-     */
-    //  (See Extracts.addTargetsWithin)
+    //  Called by: Extracts.addTargetsWithin
     preparePopupTarget: (target) => {
         //  Remove the title attribute (saving it first);
         if (target.title) {
@@ -11788,11 +11670,50 @@ Extracts = { ...Extracts,
 		/*  Since the main document has already loaded, we must trigger the
 			processing of targets manually.
 		 */
-		Extracts.processTargetsInContainer(document.body);
+		Extracts.processTargetsInContainer(Extracts.rootDocument);
 	},
 };
 /*	This file should be loaded after all other extracts*.js files.
  */
+
+Extracts.config = {
+    /*  Selector for containers within which targets may be found.
+     */
+    contentContainersSelector: [
+    	".markdownBody",
+    	"#TOC",
+    	"#page-metadata",
+    	"#sidebar"
+    ].join(", "),
+
+	/*	Selector for containers within which targets may not be found.
+	 */
+    excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
+
+	/*	Selector for targets.
+	 */
+	targetElementsSelector: "a[href]",
+
+	/*	Elements that shouldn’t be targets.
+	 */
+	excludedElementsSelector: [
+		".section-self-link",
+		".footnote-self-link",
+		".sidenote-self-link",
+		"[aria-hidden='true']",
+		"[href$='#top']",
+		".extract-not"
+	].join(", "),
+
+	/*	Don’t display indicator hooks on links in these containers.
+	 */
+	hooklessLinksContainersSelector: [
+		"body.index #markdownBody",
+		"#sidebar",
+		".TOC",
+		".floating-header"
+	].join(", ")
+};
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 

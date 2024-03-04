@@ -29,6 +29,9 @@ Popins = {
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popins.keyUp);
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popins.cleanupDidComplete");
 	},
 
 	//	Called by: popins.js (doWhenPageLoaded)
@@ -41,87 +44,36 @@ Popins = {
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popins.keyUp);
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
 
 	//	Called by: extracts.js
-	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction, targetRestoreFunction) => {
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+	addTarget: (target, prepareFunction) => {
+		//  Bind activate event.
+		target.onclick = Popins.targetClicked;
 
-		if (contentContainer == null)
-			return;
+		//  Set prepare function.
+		target.preparePopin = prepareFunction;
 
-		//	Get all targets.
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popin", true);
-				return;
-			}
-
-			if (!targets.testTarget(target)) {
-				target.classList.toggle("no-popin", true);
-				targetRestoreFunction(target);
-				return;
-			}
-
-			//  Bind activate event.
-			target.onclick = Popins.targetClicked;
-
-			//  Set prepare function.
-			target.preparePopin = prepareFunction;
-
-			//	Set target restore function.
-			target.restoreTarget = targetRestoreFunction;
-
-			//  Run any custom processing.
-			if (targetPrepareFunction)
-				targetPrepareFunction(target);
-
-			//  Mark target as spawning a popin.
-			target.classList.toggle("spawns-popin", true);
-		});
+		//  Mark target as spawning a popin.
+		target.classList.toggle("spawns-popin", true);
 	},
 
 	//	Called by: extracts.js
-	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
-		if (typeof contentContainer == "string")
-			contentContainer = document.querySelector(contentContainer);
+	removeTarget: (target) => {
+		//  Remove the popin (if any).
+		if (target.popin)
+			Popins.removePopin(target.popin);
 
-		if (contentContainer == null)
-			return;
+		//  Unbind existing activate events, if any.
+		target.onclick = null;
 
-		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
-			if (   target.matches(targets.excludedElementsSelector)
-				|| target.closest(targets.excludedContainerElementsSelector) != null) {
-				target.classList.toggle("no-popin", false);
-				return;
-			}
+		//  Unset popin prepare function.
+		target.preparePopin = null;
 
-			if (!targets.testTarget(target)) {
-				target.classList.toggle("no-popin", false);
-				return;
-			}
-
-			//  Unbind existing activate events, if any.
-			target.onclick = null;
-
-			//  Remove the popin (if any).
-			if (target.popin)
-				Popins.removePopin(target.popin);
-
-			//  Unset popin prepare function.
-			target.preparePopin = null;
-
-			//  Un-mark target as spawning a popin.
-			target.classList.toggle("spawns-popin", false);
-
-			//  Run any custom processing.
-			targetRestoreFunction = targetRestoreFunction ?? target.restoreTarget;
-			if (targetRestoreFunction)
-				targetRestoreFunction(target);
-		});
+		//  Un-mark target as spawning a popin.
+		target.classList.toggle("spawns-popin", false);
 	},
 
 	/***********/
