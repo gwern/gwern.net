@@ -49,8 +49,8 @@ transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
 
 -- `data-url-html`:
 transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
-  -- make IA book/item pages pop up nicer in live-links, by making them jump to the metadata section (which is all that works in the JS-less live-link iframe), and skipping the warnings about JS not being available. `#flag-button-container` is, weirdly enough, the first available ID to jump to, there's no better ID set inside the metadata section, it's all classes.
-  (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["flag-button-container"]) then u ++ "#flag-button-container" else u)
+  -- make IA book/item pages pop up nicer in live-links, by enabling JS, so theater-mode works.
+  (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["?view=theater"]) then u ++ "?view=theater" else u)
   . replace "https://medium.com" "https://scribe.rip"
   . addAmazonAffiliate
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
@@ -80,7 +80,7 @@ localizeLinktestCases = [
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
     , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
     , ("https://darkrunescape.fandom.com/wiki/Doubling_money_scam", ("", "", "https://antifandom.com/darkrunescape/wiki/Doubling_money_scam", []))
-    , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433#flag-button-container", []))
+    , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433?view=theater", []))
     , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
     , ("https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", ("", "", "https://www.greaterwrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist/comment/kuKaKje3en6bnhgFD?format=preview&theme=classic", []))
     , ("https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", ("", "", "https://www.greaterwrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was?format=preview&theme=classic", []))
@@ -598,15 +598,12 @@ whiteListMatchesFixed = [
       -- , "imgur.com"
       , "proofofexistence.com" -- service
       , "sifter.org" -- service
-      , "drmaciver.com" -- stable
       , "newegg.com" -- service
       , "worrydream.com" -- interactive/stable
       , "thiscardoesnotexist.glitch.me" -- service
       , "windowsphone.com" -- service/low quality
-      , "accidentallyquadratic.tumblr.com" -- sometimes updated
       , "ohyouprettythings.com" -- service
       , "aurellem.org" -- low quality (YouTube links don't inline properly)
-      , "www.iarpa.gov" -- stable?
       , "stlouisfed.org" -- service/stable (FRED economic statistics)
       , "apps.allenai.org" -- service/interactive
       , "bam-dataset.org" -- service/dataset
