@@ -28,12 +28,12 @@ import qualified Data.Text as T (pack, unpack)
 import System.Directory (doesFileExist, getModificationTime)
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, RawInline, Str, Space, Span, Strong), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(LowerAlpha, UpperAlpha), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, RawInline, Str, Strong), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkBacklink (getLinkBibLink)
-import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, authorsTruncate, hasAnnotation, isPagePath)
+import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
 import Typography (typographyTransform)
@@ -95,26 +95,20 @@ generateLinkBibliographyItems :: ArchiveMetadata -> [(String,MetadataItem)] -> B
 generateLinkBibliographyItems _ [] = Para []
 generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
                                              itemsPrimary =  items \\ itemsWP
-                                    in OrderedList (1, LowerAlpha, DefaultDelim)
+                                    in OrderedList (1, DefaultStyle, DefaultDelim)
                                       (map (generateLinkBibliographyItem am) itemsPrimary ++
                                           -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
                                           if null itemsWP then [] else [
                                                                         [Div ("",["collapse"],[]) [
                                                                             Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
-                                                                            OrderedList (1, UpperAlpha, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
+                                                                            OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
 generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]
-generateLinkBibliographyItem _ (f,(t,aut,_,_,_,""))  = -- short:
+generateLinkBibliographyItem _ (f,(t,_,_,_,_,""))  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
-      authorShort = authorsTruncate aut
-      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
-                    else Str (T.pack authorShort)
-      author = if aut=="" || aut=="N/A" then []
-               else
-                 [Str ",", Space, authorSpan]
       -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
       -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
       -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
@@ -128,12 +122,13 @@ generateLinkBibliographyItem _ (f,(t,aut,_,_,_,""))  = -- short:
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else ("",["id-not"],[])
     in
     if t=="" then
-      Para (Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author) : transcludeTarget
+      Para [Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "")] : transcludeTarget
     else
-      Para (Link linkAttr [Str "“", RawInline (Format "HTML") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author) : transcludeTarget
+      Para [Link linkAttr [RawInline (Format "HTML") (T.pack $ titlecase t)] (T.pack f, "")] : transcludeTarget
 -- long items:
 generateLinkBibliographyItem am (f,a) = generateAnnotationTransclusionBlock am (f,a)
 
+-- TODO: refactor out to Query?
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' string argument—this should never happen!"
 extractLinksFromPage path =
