@@ -770,8 +770,8 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 /*  Collapses in blockquotes.
  */
 
-blockquote .collapse-block,
-blockquote .collapse-block.expanded {
+blockquote .collapse-block:not(.in-list),
+blockquote .collapse-block:not(.in-list).expanded {
     padding-left: var(--blockquote-horizontal-padding);
     padding-right: var(--blockquote-horizontal-padding);
     margin-left: calc(-1 * var(--blockquote-horizontal-padding) / var(--blockquote-font-size-scaling-factor));
