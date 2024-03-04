@@ -9070,8 +9070,6 @@ Extracts = {
     },
 
     //  Called by: Extracts.targetsMatch
-    //  Called by: Extracts.fillPopFrame
-    //  Called by: extracts-annotations.js
     targetIdentifier: (target) => {
     	return Extracts.isAnnotatedLink(target)
     		   ? Annotations.targetIdentifier(target)
