@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-02-28 21:53:10 gwern"
+When:  Time-stamp: "2024-03-04 09:59:04 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -77,7 +77,7 @@ import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 import System.GlobalLock as GL (lock)
 
-import Config.Misc as C (root)
+import Config.Misc as C (cd, root)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
@@ -96,7 +96,8 @@ readGtxFast :: FilePath -> IO MetadataList
 readGtxFast = readGtx id
 
 readGtxSlow :: FilePath -> IO MetadataList
-readGtxSlow path = do allTags <- listTagsAll
+readGtxSlow path = do C.cd
+                      allTags <- listTagsAll
                       readGtx (postprocessing allTags) path
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, di, ts, s)) = (stripUnicodeWhitespace u,
@@ -110,7 +111,7 @@ parseGtx :: T.Text -> MetadataList
 parseGtx content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- delete the first 4 characters, which are the mandatory '---\n' header, then split at the '---' separators into sublists of "title\nauthor\ndate\ndoi\ntags\nabstract..."
                        sublists   = map T.lines subContent
                        sublists'  = map tupleize sublists
-                   in sublists'
+                   in filter (\(f,_) -> f /= "---") sublists' -- guard against off-by-one & misparsing
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
 tupleize (f:t:a:d:doi:tags:abstract) = (T.unpack f,

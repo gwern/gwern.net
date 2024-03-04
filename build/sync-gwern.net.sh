@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-03 22:25:35 gwern"
+# When:  Time-stamp: "2024-03-04 10:17:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -253,7 +253,7 @@ else
     ## NOTE: we generate the sitemap *before* generating syntax-highlighted .html files of everything to avoid having to exclude those (which would be tricky because how do we know if any given 'foo.html' a standalone HTML file or merely a syntax-highlighted snippet?)
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' | \
+     find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' -e '.hi$' -e '.o$' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
@@ -383,6 +383,13 @@ else
      find _site/metadata/annotation/ -name '*.html') | shuf | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
+    # essays only:
+    ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
+    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
+    # essays+tags+annotations+similars+backlinks:
+    # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
+
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
     # 3. add hair space ( U+200A   HAIR SPACE (HTML &#8202; · &hairsp;)) in slash-separated links or quotes, to avoid overlap of '/' with curly-quote
@@ -414,7 +421,7 @@ else
 
     bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
-    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
     cleanClasses () {
@@ -425,7 +432,7 @@ else
                -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
-    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
     find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
 
@@ -433,12 +440,6 @@ else
     # Testing compilation results:
     set +e
 
-    # essays only:
-    ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
-    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' | sort --unique)"
-    # essays+tags+annotations+similars+backlinks:
-    # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
     λ(){
          echo "$PAGES_ALL" | parallel gf -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      gfv -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
