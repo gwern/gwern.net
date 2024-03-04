@@ -15,13 +15,16 @@ import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (trimTitle, cleanAbstractsHTML, pageNumberParse, filterMeta, linkCanonicalize, extractTwitterUsername)
 import Utils (replace, sed, anyInfix, anyPrefix)
 
+-- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                             case l' of
-                                              Right _ -> return l'
+                                              -- apply global per-field rewrites here
+                                              Right (l'',(title,author,date,doi,tags,abstract)) -> return $ Right (l'',(reformatTitle title,author,date,doi,tags,abstract))
                                               Left Permanent -> let (title,author,date) = tooltipToMetadata (T.unpack l) (T.unpack tooltip) in
-                                                                  if title/="" then return (Right (T.unpack l,(title,author,date,"",[],""))) else return l'
+                                                                  if title/="" then return (Right (T.unpack l,(reformatTitle title,author,date,"",[],""))) else return l'
                                               Left Temporary -> return l'
+  where reformatTitle = replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
 
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
