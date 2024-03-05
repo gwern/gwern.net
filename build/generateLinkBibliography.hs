@@ -81,7 +81,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
           do
 
              let pairs = linksToAnnotations md links
-                 body = [Para [Strong [Str "Link Bibliography"], Str ":"], (generateLinkBibliographyItems am) pairs]
+                 body = [Para [Strong [Str "Link Bibliography"], Str ":"], generateLinkBibliographyItems am pairs]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
@@ -100,7 +100,7 @@ generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https:
                                           -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
                                           if null itemsWP then [] else [
                                                                         [Div ("",["collapse"],[]) [
-                                                                            Para [Strong [Str "Wikipedia link-bibliography"], Str ":"],
+                                                                            Para [Strong [Str "Wikipedia Link Bibliography"], Str ":"],
                                                                             OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
 generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]
