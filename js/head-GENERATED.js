@@ -821,32 +821,26 @@ function paragraphizeTextNodesOfElement(element) {
 
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
+	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeSelector: "a, br", excludeIdentifiedElements: true });
 	let node;
-	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeSelector: "a", excludeIdentifiedElements: true });
 	do {
 		node = nodes.shift();
-
 		if (   (   node?.nodeType == Node.TEXT_NODE
 				|| (   node?.nodeType == Node.ELEMENT_NODE
 					&& node.matches(inlineElementSelector)))
 			&& omitNode(node) == false) {
 			nodeSequence.push(node);
 		} else if (omitNode(node)) {
-			node.remove();
+			node?.remove();
 		} else {
 			if (nodeSequence.length > 0) {
-				//	Get next non-empty child node of the element (may be null).
-				let nextNode = nodeSequence.last.nextSibling;
-				while (omitNode(nextNode))
-					nextNode = nextNode.nextSibling;
-
 				//	Construct paragraph (<p>) to wrap node sequence.
 				//	(This removes the nodes from the element.)
 				let graf = newElement("P");
 				graf.append(...nodeSequence);
 
 				//	Insert paragraph (with the previously removed nodes).
-				element.insertBefore(graf, nextNode)
+				element.insertBefore(graf, node)
 			}
 
 			nodeSequence = [ ];
