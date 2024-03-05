@@ -8777,7 +8777,7 @@ Transclude.templates = {
 
 // On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or video; another click on it or the popup will then go to it. A click outside it de-activates it.
 
-// For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://gwern.net/newsletter/2019/07
+// For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see <https://gwern.net/static/build/LinkMetadata.hs>; for examples, see the links in <https://gwern.net/lorem-links>
 
 Extracts = {
     /******************/
@@ -9249,7 +9249,7 @@ Extracts = {
         	event on an <iframe> does not mean that the load was successful,
         	because <iframe> elements do not fire ‘error’ on server error or
         	load fail.
-         */        
+         */
 		objectOfSomeSort.onload = (event) => {
 			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 		};
