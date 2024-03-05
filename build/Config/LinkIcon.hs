@@ -492,7 +492,7 @@ linkIconTestUnitsText =
          , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
          , ("/doc/cat/psychology/drug/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg")
          , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg")
-         , ("/doc/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
+         , ("/doc/cs/hardware/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg")
          , ("/doc/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg")
          , ("/doc/darknet-market/usareshipper-profile.maff", "archive","svg")
          , ("/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text")

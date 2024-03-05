@@ -879,7 +879,7 @@ whiteList = [ ( "/crop#hands"
     , [ "Quantified Self" ]
     )
   , ( "https://en.wikipedia.org/wiki/R.A._Fisher"
-    , [ "R. A. Fisher" , "R.A. Fisher" ]
+    , [ "R. A. Fisher" , "R. A. Fisher" ]
     )
   , ( "https://en.wikipedia.org/wiki/ROUGE_(metric)" , [ "ROUGE" ] )
   , ( "https://en.wikipedia.org/wiki/Radium"

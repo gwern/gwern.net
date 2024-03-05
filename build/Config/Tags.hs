@@ -136,7 +136,8 @@ tagsShort2LongRewrites =
    , ("steganographic", "steganography"), ("stenography", "steganography"), ("blacksun", "black-sun"), ("landscapes", "landscape"), ("genewolfe-dropcaps", "genewolfe-dropcap"), ("dropcats", "dropcat"), ("ninits", "ninit")
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
-   , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis"), ("search", "google") ]
+   , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -149,12 +150,12 @@ tagsShort2Long = tagsShort2LongRewrites ++
 -- testing: unique list
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
-                      "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong",
+                      "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
                       "the", "to", "tr", "up", "we"]
 
 -- testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
-          ("traffic/ab-testing", "Web A/B testing")
+          ("traffic/ab-testing", "Web A/B testing") -- NOTE: TLAs cannot be put into smallcaps because we italicize tags but Source Serif Pro does not have italic smallcaps <https://github.com/adobe-fonts/source-serif/issues/46>.
           , ("technology/northpaw", "Northpaw compass")
           , ("technology/self-sinking", "self-sinking waste disposal")
           , ("technology/google/alerts", "Google Alerts")
@@ -559,7 +560,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("reinforcement-learning/chess", "AI chess")
           , ("reinforcement-learning", "RL")
           , ("newest", "newest links")
-          , ("osciology", "sociology")
           ]
 
 -- testing: unique keys

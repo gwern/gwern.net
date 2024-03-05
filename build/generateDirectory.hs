@@ -11,7 +11,7 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
 -- directory (mostly showing random snippets).
 
-import Control.Monad (filterM, void)
+import Control.Monad (filterM, void, unless)
 import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
@@ -63,8 +63,10 @@ main = do C.cd
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.gtx/partial.gtx TODO: actually track annotation creation dates...)
-          metaNewest <- readLinkMetadataNewest 100
-          generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+          -- Optimization: if there is only 1 argument, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would double runtime.
+          unless (length dirs == 1) $ do
+            metaNewest <- readLinkMetadataNewest 100
+            generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory filterp am md ldb sortDB dirs dir'' = do
