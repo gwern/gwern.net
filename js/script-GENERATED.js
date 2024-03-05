@@ -17468,7 +17468,7 @@ ImageFocus = {
 
 		//	Used in comparison below.
 		function textContentOf(node) {
-			return node.textContent.trim().replace(/\n\n/g, " ");
+			return node.textContent.trim().replace(/\s+/g, " ");
 		}
 
 		//	For truncating very long URLs.
