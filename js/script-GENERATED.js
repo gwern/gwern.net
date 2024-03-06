@@ -5120,8 +5120,8 @@ Annotations.dataSources.wikipedia = {
 			let sections = Array.from(response.querySelectorAll("section")).slice(1);
 			if (   sections 
 				&& sections.length > 0) {
-				responseHTML += `<div class="TOC columns"><ul>`;
-				let headingLevel = 2;
+				responseHTML += `<div class="TOC columns">`;
+				let headingLevel = 0;
 				for (let i = 0; i < sections.length; i++) {
 					let section = sections[i];
 					let headingElement = section.firstElementChild;
