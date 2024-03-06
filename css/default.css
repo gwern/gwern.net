@@ -4307,6 +4307,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     font-size: 1.75em;
     font-family: var(--GW-sans-serif-font-stack);
     font-weight: bold;
@@ -4327,11 +4328,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
-/*┌──────────────────┐*/
-/*│ Dropcap popups. │*/
-/*└──────────────────┘*/
+/*┌──────────────────────┐*/
+/*│ Dropcap info popups. │*/
+/*└──────────────────────┘*/
 
-.popup-body.dropcap p {
+.popup-body.dropcap-info p {
 	text-align: left;
 }
 
@@ -4920,6 +4921,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     font-size: 1.5em;
     font-family: var(--GW-sans-serif-font-stack);
     font-weight: bold;

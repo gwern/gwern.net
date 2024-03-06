@@ -673,7 +673,7 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		/*  See corresponding note in annotations.js.
 			—SA 2024-02-16
 		 */
-		[ "link-live", "link-page", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
+		[ "link-live", "link-page", "link-dropcap", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
@@ -941,8 +941,7 @@ function includeContent(includeLink, content) {
     unwrap(wrapper);
 
     //  Prevent race condition, part II.
-    includeLink.classList.add("include-complete");
-    includeLink.classList.remove("include-in-progress");
+    includeLink.swapClasses([ "include-in-progress", "include-complete" ], 1);
 
     //  Fire event, if need be.
     if (includeLink.delayed) {

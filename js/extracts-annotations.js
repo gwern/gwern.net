@@ -37,7 +37,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated include-annotation",
+			"class": "link-annotated include-annotation include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },
@@ -64,14 +64,12 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_ANNOTATION: (popup) => {
-        let target = popup.spawningTarget;
-
         /*  Do not spawn annotation popup if the annotation is already visible
             on screen. (This may occur if the target is in a popup that was
             spawned from a backlinks popup for this same annotation as viewed on
             a tag index page, for example.)
          */
-        let escapedLinkURL = CSS.escape(decodeURIComponent(target.href));
+        let escapedLinkURL = CSS.escape(decodeURIComponent(popup.spawningTarget.href));
         let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
         if (targetAnalogueInLinkBibliography) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
@@ -85,42 +83,22 @@ Extracts = { ...Extracts,
         return popup;
     },
 
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_ANNOTATION: (popFrame, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
-
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_ANNOTATION(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_ANNOTATION",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        let target = popFrame.spawningTarget;
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         //  Mark annotations from non-local data sources.
-		let referenceData = Annotations.referenceDataForLink(target);
+		let referenceData = Annotations.referenceDataForLink(popFrame.spawningTarget);
         if (referenceData.content.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
-        //  Update the title.
+        //  Update pop-frame title.
         Extracts.updatePopFrameTitle(popFrame);
+	},
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_ANNOTATION: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
 		/*	For annotated media, rearrange annotation content so that the media
 			itself follows the abstract (but precedes the aux-links), and the
@@ -130,7 +108,7 @@ Extracts = { ...Extracts,
 			  "localImage", 
 			  "localVideo", 
 			  "localAudio" 
-			  ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1) {
+			  ].findIndex(x => Content.contentTypes[x].matches(popFrame.spawningTarget)) !== -1) {
 			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
 			let fileIncludes = popFrame.document.querySelector(".file-includes");
 			let includeLink = fileIncludes.querySelector("a");
@@ -195,14 +173,22 @@ Extracts = { ...Extracts,
     	return Extracts.preparePopup_ANNOTATION(popup);
     },
 
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_ANNOTATION_PARTIAL: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
+
+		Extracts.updatePopFrame_ANNOTATION(popFrame);
+	},
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_ANNOTATION_PARTIAL: (popFrame) => {
+    rewritePopFrameContent_ANNOTATION_PARTIAL: (popFrame, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
 
-		Extracts.rewritePopFrameContent_ANNOTATION(popFrame);
+		Extracts.rewritePopFrameContent_ANNOTATION(popFrame, contentContainer);
     }
 };
 
+/************************************************************************/
 /*	Inject partial-annotation metadata into a popup that is not already a
 	partial annotation.
  */

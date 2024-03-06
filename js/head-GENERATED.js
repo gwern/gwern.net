@@ -196,6 +196,19 @@ function URLFromString(urlString, baseURL = location) {
 			: new URL(baseURL.href.replace(/[^\/]*$/, urlString)));
 }
 
+/****************************************************************************/
+/*	Returns a modified URL constructed from the given URL or URL string, with
+	the specified modifications in key-value form.
+ */
+function modifiedURL(url, mods) {
+	let modURL = typeof url == "string" 
+				 ? URLFromString(url) 
+				 : URLFromString(url.href);
+	for (let [ key, value ] of Object.entries(mods))
+		modURL[key] = value;
+	return modURL;
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	HTMLAnchorElement object.

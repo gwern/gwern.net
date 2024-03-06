@@ -1944,7 +1944,7 @@ Popups = {
 
 	/*	The target mouseenter event.
 	 */
-	//	Added by: Popups.addTargetsWithin
+	//	Added by: Popups.addTarget
 	targetMouseEnter: (event) => {
 		GWLog("Popups.targetMouseEnter", "popups.js", 2);
 
@@ -1971,7 +1971,7 @@ Popups = {
 
 	/*	The target mouseleave event.
 	 */
-	//	Added by: Popups.addTargetsWithin
+	//	Added by: Popups.addTarget
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
 
@@ -1985,7 +1985,7 @@ Popups = {
 
     /*	The “user (left- or right-) clicked target” mousedown event.
      */
-    //	Added by: Popups.addTargetsWithin
+    //	Added by: Popups.addTarget
 	targetMouseDown: (event) => {
 		GWLog("Popups.targetMouseDown", "popups.js", 2);
 

@@ -474,11 +474,17 @@ Popins = {
 		//	Save place.
 		let ancestor = popin.parentElement;
 
-		//	Remove from spawned popins stack.
-		Popins.spawnedPopins.shift();
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popins.popinWillDespawn", { popin: popin });
+
+		//  Detach popin from its spawning target.
+		Popins.detachPopinFromTarget(popin);
 
 		//  Remove popin from page.
 		popin.remove();
+
+		//	Remove from spawned popins stack.
+		Popins.spawnedPopins.shift();
 
 		//  … restore its scroll state.
 		if (popinBelow) {
@@ -487,9 +493,6 @@ Popins = {
 			do { ancestor.classList.remove("popin-ancestor"); }
 			while (ancestor = ancestor.parentElement);
 		}
-
-		//  Detach popin from its spawning target.
-		Popins.detachPopinFromTarget(popin);
 
 		//	Restore the window’s scroll state to before the popin was injected.
 		window.scrollBy(0, -1 * parseInt(popin.dataset.windowScrollOffset ?? '0'));
@@ -516,7 +519,7 @@ Popins = {
 	/*	Event listeners.
 		*/
 
-	//	Added by: Popins.addTargetsWithin
+	//	Added by: Popins.addTarget
 	targetClicked: (event) => {
 		GWLog("Popins.targetClicked", "popins.js", 2);
 
