@@ -394,6 +394,9 @@ Content = {
 				if (url.hostname == "docs.google.com")
 					return true;
 
+				if (url.hostname == "demos.obormot.net")
+					return true;
+
 				if (   url.hostname == "archive.org"
 					&& url.pathname.startsWith("/details/"))
 					return true;
