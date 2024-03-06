@@ -1123,6 +1123,7 @@
     --GW-popups-video-youtube-iframe-height: 310px;
     --GW-popups-video-vimeo-iframe-width: 495px;
     --GW-popups-video-vimeo-iframe-height: 278px;
+    --GW-popups-audio-popup-min-width: 360px;
     --GW-popups-audio-popup-min-height: 87px;
     --GW-popups-image-popup-min-size: 70px;
 
@@ -5543,6 +5544,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: unset;
     min-height: var(--GW-popups-audio-popup-min-height);
 }
+.popup.audio:not(.has-footer) {
+    min-width: var(--GW-popups-audio-popup-min-width);
+}
+
 .popup.audio .popframe-content-view {
     padding: 3px;
 }
