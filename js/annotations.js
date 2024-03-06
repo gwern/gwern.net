@@ -736,9 +736,7 @@ Annotations.dataSources.wikipedia = {
 
 			//	Cleaned section title.
 			titleHTML = targetHeading.innerHTML;
-			console.log(titleHTML);
 			fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
-			console.log(fullTitleHTML);
 		} else {
 			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
 			titleHTML = pageTitleElementHTML;
@@ -862,6 +860,7 @@ Annotations.dataSources.wikipedia = {
 		".Template-Fact",
 		".error",
 		".mwe-math-mathml-inline",
+		".mwe-math-mathml-display",
         ".sidebar",
         ".ambox",
 		".unicode.haudio",
@@ -1098,6 +1097,19 @@ Annotations.dataSources.wikipedia = {
 		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
 			image.classList.add("figure-not");
 		});
+
+		//	Clean up math elements.
+		unwrapAll(".mwe-math-element", { root: referenceEntry });
+		referenceEntry.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
+			//	Unwrap the <dd>.
+			unwrap(inlineButReallyBlockMathElement.parentElement);
+			//	Unwrap the <dl>.
+			unwrap(inlineButReallyBlockMathElement.parentElement);
+			//	Rectify class.
+			inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
+		});
+		wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: referenceEntry });
+		wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: referenceEntry });
 
 		//	Move infoboxes out of the way.
 		let childElements = Array.from(referenceEntry.children);

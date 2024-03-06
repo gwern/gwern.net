@@ -2995,27 +2995,20 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 /*  Special case for inline math in Wikipedia pop-frames.
-    */
-.annotation.wikipedia-entry .mwe-math-element {
-    display: inline-block;
-    height: 1.25em;
-    line-height: 1;
-    margin: 0;
-    vertical-align: bottom;
-    padding: 0;
-}
-.annotation.wikipedia-entry .mwe-math-element img {
-    display: inline-block;
-    height: 100%;
+ */
+.annotation.wikipedia-entry .wikipedia-math-inline-wrapper {
+    vertical-align: baseline;
+    position: relative;
+    bottom: -0.15em;
 }
 /*  Ditto, but block math.
  */
-.annotation.wikipedia-entry dl .mwe-math-element {
-    display: block;
-    height: unset;
+.annotation.wikipedia-entry .wikipedia-math-block-wrapper {
+    margin: 1em 0;
 }
-.annotation.wikipedia-entry dl .mwe-math-element img {
+.annotation.wikipedia-entry .wikipedia-math-block-wrapper img {
     display: block;
+    margin: auto;
 }
 
 /* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
