@@ -237,7 +237,7 @@ Content = {
 
 	removeExtraneousClassesFromMediaElement: (media) => {
 		//	Remove various link classes.
-		media.classList.remove("no-popup", "icon-not", "link-page", "link-live",
+		media.classList.remove("icon-not", "link-page", "link-live",
 			"link-annotated", "link-annotated-partial", "link-annotated-not",
 			"has-annotation", "has-annotation-partial", "has-content",
 			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
@@ -281,6 +281,35 @@ Content = {
 	},
 
 	contentTypes: {
+		dropcapInfo: {
+			matches: (link) => {
+				return link.classList.contains("link-dropcap");
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				let letter = link.dataset.letter;
+				let dropcapType = link.dataset.dropcapType;
+
+				let content = newDocument(
+					  `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
+					+ `<a class="link-page" href="/dropcap#${dropcapType}"><strong>${dropcapType}</strong></a>`
+					+ ` dropcap font.</p>`
+				);
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.dropcapInfo.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
+			}
+		},
+
 		foreignSite: {
 			matches: (link) => {
 				//	Some foreign-site links are handled specially.
@@ -363,6 +392,9 @@ Content = {
 
 			shouldEnableScriptsForURL: (url) => {
 				if (url.hostname == "docs.google.com")
+					return true;
+
+				if (url.hostname == "demos.obormot.net")
 					return true;
 
 				if (   url.hostname == "archive.org"

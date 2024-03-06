@@ -668,8 +668,16 @@ Annotations.dataSources.wikipedia = {
 
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	referenceDataFromParsedAPIResponse: (response, articleLink) => {
+		//	Article link.
 		let titleLinkHref = articleLink.href;
 
+		//	We use the mobile URL for popping up the live-link.
+		let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
+			hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
+		}).href;
+		let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+
+		//	Do not show the whole page, by default.
 		let wholePage = false;
 
 		//	Show full page (sans TOC) if it’s a disambiguation page.
@@ -740,8 +748,8 @@ Annotations.dataSources.wikipedia = {
 			let sections = Array.from(response.querySelectorAll("section")).slice(1);
 			if (   sections 
 				&& sections.length > 0) {
-				responseHTML += `<div class="TOC columns"><ul>`;
-				let headingLevel = 2;
+				responseHTML += `<div class="TOC columns">`;
+				let headingLevel = 0;
 				for (let i = 0; i < sections.length; i++) {
 					let section = sections[i];
 					let headingElement = section.firstElementChild;
@@ -793,6 +801,7 @@ Annotations.dataSources.wikipedia = {
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           `title-link link-live`,
 				titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+				titleLinkDataAttributes:  titleLinkDataAttributes,
 				abstract: 		          abstractHTML,
 				dataSourceClass:          "wikipedia-entry",
 			},

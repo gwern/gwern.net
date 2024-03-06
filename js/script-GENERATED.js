@@ -3660,7 +3660,7 @@ Popups = {
 
 	/*	The target mouseenter event.
 	 */
-	//	Added by: Popups.addTargetsWithin
+	//	Added by: Popups.addTarget
 	targetMouseEnter: (event) => {
 		GWLog("Popups.targetMouseEnter", "popups.js", 2);
 
@@ -3687,7 +3687,7 @@ Popups = {
 
 	/*	The target mouseleave event.
 	 */
-	//	Added by: Popups.addTargetsWithin
+	//	Added by: Popups.addTarget
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
 
@@ -3701,7 +3701,7 @@ Popups = {
 
     /*	The “user (left- or right-) clicked target” mousedown event.
      */
-    //	Added by: Popups.addTargetsWithin
+    //	Added by: Popups.addTarget
 	targetMouseDown: (event) => {
 		GWLog("Popups.targetMouseDown", "popups.js", 2);
 
@@ -4262,11 +4262,17 @@ Popins = {
 		//	Save place.
 		let ancestor = popin.parentElement;
 
-		//	Remove from spawned popins stack.
-		Popins.spawnedPopins.shift();
+		//	Fire event.
+		GW.notificationCenter.fireEvent("Popins.popinWillDespawn", { popin: popin });
+
+		//  Detach popin from its spawning target.
+		Popins.detachPopinFromTarget(popin);
 
 		//  Remove popin from page.
 		popin.remove();
+
+		//	Remove from spawned popins stack.
+		Popins.spawnedPopins.shift();
 
 		//  … restore its scroll state.
 		if (popinBelow) {
@@ -4275,9 +4281,6 @@ Popins = {
 			do { ancestor.classList.remove("popin-ancestor"); }
 			while (ancestor = ancestor.parentElement);
 		}
-
-		//  Detach popin from its spawning target.
-		Popins.detachPopinFromTarget(popin);
 
 		//	Restore the window’s scroll state to before the popin was injected.
 		window.scrollBy(0, -1 * parseInt(popin.dataset.windowScrollOffset ?? '0'));
@@ -4304,7 +4307,7 @@ Popins = {
 	/*	Event listeners.
 		*/
 
-	//	Added by: Popins.addTargetsWithin
+	//	Added by: Popins.addTarget
 	targetClicked: (event) => {
 		GWLog("Popins.targetClicked", "popins.js", 2);
 
@@ -5037,8 +5040,16 @@ Annotations.dataSources.wikipedia = {
 
 	//	Called by: Annotations.referenceDataFromParsedAPIResponse
 	referenceDataFromParsedAPIResponse: (response, articleLink) => {
+		//	Article link.
 		let titleLinkHref = articleLink.href;
 
+		//	We use the mobile URL for popping up the live-link.
+		let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
+			hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
+		}).href;
+		let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+
+		//	Do not show the whole page, by default.
 		let wholePage = false;
 
 		//	Show full page (sans TOC) if it’s a disambiguation page.
@@ -5109,8 +5120,8 @@ Annotations.dataSources.wikipedia = {
 			let sections = Array.from(response.querySelectorAll("section")).slice(1);
 			if (   sections 
 				&& sections.length > 0) {
-				responseHTML += `<div class="TOC columns"><ul>`;
-				let headingLevel = 2;
+				responseHTML += `<div class="TOC columns">`;
+				let headingLevel = 0;
 				for (let i = 0; i < sections.length; i++) {
 					let section = sections[i];
 					let headingElement = section.firstElementChild;
@@ -5162,6 +5173,7 @@ Annotations.dataSources.wikipedia = {
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           `title-link link-live`,
 				titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+				titleLinkDataAttributes:  titleLinkDataAttributes,
 				abstract: 		          abstractHTML,
 				dataSourceClass:          "wikipedia-entry",
 			},
@@ -5731,7 +5743,7 @@ Content = {
 
 	removeExtraneousClassesFromMediaElement: (media) => {
 		//	Remove various link classes.
-		media.classList.remove("no-popup", "icon-not", "link-page", "link-live",
+		media.classList.remove("icon-not", "link-page", "link-live",
 			"link-annotated", "link-annotated-partial", "link-annotated-not",
 			"has-annotation", "has-annotation-partial", "has-content",
 			"has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
@@ -5775,6 +5787,35 @@ Content = {
 	},
 
 	contentTypes: {
+		dropcapInfo: {
+			matches: (link) => {
+				return link.classList.contains("link-dropcap");
+			},
+
+			isPageContent: false,
+
+			contentFromLink: (link) => {
+				let letter = link.dataset.letter;
+				let dropcapType = link.dataset.dropcapType;
+
+				let content = newDocument(
+					  `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
+					+ `<a class="link-page" href="/dropcap#${dropcapType}"><strong>${dropcapType}</strong></a>`
+					+ ` dropcap font.</p>`
+				);
+
+				//  Fire contentDidLoad event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Content.contentTypes.dropcapInfo.load",
+					container: content,
+					document: content,
+					loadLocation: new URL(link.href)
+				});
+
+				return content;
+			}
+		},
+
 		foreignSite: {
 			matches: (link) => {
 				//	Some foreign-site links are handled specially.
@@ -5857,6 +5898,9 @@ Content = {
 
 			shouldEnableScriptsForURL: (url) => {
 				if (url.hostname == "docs.google.com")
+					return true;
+
+				if (url.hostname == "demos.obormot.net")
 					return true;
 
 				if (   url.hostname == "archive.org"
@@ -7291,7 +7335,7 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		/*  See corresponding note in annotations.js.
 			—SA 2024-02-16
 		 */
-		[ "link-live", "link-page", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
+		[ "link-live", "link-page", "link-dropcap", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
@@ -7559,8 +7603,7 @@ function includeContent(includeLink, content) {
     unwrap(wrapper);
 
     //  Prevent race condition, part II.
-    includeLink.classList.add("include-complete");
-    includeLink.classList.remove("include-in-progress");
+    includeLink.swapClasses([ "include-in-progress", "include-complete" ], 1);
 
     //  Fire event, if need be.
     if (includeLink.delayed) {
@@ -8877,6 +8920,33 @@ Extracts = {
 			Extracts.popFrameProvider.addTarget(target, popFramePrepareFunction);
 		});
 
+		/*	Add pop-frame indicator hooks, if need be.
+			(See links.css for how these are used.)
+		 */
+		container.querySelectorAll(".has-content").forEach(link => {
+			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
+				return;
+
+			if (link.querySelector(".indicator-hook") != null)
+				return;
+
+			//	Inject indicator hook span.
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
+
+			/*	Inject U+2060 WORD JOINER at start of first text node of the
+				link. (It _must_ be injected as a Unicode character into the
+				existing text node; injecting it within the .indicator-hook
+				span, or as an HTML escape code into the text node, or in
+				any other fashion, creates a separate text node, which
+				causes all sorts of problems - text shadow artifacts, etc.)
+			 */
+			let linkFirstTextNode = link.firstTextNode;
+			if (linkFirstTextNode)
+				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+
+			link.classList.add("has-indicator-hook");
+		});
+
 		Extracts.setUpAnnotationLoadEventsWithin(container);
 		Extracts.setUpContentLoadEventsWithin(container);
     },
@@ -8973,37 +9043,10 @@ Extracts = {
                 Extracts.addTargetsWithin(contentContainer);
             });
         }
-
-		/*	Add pop-frame indicator hooks, if need be.
-			(See links.css for how these are used.)
-		 */
-		container.querySelectorAll(".has-content").forEach(link => {
-			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
-				return;
-
-			if (link.querySelector(".indicator-hook") != null)
-				return;
-
-			//	Inject indicator hook span.
-			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
-
-			/*	Inject U+2060 WORD JOINER at start of first text node of the
-				link. (It _must_ be injected as a Unicode character into the
-				existing text node; injecting it within the .indicator-hook
-				span, or as an HTML escape code into the text node, or in
-				any other fashion, creates a separate text node, which
-				causes all sorts of problems - text shadow artifacts, etc.)
-			 */
-			let linkFirstTextNode = link.firstTextNode;
-			if (linkFirstTextNode)
-				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
-
-			link.classList.add("has-indicator-hook");
-		});
     },
 
     /***********/
-    /*  Content.
+    /*  Targets.
      */
 
 	//  See comment at Extracts.isLocalPageLink for info on this function.
@@ -9051,10 +9094,11 @@ Extracts = {
 			2. Type predicate function (of the Extracts object) for identifying
 			   targets of the type; returns true iff target is of that type
 			3. Class(es) to be added to targets of the type (these are added
-			   during initial processing)
+			   during initial processing) (may be a function on the target)
 			4. Fill function (of the Extracts object); called to fill a
 			   pop-frame for a target of that type with content
 			5. Class(es) to be added to a pop-frame for targets of that type
+			   (may be a function on the pop-frame)
 	 */
 	targetTypeDefinitions: [ ],
 
@@ -9098,6 +9142,53 @@ Extracts = {
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
     },
 
+    /*  This function’s purpose is to allow for the transclusion of entire pages
+        on the same website (displayed to the user in popups, or injected in
+        block flow as popins), and the (almost-)seamless handling of local links
+        in such transcluded content in the same way that they’re handled in the
+        root document (ie. the actual page loaded in the browser window). This
+        permits us to have truly recursive popups with unlimited recursion depth
+        and no loss of functionality.
+
+        For any given target element, targetDocument() asks: to what local
+        document does the link refer?
+
+        This may be either the root document, or an entire other page that was
+        transcluded wholesale and embedded as a pop-frame (of class
+        ‘full-page’).
+     */
+    //  Called by: Extracts.localPageForTarget
+    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
+    //  Called by: extracts-content.js
+    targetDocument: (target) => {
+        if (target.hostname != location.hostname)
+            return null;
+
+        if (target.pathname == location.pathname)
+            return Extracts.rootDocument;
+
+        if (Extracts.popFrameProvider == Popups) {
+            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
+                                                                                  && popup.spawningTarget.pathname == target.pathname));
+            return popupForTargetDocument ? popupForTargetDocument.document : null;
+        } else if (Extracts.popFrameProvider == Popins) {
+            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
+                                                                                  && popin.spawningTarget.pathname == target.pathname)
+                                                                                  && Extracts.popFrameHasLoaded(popin));
+            return popinForTargetDocument ? popinForTargetDocument.document : null;
+        }
+    },
+
+    /***************************/
+    /*  Pop-frames (in general).
+     */
+
+	popFrameTypeSuffix: () => {
+		return (Extracts.popFrameProvider == Popups
+				? "up"
+				: "in");
+	},
+
     /*  This function fills a pop-frame for a given target with content. It
         returns true if the pop-frame successfully filled, false otherwise.
      */
@@ -9113,8 +9204,12 @@ Extracts = {
         if (   targetTypeInfo
         	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
-            if (targetTypeInfo.popFrameClasses)
-            	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses.split(" ")));
+            if (targetTypeInfo.popFrameClasses) {
+				if (typeof targetTypeInfo.popFrameClasses == "string")
+					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses.split(" ")));
+				else if (typeof targetTypeInfo.popFrameClasses == "function")
+					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses(popFrame).split(" ")));
+			}
         }
 
         if (didFill) {
@@ -9174,10 +9269,9 @@ Extracts = {
 
         //  Special handling for certain popup types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialTitleFunction = (Extracts.popFrameProvider == Popups
-                                    ? Extracts[`titleForPopup_${targetTypeName}`]
-                                    : Extracts[`titleForPopin_${targetTypeName}`])
-                                || Extracts[`titleForPopFrame_${targetTypeName}`];
+        let suffix = Extracts.popFrameTypeSuffix();
+        let specialTitleFunction = (   Extracts[`titleForPop${suffix}_${targetTypeName}`]
+        							?? Extracts[`titleForPopFrame_${targetTypeName}`]);
         if (specialTitleFunction)
             return specialTitleFunction(popFrame, titleText);
         else
@@ -9196,93 +9290,62 @@ Extracts = {
 		}
 	},
 
-    /*  This function’s purpose is to allow for the transclusion of entire pages
-        on the same website (displayed to the user in popups, or injected in
-        block flow as popins), and the (almost-)seamless handling of local links
-        in such transcluded content in the same way that they’re handled in the
-        root document (ie. the actual page loaded in the browser window). This
-        permits us to have truly recursive popups with unlimited recursion depth
-        and no loss of functionality.
-
-        For any given target element, targetDocument() asks: to what local
-        document does the link refer?
-
-        This may be either the root document, or an entire other page that was
-        transcluded wholesale and embedded as a pop-frame (of class
-        ‘full-page’).
-     */
-    //  Called by: Extracts.localPageForTarget
-    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
-    //  Called by: extracts-content.js
-    targetDocument: (target) => {
-        if (target.hostname != location.hostname)
-            return null;
-
-        if (target.pathname == location.pathname)
-            return Extracts.rootDocument;
-
-        if (Extracts.popFrameProvider == Popups) {
-            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
-                                                                                  && popup.spawningTarget.pathname == target.pathname));
-            return popupForTargetDocument ? popupForTargetDocument.document : null;
-        } else if (Extracts.popFrameProvider == Popins) {
-            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
-                                                                                  && popin.spawningTarget.pathname == target.pathname)
-                                                                                  && Extracts.popFrameHasLoaded(popin));
-            return popinForTargetDocument ? popinForTargetDocument.document : null;
-        }
-    },
-
-    /*  Activate loading spinner for an object pop-frame.
-     */
-    //  Called by: extracts-content.js
-    setLoadingSpinner: (popFrame) => {
-        let target = popFrame.spawningTarget;
-
-        popFrame.classList.toggle("loading", true);
-
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, img");
-		if (objectOfSomeSort == null)
-			return;
-
-        /*	We refresh as if loading were successful, but note that the ‘load’
-        	event on an <iframe> does not mean that the load was successful,
-        	because <iframe> elements do not fire ‘error’ on server error or
-        	load fail.
-         */
-		objectOfSomeSort.onload = (event) => {
-			Extracts.postRefreshUpdatePopFrame(popFrame, true);
-		};
-
-        /*  We set an ‘error’ handler for both <img> and <iframe>, just in case,
-        	but we only expect the former to work (see above).
-         */
-        if ([ "IFRAME", "IMG" ].includes(objectOfSomeSort.tagName)) {
-			objectOfSomeSort.onerror = (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
-			};
-        }
-    },
-
 	//	Called by: Extracts.setLoadingSpinner
 	postRefreshUpdatePopFrame: (popFrame, success) => {
         GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
-
-		if (Extracts.popFrameProvider.isSpawned(popFrame) == false)
-			return;
 
 		Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
 
 		if (!success)
 			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 
-		//  Update pop-frame position.
-		if (Extracts.popFrameProvider == Popups)
-			Popups.positionPopup(popFrame);
-		else if (Extracts.popFrameProvider == Popins)
-			Popins.scrollPopinIntoView(popFrame);
+		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
+			//  Update pop-frame position.
+			if (Extracts.popFrameProvider == Popups)
+				Popups.positionPopup(popFrame);
+			else if (Extracts.popFrameProvider == Popins)
+				Popins.scrollPopinIntoView(popFrame);
+		}
 	},
+
+    //  Called by: Extracts.rewritePopFrameContent
+    setLoadingSpinner: (popFrame, useObject = false) => {
+        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
+		if (useObject == false)
+			return;
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, img, video, audio");
+		if (objectOfSomeSort == null)
+			return;
+
+		let url = [ "IMG", "IFRAME" ].includes(objectOfSomeSort.tagName)
+				  ? URLFromString(objectOfSomeSort.src)
+				  : URLFromString(objectOfSomeSort.querySelector("source").src);
+
+		/*	The HTTP HEAD trick does not work with foreign-site pop-frames,
+			due to CORS. So, we use load/error events (which are less reliable).
+		 */
+		if (url.hostname != location.hostname) {
+			objectOfSomeSort.onload = (event) => {
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
+			};
+			//	Note that iframes do not fire ‘error’ on HTTP error.
+			objectOfSomeSort.onerror = (event) => {
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
+			};
+		} else {
+			doAjax({
+				location: url.href,
+				method: "HEAD",
+				onSuccess: (event) => {
+					Extracts.postRefreshUpdatePopFrame(popFrame, true);
+				},
+				onFailure: (event) => {
+					Extracts.postRefreshUpdatePopFrame(popFrame, false);
+				}
+			});
+		}
+    },
 
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
 	//	Called by: Extracts.rewritePopupContent_CITATION_BACK_LINK
@@ -9335,14 +9398,9 @@ Extracts = {
         });
 	},
 
-    /***************************/
-    /*  Pop-frames (in general).
-     */
-
-	popFrameTypeSuffix: () => {
-		return (Extracts.popFrameProvider == Popups
-				? "up"
-				: "in");
+	popFrameTitleBarContents: (popFrame) => {
+		let suffix = Extracts.popFrameTypeSuffix();
+		return Extracts[`pop${suffix}TitleBarContents`](popFrame);
 	},
 
     //  Called by: Extracts.preparePopup
@@ -9350,22 +9408,35 @@ Extracts = {
     preparePopFrame: (popFrame) => {
         GWLog("Extracts.preparePopFrame", "extracts.js", 2);
 
-        let target = popFrame.spawningTarget;
+        //  Attempt to fill the popup.
+        if (Extracts.fillPopFrame(popFrame) == false)
+            return null;
+
+		//  Turn loading spinner on.
+		Extracts.setLoadingSpinner(popFrame);
 
         //  Import the class(es) of the target.
-        popFrame.classList.add(...target.classList);
+        popFrame.classList.add(...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-annotation-partial",
         	"has-content", "link-self", "link-annotated", "link-page",
         	"has-icon", "has-indicator-hook", "uri", "decorate-not",
         	"spawns-popup", "spawns-popin");
 
-        //  Attempt to fill the popup.
-        if (Extracts.fillPopFrame(popFrame) == false)
-            return null;
+        //  Add pop-frame title bar contents.
+		popFrame.titleBarContents = Extracts.popFrameTitleBarContents(popFrame);
 
         //  Add ‘markdownBody’ class.
         popFrame.body.classList.add("markdownBody");
+
+        //  Special handling for certain pop-frame types.
+        let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
+        let suffix = Extracts.popFrameTypeSuffix();
+        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
+        							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
+        if (specialPrepareFunction)
+            if ((popFrame = specialPrepareFunction(popFrame)) == null)
+                return null;
 
 		//	Inject styles.
 		let inlinedStyleIDs = [
@@ -9387,22 +9458,81 @@ Extracts = {
 			popFrame.document.insertBefore(styleBlock, popFrame.body);
 		});
 
-		//	Add handler to update popup position when content changes.
-		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
-			if (popFrame == null)
-				return;
+		//	Activate dynamic layout for the pop-frame.
+		startDynamicLayoutInContainer(popFrame.body);
 
-			if (Extracts.popFrameProvider == Popups)
-				Popups.positionPopup(popFrame);
-			else // if (Extracts.popFrameProvider == Popins)
-				Popins.scrollPopinIntoView(popFrame);
+		//	Register copy processors in pop-frame.
+		registerCopyProcessorsForDocument(popFrame.document);
+
+		//	Add handler to update pop-frame position when content changes.
+		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", popFrame.contentDidChangeHandler = (info) => {
+			if (   Transclude.isIncludeLink(popFrame.body.firstElementChild)
+				&& popFrame.body.firstElementChild.classList.contains("include-loading-failed")) {
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
+			} else {
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
+			}
 		}, {
 			condition: (info) => (info.document == popFrame.document)
+		});
+		//	Add handler to remove the above handler when pop-frame despawns.
+		GW.notificationCenter.addHandlerForEvent(`Pop${suffix}s.pop${suffix}WillDespawn`, (info) => {
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", popFrame.contentDidChangeHandler);
+		}, {
+			once: true,
+			condition: (info) => (info[`pop${suffix}`] == popFrame)
+		});
+
+		//	Update pop-frame when content is injected.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			//	Refresh (turning loading spinner off).
+			Extracts.postRefreshUpdatePopFrame(popFrame, true);
+
+			//	Type-specific updates.
+			(   Extracts[`updatePop${suffix}_${targetTypeName}`] 
+			 ?? Extracts[`updatePopFrame_${targetTypeName}`]
+			 )?.(popFrame);
+		}, {
+			phase: "<",
+			condition: (info) => (   info.source == "transclude"
+								  && info.document == popFrame.document),
+			once: true
+		});
+
+		//	Rewrite pop-frame content when it’s injected.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			//  Type-specific rewrites.
+			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`] 
+			 ?? Extracts[`rewritePopFrameContent_${targetTypeName}`]
+			 )?.(popFrame, info.container);
+
+			//	Additional rewrites.
+			Extracts.additionalRewrites.forEach(rewriteFunction => {
+				rewriteFunction(popFrame);
+			});
+
+			//  Turn loading spinner back on, if need be.
+			if (popFrame.classList.contains("object"))
+				Extracts.setLoadingSpinner(popFrame, true);
+		}, {
+			phase: "rewrite",
+			condition: (info) => (   info.source == "transclude"
+								  && info.document == popFrame.document),
+			once: true
+		});
+
+		//	Trigger transclude.
+		Transclude.triggerTranscludesInContainer(popFrame.body, {
+			source: "Extracts.preparePopFrame",
+			container: popFrame.body,
+			document: popFrame.document,
+			context: "popFrame"
 		});
 
         return popFrame;
     },
 
+	//	Functions added to this array should take one argument (the pop-frame).
 	additionalRewrites: [ ],
 
     /**********/
@@ -9441,6 +9571,16 @@ Extracts = {
 		};
 	},
 
+	///	Called by: Extracts.popFrameTitleBarContents
+	popinTitleBarContents: (popin) => {
+        let popinTitle = Extracts.titleForPopFrame(popin) ?? { };
+		return [
+			Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
+			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
+			Popins.titleBarComponents.closeButton()
+		];
+	},
+
     /*  Called by popins.js just before injecting the popin. This is our chance
         to fill the popin with content, and rewrite that content in whatever
         ways necessary. After this function exits, the popin will appear on the
@@ -9450,63 +9590,10 @@ Extracts = {
     preparePopin: (popin) => {
         GWLog("Extracts.preparePopin", "extracts.js", 2);
 
-        let target = popin.spawningTarget;
-
-		//	Activate dynamic layout for the popin.
-		startDynamicLayoutInContainer(popin.body);
-
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popin).
          */
-        if ((popin = Extracts.preparePopFrame(popin)) == null)
-            return null;
-
-        //  Add popin title bar contents.
-        let popinTitle = Extracts.titleForPopFrame(popin);
-        if (popinTitle) {
-            popin.titleBarContents = [
-            	Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
-            	newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
-                Popins.titleBarComponents.closeButton()
-            ];
-        }
-
-        //  Special handling for certain popin types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialPrepareFunction = Extracts[`preparePopin_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
-        if (specialPrepareFunction)
-            if ((popin = specialPrepareFunction(popin)) == null)
-                return null;
-
-        /*  If we’re waiting for content to be loaded into the popin
-            asynchronously, then there’s no need to do rewrites for now.
-         */
-        if (Extracts.popFrameHasLoaded(popin))
-            Extracts.rewritePopinContent(popin);
-
-        return popin;
-    },
-
-    //	Called by: Extracts.preparePopin
-    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
-    rewritePopinContent: (popin) => {
-        GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
-
-        let target = popin.spawningTarget;
-
-        //  Special handling for certain popin types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
-        if (specialRewriteFunction)
-            specialRewriteFunction(popin);
-
-		//	Additional rewrites.
-		Extracts.additionalRewrites.forEach(rewriteFunction => {
-			rewriteFunction(popin);
-		});
-
-		//	Register copy processors in popin.
-		registerCopyProcessorsForDocument(popin.document);
+        return Extracts.preparePopFrame(popin);
     },
 
     /**********/
@@ -9519,13 +9606,6 @@ Extracts = {
     //  Called by: extracts-options.js
     popupsEnabled: () => {
         return (localStorage.getItem(Extracts.popupsDisabledLocalStorageItemKey) != "true");
-    },
-
-    //  Called by: Extracts.preparePopup
-    spawnedPopupMatchingTarget: (target) => {
-        return Popups.allSpawnedPopups().find(popup =>
-                   Extracts.targetsMatch(target, popup.spawningTarget)
-                && Popups.popupIsPinned(popup) == false);
     },
 
     //  Called by: Extracts.addTargetsWithin
@@ -9541,6 +9621,25 @@ Extracts = {
             return (   target.closest("li") != null
                     && target.closest(".columns") == null);
         };
+    },
+
+	//	Called by: Extracts.popFrameTitleBarContents
+	popupTitleBarContents: (popup) => {
+        let popupTitle = Extracts.titleForPopFrame(popup) ?? { };
+		return [
+			Popups.titleBarComponents.closeButton(),
+			Popups.titleBarComponents.zoomButton().enableSubmenu(),
+			Popups.titleBarComponents.pinButton(),
+			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
+			Extracts.disableExtractPopFramesPopFrameTitleBarButton()
+		];
+	},
+
+    //  Called by: Extracts.preparePopup
+    spawnedPopupMatchingTarget: (target) => {
+        return Popups.allSpawnedPopups().find(popup =>
+                   Extracts.targetsMatch(target, popup.spawningTarget)
+                && Popups.popupIsPinned(popup) == false);
     },
 
     /*  Called by popups.js just before spawning (injecting and positioning) the
@@ -9564,66 +9663,14 @@ Extracts = {
             return existingPopup;
         }
 
-		//	Activate dynamic layout for the popup.
-		startDynamicLayoutInContainer(popup.body);
-
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popup).
          */
-        if ((popup = Extracts.preparePopFrame(popup)) == null)
-            return null;
-
-        //  Add popup title bar contents.
-        let popupTitle = Extracts.titleForPopFrame(popup);
-        if (popupTitle) {
-            popup.titleBarContents = [
-                Popups.titleBarComponents.closeButton(),
-                Popups.titleBarComponents.zoomButton().enableSubmenu(),
-                Popups.titleBarComponents.pinButton(),
-                newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
-                Extracts.disableExtractPopFramesPopFrameTitleBarButton()
-            ];
-        }
-
-        //  Special handling for certain popup types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
-        if (specialPrepareFunction)
-            if ((popup = specialPrepareFunction(popup)) == null)
-                return null;
-
-        /*  If we’re waiting for content to be loaded into the popup
-            asynchronously, then there’s no need to do rewrites for now.
-         */
-        if (Extracts.popFrameHasLoaded(popup))
-            Extracts.rewritePopupContent(popup);
-
-        return popup;
-    },
-
-    //	Called by: Extracts.preparePopup
-    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
-    rewritePopupContent: (popup) => {
-        GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
-
-        let target = popup.spawningTarget;
-
-        //  Special handling for certain popup types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialRewriteFunction = Extracts[`rewritePopupContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
-        if (specialRewriteFunction)
-            specialRewriteFunction(popup);
-
-		//	Additional rewrites.
-		Extracts.additionalRewrites.forEach(rewriteFunction => {
-			rewriteFunction(popup);
-		});
-
-		//	Register copy processors in popup.
-		registerCopyProcessorsForDocument(popup.document);
+        return Extracts.preparePopFrame(popup);
     }
 };
 
+/*****************************************************************************/
 /*	Browser native image lazy loading does not seem to work in pop-frames (due
 	to the shadow root or the nested scroll container or some combination
 	thereof), so we have to implement it ourselves.
@@ -9680,7 +9727,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated include-annotation",
+			"class": "link-annotated include-annotation include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },
@@ -9707,14 +9754,12 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_ANNOTATION: (popup) => {
-        let target = popup.spawningTarget;
-
         /*  Do not spawn annotation popup if the annotation is already visible
             on screen. (This may occur if the target is in a popup that was
             spawned from a backlinks popup for this same annotation as viewed on
             a tag index page, for example.)
          */
-        let escapedLinkURL = CSS.escape(decodeURIComponent(target.href));
+        let escapedLinkURL = CSS.escape(decodeURIComponent(popup.spawningTarget.href));
         let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
         if (targetAnalogueInLinkBibliography) {
             let containingSection = targetAnalogueInLinkBibliography.closest("section");
@@ -9728,42 +9773,22 @@ Extracts = { ...Extracts,
         return popup;
     },
 
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_ANNOTATION: (popFrame, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
-
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_ANNOTATION(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_ANNOTATION",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        let target = popFrame.spawningTarget;
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_ANNOTATION: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
         //  Mark annotations from non-local data sources.
-		let referenceData = Annotations.referenceDataForLink(target);
+		let referenceData = Annotations.referenceDataForLink(popFrame.spawningTarget);
         if (referenceData.content.dataSourceClass)
             Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
 
-        //  Update the title.
+        //  Update pop-frame title.
         Extracts.updatePopFrameTitle(popFrame);
+	},
+
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    rewritePopFrameContent_ANNOTATION: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_ANNOTATION", "extracts-annotations.js", 2);
 
 		/*	For annotated media, rearrange annotation content so that the media
 			itself follows the abstract (but precedes the aux-links), and the
@@ -9773,7 +9798,7 @@ Extracts = { ...Extracts,
 			  "localImage", 
 			  "localVideo", 
 			  "localAudio" 
-			  ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1) {
+			  ].findIndex(x => Content.contentTypes[x].matches(popFrame.spawningTarget)) !== -1) {
 			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
 			let fileIncludes = popFrame.document.querySelector(".file-includes");
 			let includeLink = fileIncludes.querySelector("a");
@@ -9838,14 +9863,22 @@ Extracts = { ...Extracts,
     	return Extracts.preparePopup_ANNOTATION(popup);
     },
 
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_ANNOTATION_PARTIAL: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
+
+		Extracts.updatePopFrame_ANNOTATION(popFrame);
+	},
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_ANNOTATION_PARTIAL: (popFrame) => {
+    rewritePopFrameContent_ANNOTATION_PARTIAL: (popFrame, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_ANNOTATION_PARTIAL", "extracts-annotations.js", 2);
 
-		Extracts.rewritePopFrameContent_ANNOTATION(popFrame);
+		Extracts.rewritePopFrameContent_ANNOTATION(popFrame, contentContainer);
     }
 };
 
+/************************************************************************/
 /*	Inject partial-annotation metadata into a popup that is not already a
 	partial annotation.
  */
@@ -9963,8 +9996,8 @@ Extracts = { ...Extracts,
 	is called by fillPopFrame() (chosen on the basis of the return values
 	of the testing functions, and the specified order in which they’re
 	called). The filling function takes a target element and returns a
-	string which comprises the HTML contents that should be injected into
-	the pop-frame spawned by the given target.
+	DocumentFragment whose contents should be injected into the pop-frame 
+	spawned by the given target.
  */
 
 Extracts.targetTypeDefinitions.insertBefore([
@@ -10035,43 +10068,43 @@ Extracts = { ...Extracts,
     //	Called by: Extracts.citationForTarget (extracts-content.js)
     //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
     localPageForTarget: (target, forceNarrow) => {
-        GWLog("Extracts.localPageForTarget", "extracts.js", 2);
+        GWLog("Extracts.localPageForTarget", "extracts-content.js", 2);
 
-		/*  Check to see if the target location matches an already-displayed
-			page (which can be the root page of the window).
+		/*  If the target is an anchor-link, check to see if the target location 
+			matches an already-displayed page (which can be the root page of the 
+			window).
 
 			If the entire linked page is already displayed, and if the
 			target points to an anchor in that page, display the linked
 			section or element.
 
 			Also display just the linked block if we’re spawning this
-			pop-frame from an in-pop-frame TOC.
+			pop-frame from a table of contents.
 
 			Otherwise, display the entire linked page.
+
+			(The `forceNarrow` option allows other pop-frame types, like 
+			 `CITATION`, which call this function to provide their content, to 
+			 always spawn only the linked block, regardless of what other 
+			 pop-frames may or may not be spawned.)
 		 */
 		let fullPage = !(   isAnchorLink(target)
         				 && (   forceNarrow
         					 || target.closest(".TOC")
         					 || Extracts.targetDocument(target)));
-        if (fullPage) {
-            /*  Note that we might end up here because there is yet no
-                pop-frame with the full linked document, OR because there is
-                such a pop-frame but it’s a pinned popup or something (and thus
-                we didn’t want to despawn it and respawn it at this target’s
-                location).
-            */
-			/*  Mark the pop-frame as a full page embed, and give it suitable
-				identifying classes.
-			 */
+
+		//  Mark full-page embed pop-frames.
+        if (fullPage)
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-page");
-        }
 
 		//	Designate “full context” pop-frames for backlinks.
 		if (Extracts.isFullBacklinkContextLink(target))
 			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
 
 		//	Synthesize include-link (with or without hash, as appropriate).
-		let includeLink = synthesizeIncludeLink(target, { class: "include-block-context-expanded" });
+		let includeLink = synthesizeIncludeLink(target, {
+			class: "include-block-context-expanded include-spinner-not"
+		});
 		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)
@@ -10091,7 +10124,7 @@ Extracts = { ...Extracts,
 
     //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_LOCAL_PAGE: (popFrame) => {
-        GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts.js", 2);
+        GWLog("Extracts.titleForPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
 
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
@@ -10123,8 +10156,9 @@ Extracts = { ...Extracts,
 		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
     },
 
+	//	Called by: Extracts.preparePopup_LOCAL_PAGE
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
-        GWLog("Extracts.preparePopFrame_LOCAL_PAGE", "extracts.js", 2);
+        GWLog("Extracts.preparePopFrame_LOCAL_PAGE", "extracts-content.js", 2);
 
         let target = popFrame.spawningTarget;
 
@@ -10132,7 +10166,7 @@ Extracts = { ...Extracts,
 			transcludes in source content when they trigger in the pop-frame.
 		 */
 		if (Content.cachedDataExists(target)) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", popFrame.updateSourceContentOnTranscludeTriggerHandler = (info) => {
 				Content.updateCachedContent(target, (content) => {
 					Transclude.allIncludeLinksInContainer(content).filter(includeLink =>
 						includeLink.href == info.includeLink.href
@@ -10142,18 +10176,24 @@ Extracts = { ...Extracts,
 				});
 			}, { condition: (info) => (   info.source == "transclude"
 									   && info.document == popFrame.document) });
+			//	Add handler to remove the above handler when pop-frame despawns.			
+			let suffix = Extracts.popFrameTypeSuffix();
+			GW.notificationCenter.addHandlerForEvent(`Pop${suffix}s.pop${suffix}WillDespawn`, (info) => {
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", popFrame.updateSourceContentOnTranscludeTriggerHandler);
+			}, {
+				once: true,
+				condition: (info) => (info[`pop${suffix}`] == popFrame)
+			});
 		}
 
 		return popFrame;
 	},
 
-    //  Called by: Extracts.preparePopup (as `preparePopup_${targetTypeName}`)
+    //  Called by: Extracts.preparePopFrame (as `preparePop${suffix}_${targetTypeName}`)
     preparePopup_LOCAL_PAGE: (popup) => {
-        GWLog("Extracts.preparePopup_LOCAL_PAGE", "extracts.js", 2);
+        GWLog("Extracts.preparePopup_LOCAL_PAGE", "extracts-content.js", 2);
 
         let target = popup.spawningTarget;
-
-		popup = Extracts.preparePopFrame_LOCAL_PAGE(popup);
 
 		//  Do not spawn “full context” popup if the link is visible.
  		if (   Extracts.isFullBacklinkContextLink(target)
@@ -10161,90 +10201,53 @@ Extracts = { ...Extracts,
  			&& Popups.isVisible(targetElementInDocument(target, Extracts.rootDocument)))
 			return null;
 
-       /*  Designate popups spawned from section links in the the TOC (for
+		/*  Designate popups spawned from section links in the the TOC (for
             special styling).
          */
         if (Extracts.isTOCLink(target))
         	Extracts.popFrameProvider.addClassesToPopFrame(popup, "toc-section");
 
-        return popup;
+        return Extracts.preparePopFrame_LOCAL_PAGE(popup);
     },
+
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_LOCAL_PAGE: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		//	Add page body classes.
+		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+
+		//	Update pop-frame title.
+		Extracts.updatePopFrameTitle(popFrame);
+	},
 
     //  Called by: Extracts.rewritePopinContent_LOCAL_PAGE
     //  Called by: Extracts.rewritePopupContent_LOCAL_PAGE
-    //  Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
-    //  Called by: Extracts.rewritePopupContent (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_PAGE: (popFrame, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts.js", 2);
+    rewritePopFrameContent_LOCAL_PAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		let target = popFrame.spawningTarget;
-
-		if (injectEventInfo == null) {
-			//	Preliminary rewrites.
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				//	Add page body classes.
-				let referenceData = Content.referenceDataForLink(target);
-				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
-
-				//	Update pop-frame title.
-				Extracts.updatePopFrameTitle(popFrame);
-			}, {
-				phase: "<",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Main rewrites.
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_PAGE(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-		//	Provider-specific rewrites.
-		if (Extracts.popFrameProvider == Popups)
-			Extracts.rewritePopupContent_LOCAL_PAGE(popFrame, injectEventInfo);
-		else // if (Extracts.popFrameProvider == Popins)
-			Extracts.rewritePopinContent_LOCAL_PAGE(popFrame, injectEventInfo);
-
-		//	Something failed somehow.
-		if (isNodeEmpty(injectEventInfo.container)) {
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+		//	Something failed somehow (probably a transclude error).
+		if (isNodeEmpty(contentContainer)) {
+			Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			return;
 		}
 
 		//	Make first image load eagerly.
 		let firstImage = (   popFrame.document.querySelector(".page-thumbnail")
-						  || popFrame.document.querySelector("figure img"))
+						  ?? popFrame.document.querySelector("figure img"))
 		if (firstImage) {
 			firstImage.loading = "eager";
 			firstImage.decoding = "sync";
 		}
 
 		//	Strip a single collapse block encompassing the top level content.
-		if (   isOnlyChild(injectEventInfo.container.firstElementChild)
-			&& injectEventInfo.container.firstElementChild.classList.contains("collapse"))
-			expandLockCollapseBlock(injectEventInfo.container.firstElementChild);
+		if (   isOnlyChild(contentContainer.firstElementChild)
+			&& contentContainer.firstElementChild.classList.contains("collapse"))
+			expandLockCollapseBlock(contentContainer.firstElementChild);
 
 		//	Designate section backlinks popups as such.
-		if (injectEventInfo.container.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
+		if (contentContainer.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
 			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "aux-links", "backlinks");
 
 		/*	In the case where the spawning link points to a specific element
@@ -10253,6 +10256,7 @@ Extracts = { ...Extracts,
 			transclude.js has not marked the targeted element for us already.
 			So we must do it here.
 		 */
+		let target = popFrame.spawningTarget;
 		if (   isAnchorLink(target)
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
 			targetElementInDocument(target, popFrame.document).classList.add("block-context-highlighted");
@@ -10269,53 +10273,43 @@ Extracts = { ...Extracts,
 // 		}
     },
 
-    //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_LOCAL_PAGE: (popup, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts.js", 2);
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopupContent_LOCAL_PAGE: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		if (injectEventInfo == null) {
-			Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
-			return;
-		}
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup, contentContainer);
 
-        let target = popup.spawningTarget;
-
-		let referenceData = Content.referenceDataForLink(target);
-		if (referenceData) {
-			//	Insert page thumbnail into page abstract.
-			if (   referenceData.pageThumbnailHTML
-				&& popup.document.querySelector("img.page-thumbnail") == null) {
-				let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
-				if (pageAbstract)
-					pageAbstract.insertBefore(newElement("FIGURE", {
-						class: "float-right"
-					}, {
-						innerHTML: referenceData.pageThumbnailHTML
-					}), pageAbstract.firstChild);
-			}
+		//	Insert page thumbnail into page abstract.
+		let referenceData = Content.referenceDataForLink(popup.spawningTarget);
+		if (   referenceData.pageThumbnailHTML
+			&& popup.document.querySelector("img.page-thumbnail") == null) {
+			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
+			if (pageAbstract)
+				pageAbstract.insertBefore(newElement("FIGURE", {
+					class: "float-right"
+				}, {
+					innerHTML: referenceData.pageThumbnailHTML
+				}), pageAbstract.firstChild);
 		}
 
         //  Make anchorlinks scroll popup instead of opening normally.
 		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
     },
 
-    //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
-    rewritePopinContent_LOCAL_PAGE: (popin, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts.js", 2);
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopinContent_LOCAL_PAGE: (popin, contentContainer) => {
+        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		if (injectEventInfo == null) {
-			Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
-			return;
-		}
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
 
         /*  Make anchorlinks scroll popin instead of opening normally
         	(but only for non-popin-spawning anchorlinks).
          */
-		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("no-popin")));
+		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("spawns-popin") == false));
     },
 
 	loadAdjacentSections: (popFrame, which) => {
-        GWLog("Extracts.loadAdjacentSections", "extracts.js", 2);
+        GWLog("Extracts.loadAdjacentSections", "extracts-content.js", 2);
 
 		which = which.split(",");
 		let next = which.includes("next");
@@ -10429,6 +10423,23 @@ Extracts = { ...Extracts,
 		return newDocument(synthesizeIncludeLink(target, { class: AuxLinks.auxLinksLinkType(target) }));
     },
 
+    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    titleForPopFrame_AUX_LINKS_LINK: (popFrame) => {
+        let target = popFrame.spawningTarget;
+        let targetPage = AuxLinks.targetOfAuxLinksLink(target);
+        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
+        switch (auxLinksLinkType) {
+		case "backlinks":
+			return newDocument(`<code>${targetPage}</code><span> (Backlinks)</span>`);
+		case "similars":
+			return newDocument(`<code>${targetPage}</code><span> (Similar links)</span>`);
+		case "link-bibliography":
+			return newDocument(`<code>${targetPage}</code><span> (Link bibliography)</span>`);
+		default:
+			return newDocument(`<code>${targetPage}</code>`);
+        }
+    },
+
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
     preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
         GWLog("Extracts.preparePopFrame_AUX_LINKS_LINK", "extracts-content.js", 2);
@@ -10441,29 +10452,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_AUX_LINKS_LINK: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_AUX_LINKS_LINK(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
+    rewritePopFrameContent_AUX_LINKS_LINK: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_AUX_LINKS_LINK", "extracts-content.js", 2);
 
 		if (Extracts.popFrameProvider == Popups) {
 			popFrame.document.querySelectorAll(".backlink-source a:nth-of-type(2)").forEach(fullContextLink => {
@@ -10485,99 +10475,40 @@ Extracts = { ...Extracts,
 				}
 			});
 		}
-    },
-
-    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    titleForPopFrame_AUX_LINKS_LINK: (popFrame) => {
-        let target = popFrame.spawningTarget;
-        let targetPage = AuxLinks.targetOfAuxLinksLink(target);
-        let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
-        switch (auxLinksLinkType) {
-		case "backlinks":
-			return newDocument(`<code>${targetPage}</code><span> (Backlinks)</span>`);
-		case "similars":
-			return newDocument(`<code>${targetPage}</code><span> (Similar links)</span>`);
-		case "link-bibliography":
-			return newDocument(`<code>${targetPage}</code><span> (Link bibliography)</span>`);
-		default:
-			return newDocument(`<code>${targetPage}</code>`);
-        }
-    },
+    }
 };
 
-/*=----------------=*/
-/*= DROPCAP LINKS =*/
-/*=----------------=*/
+/*=--------------------=*/
+/*= DROPCAP INFO LINKS =*/
+/*=--------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "DROPCAP_LINK",      // Type name
-    "isDropcapLink",     // Type predicate function
-    null,                // Target classes to add
-    "dropcapForTarget",  // Pop-frame fill function
-    "dropcap"            // Pop-frame classes
+    "DROPCAP_INFO_LINK",     // Type name
+    "isDropcapInfoLink",     // Type predicate function
+    null,                    // Target classes to add
+    "dropcapInfoForTarget",  // Pop-frame fill function
+    (popFrame) => [          // Pop-frame classes
+		"dropcap-info",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
-    isDropcapLink: (target) => {
-        return target.classList.contains("link-dropcap");
+    isDropcapInfoLink: (target) => {
+        return Content.contentTypes.dropcapInfo.matches(target);
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    dropcapForTarget: (target) => {
-        GWLog("Extracts.dropcapForTarget", "extracts-content.js", 2);
+    dropcapInfoForTarget: (target) => {
+        GWLog("Extracts.dropcapInfoForTarget", "extracts-content.js", 2);
 
-		let letter = target.dataset.letter;
-		let dropcapType = target.dataset.dropcapType;
-
-		return newDocument(
-			  `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
-			+ `<a class="link-page" href="/dropcap#${dropcapType}"><strong>${dropcapType}</strong></a>`
-			+ ` dropcap font.</p>`
-		)
-    },
-
-    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_DROPCAP_LINK: (popup) => {
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
-
-        return popup;
-    },
-
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_DROPCAP_LINK: (popin) => {
-        //  No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_DROPCAP_LINK: (popFrame) => {
-        GWLog("Extracts.rewritePopFrameContent_DROPCAP_LINK", "extracts.js", 2);
-
-		//	Determine load location.
-        let target = popFrame.spawningTarget;
-		let containingPopFrame = Extracts.popFrameProvider.containingPopFrame(target);
-		let loadLocation = containingPopFrame
-						   ? containingPopFrame.spawningTarget
-						   : location;
-		
-		//	Fire events.
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "Extracts.rewritePopFrameContent_DROPCAP_LINK",
-			container: popFrame.body,
-			document: popFrame.document,
-			loadLocation: new URL(loadLocation.href)
-		});
-		GW.notificationCenter.fireEvent("GW.contentDidInject", {
-			source: "Extracts.rewritePopFrameContent_DROPCAP_LINK",
-			container: popFrame.body,
-			document: popFrame.document,
-			loadLocation: new URL(loadLocation.href),
-			flags: GW.contentDidInjectEventFlags.clickable
-		});
+		return newDocument(synthesizeIncludeLink(target, {
+			"data-letter": target.dataset.letter,
+			"data-dropcap-type": target.dataset.dropcapType
+		}));
     },
 };
 
@@ -10586,11 +10517,16 @@ Extracts = { ...Extracts,
 /*=-----------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "CITATION",             // Type name
-    "isCitation",           // Type predicate function
-    null,                   // Target classes to add
-    "citationForTarget",    // Pop-frame fill function
-    "footnote"              // Pop-frame classes
+    "CITATION",           // Type name
+    "isCitation",         // Type predicate function
+    null,                 // Target classes to add
+    "citationForTarget",  // Pop-frame fill function
+    (popFrame) => [       // Pop-frame classes
+		"footnote",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
@@ -10622,11 +10558,8 @@ Extracts = { ...Extracts,
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
             visible.
          */
-        if (Array.from(Notes.allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
+        if (Array.from(Notes.allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) !== -1)
             return null;
-
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
 
         /*  Add event listeners to highlight citation when its footnote
             popup is hovered over.
@@ -10647,40 +10580,9 @@ Extracts = { ...Extracts,
         return popup;
     },
 
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_CITATION: (popin) => {
-        //  No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_CITATION: (popFrame, injectEventInfo = null) => {
-        GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts.js", 2);
-
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_CITATION(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_CITATION",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
+    rewritePopFrameContent_CITATION: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts-content.js", 2);
 
 		/*	Unwrap sidenote. (Corrects for edge case where a popup for a section
 			of the current page which is currently within a collapsed section, 
@@ -10688,8 +10590,8 @@ Extracts = { ...Extracts,
 			a popup instead of sliding up the sidenote, as the latter is hidden.
 			The sidenote, once transcluded, must then be unwrapped specially.)
 		 */
-		if (injectEventInfo.container.firstElementChild.classList.contains("sidenote"))
-			unwrap(injectEventInfo.container.querySelector(".sidenote-inner-wrapper"));
+		if (contentContainer.firstElementChild.classList.contains("sidenote"))
+			unwrap(contentContainer.querySelector(".sidenote-inner-wrapper"));
     },
 };
 
@@ -10698,11 +10600,16 @@ Extracts = { ...Extracts,
 /*=---------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "CITATION_BACK_LINK",               // Type name
-    "isCitationBackLink",               // Type predicate function
-    null,                               // Target classes to add
-    "citationBackLinkForTarget",        // Pop-frame fill function
-    "citation-context"                  // Pop-frame classes
+    "CITATION_BACK_LINK",         // Type name
+    "isCitationBackLink",         // Type predicate function
+    null,                         // Target classes to add
+    "citationBackLinkForTarget",  // Pop-frame fill function
+    (popFrame) => [               // Pop-frame classes
+		"citation-context",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
@@ -10741,46 +10648,12 @@ Extracts = { ...Extracts,
         		return null;
         }
 
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
-
         return popup;
     },
 
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_CITATION_BACK_LINK: (popin) => {
-        //  No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_CITATION_BACK_LINK: (popup, injectEventInfo = null) => {
-        let target = popup.spawningTarget;
-
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopupContent_CITATION_BACK_LINK(popup, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popup.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popup.body, {
-				source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
-				container: popup.body,
-				document: popup.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
+    rewritePopupContent_CITATION_BACK_LINK: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopupContent_CITATION_BACK_LINK", "extracts-content.js", 2);
 
         //  Highlight citation in popup.
         /*  Remove the .targeted class from a targeted citation (if any)
@@ -10791,7 +10664,7 @@ Extracts = { ...Extracts,
             targetedCitation.classList.remove("targeted");
         });
         //  In the popup, the citation for which context is being shown.
-        let citationInPopup = targetElementInDocument(target, popup.document);
+        let citationInPopup = targetElementInDocument(popup.spawningTarget, popup.document);
         //  Highlight the citation.
         citationInPopup.classList.add("targeted");
         //	Remove class that would interfere with styling.
@@ -10827,35 +10700,6 @@ Extracts = { ...Extracts,
 		return newDocument(synthesizeIncludeLink(target), {
 			"class": "include-caption-not"
         });
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_REMOTE_IMAGE: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_REMOTE_IMAGE(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_REMOTE_IMAGE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
     }
 };
 
@@ -10895,35 +10739,6 @@ Extracts = { ...Extracts,
 		}
 
         return popup;
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_REMOTE_VIDEO: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_REMOTE_VIDEO(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_REMOTE_VIDEO",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
     }
 };
 
@@ -10932,11 +10747,16 @@ Extracts = { ...Extracts,
 /*=-----------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "LOCAL_VIDEO",              // Type name
-    "isLocalVideoLink",         // Type predicate function
-    "has-content",              // Target classes to add
-    "localVideoForTarget",      // Pop-frame fill function
-    "video object"              // Pop-frame class
+    "LOCAL_VIDEO",          // Type name
+    "isLocalVideoLink",     // Type predicate function
+    "has-content",          // Target classes to add
+    "localVideoForTarget",  // Pop-frame fill function
+    (popFrame) => [         // Pop-frame classes
+		"video object",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
@@ -10952,65 +10772,6 @@ Extracts = { ...Extracts,
         return newDocument(synthesizeIncludeLink(target), {
 			"class": "include-caption-not"
         });
-    },
-
-    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_LOCAL_VIDEO: (popup) => {
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
-
-        return popup;
-    },
-
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_LOCAL_VIDEO: (popin) => {
-        //  No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_VIDEO: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_VIDEO(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_VIDEO",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        //  Loading spinner.
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
-
-    	let video = popFrame.document.querySelector("video");
-    	let source = video.querySelector("source");
-
-		doAjax({
-			location: source.src,
-			method: "HEAD",
-			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrame(popFrame, true);
-			},
-			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrame(popFrame, false);
-			}
-		});
     }
 };
 
@@ -11019,11 +10780,16 @@ Extracts = { ...Extracts,
 /*=----------------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "LOCAL_AUDIO",              // Type name
-    "isLocalAudioLink",         // Type predicate function
-    "has-content",              // Target classes to add
-    "localAudioForTarget",      // Pop-frame fill function
-    "audio object"              // Pop-frame class
+    "LOCAL_AUDIO",          // Type name
+    "isLocalAudioLink",     // Type predicate function
+    "has-content",          // Target classes to add
+    "localAudioForTarget",  // Pop-frame fill function
+    (popFrame) => [         // Pop-frame classes
+		"audio object",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar no-resize-height"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
@@ -11039,68 +10805,6 @@ Extracts = { ...Extracts,
         return newDocument(synthesizeIncludeLink(target), {
 			"class": "include-caption-not"
         });
-    },
-
-    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_LOCAL_AUDIO: (popup) => {
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
-
-		//	Audio elements can’t get taller.
-        popup.classList.add("no-resize-height");
-
-        return popup;
-    },
-
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_LOCAL_AUDIO: (popin) => {
-        //  No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_AUDIO: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_AUDIO(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_AUDIO",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        //  Loading spinner.
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
-
-    	let audio = popFrame.document.querySelector("audio");
-    	let source = audio.querySelector("source");
-
-		doAjax({
-			location: source.src,
-			method: "HEAD",
-			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrame(popFrame, true);
-			},
-			onFailure: (event) => {
-				Extracts.postRefreshUpdatePopFrame(popFrame, false);
-			}
-		});
     }
 };
 
@@ -11109,11 +10813,16 @@ Extracts = { ...Extracts,
 /*=-----------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "LOCAL_IMAGE",              // Type name
-    "isLocalImageLink",         // Type predicate function
-    "has-content",              // Target classes to add
-    "localImageForTarget",      // Pop-frame fill function
-    "image object"              // Pop-frame classes
+    "LOCAL_IMAGE",          // Type name
+    "isLocalImageLink",     // Type predicate function
+    "has-content",          // Target classes to add
+    "localImageForTarget",  // Pop-frame fill function
+    (popFrame) => [         // Pop-frame classes
+		"image object",
+		(Extracts.popFrameProvider == Popups
+		 ? "mini-title-bar"
+		 : "no-footer-bar")
+	].join(" ")
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
@@ -11131,49 +10840,9 @@ Extracts = { ...Extracts,
         }));
     },
 
-    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_LOCAL_IMAGE: (popup) => {
-        //  Mini title bar.
-        popup.classList.add("mini-title-bar");
-
-        return popup;
-    },
-
-    //  Called by: extracts.js (as `preparePopin_${targetTypeName}`)
-    preparePopin_LOCAL_IMAGE: (popin) => {
-		//	No footer bar.
-        popin.classList.add("no-footer-bar");
-
-        return popin;
-    },
-
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_IMAGE: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_IMAGE(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_IMAGE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-		//	Loading spinner.
-		Extracts.setLoadingSpinner(popFrame);
+    rewritePopFrameContent_LOCAL_IMAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_IMAGE", "extracts-content.js", 2);
 
 		//	Mark sized image pop-frame.
         if (popFrame.document.querySelector("img[width][height]"))
@@ -11224,51 +10893,18 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
+    rewritePopFrameContent_LOCAL_DOCUMENT: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_DOCUMENT", "extracts-content.js", 2);
 
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_DOCUMENT",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
+		let iframe = popFrame.document.querySelector("iframe");
+		if (iframe) {
+			iframe.addEventListener("load", (event) => {
+				//  Set title of popup from page title, if any.
+				let title = iframe.contentDocument.title?.trim();
+				if (title > "")
+					Extracts.updatePopFrameTitle(popFrame, title);
 			});
-
-			return;
 		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        let iframe = popFrame.document.querySelector("iframe");
-        if (iframe) {
-            iframe.addEventListener("load", (event) => {
-				//  Set title of popup from page title.
-				Extracts.updatePopFrameTitle(popFrame, iframe.contentDocument.title);
-            });
-        }
-
-        //  Loading spinner.
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
-
-		doAjax({
-			location: popFrame.document.querySelector("iframe").src,
-			method: "HEAD",
-			onSuccess: (event) => {
-				Extracts.postRefreshUpdatePopFrame(popFrame, true);
-			},
-			onFailure: (event) => {
-                Extracts.postRefreshUpdatePopFrame(popFrame, false);
-			}
-		});
     }
 };
 
@@ -11295,33 +10931,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target));
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_LOCAL_CODE_FILE: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_LOCAL_CODE_FILE(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_LOCAL_CODE_FILE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-    },
+    }
 };
 
 /*=----------------=*/
@@ -11347,35 +10957,6 @@ Extracts = { ...Extracts,
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target));
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_FOREIGN_SITE: (popFrame, injectEventInfo = null) => {
-		if (injectEventInfo == null) {
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-				Extracts.rewritePopFrameContent_FOREIGN_SITE(popFrame, info);
-			}, {
-				phase: "rewrite",
-				condition: (info) => (   info.source == "transclude"
-									  && info.document == popFrame.document),
-				once: true
-			});
-
-			//	Trigger transcludes.
-			Transclude.triggerTranscludesInContainer(popFrame.body, {
-				source: "Extracts.rewritePopFrameContent_FOREIGN_SITE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-
-			return;
-		}
-
-		//	REAL REWRITES BEGIN HERE
-
-        //  Loading spinner.
-        Extracts.setLoadingSpinner(popFrame);
     }
 };
 

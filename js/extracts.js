@@ -108,6 +108,33 @@ Extracts = {
 			Extracts.popFrameProvider.addTarget(target, popFramePrepareFunction);
 		});
 
+		/*	Add pop-frame indicator hooks, if need be.
+			(See links.css for how these are used.)
+		 */
+		container.querySelectorAll(".has-content").forEach(link => {
+			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
+				return;
+
+			if (link.querySelector(".indicator-hook") != null)
+				return;
+
+			//	Inject indicator hook span.
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
+
+			/*	Inject U+2060 WORD JOINER at start of first text node of the
+				link. (It _must_ be injected as a Unicode character into the
+				existing text node; injecting it within the .indicator-hook
+				span, or as an HTML escape code into the text node, or in
+				any other fashion, creates a separate text node, which
+				causes all sorts of problems - text shadow artifacts, etc.)
+			 */
+			let linkFirstTextNode = link.firstTextNode;
+			if (linkFirstTextNode)
+				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+
+			link.classList.add("has-indicator-hook");
+		});
+
 		Extracts.setUpAnnotationLoadEventsWithin(container);
 		Extracts.setUpContentLoadEventsWithin(container);
     },
@@ -204,37 +231,10 @@ Extracts = {
                 Extracts.addTargetsWithin(contentContainer);
             });
         }
-
-		/*	Add pop-frame indicator hooks, if need be.
-			(See links.css for how these are used.)
-		 */
-		container.querySelectorAll(".has-content").forEach(link => {
-			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
-				return;
-
-			if (link.querySelector(".indicator-hook") != null)
-				return;
-
-			//	Inject indicator hook span.
-			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), link.firstChild);
-
-			/*	Inject U+2060 WORD JOINER at start of first text node of the
-				link. (It _must_ be injected as a Unicode character into the
-				existing text node; injecting it within the .indicator-hook
-				span, or as an HTML escape code into the text node, or in
-				any other fashion, creates a separate text node, which
-				causes all sorts of problems - text shadow artifacts, etc.)
-			 */
-			let linkFirstTextNode = link.firstTextNode;
-			if (linkFirstTextNode)
-				linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
-
-			link.classList.add("has-indicator-hook");
-		});
     },
 
     /***********/
-    /*  Content.
+    /*  Targets.
      */
 
 	//  See comment at Extracts.isLocalPageLink for info on this function.
@@ -282,10 +282,11 @@ Extracts = {
 			2. Type predicate function (of the Extracts object) for identifying
 			   targets of the type; returns true iff target is of that type
 			3. Class(es) to be added to targets of the type (these are added
-			   during initial processing)
+			   during initial processing) (may be a function on the target)
 			4. Fill function (of the Extracts object); called to fill a
 			   pop-frame for a target of that type with content
 			5. Class(es) to be added to a pop-frame for targets of that type
+			   (may be a function on the pop-frame)
 	 */
 	targetTypeDefinitions: [ ],
 
@@ -329,6 +330,53 @@ Extracts = {
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
     },
 
+    /*  This function’s purpose is to allow for the transclusion of entire pages
+        on the same website (displayed to the user in popups, or injected in
+        block flow as popins), and the (almost-)seamless handling of local links
+        in such transcluded content in the same way that they’re handled in the
+        root document (ie. the actual page loaded in the browser window). This
+        permits us to have truly recursive popups with unlimited recursion depth
+        and no loss of functionality.
+
+        For any given target element, targetDocument() asks: to what local
+        document does the link refer?
+
+        This may be either the root document, or an entire other page that was
+        transcluded wholesale and embedded as a pop-frame (of class
+        ‘full-page’).
+     */
+    //  Called by: Extracts.localPageForTarget
+    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
+    //  Called by: extracts-content.js
+    targetDocument: (target) => {
+        if (target.hostname != location.hostname)
+            return null;
+
+        if (target.pathname == location.pathname)
+            return Extracts.rootDocument;
+
+        if (Extracts.popFrameProvider == Popups) {
+            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
+                                                                                  && popup.spawningTarget.pathname == target.pathname));
+            return popupForTargetDocument ? popupForTargetDocument.document : null;
+        } else if (Extracts.popFrameProvider == Popins) {
+            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
+                                                                                  && popin.spawningTarget.pathname == target.pathname)
+                                                                                  && Extracts.popFrameHasLoaded(popin));
+            return popinForTargetDocument ? popinForTargetDocument.document : null;
+        }
+    },
+
+    /***************************/
+    /*  Pop-frames (in general).
+     */
+
+	popFrameTypeSuffix: () => {
+		return (Extracts.popFrameProvider == Popups
+				? "up"
+				: "in");
+	},
+
     /*  This function fills a pop-frame for a given target with content. It
         returns true if the pop-frame successfully filled, false otherwise.
      */
@@ -344,8 +392,12 @@ Extracts = {
         if (   targetTypeInfo
         	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
-            if (targetTypeInfo.popFrameClasses)
-            	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses.split(" ")));
+            if (targetTypeInfo.popFrameClasses) {
+				if (typeof targetTypeInfo.popFrameClasses == "string")
+					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses.split(" ")));
+				else if (typeof targetTypeInfo.popFrameClasses == "function")
+					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(targetTypeInfo.popFrameClasses(popFrame).split(" ")));
+			}
         }
 
         if (didFill) {
@@ -405,10 +457,9 @@ Extracts = {
 
         //  Special handling for certain popup types.
         let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialTitleFunction = (Extracts.popFrameProvider == Popups
-                                    ? Extracts[`titleForPopup_${targetTypeName}`]
-                                    : Extracts[`titleForPopin_${targetTypeName}`])
-                                || Extracts[`titleForPopFrame_${targetTypeName}`];
+        let suffix = Extracts.popFrameTypeSuffix();
+        let specialTitleFunction = (   Extracts[`titleForPop${suffix}_${targetTypeName}`]
+        							?? Extracts[`titleForPopFrame_${targetTypeName}`]);
         if (specialTitleFunction)
             return specialTitleFunction(popFrame, titleText);
         else
@@ -427,93 +478,62 @@ Extracts = {
 		}
 	},
 
-    /*  This function’s purpose is to allow for the transclusion of entire pages
-        on the same website (displayed to the user in popups, or injected in
-        block flow as popins), and the (almost-)seamless handling of local links
-        in such transcluded content in the same way that they’re handled in the
-        root document (ie. the actual page loaded in the browser window). This
-        permits us to have truly recursive popups with unlimited recursion depth
-        and no loss of functionality.
-
-        For any given target element, targetDocument() asks: to what local
-        document does the link refer?
-
-        This may be either the root document, or an entire other page that was
-        transcluded wholesale and embedded as a pop-frame (of class
-        ‘full-page’).
-     */
-    //  Called by: Extracts.localPageForTarget
-    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
-    //  Called by: extracts-content.js
-    targetDocument: (target) => {
-        if (target.hostname != location.hostname)
-            return null;
-
-        if (target.pathname == location.pathname)
-            return Extracts.rootDocument;
-
-        if (Extracts.popFrameProvider == Popups) {
-            let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
-                                                                                  && popup.spawningTarget.pathname == target.pathname));
-            return popupForTargetDocument ? popupForTargetDocument.document : null;
-        } else if (Extracts.popFrameProvider == Popins) {
-            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
-                                                                                  && popin.spawningTarget.pathname == target.pathname)
-                                                                                  && Extracts.popFrameHasLoaded(popin));
-            return popinForTargetDocument ? popinForTargetDocument.document : null;
-        }
-    },
-
-    /*  Activate loading spinner for an object pop-frame.
-     */
-    //  Called by: extracts-content.js
-    setLoadingSpinner: (popFrame) => {
-        let target = popFrame.spawningTarget;
-
-        popFrame.classList.toggle("loading", true);
-
-        let objectOfSomeSort = popFrame.document.querySelector("iframe, img");
-		if (objectOfSomeSort == null)
-			return;
-
-        /*	We refresh as if loading were successful, but note that the ‘load’
-        	event on an <iframe> does not mean that the load was successful,
-        	because <iframe> elements do not fire ‘error’ on server error or
-        	load fail.
-         */
-		objectOfSomeSort.onload = (event) => {
-			Extracts.postRefreshUpdatePopFrame(popFrame, true);
-		};
-
-        /*  We set an ‘error’ handler for both <img> and <iframe>, just in case,
-        	but we only expect the former to work (see above).
-         */
-        if ([ "IFRAME", "IMG" ].includes(objectOfSomeSort.tagName)) {
-			objectOfSomeSort.onerror = (event) => {
-				Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-				Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
-			};
-        }
-    },
-
 	//	Called by: Extracts.setLoadingSpinner
 	postRefreshUpdatePopFrame: (popFrame, success) => {
         GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
-
-		if (Extracts.popFrameProvider.isSpawned(popFrame) == false)
-			return;
 
 		Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
 
 		if (!success)
 			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
 
-		//  Update pop-frame position.
-		if (Extracts.popFrameProvider == Popups)
-			Popups.positionPopup(popFrame);
-		else if (Extracts.popFrameProvider == Popins)
-			Popins.scrollPopinIntoView(popFrame);
+		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
+			//  Update pop-frame position.
+			if (Extracts.popFrameProvider == Popups)
+				Popups.positionPopup(popFrame);
+			else if (Extracts.popFrameProvider == Popins)
+				Popins.scrollPopinIntoView(popFrame);
+		}
 	},
+
+    //  Called by: Extracts.rewritePopFrameContent
+    setLoadingSpinner: (popFrame, useObject = false) => {
+        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+
+		if (useObject == false)
+			return;
+        let objectOfSomeSort = popFrame.document.querySelector("iframe, img, video, audio");
+		if (objectOfSomeSort == null)
+			return;
+
+		let url = [ "IMG", "IFRAME" ].includes(objectOfSomeSort.tagName)
+				  ? URLFromString(objectOfSomeSort.src)
+				  : URLFromString(objectOfSomeSort.querySelector("source").src);
+
+		/*	The HTTP HEAD trick does not work with foreign-site pop-frames,
+			due to CORS. So, we use load/error events (which are less reliable).
+		 */
+		if (url.hostname != location.hostname) {
+			objectOfSomeSort.onload = (event) => {
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
+			};
+			//	Note that iframes do not fire ‘error’ on HTTP error.
+			objectOfSomeSort.onerror = (event) => {
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
+			};
+		} else {
+			doAjax({
+				location: url.href,
+				method: "HEAD",
+				onSuccess: (event) => {
+					Extracts.postRefreshUpdatePopFrame(popFrame, true);
+				},
+				onFailure: (event) => {
+					Extracts.postRefreshUpdatePopFrame(popFrame, false);
+				}
+			});
+		}
+    },
 
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
 	//	Called by: Extracts.rewritePopupContent_CITATION_BACK_LINK
@@ -566,14 +586,9 @@ Extracts = {
         });
 	},
 
-    /***************************/
-    /*  Pop-frames (in general).
-     */
-
-	popFrameTypeSuffix: () => {
-		return (Extracts.popFrameProvider == Popups
-				? "up"
-				: "in");
+	popFrameTitleBarContents: (popFrame) => {
+		let suffix = Extracts.popFrameTypeSuffix();
+		return Extracts[`pop${suffix}TitleBarContents`](popFrame);
 	},
 
     //  Called by: Extracts.preparePopup
@@ -581,22 +596,35 @@ Extracts = {
     preparePopFrame: (popFrame) => {
         GWLog("Extracts.preparePopFrame", "extracts.js", 2);
 
-        let target = popFrame.spawningTarget;
+        //  Attempt to fill the popup.
+        if (Extracts.fillPopFrame(popFrame) == false)
+            return null;
+
+		//  Turn loading spinner on.
+		Extracts.setLoadingSpinner(popFrame);
 
         //  Import the class(es) of the target.
-        popFrame.classList.add(...target.classList);
+        popFrame.classList.add(...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-annotation-partial",
         	"has-content", "link-self", "link-annotated", "link-page",
         	"has-icon", "has-indicator-hook", "uri", "decorate-not",
         	"spawns-popup", "spawns-popin");
 
-        //  Attempt to fill the popup.
-        if (Extracts.fillPopFrame(popFrame) == false)
-            return null;
+        //  Add pop-frame title bar contents.
+		popFrame.titleBarContents = Extracts.popFrameTitleBarContents(popFrame);
 
         //  Add ‘markdownBody’ class.
         popFrame.body.classList.add("markdownBody");
+
+        //  Special handling for certain pop-frame types.
+        let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
+        let suffix = Extracts.popFrameTypeSuffix();
+        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
+        							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
+        if (specialPrepareFunction)
+            if ((popFrame = specialPrepareFunction(popFrame)) == null)
+                return null;
 
 		//	Inject styles.
 		let inlinedStyleIDs = [
@@ -618,22 +646,81 @@ Extracts = {
 			popFrame.document.insertBefore(styleBlock, popFrame.body);
 		});
 
-		//	Add handler to update popup position when content changes.
-		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (info) => {
-			if (popFrame == null)
-				return;
+		//	Activate dynamic layout for the pop-frame.
+		startDynamicLayoutInContainer(popFrame.body);
 
-			if (Extracts.popFrameProvider == Popups)
-				Popups.positionPopup(popFrame);
-			else // if (Extracts.popFrameProvider == Popins)
-				Popins.scrollPopinIntoView(popFrame);
+		//	Register copy processors in pop-frame.
+		registerCopyProcessorsForDocument(popFrame.document);
+
+		//	Add handler to update pop-frame position when content changes.
+		GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", popFrame.contentDidChangeHandler = (info) => {
+			if (   Transclude.isIncludeLink(popFrame.body.firstElementChild)
+				&& popFrame.body.firstElementChild.classList.contains("include-loading-failed")) {
+				Extracts.postRefreshUpdatePopFrame(popFrame, false);
+			} else {
+				Extracts.postRefreshUpdatePopFrame(popFrame, true);
+			}
 		}, {
 			condition: (info) => (info.document == popFrame.document)
+		});
+		//	Add handler to remove the above handler when pop-frame despawns.
+		GW.notificationCenter.addHandlerForEvent(`Pop${suffix}s.pop${suffix}WillDespawn`, (info) => {
+			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", popFrame.contentDidChangeHandler);
+		}, {
+			once: true,
+			condition: (info) => (info[`pop${suffix}`] == popFrame)
+		});
+
+		//	Update pop-frame when content is injected.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			//	Refresh (turning loading spinner off).
+			Extracts.postRefreshUpdatePopFrame(popFrame, true);
+
+			//	Type-specific updates.
+			(   Extracts[`updatePop${suffix}_${targetTypeName}`] 
+			 ?? Extracts[`updatePopFrame_${targetTypeName}`]
+			 )?.(popFrame);
+		}, {
+			phase: "<",
+			condition: (info) => (   info.source == "transclude"
+								  && info.document == popFrame.document),
+			once: true
+		});
+
+		//	Rewrite pop-frame content when it’s injected.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+			//  Type-specific rewrites.
+			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`] 
+			 ?? Extracts[`rewritePopFrameContent_${targetTypeName}`]
+			 )?.(popFrame, info.container);
+
+			//	Additional rewrites.
+			Extracts.additionalRewrites.forEach(rewriteFunction => {
+				rewriteFunction(popFrame);
+			});
+
+			//  Turn loading spinner back on, if need be.
+			if (popFrame.classList.contains("object"))
+				Extracts.setLoadingSpinner(popFrame, true);
+		}, {
+			phase: "rewrite",
+			condition: (info) => (   info.source == "transclude"
+								  && info.document == popFrame.document),
+			once: true
+		});
+
+		//	Trigger transclude.
+		Transclude.triggerTranscludesInContainer(popFrame.body, {
+			source: "Extracts.preparePopFrame",
+			container: popFrame.body,
+			document: popFrame.document,
+			context: "popFrame"
 		});
 
         return popFrame;
     },
 
+	//	Functions added to this array should take one argument (the pop-frame).
 	additionalRewrites: [ ],
 
     /**********/
@@ -672,6 +759,16 @@ Extracts = {
 		};
 	},
 
+	///	Called by: Extracts.popFrameTitleBarContents
+	popinTitleBarContents: (popin) => {
+        let popinTitle = Extracts.titleForPopFrame(popin) ?? { };
+		return [
+			Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
+			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
+			Popins.titleBarComponents.closeButton()
+		];
+	},
+
     /*  Called by popins.js just before injecting the popin. This is our chance
         to fill the popin with content, and rewrite that content in whatever
         ways necessary. After this function exits, the popin will appear on the
@@ -681,63 +778,10 @@ Extracts = {
     preparePopin: (popin) => {
         GWLog("Extracts.preparePopin", "extracts.js", 2);
 
-        let target = popin.spawningTarget;
-
-		//	Activate dynamic layout for the popin.
-		startDynamicLayoutInContainer(popin.body);
-
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popin).
          */
-        if ((popin = Extracts.preparePopFrame(popin)) == null)
-            return null;
-
-        //  Add popin title bar contents.
-        let popinTitle = Extracts.titleForPopFrame(popin);
-        if (popinTitle) {
-            popin.titleBarContents = [
-            	Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
-            	newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
-                Popins.titleBarComponents.closeButton()
-            ];
-        }
-
-        //  Special handling for certain popin types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialPrepareFunction = Extracts[`preparePopin_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
-        if (specialPrepareFunction)
-            if ((popin = specialPrepareFunction(popin)) == null)
-                return null;
-
-        /*  If we’re waiting for content to be loaded into the popin
-            asynchronously, then there’s no need to do rewrites for now.
-         */
-        if (Extracts.popFrameHasLoaded(popin))
-            Extracts.rewritePopinContent(popin);
-
-        return popin;
-    },
-
-    //	Called by: Extracts.preparePopin
-    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
-    rewritePopinContent: (popin) => {
-        GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
-
-        let target = popin.spawningTarget;
-
-        //  Special handling for certain popin types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
-        if (specialRewriteFunction)
-            specialRewriteFunction(popin);
-
-		//	Additional rewrites.
-		Extracts.additionalRewrites.forEach(rewriteFunction => {
-			rewriteFunction(popin);
-		});
-
-		//	Register copy processors in popin.
-		registerCopyProcessorsForDocument(popin.document);
+        return Extracts.preparePopFrame(popin);
     },
 
     /**********/
@@ -750,13 +794,6 @@ Extracts = {
     //  Called by: extracts-options.js
     popupsEnabled: () => {
         return (localStorage.getItem(Extracts.popupsDisabledLocalStorageItemKey) != "true");
-    },
-
-    //  Called by: Extracts.preparePopup
-    spawnedPopupMatchingTarget: (target) => {
-        return Popups.allSpawnedPopups().find(popup =>
-                   Extracts.targetsMatch(target, popup.spawningTarget)
-                && Popups.popupIsPinned(popup) == false);
     },
 
     //  Called by: Extracts.addTargetsWithin
@@ -772,6 +809,25 @@ Extracts = {
             return (   target.closest("li") != null
                     && target.closest(".columns") == null);
         };
+    },
+
+	//	Called by: Extracts.popFrameTitleBarContents
+	popupTitleBarContents: (popup) => {
+        let popupTitle = Extracts.titleForPopFrame(popup) ?? { };
+		return [
+			Popups.titleBarComponents.closeButton(),
+			Popups.titleBarComponents.zoomButton().enableSubmenu(),
+			Popups.titleBarComponents.pinButton(),
+			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
+			Extracts.disableExtractPopFramesPopFrameTitleBarButton()
+		];
+	},
+
+    //  Called by: Extracts.preparePopup
+    spawnedPopupMatchingTarget: (target) => {
+        return Popups.allSpawnedPopups().find(popup =>
+                   Extracts.targetsMatch(target, popup.spawningTarget)
+                && Popups.popupIsPinned(popup) == false);
     },
 
     /*  Called by popups.js just before spawning (injecting and positioning) the
@@ -795,66 +851,14 @@ Extracts = {
             return existingPopup;
         }
 
-		//	Activate dynamic layout for the popup.
-		startDynamicLayoutInContainer(popup.body);
-
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popup).
          */
-        if ((popup = Extracts.preparePopFrame(popup)) == null)
-            return null;
-
-        //  Add popup title bar contents.
-        let popupTitle = Extracts.titleForPopFrame(popup);
-        if (popupTitle) {
-            popup.titleBarContents = [
-                Popups.titleBarComponents.closeButton(),
-                Popups.titleBarComponents.zoomButton().enableSubmenu(),
-                Popups.titleBarComponents.pinButton(),
-                newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
-                Extracts.disableExtractPopFramesPopFrameTitleBarButton()
-            ];
-        }
-
-        //  Special handling for certain popup types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
-        if (specialPrepareFunction)
-            if ((popup = specialPrepareFunction(popup)) == null)
-                return null;
-
-        /*  If we’re waiting for content to be loaded into the popup
-            asynchronously, then there’s no need to do rewrites for now.
-         */
-        if (Extracts.popFrameHasLoaded(popup))
-            Extracts.rewritePopupContent(popup);
-
-        return popup;
-    },
-
-    //	Called by: Extracts.preparePopup
-    //  Called by: Extracts.postRefreshSuccessUpdatePopFrameForTarget
-    rewritePopupContent: (popup) => {
-        GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
-
-        let target = popup.spawningTarget;
-
-        //  Special handling for certain popup types.
-        let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-        let specialRewriteFunction = Extracts[`rewritePopupContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
-        if (specialRewriteFunction)
-            specialRewriteFunction(popup);
-
-		//	Additional rewrites.
-		Extracts.additionalRewrites.forEach(rewriteFunction => {
-			rewriteFunction(popup);
-		});
-
-		//	Register copy processors in popup.
-		registerCopyProcessorsForDocument(popup.document);
+        return Extracts.preparePopFrame(popup);
     }
 };
 
+/*****************************************************************************/
 /*	Browser native image lazy loading does not seem to work in pop-frames (due
 	to the shadow root or the nested scroll container or some combination
 	thereof), so we have to implement it ourselves.
