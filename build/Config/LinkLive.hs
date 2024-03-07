@@ -123,7 +123,6 @@ goodDomainsSimple =
     , "davidepstein.com"
     , "dealbook.nytimes.com"
     , "defector.com"
-    , "diff.wikimedia.org"
     , "digital.library.unt.edu"
     , "distill.pub"
     , "diyhpl.us"
@@ -2287,6 +2286,7 @@ badDomainsSimple = [ "2chan.us"
    , "vitalik.eth.limo"
    , "memteaimports.com"
    , "garote.bdmonkeys.net"
+   , "diff.wikimedia.org"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -2396,7 +2396,6 @@ goodLinks =
             , "https://davidepstein.com/david-epstein-the-sports-gene/"
             , "https://defector.com/in-the-future-of-collecting-is-anyone-having-fun"
             , "https://demos.obormot.net/these-waifus-do-not-exist-v2-alt"
-            , "https://diff.wikimedia.org/2012/03/27/analysis-of-the-quality-of-newcomers-in-wikipedia-over-time/"
             , "https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext"
             , "https://distill.pub/2017/aia/"
             , "https://dnstats.net/market/Nucleus+Market"
@@ -4465,4 +4464,5 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://vitalik.eth.limo/general/2019/11/22/progress.html"
             , "https://github.com/fyu/lsun"
             , "http://garote.bdmonkeys.net/commandline/"
+            , "https://diff.wikimedia.org/2012/03/27/analysis-of-the-quality-of-newcomers-in-wikipedia-over-time/"
             ]

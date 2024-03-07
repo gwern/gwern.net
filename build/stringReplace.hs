@@ -29,7 +29,7 @@ main :: IO ()
 main = do (original:new:file) <- getArgs
           files <- if null file then fmap (nubOrd . lines) getContents else return file
           cores <- getNumCapabilities
-          setNumCapabilities (cores - 1)
+          setNumCapabilities ((cores - 1) `max` 1)
           Par.mapM_ (replace (T.pack original) (T.pack new)) files
 
 replace :: T.Text -> T.Text -> FilePath -> IO ()

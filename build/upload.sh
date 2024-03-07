@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-03-04 21:44:11 gwern"
+# When:  Time-stamp: "2024-03-05 12:41:36 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -22,7 +22,7 @@
 
 set -e
 
-if [ ! -f "$1" ]; then echo "l20: '$1' is not a file‽" && exit 1; fi
+if [ ! -f "$1" ] || [ ! -s "$1" ]; then echo "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {

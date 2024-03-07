@@ -93,9 +93,8 @@ processArxivAbstract a = let cleaned = runPure $ do
                                                        ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                        ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                        ("({\\lambda})", "(λ)")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")
-
-                                                          ] $ (if dollarSignsN == 1 then replaceMany [("$", "\\$")] else id) a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)"), ("{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**"), ("%we", "We")]
+                                                          $ (if dollarSignsN == 1 then replaceMany [("$", "\\$")] else id) a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.

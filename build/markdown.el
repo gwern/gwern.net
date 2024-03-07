@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-03-03 21:28:32 gwern"
+;;; When:  Time-stamp: "2024-03-05 21:10:44 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1410,7 +1410,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "(ps " "(<em>p</em>s " nil begin end)
          (query-replace "k-NN" "_k_-NN" nil begin end)
          (query-replace "𝜌" "_ρ_" nil begin end)
-         (query-replace "Sect\\. " "Section " begin end)
+         (query-replace "Sect\\. " "Section " nil begin end)
 
          (query-replace "ρSDS" "ρ~SDS~" nil begin end)
          (query-replace "tpre-Neolithic" "<em>t</em><sub>pre-Neolithic</sub>" nil begin end)
