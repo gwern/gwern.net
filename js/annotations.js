@@ -992,8 +992,6 @@ Annotations.dataSources.wikipedia = {
 			});
 		});
 
-		console.log(referenceEntry.innerHTML);
-
 		//  Rectify table classes.
 		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
 			table.classList.toggle("infobox", true);
