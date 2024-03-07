@@ -44,7 +44,7 @@
     --GW-popups-popup-with-full-title-bar-min-width: 360px;
     --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
-    --GW-popups-annotation-popup-min-height: 240px;
+    --GW-popups-annotation-popup-min-height: 120px;
     --GW-popups-tweet-popup-min-height: 120px;
     --GW-popups-tweet-avatar-size: 75px;
     --GW-popups-aux-links-popup-min-width: 480px;
@@ -3011,10 +3011,21 @@ ol.link-bibliography-list-compact > li::before {
     margin: auto;
 }
 
-/* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
+/*	WP wraps references entirely in <cite> elements; <cite> is styled by 
+	browsers (Chrome/FF) by default in italics. No one wants their entire 
+	reference in italics, so WP resets the font to the default style (whatever 
+	that is), and styles italics bits (like book titles) manually. We need to 
+	replicate that, or else references sections in our WP popups will be 
+	entirely italics!
+ */
 .annotation.wikipedia-entry cite,
 .annotation.wikipedia-entry dfn {
     font-style: inherit;
+}
+
+.annotation.wikipedia-entry .wp-footnote-back {
+	padding: 0 0.25em;
+	margin: 0 0.5em 0 0;
 }
 
 /**********/
@@ -3763,11 +3774,17 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     content: "File not found.";
 }
 
-/*┌──────────────────────────────────────┐*/
-/*│ Local document transform pop-frames. │*/
-/*└──────────────────────────────────────┘*/
+/*┌───────────────────┐*/
+/*│ Tweet pop-frames. │*/
+/*└───────────────────┘*/
 
-.popframe-body.local-document-transform > .tweet:only-child > p.data-field.title:only-of-type {
+.popframe.tweet .popframe-title img.avatar {
+	height: 1.125em;
+	width: auto;
+	margin: 0 0.5em 0 0;
+}
+
+.popframe-body.tweet > .tweet:only-child > p.data-field.title:only-of-type {
     font-size: 1em;
 }
 
@@ -4322,6 +4339,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
+/*┌───────────────┐*/
+/*│ Tweet popups. │*/
+/*└───────────────┘*/
+
+.popup.annotation.tweet {
+    min-height: var(--GW-popups-tweet-popup-min-height);
+}
+
 /*┌──────────────────────┐*/
 /*│ Dropcap info popups. │*/
 /*└──────────────────────┘*/
@@ -4488,14 +4513,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌────────────────────────┐*/
 /*│ Local document popups. │*/
 /*└────────────────────────┘*/
-
-/*┌──────────────────────────────────┐*/
-/*│ Local document transform popups. │*/
-/*└──────────────────────────────────┘*/
-
-.popup.local-document-transform.tweet {
-    min-height: var(--GW-popups-tweet-popup-min-height);
-}
 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/

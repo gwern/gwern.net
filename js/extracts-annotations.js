@@ -116,6 +116,10 @@ Extracts = { ...Extracts,
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
 			fileIncludes.remove();
 		}
+
+		//	Make anchor-links in Wikipedia annotations un-clickable.
+		if (popFrame.classList.contains("wikipedia-entry"))
+			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
     }
 };
 

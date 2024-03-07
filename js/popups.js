@@ -366,7 +366,7 @@ Popups = {
 		}
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(target.popup, spawnPoint);
+		Popups.positionPopup(target.popup, { spawnPoint: spawnPoint });
 
 		//  Mark target as having an active popup associated with it.
 		target.classList.add("popup-open");
@@ -1272,14 +1272,13 @@ Popups = {
 		};
 	},
 
-	positionPopup: (popup, spawnPoint, tight = false) => {
+	positionPopup: (popup, options = { }) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
+		let spawnPoint = options.spawnPoint ?? target.lastMouseEnterLocation;
 		if (spawnPoint)
 			target.lastMouseEnterLocation = spawnPoint;
-		else if (target.lastMouseEnterLocation)
-			spawnPoint = target.lastMouseEnterLocation;
 		else
 			return;
 
@@ -1289,14 +1288,10 @@ Popups = {
 			away from the cursor.
 		 */
 		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
-								 || target.getBoundingClientRect();
+								 ?? target.getBoundingClientRect();
 
 		//  Wait for the “naive” layout to be completed, and then...
-		requestAnimationFrame(() => {
-			//	Clear popup position.
-			popup.style.left = "";
-			popup.style.top = "";
-
+		let computePosition = () => {
 			/*  This is the width and height of the popup, as already determined
 				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.
@@ -1310,9 +1305,9 @@ Popups = {
 
 			let offToTheSide = false;
 			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
-											   - (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+											   - (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
 			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
-											   + (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+											   + (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
 			if (   Popups.containingPopFrame(target)
 				|| Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
@@ -1360,9 +1355,9 @@ Popups = {
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
 				} else {
 					//  The popup does not fit above or below!
-					if (tight == false) {
+					if (options.tight != true) {
 						//	Let’s try and pack it in more tightly...
-						Popups.positionPopup(popup, null, true);
+						Popups.positionPopup(popup, { tight: true, immediately: true });
 						return;
 					} else {
 						/*	... or, failing that, we will have to put it off to
@@ -1439,7 +1434,13 @@ Popups = {
 			popup.viewportRect = popup.getBoundingClientRect();
 
 			document.activeElement.blur();
-		});
+		};
+
+		//	Either position immediately, or let native layout complete first.
+		if (options.immediately == true)
+			computePosition();
+		else
+			requestAnimationFrame(computePosition);
 	},
 
 	setPopupViewportRect: (popup, rect, options = { }) => {
@@ -1965,7 +1966,7 @@ Popups = {
 				re-position it.
 			 */
 			Popups.bringPopupToFront(event.target.popup);
-			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
+			Popups.positionPopup(event.target.popup, { spawnPoint: { x: event.clientX, y: event.clientY } });
 		}
 	},
 

@@ -517,9 +517,9 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		(match, constantOrFieldName) =>
 		(/^_(\S*)_$/.test(constantOrFieldName)
 		 ? constantOrFieldName
-		 : (valueFunction(constantOrFieldName) == null
-			? "_FALSE_"
-			: "_TRUE_"))
+		 : (valueFunction(constantOrFieldName)
+			? "_TRUE_"
+			: "_FALSE_"))
 	));
 }
 

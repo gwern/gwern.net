@@ -2082,7 +2082,7 @@ Popups = {
 		}
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(target.popup, spawnPoint);
+		Popups.positionPopup(target.popup, { spawnPoint: spawnPoint });
 
 		//  Mark target as having an active popup associated with it.
 		target.classList.add("popup-open");
@@ -2988,14 +2988,13 @@ Popups = {
 		};
 	},
 
-	positionPopup: (popup, spawnPoint, tight = false) => {
+	positionPopup: (popup, options = { }) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
+		let spawnPoint = options.spawnPoint ?? target.lastMouseEnterLocation;
 		if (spawnPoint)
 			target.lastMouseEnterLocation = spawnPoint;
-		else if (target.lastMouseEnterLocation)
-			spawnPoint = target.lastMouseEnterLocation;
 		else
 			return;
 
@@ -3005,14 +3004,10 @@ Popups = {
 			away from the cursor.
 		 */
 		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
-								 || target.getBoundingClientRect();
+								 ?? target.getBoundingClientRect();
 
 		//  Wait for the “naive” layout to be completed, and then...
-		requestAnimationFrame(() => {
-			//	Clear popup position.
-			popup.style.left = "";
-			popup.style.top = "";
-
+		let computePosition = () => {
 			/*  This is the width and height of the popup, as already determined
 				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.
@@ -3026,9 +3021,9 @@ Popups = {
 
 			let offToTheSide = false;
 			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
-											   - (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+											   - (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
 			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
-											   + (tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+											   + (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
 			if (   Popups.containingPopFrame(target)
 				|| Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
@@ -3076,9 +3071,9 @@ Popups = {
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
 				} else {
 					//  The popup does not fit above or below!
-					if (tight == false) {
+					if (options.tight != true) {
 						//	Let’s try and pack it in more tightly...
-						Popups.positionPopup(popup, null, true);
+						Popups.positionPopup(popup, { tight: true, immediately: true });
 						return;
 					} else {
 						/*	... or, failing that, we will have to put it off to
@@ -3155,7 +3150,13 @@ Popups = {
 			popup.viewportRect = popup.getBoundingClientRect();
 
 			document.activeElement.blur();
-		});
+		};
+
+		//	Either position immediately, or let native layout complete first.
+		if (options.immediately == true)
+			computePosition();
+		else
+			requestAnimationFrame(computePosition);
 	},
 
 	setPopupViewportRect: (popup, rect, options = { }) => {
@@ -3681,7 +3682,7 @@ Popups = {
 				re-position it.
 			 */
 			Popups.bringPopupToFront(event.target.popup);
-			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
+			Popups.positionPopup(event.target.popup, { spawnPoint: { x: event.clientX, y: event.clientY } });
 		}
 	},
 
@@ -5060,55 +5061,64 @@ Annotations.dataSources.wikipedia = {
 			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
 		}
 
-		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		let pageTitleElementHTML = unescapeHTML(response.querySelector("title").innerHTML);
+		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		if (wholePage) {
 			responseHTML = response.innerHTML;
 			titleHTML = pageTitleElementHTML;
 			fullTitleHTML = pageTitleElementHTML;
 		} else if (articleLink.hash > "") {
-			let targetHeading = response.querySelector(selectorFromHash(articleLink.hash));
+			let targetElement = response.querySelector(selectorFromHash(articleLink.hash));
 
-			/*	Check whether we have tried to load a page section which does
-				not exist on the requested wiki page.
+			/*	Check whether we have tried to load a part of the page which
+				does not exist.
 			 */
-			if (!targetHeading)
+			if (!targetElement)
 				return null;
 
-			//	The id is on the heading, so the section is its parent.
-			let targetSection = targetHeading.parentElement.cloneNode(true);
+			if (/H[0-9]/.test(targetElement.tagName)) {
+				//	The target is a section heading.
+				let targetHeading = targetElement;
+	
+				//	The id is on the heading, so the section is its parent.
+				let targetSection = targetHeading.parentElement.cloneNode(true);
 
-			//	Excise heading.
-			targetHeading = targetSection.firstElementChild;
-			targetHeading.remove();
+				//	Excise heading.
+				targetHeading = targetSection.firstElementChild;
+				targetHeading.remove();
 
-			//	Content sans heading.
-			responseHTML = targetSection.innerHTML;
+				//	Content sans heading.
+				responseHTML = targetSection.innerHTML;
 
-			//	Unwrap or delete links, but save them for inclusion in the template.
-			secondaryTitleLinksHTML = "";
-			//	First link is the section title itself.
-			targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
-				//  Process link, save HTML, unwrap.
-				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-				Annotations.dataSources.wikipedia.designateWikiLink(link);
-				secondaryTitleLinksHTML += link.outerHTML;
-				unwrap(link);
-			});
-			//	Additional links are other things, who knows what.
-			targetHeading.querySelectorAll("a").forEach(link => {
-				//  Process link, save HTML, delete.
-				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-				Annotations.dataSources.wikipedia.designateWikiLink(link);
-				secondaryTitleLinksHTML += link.outerHTML;
-				link.remove();
-			});
-			if (secondaryTitleLinksHTML > "")
-				secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
+				//	Unwrap or delete links, but save them for inclusion in the template.
+				secondaryTitleLinksHTML = "";
+				//	First link is the section title itself.
+				targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
+					//  Process link, save HTML, unwrap.
+					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+					Annotations.dataSources.wikipedia.designateWikiLink(link);
+					secondaryTitleLinksHTML += link.outerHTML;
+					unwrap(link);
+				});
+				//	Additional links are other things, who knows what.
+				targetHeading.querySelectorAll("a").forEach(link => {
+					//  Process link, save HTML, delete.
+					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+					Annotations.dataSources.wikipedia.designateWikiLink(link);
+					secondaryTitleLinksHTML += link.outerHTML;
+					link.remove();
+				});
+				if (secondaryTitleLinksHTML > "")
+					secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
 
-			//	Cleaned section title.
-			titleHTML = targetHeading.innerHTML;
-			fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+				//	Cleaned section title.
+				titleHTML = targetHeading.innerHTML;
+				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+			} else {
+				//	The target is something else.
+				responseHTML = newDocument(Transclude.blockContext(targetElement, articleLink)).innerHTML
+				titleHTML = articleLink.hash;
+			}
 		} else {
 			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
 			titleHTML = pageTitleElementHTML;
@@ -5158,7 +5168,9 @@ Annotations.dataSources.wikipedia = {
 
 		//	Pop-frame title text. Mark sections with ‘§’ symbol.
 		let popFrameTitleHTML = (articleLink.hash > ""
-								 ? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+								 ? (fullTitleHTML
+									? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+									: `${titleHTML} (${pageTitleElementHTML})`)
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
@@ -5166,7 +5178,7 @@ Annotations.dataSources.wikipedia = {
 			content: {
 				titleHTML:                titleHTML,
 				fullTitleHTML:            fullTitleHTML,
-				secondaryTitleLinksHTML:  (secondaryTitleLinksHTML ?? null),
+				secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 				titleText:                titleText,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           `title-link link-live`,
@@ -5201,6 +5213,10 @@ Annotations.dataSources.wikipedia = {
 			link.pathname = hostArticleLink.pathname;
 		if (link.hostname == location.hostname)
 			link.hostname = hostArticleLink.hostname;
+		if (   link.hostname == hostArticleLink.hostname
+			&& link.pathname.startsWith("/wiki/") == false
+			&& link.pathname.startsWith("/api/") == false)
+			link.pathname = "/wiki" + link.pathname;
 	},
 
 	/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
@@ -5222,13 +5238,13 @@ Annotations.dataSources.wikipedia = {
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	extraneousElementSelectors: [
 		"style",
-		".mw-ref",
+// 		".mw-ref",
 		".shortdescription",
 		"td hr",
 		".hatnote",
 		".portal",
 		".penicon",
-		".reference",
+// 		".reference",
 		".Template-Fact",
 		".error",
 		".mwe-math-mathml-inline",
@@ -5312,6 +5328,19 @@ Annotations.dataSources.wikipedia = {
 				link.classList.add("link-self");
 		});
 
+		//	Prevent layout weirdness for footnote links.
+		referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
+			citationLink.classList.add("icon-not");
+			citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
+		});
+
+		//	Rectify back-to-citation links in “References” sections.
+		referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
+			backToCitationLink.classList.add("icon-not");
+			backToCitationLink.classList.add("wp-footnote-back");
+			backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
+		});
+
 		//	Strip inline styles and some related attributes.
 		let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
 		referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
@@ -5335,6 +5364,8 @@ Annotations.dataSources.wikipedia = {
 				tableElement.removeAttribute(attribute);
 			});
 		});
+
+		console.log(referenceEntry.innerHTML);
 
 		//  Rectify table classes.
 		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
@@ -7191,9 +7222,9 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		(match, constantOrFieldName) =>
 		(/^_(\S*)_$/.test(constantOrFieldName)
 		 ? constantOrFieldName
-		 : (valueFunction(constantOrFieldName) == null
-			? "_FALSE_"
-			: "_TRUE_"))
+		 : (valueFunction(constantOrFieldName)
+			? "_TRUE_"
+			: "_FALSE_"))
 	));
 }
 
@@ -8729,19 +8760,21 @@ Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 });
 Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
+	<[IF fullTitleHTML]>
+	<p class="data-field title <[IF2 authorDateAux]>author-date-aux<[IF2END]>">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>\\
+		<[IF2 [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]>\\
+		<[IF2 authorDateAux]><[IF3 author]>,\\ <[IF3END]><{authorDateAux}><[IF3 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF3END]><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract">
 		<{abstract}>
@@ -8756,17 +8789,19 @@ Transclude.templates = {
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
+	<[IF fullTitleHTML]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -8778,17 +8813,19 @@ Transclude.templates = {
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
+	<[IF fullTitleHTML]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
+			   ><{fullTitleHTML}></a>\\
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -9399,12 +9436,8 @@ Extracts = {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
-                    if (hashTarget) {
-                        Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget, true);
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    if (hashTarget)
+                        revealElement(hashTarget);
                 });
             }
         });
@@ -9818,6 +9851,10 @@ Extracts = { ...Extracts,
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
 			fileIncludes.remove();
 		}
+
+		//	Make anchor-links in Wikipedia annotations un-clickable.
+		if (popFrame.classList.contains("wikipedia-entry"))
+			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
     }
 };
 

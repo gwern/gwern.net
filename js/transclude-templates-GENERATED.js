@@ -1,18 +1,20 @@
 Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
+	<[IF fullTitleHTML]>
+	<p class="data-field title <[IF2 authorDateAux]>author-date-aux<[IF2END]>">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>\\
-		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>\\
+		<[IF2 [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]>\\
+		<[IF2 authorDateAux]><[IF3 author]>,\\ <[IF3END]><{authorDateAux}><[IF3 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF3END]><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract">
 		<{abstract}>
@@ -27,17 +29,19 @@ Transclude.templates = {
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
+	<[IF fullTitleHTML]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
 			   ><{fullTitleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -49,17 +53,19 @@ Transclude.templates = {
 	<[IFEND]>
 </div>`,
 	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
+	<[IF fullTitleHTML]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
+			   ><{fullTitleHTML}></a>\\
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>

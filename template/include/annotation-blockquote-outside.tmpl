@@ -1,15 +1,17 @@
 <blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
+	<[IF fullTitleHTML]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF linkTarget]>target="<{linkTarget}>"<[IFEND]>
-		   <[IF titleLinkDataAttributes]><{titleLinkDataAttributes}><[IFEND]>
+		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
+		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
 		   <{titleLinkIconMetadata}>
-			   ><{titleHTML}></a>\
-		<[IF secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IFEND]>
+			   ><{fullTitleHTML}></a>\
+		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
 	</p>
+	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>

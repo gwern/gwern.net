@@ -575,12 +575,8 @@ Extracts = {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
-                    if (hashTarget) {
-                        Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget, true);
-                        return false;
-                    } else {
-                        return true;
-                    }
+                    if (hashTarget)
+                        revealElement(hashTarget);
                 });
             }
         });

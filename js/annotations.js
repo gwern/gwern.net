@@ -688,55 +688,64 @@ Annotations.dataSources.wikipedia = {
 			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
 		}
 
-		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		let pageTitleElementHTML = unescapeHTML(response.querySelector("title").innerHTML);
+		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 		if (wholePage) {
 			responseHTML = response.innerHTML;
 			titleHTML = pageTitleElementHTML;
 			fullTitleHTML = pageTitleElementHTML;
 		} else if (articleLink.hash > "") {
-			let targetHeading = response.querySelector(selectorFromHash(articleLink.hash));
+			let targetElement = response.querySelector(selectorFromHash(articleLink.hash));
 
-			/*	Check whether we have tried to load a page section which does
-				not exist on the requested wiki page.
+			/*	Check whether we have tried to load a part of the page which
+				does not exist.
 			 */
-			if (!targetHeading)
+			if (!targetElement)
 				return null;
 
-			//	The id is on the heading, so the section is its parent.
-			let targetSection = targetHeading.parentElement.cloneNode(true);
+			if (/H[0-9]/.test(targetElement.tagName)) {
+				//	The target is a section heading.
+				let targetHeading = targetElement;
+	
+				//	The id is on the heading, so the section is its parent.
+				let targetSection = targetHeading.parentElement.cloneNode(true);
 
-			//	Excise heading.
-			targetHeading = targetSection.firstElementChild;
-			targetHeading.remove();
+				//	Excise heading.
+				targetHeading = targetSection.firstElementChild;
+				targetHeading.remove();
 
-			//	Content sans heading.
-			responseHTML = targetSection.innerHTML;
+				//	Content sans heading.
+				responseHTML = targetSection.innerHTML;
 
-			//	Unwrap or delete links, but save them for inclusion in the template.
-			secondaryTitleLinksHTML = "";
-			//	First link is the section title itself.
-			targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
-				//  Process link, save HTML, unwrap.
-				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-				Annotations.dataSources.wikipedia.designateWikiLink(link);
-				secondaryTitleLinksHTML += link.outerHTML;
-				unwrap(link);
-			});
-			//	Additional links are other things, who knows what.
-			targetHeading.querySelectorAll("a").forEach(link => {
-				//  Process link, save HTML, delete.
-				Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-				Annotations.dataSources.wikipedia.designateWikiLink(link);
-				secondaryTitleLinksHTML += link.outerHTML;
-				link.remove();
-			});
-			if (secondaryTitleLinksHTML > "")
-				secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
+				//	Unwrap or delete links, but save them for inclusion in the template.
+				secondaryTitleLinksHTML = "";
+				//	First link is the section title itself.
+				targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
+					//  Process link, save HTML, unwrap.
+					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+					Annotations.dataSources.wikipedia.designateWikiLink(link);
+					secondaryTitleLinksHTML += link.outerHTML;
+					unwrap(link);
+				});
+				//	Additional links are other things, who knows what.
+				targetHeading.querySelectorAll("a").forEach(link => {
+					//  Process link, save HTML, delete.
+					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
+					Annotations.dataSources.wikipedia.designateWikiLink(link);
+					secondaryTitleLinksHTML += link.outerHTML;
+					link.remove();
+				});
+				if (secondaryTitleLinksHTML > "")
+					secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
 
-			//	Cleaned section title.
-			titleHTML = targetHeading.innerHTML;
-			fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+				//	Cleaned section title.
+				titleHTML = targetHeading.innerHTML;
+				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+			} else {
+				//	The target is something else.
+				responseHTML = newDocument(Transclude.blockContext(targetElement, articleLink)).innerHTML
+				titleHTML = articleLink.hash;
+			}
 		} else {
 			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
 			titleHTML = pageTitleElementHTML;
@@ -786,7 +795,9 @@ Annotations.dataSources.wikipedia = {
 
 		//	Pop-frame title text. Mark sections with ‘§’ symbol.
 		let popFrameTitleHTML = (articleLink.hash > ""
-								 ? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+								 ? (fullTitleHTML
+									? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+									: `${titleHTML} (${pageTitleElementHTML})`)
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
 
@@ -794,7 +805,7 @@ Annotations.dataSources.wikipedia = {
 			content: {
 				titleHTML:                titleHTML,
 				fullTitleHTML:            fullTitleHTML,
-				secondaryTitleLinksHTML:  (secondaryTitleLinksHTML ?? null),
+				secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
 				titleText:                titleText,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           `title-link link-live`,
@@ -829,6 +840,10 @@ Annotations.dataSources.wikipedia = {
 			link.pathname = hostArticleLink.pathname;
 		if (link.hostname == location.hostname)
 			link.hostname = hostArticleLink.hostname;
+		if (   link.hostname == hostArticleLink.hostname
+			&& link.pathname.startsWith("/wiki/") == false
+			&& link.pathname.startsWith("/api/") == false)
+			link.pathname = "/wiki" + link.pathname;
 	},
 
 	/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
@@ -850,13 +865,13 @@ Annotations.dataSources.wikipedia = {
 	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
 	extraneousElementSelectors: [
 		"style",
-		".mw-ref",
+// 		".mw-ref",
 		".shortdescription",
 		"td hr",
 		".hatnote",
 		".portal",
 		".penicon",
-		".reference",
+// 		".reference",
 		".Template-Fact",
 		".error",
 		".mwe-math-mathml-inline",
@@ -940,6 +955,19 @@ Annotations.dataSources.wikipedia = {
 				link.classList.add("link-self");
 		});
 
+		//	Prevent layout weirdness for footnote links.
+		referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
+			citationLink.classList.add("icon-not");
+			citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
+		});
+
+		//	Rectify back-to-citation links in “References” sections.
+		referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
+			backToCitationLink.classList.add("icon-not");
+			backToCitationLink.classList.add("wp-footnote-back");
+			backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
+		});
+
 		//	Strip inline styles and some related attributes.
 		let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
 		referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
@@ -963,6 +991,8 @@ Annotations.dataSources.wikipedia = {
 				tableElement.removeAttribute(attribute);
 			});
 		});
+
+		console.log(referenceEntry.innerHTML);
 
 		//  Rectify table classes.
 		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
