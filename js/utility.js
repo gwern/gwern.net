@@ -238,13 +238,21 @@ HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
 	this.search = url.search;
 }
 
-/******************************************************************************/
-/*  Adds an event listener to a button (or other clickable element), attaching
+/****************************************************************************/
+/*  Add an event listener to a button (or other clickable element), attaching
     it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
-    Optionally also attaches the listener to the ‘mousedown’ event, making the
-    element activate on mouse down instead of mouse up.
+
+	Available option fields:
+
+	includeMouseDown (boolean)
+		Also attach the listener to the ‘mousedown’ event, making the element 
+		activate on mouse down (rather than only mouse up, as normal).
  */
-Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
+Element.prototype.addActivateEvent = function(fn, options) {
+	options = Object.assign({
+		includeMouseDown: false
+	}, options);
+
     let ael = this.activateEventListener = (event) => {
         if (   event.button === 0
             || event.key    === ' ')
@@ -252,7 +260,7 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
     };
     this.addEventListener("click", ael);
     this.addEventListener("keyup", ael);
-    if (includeMouseDown)
+    if (options.includeMouseDown)
         this.addEventListener("mousedown", ael);
 }
 
@@ -501,21 +509,27 @@ function transferClasses(source, target, classes) {
 	(Example: "span.foo-bar.baz-quux", which makes the wrapper
 	 `<span class="foo-bar baz-quux"></span>`.)
 
-	Available options fields are:
+	Available option fields:
 
-	useExistingWrapper
-		If the given element is already the only element child of an element
-		with the same tag name as the specified wrapper, then do not inject any
-		additional wrapper. If wrapper classes are specified, apply them to this
-		existing wrapper.
+	useExistingWrapper (boolean)
+		If the value of `useExistingWrapper` is `true`, then, if the given 
+		element is already the only element child of an element with the same 
+		tag name as the specified wrapper, then do not inject any additional 
+		wrapper. If wrapper classes are specified, apply them to this existing 
+		wrapper.
 
-	moveClasses
-		If the value of this option field is `true`, then all classes are moved
+	moveClasses (boolean|Array)
+		If the value of `moveClasses` is `true`, then all classes are moved
 		(not copied!) from the given element to the wrapper. If, instead, the 
-		value of this option field is an array, then all classes which are in 
-		the array are moved (not copied!) from the given element to the wrapper.
+		value of `moveClasses` is an array, then all classes which are in the 
+		array are moved (not copied!) from the given element to the wrapper.
  */
-function wrapElement(element, wrapperSpec = "", options = { }) {
+function wrapElement(element, wrapperSpec = "", options) {
+	options = Object.assign({
+		useExistingWrapper: false,
+		moveClasses: false
+	}, options);
+
 	let [ wrapperTagName, ...wrapperClasses ] = wrapperSpec.split(".");
 
 	//	Default wrapper tag to <div>; capitalize tag name.
@@ -549,48 +563,55 @@ function wrapElement(element, wrapperSpec = "", options = { }) {
 	See the wrapElement() function for details on the `wrapperSpec` and 
 	`options` arguments.
 
-	Available option fields (in addition to those used by wrapElement()) are:
-
-	root
-		The value of this option field should be an element, Document, or
-		DocumentFragment, within which (but not including which) the given
-		selector will be looked for. (The default value is `document`.)
-
 	NOTE: The `wrapperSpec` argument may be a wrap function, in which case all 
 	option fields that pertain to the wrapElement() function are ignored (as 
 	that function is not called in such a case).
+
+	Available option fields:
+
+	root (Element|Document|DocumentFragment)
+		Look for the given selector within the subtree of this node.
  */
-function wrapAll(selector, wrapperSpec, options = { }) {
-	let root = options.root ?? document;
+function wrapAll(selector, wrapperSpec, options) {
+	options = Object.assign({
+		root: document
+	}, options);
+
     let wrapperFunction = typeof wrapperSpec == "function"
     					  ? wrapperSpec
     					  : (element) => { wrapElement(element, wrapperSpec, options); };
 
-    root.querySelectorAll(selector).forEach(wrapperFunction);
+    options.root.querySelectorAll(selector).forEach(wrapperFunction);
 }
 
 /**************************************************************************/
 /*  Replace an element with its contents. Returns array of unwrapped nodes.
 
-	Available options fields are:
+	Available option fields:
 
-	moveID
+	moveID (boolean)
 		If the value of this option field is `true`, and the wrapper has only a
 		single child element, then that element is assigned the `id` attribute
 		of the wrapper (if any).
 
-	moveClasses
+	moveClasses (boolean|Array)
 		If the value of this option field is `true`, then all classes are moved
 		from the wrapper to each unwrapped child element. If, instead, the value
 		of this option field is an array, then all classes which are in the 
 		array are moved from the wrapper to each element child.
 
-	preserveBlockSpacing
+	preserveBlockSpacing (boolean)
 		If the value of this option field is `true`, then the value of the 
 		`--bsm` CSS property of the wrapper (if any) is assigned to the first
 		child element of the wrapper.
  */
-function unwrap(wrapper, options = { }) {
+function unwrap(wrapper, options) {
+	options = Object.assign({
+		moveID: false,
+		moveClasses: false,
+		preserveBlockSpacing: false
+	}, options);
+
 	if (wrapper == null)
 		return;
 
@@ -600,14 +621,14 @@ function unwrap(wrapper, options = { }) {
 	let nodes = Array.from(wrapper.childNodes);
 
 	//	Move ID, if specified.
-	if (   options.moveID === true
+	if (   options.moveID
 		&& wrapper.id > ""
 		&& wrapper.children.length == 1) {
 		wrapper.firstElementChild.id = wrapper.id;
 	}
 
 	//	Preserve block spacing, if specified.
-	if (   options.preserveBlockSpacing === true
+	if (   options.preserveBlockSpacing
 		&& wrapper.children.length > 0) {
 		let bsm = wrapper.style.getPropertyValue("--bsm");
 		if (bsm > "")
@@ -647,16 +668,19 @@ function rewrapContents(...args) {
 /*************************************************************************/
 /*  Unwrap all elements specified by the given selector.
 
-	Available option fields (in addition to those used by unwrap()) are:
+	Available option fields (default value):
 
-	root
-		The value of this option field should be an element, Document, or
-		DocumentFragment, within which (but not including which) the given
-		selector will be looked for. (The default value is `document`.)
+	root (Element|Document|DocumentFragment)
+		Look for the given selector within the subtree of this node.
+
+	(NOTE: All options used by unwrap() are also supported.)
  */
-function unwrapAll(selector, options = { }) {
-	let root = options.root ?? document;
-    root.querySelectorAll(selector).forEach(element => {
+function unwrapAll(selector, options) {
+	options = Object.assign({
+		root: document
+	}, options);
+
+    options.root.querySelectorAll(selector).forEach(element => {
         unwrap(element, options);
     });
 }
@@ -724,11 +748,24 @@ function stripStyles(element, propertiesToRemove = null, propertiesToSave = null
     or the element specified by the given selector (if `target` is a string),
     intersects the viewport.
 
-    Optionally specify the intersection ratio.
+    Available option fields:
+
+	root
+		See IntersectionObserver documentation.
+
+	threshold
+		See IntersectionObserver documentation.
+
+	rootMargin
+		See IntersectionObserver documentation.
  */
-function lazyLoadObserver(f, target, options = { }) {
+function lazyLoadObserver(f, target, options) {
+	options = Object.assign({
+		root: document
+	}, options);
+
     if (typeof target == "string")
-        target = (options.root ?? document).querySelector(target);
+        target = options.root.querySelector(target);
 
     if (target == null)
         return;
@@ -780,13 +817,34 @@ function isOnlyChild(node) {
 /******************************************************************************/
 /*  Returns true if the node contains only whitespace and/or other empty nodes.
 
-	Permissible options:
+	Available option fields:
 
-		excludeSelector: string
-		alsoExcludeSelector: string
-		excludeIdentifiedElements: boolean
+	excludeSelector (string)
+		If the node is an element node, then if *and only if* matches the given
+		selector, always consider it to be non-empty (and thus always return 
+		false, no matter what the node may contain). (Note the difference 
+		between this option and `alsoExcludeSelector`, below.)
+
+	alsoExcludeSelector (string)
+		If the node is an element node, then if the node matches the given 
+		selector OR is one of several always-considered-nonempty tag types
+		(IMG, SVG, VIDEO, AUDIO, IFRAME, OBJECT), always consider the node to be
+		non-empty (and thus always return false, no matter what the node may
+		contain). (Note the difference between this option and 
+		`excludeSelector`, above.)
+
+	excludeIdentifiedElements (boolean)
+		If the node is an element node, and has a non-empty value for the `id`
+		attribute, then always consider the node to be non-empty (and thus 
+		always return false, no matter what the node may contain).
  */
-function isNodeEmpty(node, options = { }) {
+function isNodeEmpty(node, options) {
+	options = Object.assign({
+		excludeSelector: null,
+		alsoExcludeSelector: null,
+		excludeIdentifiedElements: false
+	}, options);
+
 	if (node == null)
 		return undefined;
 
@@ -801,7 +859,8 @@ function isNodeEmpty(node, options = { }) {
 				   && node.matches(options.excludeSelector)) {
 			return false;
 		} else if (   [ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(node.tagName.toUpperCase())
-				   || node.matches(options.alsoExcludeSelector)) {
+				   || (   options.alsoExcludeSelector != null
+				       && node.matches(options.alsoExcludeSelector))) {
 			return false;
 		}
 	}
@@ -1040,38 +1099,47 @@ function urlEncodeQuery(params) {
     https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
  */
 function doAjax(options) {
+	options = Object.assign({
+		location: document.location,
+		method: "GET",
+		params: null,
+		responseType: null,
+		headers: null,
+		onSuccess: null,
+		onFailure: null
+	}, options);
+
     let req = new XMLHttpRequest();
 
     req.addEventListener("load", (event) => {
         if (event.target.status < 400) {
-            if (options["onSuccess"])
-                options.onSuccess(event);
+			options.onSuccess?.(event);
         } else {
-            if (options["onFailure"])
-                options.onFailure(event);
+			options.onFailure?.(event);
         }
     });
     req.addEventListener("error", (event) => {
-        if (options["onFailure"])
-            options.onFailure(event);
+		options.onFailure?.(event);
     });
 
-    let method = (options["method"] || "GET");
-    let location = (options.location || document.location)
-                   + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
-    req.open(method, location);
+    let location = options.location
+    			 + ((   options.params != null
+    			 	 && options.method == "GET") 
+    			 	? "?" + urlEncodeQuery(options.params)
+    			 	: "");
+    req.open(options.method, location);
 
-    if (options["responseType"])
-	    req.responseType = options["responseType"];
-
-    if (options["method"] == "POST")
+    if (options.method == "POST")
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-	if (options["headers"] != null)
-		for (let [ headerName, headerValue ] of Object.entries(options["headers"]))
+    if (options.responseType)
+	    req.responseType = options.responseType;
+
+	if (options.headers)
+		for (let [ headerName, headerValue ] of Object.entries(options.headers))
 			req.setRequestHeader(headerName, headerValue);
 
-    if (options["method"] == "POST") {
+    if (options.method == "POST") {
         req.send(urlEncodeQuery(options.params));
     } else {
         req.send();
@@ -1094,10 +1162,20 @@ function getHashTargetedElement() {
 		    : null);
 }
 
-/**************************/
+/*************************************************************************/
 /*  Simple mutex mechanism.
+
+	Available option fields:
+
+	releaseImmediately (boolean)
+		If `true`, release the pass immediately after calling the provided
+		function; otherwise, release at the next animation frame.
  */
-function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
+function doIfAllowed(f, passHolder, passName, options) {
+	options = Object.assign({
+		releaseImmediately: false
+	}, options);
+
     if (passHolder[passName] == false)
         return;
 
@@ -1105,7 +1183,7 @@ function doIfAllowed(f, passHolder, passName, releaseImmediately = false) {
 
     f();
 
-    if (releaseImmediately) {
+    if (options.releaseImmediately) {
         passHolder[passName] = true;
     } else {
         requestAnimationFrame(() => {
