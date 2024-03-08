@@ -1139,7 +1139,7 @@
     --GW-page-toolbar-widget-flash-rise-duration: 1s;
     --GW-page-toolbar-widget-flash-fall-duration: 1s;
 }
-@supports (-moz-user-focus: normal) {
+@supports (-moz-appearance: none) {
     :root {
         --GW-popups-audio-popup-min-height: 75px;
     }
@@ -2099,7 +2099,7 @@ ol.has-floats > li {
 
 /*  Special styles for special browsers.
     */
-@supports (-moz-user-focus: normal) {
+@supports (-moz-appearance: none) {
     .markdownBody .columns.figures figcaption {
         line-height: initial;
     }

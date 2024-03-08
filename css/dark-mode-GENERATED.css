@@ -410,7 +410,7 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
 }
 /*  Special styles for special browsers.
 	*/
-@supports (-moz-user-focus: normal) {
+@supports (-moz-appearance: none) {
 	.markdownBody figure audio {
 	    border-color: var(--GW-figure-outline-color);
 	}

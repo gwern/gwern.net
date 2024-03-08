@@ -1499,7 +1499,7 @@ figure audio {
 }
 /*  Special styles for special browsers.
     */
-@supports (-moz-user-focus: normal) {
+@supports (-moz-appearance: none) {
     figure audio {
         height: 42px;
         border-radius: 21px;
