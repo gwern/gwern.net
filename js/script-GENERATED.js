@@ -5424,7 +5424,7 @@ Annotations.dataSources.wikipedia = {
 				if (image.closest("figure") == figure)
 					return;
 
-				let closestRow = image.closest("tr, .trow, [style*='display:table-row']");
+				let closestRow = image.closest("tr, .trow, [style*='display: table-row']");
 				if (closestRow == null)
 					return;
 
@@ -5436,6 +5436,7 @@ Annotations.dataSources.wikipedia = {
 				} else {
 					figure.append(allImagesInRow[0]);
 				}
+				console.log(figure.outerHTML);
 
 				closestRow.remove();
 			});
