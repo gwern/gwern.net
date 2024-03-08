@@ -288,14 +288,6 @@ Extracts = { ...Extracts,
 
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);
-
-		//	Lazy-loading of adjacent sections.
-		//	WARNING: Experimental code!
-// 		if (target.hash > "") {
-// 			requestAnimationFrame(() => {
-// 				Extracts.loadAdjacentSections(popFrame, "next,prev");
-// 			});
-// 		}
     },
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
@@ -331,71 +323,7 @@ Extracts = { ...Extracts,
         	(but only for non-popin-spawning anchorlinks).
          */
 		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("spawns-popin") == false));
-    },
-
-	loadAdjacentSections: (popFrame, which) => {
-        GWLog("Extracts.loadAdjacentSections", "extracts-content.js", 2);
-
-		which = which.split(",");
-		let next = which.includes("next");
-		let prev = which.includes("prev");
-
-		let target = popFrame.spawningTarget;
-		let sourceDocument = Extracts.cachedPages[target.pathname] || Extracts.rootDocument;
-
-		popFrame.firstSection = popFrame.firstSection || targetElementInDocument(target, sourceDocument);
-		popFrame.lastSection = popFrame.lastSection || popFrame.firstSection;
-
-		if (!(next || prev))
-			return;
-
-		if (targetElementInDocument(target, popFrame.document) == null) {
-			let sectionWrapper = newElement("SECTION", {
-				"id": popFrame.firstSection.id,
-				"class": [ ...(popFrame.firstSection.classList) ].join(" ")
-			});
-			sectionWrapper.replaceChildren(...(popFrame.body.children));
-			popFrame.body.appendChild(sectionWrapper);
-
-			//  Fire a contentDidInject event.
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "Extracts.loadAdjacentSections",
-				container: popFrame.body.firstElementChild,
-				document: popFrame.document,
-				loadLocation: URLFromString(target.href)
-			});
-		}
-
-		let prevSection = popFrame.firstSection.previousElementSibling;
-		if (prev && prevSection) {
-			popFrame.body.insertBefore(newDocument(prevSection), popFrame.body.firstElementChild);
-
-			//  Fire a contentDidInject event.
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "Extracts.loadAdjacentSections",
-				container: popFrame.body.firstElementChild,
-				document: popFrame.document,
-				loadLocation: URLFromString(target.href)
-			});
-
-			popFrame.firstSection = prevSection;
-		}
-
-		let nextSection = popFrame.lastSection.nextElementSibling;
-		if (next && nextSection) {
-			popFrame.body.insertBefore(newDocument(nextSection), null);
-
-			//  Fire a contentDidInject event.
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "Extracts.loadAdjacentSections",
-				container: popFrame.body.lastElementChild,
-				document: popFrame.document,
-				loadLocation: URLFromString(target.href)
-			});
-
-			popFrame.lastSection = nextSection;
-		}
-	}
+    }
 };
 
 /*=-----------------=*/
