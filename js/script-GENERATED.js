@@ -5436,7 +5436,6 @@ Annotations.dataSources.wikipedia = {
 				} else {
 					figure.append(allImagesInRow[0]);
 				}
-				console.log(figure.outerHTML);
 
 				closestRow.remove();
 			});
