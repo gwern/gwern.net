@@ -3260,9 +3260,10 @@ ol.link-bibliography-list-compact > li::before {
 #navigation a {
     line-height: 1;
     display: flex;
+	color: var(--GW-nav-header-link-color);
 }
 #navigation a:hover {
-    color: var(--GW-nav-header-link-color);
+    color: var(--GW-body-link-color);
 }
 #navigation a svg {
     margin: 0;
