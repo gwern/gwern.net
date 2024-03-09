@@ -1554,15 +1554,15 @@ GW.notificationCenter = {
             - ‘condition’ (key) [optional]
                 Test function, to which the event info dictionary of the fired
                 event is passed; the handler function is called if (and only if)
-                the condition returns true
+                the condition returns true.
 
             - ‘once’ (key) [optional]
                 Boolean value; if true, the handler will be removed after the
                 handler function is called once (note that if there is a
                 condition function provided [see the ‘condition’ key], the
                 handler function will not be called - and therefore will not be
-                removed - if the named event is fired by the condition evaluates
-                to false).
+                removed - if the named event is fired but the condition 
+                evaluates to false).
 
                 If not set, defaults to false (ie. by default a handler is
                 not removed after an event is fired once, but will continue to
@@ -1699,7 +1699,13 @@ GW.notificationCenter = {
         you are trying to register, then the new handler will not be registered
         (even if it has different handler options than the existing handler).
      */
-    addHandlerForEvent: (eventName, f, options = { }) => {
+    addHandlerForEvent: (eventName, f, options) => {
+		options = Object.assign({
+			condition: null,
+			once: false,
+			phase: ""
+		}, options);
+
         /*  If this event is currently firing, do not add the handler yet.
             Instead, add it to the waiting list. It will be added once the event
             has finished firing.
@@ -1736,9 +1742,6 @@ GW.notificationCenter = {
         	the built-in phases “<” and “>”.)
          */
         let phaseOrder = [ "<", ...(GW.notificationCenter.handlerPhaseOrders[eventName] ?? [ ]), ">" ];
-
-		//	Ensure phase option is non-null.
-		options.phase = (options.phase ?? "");
 
 		/*  Get the target phase name, which may be the full value of the
 			‘phase’ key of the options dictionary, OR it may be that value
@@ -2171,7 +2174,7 @@ GW.contentLoadHandlers = { };
 /*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
     event). (Convenience function.)
  */
-function addContentLoadHandler(handler, phase, condition = null, once = false) {
+function addContentLoadHandler(handler, phase = "", condition = null, once = false) {
     GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, {
     	phase: phase,
     	condition: condition,
@@ -2184,7 +2187,7 @@ GW.contentInjectHandlers = { };
 /*  Add content inject handler (i.e., an event handler for the
     GW.contentDidInject event). (Convenience function.)
  */
-function addContentInjectHandler(handler, phase, condition = null, once = false) {
+function addContentInjectHandler(handler, phase = "", condition = null, once = false) {
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, {
     	phase: phase,
     	condition: condition,
@@ -2223,34 +2226,53 @@ GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => 
 GW.eventListeners = { };
 
 /*  Adds a named event listener to the page (or other target).
+
+	Available option fields:
+
+	
  */
-function addNamedEventListener(eventName, fn, name, options = { }, target = document) {
-    if (options?.defer) {
+function addNamedEventListener(eventName, fn, options) {
+	options = Object.assign({
+		name: null,
+		target: document,
+		defer: false,
+		ifDeferCallWhenAdd: false
+	}, options);
+
+    if (options.defer) {
         doWhenPageLoaded(() => {
             requestAnimationFrame(() => {
-                if (options?.ifDeferCallWhenAdd)
+                if (options.ifDeferCallWhenAdd)
                     fn();
-                addNamedEventListener(eventName, fn, name, { defer: false }, target);
+                addNamedEventListener(eventName, fn, {
+                	name: options.name,
+                	target: options.target,
+                	defer: false
+                });
             });
         });
+
         return;
     }
 
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
-            target.addEventListener(eventName, wrapper, { once: true, passive: true });
+            options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
     }
-    target.addEventListener(eventName, wrapper, { once: true, passive: true });
+    options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
 
     /*  Retain a reference to the event listener, if a name is provided.
      */
-    if (name) {
+    if (options.name) {
     	if (GW.eventListeners[eventName] == null)
     		GW.eventListeners[eventName] = { };
 
-        GW.eventListeners[eventName][name] = { wrapper: wrapper, target: target };
+        GW.eventListeners[eventName][options.name] = {
+        	wrapper: wrapper,
+        	target: options.target
+        };
     }
 
     return wrapper;
@@ -2271,8 +2293,8 @@ function removeNamedEventListener(eventName, name) {
 
 /*  Adds a scroll event listener to the page (or other target).
  */
-function addScrollListener(fn, name, options = { }, target = document) {
-	return addNamedEventListener("scroll", fn, name, options, target);
+function addScrollListener(fn, options) {
+	return addNamedEventListener("scroll", fn, options);
 }
 
 /*  Removes a named scroll event listener from the page (or other target).
@@ -2283,8 +2305,12 @@ function removeScrollListener(name) {
 
 /*  Adds a resize event listener to the window.
  */
-function addWindowResizeListener(fn, name, options) {
-	return addNamedEventListener("resize", fn, name, options, window);
+function addWindowResizeListener(fn, options) {
+	options = Object.assign({
+		target: window
+	}, options);
+
+	return addNamedEventListener("resize", fn, options);
 }
 
 /*  Removes a named resize event listener from the window.
@@ -2320,7 +2346,11 @@ function updateScrollState(event) {
         									  : 0;
     GW.scrollState.lastScrollTop = GW.scrollState.newScrollTop;
 }
-addScrollListener(updateScrollState, "updateScrollStateScrollListener", { defer: true, ifDeferCallWhenAdd: true });
+addScrollListener(updateScrollState, {
+	name: "updateScrollStateScrollListener",
+	defer: true, 
+	ifDeferCallWhenAdd: true
+});
 
 /*  Toggles whether the page is scrollable.
  */
@@ -2335,7 +2365,9 @@ function togglePageScrolling(enable) {
     if (typeof enable == "undefined")
         enable = document.documentElement.classList.contains("scroll-enabled-not");
 
-    let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
+    let preventScroll = (event) => {
+    	document.documentElement.scrollTop = GW.scrollState.lastScrollTop;
+    };
 
     /*  The `scroll-enabled-not` CSS class, which is added to the `html` element
         when scrolling is disabled by this function (in order to permit the
@@ -2351,12 +2383,16 @@ function togglePageScrolling(enable) {
         && isPageScrollingEnabled() == false) {
         document.documentElement.classList.toggle("scroll-enabled-not", false);
         removeScrollListener("preventScroll");
-        addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+        addScrollListener(updateScrollState, {
+        	name: "updateScrollStateScrollListener"
+        });
     } else if (  !enable
                && isPageScrollingEnabled() == true) {
         document.documentElement.classList.toggle("scroll-enabled-not", true);
-        addScrollListener(preventScroll, "preventScroll");
         removeScrollListener("updateScrollStateScrollListener");
+        addScrollListener(preventScroll, {
+        	name: "preventScroll"
+        });
     }
 }
 

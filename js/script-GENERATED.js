@@ -1349,10 +1349,16 @@ GW.pageToolbar = {
 			}
 
 			//	Update toolbar state on scroll.
-			addScrollListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+			addScrollListener(GW.pageToolbar.updateState, {
+				name: "updatePageToolbarStateOnScrollListener", 
+				defer: true
+			});
 
 			//	Update toolbar state on window resize.
-			addWindowResizeListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+			addWindowResizeListener(GW.pageToolbar.updateState, {
+				name: "updatePageToolbarStateOnWindowResizeListener", 
+				defer: true
+			});
 		});
 
 		GW.pageToolbar.setupComplete = true;
@@ -1404,7 +1410,11 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
-    addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
+    addScrollListener(updateBackToTopLinkVisibility, {
+    	name: "updateBackToTopLinkScrollListener", 
+    	defer: true, 
+    	ifDeferCallWhenAdd: true
+    });
 
     //  Show the back-to-top link on mouseover.
     GW.backToTop.addEventListener("mouseenter", (event) => {
@@ -1460,6 +1470,7 @@ GW.floatingHeader = {
 
     /*  Show/hide the floating header, and update state, in response to
         scroll event.
+
         (Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
      */
     updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
@@ -1603,8 +1614,11 @@ GW.floatingHeader = {
 										 + thresholdElement.offsetHeight;
 
 		//  Show/hide the back-to-top link on scroll up/down.
-		addScrollListener(GW.floatingHeader.updateState, "updateFloatingHeaderScrollListener",
-			{ defer: true, ifDeferCallWhenAdd: true });
+		addScrollListener(GW.floatingHeader.updateState, {
+			name: "updateFloatingHeaderScrollListener",
+			defer: true, 
+			ifDeferCallWhenAdd: true
+		});
 
 		//  Adjust initial scroll offset.
 		doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);
@@ -1804,7 +1818,10 @@ Popups = {
 			Popups.allSpawnedPopups().forEach(popup => {
 				Popups.setPopupViewportRect(popup, popup.viewportRect, { clampPositionToScreen: true });
 			});
-		}, "repositionPopupsOnWindowResizeListener", { defer: true });
+		}, {
+			name: "repositionPopupsOnWindowResizeListener", 
+			defer: true
+		});
 
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
@@ -1817,13 +1834,18 @@ Popups = {
 		//	Add scroll listener, to disable hover on scroll.
 		addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
 			Popups.hoverEventsActive = false;
-		}, "disablePopupHoverEventsOnScrollListener");
+		}, {
+			name: "disablePopupHoverEventsOnScrollListener"
+		});
 
 		/*	Add event handler to add scroll listener to spawned popups, to
 			disable hover events when scrolling within a popup.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-			addScrollListener(Popups.disableHoverEventsOnScroll, null, null, info.popup.scrollView);
+			addScrollListener(Popups.disableHoverEventsOnScroll, {
+				name: "disablePopupHoverEventsOnScrollInPopupListener",
+				target: info.popup.scrollView
+			});
 		});
 
 		//	Fire event.
@@ -12630,7 +12652,9 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         //  Add listener to update caption max-width when window resizes.
         addWindowResizeListener(event => {
             allFullWidthMedia.forEach(constrainCaptionWidth);
-        }, "constrainFullWidthMediaCaptionWidthResizeListener");
+        }, {
+        	name: "constrainFullWidthMediaCaptionWidthOnWindowResizeListener"
+        });
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
@@ -13056,7 +13080,9 @@ function createFullWidthBlockLayoutStyles() {
     updateFullWidthBlockLayoutStyles();
 
     //  Add listener to update layout variables on window resize.
-    addWindowResizeListener(updateFullWidthBlockLayoutStyles, "updateFullWidthBlockLayoutStylesResizeListener");
+    addWindowResizeListener(updateFullWidthBlockLayoutStyles, {
+    	name: "updateFullWidthBlockLayoutStylesOnWindowResizeListener"
+    });
 }
 
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {
@@ -14624,13 +14650,18 @@ if (GW.collapse.hoverEventsEnabled) {
 	//	Disable on scroll.
 	addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll = (event) => {
 		GW.collapse.hoverEventsActive = false;
-	}, "disableCollapseHoverEventsOnScrollListener");
+	}, {
+		name: "disableCollapseHoverEventsOnScrollListener"
+	});
 
 	/*	Add event handler to add scroll listener to spawned popups, to
 		disable hover events when scrolling within a popup.
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, null, null, info.popup.scrollView);
+		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
+			name: "disableCollapseHoverEventsOnScrollInPopupListener",
+			target: info.popup.scrollView
+		});
 	});
 
 	//	Enable on mousemove.
@@ -16135,7 +16166,10 @@ Sidenotes = { ...Sidenotes,
 
 			sidenote.scrollListener = addScrollListener((event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
-			}, null, { }, sidenote.outerWrapper);
+			}, {
+				name: "Sidenotes.updateSidenoteHideMoreIndicatorVisibilityOnScrollListener",
+				target: sidenote.outerWrapper
+			});
 		});
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
@@ -16384,7 +16418,9 @@ Sidenotes = { ...Sidenotes,
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			}, "Sidenotes.recalculateSidenotePositionsOnWindowResize");
+			}, {
+				name: "Sidenotes.updateSidenotePositionsOnWindowResizeListener"
+			});
 
 			/*	Add handler to bind more sidenote-slide events if more 
 				citations are injected (e.g., in a popup).
@@ -16408,7 +16444,10 @@ Sidenotes = { ...Sidenotes,
 			 */
 			addScrollListener((event) => {
 				Sidenotes.putAllSidenotesBack();
-			}, "Sidenotes.unSlideSidenotesOnScroll", { defer: true });
+			}, {
+				name: "Sidenotes.unSlideSidenotesOnScrollListener", 
+				defer: true
+			});
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
 			 */

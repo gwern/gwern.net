@@ -675,7 +675,10 @@ Sidenotes = { ...Sidenotes,
 
 			sidenote.scrollListener = addScrollListener((event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
-			}, null, { }, sidenote.outerWrapper);
+			}, {
+				name: "Sidenotes.updateSidenoteHideMoreIndicatorVisibilityOnScrollListener",
+				target: sidenote.outerWrapper
+			});
 		});
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
@@ -924,7 +927,9 @@ Sidenotes = { ...Sidenotes,
 				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			}, "Sidenotes.recalculateSidenotePositionsOnWindowResize");
+			}, {
+				name: "Sidenotes.updateSidenotePositionsOnWindowResizeListener"
+			});
 
 			/*	Add handler to bind more sidenote-slide events if more 
 				citations are injected (e.g., in a popup).
@@ -948,7 +953,10 @@ Sidenotes = { ...Sidenotes,
 			 */
 			addScrollListener((event) => {
 				Sidenotes.putAllSidenotesBack();
-			}, "Sidenotes.unSlideSidenotesOnScroll", { defer: true });
+			}, {
+				name: "Sidenotes.unSlideSidenotesOnScrollListener", 
+				defer: true
+			});
 		}, (mediaQuery) => {
 			/*	Deactivate event handlers.
 			 */

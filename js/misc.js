@@ -1349,10 +1349,16 @@ GW.pageToolbar = {
 			}
 
 			//	Update toolbar state on scroll.
-			addScrollListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+			addScrollListener(GW.pageToolbar.updateState, {
+				name: "updatePageToolbarStateOnScrollListener", 
+				defer: true
+			});
 
 			//	Update toolbar state on window resize.
-			addWindowResizeListener(GW.pageToolbar.updateState, "updatePageToolbarStateListener", { defer: true });
+			addWindowResizeListener(GW.pageToolbar.updateState, {
+				name: "updatePageToolbarStateOnWindowResizeListener", 
+				defer: true
+			});
 		});
 
 		GW.pageToolbar.setupComplete = true;
@@ -1404,7 +1410,11 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
         + `</a></div>`);
 
     //  Show/hide the back-to-top link on scroll up/down.
-    addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkScrollListener", { defer: true, ifDeferCallWhenAdd: true });
+    addScrollListener(updateBackToTopLinkVisibility, {
+    	name: "updateBackToTopLinkScrollListener", 
+    	defer: true, 
+    	ifDeferCallWhenAdd: true
+    });
 
     //  Show the back-to-top link on mouseover.
     GW.backToTop.addEventListener("mouseenter", (event) => {
@@ -1460,6 +1470,7 @@ GW.floatingHeader = {
 
     /*  Show/hide the floating header, and update state, in response to
         scroll event.
+
         (Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
      */
     updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
@@ -1603,8 +1614,11 @@ GW.floatingHeader = {
 										 + thresholdElement.offsetHeight;
 
 		//  Show/hide the back-to-top link on scroll up/down.
-		addScrollListener(GW.floatingHeader.updateState, "updateFloatingHeaderScrollListener",
-			{ defer: true, ifDeferCallWhenAdd: true });
+		addScrollListener(GW.floatingHeader.updateState, {
+			name: "updateFloatingHeaderScrollListener",
+			defer: true, 
+			ifDeferCallWhenAdd: true
+		});
 
 		//  Adjust initial scroll offset.
 		doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);

@@ -84,7 +84,10 @@ Popups = {
 			Popups.allSpawnedPopups().forEach(popup => {
 				Popups.setPopupViewportRect(popup, popup.viewportRect, { clampPositionToScreen: true });
 			});
-		}, "repositionPopupsOnWindowResizeListener", { defer: true });
+		}, {
+			name: "repositionPopupsOnWindowResizeListener", 
+			defer: true
+		});
 
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popups.keyUp);
@@ -97,13 +100,18 @@ Popups = {
 		//	Add scroll listener, to disable hover on scroll.
 		addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
 			Popups.hoverEventsActive = false;
-		}, "disablePopupHoverEventsOnScrollListener");
+		}, {
+			name: "disablePopupHoverEventsOnScrollListener"
+		});
 
 		/*	Add event handler to add scroll listener to spawned popups, to
 			disable hover events when scrolling within a popup.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-			addScrollListener(Popups.disableHoverEventsOnScroll, null, null, info.popup.scrollView);
+			addScrollListener(Popups.disableHoverEventsOnScroll, {
+				name: "disablePopupHoverEventsOnScrollInPopupListener",
+				target: info.popup.scrollView
+			});
 		});
 
 		//	Fire event.

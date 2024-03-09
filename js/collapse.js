@@ -22,13 +22,18 @@ if (GW.collapse.hoverEventsEnabled) {
 	//	Disable on scroll.
 	addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll = (event) => {
 		GW.collapse.hoverEventsActive = false;
-	}, "disableCollapseHoverEventsOnScrollListener");
+	}, {
+		name: "disableCollapseHoverEventsOnScrollListener"
+	});
 
 	/*	Add event handler to add scroll listener to spawned popups, to
 		disable hover events when scrolling within a popup.
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, null, null, info.popup.scrollView);
+		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
+			name: "disableCollapseHoverEventsOnScrollInPopupListener",
+			target: info.popup.scrollView
+		});
 	});
 
 	//	Enable on mousemove.
