@@ -9411,11 +9411,11 @@ Extracts = {
                 if (   popFrame
                     && (element = targetElementInDocument(target, popFrame.document))) {
 					//	Scroll to element immediately...
-                    revealElement(element, true);
+                    revealElement(element);
 
 					//	... and also after the first layout pass completes.
 					GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
-						revealElement(element, true);
+						revealElement(element);
 					}, {
 						condition: (layoutEventInfo) => (   layoutEventInfo.container == popFrame.body
 														 && layoutEventInfo.processorName == "applyBlockSpacingInContainer"),
@@ -14639,16 +14639,25 @@ if (GW.collapse.hoverEventsEnabled) {
 	});
 }
 
-/*******************************************************************************/
-/*  This function expands all collapse blocks containing the given node, if
-    any (including the node itself, if it is a collapse block). Returns true
-    if any such expansion occurred. Fires Collapse.collapseStateDidChange event
-    after all (possibly recursive) expansion is completed. (Only one event fired
-    per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
-    expansion occurred.)
+/******************************************************************************/
+/*  Expand all collapse blocks containing the given node, if any (including the 
+	node itself, if it is a collapse block). Returns true if any such expansion
+	occurred. 
+
+	Available option fields:
+
+	fireStateChangedEvent (boolean)
+		Fire a `Collapse.collapseStateDidChange` event after all (possibly 
+		recursive) expansion is completed. (Only one event fired per 
+		non-recursive call to expandCollapseBlocksToReveal(), even if recursive
+		expansion occurred.)
  */
-function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
+function expandCollapseBlocksToReveal(node, options) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
+
+	options = Object.assign({
+		fireStateChangedEvent: true
+	}, options);
 
 	if (!node)
 		return;
@@ -14670,7 +14679,9 @@ function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
 		Fire state change event only if we will not have to expand this block
 		(otherwise we’ll do redundant layout).
      */
-	let expandedAncestor = expandCollapseBlocksToReveal(collapseBlock.parentElement, expand == false);
+	let expandedAncestor = expandCollapseBlocksToReveal(collapseBlock.parentElement, {
+		fireStateChangedEvent: (expand == false)
+	});
 
     if (expand) {
 		//	Expand nearest collapse block.
@@ -14679,7 +14690,7 @@ function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
 		/*	Fire state change event only if we will not have to do any more 
 			expansion (otherwise we’ll do redundant layout).
 		 */
-		if (fireStateChangedEvent) {
+		if (options.fireStateChangedEvent) {
 			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
 				source: "expandCollapseBlocksToReveal",
 				collapseBlock: collapseBlock
@@ -14691,15 +14702,24 @@ function expandCollapseBlocksToReveal(node, fireStateChangedEvent = true) {
     return (expand || expandedAncestor);
 }
 
-/*******************************************************************************/
-/*	This function collapses the specified collapse block and all collapse blocks
-	nested within it, if any. Fires Collapse.collapseStateDidChange event after
-	all (possibly recursive) collapsing is completed. (Only one event fired per
-	non-recursive call to collapseCollapseBlock(), even if recursive collapsing 
-	occurred.)
+/******************************************************************************/
+/*	Collapse the specified collapse block and all collapse blocks nested within 
+	it, if any.
+
+	Available option fields:
+
+	fireStateChangedEvent (boolean)
+		Fire a `Collapse.collapseStateDidChange` event after all (possibly 
+		recursive) collapsing is completed. (Only one event fired per 
+		non-recursive call to expandCollapseBlocksToReveal(), even if recursive
+		collapsing occurred.)
  */
-function collapseCollapseBlock(collapseBlock, fireEvent = true) {
+function collapseCollapseBlock(collapseBlock, options) {
     GWLog("collapseCollapseBlock", "collapse.js", 2);
+
+	options = Object.assign({
+		fireStateChangedEvent: true
+	}, options);
 
 	if (isCollapsed(collapseBlock))
 		return;
@@ -14710,14 +14730,16 @@ function collapseCollapseBlock(collapseBlock, fireEvent = true) {
 		collapsed.
 	 */
 	collapseBlock.querySelectorAll(".collapse").forEach(nestedCollapseBlock => {
-		collapseCollapseBlock(nestedCollapseBlock, false);
+		collapseCollapseBlock(nestedCollapseBlock, {
+			fireStateChangedEvent: false
+		});
 	});
 
 	//	Collapse block.
 	toggleCollapseBlockState(collapseBlock, false);
 
 	//	Fire event, if need be.
-	if (fireEvent) {
+	if (options.fireStateChangedEvent) {
     	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
     		source: "collapseCollapseBlock",
     		collapseBlock: collapseBlock
@@ -14779,14 +14801,29 @@ function containsBlockChildren(element) {
 	return false
 }
 
-/***************************************************************************/
-/*	Constructs and returns a disclosure button (for block-level collapses by
-	default; to get an inline button, pass `false`).
+/****************************************************************************/
+/*	Constructs and returns a disclosure button.
+
+	Available option fields:
+
+	block (boolean)
+		If `true`, the constructed button is for a block collapse; otherwise,
+		the button is for an inline collapse.
+
+	start (boolean)
+		If `true`, the button is for placement at the start of an inline 
+		collapse; otherwise, the button is for placement at the end of an 
+		inline collapse. (Ignored for block collapse buttons.)
  */
-function newDisclosureButton(block = true, start = true) {
-	let className = "disclosure-button" + (block ? "" : (" " + (start ? "start" : "end")));
+function newDisclosureButton(options) {
+	options = Object.assign({
+		block: true,
+		start: true
+	}, options);
+
+	let className = "disclosure-button" + (options.block ? "" : (" " + (options.start ? "start" : "end")));
 	let disclosureButtonHTML = `<button type="button" class="${className}" tabindex="-1" aria-label="Open/close collapsed section">`;
-	if (block) {
+	if (options.block) {
 		disclosureButtonHTML += `<span class="part top">`
 								 + `<span class="label"></span>`
 								 + `<span class="icon">`
@@ -14801,7 +14838,7 @@ function newDisclosureButton(block = true, start = true) {
 							  + `</span>`;
 	} else {
 		disclosureButtonHTML += `<span class="icon">`
-							  + (start
+							  + (options.start
 								 ? GW.svg("bracket-square-left-sharp-light")
 								 : (  GW.svg("angle-right-regular")
 									+ GW.svg("bracket-square-right-sharp-light")))
@@ -14927,12 +14964,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		//  Inject the disclosure button.
 		if (collapseWrapper.classList.contains("collapse-inline")) {
 			//	Button at start.
-			collapseWrapper.insertBefore(newDisclosureButton(false), collapseContentWrapper);
+			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
 
 			//	Button at end.
-			collapseWrapper.insertBefore(newDisclosureButton(false, false), null);
+			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
 		} else {
-			collapseWrapper.insertBefore(newDisclosureButton(), collapseContentWrapper);
+			collapseWrapper.insertBefore(newDisclosureButton({ block: true }), collapseContentWrapper);
 		}
 
 		//	Mark as expanded, if need be.
@@ -14985,11 +15022,25 @@ addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks 
 	eventInfo.container.querySelectorAll(".collapse.expanded").forEach(collapseCollapseBlock);
 }, "<eventListeners");
 
-/********************************************************/
+/*****************************************************************************/
 /*	Updates disclosure button label for current UI state.
+
+	Available option fields:
+
+	showLabels (boolean)
+		If `true`, disclosure button labels are visible by default. (Applies 
+		only to block collapses, as inline collapses have no disclosure button
+		labels.) 
+
+		NOTE: This option is ignored if 
+		GW.collapse.alwaysShowCollapseInteractionHints is `true`.
  */
-function updateDisclosureButtonState(collapseBlock, showLabels) {
+function updateDisclosureButtonState(collapseBlock, options) {
 	GWLog("updateDisclosureButtonState", "collapse.js", 2);
+
+	options = Object.assign({
+		showLabels: false
+	}, options);
 
 	let action = GW.isMobile() ? "Tap" : "Click";
 	let labelHTML = isCollapsed(collapseBlock)
@@ -15003,7 +15054,7 @@ function updateDisclosureButtonState(collapseBlock, showLabels) {
 			label.innerHTML = labelHTML;
 		});
 
-		disclosureButton.classList.toggle("labels-visible", showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
+		disclosureButton.classList.toggle("labels-visible", options.showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
 	} else {
 		[ collapseBlock.firstElementChild, collapseBlock.lastElementChild ].forEach(disclosureButton => {
 			disclosureButton.title = labelHTML;
@@ -15019,7 +15070,9 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
 
 	//	Update label text and other HTML-based UI state.
-	updateDisclosureButtonState(collapseBlock, GW.collapse.showCollapseInteractionHintsOnHover);
+	updateDisclosureButtonState(collapseBlock, {
+		showLabels: GW.collapse.showCollapseInteractionHintsOnHover
+	});
 
 	/*	Compensate for block indentation due to nesting (e.g., lists).
 
@@ -15170,7 +15223,9 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					if (GW.collapse.hoverEventsActive == false)
 						return;
 
-					updateDisclosureButtonState(collapseBlock, true);
+					updateDisclosureButtonState(collapseBlock, {
+						showLabels: true
+					});
 				});
 				disclosureButton.addEventListener("mouseleave", (event) => {
 					if (GW.collapse.hoverEventsActive == false)
@@ -15255,10 +15310,33 @@ addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eve
 /*******************************************************************************/
 /*	Ensure that the given element is scrolled into view when layout is complete.
 
-	NOTE: Offset is ignored if element is inside a pop-frame.
+	NOTE: In most cases when this function would be used, it is better to use
+	the revealElement() function instead, as otherwise, if the element is inside
+	a collapsed block, it will be scrolled into view but not actually visible on
+	the screen, frustrating the user.
+		Outside of this file (where scrollElementIntoView() is used in the 
+	collapse code itself), this function should generally be called directly 
+	only if (a) expansion of any collapse blocks involved is explicitly *not* 
+	desired, or (b) expansion is being done separately (i.e., by calling 
+	revealElement() and passing `false` as the value of the `scrollIntoView`
+	option; generally, this should be done *before* scrolling an element into 
+	view!), with some other operations intervening between revealing and
+	scrolling into view.
+
+	Available option fields:
+
+	offset (float)
+		If element is in the base page (and not in a pop-frame, etc.), then,
+		after scrolling the element into view, scroll the page down by the given
+		offset. (If the element is in a pop-frame or similar, `offset` is
+		ignored.)
  */
-function scrollElementIntoView(element, offset = 0) {
+function scrollElementIntoView(element, options) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
+
+	options = Object.assign({
+		offset: 0
+	}, options);
 
 	if (   Extracts 
 		&& Extracts.popFrameProvider
@@ -15267,28 +15345,47 @@ function scrollElementIntoView(element, offset = 0) {
 	} else {	
 		doWhenPageLayoutComplete(() => {
 			element.scrollIntoView();
-			if (offset != 0)
-				window.scrollBy(0, offset);
+			if (options.offset != 0)
+				window.scrollBy(0, options.offset);
 			updateScrollState();
 		});
 	}
 }
 
-/*******************************************************************************/
-/*	Expand collapse blocks to reveal the given element, and scroll it into view.
+/****************************************************************************/
+/*	Expand collapse blocks to reveal the given element.
+
+	Available option fields:
+
+	scrollIntoView (boolean)
+		After expanding collapse blocks to reveal the element, scroll it into
+		view.
+
+	offset (float)
+		If `scrollIntoView` is `true`, then `offset` is passed to 
+		scrollElementIntoView() as an option.
  */
-function revealElement(element, scrollIntoView = true) {
+function revealElement(element, options) {
     GWLog("revealElement", "collapse.js", 2);
+
+	options = Object.assign({
+		scrollIntoView: true,
+		offset: 0
+	}, options);
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
 
-	if (scrollIntoView) {
+	if (options.scrollIntoView) {
 		if (didExpandCollapseBlocks) {
 			requestAnimationFrame(() => {
-				scrollElementIntoView(element);		
+				scrollElementIntoView(element, {
+					offset: options.offset
+				});		
 			});
 		} else {
-			scrollElementIntoView(element);
+			scrollElementIntoView(element, {
+				offset: options.offset
+			});
 		}
 	}
 
@@ -15297,15 +15394,26 @@ function revealElement(element, scrollIntoView = true) {
 
 /***********************************************/
 /*  Reveal the element targeted by the URL hash.
+
+	Available option fields:
+
+	offset (float)
+		Passed to revealElement() as an option.
  */
-function revealTarget() {
+function revealTarget(options) {
     GWLog("revealTarget", "collapse.js", 1);
+
+	options = Object.assign({
+		offset: 0
+	}, options);
 
     let target = getHashTargetedElement();
     if (!target)
     	return;
 
-	let didReveal = revealElement(target);
+	let didReveal = revealElement(target, {
+		offset: options.offset
+	});
 
 	//	Fire notification event.
 	if (didReveal)
@@ -16196,12 +16304,16 @@ Sidenotes = { ...Sidenotes,
 
 				let sidenote = Sidenotes.counterpart(citation);
 
-				revealElement(citation, false);
+				revealElement(citation, {
+					scrollIntoView: false
+				});
 
 				Sidenotes.slideLockSidenote(sidenote);
 
 				requestAnimationFrame(() => {
-					scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
+					scrollElementIntoView(sidenote, {
+						offset: (-1 * (Sidenotes.sidenotePadding + 1))
+					});
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
@@ -16216,7 +16328,9 @@ Sidenotes = { ...Sidenotes,
 					let citationRect = citation.getBoundingClientRect();
 					if (   sidenoteRect.top < Sidenotes.sidenotePadding + 1
 						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
-						scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
+						scrollElementIntoView(sidenote, {
+							offset: (-1 * (Sidenotes.sidenotePadding + 1))
+						});
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});

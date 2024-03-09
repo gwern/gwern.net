@@ -844,12 +844,16 @@ Sidenotes = { ...Sidenotes,
 
 				let sidenote = Sidenotes.counterpart(citation);
 
-				revealElement(citation, false);
+				revealElement(citation, {
+					scrollIntoView: false
+				});
 
 				Sidenotes.slideLockSidenote(sidenote);
 
 				requestAnimationFrame(() => {
-					scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
+					scrollElementIntoView(sidenote, {
+						offset: (-1 * (Sidenotes.sidenotePadding + 1))
+					});
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
@@ -864,7 +868,9 @@ Sidenotes = { ...Sidenotes,
 					let citationRect = citation.getBoundingClientRect();
 					if (   sidenoteRect.top < Sidenotes.sidenotePadding + 1
 						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
-						scrollElementIntoView(sidenote, ((-1 * Sidenotes.sidenotePadding) - 1));
+						scrollElementIntoView(sidenote, {
+							offset: (-1 * (Sidenotes.sidenotePadding + 1))
+						});
 
 					Sidenotes.unSlideLockSidenote(sidenote);
 				});
