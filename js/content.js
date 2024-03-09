@@ -273,7 +273,7 @@ Content = {
 	 */
 
 	contentTypeForLink: (link) => {
-		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
+		for (let [ typeName, contentType ] of Object.entries(Content.contentTypes))
 			if (contentType.matches(link))
 				return contentType;
 

@@ -393,7 +393,7 @@ AuxLinks = {
     },
 
     auxLinksLinkType: (link) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes))
+        for (let [ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes))
             if (link.pathname.startsWith(pathnamePrefix))
                 return linkType;
 
@@ -403,7 +403,7 @@ AuxLinks = {
     /*  Page or document for whom the aux-links are.
      */
     targetOfAuxLinksLink: (link) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes)) {
+        for (let [ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes)) {
             if (link.pathname.startsWith(pathnamePrefix)) {
                 if (link.pathname.endsWith(".html")) {
                     let start = pathnamePrefix.length;
@@ -4546,7 +4546,7 @@ Annotations = { ...Annotations,
 			&& Object.keys(Annotations.dataSources).includes(link.dataset.annotationDataSource))
 			return Annotations.dataSources[link.dataset.annotationDataSource];
 
-		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
+		for (let [ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
 			if (sourceName == "local")
 				continue;
 
@@ -5824,7 +5824,7 @@ Content = {
 	 */
 
 	contentTypeForLink: (link) => {
-		for ([ typeName, contentType ] of Object.entries(Content.contentTypes))
+		for (let [ typeName, contentType ] of Object.entries(Content.contentTypes))
 			if (contentType.matches(link))
 				return contentType;
 
@@ -7339,7 +7339,7 @@ function fillTemplate(template, data = null, context = null, options = { }) {
         };
 
 		if (options.loadEventInfo)
-			for ([key, value] of Object.entries(options.loadEventInfo))
+			for (let [key, value] of Object.entries(options.loadEventInfo))
 				if ([ "container", "document" ].includes(key) == false)
 					loadEventInfo[key] = value;
 
@@ -11323,7 +11323,7 @@ Typography = {
 			[ Typography.replacementTypes.JOINERS,		Typography.replacementDefinitionGroups.joiners		],
 			[ Typography.replacementTypes.SEPARATORS,	Typography.replacementDefinitionGroups.separators	]
 		];
-		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
+		for (let [ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
 				for (replacement of replacementGroup)
 					specifiedReplacements.push(replacement);

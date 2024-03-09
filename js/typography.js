@@ -29,7 +29,7 @@ Typography = {
 			[ Typography.replacementTypes.JOINERS,		Typography.replacementDefinitionGroups.joiners		],
 			[ Typography.replacementTypes.SEPARATORS,	Typography.replacementDefinitionGroups.separators	]
 		];
-		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
+		for (let [ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
 				for (replacement of replacementGroup)
 					specifiedReplacements.push(replacement);

@@ -169,7 +169,7 @@ Annotations = { ...Annotations,
 			&& Object.keys(Annotations.dataSources).includes(link.dataset.annotationDataSource))
 			return Annotations.dataSources[link.dataset.annotationDataSource];
 
-		for ([ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
+		for (let [ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
 			if (sourceName == "local")
 				continue;
 

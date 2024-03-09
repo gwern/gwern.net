@@ -1420,7 +1420,7 @@ function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = n
 function cancelDoWhenMatchMedia(name) {
     GW.mediaQueryResponders[name](null, true);
 
-    for ([ key, mediaQuery ] of Object.entries(GW.mediaQueries))
+    for (let [ key, mediaQuery ] of Object.entries(GW.mediaQueries))
         mediaQuery.removeListener(GW.mediaQueryResponders[name]);
 
     GW.mediaQueryResponders[name] = null;
@@ -2209,7 +2209,7 @@ GW.contentDidInjectEventFlags = {
 /*  Event-specific pre-fire processing for the ‘GW.contentDidInject’ event.
  */
 GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => {
-    for ([flagName, flagValue] of Object.entries(GW.contentDidInjectEventFlags))
+    for (let [flagName, flagValue] of Object.entries(GW.contentDidInjectEventFlags))
         eventInfo[flagName] = (0 != (eventInfo.flags & flagValue));
 
     return eventInfo;

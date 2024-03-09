@@ -632,7 +632,7 @@ function fillTemplate(template, data = null, context = null, options = { }) {
         };
 
 		if (options.loadEventInfo)
-			for ([key, value] of Object.entries(options.loadEventInfo))
+			for (let [key, value] of Object.entries(options.loadEventInfo))
 				if ([ "container", "document" ].includes(key) == false)
 					loadEventInfo[key] = value;
 

@@ -393,7 +393,7 @@ AuxLinks = {
     },
 
     auxLinksLinkType: (link) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes))
+        for (let [ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes))
             if (link.pathname.startsWith(pathnamePrefix))
                 return linkType;
 
@@ -403,7 +403,7 @@ AuxLinks = {
     /*  Page or document for whom the aux-links are.
      */
     targetOfAuxLinksLink: (link) => {
-        for ([ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes)) {
+        for (let [ pathnamePrefix, linkType ] of Object.entries(AuxLinks.auxLinksLinkTypes)) {
             if (link.pathname.startsWith(pathnamePrefix)) {
                 if (link.pathname.endsWith(".html")) {
                     let start = pathnamePrefix.length;
