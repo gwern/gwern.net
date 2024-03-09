@@ -3600,6 +3600,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			let previousBlockSelector = [
 				":not(p)",
 				".text-center",
+				".section-metadata",
 				".margin-notes-block",
 				".page-description-annotation",
 				".annotation .data-field",
