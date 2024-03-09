@@ -3888,19 +3888,14 @@ section.footnotes .footnote-self-link {
 /*  Italicize link tags in popups/indexes similar to the page metadata block’s
     tags, for consistency.
  */
-.annotation .link-tags {
+.annotation .link-tags,
+.annotation-partial .link-tags {
     font-style: italic;
 
     /*  Tags are enclosed in ()s, but as links with the text-shadow trick, the
         italic slant leads to the usual ‘chomp’ without additional margin.
      */
     margin-left: 0.1em;
-}
-
-/*  Annotation abstract (body).
- */
-.annotation .data-field.annotation-abstract:empty {
-    display: none;
 }
 
 /*************************************/
