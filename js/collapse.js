@@ -553,7 +553,9 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					return;
 
 				disclosureButton.actionHandler(event);
-			}, [ "mouseleave", "mousedown" ]);
+			}, {
+				cancelOnEvents: [ "mouseleave", "mousedown" ]
+			});
 		}
 
 		//	On-hover state changes.

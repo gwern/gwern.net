@@ -976,15 +976,15 @@ Annotations.dataSources.wikipedia = {
 				return;
 
 			if (styledElement.style.display != "none")
-				stripStyles(styledElement, null, Annotations.dataSources.wikipedia.preservedInlineStyleProperties);
+				stripStyles(styledElement, { saveProperties: Annotations.dataSources.wikipedia.preservedInlineStyleProperties });
 		});
 		//	Special handling for table elements.
 		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
 			if (tableElement.style.display != "none") {
 				if (tableElement.style.position == "relative")
-					stripStyles(tableElement, null, [ "text-align", "position", "width", "height" ]);
+					stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
 				else
-					stripStyles(tableElement, null, [ "text-align" ]);
+					stripStyles(tableElement, { saveProperties: [ "text-align" ] });
 			}
 
 			[ "width", "height", "align" ].forEach(attribute => {

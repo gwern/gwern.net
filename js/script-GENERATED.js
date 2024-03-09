@@ -1303,13 +1303,17 @@ GW.pageToolbar = {
 					onEventAfterDelayDo(button, "mouseenter", GW.pageToolbar.hoverUncollapseDelay, (event) => {
 						if (GW.pageToolbar.isCollapsed())
 							GW.pageToolbar.toggleCollapseState(false, { tempOrSlowly: true });
-					}, [ "mouseleave", "mousedown" ]);
+					}, {
+						cancelOnEvents: [ "mouseleave", "mousedown" ]
+					});
 
 					//	Collapse on unhover.
 					onEventAfterDelayDo(GW.pageToolbar.toolbar, "mouseleave", GW.pageToolbar.unhoverCollapseDelay, (event) => {
 						if (GW.pageToolbar.isTempExpanded())
 							GW.pageToolbar.toggleCollapseState(true);
-					}, "mouseenter");
+					}, {
+						cancelOnEvents: [ "mouseenter" ]
+					});
 				}
 			}
 		});
@@ -5349,15 +5353,15 @@ Annotations.dataSources.wikipedia = {
 				return;
 
 			if (styledElement.style.display != "none")
-				stripStyles(styledElement, null, Annotations.dataSources.wikipedia.preservedInlineStyleProperties);
+				stripStyles(styledElement, { saveProperties: Annotations.dataSources.wikipedia.preservedInlineStyleProperties });
 		});
 		//	Special handling for table elements.
 		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
 			if (tableElement.style.display != "none") {
 				if (tableElement.style.position == "relative")
-					stripStyles(tableElement, null, [ "text-align", "position", "width", "height" ]);
+					stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
 				else
-					stripStyles(tableElement, null, [ "text-align" ]);
+					stripStyles(tableElement, { saveProperties: [ "text-align" ] });
 			}
 
 			[ "width", "height", "align" ].forEach(attribute => {
@@ -9983,7 +9987,9 @@ Extracts = { ...Extracts,
                     //  Do nothing if the annotation is already loaded.
                     if (Annotations.cachedDataExists(annotatedTarget) == false)
                         Annotations.load(annotatedTarget);
-                }, "mouseleave");
+                }, {
+                	cancelOnEvents: [ "mouseleave" ]
+                });
             });
 
 			if (allAnnotatedTargetsInContainer.length > 0) {
@@ -10962,7 +10968,9 @@ Extracts = { ...Extracts,
                     //  Do nothing if the content is already loaded.
                     if (Content.cachedDataExists(target) == false)
                         Content.load(target);
-                }, "mouseleave");
+                }, {
+                	cancelOnEvents: [ "mouseleave" ]
+                });
             });
 
 			if (allTargetsInContainer.length > 0) {
@@ -15147,7 +15155,9 @@ addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosure
 					return;
 
 				disclosureButton.actionHandler(event);
-			}, [ "mouseleave", "mousedown" ]);
+			}, {
+				cancelOnEvents: [ "mouseleave", "mousedown" ]
+			});
 		}
 
 		//	On-hover state changes.
@@ -17911,7 +17921,9 @@ ReaderMode = { ...ReaderMode,
 				/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
 					links on hover.
 				 */
-				link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
+				link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, {
+					cancelOnEvents: [ "mouseleave" ]
+				});
 				link.removeMouseLeaveEvent = onEventAfterDelayDo(link, "mouseleave", 0, ReaderMode.updateState);
 
 				//	Add custom popup trigger delay.

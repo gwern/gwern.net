@@ -687,13 +687,24 @@ function unwrapAll(selector, options) {
 
 /*************************************************************************/
 /*	Save an element’s inline styles in a .savedStyles DOM object property.
+
+	Available option fields:
+
+	saveProperties (Array)
+		Array of property names which should be saved. If this is null, then
+		all properties are saves.
  */
-function saveStyles(element, propertiesToSave) {
+function saveStyles(element, options) {
+	options = Object.assign({
+		saveProperties: null
+	}, options);
+
 	let stylesToSave = { };
 
 	for (let i = 0; i < element.style.length; i++) {
 		let propertyName = element.style.item(i);
-		if (propertiesToSave.includes(propertyName)) {
+		if (   options.saveProperties == null
+			|| options.saveProperties.includes(propertyName)) {
 			let propertyValue = element.style.getPropertyValue(propertyName);
 			stylesToSave[propertyName] = propertyValue;
 		}
@@ -710,7 +721,7 @@ function restoreStyles(element) {
 	if (element.savedStyles == null)
 		return;
 
-	for ([ propertyName, propertyValue ] of Object.entries(element.savedStyles))
+	for (let [ propertyName, propertyValue ] of Object.entries(element.savedStyles))
 		element.style.setProperty(propertyName, propertyValue);
 
 	element.savedStyles = null;
@@ -718,25 +729,39 @@ function restoreStyles(element) {
 
 /*****************************************************************************/
 /*	Strip an element’s inline styles, optionally only removing some styles,
-	optionally keeping some styles. (The ‘propertiesToSave’ argument overrides
-	the ‘propertiesToRemove’ argument, i.e. if a property appears in both
-	lists, it is saved.)
- */
-function stripStyles(element, propertiesToRemove = null, propertiesToSave = null) {
-	if (propertiesToSave)
-		saveStyles(element, propertiesToSave);
+	optionally keeping some styles.
 
-	if (propertiesToRemove) {
+	Available option fields:
+
+	removeProperties (Array)
+		Remove only properties whose names are in this array. If this is null,
+		then all properties are removed.
+
+	saveProperties (Array)
+		Save the value of these properties; after removing some or all 
+		properties (depending on the value of the `removeProperties` option), 
+		restore these properties to their saved values.
+ */
+function stripStyles(element, options) {
+	options = Object.assign({
+		removeProperties: null,
+		saveProperties: null
+	}, options);
+
+	if (options.saveProperties)
+		saveStyles(element, { saveProperties: options.saveProperties });
+
+	if (options.removeProperties) {
 		for (let i = 0; i < element.style.length; i++) {
 			let propertyName = element.style.item(i);
-			if (propertiesToRemove.includes(propertyName))
+			if (options.removeProperties.includes(propertyName))
 				element.style.removeProperty(propertyName);
 		}
 	} else {
 		element.removeAttribute("style");
 	}
 
-	if (propertiesToSave)
+	if (options.saveProperties)
 		restoreStyles(element);
 
 	if (element.style.length == 0)
@@ -893,7 +918,10 @@ function paragraphizeTextNodesOfElement(element) {
 
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
-	let omitNode = (node) => isNodeEmpty(node, { alsoExcludeSelector: "a, br", excludeIdentifiedElements: true });
+	let omitNode = (node) => isNodeEmpty(node, {
+		alsoExcludeSelector: "a, br", 
+		excludeIdentifiedElements: true
+	});
 	let node;
 	do {
 		node = nodes.shift();
@@ -1021,12 +1049,12 @@ function isOnScreen(element, margin) {
     return isWithinRectOf(element, null, margin);
 }
 
-/******************************/
-/*	Returns union of two rects.
+/**************************************/
+/*	Returns union of two or more rects.
  */
 function rectUnion (aRect, ...args) {
 	let union = aRect;
-	for (rect of args) {
+	for (let rect of args) {
 		union = new DOMRect(
 						Math.min(union.x, rect.x),
 						Math.min(union.y, rect.y),
@@ -1043,7 +1071,7 @@ function rectUnion (aRect, ...args) {
     according to the CSS spec are escaped.)
  */
 function selectorFromHash(hash) {
-    if (hash.length < 2)
+    if (hash.length <= 1)
         return null;
 
     //  Chrome’s fancy new “scroll to text fragment”.
@@ -1193,23 +1221,28 @@ function doIfAllowed(f, passHolder, passName, options) {
 }
 
 /*******************************************************************************/
-/*  When the given event is triggered on the given target, after the given delay
-    (in ms), call the given handler function. (Optionally, if the given cancel 
-    event occurs in the interim - i.e. after the trigger event happens but 
-    before the delay elapses - cancel calling the handler.)
+/*  When the given event is triggered on the given target, start a timer with
+	a duration equal to the given delay (in ms); when the timer fires, it calls
+	the given handler function.
 
     Return value of this function is an anonymous function which removes the
     listeners that this function adds.
 
-    NOTE: If `delay` is 0 or less, then `cancelEventName` is ignored, and `func`
-    is added as an event handler for `triggerEventName` directly.
+	Available option fields:
 
-    If `delay` is positive, then `func` will be called by a timer after `delay`
-    ms, prior to which time it might be cancelled if `cancelEventName` (if any)
-    occurs. (If `cancelEventName` is null, then `func` will be called after
-    `delay` unconditionally.)
+	cancelOnEvents (Array)
+		If any of the events whose names are listed in this array occur after
+		the triggering event occurs but prior to the delay elapsing, the timer
+		will be canceled and the handler function will not be called.
+
+		NOTE: If `delay` is 0 or less, then `cancelOnEvents` is ignored, and 
+		`func` is added as an event handler for `triggerEventName` directly.
  */
-function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventNames = [ ]) {
+function onEventAfterDelayDo(target, triggerEventName, delay, func, options) {
+	options = Object.assign({
+		cancelOnEvents: [ ]
+	}, options);
+
     if (delay <= 0) {
         target.addEventListener(triggerEventName, func);
         return (() => {
@@ -1217,29 +1250,17 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
         });
     } else {
         let timer = null;
-        let events = { };
-        target.addEventListener(triggerEventName, events.triggerEvent = (event) => {
-            timer = setTimeout(func, delay, event);
-        });
-        if (typeof cancelEventNames == "string") {
-        	cancelEventNames = cancelEventNames > "" 
-        					   ? [ cancelEventNames ] 
-        					   : [ ];
-        }
-        if (cancelEventNames.length > 0) {
-        	cancelEventNames.forEach(cancelEventName => {
-				target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
-					clearTimeout(timer);
-				});
-			});
-        }
+        let triggerEvent = (event) => { timer = setTimeout(func, delay, event); };
+        let cancelEvent = (event) => { clearTimeout(timer); };
+        target.addEventListener(triggerEventName, triggerEvent);
+		options.cancelOnEvents.forEach(cancelEventName => {
+			target.addEventListener(cancelEventName, cancelEvent);
+		});
         return (() => {
-            target.removeEventListener(triggerEventName, events.triggerEvent);
-            if (cancelEventNames.length > 0) {
-	        	cancelEventNames.forEach(cancelEventName => {
-	                target.removeEventListener(cancelEventName, events.cancelEvent);
-	            });
-            }
+            target.removeEventListener(triggerEventName, triggerEvent);
+			options.cancelOnEvents.forEach(cancelEventName => {
+				target.removeEventListener(cancelEventName, cancelEvent);
+			});
         });
     }
 }

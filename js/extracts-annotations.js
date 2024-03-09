@@ -250,7 +250,9 @@ Extracts = { ...Extracts,
                     //  Do nothing if the annotation is already loaded.
                     if (Annotations.cachedDataExists(annotatedTarget) == false)
                         Annotations.load(annotatedTarget);
-                }, "mouseleave");
+                }, {
+                	cancelOnEvents: [ "mouseleave" ]
+                });
             });
 
 			if (allAnnotatedTargetsInContainer.length > 0) {

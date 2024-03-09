@@ -1303,13 +1303,17 @@ GW.pageToolbar = {
 					onEventAfterDelayDo(button, "mouseenter", GW.pageToolbar.hoverUncollapseDelay, (event) => {
 						if (GW.pageToolbar.isCollapsed())
 							GW.pageToolbar.toggleCollapseState(false, { tempOrSlowly: true });
-					}, [ "mouseleave", "mousedown" ]);
+					}, {
+						cancelOnEvents: [ "mouseleave", "mousedown" ]
+					});
 
 					//	Collapse on unhover.
 					onEventAfterDelayDo(GW.pageToolbar.toolbar, "mouseleave", GW.pageToolbar.unhoverCollapseDelay, (event) => {
 						if (GW.pageToolbar.isTempExpanded())
 							GW.pageToolbar.toggleCollapseState(true);
-					}, "mouseenter");
+					}, {
+						cancelOnEvents: [ "mouseenter" ]
+					});
 				}
 			}
 		});

@@ -940,7 +940,9 @@ Extracts = { ...Extracts,
                     //  Do nothing if the content is already loaded.
                     if (Content.cachedDataExists(target) == false)
                         Content.load(target);
-                }, "mouseleave");
+                }, {
+                	cancelOnEvents: [ "mouseleave" ]
+                });
             });
 
 			if (allTargetsInContainer.length > 0) {

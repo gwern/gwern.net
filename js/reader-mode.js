@@ -268,7 +268,9 @@ ReaderMode = { ...ReaderMode,
 				/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
 					links on hover.
 				 */
-				link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
+				link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, {
+					cancelOnEvents: [ "mouseleave" ]
+				});
 				link.removeMouseLeaveEvent = onEventAfterDelayDo(link, "mouseleave", 0, ReaderMode.updateState);
 
 				//	Add custom popup trigger delay.
