@@ -68,7 +68,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                               let imgClass =  "class=\"float-right page-thumbnail " ++ color' ++ " " ++ unwords thumbnailCSS ++ "\""
                               in ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
-                        let doi = "" -- I explored the idea but DOIs are too expensive & ultimately do little useful
+                        let doi = [] -- I explored the idea but DOIs are too expensive & ultimately do little useful
                         let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b
 
                         let toc = gwernTOC footnotesP indexP p' f
@@ -96,7 +96,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectoriesAll ["doc/"]
                               let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/doc/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
-                              return $ Right ("/doc/index", ("doc tag","N/A","","",[],"<p>Bibliography for tag <em>doc</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
+                              return $ Right ("/doc/index", ("doc tag","N/A","",[],[],"<p>Bibliography for tag <em>doc</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract _ p' description toc f =

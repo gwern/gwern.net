@@ -148,4 +148,4 @@ linksToAnnotations m = map (linkToAnnotation m)
 linkToAnnotation :: Metadata -> String -> (String,MetadataItem)
 linkToAnnotation m u = case M.lookup u m of
                          Just i  -> (u,i)
-                         Nothing -> (u,("","","","",[],""))
+                         Nothing -> (u,("","","",[],[],""))

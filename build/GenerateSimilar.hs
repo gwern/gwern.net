@@ -38,7 +38,7 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, replaceChecked, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, replaceChecked, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
 
 import Config.Misc (currentDay)
 import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, minimumLength, maximumLength, maxDistance, blackList, minimumSuggestions)
@@ -50,7 +50,7 @@ singleShotRecommendations html =
      edb <- readEmbeddings
      bdb <- readBacklinksDB
 
-     newEmbedding <- embed [] md bdb ("",("","","","",[],html))
+     newEmbedding <- embed [] md bdb ("",("","","",[],[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
@@ -325,7 +325,8 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
                Just ("",_,_,_,_,_)  -> []
                Just (_,_,_,_,_,"")  -> []
-               Just (title,_,_,doi,_,_) -> let doiEscaped = urlEncode doi -- TEST: this is to work around /doc/psychology/cognitive-bias/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
+               Just (title,_,_,kvs,_,_) -> let doi = kvDOI kvs
+                                               doiEscaped = urlEncode doi -- TEST: this is to work around /doc/psychology/cognitive-bias/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
                                                doiQuery = "doi:" ++ doiEscaped
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = urlEncode $ "\"" ++ title' ++ "\""

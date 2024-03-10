@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-03-05 21:10:44 gwern"
+;;; When:  Time-stamp: "2024-03-09 21:59:23 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2003,7 +2003,7 @@ This tool is run automatically by a cron job. So any link on Gwern.net will auto
           (lambda ()
             (define-key html-mode-map (kbd "<C-return>")  (lambda () (interactive)
                                                             (if (= ?\s (preceding-char)) (delete-char -1))
-                                                            (insert "</p> <p>")
+                                                            (insert "</p>\n<p>")
                                                             (if (= ?\s (following-char)) (delete-char 1)))
             )
           ))

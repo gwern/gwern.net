@@ -28,6 +28,6 @@ openreview p = do checkURL p
                              let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                              let desc' = cleanAbstractsHTML $ processArxivAbstract desc
                              let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
-                             return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [],
+                             return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, [], [],
                                                  -- due to pseudo-LaTeX
                                                    abstractCombined))

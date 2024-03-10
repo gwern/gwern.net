@@ -30,7 +30,7 @@ main = do full  <- readGtxFast (C.root ++ "metadata/full.gtx")   -- for hand cre
           stdin <- fmap (nubOrd . lines . T.unpack) TIO.getContents
           if null stdin then putStrLn (unlines finalSingleLine)
             else do let lookups = map (\p -> case M.lookup p incompleteDB of
-                                              Nothing -> toSingleLine (p, (("","","","",[],""),""))
+                                              Nothing -> toSingleLine (p, (("","","",[],[],""),""))
                                               Just a  -> toSingleLine (p,(a,"a"))
                                       ) stdin
                     let hits = filter (`anyInfix` stdin) finalSingleLine

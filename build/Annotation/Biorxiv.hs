@@ -16,7 +16,7 @@ import Paragraph (processParagraphizer)
 -- handles medRxiv too (same codebase)
 biorxiv  :: Path -> IO (Either Failure (Path, MetadataItem))
 biorxiv p = do checkURL p
-               if ".pdf" `isInfixOf` p then return (Right (p, ("", "", "", "", [], ""))) else
+               if ".pdf" `isInfixOf` p then return (Right (p, ("", "", "", [], [], ""))) else
                 do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                    case status of
                      ExitFailure _ -> printRed ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
@@ -43,7 +43,7 @@ biorxiv p = do checkURL p
                                                               print abstractRaw'
                                                               return (Left Temporary)
                                        else
-                                                       return $ Right (p, (title, author, date, doi, ts, abstrct))
+                                                       return $ Right (p, (title, author, date, [("doi",doi)], ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
     parseMetadataTagsoup key = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "")

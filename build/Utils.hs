@@ -359,6 +359,13 @@ split delim str =
 hasKeyAL :: Eq a => a -> [(a, b)] -> Bool
 hasKeyAL key list = key `elem` map fst list
 
+
+kvLookup :: String -> [(String, String)] -> String
+kvLookup key xs = maybe "" id (lookup key xs)
+
+kvDOI :: [(String,String)] -> String
+kvDOI = kvLookup "doi"
+
 -- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
 -- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.
 replaceChecked :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]

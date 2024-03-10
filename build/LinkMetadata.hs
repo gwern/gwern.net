@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-09 18:51:19 gwern"
+When:  Time-stamp: "2024-03-10 17:35:12 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -176,11 +176,11 @@ readLinkMetadataAndCheck = do
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) full
 
-             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
+             let badDoisDash = filter (\(_,(_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
                  unless (null badDoisDash) $ error $ "full.gtx: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
+             let badDois = filter (\(_,(_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
                unless (null badDois) $ error $ "full.gtx: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
@@ -314,8 +314,8 @@ minimumAnnotationLength = 250
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
-writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
+writeAnnotationFragment _ _ _ _ ("","","",[],[],"") = return ()
+writeAnnotationFragment am md onlyMissing u i@(a,b,c,kvs,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
@@ -337,7 +337,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
@@ -403,7 +403,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return (Left Temporary)
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return (Left Permanent)
+                       Left Permanent -> appendLinkMetadata target'' ("", "", "", [], [], "") >> return (Left Permanent)
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
@@ -430,7 +430,7 @@ hasAnnotationOrIDInline metadata inline = case inline of
             let canonicalUrl = linkCanonicalize $ T.unpack url
             in case M.lookup canonicalUrl metadatadb of
                 Nothing                  -> addID Nothing link
-                Just ("","","","",[],"") -> addID Nothing link
+                Just ("","","",[],[],"") -> addID Nothing link
                 Just metadataItem        -> addID (Just metadataItem) (addHasAnnotation metadataItem link)
 
 addID :: Maybe MetadataItem -> Inline -> Inline
@@ -490,7 +490,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
      -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
-     Just x@(tle,aut,dt,doi,ts,abst) ->
+     Just x@(tle,aut,dt,kvs,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else if "<em>"`isPrefixOf`tle && "</em>"`isSuffixOf`tle then tle else "“"++tle++"”"
            lid = let tmpID = generateID f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
@@ -512,6 +512,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
                                                                                    [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
+           doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
            link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
@@ -625,18 +626,18 @@ findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ 
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
-                       Just ("","","","",[],"") -> tryPrefix
+                       Just ("","","",[],[],"") -> tryPrefix
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
                                              u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
                                          in
-                                               (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
+                                               (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", [], [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
                                                   -- '/review/cat.md' will trigger a fallback to /review/cat#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
-                                                    if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
+                                                    if snd possibleFallback == ("", "", "", [], [], "") then (u, ("", "", "", [], [], "")) else
                                                       (u',snd possibleFallback))
 
 
