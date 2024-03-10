@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-03-01 20:03:16 gwern"
+# When:  Time-stamp: "2024-03-08 12:06:25 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -48,7 +48,7 @@ done
 
 if [[ -z $URL ]]; then echo "No URL argument in arguments? $*" && exit 99; fi
 
-USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.1"
+USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the
