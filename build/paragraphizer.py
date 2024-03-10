@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2023-11-08 18:44:42 gwern"
+# When:  Time-stamp: "2024-03-10 18:05:57 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -83,10 +83,10 @@ else:
     target = sys.argv[1]
 
 completion = client.chat.completions.create(
-  model="gpt-4-1106-preview",
+  model="gpt-4-turbo-preview",
   messages=[
-    {"role": "system", "content": "You are a helpful assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
-    {"role": "user", "content": f"You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.) Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) Convert to American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+    {"role": "system", "content": "You are a helpful research assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
+    {"role": "user", "content": f"You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)\n Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/outputs; 4. conclusion/discussion; 5. supplementary information (eg. code, websites, datasets).\nAdditional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
   ]
 )
 
