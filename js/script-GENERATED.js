@@ -980,8 +980,17 @@ function incrementSavedCount(key) {
 /*  Adds given element (first creating it from HTML, if necessary) to
     #ui-elements-container (creating the latter if it does not exist), and
     returns the added element.
+
+	Available option fields:
+
+	raiseOnHover (boolean)
+		When the added UI element is hovered over, it gains a `hover` class.
  */
-function addUIElement(element, options = { }) {
+function addUIElement(element, options) {
+	options = Object.assign({
+		raiseOnHover: false
+	}, options);
+
     let uiElementsContainer = (   document.querySelector("#ui-elements-container")
     						   ?? document.querySelector("body").appendChild(newElement("DIV", { id: "ui-elements-container" })));
 
@@ -1116,14 +1125,32 @@ GW.pageToolbar = {
 
 		NOTE: Use only this method to collapse or uncollapse toolbar; the
 		.collapse() and .uncollapse() methods are for internal use only.
+
+		Available option fields:
+
+		delay (integer)
+			Collapse or uncollapse after a delay, instead of immediately.
+
+		temp (boolean)
+			If un-collapsing, do it only temporarily (re-collapse on un-hover).
+
+		slow (boolean)
+			If collapsing, do it slowly.
 	 */
-	toggleCollapseState: (collapse, options = { }) => {
+	toggleCollapseState: (collapse, options) => {
+		options = Object.assign({
+			delay: 0,
+			temp: false,
+			slow: false
+		}, options);
+
 		if (   collapse 
-			&& options.delay) {
+			&& options.delay > 0) {
 			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState, 
 															  options.delay, 
 															  collapse, {
-																  tempOrSlowly: options.tempOrSlowly
+																  temp: options.temp,
+																  slow: options.slow
 															  });
 			return;
 		}
@@ -1137,11 +1164,9 @@ GW.pageToolbar = {
 				GW.pageToolbar.collapse();
 			}
 		} else if (collapse == true) {
-			GW.pageToolbar.collapse(options.tempOrSlowly);
+			GW.pageToolbar.collapse(options.slow);
 		} else {
-			GW.pageToolbar.uncollapse();
-			if (options.tempOrSlowly)
-				GW.pageToolbar.toolbar.classList.add("expanded-temp");
+			GW.pageToolbar.uncollapse(options.temp);
 		}
 	},
 
@@ -1149,12 +1174,12 @@ GW.pageToolbar = {
 
 		(For internal use only; do not call except from .toggleCollapseState().)
 	 */
-	collapse: (slowly = false) => {
+	collapse: (slow = false) => {
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
 		GW.pageToolbar.toolbar.classList.add("collapsed");
 
-		if (slowly) {
+		if (slow) {
 			GW.pageToolbar.addToolbarClassesTemporarily("animating", "collapsed-slowly",
 				GW.pageToolbar.demoCollapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 		} else {
@@ -1167,13 +1192,16 @@ GW.pageToolbar = {
 
 		(For internal use only; do not call except from .toggleCollapseState().)
 	 */
-	uncollapse: () => {
+	uncollapse: (temp = false) => {
 		clearTimeout(GW.pageToolbar.toolbar.collapseTimer);
 
 		GW.pageToolbar.addToolbarClassesTemporarily("animating",
 			GW.pageToolbar.collapseDuration + GW.pageToolbar.fadeAfterCollapseDuration);
 
 		GW.pageToolbar.toolbar.classList.remove("collapsed", "collapsed-slowly");
+
+		if (temp)
+			GW.pageToolbar.toolbar.classList.add("expanded-temp");
 	},
 
 	/*	Fade toolbar to full transparency.
@@ -1302,7 +1330,7 @@ GW.pageToolbar = {
 					//	Uncollapse on hover.
 					onEventAfterDelayDo(button, "mouseenter", GW.pageToolbar.hoverUncollapseDelay, (event) => {
 						if (GW.pageToolbar.isCollapsed())
-							GW.pageToolbar.toggleCollapseState(false, { tempOrSlowly: true });
+							GW.pageToolbar.toggleCollapseState(false, { temp: true });
 					}, {
 						cancelOnEvents: [ "mouseleave", "mousedown" ]
 					});
@@ -1340,7 +1368,7 @@ GW.pageToolbar = {
 					//	Don’t collapse if hovering.
 					if (GW.pageToolbar.toolbar.matches(":hover") == false)
 						GW.pageToolbar.toggleCollapseState(true, { 
-															  tempOrSlowly: true, 
+															  slow: true, 
 															  delay: GW.pageToolbar.demoCollapseDelay
 														   });
 				});
