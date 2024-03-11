@@ -24,7 +24,7 @@ maxEmbedAtOnce = 750
 main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
-          let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
+          let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           let chunkSize = 25
           let mdlChunks = chunksOf chunkSize mdl
           bdb <- readBacklinksDB

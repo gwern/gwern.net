@@ -112,12 +112,12 @@ writeAnnotDayDB path = writeFile path . ppShow
 generateAnnotationOfTheDay :: Metadata -> FilePath -> FilePath -> (String -> String) -> IO ()
 generateAnnotationOfTheDay md dbpath annotpath formatter =
   do db <- readAnnotDayDB dbpath
-     let md' = M.toList $ M.filterWithKey (\k (_,author,_,_,_,abstract1) ->
+     let md' = M.toList $ M.filterWithKey (\k (_,author,_,_,_,_,abstract1) ->
                                               length abstract1 > C.minAnnotationAbstractLength &&
                                               author /= "Gwern Branwen" && author /= "gwern" && author /= "Gwern" &&
                                               k `notElem` db &&
                                               not ("/index" `isSuffixOf` k)) md
-     let lengthList = sortOn (\(_, (_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)
+     let lengthList = sortOn (\(_, (_,_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)
      if null lengthList then writeFile [] dbpath else
        do let (url,_) = last lengthList -- grab the largest
           let db' = db ++ [url]

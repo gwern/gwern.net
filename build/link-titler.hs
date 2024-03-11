@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2024-02-07 12:18:49 gwern"
+-- When:  Time-stamp: "2024-03-10 20:27:57 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -63,11 +63,11 @@ addTitlesToFile md filepath = do
           let titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
                                  map (\(u,t') -> case M.lookup (T.unpack u) md of
                                                    Nothing -> ("","")
-                                                   Just ("",_,_,_,_,_) -> ("","")
-                                                   Just (_,"",_,_,_,_) -> ("","")
-                                                   Just (_,_,"",_,_,_) -> ("","")
-                                                   Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
-                                                                               textSimplifier (T.pack t) == textSimplifier t'
+                                                   Just ("",_,_,_,_,_,_) -> ("","")
+                                                   Just (_,"",_,_,_,_,_) -> ("","")
+                                                   Just (_,_,"",_,_,_,_) -> ("","")
+                                                   Just (t,aut,dt,_,_,_,_) -> if T.pack t == t' ||
+                                                                                textSimplifier (T.pack t) == textSimplifier t'
                                                                             then ("","") else
                                                                               let authorCite = authorsToCite (T.unpack u) aut dt in
                                                                               (u, T.pack $
@@ -85,7 +85,7 @@ addTitlesToFile md filepath = do
 
 -- TODO: refactor; most of this is redundant
 addTitlesToHTML :: Metadata -> (String,MetadataItem) -> IO (String,MetadataItem)
-addTitlesToHTML md (path,(title,author,date,doi,tags,abstract))
+addTitlesToHTML md (path,(title,author,date,dc,kvs,tags,abstract))
   = let pandoc = parseMarkdownOrHTML False (T.pack abstract)
         links = M.toList $ M.fromListWith (++) $ extractURLsAndAnchorTooltips pandoc
 
@@ -94,10 +94,10 @@ addTitlesToHTML md (path,(title,author,date,doi,tags,abstract))
         titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
                            map (\(u,t') -> case M.lookup (T.unpack u) md of
                          Nothing -> ("","")
-                         Just ("",_,_,_,_,_) -> ("","")
-                         Just (_,"",_,_,_,_) -> ("","")
-                         Just (_,_,"",_,_,_) -> ("","")
-                         Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
+                         Just ("",  _,_, _,_,_,_) -> ("","")
+                         Just (_,  "",_, _,_,_,_) -> ("","")
+                         Just (_,   _,"",_,_,_,_) -> ("","")
+                         Just (t, aut,dt,_,_,_,_) -> if T.pack t == t' ||
                                                      textSimplifier (T.pack t) == textSimplifier t'
                                                   then ("","") else
                                                     let authorCite = authorsToCite (T.unpack u) aut dt in
@@ -110,7 +110,7 @@ addTitlesToHTML md (path,(title,author,date,doi,tags,abstract))
                                                                (url `T.append` "\" title=\"" `T.append` titleNew `T.append` "\"")
                                                                text)
                        (T.pack abstract) titled
-    in return (path,(title,author,date,doi,tags,T.unpack updatedAbstract))
+    in return (path,(title,author,date,dc,kvs,tags,T.unpack updatedAbstract))
 
 -- simplify a title as much as possible to find similar title/anchor pairs to skip rewriting:
 textSimplifier :: T.Text -> T.Text

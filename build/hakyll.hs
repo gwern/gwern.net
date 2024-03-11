@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-29 11:56:58 gwern"
+When: Time-stamp: "2024-03-10 22:10:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -212,7 +212,7 @@ lookupTags m item = do
   let path = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return Nothing
-    Just (_,_,_,_,tags,_) -> return $ Just tags
+    Just (_,_,_,_,_,tags,_) -> return $ Just tags
 
 fieldsTagHTML :: Metadata -> Context String
 fieldsTagHTML m = field "tagsHTML" $ \item -> do
@@ -293,7 +293,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
-     walkM (imageLinkHeightWidthSet <=< invertImageInline) pbth
+     walkM (imageLinkHeightWidthSet <=< invertImageInline md) pbth
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --

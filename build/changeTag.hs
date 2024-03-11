@@ -116,10 +116,10 @@ changeTag "" a b  = error $ "changeTag called with empty arguments: " ++ "\"\"" 
 changeTag  a [] b = error $ "changeTag called with empty arguments: " ++ show a  ++ ":" ++ "[]"    ++ ":" ++ show b  ++ "; this should never happen."
 changeTag  a b "" = error $ "changeTag called with empty arguments: " ++ show a  ++ ":" ++ show b  ++ ":" ++ "\"\""  ++ "; this should never happen."
 changeTag i ml tag = if head tag /= '-' then addTag i ml tag else removeTag i ml (tail tag)
-addTag i ml tag = map (\(path,item@(a,b,c,d,e,f)) -> if i /= path || (tag `elem` e) then (path,item) else
-                                                      (path,(a,b,c,d,e++[tag],f)) ) ml
-removeTag i ml tag = map (\(path,item@(a,b,c,d,e,f)) -> if i /= path || (tag `notElem` e) then (path,item) else
-                                                      (path,(a,b,c,d,filter (/= tag) e,f)) ) ml
+addTag i ml tag = map (\(path,item@(a,b,c,d,dc,e,f)) -> if i /= path || (tag `elem` e) then (path,item) else
+                                                      (path,(a,b,c,d,dc,e++[tag],f)) ) ml
+removeTag i ml tag = map (\(path,item@(a,b,c,d,dc,e,f)) -> if i /= path || (tag `notElem` e) then (path,item) else
+                                                      (path,(a,b,c,d,dc,filter (/= tag) e,f)) ) ml
 
 mvItem :: MetadataList -> MetadataList -> String -> (MetadataList,MetadataList)
 mvItem original new i = (removeItem original i,

@@ -15,7 +15,7 @@ type ArchiveMetadataList= [(Path, -- URL: original raw URL of an external link
 type ArchiveMetadata = M.Map Path ArchiveMetadataItem
 
 type Metadata = M.Map Path MetadataItem                                --
-type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
+type MetadataItem = (String, String, String, String, [(String,String)], [String], String) -- (Title, Author, Date, Date-MetadataItem-Created, K-Vs, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
 

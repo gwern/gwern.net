@@ -8,6 +8,7 @@ import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
 import Data.Maybe (isJust, isNothing)
+import qualified Data.Map as M
 import Data.Ratio as R (denominator, numerator, (%))
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import Network.HTTP (urlDecode)
@@ -24,7 +25,8 @@ import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
-import Utils (addClass, printRed, replace, anySuffix, isLocal)
+import LinkMetadataTypes (Metadata)
+import Utils (addClass, printRed, replace, anySuffix, isLocal, kvLookup)
 
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
 -- excludes ".psd"
@@ -41,20 +43,33 @@ isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm", ".avi"] --
 -- image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check
 -- every image for color, and set an 'invert-auto' HTML class on the ones which are low. We can
 -- manually specify a 'invert' class on images which don't pass the heuristic but should.
-invertImageInline :: Inline -> IO Inline
-invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) =
-  if notInvertP classes then
-    return x else do
-                   (color,_,_) <- invertFile p
-                   if not color then return x else
-                     return (addLazyLoadingImage $ Image (htmlid, "invert-auto":classes, kvs) xs (p,t))
-invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
+invertImageInline :: Metadata -> Inline -> IO Inline
+invertImageInline md x@(Image (htmlid, classes, kvs) xs (p,t)) =
+  do let inverted = addLazyLoadingImage $ Image (htmlid, "invert-auto":classes, kvs) xs (p,t)
+     case invertGlobalOverride md (T.unpack p) of
+       Just True -> return inverted
+       Just False -> return x
+       Nothing -> if notInvertP classes then
+                      return x else do
+                                     (color,_,_) <- invertFile p
+                                     if not color then return x else
+                                       return inverted
+invertImageInline _ x@(Link (htmlid, classes, kvs) xs (p, t)) =
   if notInvertP classes || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p)  then
                                                           return x else
                                                             do (color,_,_) <- invertFile p
                                                                if not color then return x else
                                                                  return $ addClass "invert-auto" $ Link (htmlid, classes, kvs) xs (p, t)
-invertImageInline x = return x
+invertImageInline _ x = return x
+
+invertGlobalOverride :: Metadata -> FilePath -> Maybe Bool
+invertGlobalOverride md p = case M.lookup p md of
+  Nothing -> Nothing
+  Just (_,_,_,_,kvs,_,_) -> case kvLookup "invert" kvs  of
+               "" -> Nothing
+               "True" -> Just True
+               "False" -> Just False
+               _ -> error $ "invertGlobalOverride: impossible pattern match result for: " ++ show p ++ " : " ++ show kvs
 
 invertFile :: T.Text -> IO (Bool, String, String)
 invertFile p = do let p' = T.unpack p

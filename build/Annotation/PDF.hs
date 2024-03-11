@@ -43,7 +43,7 @@ pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
                 printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                 at <- fmap (fromMaybe "") $ doi2Abstract edoi'
                 if not (null (title ++ author ++ U.toString mbDate ++ edoi')) then
-                  return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), edoi', ts, at))
+                  return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), "", [("doi",edoi')], ts, at))
                   else
                   return (Left Permanent)
            else printRed "PDF annotation failed, insufficient data or unreadable file; exiftool returned: " >> putStrLn ("title/author/date: " ++ show mbTitle ++ " ; DOI: " ++ show mbDoi) >> return (Left Permanent)

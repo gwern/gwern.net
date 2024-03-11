@@ -62,9 +62,9 @@ main = do C.cd
           -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
-          -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.gtx/partial.gtx TODO: actually track annotation creation dates...)
-          -- Optimization: if there is only 1 argument, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would double runtime.
-          unless (length dirs == 1) $ do
+          -- 'newest': the _n_ newest link annotations created
+          -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
+          unless (length dirs < 5) $ do
             metaNewest <- readLinkMetadataNewest 100
             generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
@@ -98,7 +98,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   -- we suppress what would be duplicate entries in the File/me section
   let taggedAll = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
-  let taggedSelf = filter (\(_,(_,aut,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll
+  let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll
   let tagged' = taggedAll \\ taggedSelf
 
   dirsChildren   <- listTagDirectoriesAll [dir'']
@@ -120,9 +120,9 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
-  let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") linksSelf
-  let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links
-  let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_),_) -> t == "") links
+  let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") linksSelf
+  let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") links
+  let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t == "") links
   titledLinksSorted <- if not filterp then return []
                         -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
                        else sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks
@@ -132,7 +132,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
   let untitledLinksSection  = generateListItems am untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
-  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
+  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst))
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
@@ -152,7 +152,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
                           else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                else []
 
-  let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_),lb) -> not (null lb)) links
+  let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_,_),lb) -> not (null lb)) links
 
   let body = abstract ++
 
@@ -192,8 +192,8 @@ generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []
 generateLinkBibliographyItems items = [OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items]
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath) -> [Block]
-generateLinkBibliographyItem x@(_,(_,_,_,_,_,_),"") = error $ "generateDirectory.hs.generateLinkBibliographyItem asked to generate a link-bib entry for an item passed to it with no link-bib file defined! This should never happen. Data: " ++ show x
-generateLinkBibliographyItem (f,(t,aut,_,_,_,_),lb)  =
+generateLinkBibliographyItem x@(_,(_,_,_,_,_,_,_),"") = error $ "generateDirectory.hs.generateLinkBibliographyItem asked to generate a link-bib entry for an item passed to it with no link-bib file defined! This should never happen. Data: " ++ show x
+generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
@@ -254,7 +254,7 @@ listFiles m direntries' = do
 listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
 listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "doc/" "" dir in
-                     let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
+                     let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nubOrd $ map truncateAnchors $ M.keys tagged
                           linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
                           let fileAnnotationsMi = map (lookupFallback m) files
@@ -270,7 +270,7 @@ listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
 sortByDate :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
 sortByDate = reverse . sortBy compareEntries
   where
-    compareEntries (f, (_, _, d, _, _, _), _) (f', (_, _, d', _, _, _), _)
+    compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
       | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
       | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
       | head f == '/' = LT -- '/' paths come after non '/' paths
@@ -280,7 +280,7 @@ sortByDate = reverse . sortBy compareEntries
 -- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
 getNewestDate [] = ""
-getNewestDate ((_,(_,_,date,_,_,_),_):_) = date
+getNewestDate ((_,(_,_,date,_,_,_,_),_):_) = date
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =
@@ -344,14 +344,14 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
 generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
-                                             concatMap (\(f,(_,aut,dt,_,_,_)) ->
+                                             concatMap (\(f,(_,aut,dt,_,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
                                                       in [Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]
                                                        ) items
 generateSections' :: ArchiveMetadata -> Int -> [(FilePath, MetadataItem)] -> [Block]
-generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_)) ->
+generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
                                 let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt

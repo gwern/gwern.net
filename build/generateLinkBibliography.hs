@@ -51,8 +51,8 @@ writeLinkBibliographyFragment :: ArchiveMetadata -> Metadata -> FilePath -> IO (
 writeLinkBibliographyFragment am md path =
   case M.lookup path md of
     Nothing -> return ()
-    Just (_,_,_,_,_,"") -> return ()
-    Just (_,_,_,_,_,abstract) -> do
+    Just (_,_,_,_,_,_,"") -> return ()
+    Just (_,_,_,_,_,_,abstract) -> do
       let self = takeWhile (/='#') path
       let selfAbsolute = "https://gwern.net" ++ self
       let (path',_) = getLinkBibLink path
@@ -104,7 +104,7 @@ generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https:
                                                                             OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
 generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]
-generateLinkBibliographyItem _ (f,(t,_,_,_,_,""))  = -- short:
+generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
@@ -148,4 +148,4 @@ linksToAnnotations m = map (linkToAnnotation m)
 linkToAnnotation :: Metadata -> String -> (String,MetadataItem)
 linkToAnnotation m u = case M.lookup u m of
                          Just i  -> (u,i)
-                         Nothing -> (u,("","","","",[],""))
+                         Nothing -> (u,("","","","",[],[],""))

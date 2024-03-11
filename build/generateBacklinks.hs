@@ -101,13 +101,13 @@ generateCaller md target (caller, callers) =
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                                                              -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
-                                                             Just (_,aut,dt,_,_,_) -> generateID (T.unpack caller) aut dt
+                                                             Just (_,aut,dt,_,_,_,_) -> generateID (T.unpack caller) aut dt
                                            callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url in
                                                                      case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just ("",_,"",_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just ("",_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just (t,_,dt,_,_,_) -> (dt,T.pack t,u))
+                                                                      Just ("",_,"",_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                                                      Just ("",_,_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                                                      Just (t,_,dt,_,_,_,_) -> (dt,T.pack t,u))
                                                           callers
                                        -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
                                            callerTitles  = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
@@ -136,7 +136,7 @@ generateCaller md target (caller, callers) =
                                              in content
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
-parseAnnotationForLinks caller (_,_,_,_,_,abstract) =
+parseAnnotationForLinks caller (_,_,_,_,_,_,abstract) =
                             let doc = parseMarkdownOrHTML False (T.pack abstract)
                                 linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc
                                 linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs

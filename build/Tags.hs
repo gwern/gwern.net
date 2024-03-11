@@ -22,9 +22,9 @@ tagMax, tagPairMax :: Int
 tagMax = 100
 tagPairMax = 11
 tagCount :: Metadata -> [(Int,String)]
-tagCount = frequency . concatMap (\(_,(_,_,_,_,tags,_)) -> tags) . M.toList
+tagCount = frequency . concatMap (\(_,(_,_,_,_,_,tags,_)) -> tags) . M.toList
 tagPairsCount :: Metadata -> [(Int,(String,String))]
-tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,_,_,_,ts,abst) -> if null abst || null ts then [] else ts) md
+tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,_,_,_,_,ts,abst) -> if null abst || null ts then [] else ts) md
 
 -- Compile tags down into a Span containing a list of links to the respective /doc/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --

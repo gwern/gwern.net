@@ -50,10 +50,10 @@ generateID url author date
 
 -- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
 generateURL :: Path -> MetadataItem -> String
-generateURL _ (_,_,_,_,[],_) = ""
-generateURL url (_,a,d,_,ts,_) = let ident = T.unpack $ generateID url a d in
-                                   if null ident then "" else
-                                     "https://gwern.net/doc/" ++ head ts ++ "/index#" ++ ident ++ "-section"
+generateURL _ (_,_,_,_,_,[],_) = ""
+generateURL url (_,a,d,_,_,ts,_) = let ident = T.unpack $ generateID url a d in
+                                     if null ident then "" else
+                                       "https://gwern.net/doc/" ++ head ts ++ "/index#" ++ ident ++ "-section"
 
 authorsToCite :: String -> String -> String -> String
 authorsToCite url author date =

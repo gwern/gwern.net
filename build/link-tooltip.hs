@@ -29,11 +29,11 @@ extractAnchorTooltips = queryWith extractURLSquashed
    extractURLSquashed _ = []
 
 upgradeMetadata :: M.Map String (String,String,String) -> (String, MetadataItem) -> IO (String, MetadataItem)
-upgradeMetadata db x@(p,(t,a,d,doi,ts,abst)) = if t/= "" then return x else
+upgradeMetadata db x@(p,(t,a,d,dc,kvs,ts,abst)) = if t/= "" then return x else
                                                  case M.lookup p db of
                                                    Nothing -> return x
-                                                   Just (t',a',d') -> return (p, (t', a `m` a', d `m` d',
-                                                                                      doi,ts,abst))
+                                                   Just (t',a',d') -> return (p, (t', a `m` a', d `m` d', dc,
+                                                                                      kvs,ts,abst))
   where m y z = if length y > length z then y else z
 
 extractMetadataCandidates :: String -> IO [(String, (String,String,String))]

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-05 10:42:05 gwern"
+When:  Time-stamp: "2024-03-10 22:10:59 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -84,7 +84,7 @@ addPageLink x = x
 --
 -- To rewrite a tag, eg. 'conscientiousness' → 'psychology/personality/conscientiousness':
 --
--- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,doi,tags,abst)) -> return (path,(title,author,date,doi,
+-- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,kvs,tags,abst)) -> return (path,(title,author,date,kvs,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
 --
 -- To rerun LinkAuto.hs (perhaps because some rules were added):
@@ -127,13 +127,13 @@ rescrapeItem gtx dblist path =
    Nothing -> return dblist
 
 updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-updateGwernEntry x@(path,(title,author,date,doi,tags,_)) = if False then return x -- || not ("index"`isInfixOf` path)
+updateGwernEntry x@(path,(title,author,date,dc,kvs,tags,_)) = if False then return x -- || not ("index"`isInfixOf` path)
     else do printGreen path
             newEntry <- gwern path
             case newEntry of
               Left Temporary -> return x
-              Left Permanent -> return (path,(title,author,date,doi,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
-              Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
+              Left Permanent -> return (path,(title,author,date,dc,kvs,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
+              Right (path', (title',author',date',dc',kvs',_,abstract')) -> return (path', (title',author',date',dc',kvs',tags,abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -174,19 +174,19 @@ readLinkMetadataAndCheck = do
              let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
              when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
-             let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,ts,_)) -> ts) full
+             let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,_,ts,_)) -> ts) full
 
-             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
+             let badDoisDash = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
                  unless (null badDoisDash) $ error $ "full.gtx: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
+             let badDois = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
                unless (null badDois) $ error $ "full.gtx: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
-             let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
+             let emptyCheck = filter (\(u,(t,a,_,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
              unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
-             let annotations = map (\(_,(_,_,_,_,_,s)) -> s) full in
+             let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) full in
                when (length (nubOrd (sort annotations)) /= length annotations) $ error $
                "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
@@ -225,12 +225,12 @@ readLinkMetadataAndCheck = do
                                    urlsFinal
              unless (null brokenUrlsFinal) $ error $ "GTX: Broken URLs: " ++ show brokenUrlsFinal
 
-             let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
+             let balancedQuotes = filter (\(_,(_,_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
                                              count > 0 && (count `mod` 2 == 1) ) finalL
              unless (null balancedQuotes) $ error $ "GTX: Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
-             let balancedBrackets = map (\(p,(title',_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $
-                                     filter (\(_,(title,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
+             let balancedBrackets = map (\(p,(title',_,_,_,_,_,abst) ) -> (p, balanced title', balanced abst)) $
+                                     filter (\(_,(title,_,_,_,_,_,abst)) -> not $ null (balanced title ++ balanced abst)) finalL
              unless (null balancedBrackets) $ do printRed "GTX: Link Annotation Error: unbalanced brackets!"
                                                  printGreen $ ppShow balancedBrackets
 
@@ -244,32 +244,32 @@ readLinkMetadataAndCheck = do
              let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
              unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> printGreen (show urlsDuplicateAffiliation)
 
-             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
+             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
-             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) finalL
+             let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let datesBad = filter (\(_,(_,_,dt,_,_,_)) -> not (dt =~ dateRegex || null dt)) finalL
+             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (dt =~ dateRegex || null dt || dc =~ dateRegex || null dc)) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad)
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
-             let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
+             let titlesEmpty = M.filter (\(t,_,_,_,_,_,abst) -> t=="" && length abst > 100) final
              unless (null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
 
-             let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/doc/" `isPrefixOf` f) then False else
+             let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,_,tags,_) -> if not ("/doc/" `isPrefixOf` f) then False else
                                                         let fileTag = replace "/doc/" "" $ takeDirectory f
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
              -- check tags (not just full but all of them, including half.gtx)
-             let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_) -> t /= "") final
+             let tagsSet = sort $ nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,_,tags,_) -> tags) $ M.filter (\(t,_,_,_,_,_,_) -> t /= "") final
              tagsAll <- listTagsAll
              let tagsBad = tagsSet \\ tagsAll
-             let annotationsWithBadTags = M.filter (\(_,_,_,_,ts,_) -> hasAny ts tagsBad) final
+             let annotationsWithBadTags = M.filter (\(_,_,_,_,_,ts,_) -> hasAny ts tagsBad) final
              unless (null annotationsWithBadTags) $ error $ "Link Annotation Error: tag does not match a directory! Bad annotations: " ++ show annotationsWithBadTags
 
              -- these are good ideas but will have to wait for embedding-based refactoring to be usable warnings.
@@ -280,32 +280,23 @@ readLinkMetadataAndCheck = do
              -- unless (null tagPairsOverused) $ printRed "Overused pairs of tags: " >> printGreen (show tagPairsOverused)
 
              -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
-             let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
+             let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
              unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
 
              return final
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
--- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.gtx/half.gtx, and so the newest n are the last n from full+half. (auto.gtx is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.gtx entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.gtx instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
-                              half    <- fmap (reverse . filter (\(_,(_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
-                              let ratio = fromIntegral (length full) / fromIntegral (length (full++half)) :: Double
-                              let n1 = round (fromIntegral n * ratio)
-                              let full' = take n1 full
-                              let n2 = round (fromIntegral n * (1-ratio))
-                              let half' = take n2 half
-                              let final = M.fromList $ interleave full' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
-                              return final
-  where
-    interleave :: [a] -> [a] -> [a]
-    interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
-    interleave _        _        = []
+readLinkMetadataNewest n = do full  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
+                              half  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
+                              let both = full++half
+                              let newest = take n $ sortItemPathDateCreated both
+                              return $ M.fromList newest
 
 -- read a GTX database and look for annotations that need to be paragraphized.
 warnParagraphizeGTX :: FilePath -> IO ()
 warnParagraphizeGTX path = do gtx <- readGtxFast path
-                              let unparagraphized = filter (\(f,(_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
+                              let unparagraphized = filter (\(f,(_,_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
                               unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
 minimumAnnotationLength :: Int
@@ -314,8 +305,8 @@ minimumAnnotationLength = 250
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ ("","","","",[],"") = return ()
-writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
+writeAnnotationFragment _ _ _ _ ("","","",_,[],[],"") = return ()
+writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
@@ -337,14 +328,14 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,doi,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,doi,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
-                                    walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
+                                    walkM (invertImageInline md <=< imageLinkHeightWidthSet <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
 
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
@@ -403,8 +394,8 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return (Left Temporary)
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return (Left Permanent)
-                       Right y@(f,m@(_,_,_,_,_,e)) -> do
+                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], [], "") >> return (Left Permanent)
+                       Right y@(f,m@(_,_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        appendLinkMetadata target'' m >> return (Right y)
@@ -429,9 +420,9 @@ hasAnnotationOrIDInline metadata inline = case inline of
         processLink metadatadb url link =
             let canonicalUrl = linkCanonicalize $ T.unpack url
             in case M.lookup canonicalUrl metadatadb of
-                Nothing                  -> addID Nothing link
-                Just ("","","","",[],"") -> addID Nothing link
-                Just metadataItem        -> addID (Just metadataItem) (addHasAnnotation metadataItem link)
+                Nothing                     -> addID Nothing link
+                Just ("","","","",[],[],"") -> addID Nothing link
+                Just metadataItem           -> addID (Just metadataItem) (addHasAnnotation metadataItem link)
 
 addID :: Maybe MetadataItem -> Inline -> Inline
 addID maybeMetadataItem inline = case inline of
@@ -443,8 +434,8 @@ addID maybeMetadataItem inline = case inline of
  where
         generateLinkID :: (T.Text, [T.Text], [(T.Text, T.Text)]) -> Maybe MetadataItem -> T.Text -> (T.Text, [T.Text], [(T.Text, T.Text)])
         generateLinkID ("", classs, kvs) maybeMetadataItem' url = case maybeMetadataItem' of
-            Nothing                         -> (generateID (T.unpack url) "" "",       classs, kvs)
-            Just (_, author, date, _, _, _) -> (generateID (T.unpack url) author date, classs, kvs)
+            Nothing                            -> (generateID (T.unpack url) "" "",       classs, kvs)
+            Just (_, author, date, _, _, _, _) -> (generateID (T.unpack url) author date, classs, kvs)
         -- if it has an ID already, avoid overriding?
         generateLinkID a _ _ = a
 
@@ -457,7 +448,7 @@ addID maybeMetadataItem inline = case inline of
             "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,abstrct) (Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
   | length abstrct > minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
@@ -488,9 +479,9 @@ generateAnnotationBlock :: ArchiveMetadata -> Bool -> Bool -> (FilePath, Maybe M
 generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
   case ann of
      Nothing                 -> nonAnnotatedLink
-     -- Just ("",   _,_,_,_,_)  -> nonAnnotatedLink
-     -- Just (_,    _,_,_,_,"") -> nonAnnotatedLink
-     Just x@(tle,aut,dt,doi,ts,abst) ->
+     -- Just ("",   _,_,_,_,_,_)  -> nonAnnotatedLink
+     -- Just (_,    _,_,_,_,_,"") -> nonAnnotatedLink
+     Just x@(tle,aut,dt,_,kvs,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else if "<em>"`isPrefixOf`tle && "</em>"`isSuffixOf`tle then tle else "“"++tle++"”"
            lid = let tmpID = generateID f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
@@ -512,6 +503,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
                                                                                    [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
+           doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
            link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
@@ -545,16 +537,16 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
     where
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
-                         generateFileTransclusionBlock am True (f, ("",undefined,undefined,undefined,undefined,undefined))
+                         generateFileTransclusionBlock am True (f, ("",undefined,undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]
-generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
+generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
                                     link = linkIcon $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
 
-                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am False (f, ("",undefined,undefined,undefined,undefined,undefined))
+                                    fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am False (f, ("",undefined,undefined,undefined,undefined,undefined,undefined))
                                     linkColon = if wasAnnotated link || null fileTransclude then [] else [Str "\8288:"]
                                 in Para [Strong (link:linkColon)] : fileTransclude
 
@@ -566,7 +558,7 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
    localP = isLocal $ T.pack f'
@@ -589,8 +581,8 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_)) = if null gen
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
-    | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"],[])
-                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"]++(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
+    | isDocumentViewable f' || isCodeViewable f' = [Div ("",["collapse"]++(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []),[])
+                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
     -- image/video/audio:
     | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
         [Para $ (if alwaysLabelP then [Strong [Str "View ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[]) [title] (T.pack f', "")]]
@@ -625,18 +617,18 @@ findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ 
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
-                       Just ("","","","",[],"") -> tryPrefix
+                       Just ("","","",_,_,_,"") -> tryPrefix
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
                                              u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
                                          in
-                                               (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
+                                               (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
                                                   -- '/review/cat.md' will trigger a fallback to /review/cat#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
-                                                    if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
+                                                    if snd possibleFallback == ("", "", "", "", [], [], "") then (u, ("", "", "", "", [], [], "")) else
                                                       (u',snd possibleFallback))
 
 
@@ -648,5 +640,11 @@ sortItemDate = sortBy (flip compare `on` third)
 sortItemPathDate :: [(Path,(MetadataItem,String))] -> [(Path,(MetadataItem,String))]
 sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 
-third :: (a,b,c,d,e,f) -> c
-third (_,_,rd,_,_,_) = rd
+third :: (a,b,c,d,dc,e,f) -> c
+third (_,_,rd,_,_,_,_) = rd
+
+sortItemPathDateCreated :: [(Path,MetadataItem)] -> [(Path,MetadataItem)]
+sortItemPathDateCreated = sortBy (flip compare `on` (fourth . snd))
+
+fourth :: (a,b,c,d,e,f,g) -> d
+fourth (_,_,_,th,_,_,_) = th
