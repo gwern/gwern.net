@@ -767,6 +767,17 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
     padding: 0.5em 0;
 }
 
+/**********************/
+/*	Collapses in lists.
+ */
+
+/*	Fix problem of partial overlap of list marker, when collapse block is the
+	first block within a list item.
+ */
+.collapse-block.in-list:first-child {
+	--collapse-left-offset:calc(var(--list-left-padding) + 0.25em);
+}
+
 /****************************/
 /*  Collapses in blockquotes.
  */
