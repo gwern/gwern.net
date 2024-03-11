@@ -1372,6 +1372,10 @@ Transclude = {
 			].join(", ")
 	],
 
+	notBlockElementSelector: [
+		".annotation .data-field"
+	].join(", "),
+
 	generalBlockContextMinimumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
@@ -1396,7 +1400,8 @@ Transclude = {
 		}
 
 		for (selector of selectors)
-			if (block = element.closest(selector) ?? block)
+			if (   (block = element.closest(selector) ?? block)
+				&& block.matches(Transclude.notBlockElementSelector) == false)
 // 				if (   Transclude.specificBlockElementSelectors.includes(selector)
 // 					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
 // 					|| (   block.parentNode == null
@@ -1579,7 +1584,7 @@ Transclude = {
 					&& Transclude.isAnnotationTransclude(targetElement)
 					&& includeLink.closest(".backlink-context") != null) {
 					Transclude.clearLinkState(targetElement);
-					targetElement.classList.remove(...Transclude.permittedClassNames, "include-spinner", "include-spinner-not");
+					Transclude.stripIncludeClassesFromLink(targetElement);
 					isBlockTranscludeLink = false;
 				}
 
@@ -1958,6 +1963,11 @@ Transclude = {
             link.title = link.savedTitle;
             link.savedTitle = null;
         }
+	},
+
+	//	Called by: Transclude.sliceContentFromDocument
+	stripIncludeClassesFromLink: (link) => {
+		link.classList.remove(...Transclude.permittedClassNames, "include-spinner", "include-spinner-not");
 	}
 };
 
