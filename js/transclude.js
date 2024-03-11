@@ -691,10 +691,8 @@ function synthesizeIncludeLink(link, attributes, properties) {
  */
 function loadLocationForIncludeLink(includeLink) {
     if (Transclude.isAnnotationTransclude(includeLink) == false) {
-    	contentSourceURLs = Content.sourceURLsForLink(includeLink);
-    	return contentSourceURLs
-			   ? contentSourceURLs.first
-			   : includeLink.eventInfo.loadLocation;
+    	return (   Content.sourceURLsForLink(includeLink)?.first 
+    			?? includeLink.eventInfo.loadLocation);
     } else {
     	return null;
     }
@@ -910,6 +908,7 @@ function includeContent(includeLink, content) {
 
 	//	Distribute backlinks, if need be.
 	if (   transcludingIntoFullPage
+		&& loadLocationForIncludeLink(includeLink) != null
 		&& AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
 		&& wrapper.closest("#backlinks-section") != null)
 		distributeSectionBacklinks(includeLink, wrapper);
@@ -963,7 +962,7 @@ function includeContent(includeLink, content) {
 function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 	let containingDocument = includeLink.eventInfo.document;
 
-	let prefix = `gwern-${(includeLink.eventInfo.loadLocation.pathname.slice(1))}-`;
+	let prefix = `gwern-${(loadLocationForIncludeLink(includeLink).pathname.slice(1))}-`;
 
 	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
 		let id = backlinkContextLink.dataset.targetId.slice(prefix.length);
