@@ -1577,6 +1577,9 @@ GW.floatingHeader = {
     linkInChainClicked: (event) => {
         if (event.target.hash == location.hash)
             GW.floatingHeader.adjustScrollTop();
+
+		if (Extracts.popFrameProvider == Popins)
+			Popins.removeAllPopins();
     },
 
 	setup: () => {

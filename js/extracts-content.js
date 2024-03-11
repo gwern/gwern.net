@@ -118,18 +118,19 @@ Extracts = { ...Extracts,
         					 || target.closest(".TOC")
         					 || Extracts.targetDocument(target)));
 
-		//  Mark full-page embed pop-frames.
-        if (fullPage)
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-page");
-
-		//	Designate “full context” pop-frames for backlinks.
-		if (Extracts.isFullBacklinkContextLink(target))
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
-
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, {
 			class: "include-block-context-expanded include-spinner-not"
 		});
+
+		//  Mark full-page embed pop-frames.
+        if (fullPage)
+			Extracts.addPopFrameClassesToLink(includeLink, "full-page");
+
+		//	Designate “full context” pop-frames for backlinks.
+		if (Extracts.isFullBacklinkContextLink(target))
+			Extracts.addPopFrameClassesToLink(includeLink, "full-backlink-context");
+
 		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)

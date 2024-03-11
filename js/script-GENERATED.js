@@ -1577,6 +1577,9 @@ GW.floatingHeader = {
     linkInChainClicked: (event) => {
         if (event.target.hash == location.hash)
             GW.floatingHeader.adjustScrollTop();
+
+		if (Extracts.popFrameProvider == Popins)
+			Popins.removeAllPopins();
     },
 
 	setup: () => {
@@ -1941,8 +1944,7 @@ Popups = {
 	},
 
 	containingDocumentForTarget: (target) => {
-		let containingPopup = Popups.containingPopFrame(target);
-		return (containingPopup ? containingPopup.document : Popups.rootDocument);
+		return (Popups.containingPopFrame(target)?.document ?? Popups.rootDocument);
 	},
 
 	allSpawnedPopFrames: () => {
@@ -2011,32 +2013,27 @@ Popups = {
 	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
-		let popup = newElement("DIV");
-		popup.classList.add("popup", "popframe");
-		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
-		popup.scrollView = popup.querySelector(".popframe-scroll-view");
-		popup.contentView = popup.querySelector(".popframe-content-view");
+		//	Create popup, scroll view, content view, shadow root, shadow body.
+		let popup = newElement("DIV", { class: "popup popframe" }, { spawningTarget: target });
+		popup.scrollView = popup.appendChild(newElement("DIV", { class: "popframe-scroll-view" }));
+		popup.contentView = popup.scrollView.appendChild(newElement("DIV", { class: "popframe-content-view" }));
+		popup.document = popup.contentView.attachShadow({ mode: "open" });
+		popup.document.body = popup.body = popup.shadowBody = popup.document.appendChild(newElement("DIV", {
+			class: "popframe-body popup-body shadow-body"
+		}));
 
-		popup.contentView.attachShadow({ mode: "open" });
-		popup.document = popup.contentView.shadowRoot;
-		popup.document.appendChild(newElement("DIV"));
-		popup.document.body = popup.body = popup.shadowBody = popup.document.firstElementChild;
-		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
+		//	Set reverse references.
+		popup.document.popup = popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
-		let styleReset = newElement("STYLE");
-		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popup.document.insertBefore(styleReset, popup.body);
+		//	Inject style reset.
+		popup.document.insertBefore(newElement("STYLE", null, { innerHTML: `.shadow-body { all: initial; }` }), popup.body);
 
-		popup.document.popup = popup;
-
-		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
-
+		//	Default empty title bar.
 		popup.titleBarContents = [ ];
 
-		popup.uiElementsContainer = popup.appendChild(newElement("DIV", { "class": "popframe-ui-elements-container" }));
-
-		//  Give the popup a reference to the target.
-		popup.spawningTarget = target;
+		//	Loading spinner and “loading failed” message views.
+		popup.loadingSpinnerView = popup.appendChild(newElement("DIV", { class: "popframe-loading-spinner-view" }));
+		popup.loadingFailedMessageView = popup.appendChild(newElement("DIV", { class: "popframe-loading-failed-message-view" }));
 
 		return popup;
 	},
@@ -2069,8 +2066,20 @@ Popups = {
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
 
-		/*	Once this popup is spawned, despawn all non-pinned popups not in this
-			popup’s stack.
+		//  Create the new popup.
+		let popup = Popups.newPopup(target);
+
+		//  Prepare the newly created popup for spawning.
+		if (popup = target.preparePopup(popup)) {
+			//	Attach popup to target.
+			Popups.attachPopupToTarget(popup, target);
+		} else {
+			//	Preparation failed.
+			return;
+		}
+
+		/*	Once this popup is spawned, despawn all non-pinned popups not in 
+			this popup’s stack.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 			Popups.allSpawnedPopups().forEach(spawnedPopup => {
@@ -2080,47 +2089,29 @@ Popups = {
 			});
 		}, {
 			once: true,
-			condition: (info) => (info.popup == target.popup)
+			condition: (info) => (info.popup == popup)
 		});
 
-		//  Create the new popup.
-		target.popFrame = target.popup = Popups.newPopup(target);
-
-		//  Prepare the newly created popup for spawning.
-		if ((target.popFrame = target.popup = target.preparePopup(target.popup)) == null) {
-			//	Reset cursor to normal.
-			Popups.clearWaitCursorForTarget(target);
-
-			return;
-		}
-
 		//  If title bar contents are provided, add a title bar (if needed).
-		if (   target.popup.titleBar == null
-			&& target.popup.titleBarContents.length > 0)
-			Popups.addTitleBarToPopup(target.popup);
+		if (   popup.titleBar == null
+			&& popup.titleBarContents.length > 0)
+			Popups.addTitleBarToPopup(popup);
 
-		if (target.popup.parentElement == Popups.popupContainer) {
+		if (popup.parentElement == Popups.popupContainer) {
 			//  If the popup is an existing popup, just bring it to the front.
-			Popups.bringPopupToFront(target.popup);
+			Popups.bringPopupToFront(popup);
 		} else {
 			//	Otherwise, inject the popup into the page.
-			Popups.injectPopup(target.popup);
+			Popups.injectPopup(popup);
 		}
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(target.popup, { spawnPoint: spawnPoint });
-
-		//  Mark target as having an active popup associated with it.
-		target.classList.add("popup-open");
+		Popups.positionPopup(popup, { spawnPoint: spawnPoint });
 
 		//  Fire notification event.
-		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
+		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 
 		requestAnimationFrame(() => {
-			//	Disable rendering progress indicator (spinner).
-			if (target.popup)
-				Popups.removeClassesFromPopFrame(target.popup, "rendering");
-
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
 		});
@@ -2137,9 +2128,6 @@ Popups = {
 			popup.popupStack.remove(popup);
 		}
 		popup.popupStack.push(popup);
-
-		//	Set rendering progress indicator (spinner).
-		Popups.addClassesToPopFrame(popup, "rendering");
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
@@ -2176,25 +2164,41 @@ Popups = {
 		});
 	},
 
-	attachPopupToTarget: (popup) => {
+	//	Called by: Popups.spawnPopup
+	//	Called by: extracts.js
+	attachPopupToTarget: (popup, target) => {
 		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
+		target = target ?? popup.spawningTarget;
 
-        popup.spawningTarget.classList.add("popup-open");
-        popup.spawningTarget.popup = popup;
-        popup.spawningTarget.popFrame = popup;
+		//	Clear timers.
+		Popups.clearPopupTimers(target);
+
+        target.classList.add("popup-open");
+        target.popup = popup;
+        target.popFrame = popup;
+
+		popup.spawningTarget = target;
 	},
 
+	//	Called by: Popups.spawnPopup
+	//	Called by: Popups.despawnPopup
+	//	Called by: Popups.pinPopup
 	//	Called by: extracts.js
-	detachPopupFromTarget: (popup) => {
+	detachPopupFromTarget: (popup, target) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
+		target = target ?? popup.spawningTarget;
 
-        popup.spawningTarget.classList.remove("popup-open");
-        popup.spawningTarget.popup = null;
-        popup.spawningTarget.popFrame = null;
+		//	Clear timers.
+		Popups.clearPopupTimers(target);
+
+		//	Reset cursor to normal.
+		Popups.clearWaitCursorForTarget(target);
+
+        target.classList.remove("popup-open");
+        target.popup = null;
+        target.popFrame = null;
 	},
 
     despawnPopup: (popup) => {
@@ -2224,13 +2228,35 @@ Popups = {
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
 
-		//	Reset cursor to normal.
-		requestAnimationFrame(() => {
-			Popups.clearWaitCursorForTarget(popup.spawningTarget);
-		});
-
         document.activeElement.blur();
     },
+
+	//	Called by: extracts.js
+	popFrameStateLoading: (popup) => {
+		return popin.classList.contains("loading");
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoadingFailed: (popup) => {
+		return popup.classList.contains("loading-failed");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoading: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading-failed");
+		Popups.addClassesToPopFrame(popup, "loading");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoadingFailed: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading");
+		Popups.addClassesToPopFrame(popup, "loading-failed");
+	},
+
+	//	Called by: extracts.js
+	clearPopFrameState: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading", "loading-failed");
+	},
 
 	getPopupAncestorStack: (popup) => {
 		let indexOfPopup = popup.popupStack.indexOf(popup);
@@ -2627,9 +2653,10 @@ Popups = {
 		popup.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popup.titleBar = newElement("DIV");
-		popup.titleBar.classList.add("popframe-title-bar");
-		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)";
+		popup.titleBar = newElement("DIV", {
+			class: "popframe-title-bar",
+			title: "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)"
+		});
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
@@ -2715,8 +2742,7 @@ Popups = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON");
-			button.classList.add("popframe-title-bar-button");
+			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -2726,8 +2752,8 @@ Popups = {
 		//  Close button.
 		closeButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
-			button.classList.add("close-button");
 
+			button.classList.add("close-button");
 			button.innerHTML = Popups.titleBarComponents.getButtonIcon("close");
 			button.title = Popups.titleBarComponents.buttonTitles["close"];
 
@@ -2749,6 +2775,7 @@ Popups = {
 		//  Zoom button (with submenu).
 		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
+
 			button.classList.add("zoom-button", "zoom");
 
 			button.defaultHTML = Popups.titleBarComponents.getButtonIcon("zoom");
@@ -2896,8 +2923,7 @@ Popups = {
 
 			button.classList.add("has-submenu");
 
-			button.submenu = newElement("DIV");
-			button.submenu.classList.add("submenu", submenuClass);
+			button.submenu = newElement("DIV", { class: `submenu ${submenuClass}` });
 
 			popup.titleBar.insertBefore(button.submenu, button.nextElementSibling);
 
@@ -2915,14 +2941,6 @@ Popups = {
 
 	addPartToPopFrame: (popup, part) => {
 		popup.append(part);
-	},
-
-	/************************/
-	/*	Optional UI elements.
-	 */
-
-	addUIElementsToPopFrame: (popup, ...args) => {
-		popup.uiElementsContainer.append(...args);
 	},
 
 	/*********************/
@@ -2997,12 +3015,17 @@ Popups = {
 		(footers, etc.).
 	 */
 	getPopupViewportRect: (popup) => {
-		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(x => x.getBoundingClientRect())));
+		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(child => {
+			let rect = child.getBoundingClientRect();
+			return (rect.width * rect.height == 0
+					? null
+					: rect);
+		}).filter(x => x)));
 	},
 
 	//	See also: extracts.js
 	preferSidePositioning: (target) => {
-		return target.preferSidePositioning ? target.preferSidePositioning() : false;
+		return (target.preferSidePositioning?.() ?? false);
 	},
 
 	/*	Returns current popup position. (Usable only after popup is positioned.)
@@ -3014,10 +3037,17 @@ Popups = {
 		};
 	},
 
-	positionPopup: (popup, options = { }) => {
+	positionPopup: (popup, options) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
+		options = Object.assign({
+			spawnPoint: null,
+			tight: false,
+			immediately: false
+		}, options);
+
 		let target = popup.spawningTarget;
+
 		let spawnPoint = options.spawnPoint ?? target.lastMouseEnterLocation;
 		if (spawnPoint)
 			target.lastMouseEnterLocation = spawnPoint;
@@ -3718,7 +3748,7 @@ Popups = {
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
 
-		event.target.lastMouseEnterEvent = null;
+		event.target.lastMouseEnterLocation = null;
 
 		Popups.clearPopupTimers(event.target);
 
@@ -3839,8 +3869,7 @@ Popins = {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
 		//  Remove all remnant popins.
-		while (Popins.getTopPopin())
-			Popins.removePopin(Popins.getTopPopin());
+		Popins.removeAllPopins();
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popins.keyUp);
@@ -3913,8 +3942,7 @@ Popins = {
 
 	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
-		let containingPopin = Popins.containingPopFrame(target);
-		return (containingPopin ? containingPopin.document : Popins.rootDocument);
+		return (Popins.containingPopFrame(target)?.document ?? Popins.rootDocument);
 	},
 
 	//	Called by: Popins.keyUp
@@ -3981,13 +4009,11 @@ Popins = {
 		popin.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popin.titleBar = newElement("DIV");
-		popin.titleBar.classList.add("popframe-title-bar");
+		popin.titleBar = newElement("DIV", { class: "popframe-title-bar" });
 		popin.insertBefore(popin.titleBar, popin.firstElementChild);
 
 		//  Add popin stack counter.
-		popin.titleBar.stackCounter = newElement("SPAN");
-		popin.titleBar.stackCounter.classList.add("popin-stack-counter");
+		popin.titleBar.stackCounter = newElement("SPAN", { class: "popin-stack-counter" });
 		requestAnimationFrame(() => {
 			let popinStackNumber = Popins.popinStackNumber(popin);
 			popin.titleBar.stackCounter.textContent = popinStackNumber;
@@ -4017,8 +4043,7 @@ Popins = {
 		popin.classList.add("has-footer-bar");
 
 		//	Inject popin footer bar.
-		popin.footerBar = newElement("DIV");
-		popin.footerBar.classList.add("popin-footer-bar");
+		popin.footerBar = newElement("DIV", { class: "popin-footer-bar" });
 		popin.insertBefore(popin.footerBar, null);
 
 		//	Inject footer title-link.
@@ -4051,8 +4076,7 @@ Popins = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON");
-			button.classList.add("popframe-title-bar-button");
+			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -4062,11 +4086,10 @@ Popins = {
 		//  Close button.
 		closeButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.classList.add("close-button");
 
+			button.classList.add("close-button");
 			button.innerHTML = GW.svg(Popins.titleBarComponents.buttonIcons["close"]);
 			button.title = Popins.titleBarComponents.buttonTitles["close"];
-
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
@@ -4079,8 +4102,8 @@ Popins = {
 		//  Options button (does nothing by default).
 		optionsButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.classList.add("options-button");
 
+			button.classList.add("options-button");
 			button.innerHTML = GW.svg(Popins.titleBarComponents.buttonIcons["options"]);
 			button.title = Popins.titleBarComponents.buttonTitles["options"];
 
@@ -4096,14 +4119,6 @@ Popins = {
 		popin.append(part);
 	},
 
-	/************************/
-	/*	Optional UI elements.
-	 */
-
-	addUIElementsToPopFrame: (popin, ...args) => {
-		popin.uiElementsContainer.append(...args);
-	},
-
 	/******************/
 	/*	Popin spawning.
 		*/
@@ -4112,30 +4127,27 @@ Popins = {
 	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
-		let popin = newElement("DIV");
-		popin.classList.add("popin", "popframe");
-		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
-		popin.scrollView = popin.querySelector(".popframe-scroll-view");
-		popin.contentView = popin.querySelector(".popframe-content-view");
+		//	Create popin, scroll view, content view, shadow root, shadow body.
+		let popin = newElement("DIV", { class: "popin popframe" }, { spawningTarget: target });
+		popin.scrollView = popin.appendChild(newElement("DIV", { class: "popframe-scroll-view" }));
+		popin.contentView = popin.scrollView.appendChild(newElement("DIV", { class: "popframe-content-view" }));
+		popin.document = popin.contentView.attachShadow({ mode: "open" });
+		popin.document.body = popin.body = popin.shadowBody = popin.document.appendChild(newElement("DIV", {
+			class: "popframe-body popin-body shadow-body"
+		}));
 
-		popin.contentView.attachShadow({ mode: "open" });
-		popin.document = popin.contentView.shadowRoot;
-		popin.document.appendChild(newElement("DIV"));
-		popin.document.body = popin.body = popin.shadowBody = popin.document.firstElementChild;
-		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
+		//	Set reverse references.
+		popin.document.popin = popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
 
-		let styleReset = newElement("STYLE");
-		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popin.document.insertBefore(styleReset, popin.body);
+		//	Inject style reset.
+		popin.document.insertBefore(newElement("STYLE", null, { innerHTML: `.shadow-body { all: initial; }` }), popin.body);
 
-		popin.document.popin = popin;
-
-		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
-
+		//	Default empty title bar.
 		popin.titleBarContents = [ ];
 
-		//  Give the popin a reference to the target.
-		popin.spawningTarget = target;
+		//	Loading spinner and “loading failed” message views.
+		popin.loadingSpinnerView = popin.appendChild(newElement("DIV", { class: "popframe-loading-spinner-view" }));
+		popin.loadingFailedMessageView = popin.appendChild(newElement("DIV", { class: "popframe-loading-failed-message-view" }));
 
 		return popin;
 	},
@@ -4153,58 +4165,66 @@ Popins = {
 	},
 
 	//	Called by: Popins.targetClicked (event handler)
-	injectPopinForTarget: (target) => {
+	injectPopinForTarget: (target, options) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
+		options = Object.assign({
+			inheritInitialHeight: true
+		}, options);
+
 		//  Create the new popin.
-		target.popFrame = target.popin = Popins.newPopin(target);
+		let popin = Popins.newPopin(target);
 
 		// Prepare the newly created popin for injection.
-		if (!(target.popFrame = target.popin = target.preparePopin(target.popin)))
+		if (popin = target.preparePopin(popin)) {
+			//	Attach popin to target.
+			Popins.attachPopinToTarget(popin, target);
+		} else {
+			//	Preparation failed.
 			return;
+		}
 
 		/*  If title bar contents are provided, create and inject the popin
 			title bar, and set class `has-title-bar` on the popin.
 			*/
-		if (target.popin.titleBarContents.length > 0) {
-			Popins.addTitleBarToPopin(target.popin);
+		if (popin.titleBarContents.length > 0) {
+			Popins.addTitleBarToPopin(popin);
 
-			if (target.popin.classList.contains("no-footer-bar") == false)
-				Popins.addFooterBarToPopin(target.popin);
+			if (popin.classList.contains("no-footer-bar") == false)
+				Popins.addFooterBarToPopin(popin);
 		}
 
 		//	Add listener to enable tapping on the backdrop to dismiss the popin.
-		target.popin.addEventListener("click", Popins.popinClicked);
+		popin.addEventListener("click", Popins.popinClicked);
 
-		//  Get containing document.
+		//  Get containing document (for popins spawned from targets in popins).
 		let containingDocument = Popins.containingDocumentForTarget(target);
-
-		//  Remove (other) existing popins on this level.
-		containingDocument.querySelectorAll(".popin").forEach(existingPopin => {
-			if (existingPopin != target.popin)
-				Popins.removePopin(existingPopin);
-		});
-
-		//	Set rendering progress indicator (spinner).
-		Popins.addClassesToPopFrame(target.popin, "rendering");
-
-		//  Inject the popin.
 		if (containingDocument.popin) {
 			/*  Save the parent popin’s scroll state when pushing it down the
 				‘stack’.
 				*/
 			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
 
-			containingDocument.popin.parentElement.insertBefore(target.popin, containingDocument.popin);
+			/*	If popin is still loading (or has failed to load), and the
+				`inheritInitialHeight` option is enabled, then set the new 
+				popin’s initial height to the height of the parent popin (to be 
+				adjusted after the new popin finishes loading, if ever).
+			 */
+			if (   options.inheritInitialHeight
+				&& (   Popins.popFrameStateLoading(popin)
+					|| Popins.popFrameStateLoadingFailed(popin)))
+				popin.style.height = Math.round(containingDocument.popin.clientHeight) + "px";
+
+			containingDocument.popin.parentElement.insertBefore(popin, containingDocument.popin);
 		} else {
-			target.parentElement.insertBefore(target.popin, target.nextSibling);
+			target.parentElement.insertBefore(popin, target.nextSibling);
 		}
 
 		//	Push popin onto spawned popins stack.
-		Popins.spawnedPopins.unshift(target.popin);
+		Popins.spawnedPopins.unshift(popin);
 
 		//	Designate ancestors.
-		let ancestor = target.popin.parentElement;
+		let ancestor = popin.parentElement;
 		do { ancestor.classList.add("popin-ancestor"); }
 		while (   (ancestor = ancestor.parentElement) 
 			   && [ "MAIN", "ARTICLE" ].includes(ancestor.tagName) == false);
@@ -4213,7 +4233,7 @@ Popins = {
 		target.classList.add("popin-open", "highlighted");
 
 		//	Fire event.
-		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: popin });
 
 		//	Post-inject adjustments.
 		requestAnimationFrame(() => {
@@ -4222,17 +4242,11 @@ Popins = {
 
 			//	Adjust popin position.
 			if (target.adjustPopinWidth)
-				target.adjustPopinWidth(target.popin);
-
-			//	Disable rendering progress indicator (spinner).
-			Popins.removeClassesFromPopFrame(target.popin, "rendering");
-
-			//	Set scroll view height.
-			target.popin.body.style.setProperty("--popframe-scroll-view-height", target.popin.scrollView.clientHeight + "px");
+				target.adjustPopinWidth(popin);
 
 			//  Scroll page so that entire popin is visible, if need be.
 			requestAnimationFrame(() => {
-				Popins.scrollPopinIntoView(target.popin);
+				Popins.scrollPopinIntoView(popin);
 			});
 		});
 	},
@@ -4242,6 +4256,36 @@ Popins = {
 	 */
 	getPopinViewportRect: (popin) => {
 		return rectUnion(popin.getBoundingClientRect(), ...(Array.from(popin.children).map(x => x.getBoundingClientRect())));
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoading: (popin) => {
+		return popin.classList.contains("loading");
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoadingFailed: (popin) => {
+		return popin.classList.contains("loading-failed");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoading: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading-failed");
+		Popins.addClassesToPopFrame(popin, "loading");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoadingFailed: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading");
+		Popins.addClassesToPopFrame(popin, "loading-failed");
+	},
+
+	//	Called by: extracts.js
+	clearPopFrameState: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading", "loading-failed");
+
+		//	Clear provisional popin height (inherited from parent popin).
+		popin.style.height = "";
 	},
 
 	//	Called by: Popins.injectPopinForTarget
@@ -4262,20 +4306,35 @@ Popins = {
 			window.scrollBy(0, scrollWindowBy);
 			popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
 		}
+
+		//	Set scroll view height.
+		popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
+	},
+
+	//	Called by: Popins.cleanup
+	removeAllPopins: () => {
+		while (Popins.getTopPopin())
+			Popins.removePopin(Popins.getTopPopin());
 	},
 
 	//	Called by: extracts.js
-	removeAllPopinsInContainer: (container) => {
-		GWLog("Popins.removeAllPopinsInContainer", "popins.js", 2);
+	cleanPopinsFromContainer: (container) => {
+		GWLog("Popins.cleanPopinsFromContainer", "popins.js", 2);
 
 		container.querySelectorAll(".popin").forEach(popin => {
-			Popins.removePopin(popin);
+			popin.remove();
+		});
+		container.querySelectorAll(".popin-ancestor").forEach(popinAncestor => {
+			popinAncestor.classList.remove("popin-ancestor");
+		});
+		container.querySelectorAll(".popin-open").forEach(popinSpawningTarget => {
+			popinSpawningTarget.classList.remove("popin-open", "highlighted");
 		});
 	},
 
 	//	Called by: Popins.cleanup
 	//	Called by: Popins.targetClicked (event handler)
-	//	Called by: Popins.removeTargetsWithin
+	//	Called by: Popins.removeTarget
 	//	Called by: Popins.titleBarComponents.closeButton
 	//	Called by: Popins.injectPopinForTarget
 	removePopin: (popin) => {
@@ -4299,7 +4358,7 @@ Popins = {
 		popin.remove();
 
 		//	Remove from spawned popins stack.
-		Popins.spawnedPopins.shift();
+		Popins.spawnedPopins.remove(popin);
 
 		//  … restore its scroll state.
 		if (popinBelow) {
@@ -4313,16 +4372,28 @@ Popins = {
 		window.scrollBy(0, -1 * parseInt(popin.dataset.windowScrollOffset ?? '0'));
 	},
 
+	//	Called by: Popins.injectPopinForTarget
+	attachPopinToTarget: (popin, target) => {
+		GWLog("Popins.attachPopinToTarget", "popups.js", 2);
+
+		target = target ?? popin.spawningTarget;
+
+        target.classList.add("popin-open");
+        target.popin = popin;
+        target.popFrame = popin;
+
+		popin.spawningTarget = target;
+	},
+
 	//	Called by: Popins.removePopin
-	detachPopinFromTarget: (popin) => {
+	detachPopinFromTarget: (popin, target) => {
 		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
 
-		if (popin.spawningTarget == null)
-			return;
+		target = target ?? popin.spawningTarget;
 
-		popin.spawningTarget.popin = null;
-		popin.spawningTarget.popFrame = null;
-		popin.spawningTarget.classList.remove("popin-open", "highlighted");
+		target.popin = null;
+		target.popFrame = null;
+		target.classList.remove("popin-open", "highlighted");
 	},
 
 	isSpawned: (popin) => {
@@ -4344,15 +4415,7 @@ Popins = {
 
 		event.preventDefault();
 
-		let target = event.target.closest(".spawns-popin");
-
-		if (target.classList.contains("popin-open")) {
-			Popins.allSpawnedPopins().forEach(popin => {
-				Popins.removePopin(popin);
-			});
-		} else {
-			Popins.injectPopinForTarget(target);
-		}
+		Popins.injectPopinForTarget(event.target.closest(".spawns-popin"));
 
 		document.activeElement.blur();
 	},
@@ -9095,7 +9158,7 @@ Extracts = {
 		if (Extracts.popFrameProvider == Popins) {
 			addContentInjectHandler((eventInfo) => {
 				//	Clean any existing popins.
-				Popins.removeAllPopinsInContainer(eventInfo.container);
+				Popins.cleanPopinsFromContainer(eventInfo.container);
 			}, "rewrite");
 		}
 
@@ -9252,6 +9315,11 @@ Extracts = {
         }
     },
 
+	//	Called by: extracts-content.js
+	addPopFrameClassesToLink: (link, ...classes) => {
+		link.dataset.popFrameClasses = [ ...(link.dataset.popFrameClasses?.split(" ") ?? [ ]), ...classes ].join(" ");
+	},
+
     /***************************/
     /*  Pop-frames (in general).
      */
@@ -9298,7 +9366,8 @@ Extracts = {
     //  Called by: Extracts.preparePopin
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
-        return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
+        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame) 
+        		 || Extracts.popFrameProvider.popFrameStateLoadingFailed(popFrame)) == false);
     },
 
     //  Called by: Extracts.titleForPopFrame
@@ -9367,10 +9436,10 @@ Extracts = {
 	postRefreshUpdatePopFrame: (popFrame, success) => {
         GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
 
-		Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-
-		if (!success)
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+		if (success)
+			Extracts.popFrameProvider.clearPopFrameState(popFrame);
+		else
+			Extracts.popFrameProvider.setPopFrameStateLoadingFailed(popFrame);
 
 		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
 			//  Update pop-frame position.
@@ -9383,7 +9452,7 @@ Extracts = {
 
     //  Called by: Extracts.rewritePopFrameContent
     setLoadingSpinner: (popFrame, useObject = false) => {
-        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+        Extracts.popFrameProvider.setPopFrameStateLoading(popFrame);
 
 		if (useObject == false)
 			return;
@@ -9480,12 +9549,17 @@ Extracts = {
 		Extracts.setLoadingSpinner(popFrame);
 
         //  Import the class(es) of the target.
-        popFrame.classList.add(...(popFrame.spawningTarget.classList));
+        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
-        popFrame.classList.remove("has-annotation", "has-annotation-partial",
-        	"has-content", "link-self", "link-annotated", "link-page",
-        	"has-icon", "has-indicator-hook", "uri", "decorate-not",
+        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
+        	"uri", "has-annotation", "has-annotation-partial", "has-content", 
+        	"link-self", "link-annotated", "link-page", "link-tag", "icon-not", 
+        	"has-icon", "has-indicator-hook", "decorate-not",
         	"spawns-popup", "spawns-popin");
+
+		//	Import classes from include-link.
+		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.body.firstElementChild.dataset.popFrameClasses.split(" ")));
 
 		//	Determine pop-frame type.
         let suffix = Extracts.popFrameTypeSuffix();
@@ -9631,9 +9705,9 @@ Extracts = {
 				leftMargin = (containerRect.left - popinRect.left);
 				rightMargin = (popinRect.right - containerRect.right);
 			}
-			popin.style = `margin-left: ${leftMargin}px; `
-						+ `margin-right: ${rightMargin}px; `
-						+ `width: calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
+			popin.style.marginLeft = `${leftMargin}px`;
+			popin.style.marginRight = `${rightMargin}px`;
+			popin.style.width = `calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
 		};
 	},
 
@@ -9723,11 +9797,8 @@ Extracts = {
             new popup; just use the existing popup.
          */
         let existingPopup = Extracts.spawnedPopupMatchingTarget(target);
-        if (existingPopup) {
-            Popups.detachPopupFromTarget(existingPopup);
-            existingPopup.spawningTarget = target;
+        if (existingPopup)
             return existingPopup;
-        }
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popup).
@@ -10165,18 +10236,19 @@ Extracts = { ...Extracts,
         					 || target.closest(".TOC")
         					 || Extracts.targetDocument(target)));
 
-		//  Mark full-page embed pop-frames.
-        if (fullPage)
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-page");
-
-		//	Designate “full context” pop-frames for backlinks.
-		if (Extracts.isFullBacklinkContextLink(target))
-			Extracts.popFrameProvider.addClassesToPopFrame(target.popFrame, "full-backlink-context");
-
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, {
 			class: "include-block-context-expanded include-spinner-not"
 		});
+
+		//  Mark full-page embed pop-frames.
+        if (fullPage)
+			Extracts.addPopFrameClassesToLink(includeLink, "full-page");
+
+		//	Designate “full context” pop-frames for backlinks.
+		if (Extracts.isFullBacklinkContextLink(target))
+			Extracts.addPopFrameClassesToLink(includeLink, "full-backlink-context");
+
 		if (fullPage) {
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)

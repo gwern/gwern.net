@@ -4541,6 +4541,12 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     margin-left: 0.25em;
 }
 
+/*  “Loading failed” message.
+    */
+.popframe {
+    --popframe-loading-failed-message: "Loading failed.";
+}
+
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/
@@ -4725,8 +4731,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” message.
     */
-.popframe.local-code-file.loading-failed::after {
-    content: "File not found.";
+.popframe.local-code-file {
+    --popframe-loading-failed-message: "File not found.";
 }
 
 /*┌────────────────────┐*/
@@ -4770,8 +4776,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” message.
     */
-.popframe.image.loading-failed::after {
-    content: "Image not found.";
+.popframe.image {
+    --popframe-loading-failed-message: "Image not found.";
 }
 
 /*  Don’t show when loading failed.
@@ -4797,8 +4803,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” message.
     */
-.popframe.video.loading-failed::after {
-    content: "Video not found.";
+.popframe.video {
+    --popframe-loading-failed-message: "Video not found.";
 }
 
 /*┌───────────────────┐*/
@@ -4819,8 +4825,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” message.
     */
-.popframe.audio.loading-failed::after {
-    content: "Audio not found.";
+.popframe.audio {
+    --popframe-loading-failed-message: "Audio not found.";
 }
 
 /*┌────────────────────────────┐*/
@@ -4829,8 +4835,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” message.
     */
-.popframe.local-document.loading-failed::after {
-    content: "File not found.";
+.popframe.local-document {
+    --popframe-loading-failed-message: "File not found.";
 }
 
 /*┌───────────────────┐*/
@@ -5327,11 +5333,19 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         opacity 0.25s ease-in 0.1s;
 }
 
-/*  Spinners.
+/*  Loading spinner.
  */
-.popup.loading::before,
-.popup.rendering::before {
+.popup .popframe-loading-spinner-view {
+	display: none;
+}
+.popup.loading .popframe-loading-spinner-view {
+	display: initial;
+}
+
+.popup .popframe-loading-spinner-view::before {
     content: "";
+    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
+    animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -5350,24 +5364,17 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     100% { transform: rotate(360deg); }
 }
 
-/*  Loading spinner (for object popups).
- */
-.popup.loading::before {
-    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
-    animation: fa-spin 2s infinite linear;
-}
-
-/*  Rendering spinner.
- */
-.popup.rendering::before {
-    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
-    animation: fa-spin 3s infinite linear;
-}
-
-/*  “Loading failed” messages (for object popups).
+/*  “Loading failed” messages.
     */
-.popup.loading-failed::after {
-    content: "Loading failed.";
+.popup .popframe-loading-failed-message-view {
+	display: none;
+}
+.popup.loading-failed .popframe-loading-failed-message-view {
+	display: initial;
+}
+
+.popup .popframe-loading-failed-message-view::before {
+    content: var(--popframe-loading-failed-message);
     position: absolute;
     left: 0;
     top: var(--popup-title-bar-height);
@@ -5946,11 +5953,19 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Transitional UI elements. │*/
 /*└───────────────────────────┘*/
 
-/*  Spinners.
+/*  Loading spinner.
  */
-.popin.loading::before,
-.popin.rendering::before {
+.popin .popframe-loading-spinner-view {
+	display: none;
+}
+.popin.loading .popframe-loading-spinner-view {
+	display: initial;
+}
+
+.popin .popframe-loading-spinner-view::before {
     content: "";
+    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
+    animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
     height: auto;
@@ -5969,24 +5984,17 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     100% { transform: rotate(360deg); }
 }
 
-/*  Loading spinner (for object popins).
+/*  “Loading failed” messages.
  */
-.popin.loading::before {
-    background-image: url('/static/img/icon/icons.svg#circle-notch-light');
-    animation: fa-spin 2s infinite linear;
+.popin .popframe-loading-failed-message-view {
+	display: none;
+}
+.popin.loading-failed .popframe-loading-failed-message-view {
+	display: initial;
 }
 
-/*  Rendering spinner.
- */
-.popin.rendering::before {
-    background-image: url('/static/img/icon/icons.svg#spinner-third-light');
-    animation: fa-spin 3s infinite linear;
-}
-
-/*  “Loading failed” messages (for object popups).
- */
-.popin.loading-failed::after {
-    content: "Loading failed.";
+.popin .popframe-loading-failed-message-view::before {
+    content: var(--popframe-loading-failed-message);
     position: absolute;
     left: 0;
     top: 0;

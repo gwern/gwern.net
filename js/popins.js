@@ -24,8 +24,7 @@ Popins = {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
 		//  Remove all remnant popins.
-		while (Popins.getTopPopin())
-			Popins.removePopin(Popins.getTopPopin());
+		Popins.removeAllPopins();
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popins.keyUp);
@@ -98,8 +97,7 @@ Popins = {
 
 	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
-		let containingPopin = Popins.containingPopFrame(target);
-		return (containingPopin ? containingPopin.document : Popins.rootDocument);
+		return (Popins.containingPopFrame(target)?.document ?? Popins.rootDocument);
 	},
 
 	//	Called by: Popins.keyUp
@@ -166,13 +164,11 @@ Popins = {
 		popin.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popin.titleBar = newElement("DIV");
-		popin.titleBar.classList.add("popframe-title-bar");
+		popin.titleBar = newElement("DIV", { class: "popframe-title-bar" });
 		popin.insertBefore(popin.titleBar, popin.firstElementChild);
 
 		//  Add popin stack counter.
-		popin.titleBar.stackCounter = newElement("SPAN");
-		popin.titleBar.stackCounter.classList.add("popin-stack-counter");
+		popin.titleBar.stackCounter = newElement("SPAN", { class: "popin-stack-counter" });
 		requestAnimationFrame(() => {
 			let popinStackNumber = Popins.popinStackNumber(popin);
 			popin.titleBar.stackCounter.textContent = popinStackNumber;
@@ -202,8 +198,7 @@ Popins = {
 		popin.classList.add("has-footer-bar");
 
 		//	Inject popin footer bar.
-		popin.footerBar = newElement("DIV");
-		popin.footerBar.classList.add("popin-footer-bar");
+		popin.footerBar = newElement("DIV", { class: "popin-footer-bar" });
 		popin.insertBefore(popin.footerBar, null);
 
 		//	Inject footer title-link.
@@ -236,8 +231,7 @@ Popins = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON");
-			button.classList.add("popframe-title-bar-button");
+			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -247,11 +241,10 @@ Popins = {
 		//  Close button.
 		closeButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.classList.add("close-button");
 
+			button.classList.add("close-button");
 			button.innerHTML = GW.svg(Popins.titleBarComponents.buttonIcons["close"]);
 			button.title = Popins.titleBarComponents.buttonTitles["close"];
-
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
@@ -264,8 +257,8 @@ Popins = {
 		//  Options button (does nothing by default).
 		optionsButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
-			button.classList.add("options-button");
 
+			button.classList.add("options-button");
 			button.innerHTML = GW.svg(Popins.titleBarComponents.buttonIcons["options"]);
 			button.title = Popins.titleBarComponents.buttonTitles["options"];
 
@@ -281,14 +274,6 @@ Popins = {
 		popin.append(part);
 	},
 
-	/************************/
-	/*	Optional UI elements.
-	 */
-
-	addUIElementsToPopFrame: (popin, ...args) => {
-		popin.uiElementsContainer.append(...args);
-	},
-
 	/******************/
 	/*	Popin spawning.
 		*/
@@ -297,30 +282,27 @@ Popins = {
 	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
-		let popin = newElement("DIV");
-		popin.classList.add("popin", "popframe");
-		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
-		popin.scrollView = popin.querySelector(".popframe-scroll-view");
-		popin.contentView = popin.querySelector(".popframe-content-view");
+		//	Create popin, scroll view, content view, shadow root, shadow body.
+		let popin = newElement("DIV", { class: "popin popframe" }, { spawningTarget: target });
+		popin.scrollView = popin.appendChild(newElement("DIV", { class: "popframe-scroll-view" }));
+		popin.contentView = popin.scrollView.appendChild(newElement("DIV", { class: "popframe-content-view" }));
+		popin.document = popin.contentView.attachShadow({ mode: "open" });
+		popin.document.body = popin.body = popin.shadowBody = popin.document.appendChild(newElement("DIV", {
+			class: "popframe-body popin-body shadow-body"
+		}));
 
-		popin.contentView.attachShadow({ mode: "open" });
-		popin.document = popin.contentView.shadowRoot;
-		popin.document.appendChild(newElement("DIV"));
-		popin.document.body = popin.body = popin.shadowBody = popin.document.firstElementChild;
-		popin.body.classList.add("popframe-body", "popin-body", "shadow-body");
+		//	Set reverse references.
+		popin.document.popin = popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
 
-		let styleReset = newElement("STYLE");
-		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popin.document.insertBefore(styleReset, popin.body);
+		//	Inject style reset.
+		popin.document.insertBefore(newElement("STYLE", null, { innerHTML: `.shadow-body { all: initial; }` }), popin.body);
 
-		popin.document.popin = popin;
-
-		popin.body.popin = popin.contentView.popin = popin.scrollView.popin = popin;
-
+		//	Default empty title bar.
 		popin.titleBarContents = [ ];
 
-		//  Give the popin a reference to the target.
-		popin.spawningTarget = target;
+		//	Loading spinner and “loading failed” message views.
+		popin.loadingSpinnerView = popin.appendChild(newElement("DIV", { class: "popframe-loading-spinner-view" }));
+		popin.loadingFailedMessageView = popin.appendChild(newElement("DIV", { class: "popframe-loading-failed-message-view" }));
 
 		return popin;
 	},
@@ -338,58 +320,66 @@ Popins = {
 	},
 
 	//	Called by: Popins.targetClicked (event handler)
-	injectPopinForTarget: (target) => {
+	injectPopinForTarget: (target, options) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
+		options = Object.assign({
+			inheritInitialHeight: true
+		}, options);
+
 		//  Create the new popin.
-		target.popFrame = target.popin = Popins.newPopin(target);
+		let popin = Popins.newPopin(target);
 
 		// Prepare the newly created popin for injection.
-		if (!(target.popFrame = target.popin = target.preparePopin(target.popin)))
+		if (popin = target.preparePopin(popin)) {
+			//	Attach popin to target.
+			Popins.attachPopinToTarget(popin, target);
+		} else {
+			//	Preparation failed.
 			return;
+		}
 
 		/*  If title bar contents are provided, create and inject the popin
 			title bar, and set class `has-title-bar` on the popin.
 			*/
-		if (target.popin.titleBarContents.length > 0) {
-			Popins.addTitleBarToPopin(target.popin);
+		if (popin.titleBarContents.length > 0) {
+			Popins.addTitleBarToPopin(popin);
 
-			if (target.popin.classList.contains("no-footer-bar") == false)
-				Popins.addFooterBarToPopin(target.popin);
+			if (popin.classList.contains("no-footer-bar") == false)
+				Popins.addFooterBarToPopin(popin);
 		}
 
 		//	Add listener to enable tapping on the backdrop to dismiss the popin.
-		target.popin.addEventListener("click", Popins.popinClicked);
+		popin.addEventListener("click", Popins.popinClicked);
 
-		//  Get containing document.
+		//  Get containing document (for popins spawned from targets in popins).
 		let containingDocument = Popins.containingDocumentForTarget(target);
-
-		//  Remove (other) existing popins on this level.
-		containingDocument.querySelectorAll(".popin").forEach(existingPopin => {
-			if (existingPopin != target.popin)
-				Popins.removePopin(existingPopin);
-		});
-
-		//	Set rendering progress indicator (spinner).
-		Popins.addClassesToPopFrame(target.popin, "rendering");
-
-		//  Inject the popin.
 		if (containingDocument.popin) {
 			/*  Save the parent popin’s scroll state when pushing it down the
 				‘stack’.
 				*/
 			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
 
-			containingDocument.popin.parentElement.insertBefore(target.popin, containingDocument.popin);
+			/*	If popin is still loading (or has failed to load), and the
+				`inheritInitialHeight` option is enabled, then set the new 
+				popin’s initial height to the height of the parent popin (to be 
+				adjusted after the new popin finishes loading, if ever).
+			 */
+			if (   options.inheritInitialHeight
+				&& (   Popins.popFrameStateLoading(popin)
+					|| Popins.popFrameStateLoadingFailed(popin)))
+				popin.style.height = Math.round(containingDocument.popin.clientHeight) + "px";
+
+			containingDocument.popin.parentElement.insertBefore(popin, containingDocument.popin);
 		} else {
-			target.parentElement.insertBefore(target.popin, target.nextSibling);
+			target.parentElement.insertBefore(popin, target.nextSibling);
 		}
 
 		//	Push popin onto spawned popins stack.
-		Popins.spawnedPopins.unshift(target.popin);
+		Popins.spawnedPopins.unshift(popin);
 
 		//	Designate ancestors.
-		let ancestor = target.popin.parentElement;
+		let ancestor = popin.parentElement;
 		do { ancestor.classList.add("popin-ancestor"); }
 		while (   (ancestor = ancestor.parentElement) 
 			   && [ "MAIN", "ARTICLE" ].includes(ancestor.tagName) == false);
@@ -398,7 +388,7 @@ Popins = {
 		target.classList.add("popin-open", "highlighted");
 
 		//	Fire event.
-		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: popin });
 
 		//	Post-inject adjustments.
 		requestAnimationFrame(() => {
@@ -407,17 +397,11 @@ Popins = {
 
 			//	Adjust popin position.
 			if (target.adjustPopinWidth)
-				target.adjustPopinWidth(target.popin);
-
-			//	Disable rendering progress indicator (spinner).
-			Popins.removeClassesFromPopFrame(target.popin, "rendering");
-
-			//	Set scroll view height.
-			target.popin.body.style.setProperty("--popframe-scroll-view-height", target.popin.scrollView.clientHeight + "px");
+				target.adjustPopinWidth(popin);
 
 			//  Scroll page so that entire popin is visible, if need be.
 			requestAnimationFrame(() => {
-				Popins.scrollPopinIntoView(target.popin);
+				Popins.scrollPopinIntoView(popin);
 			});
 		});
 	},
@@ -427,6 +411,36 @@ Popins = {
 	 */
 	getPopinViewportRect: (popin) => {
 		return rectUnion(popin.getBoundingClientRect(), ...(Array.from(popin.children).map(x => x.getBoundingClientRect())));
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoading: (popin) => {
+		return popin.classList.contains("loading");
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoadingFailed: (popin) => {
+		return popin.classList.contains("loading-failed");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoading: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading-failed");
+		Popins.addClassesToPopFrame(popin, "loading");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoadingFailed: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading");
+		Popins.addClassesToPopFrame(popin, "loading-failed");
+	},
+
+	//	Called by: extracts.js
+	clearPopFrameState: (popin) => {
+		Popins.removeClassesFromPopFrame(popin, "loading", "loading-failed");
+
+		//	Clear provisional popin height (inherited from parent popin).
+		popin.style.height = "";
 	},
 
 	//	Called by: Popins.injectPopinForTarget
@@ -447,20 +461,35 @@ Popins = {
 			window.scrollBy(0, scrollWindowBy);
 			popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
 		}
+
+		//	Set scroll view height.
+		popin.body.style.setProperty("--popframe-scroll-view-height", popin.scrollView.clientHeight + "px");
+	},
+
+	//	Called by: Popins.cleanup
+	removeAllPopins: () => {
+		while (Popins.getTopPopin())
+			Popins.removePopin(Popins.getTopPopin());
 	},
 
 	//	Called by: extracts.js
-	removeAllPopinsInContainer: (container) => {
-		GWLog("Popins.removeAllPopinsInContainer", "popins.js", 2);
+	cleanPopinsFromContainer: (container) => {
+		GWLog("Popins.cleanPopinsFromContainer", "popins.js", 2);
 
 		container.querySelectorAll(".popin").forEach(popin => {
-			Popins.removePopin(popin);
+			popin.remove();
+		});
+		container.querySelectorAll(".popin-ancestor").forEach(popinAncestor => {
+			popinAncestor.classList.remove("popin-ancestor");
+		});
+		container.querySelectorAll(".popin-open").forEach(popinSpawningTarget => {
+			popinSpawningTarget.classList.remove("popin-open", "highlighted");
 		});
 	},
 
 	//	Called by: Popins.cleanup
 	//	Called by: Popins.targetClicked (event handler)
-	//	Called by: Popins.removeTargetsWithin
+	//	Called by: Popins.removeTarget
 	//	Called by: Popins.titleBarComponents.closeButton
 	//	Called by: Popins.injectPopinForTarget
 	removePopin: (popin) => {
@@ -484,7 +513,7 @@ Popins = {
 		popin.remove();
 
 		//	Remove from spawned popins stack.
-		Popins.spawnedPopins.shift();
+		Popins.spawnedPopins.remove(popin);
 
 		//  … restore its scroll state.
 		if (popinBelow) {
@@ -498,16 +527,28 @@ Popins = {
 		window.scrollBy(0, -1 * parseInt(popin.dataset.windowScrollOffset ?? '0'));
 	},
 
+	//	Called by: Popins.injectPopinForTarget
+	attachPopinToTarget: (popin, target) => {
+		GWLog("Popins.attachPopinToTarget", "popups.js", 2);
+
+		target = target ?? popin.spawningTarget;
+
+        target.classList.add("popin-open");
+        target.popin = popin;
+        target.popFrame = popin;
+
+		popin.spawningTarget = target;
+	},
+
 	//	Called by: Popins.removePopin
-	detachPopinFromTarget: (popin) => {
+	detachPopinFromTarget: (popin, target) => {
 		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
 
-		if (popin.spawningTarget == null)
-			return;
+		target = target ?? popin.spawningTarget;
 
-		popin.spawningTarget.popin = null;
-		popin.spawningTarget.popFrame = null;
-		popin.spawningTarget.classList.remove("popin-open", "highlighted");
+		target.popin = null;
+		target.popFrame = null;
+		target.classList.remove("popin-open", "highlighted");
 	},
 
 	isSpawned: (popin) => {
@@ -529,15 +570,7 @@ Popins = {
 
 		event.preventDefault();
 
-		let target = event.target.closest(".spawns-popin");
-
-		if (target.classList.contains("popin-open")) {
-			Popins.allSpawnedPopins().forEach(popin => {
-				Popins.removePopin(popin);
-			});
-		} else {
-			Popins.injectPopinForTarget(target);
-		}
+		Popins.injectPopinForTarget(event.target.closest(".spawns-popin"));
 
 		document.activeElement.blur();
 	},

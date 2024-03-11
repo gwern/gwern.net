@@ -207,8 +207,7 @@ Popups = {
 	},
 
 	containingDocumentForTarget: (target) => {
-		let containingPopup = Popups.containingPopFrame(target);
-		return (containingPopup ? containingPopup.document : Popups.rootDocument);
+		return (Popups.containingPopFrame(target)?.document ?? Popups.rootDocument);
 	},
 
 	allSpawnedPopFrames: () => {
@@ -277,32 +276,27 @@ Popups = {
 	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
-		let popup = newElement("DIV");
-		popup.classList.add("popup", "popframe");
-		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
-		popup.scrollView = popup.querySelector(".popframe-scroll-view");
-		popup.contentView = popup.querySelector(".popframe-content-view");
+		//	Create popup, scroll view, content view, shadow root, shadow body.
+		let popup = newElement("DIV", { class: "popup popframe" }, { spawningTarget: target });
+		popup.scrollView = popup.appendChild(newElement("DIV", { class: "popframe-scroll-view" }));
+		popup.contentView = popup.scrollView.appendChild(newElement("DIV", { class: "popframe-content-view" }));
+		popup.document = popup.contentView.attachShadow({ mode: "open" });
+		popup.document.body = popup.body = popup.shadowBody = popup.document.appendChild(newElement("DIV", {
+			class: "popframe-body popup-body shadow-body"
+		}));
 
-		popup.contentView.attachShadow({ mode: "open" });
-		popup.document = popup.contentView.shadowRoot;
-		popup.document.appendChild(newElement("DIV"));
-		popup.document.body = popup.body = popup.shadowBody = popup.document.firstElementChild;
-		popup.body.classList.add("popframe-body", "popup-body", "shadow-body");
+		//	Set reverse references.
+		popup.document.popup = popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
 
-		let styleReset = newElement("STYLE");
-		styleReset.innerHTML = `.shadow-body { all: initial; }`;
-		popup.document.insertBefore(styleReset, popup.body);
+		//	Inject style reset.
+		popup.document.insertBefore(newElement("STYLE", null, { innerHTML: `.shadow-body { all: initial; }` }), popup.body);
 
-		popup.document.popup = popup;
-
-		popup.body.popup = popup.contentView.popup = popup.scrollView.popup = popup;
-
+		//	Default empty title bar.
 		popup.titleBarContents = [ ];
 
-		popup.uiElementsContainer = popup.appendChild(newElement("DIV", { "class": "popframe-ui-elements-container" }));
-
-		//  Give the popup a reference to the target.
-		popup.spawningTarget = target;
+		//	Loading spinner and “loading failed” message views.
+		popup.loadingSpinnerView = popup.appendChild(newElement("DIV", { class: "popframe-loading-spinner-view" }));
+		popup.loadingFailedMessageView = popup.appendChild(newElement("DIV", { class: "popframe-loading-failed-message-view" }));
 
 		return popup;
 	},
@@ -335,8 +329,20 @@ Popups = {
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
 
-		/*	Once this popup is spawned, despawn all non-pinned popups not in this
-			popup’s stack.
+		//  Create the new popup.
+		let popup = Popups.newPopup(target);
+
+		//  Prepare the newly created popup for spawning.
+		if (popup = target.preparePopup(popup)) {
+			//	Attach popup to target.
+			Popups.attachPopupToTarget(popup, target);
+		} else {
+			//	Preparation failed.
+			return;
+		}
+
+		/*	Once this popup is spawned, despawn all non-pinned popups not in 
+			this popup’s stack.
 		 */
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 			Popups.allSpawnedPopups().forEach(spawnedPopup => {
@@ -346,47 +352,29 @@ Popups = {
 			});
 		}, {
 			once: true,
-			condition: (info) => (info.popup == target.popup)
+			condition: (info) => (info.popup == popup)
 		});
 
-		//  Create the new popup.
-		target.popFrame = target.popup = Popups.newPopup(target);
-
-		//  Prepare the newly created popup for spawning.
-		if ((target.popFrame = target.popup = target.preparePopup(target.popup)) == null) {
-			//	Reset cursor to normal.
-			Popups.clearWaitCursorForTarget(target);
-
-			return;
-		}
-
 		//  If title bar contents are provided, add a title bar (if needed).
-		if (   target.popup.titleBar == null
-			&& target.popup.titleBarContents.length > 0)
-			Popups.addTitleBarToPopup(target.popup);
+		if (   popup.titleBar == null
+			&& popup.titleBarContents.length > 0)
+			Popups.addTitleBarToPopup(popup);
 
-		if (target.popup.parentElement == Popups.popupContainer) {
+		if (popup.parentElement == Popups.popupContainer) {
 			//  If the popup is an existing popup, just bring it to the front.
-			Popups.bringPopupToFront(target.popup);
+			Popups.bringPopupToFront(popup);
 		} else {
 			//	Otherwise, inject the popup into the page.
-			Popups.injectPopup(target.popup);
+			Popups.injectPopup(popup);
 		}
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(target.popup, { spawnPoint: spawnPoint });
-
-		//  Mark target as having an active popup associated with it.
-		target.classList.add("popup-open");
+		Popups.positionPopup(popup, { spawnPoint: spawnPoint });
 
 		//  Fire notification event.
-		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
+		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 
 		requestAnimationFrame(() => {
-			//	Disable rendering progress indicator (spinner).
-			if (target.popup)
-				Popups.removeClassesFromPopFrame(target.popup, "rendering");
-
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
 		});
@@ -403,9 +391,6 @@ Popups = {
 			popup.popupStack.remove(popup);
 		}
 		popup.popupStack.push(popup);
-
-		//	Set rendering progress indicator (spinner).
-		Popups.addClassesToPopFrame(popup, "rendering");
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
@@ -442,25 +427,41 @@ Popups = {
 		});
 	},
 
-	attachPopupToTarget: (popup) => {
+	//	Called by: Popups.spawnPopup
+	//	Called by: extracts.js
+	attachPopupToTarget: (popup, target) => {
 		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
+		target = target ?? popup.spawningTarget;
 
-        popup.spawningTarget.classList.add("popup-open");
-        popup.spawningTarget.popup = popup;
-        popup.spawningTarget.popFrame = popup;
+		//	Clear timers.
+		Popups.clearPopupTimers(target);
+
+        target.classList.add("popup-open");
+        target.popup = popup;
+        target.popFrame = popup;
+
+		popup.spawningTarget = target;
 	},
 
+	//	Called by: Popups.spawnPopup
+	//	Called by: Popups.despawnPopup
+	//	Called by: Popups.pinPopup
 	//	Called by: extracts.js
-	detachPopupFromTarget: (popup) => {
+	detachPopupFromTarget: (popup, target) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
+		target = target ?? popup.spawningTarget;
 
-        popup.spawningTarget.classList.remove("popup-open");
-        popup.spawningTarget.popup = null;
-        popup.spawningTarget.popFrame = null;
+		//	Clear timers.
+		Popups.clearPopupTimers(target);
+
+		//	Reset cursor to normal.
+		Popups.clearWaitCursorForTarget(target);
+
+        target.classList.remove("popup-open");
+        target.popup = null;
+        target.popFrame = null;
 	},
 
     despawnPopup: (popup) => {
@@ -490,13 +491,35 @@ Popups = {
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
 
-		//	Reset cursor to normal.
-		requestAnimationFrame(() => {
-			Popups.clearWaitCursorForTarget(popup.spawningTarget);
-		});
-
         document.activeElement.blur();
     },
+
+	//	Called by: extracts.js
+	popFrameStateLoading: (popup) => {
+		return popin.classList.contains("loading");
+	},
+
+	//	Called by: extracts.js
+	popFrameStateLoadingFailed: (popup) => {
+		return popup.classList.contains("loading-failed");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoading: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading-failed");
+		Popups.addClassesToPopFrame(popup, "loading");
+	},
+
+	//	Called by: extracts.js
+	setPopFrameStateLoadingFailed: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading");
+		Popups.addClassesToPopFrame(popup, "loading-failed");
+	},
+
+	//	Called by: extracts.js
+	clearPopFrameState: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "loading", "loading-failed");
+	},
 
 	getPopupAncestorStack: (popup) => {
 		let indexOfPopup = popup.popupStack.indexOf(popup);
@@ -893,9 +916,10 @@ Popups = {
 		popup.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
-		popup.titleBar = newElement("DIV");
-		popup.titleBar.classList.add("popframe-title-bar");
-		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)";
+		popup.titleBar = newElement("DIV", {
+			class: "popframe-title-bar",
+			title: "Drag popup by title bar to reposition; double-click title bar to collapse (hold Option/Alt to collapse all)"
+		});
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
@@ -981,8 +1005,7 @@ Popups = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON");
-			button.classList.add("popframe-title-bar-button");
+			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -992,8 +1015,8 @@ Popups = {
 		//  Close button.
 		closeButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
-			button.classList.add("close-button");
 
+			button.classList.add("close-button");
 			button.innerHTML = Popups.titleBarComponents.getButtonIcon("close");
 			button.title = Popups.titleBarComponents.buttonTitles["close"];
 
@@ -1015,6 +1038,7 @@ Popups = {
 		//  Zoom button (with submenu).
 		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
+
 			button.classList.add("zoom-button", "zoom");
 
 			button.defaultHTML = Popups.titleBarComponents.getButtonIcon("zoom");
@@ -1162,8 +1186,7 @@ Popups = {
 
 			button.classList.add("has-submenu");
 
-			button.submenu = newElement("DIV");
-			button.submenu.classList.add("submenu", submenuClass);
+			button.submenu = newElement("DIV", { class: `submenu ${submenuClass}` });
 
 			popup.titleBar.insertBefore(button.submenu, button.nextElementSibling);
 
@@ -1181,14 +1204,6 @@ Popups = {
 
 	addPartToPopFrame: (popup, part) => {
 		popup.append(part);
-	},
-
-	/************************/
-	/*	Optional UI elements.
-	 */
-
-	addUIElementsToPopFrame: (popup, ...args) => {
-		popup.uiElementsContainer.append(...args);
 	},
 
 	/*********************/
@@ -1263,12 +1278,17 @@ Popups = {
 		(footers, etc.).
 	 */
 	getPopupViewportRect: (popup) => {
-		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(x => x.getBoundingClientRect())));
+		return rectUnion(popup.getBoundingClientRect(), ...(Array.from(popup.children).map(child => {
+			let rect = child.getBoundingClientRect();
+			return (rect.width * rect.height == 0
+					? null
+					: rect);
+		}).filter(x => x)));
 	},
 
 	//	See also: extracts.js
 	preferSidePositioning: (target) => {
-		return target.preferSidePositioning ? target.preferSidePositioning() : false;
+		return (target.preferSidePositioning?.() ?? false);
 	},
 
 	/*	Returns current popup position. (Usable only after popup is positioned.)
@@ -1280,10 +1300,17 @@ Popups = {
 		};
 	},
 
-	positionPopup: (popup, options = { }) => {
+	positionPopup: (popup, options) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
+		options = Object.assign({
+			spawnPoint: null,
+			tight: false,
+			immediately: false
+		}, options);
+
 		let target = popup.spawningTarget;
+
 		let spawnPoint = options.spawnPoint ?? target.lastMouseEnterLocation;
 		if (spawnPoint)
 			target.lastMouseEnterLocation = spawnPoint;
@@ -1984,7 +2011,7 @@ Popups = {
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
 
-		event.target.lastMouseEnterEvent = null;
+		event.target.lastMouseEnterLocation = null;
 
 		Popups.clearPopupTimers(event.target);
 

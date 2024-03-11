@@ -76,7 +76,8 @@ GW.layout = {
 	//	Do not apply block layout classes within these containers.
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
-		".TOC > *"
+		".TOC > *",
+		".popframe"
 	].join(", "),
 
 	blockSpacing: [

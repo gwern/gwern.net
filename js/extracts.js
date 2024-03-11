@@ -210,7 +210,7 @@ Extracts = {
 		if (Extracts.popFrameProvider == Popins) {
 			addContentInjectHandler((eventInfo) => {
 				//	Clean any existing popins.
-				Popins.removeAllPopinsInContainer(eventInfo.container);
+				Popins.cleanPopinsFromContainer(eventInfo.container);
 			}, "rewrite");
 		}
 
@@ -367,6 +367,11 @@ Extracts = {
         }
     },
 
+	//	Called by: extracts-content.js
+	addPopFrameClassesToLink: (link, ...classes) => {
+		link.dataset.popFrameClasses = [ ...(link.dataset.popFrameClasses?.split(" ") ?? [ ]), ...classes ].join(" ");
+	},
+
     /***************************/
     /*  Pop-frames (in general).
      */
@@ -413,7 +418,8 @@ Extracts = {
     //  Called by: Extracts.preparePopin
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
-        return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
+        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame) 
+        		 || Extracts.popFrameProvider.popFrameStateLoadingFailed(popFrame)) == false);
     },
 
     //  Called by: Extracts.titleForPopFrame
@@ -482,10 +488,10 @@ Extracts = {
 	postRefreshUpdatePopFrame: (popFrame, success) => {
         GWLog("Extracts.postRefreshUpdatePopFrame", "extracts.js", 2);
 
-		Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "loading");
-
-		if (!success)
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading-failed");
+		if (success)
+			Extracts.popFrameProvider.clearPopFrameState(popFrame);
+		else
+			Extracts.popFrameProvider.setPopFrameStateLoadingFailed(popFrame);
 
 		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
 			//  Update pop-frame position.
@@ -498,7 +504,7 @@ Extracts = {
 
     //  Called by: Extracts.rewritePopFrameContent
     setLoadingSpinner: (popFrame, useObject = false) => {
-        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "loading");
+        Extracts.popFrameProvider.setPopFrameStateLoading(popFrame);
 
 		if (useObject == false)
 			return;
@@ -595,12 +601,17 @@ Extracts = {
 		Extracts.setLoadingSpinner(popFrame);
 
         //  Import the class(es) of the target.
-        popFrame.classList.add(...(popFrame.spawningTarget.classList));
+        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
-        popFrame.classList.remove("has-annotation", "has-annotation-partial",
-        	"has-content", "link-self", "link-annotated", "link-page",
-        	"has-icon", "has-indicator-hook", "uri", "decorate-not",
+        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
+        	"uri", "has-annotation", "has-annotation-partial", "has-content", 
+        	"link-self", "link-annotated", "link-page", "link-tag", "icon-not", 
+        	"has-icon", "has-indicator-hook", "decorate-not",
         	"spawns-popup", "spawns-popin");
+
+		//	Import classes from include-link.
+		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
+			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.body.firstElementChild.dataset.popFrameClasses.split(" ")));
 
 		//	Determine pop-frame type.
         let suffix = Extracts.popFrameTypeSuffix();
@@ -746,9 +757,9 @@ Extracts = {
 				leftMargin = (containerRect.left - popinRect.left);
 				rightMargin = (popinRect.right - containerRect.right);
 			}
-			popin.style = `margin-left: ${leftMargin}px; `
-						+ `margin-right: ${rightMargin}px; `
-						+ `width: calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
+			popin.style.marginLeft = `${leftMargin}px`;
+			popin.style.marginRight = `${rightMargin}px`;
+			popin.style.width = `calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
 		};
 	},
 
@@ -838,11 +849,8 @@ Extracts = {
             new popup; just use the existing popup.
          */
         let existingPopup = Extracts.spawnedPopupMatchingTarget(target);
-        if (existingPopup) {
-            Popups.detachPopupFromTarget(existingPopup);
-            existingPopup.spawningTarget = target;
+        if (existingPopup)
             return existingPopup;
-        }
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popup).

@@ -412,7 +412,10 @@ if (crypto.randomUUID === undefined) {
 /*  Create and return a new element with the specified tag name, attributes, and
     object properties.
  */
-function newElement(tagName, attributes = { }, properties = { }) {
+function newElement(tagName, attributes, properties) {
+	attributes = Object.assign({ }, attributes);
+	properties = Object.assign({ }, properties);
+
     let element = document.createElement(tagName);
     for (const attrName in attributes)
         if (attributes.hasOwnProperty(attrName))
