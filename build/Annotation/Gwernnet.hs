@@ -178,7 +178,7 @@ gwernTOC footnotesP indexP p' f =
                  ("class=\"footnote-ref\" role=\"doc-noteref\"", "")
                 ] tc') $
  (\tc -> -- add columns class to condense it in popups/tags
-        replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">" $
+        (if indexP then id else replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns TOC\">") $
         -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right? [EDIT: no, the subscript citations are]), we'll remove them. TODO: should be fixed in Pandoc HEAD, so remove this after a full upgrade.
         sed "<span>(.*)</span>" "\\1" $
         (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
