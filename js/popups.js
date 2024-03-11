@@ -337,7 +337,10 @@ Popups = {
 			//	Attach popup to target.
 			Popups.attachPopupToTarget(popup, target);
 		} else {
-			//	Preparation failed.
+			//	Reset cursor to normal.
+			Popups.clearWaitCursorForTarget(target);
+
+			//	Preparation failed, so do nothing.
 			return;
 		}
 

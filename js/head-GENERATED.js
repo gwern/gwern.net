@@ -179,7 +179,8 @@ URL.prototype.deleteQueryVariable = function (key) {
 /*****************************************************************************/
 /*	Returns a URL constructed from either a fully qualified URL string,
 	or an absolute local URL (pathname starting at root), or a relative URL
-	(pathname component replacing part of current URL after last slash).
+	(pathname component replacing part of current URL after last slash), or
+	a hash (URL fragment) only.
 
 	(The existing URL() constructor only handles fully qualified URL strings.)
 
@@ -190,6 +191,9 @@ function URLFromString(urlString, baseURL = location) {
 	if (   urlString.startsWith("http://")
 		|| urlString.startsWith("https://"))
 		return new URL(urlString);
+
+	if (urlString.startsWith("#"))
+		return new URL(baseURL.origin + baseURL.pathname + urlString);
 
 	return (urlString.startsWith("/")
 			? new URL(baseURL.origin + urlString)
