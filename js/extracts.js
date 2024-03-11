@@ -582,11 +582,6 @@ Extracts = {
         });
 	},
 
-	popFrameTitleBarContents: (popFrame) => {
-		let suffix = Extracts.popFrameTypeSuffix();
-		return Extracts[`pop${suffix}TitleBarContents`](popFrame);
-	},
-
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     preparePopFrame: (popFrame) => {
@@ -607,15 +602,17 @@ Extracts = {
         	"has-icon", "has-indicator-hook", "uri", "decorate-not",
         	"spawns-popup", "spawns-popin");
 
+		//	Determine pop-frame type.
+        let suffix = Extracts.popFrameTypeSuffix();
+
         //  Add pop-frame title bar contents.
-		popFrame.titleBarContents = Extracts.popFrameTitleBarContents(popFrame);
+		popFrame.titleBarContents = Extracts[`pop${suffix}TitleBarContents`](popFrame);
 
         //  Add ‘markdownBody’ class.
         popFrame.body.classList.add("markdownBody");
 
         //  Special handling for certain pop-frame types.
         let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
-        let suffix = Extracts.popFrameTypeSuffix();
         let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
         							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
         if (specialPrepareFunction)
@@ -755,7 +752,7 @@ Extracts = {
 		};
 	},
 
-	///	Called by: Extracts.popFrameTitleBarContents
+	//	Called by: Extracts.preparePopFrame (as Extracts[`pop${suffix}TitleBarContents`])
 	popinTitleBarContents: (popin) => {
         let popinTitle = Extracts.titleForPopFrame(popin) ?? { };
 		return [
@@ -807,7 +804,7 @@ Extracts = {
         };
     },
 
-	//	Called by: Extracts.popFrameTitleBarContents
+	//	Called by: Extracts.preparePopFrame (as Extracts[`pop${suffix}TitleBarContents`])
 	popupTitleBarContents: (popup) => {
         let popupTitle = Extracts.titleForPopFrame(popup) ?? { };
 		return [
