@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-10 20:06:50 gwern"
+When:  Time-stamp: "2024-03-10 20:36:15 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -85,9 +85,6 @@ import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithD
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
-import Data.Time.Calendar
-import Data.Time.Format
-
 readGtx :: ((FilePath, MetadataItem) -> (FilePath, MetadataItem)) -> FilePath -> IO MetadataList
 readGtx hook f = do f' <- do filep <- doesFileExist f
                              if filep then return f
@@ -164,95 +161,3 @@ appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppS
                                                    today <- currentDayString
                                                    let newGtx = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abst))
                                                    void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGtx
-
-
----
-
-
--- Calculate the difference in days between two dates
-daysDiff :: Day -> Day -> Integer
-daysDiff start end = diffDays end start
-
--- Add days to a given date
-addDaysToDate :: Integer -> Day -> Day
-addDaysToDate days = addDays days
-
--- -- Generate a list of dates between the start and end dates, evenly spaced for each item
--- generateDates :: Day -> Day -> Int -> [Day]
--- generateDates start end itemCount =
---   let totalDays = daysDiff start end
---       interval = fromIntegral totalDays `div` fromIntegral itemCount
---   in [addDaysToDate (interval * fromIntegral i) start | i <- [0..itemCount-1]]
-
--- -- Update the MetadataItem list by adding 'date-created'
--- updateItemsWithDates :: [MetadataItem] -> [MetadataItem]
--- updateItemsWithDates items =
---   let startDate = fromGregorian 2019 8 21 -- Start date
---       endDate = fromGregorian 2024 3 10 -- End date
---       itemCount = length items
---       dates = generateDates startDate endDate itemCount
---       formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
---       updateItem (title, author, date, _, misc, tags, abstract) newDate =
---         (title, author, date, formatDay newDate, misc, tags, abstract)
---   in zipWith updateItem items dates
-
-
--- Helper function to generate a list of dates
--- generateDates :: Day -> Day -> Int -> [Day]
--- generateDates start end itemCount =
---   let totalDays = diffDays end start
---       interval = fromIntegral totalDays `div` fromIntegral itemCount
---   in [addDays (interval * fromIntegral i) start | i <- [0..itemCount-1]]
-
-
-generateDates :: Day -> Day -> Int -> [Day]
-generateDates start end itemCount =
-  let totalDays = fromIntegral $ diffDays end start
-      interval = totalDays / fromIntegral (itemCount - 1)
-  in [addDays (round (interval * fromIntegral i :: Double)) start | i <- [0..itemCount-1]]
-
-
--- Function to ensure 'date-created' is not before 'date'
-adjustDateCreated :: String -> String -> String
-adjustDateCreated dateCreated datePublished =
-  if datePublished > dateCreated then datePublished else dateCreated
-
--- Updated function to accurately update items with dates
-updateItemsWithDates :: MetadataList -> MetadataList
-updateItemsWithDates items =
-  let startDate = fromGregorian 2019 8 21
-      endDate = fromGregorian 2024 3 10
-      itemCount = length items
-      dates = generateDates startDate endDate itemCount
-      formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
-      updateItem (path, (title, author, date, _, misc, tags, abstract)) newDateCreated =
-        let newDateCreatedFormatted = formatDay newDateCreated
-            adjustedDateCreated = adjustDateCreated newDateCreatedFormatted date
-        in (path, (title, author, date, adjustedDateCreated, misc, tags, abstract))
-  in zipWith updateItem items dates
-
--- -- Function to update MetadataList with dates
--- updateItemsWithDates :: MetadataList -> MetadataList
--- updateItemsWithDates items =
---   let startDate = fromGregorian 2019 8 21
---       endDate = fromGregorian 2024 3 10
---       itemCount = length items
---       dates = generateDates startDate endDate itemCount
---       formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
---       updateItem (path, (title, author, date, _, misc, tags, abstract)) newDate =
---         (path, (title, author, date, formatDay newDate, misc, tags, abstract))
---   in zipWith updateItem items dates
-
--- Function to update MetadataList with today's date for the 'date-created' field
-updateItemsWithToday :: MetadataList -> IO MetadataList
-updateItemsWithToday items = do
-  today <- currentDayString
-  let updateItem (path, (title, author, date, _, misc, tags, abstract)) =
-        (path, (title, author, date, today, misc, tags, abstract))
-  return $ map updateItem items
-
--- -- Function to update items with today's date in the 'date-created' field
--- updateItemsWithToday :: [MetadataItem] -> IO [MetadataItem]
--- updateItemsWithToday items = do
---   today <- currentDayString
---   return $ map (\(title, author, date, _, misc, tags, abstract) -> (title, author, date, today, misc, tags, abstract)) items
