@@ -771,10 +771,8 @@ function stripStyles(element, options) {
 		element.removeAttribute("style");
 }
 
-/******************************************************************************/
-/*  Call the given function when the given element (if `target` is an element),
-    or the element specified by the given selector (if `target` is a string),
-    intersects the viewport.
+/**************************************************************************/
+/*  Call the given function when the given element intersects the viewport.
 
     Available option fields:
 
@@ -788,12 +786,7 @@ function stripStyles(element, options) {
 		See IntersectionObserver documentation.
  */
 function lazyLoadObserver(f, target, options) {
-	options = Object.assign({
-		root: document
-	}, options);
-
-    if (typeof target == "string")
-        target = options.root.querySelector(target);
+	options = Object.assign({ }, options);
 
     if (target == null)
         return;
