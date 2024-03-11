@@ -51,6 +51,8 @@ if [ "${*##*.}" = "pdf" ]; then
 
     echo "$(exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET | \
          sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")"
+    echo "$(date '+%F')" # date-created—which is today/now
+
     DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
               sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
     if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\", \"$DOI\")]"; fi

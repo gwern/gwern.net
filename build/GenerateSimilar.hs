@@ -50,7 +50,7 @@ singleShotRecommendations html =
      edb <- readEmbeddings
      bdb <- readBacklinksDB
 
-     newEmbedding <- embed [] md bdb ("",("","","",[],[],html))
+     newEmbedding <- embed [] md bdb ("",("","","","",[],[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
      let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
@@ -96,7 +96,7 @@ pruneEmbeddings md edb = let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d
                              in map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList validEdbDB
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
-missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > C.minimumLength) md
+missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, _, tags, abst) -> length (t++aut++show tags++abst) > C.minimumLength) md
                                urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
                                missing      = urlsToCheck \\ urlsEmbedded
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
@@ -143,7 +143,7 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 -- > - "Book Reviews", Gwern Branwen (2013)
 -- >
 formatDoc :: (String,MetadataItem) -> T.Text
-formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
+formatDoc (path,mi@(t,aut,dt,_,_,tags,abst)) =
     let document = T.pack $ replace "\n" "\n\n" $ unlines [
           (if t=="" then "" else "'"++t++"'" ++
             if path=="" || head path == '/' then "" else " ("++path++")") ++
@@ -181,7 +181,7 @@ embed edb mdb bdb i@(p,_) =
                                       "\n\nReverse citations:\n\n- " ++ intercalate "\n- " (nubOrd $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
-                                                    Just (t,a,d,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
+                                                    Just (t,a,d,_,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
             (modelType,embedding) <- oaAPIEmbed doc
@@ -301,10 +301,10 @@ writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
   if length matches < C.minimumSuggestions then return () else
   case M.lookup p md of
-    Nothing             -> return ()
-    Just (_,_,_,_,_,"") -> return ()
-    Just ("",_,_,_,_,_) -> return ()
-    Just (_,_,_,_,_,abst) -> do
+    Nothing                   -> return ()
+    Just ( _,_,_,_,_,_,  "")  -> return ()
+    Just ("",_,_,_,_,_,   _)  -> return ()
+    Just ( _,_,_,_,_,_,abst)  -> do
           let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
           let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
           writeUpdatedFile "similar" f similarLinksHtmlFragment
@@ -323,45 +323,46 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              googleScholar = case M.lookup p md of
                Nothing             -> []
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
-               Just ("",_,_,_,_,_)  -> []
-               Just (_,_,_,_,_,"")  -> []
-               Just (title,_,_,kvs,_,_) -> let doi = kvDOI kvs
-                                               doiEscaped = urlEncode doi -- TEST: this is to work around /doc/psychology/cognitive-bias/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
-                                               doiQuery = "doi:" ++ doiEscaped
-                                               title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
-                                               titleQuery = urlEncode $ "\"" ++ title' ++ "\""
-                                               query
-                                                 | null title' && not (null doi) = doiQuery
-                                                 | null doi && not (null title) = titleQuery
-                                                 | otherwise = doiQuery ++ "+OR+" ++ titleQuery
-                                               linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "alphabet"), ("link-icon-type", "svg")])
-                                               linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
-                                               linkMetadataCP = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
-                                           in
-                                            [[Para [Span ("", ["similar-links-search"], []) (
-                                              [Strong [Str "Search"], Str ": ",
-                                                Link linkMetadataGS
-                                                [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                             T.pack "Reverse citations of this paper in Google Scholar"),
-                                              Str "; "]
-                                               ++
-                                               (if null doi then [] else [Link linkMetadataCP
-                                                                         -- it would be nice to include <https://paperswithcode.com/> but their DOI lookup was broken and stateful last I checked. Someday?
-                                                                          [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doiEscaped),
-                                                                                      T.pack ("Connected Papers lookup for DOI ‘" ++ doiEscaped ++ "’.")),
-                                                                         Str "; "])
-                                               ++
-                                               [Link linkMetadataG
-                                                 [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
-                                                                  T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
-                                                 Str "; ",
-                                                 Link linkMetadataG
-                                                 [Str "site"] (T.pack ("https://www.google.com/search?q=site:gwern.net+-site:gwern.net/metadata/" ++ urlEncode title'),
-                                                                    T.pack ("Gwern.net site-wide search hits for ‘" ++ title' ++ "’."))
-                                               ]
-                                              )
-                                             ]
-                                           ]]
+               Just ("",   _,_,_,  _,_, _) -> []
+               Just (_,    _,_,_,  _,_,"") -> []
+               Just (title,_,_,_,kvs,_, _) ->
+                 let doi = kvDOI kvs
+                     doiEscaped = urlEncode doi -- TEST: this is to work around /doc/psychology/cognitive-bias/sunk-cost/2001-nolet.pdf's crazy DOI '10.1890/0012-9658(2001)082[1655:SVITDB]2.0.CO;2' but might break other DOIs?
+                     doiQuery = "doi:" ++ doiEscaped
+                     title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
+                     titleQuery = urlEncode $ "\"" ++ title' ++ "\""
+                     query
+                       | null title' && not (null doi) = doiQuery
+                       | null doi && not (null title) = titleQuery
+                       | otherwise = doiQuery ++ "+OR+" ++ titleQuery
+                     linkMetadataG  = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "alphabet"), ("link-icon-type", "svg")])
+                     linkMetadataGS = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
+                     linkMetadataCP = ("",["backlink-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
+                 in
+                    [[Para [Span ("", ["similar-links-search"], []) (
+                      [Strong [Str "Search"], Str ": ",
+                        Link linkMetadataGS
+                        [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
+                                     T.pack "Reverse citations of this paper in Google Scholar"),
+                      Str "; "]
+                       ++
+                       (if null doi then [] else [Link linkMetadataCP
+                                                 -- it would be nice to include <https://paperswithcode.com/> but their DOI lookup was broken and stateful last I checked. Someday?
+                                                  [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doiEscaped),
+                                                              T.pack ("Connected Papers lookup for DOI ‘" ++ doiEscaped ++ "’.")),
+                                                 Str "; "])
+                       ++
+                       [Link linkMetadataG
+                         [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
+                                          T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
+                         Str "; ",
+                         Link linkMetadataG
+                         [Str "site"] (T.pack ("https://www.google.com/search?q=site:gwern.net+-site:gwern.net/metadata/" ++ urlEncode title'),
+                                            T.pack ("Gwern.net site-wide search hits for ‘" ++ title' ++ "’."))
+                       ]
+                      )
+                     ]
+                   ]]
 
              preface = if singleShot then [] else [Para [Strong [Str "Similar Links"], Str ":"]]
              linkList = BulletList $ similarItems ++ googleScholar
@@ -378,9 +379,9 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
 generateItem :: Metadata -> Bool -> String -> [Block]
 generateItem md linkTagsP p2 = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
-                                  Just ("",_,_,_,_,_) -> []
-                                  Just (_,_,_,_,_,"") -> []
-                                  Just (t,_,_,_,tags,_) ->
+                                  Just ("",_,_,_,_,_,_) -> []
+                                  Just (_,_,_,_,_,_,"") -> []
+                                  Just (t,_,_,_,_,tags,_) ->
                                     [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
                                       [Link ("", ["link-annotated", "backlink-not", "id-not"],
                                              -- link-tags are particularly useful when reviewing single-shot reccomendations while writing annotations
@@ -419,7 +420,7 @@ sortTagByTopic :: Metadata -> String -> IO [FilePath]
 sortTagByTopic md tag = do
                            edb <- readEmbeddings
                            let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
-                           let mdl = M.filter (\(_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
+                           let mdl = M.filter (\(_,_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
                            let paths = M.keys mdl
                            let mdlSorted =  filter (\(f,_) -> M.member f edbDB) $ LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
                            let newest = fst $ head mdlSorted
@@ -475,7 +476,7 @@ sortSimilarsStartingWithNewestWithTag ldb sortDB md parentTag items =
       let urlList = map fst fs
       suggestion <- case M.lookup (sort urlList) ldb' of
                       Just nickname -> return nickname -- use existing one, or generate new suggestion & cache it out:
-                      Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_)) -> t) fs
+                      Nothing -> do nicknameNew <- processTitles parentTag blacklist $ map (\(_,(t,_,_,_,_,_,_)) -> t) fs
                                     ldb'' <- readListName -- the in-memory DB may be stale due to other threads also trying to update the on-disk, so re-read
                                     let ldb''' = M.insert urlList nicknameNew ldb''
                                     writeListName ldb'''

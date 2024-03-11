@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-10 17:53:41 gwern"
+When:  Time-stamp: "2024-03-10 20:06:50 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -79,11 +79,14 @@ import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 import System.GlobalLock as GL (lock)
 
-import Config.Misc as C (cd, root)
+import Config.Misc as C (cd, root, currentDayString)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
+
+import Data.Time.Calendar
+import Data.Time.Format
 
 readGtx :: ((FilePath, MetadataItem) -> (FilePath, MetadataItem)) -> FilePath -> IO MetadataList
 readGtx hook f = do f' <- do filep <- doesFileExist f
@@ -102,8 +105,8 @@ readGtxSlow path = do C.cd
                       allTags <- listTagsAll
                       readGtx (postprocessing allTags) path
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
-           postprocessing allTags' (u, (t, a, d, kvs, ts, s)) = (stripUnicodeWhitespace u,
-                                                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, kvs,
+           postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
+                                                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, kvs,
                                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u (unwords ts), s))
            stripUnicodeWhitespace, reformatTitle :: String -> String
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
@@ -116,19 +119,20 @@ parseGtx content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
                    in filter (\(f,_) -> f /= "---") sublists' -- guard against off-by-one & misparsing
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
-tupleize (f:t:a:d:doi:tags:abstract) = (T.unpack f,
-                                        (T.unpack t, T.unpack a, T.unpack d, doiOrKV $ T.unpack doi, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
-tupleize [] = error "tuplize: empty list"
+tupleize (f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
+                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
+tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 
 writeGtx :: FilePath -> MetadataList -> IO ()
-writeGtx f ml = do let lists = concatMap untupleize ml
+writeGtx f ml = do today <- currentDayString
+                   let lists = concatMap (untupleize today) ml
                    void $ GL.lock $ writeUpdatedFile "gtx" f $ T.unlines lists
 
-untupleize :: (Path, MetadataItem) -> [T.Text]
-untupleize (f, (t, a, d, kvs, tags, abstract)) = map (T.strip . T.pack) ["---"
+untupleize :: String -> (Path, MetadataItem) -> [T.Text]
+untupleize today (f, (t, a, d, dc, kvs, tags, abstract)) = map (T.strip . T.pack) ["---"
                                                 , f
-                                                , t, a, d
+                                                , t, a, d, if null dc then today else dc
                                                 , if null kvs then "" else show $ nubOrd kvs
                                                 , unwords tags
                                                 , abstract
@@ -150,12 +154,105 @@ rewriteLinkMetadata half full gtx
        let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old
        let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-       let newGtx = map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,(b,c,d,e, filter (/=defTag) ts, f))) $ -- flatten [(Path, (String, String, String, String, String))]
+       let newGtx = map (\(a,(b,c,d,dc,kvs,ts,f)) -> let defTag = tag2Default a in (a,(b,c,d,dc,kvs, filter (/=defTag) ts, f))) $ -- flatten [(Path, (String, String, String, String, String))]
                      M.toList new
        writeGtx gtx newGtx
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
-appendLinkMetadata l i@(t,a,d,di,ts,abst) = do printGreen (l ++ " : " ++ ppShow i)
-                                               let newGtx = T.unlines $ untupleize (l, (t,a,d,di,ts,abst))
-                                               void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGtx
+appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppShow i)
+                                                   today <- currentDayString
+                                                   let newGtx = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abst))
+                                                   void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGtx
+
+
+---
+
+
+-- Calculate the difference in days between two dates
+daysDiff :: Day -> Day -> Integer
+daysDiff start end = diffDays end start
+
+-- Add days to a given date
+addDaysToDate :: Integer -> Day -> Day
+addDaysToDate days = addDays days
+
+-- -- Generate a list of dates between the start and end dates, evenly spaced for each item
+-- generateDates :: Day -> Day -> Int -> [Day]
+-- generateDates start end itemCount =
+--   let totalDays = daysDiff start end
+--       interval = fromIntegral totalDays `div` fromIntegral itemCount
+--   in [addDaysToDate (interval * fromIntegral i) start | i <- [0..itemCount-1]]
+
+-- -- Update the MetadataItem list by adding 'date-created'
+-- updateItemsWithDates :: [MetadataItem] -> [MetadataItem]
+-- updateItemsWithDates items =
+--   let startDate = fromGregorian 2019 8 21 -- Start date
+--       endDate = fromGregorian 2024 3 10 -- End date
+--       itemCount = length items
+--       dates = generateDates startDate endDate itemCount
+--       formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
+--       updateItem (title, author, date, _, misc, tags, abstract) newDate =
+--         (title, author, date, formatDay newDate, misc, tags, abstract)
+--   in zipWith updateItem items dates
+
+
+-- Helper function to generate a list of dates
+-- generateDates :: Day -> Day -> Int -> [Day]
+-- generateDates start end itemCount =
+--   let totalDays = diffDays end start
+--       interval = fromIntegral totalDays `div` fromIntegral itemCount
+--   in [addDays (interval * fromIntegral i) start | i <- [0..itemCount-1]]
+
+
+generateDates :: Day -> Day -> Int -> [Day]
+generateDates start end itemCount =
+  let totalDays = fromIntegral $ diffDays end start
+      interval = totalDays / fromIntegral (itemCount - 1)
+  in [addDays (round (interval * fromIntegral i :: Double)) start | i <- [0..itemCount-1]]
+
+
+-- Function to ensure 'date-created' is not before 'date'
+adjustDateCreated :: String -> String -> String
+adjustDateCreated dateCreated datePublished =
+  if datePublished > dateCreated then datePublished else dateCreated
+
+-- Updated function to accurately update items with dates
+updateItemsWithDates :: MetadataList -> MetadataList
+updateItemsWithDates items =
+  let startDate = fromGregorian 2019 8 21
+      endDate = fromGregorian 2024 3 10
+      itemCount = length items
+      dates = generateDates startDate endDate itemCount
+      formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
+      updateItem (path, (title, author, date, _, misc, tags, abstract)) newDateCreated =
+        let newDateCreatedFormatted = formatDay newDateCreated
+            adjustedDateCreated = adjustDateCreated newDateCreatedFormatted date
+        in (path, (title, author, date, adjustedDateCreated, misc, tags, abstract))
+  in zipWith updateItem items dates
+
+-- -- Function to update MetadataList with dates
+-- updateItemsWithDates :: MetadataList -> MetadataList
+-- updateItemsWithDates items =
+--   let startDate = fromGregorian 2019 8 21
+--       endDate = fromGregorian 2024 3 10
+--       itemCount = length items
+--       dates = generateDates startDate endDate itemCount
+--       formatDay = formatTime defaultTimeLocale "%Y-%m-%d"
+--       updateItem (path, (title, author, date, _, misc, tags, abstract)) newDate =
+--         (path, (title, author, date, formatDay newDate, misc, tags, abstract))
+--   in zipWith updateItem items dates
+
+-- Function to update MetadataList with today's date for the 'date-created' field
+updateItemsWithToday :: MetadataList -> IO MetadataList
+updateItemsWithToday items = do
+  today <- currentDayString
+  let updateItem (path, (title, author, date, _, misc, tags, abstract)) =
+        (path, (title, author, date, today, misc, tags, abstract))
+  return $ map updateItem items
+
+-- -- Function to update items with today's date in the 'date-created' field
+-- updateItemsWithToday :: [MetadataItem] -> IO [MetadataItem]
+-- updateItemsWithToday items = do
+--   today <- currentDayString
+--   return $ map (\(title, author, date, _, misc, tags, abstract) -> (title, author, date, today, misc, tags, abstract)) items

@@ -39,7 +39,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                            do printRed "Error: Arxiv parsing failed!"
                               printGreen ("Error details: failure on Arxiv URL "++url' ++"; Arxiv ID: " ++ arxivid ++ "; raw response: " ++ show bs ++ "; parsed data: " ++ show [show tags, title, authors, published, doiTmp, show doi, abst, show ts])
                               return (Left Temporary)
-                           else return $ Right (url', (title,authors,published,doi,ts,abst))
+                           else return $ Right (url', (title,authors,published,"",doi,ts,abst))
 
 arxivDownload :: String -> IO (ExitCode, U.ByteString, String)
 arxivDownload url = do

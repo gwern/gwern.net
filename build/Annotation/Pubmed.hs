@@ -26,7 +26,7 @@ pubmed l = do checkURL l
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
                              abstract' <- fmap cleanAbstractsHTML $ processParagraphizer l $ linkAutoHtml5String $ processPubMedAbstract $ unlines abstrct
-                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, [("doi",trim $ processDOI doi)], ts, abstract'))
+                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, "", [("doi",trim $ processDOI doi)], ts, abstract'))
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do

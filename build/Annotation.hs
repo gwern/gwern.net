@@ -20,9 +20,9 @@ linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                             case l' of
                                               -- apply global per-field rewrites here
-                                              Right (l'',(title,author,date,doi,tags,abstract)) -> return $ Right (l'',(reformatTitle title,author,date,doi,tags,abstract))
+                                              Right (l'',(title,author,date,dc,kvs,tags,abstract)) -> return $ Right (l'',(reformatTitle title,author,date,dc,kvs,tags,abstract))
                                               Left Permanent -> let (title,author,date) = tooltipToMetadata (T.unpack l) (T.unpack tooltip) in
-                                                                  if title/="" then return (Right (T.unpack l,(reformatTitle title,author,date,[],[],""))) else return l'
+                                                                  if title/="" then return (Right (T.unpack l,(reformatTitle title,author,date,"",[],[],""))) else return l'
                                               Left Temporary -> return l'
   where reformatTitle = replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
@@ -30,7 +30,7 @@ linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
-                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", [], [], ""))
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], [], ""))
                  | "arxiv.org/abs/" `isInfixOf` l || "browse.arxiv.org/html/" `isInfixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
@@ -67,4 +67,4 @@ wikipediaURLToTitle :: String -> String
 wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
 
 twitter :: Path -> IO (Either Failure (Path, MetadataItem))
-twitter u = return $ Right (u, ("", extractTwitterUsername u, "", [], [], ""))
+twitter u = return $ Right (u, ("", extractTwitterUsername u, "", "", [], [], ""))

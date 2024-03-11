@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-02-29 11:56:58 gwern"
+When: Time-stamp: "2024-03-10 20:05:04 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -212,7 +212,7 @@ lookupTags m item = do
   let path = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return Nothing
-    Just (_,_,_,_,tags,_) -> return $ Just tags
+    Just (_,_,_,_,_,tags,_) -> return $ Just tags
 
 fieldsTagHTML :: Metadata -> Context String
 fieldsTagHTML m = field "tagsHTML" $ \item -> do

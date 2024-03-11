@@ -3,6 +3,7 @@ module Config.Misc where
 
 import Data.Time.Calendar (toModifiedJulianDay, toGregorian)
 import Data.Time.Clock (getCurrentTime, utctDay)
+import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory)
 import System.IO.Unsafe (unsafePerformIO)
@@ -23,6 +24,9 @@ currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGreg
 
 currentDay :: IO Integer
 currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
+
+currentDayString :: IO String
+currentDayString = fmap (formatTime defaultTimeLocale "%Y-%m-%d") Data.Time.Clock.getCurrentTime
 
 -- for Columns.hs:
 listLengthMaxN :: Int

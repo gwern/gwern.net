@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2024-02-28 17:28:19 gwern"
+When:  Time-stamp: "2024-03-10 20:08:22 gwern"
 License: CC-0
 Dependencies: Gwern.net Hakyll libraries
 
@@ -81,5 +81,5 @@ isAnnotated md target =
     let annotated = M.lookup target' md in
       case annotated of
        -- the link has a valid annotation already defined (>100 chars, no meaningful abstract can be written in <100), so build & return;
-       Just (_,_,_,_,_,abstrct)  -> length abstrct > 100
+       Just (_,_,_,_,_,_,abstrct)  -> length abstrct > 100
        Nothing -> False
