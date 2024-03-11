@@ -819,18 +819,6 @@ function includeContent(includeLink, content) {
         wrapper.append(idBearerBlock);
     }
 
-	//	Intelligent rectification of contained HTML structure.
-	if (wrapper.closest("#footnotes > ol") == null) {
-		wrapper.querySelectorAll(".footnote-self-link").forEach(link => {
-			link.remove();
-		});
-		if (wrapper.querySelector("#footnotes > ol") == null) {
-			wrapper.querySelectorAll(".footnote-back").forEach(link => {
-				link.remove();
-			});
-		}
-	}
-
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 

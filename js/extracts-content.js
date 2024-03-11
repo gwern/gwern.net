@@ -92,7 +92,7 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
     //	Called by: Extracts.citationForTarget (extracts-content.js)
     //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
-    localPageForTarget: (target, forceNarrow) => {
+    localPageForTarget: (target) => {
         GWLog("Extracts.localPageForTarget", "extracts-content.js", 2);
 
 		/*  If the target is an anchor-link, check to see if the target location 
@@ -107,20 +107,14 @@ Extracts = { ...Extracts,
 			pop-frame from a table of contents.
 
 			Otherwise, display the entire linked page.
-
-			(The `forceNarrow` option allows other pop-frame types, like 
-			 `CITATION`, which call this function to provide their content, to 
-			 always spawn only the linked block, regardless of what other 
-			 pop-frames may or may not be spawned.)
 		 */
 		let fullPage = !(   isAnchorLink(target)
-        				 && (   forceNarrow
-        					 || target.closest(".TOC")
+        				 && (   target.closest(".TOC")
         					 || Extracts.targetDocument(target)));
 
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, {
-			class: "include-block-context-expanded include-spinner-not"
+			class: "include-strict include-block-context-expanded include-spinner-not"
 		});
 
 		//  Mark full-page embed pop-frames.
@@ -374,7 +368,9 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target, { class: AuxLinks.auxLinksLinkType(target) }));
+		return newDocument(synthesizeIncludeLink(target, {
+			class: "include-strict include-spinner-not " + AuxLinks.auxLinksLinkType(target)
+		}));
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -460,6 +456,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.dropcapInfoForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict",
 			"data-letter": target.dataset.letter,
 			"data-dropcap-type": target.dataset.dropcapType
 		}));
@@ -493,7 +490,10 @@ Extracts = { ...Extracts,
     citationForTarget: (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
-		return Extracts.localPageForTarget(target, true);
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict include-spinner-not",
+			"data-include-selector-not": ".footnote-self-link, .footnote-back"
+		}));
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -576,7 +576,9 @@ Extracts = { ...Extracts,
     citationBackLinkForTarget: (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
-        return Extracts.localPageForTarget(target, true);
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-block-context-expanded include-strict include-spinner-not"
+        }));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -651,9 +653,9 @@ Extracts = { ...Extracts,
     remoteImageForTarget: (target) => {
         GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -679,7 +681,9 @@ Extracts = { ...Extracts,
     remoteVideoForTarget: (target) => {
         GWLog("Extracts.remoteVideoForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target));
+		return newDocument(synthesizeIncludeLink(target, {
+			class: "include-strict include-spinner-not"
+		}));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -723,9 +727,9 @@ Extracts = { ...Extracts,
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -756,9 +760,9 @@ Extracts = { ...Extracts,
     localAudioForTarget: (target) => {
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -790,7 +794,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target, {
-			"class": "include-caption-not"
+			"class": "include-caption-not include-strict include-spinner-not"
         }));
     },
 
@@ -826,7 +830,9 @@ Extracts = { ...Extracts,
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -884,7 +890,9 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -910,7 +918,9 @@ Extracts = { ...Extracts,
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     }
 };
 

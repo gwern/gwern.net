@@ -589,12 +589,26 @@ Sidenotes = { ...Sidenotes,
 			//  Create the sidenote outer containing block...
 			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
 
-			//  Wrap the contents of the footnote in two wrapper divs...
+			/*	Fill the sidenote either by copying from an existing footnote
+				in the current page, or else by transcluding the footnote to 
+				which the citation refers.
+			 */
 			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
 			let sidenoteContents = newDocument(referencedFootnote 
 											   ? referencedFootnote.childNodes 
-											   : "Loading sidenote contents, please wait…");
+											   : synthesizeIncludeLink(citation, {
+											   		"class": "include-strict include-unwrap",
+											   		"data-include-selector-not": ".footnote-self-link"
+											   	 }));
+
+			/*	If the sidenote contents were copied from a footnote that exists
+				in the page, then we should regenerate placeholders, otherwise
+				the back-to-citation links (among possibly other things) may
+				not work right.
+			 */
 			regeneratePlaceholderIds(sidenoteContents);
+
+			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
 				class: "sidenote-outer-wrapper" 
 			})).appendChild(sidenote.innerWrapper = newElement("DIV", { 
@@ -1014,7 +1028,8 @@ Sidenotes = { ...Sidenotes,
 				});
 			}
 		}, "rewrite", (info) => (   info.document == document
-								 && info.source != "Sidenotes.constructSidenotes"));
+								 && info.source != "Sidenotes.constructSidenotes"
+								 && info.container.closest(".sidenote") == null));
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	},

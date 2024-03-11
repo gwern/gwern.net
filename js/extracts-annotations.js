@@ -37,7 +37,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated include-annotation include-spinner-not",
+			"class": "link-annotated include-annotation include-strict include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },
@@ -160,7 +160,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.partialAnnotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated-partial include-annotation-partial",
+			"class": "link-annotated-partial include-annotation-partial include-strict include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },

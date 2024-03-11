@@ -2102,7 +2102,10 @@ Popups = {
 			//	Attach popup to target.
 			Popups.attachPopupToTarget(popup, target);
 		} else {
-			//	Preparation failed.
+			//	Reset cursor to normal.
+			Popups.clearWaitCursorForTarget(target);
+
+			//	Preparation failed, so do nothing.
 			return;
 		}
 
@@ -7639,18 +7642,6 @@ function includeContent(includeLink, content) {
         wrapper.append(idBearerBlock);
     }
 
-	//	Intelligent rectification of contained HTML structure.
-	if (wrapper.closest("#footnotes > ol") == null) {
-		wrapper.querySelectorAll(".footnote-self-link").forEach(link => {
-			link.remove();
-		});
-		if (wrapper.querySelector("#footnotes > ol") == null) {
-			wrapper.querySelectorAll(".footnote-back").forEach(link => {
-				link.remove();
-			});
-		}
-	}
-
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
@@ -9901,7 +9892,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated include-annotation include-spinner-not",
+			"class": "link-annotated include-annotation include-strict include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },
@@ -10024,7 +10015,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.partialAnnotationForTarget", "extracts-annotations.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
-			"class": "link-annotated-partial include-annotation-partial",
+			"class": "link-annotated-partial include-annotation-partial include-strict include-spinner-not",
 			"data-include-template": "annotation-blockquote-not"
 		}));
     },
@@ -10247,7 +10238,7 @@ Extracts = { ...Extracts,
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
     //	Called by: Extracts.citationForTarget (extracts-content.js)
     //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
-    localPageForTarget: (target, forceNarrow) => {
+    localPageForTarget: (target) => {
         GWLog("Extracts.localPageForTarget", "extracts-content.js", 2);
 
 		/*  If the target is an anchor-link, check to see if the target location 
@@ -10262,20 +10253,14 @@ Extracts = { ...Extracts,
 			pop-frame from a table of contents.
 
 			Otherwise, display the entire linked page.
-
-			(The `forceNarrow` option allows other pop-frame types, like 
-			 `CITATION`, which call this function to provide their content, to 
-			 always spawn only the linked block, regardless of what other 
-			 pop-frames may or may not be spawned.)
 		 */
 		let fullPage = !(   isAnchorLink(target)
-        				 && (   forceNarrow
-        					 || target.closest(".TOC")
+        				 && (   target.closest(".TOC")
         					 || Extracts.targetDocument(target)));
 
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, {
-			class: "include-block-context-expanded include-spinner-not"
+			class: "include-strict include-block-context-expanded include-spinner-not"
 		});
 
 		//  Mark full-page embed pop-frames.
@@ -10529,7 +10514,9 @@ Extracts = { ...Extracts,
     auxLinksForTarget: (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target, { class: AuxLinks.auxLinksLinkType(target) }));
+		return newDocument(synthesizeIncludeLink(target, {
+			class: "include-strict include-spinner-not " + AuxLinks.auxLinksLinkType(target)
+		}));
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -10615,6 +10602,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.dropcapInfoForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict",
 			"data-letter": target.dataset.letter,
 			"data-dropcap-type": target.dataset.dropcapType
 		}));
@@ -10648,7 +10636,10 @@ Extracts = { ...Extracts,
     citationForTarget: (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
-		return Extracts.localPageForTarget(target, true);
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict include-spinner-not",
+			"data-include-selector-not": ".footnote-self-link, .footnote-back"
+		}));
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -10731,7 +10722,9 @@ Extracts = { ...Extracts,
     citationBackLinkForTarget: (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
-        return Extracts.localPageForTarget(target, true);
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-block-context-expanded include-strict include-spinner-not"
+        }));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -10806,9 +10799,9 @@ Extracts = { ...Extracts,
     remoteImageForTarget: (target) => {
         GWLog("Extracts.remoteImageForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+		return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -10834,7 +10827,9 @@ Extracts = { ...Extracts,
     remoteVideoForTarget: (target) => {
         GWLog("Extracts.remoteVideoForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target));
+		return newDocument(synthesizeIncludeLink(target, {
+			class: "include-strict include-spinner-not"
+		}));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -10878,9 +10873,9 @@ Extracts = { ...Extracts,
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -10911,9 +10906,9 @@ Extracts = { ...Extracts,
     localAudioForTarget: (target) => {
         GWLog("Extracts.localAudioForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target), {
-			"class": "include-caption-not"
-        });
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-caption-not include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -10945,7 +10940,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target, {
-			"class": "include-caption-not"
+			"class": "include-caption-not include-strict include-spinner-not"
         }));
     },
 
@@ -10981,7 +10976,9 @@ Extracts = { ...Extracts,
     localDocumentForTarget: (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     },
 
     /*  This “special testing function” is used to exclude certain targets which
@@ -11039,7 +11036,9 @@ Extracts = { ...Extracts,
     localCodeFileForTarget: (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -11065,7 +11064,9 @@ Extracts = { ...Extracts,
     foreignSiteForTarget: (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
-        return newDocument(synthesizeIncludeLink(target));
+        return newDocument(synthesizeIncludeLink(target, {
+        	class: "include-strict include-spinner-not"
+        }));
     }
 };
 
@@ -13940,7 +13941,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
             && (   eventInfo.container == document.body
                 // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-               // if the link refers to the loaded content container itself
+                // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container.matches(selectorFromHash(link.hash))))) {
             link.swapClasses([ "link-self", "link-page" ], 0);
@@ -13982,11 +13983,14 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 
     //  Local links (to other pages on the site).
     eventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
-        if (link.dataset.linkIcon)
+        if (   link.dataset.linkIcon
+        	&& [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon) == false)
             return;
 
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
+        link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
+        						? "\u{00B6}" // ¶
+        						: "\u{1D50A}"; // 𝔊
     });
 }, "rewrite");
 
@@ -16186,12 +16190,26 @@ Sidenotes = { ...Sidenotes,
 			//  Create the sidenote outer containing block...
 			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
 
-			//  Wrap the contents of the footnote in two wrapper divs...
+			/*	Fill the sidenote either by copying from an existing footnote
+				in the current page, or else by transcluding the footnote to 
+				which the citation refers.
+			 */
 			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
 			let sidenoteContents = newDocument(referencedFootnote 
 											   ? referencedFootnote.childNodes 
-											   : "Loading sidenote contents, please wait…");
+											   : synthesizeIncludeLink(citation, {
+											   		"class": "include-strict include-unwrap",
+											   		"data-include-selector-not": ".footnote-self-link"
+											   	 }));
+
+			/*	If the sidenote contents were copied from a footnote that exists
+				in the page, then we should regenerate placeholders, otherwise
+				the back-to-citation links (among possibly other things) may
+				not work right.
+			 */
 			regeneratePlaceholderIds(sidenoteContents);
+
+			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
 				class: "sidenote-outer-wrapper" 
 			})).appendChild(sidenote.innerWrapper = newElement("DIV", { 
@@ -16611,7 +16629,8 @@ Sidenotes = { ...Sidenotes,
 				});
 			}
 		}, "rewrite", (info) => (   info.document == document
-								 && info.source != "Sidenotes.constructSidenotes"));
+								 && info.source != "Sidenotes.constructSidenotes"
+								 && info.container.closest(".sidenote") == null));
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	},

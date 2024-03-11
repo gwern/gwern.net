@@ -1912,7 +1912,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
             && (   eventInfo.container == document.body
                 // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-               // if the link refers to the loaded content container itself
+                // if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container.matches(selectorFromHash(link.hash))))) {
             link.swapClasses([ "link-self", "link-page" ], 0);
@@ -1954,11 +1954,14 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 
     //  Local links (to other pages on the site).
     eventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
-        if (link.dataset.linkIcon)
+        if (   link.dataset.linkIcon
+        	&& [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon) == false)
             return;
 
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = "\u{1D50A}"; // 𝔊
+        link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
+        						? "\u{00B6}" // ¶
+        						: "\u{1D50A}"; // 𝔊
     });
 }, "rewrite");
 
