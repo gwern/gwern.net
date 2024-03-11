@@ -62,9 +62,9 @@ main = do C.cd
           -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
-          -- 'newest': the _n_ newest link annotations created (currently, 'newest' is not properly tracked, and is inferred from being at the bottom/end of full.gtx/partial.gtx TODO: actually track annotation creation dates...)
-          -- Optimization: if there is only 1 argument, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would double runtime.
-          unless (length dirs == 1) $ do
+          -- 'newest': the _n_ newest link annotations created
+          -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
+          unless (length dirs < 5) $ do
             metaNewest <- readLinkMetadataNewest 100
             generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-10 20:03:53 gwern"
+When:  Time-stamp: "2024-03-10 20:46:20 gwern"
 License: CC-0
 -}
 
@@ -286,21 +286,12 @@ readLinkMetadataAndCheck = do
              return final
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
--- HACK: Because we do not (yet) track annotation creation date, we guess at it. *Usually* a new annotation is appended to the end of full.gtx/half.gtx, and so the newest n are the last n from full+half. (auto.gtx is automatically sorted to deduplicate, erasing the temporal order of additions; however, this is not a big loss, as most auto.gtx entries which have a generated annotation worth reading would've been created by `gwtag`ing a link, which would put them into half.gtx instead.)
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do full  <- fmap (reverse . filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
-                              half  <- fmap (reverse . filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
-                              let ratio = fromIntegral (length full) / fromIntegral (length (full++half)) :: Double
-                              let n1 = round (fromIntegral n * ratio)
-                              let full' = take n1 full
-                              let n2 = round (fromIntegral n * (1-ratio))
-                              let half' = take n2 half
-                              let final = M.fromList $ interleave full' half' -- TODO: we'd like to preserve the ordering, but the Map erases it, and generateDirectory insists on sorting by the publication-date. Hm...
-                              return final
-  where
-    interleave :: [a] -> [a] -> [a]
-    interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
-    interleave _        _        = []
+readLinkMetadataNewest n = do full  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
+                              half  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
+                              let both = full++half
+                              let newest = take n $ sortItemPathDateCreated both
+                              return $ M.fromList newest
 
 -- read a GTX database and look for annotations that need to be paragraphized.
 warnParagraphizeGTX :: FilePath -> IO ()
@@ -651,3 +642,9 @@ sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 
 third :: (a,b,c,d,dc,e,f) -> c
 third (_,_,rd,_,_,_,_) = rd
+
+sortItemPathDateCreated :: [(Path,MetadataItem)] -> [(Path,MetadataItem)]
+sortItemPathDateCreated = sortBy (flip compare `on` (fourth . snd))
+
+fourth :: (a,b,c,d,e,f,g) -> d
+fourth (_,_,_,th,_,_,_) = th
