@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-10 20:46:20 gwern"
+When:  Time-stamp: "2024-03-10 22:10:59 gwern"
 License: CC-0
 -}
 
@@ -335,7 +335,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
-                                    walkM (invertImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
+                                    walkM (invertImageInline md <=< imageLinkHeightWidthSet <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
 
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>

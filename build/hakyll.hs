@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-03-10 20:05:04 gwern"
+When: Time-stamp: "2024-03-10 22:10:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -293,7 +293,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
-     walkM (imageLinkHeightWidthSet <=< invertImageInline) pbth
+     walkM (imageLinkHeightWidthSet <=< invertImageInline md) pbth
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
