@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-10 20:36:15 gwern"
+When:  Time-stamp: "2024-03-11 11:59:43 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -159,5 +159,10 @@ rewriteLinkMetadata half full gtx
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
 appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppShow i)
                                                    today <- currentDayString
-                                                   let newGtx = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abst))
+                                                   -- GTX removes as much delimiting as possible for easier editing/generation. This lack of explicit closing becomes a problem in one case: hand-editing 'auto.gtx'.
+                                                   -- Because many tools will delete trailing whitespace, this renders manual editing of 'auto.gtx' risky, because the final entry (like most 'auto.gtx' entries) may not have any abstract contents at all: so we would edit some entry, but then the final trailing entry will be truncated up to the date-created field, which is the last field that always exists. This then fails to parse, breaking everything. (This is never an issue with full.gtx and rarely an issue with half.gtx.)
+                                                   -- We could attempt to append a '---', but then that risks double-lines of '---\n---', or we could attempt to modify GTX parsing to be more permissive on only the final entry in a GTX file, but that dangerously complicates the parsing logic.
+                                                   -- So we adopt a simpler solution: when generating a new 'auto.gtx' entry, always done using `appendLinkMetadata`, insert a 'page left intentionally blank' marker. A simple HTML comment will not trigger any length limits or annotation-creation, doesn't use up much space, doesn't affect the rest of the code, doesn't risk mis-parses or duplicated lines etc. (If the unnecessary ones become a concern, they can always be deleted, as long as the final one is left in place.)
+                                                   let abstractPadded = if null abst then "<!-- [GTX padding] -->" else abst
+                                                   let newGtx = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abstractPadded))
                                                    void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGtx
