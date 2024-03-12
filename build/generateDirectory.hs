@@ -144,13 +144,17 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   -- A tag index may have an optional Markdown essay/page explaining it; if it does, that is located at `/note/basename($TAG)`, and we transclude it at runtime. If there is no such `/note/`, then we fall back to checking for an entire top-level essay of the same name, `/basename($TAG)`, but that would be far too long to transclude as a whole, so we transclude the summary in that case.
   -- (If we desire to transclude an annotation but the top-level essay file does not exactly coincidence with the tag-name, then the workaround is to simply create a `/note/basename($TAG)` which contains only a .include-annotation link in it.)
-  abstract <- do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
-                 let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
-                 abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file, 'note/catnip.md'
-                 essayp <- doesFileExist (tagBase ++ ".md")
-                 return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"], []) [Str "[page summary]"] (T.pack (abstractf ++ "##footnotes"), T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
-                          else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
-                               else []
+  abstract <- if not ("doc/" `isPrefixOf` dir'') then return [] else
+                do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
+                   let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
+                   abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file, 'note/catnip.md'
+                   essayp <- doesFileExist (tagBase ++ ".md")
+                   return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content", "link-page"],
+                                                                                                                                  -- exclude page wrappers if present, like footnotes etc: they take up too much space when transcluded at the top of a tag-directory:
+                                                                                                                                   [("include-selector-not","#footnotes, #further-reading, #backlinks-section, #link-bibliography-section")])
+                                                                                                                             [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
+                            else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
+                                 else []
 
   let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_,_),lb) -> not (null lb)) links
 
