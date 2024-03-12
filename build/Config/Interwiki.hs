@@ -3531,7 +3531,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Okinawa_Battle", "Battle_of_Okinawa")
           , ("Olbers%27_paradox", "Olbers%27s_paradox")
           , ("Old_World_vultures", "Old_World_vulture")
-          , ("Oleander", "Nerima")
+          , ("Oleander", "Nerium")
           , ("Olfaction", "Sense_of_smell")
           , ("Olfactory_bulbs", "Olfactory_bulb")
           , ("Oligodendrocytes", "Oligodendrocyte")

@@ -158,8 +158,8 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore", "ÿþ"]
 
 -- testing: unique keys
-htmlRewriteRegexp, htmlRewriteFixed :: [(String, String)]
-htmlRewriteRegexp = [
+htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
+htmlRewriteRegexpAfter = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
          -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to stripe attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
@@ -266,8 +266,6 @@ htmlRewriteRegexp = [
          , ("([0-9]*[02456789])th ", "\\1<sup>th</sup> ")
          , ("([0-9]*[1])st ",        "\\1<sup>st</sup> ")
          , ("([0-9]*[3])rd ",        "\\1<sup>rd</sup> ")
-         , ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
-         , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts
          , ("CI=([.0-9])", "CI = \\1") -- 'CI=0.90' → 'CI = 0.90'
          , ("RR=([.0-9])", "RR = \\1") -- 'RR=2.9' → 'RR = 2.09'
          , ("OR=([.0-9])", "OR = \\1") -- 'OR=2.9' → 'OR = 2.09'
@@ -1084,6 +1082,9 @@ htmlRewriteFixed =
          , ("<strong>Originality/value</strong>", "<strong>Conclusion</strong>:")
          , ("<strong>Conclusions and Relevance</strong>", "<strong>Conclusion</strong>:")
          , ("<strong>Conclusions and relevance</strong>", "<strong>Conclusion</strong>:")
+         , ("<strong>Conclusions and Clinical Relevance</strong>", "<strong>Conclusion</strong>:")
+         , ("<strong>Clinical Relevance</strong>", "<strong>Conclusion</strong>:")
+         , ("<strong>CLINICAL RELEVANCE</strong><p>", "<p><strong>Conclusion</strong>: ")
          , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
          , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
          , ("&lt;b&gt;&lt;i&gt;", "<em>")
@@ -1818,4 +1819,9 @@ htmlRewriteFixed =
          , (",’", "’,")
          , (" (”", " (“")
          , ("\160", " ") -- NO BREAK SPACE
+         ]
+
+-- regexps we need to run *before* we run the bulk of the fixed-string
+htmlRewriteRegexpBefore = [ ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
+         , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts; must be run *before* because JEL codes like 'R2' or 'L2' will be rewritten into sub/superscript under the assumption they are the scientific concepts, which then breaks the JEL match.
          ]

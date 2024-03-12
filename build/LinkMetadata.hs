@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-11 21:41:48 gwern"
+When:  Time-stamp: "2024-03-12 11:20:00 gwern"
 License: CC-0
 -}
 
@@ -42,7 +42,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -289,8 +289,8 @@ readLinkMetadataAndCheck = do
 readLinkMetadataNewest :: Int -> IO Metadata
 readLinkMetadataNewest n = do md <- fmap M.toList $ readLinkMetadata
                               let newest = sortItemPathDateCreated md
-                              let annotations = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> abst /= "") newest
-                              let links       = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> abst == "") newest
+                              let annotations = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst >= C.minimumAnnotationLength) newest
+                              let links       = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <  C.minimumAnnotationLength) newest
                               return $ M.fromList $ annotations ++ links
 
 -- read a GTX database and look for annotations that need to be paragraphized.
@@ -298,9 +298,6 @@ warnParagraphizeGTX :: FilePath -> IO ()
 warnParagraphizeGTX path = do gtx <- readGtxFast path
                               let unparagraphized = filter (\(f,(_,_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
                               unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
-
-minimumAnnotationLength :: Int
-minimumAnnotationLength = 250
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
@@ -451,7 +448,7 @@ addHasAnnotation :: MetadataItem -> Inline -> Inline
 addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
+  | length abstrct > C.minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
   | otherwise = addClass "link-annotated-partial" x'

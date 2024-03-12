@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-03-09 21:59:23 gwern"
+;;; When:  Time-stamp: "2024-03-12 11:50:36 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1099,6 +1099,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" \\([0-9∞.]+\\) or \\([0-9∞.]+\\) "        . " \\1–\\2 ")
                         ("\\([0-9∞.]+\\)- to \\([0-9∞.]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         ("95% CI = \\([0-9]\\.[0-9]+\\), \\([0-9]\\.[0-9]+\\)" . "95% CI = \\1–\\2")
+                        ("CI:\\([0-9]\\)" . "CI: \\1") ; "95% CI:0.01-0.99"
                         )
                       ))
          (dolist (pair regexps)

@@ -206,6 +206,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("longevity/aspirin", "aspirin (aging)")
           , ("japan/history/tominaga-nakamoto", "Tominaga Nakamoto")
           , ("genetics/selection/artificial/index-selection", "index selection (breeding)")
+          , ("genetics/selection/www.mountimprobable.com", "<em>Climbing Mt. Improbable</em>")
           , ("genetics/heritable/adoption", "adoption studies")
           , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
           , ("genetics/genome-synthesis", "genome synthesis")
