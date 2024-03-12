@@ -535,17 +535,14 @@ article {
 /*	TOCs on directory index pages.
  */
 
-@media all and (max-width: 649px) {
-    body[class*='-index'] #TOC {
-        margin-top: 2.5rem;
-    }
+body[class*='-index'] #TOC {
+	margin-top: 2.5rem;
 }
 @media all and (min-width: 650px) {
     body[class*='-index'] #TOC {
         float: unset;
         max-width: unset;
         margin-right: unset;
-        margin-top: 3rem;
     }
 }
 
