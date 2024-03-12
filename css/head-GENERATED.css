@@ -291,6 +291,10 @@ article {
     line-height: 1.5;
 }
 
+#page-metadata:not(:last-child) {
+	margin-bottom: 2.25rem;
+}
+
 #page-metadata > * + * {
 	margin-top: 0.75em;
 }
@@ -511,7 +515,7 @@ article {
 	/*	On desktop, we want the TOC side by side with the content.
 	 */
     #TOC {
-		margin: 2.25rem 2.25rem 1rem 0;
+		margin: 0 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
 		box-shadow:
@@ -923,14 +927,6 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /****************/
 /* MAIN CONTENT */
 /****************/
-
-#markdownBody {
-	margin-top: 2.25rem;
-}
-
-#markdownBody:first-child {
-	margin-top: 0;
-}
 
 .markdownBody {
 	--base-block-spacing: 0.25em;

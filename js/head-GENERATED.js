@@ -2744,7 +2744,7 @@ GW.layout = {
 		"hr"
 	],
 
-	//	Do not apply block layout classes within these containers.
+	//	Do not apply block layout classes to or within these elements.
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
 		".TOC > *",
@@ -2858,6 +2858,10 @@ GW.layout = {
 //	Add support for .desktop-not and .mobile-not classes.
 GW.layout.skipElements.push(GW.mediaQueries.mobileWidth.matches ? ".mobile-not" : ".desktop-not");
 
+//	Skip non-layout-containing blocks if they themselves appear in block flow.
+GW.layout.skipElements.push(...(GW.layout.blockLayoutExclusionSelector.split(", ")));
+
+//	Default block sequence function options.
 GW.layout.defaultOptions = processLayoutOptions({
 	blockContainers: GW.layout.blockContainers,
 	blockElements: GW.layout.blockElements,
@@ -3188,18 +3192,18 @@ function sequentialBlockOf(element, direction, options) {
 	let wrapperOutType = wrapperDirection + "Out";
 	let terminus = (direction == "next" ? "first" : "last");
 
+	//	Skip elements that don’t participate in block flow.
+	if (   isSkipped(element[siblingKey], options)
+		|| (   isNodeEmpty(element[siblingKey]) == true
+			&& isNonEmpty(element[siblingKey], options) == false))
+		return sequentialBlockOf(element[siblingKey], direction, options);
+
 	//	Look inside “transparent” wrappers (that don’t affect layout).
 	if (isWrapper(element[siblingKey], wrapperInType, options)) {
 		let terminalBlock = terminalBlockOf(element[siblingKey], terminus, options);
 		if (terminalBlock)
 			return terminalBlock;
 	}
-
-	//	Skip elements that don’t participate in block flow.
-	if (   isSkipped(element[siblingKey], options)
-		|| (   isNodeEmpty(element[siblingKey]) == true
-			&& isNonEmpty(element[siblingKey], options) == false))
-		return sequentialBlockOf(element[siblingKey], direction, options);
 
 	//	An actual block element (the base case).
 	if (isBlock(element[siblingKey], options))
