@@ -72,7 +72,6 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
  | anyPrefixT u ["/metadata/annotation/"] = x
 
- -- `arrow-down`/`arrow-up` are handled by Arrow.hs
  | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg")
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg")

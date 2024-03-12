@@ -8,9 +8,6 @@ import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc.Definition (Inline(Link, Span, Str),
-                               Block(Div, Header, Para))
-
 import Utils (anyInfixT, anyPrefixT)
 
 root :: FilePath
@@ -82,52 +79,6 @@ tooltipToMetadataTestcases =
       , (("","Foo 2020-06-12"),  ("", "Foo", "2020-06-12"))
       , (("","John Smith 2020"), ("", "John Smith", "2020"))
       , (("/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=5","Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)"), ("Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)", "", ""))
-      ]
-
-arrowUp, arrowDown :: T.Text
-arrowUp = "arrow-up"
-arrowDown = "arrow-down"
-arrowUpKV, arrowDownKV :: [(T.Text,T.Text)]
-arrowUpKV = [("link-icon", arrowUp), ("link-icon-type", "svg")]
-arrowDownKV = [("link-icon", arrowDown), ("link-icon-type", "svg")]
-
--- testing: unique all
-arrowTestCases :: [([Block], [Block])]
-arrowTestCases =
-      [([Para [Link ("", [], []) [Str "simpleCase"] ("#target", "")]],
-        [Para [Link ("", [], arrowDownKV) [Str "simpleCase"] ("#target", "")]])
-      , ([Para [Link ("", [], []) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "sameBlockCase"] ("#target", ""), Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "differentBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]],
-          [Para [Link ("", [], arrowDownKV) [Str "nestedCase"] ("#target", "")], Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]]])
-      , ([Para [Link ("", [], []) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]],
-         [Para [Link ("", [], arrowDownKV) [Str "headerCase"] ("#target", "")], Header 1 ("target", [], []) [Str "header"]])
-      , ([Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "beforeLinkCase"] ("#target", "")]],
-         [Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkCase"] ("#target", "")]])
-      , ([Para [Link ("", [], []) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]],
-          [Para [Link ("", [], arrowDownKV) [Str "multipleLinksCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]])
-      , ([Para [Link ("", [], []) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]],
-         [Para [Link ("", [], arrowDownKV) [Str "multipleTargetsCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]]])
-      , ([Para [Link ("", [], []) [Str "nonExistentTargetCase"] ("#nonexistent", "")]],
-         [Para [Link ("", [], arrowDownKV) [Str "nonExistentTargetCase"] ("#nonexistent", "")]])
-      , ([Para [Str "noLinksCase: no links or targets here"]],
-         [Para [Str "noLinksCase: no links or targets here"]])
-      , ([Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], []) [Str "beforeLinkNestedCase"] ("#target", "")]],
-         [Div ("", [], []) [Para [Span ("target", [], []) [Str "span"]]], Para [Link ("", [], arrowUpKV) [Str "beforeLinkNestedCase"] ("#target", "")]])
-      , ([Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], []) [Str "beforeLinkHeaderCase"] ("#target", "")]],
-         [Header 1 ("target", [], []) [Str "header"], Para [Link ("", [], arrowUpKV) [Str "beforeLinkHeaderCase"] ("#target", "")]])
-      , ([Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], []) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")]],
-         [Para [Span ("target1", [], []) [Str "span1"], Span ("target2", [], []) [Str "span2"]], Para [Link ("", [], arrowUpKV) [Str "multipleTargetsWithBeforeLinksCase"] ("#target1", ""), Link ("", [], arrowUpKV) [Str "link2"] ("#target2", "")]])
-      , ([Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], []) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], []) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]],
-         [Para [Span ("target1", [], []) [Str "span1"]], Para [Link ("", [], arrowUpKV) [Str "beforeAfterMixedCase"] ("#target1", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target2", "")], Para [Span ("target2", [], []) [Str "span2"]]])
-      , ([Para [Link ("", [], []) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], []) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], []) [Str "link3"] ("#target", "")]],
-         [Para [Link ("", [], arrowDownKV) [Str "mixedLinkOrderCase"] ("#target", ""), Link ("", [], arrowDownKV) [Str "link2"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]], Para [Link ("", [], arrowUpKV) [Str "link3"] ("#target", "")]])
-      , ([Div ("", [], []) [Para [Link ("", [], []) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]],
-         [Div ("", [], []) [Para [Link ("", [], arrowDownKV) [Str "sameDivBlockCase"] ("#target", "")], Para [Span ("target", [], []) [Str "span"]]]])
-      , ([Para [Link ("", [], []) [Str "simpleCase"] ("#top", "")]],
-         [Para [Link ("", [], arrowUpKV) [Str "simpleCase"] ("#top", "")]])
       ]
 
 -- testing: unique keys

@@ -15,7 +15,6 @@ import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, e
 
 -- module self-tests:
 import Annotation (tooltipToMetadata)
-import Arrow (testUpDownArrows)
 import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
@@ -41,7 +40,7 @@ import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDolla
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
-import qualified Config.Misc (cd, arrowTestCases, tooltipToMetadataTestcases, cycleTestCases,)
+import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases,)
 import qualified Config.Paragraph (whitelist)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
@@ -139,7 +138,6 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
-              , length $ isUniqueAll Config.Misc.arrowTestCases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ ensure "Test.LinkAuto.custom" "isURiReferenceT" (isURIReferenceT . snd) Config.LinkAuto.custom
@@ -178,8 +176,6 @@ testAll = do Config.Misc.cd
 
              printGreen ("Testing link icon matches…" :: String)
              unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)
-
-             unless (null testUpDownArrows) $ printRed ("Self-link arrow up/down AST test suite has errors in: " ++ show testUpDownArrows)
 
              unless (null printDoubleTestSuite) $ printRed ("Double-printing function test suite has errors in: " ++ show printDoubleTestSuite)
 
