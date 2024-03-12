@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-10 22:10:59 gwern"
+When:  Time-stamp: "2024-03-11 21:41:48 gwern"
 License: CC-0
 -}
 
@@ -116,7 +116,7 @@ rescrapeGTX filterF gtxpath = do dbl <- readGtxFast gtxpath
                                  let paths = filter filterF $ map fst dbl
                                  foldM_ (rescrapeItem gtxpath) dbl paths
 
-rescrapeItem :: Path -> [(Path, MetadataItem)] -> Path -> IO MetadataList
+rescrapeItem :: Path -> MetadataList -> Path -> IO MetadataList
 rescrapeItem gtx dblist path =
   case lookup path dblist of
    Just old -> do new <- updateGwernEntry (path,old)
@@ -287,11 +287,11 @@ readLinkMetadataAndCheck = do
 
 -- return the n most recent/newest annotations, in terms of created, not publication date.
 readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do full  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/full.gtx"
-                              half  <- fmap (filter (\(_,(_,_,_,_,_,_,abstrct)) -> not (null abstrct))) $ readGtxSlow "metadata/half.gtx"
-                              let both = full++half
-                              let newest = take n $ sortItemPathDateCreated both
-                              return $ M.fromList newest
+readLinkMetadataNewest n = do md <- fmap M.toList $ readLinkMetadata
+                              let newest = sortItemPathDateCreated md
+                              let annotations = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> abst /= "") newest
+                              let links       = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> abst == "") newest
+                              return $ M.fromList $ annotations ++ links
 
 -- read a GTX database and look for annotations that need to be paragraphized.
 warnParagraphizeGTX :: FilePath -> IO ()
@@ -365,7 +365,7 @@ createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extract
 
 annotateLink :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
-  | anyPrefixT targetT ["/metadata/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
+  | anyPrefixT targetT ["/metadata/", "/doc/www/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)
@@ -643,7 +643,7 @@ sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 third :: (a,b,c,d,dc,e,f) -> c
 third (_,_,rd,_,_,_,_) = rd
 
-sortItemPathDateCreated :: [(Path,MetadataItem)] -> [(Path,MetadataItem)]
+sortItemPathDateCreated :: MetadataList -> MetadataList
 sortItemPathDateCreated = sortBy (flip compare `on` (fourth . snd))
 
 fourth :: (a,b,c,d,e,f,g) -> d
