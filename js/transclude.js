@@ -330,14 +330,27 @@
 		abstract, i.e. the body of the annotation, if any). Formats the included
 		annotation as a partial.
 
-	class="include-annotation include-omit-metadata"
+	class="include-annotation-core"
 
+		class="include-annotation"
 		data-include-selector=".annotation-abstract, .file-includes"
 
 		Essentially the opposite of .include-annotation-partial; includes only
 		the annotation abstract, omitting metadata. (If there is no abstract - 
 		i.e., if the annotation is a partial - the included content will be
 		empty.)
+
+	class="include-content-core"
+
+		class="include-content"
+		data-include-selector-not="#footnotes, #further-reading, 
+			#backlinks-section, #link-bibliography-section, 
+			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
+
+		Include a page’s content, omitting “auxiliary” content sections
+		(Footnotes, Further Reading, Backlinks, Link Bibliography), as well as
+		the page tags and the date/status/confidence/importance/etc. metadata
+		fields block.
 
 	class="include-content-no-header"
 
@@ -1679,9 +1692,10 @@ Transclude = {
 	resolveIncludeLinkAliasClasses: (includeLink) => {
 		Transclude.includeLinkAliasTransforms.forEach(alias => {
 			let [ aliasClass, linkTransform ] = alias;
-			if (   includeLink.classList.contains(aliasClass)
-				&& linkTransform(includeLink))
+			if (includeLink.classList.contains(aliasClass)) {
+				linkTransform(includeLink);
 				includeLink.classList.remove(aliasClass);
+			}
 		});
 	},
 
@@ -1983,6 +1997,16 @@ addContentInjectHandler(GW.contentInjectHandlers.handleTranscludes = GW.contentL
 /*	Add various include-link alias classes.
  */
 
+/*=============================================*/
+/*	.include-block-context-expanded
+		`class="include-block-context"`
+		`data-block-context-options="expanded"`
+ */
+Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLink) => {
+	includeLink.classList.add("include-block-context");
+	includeLink.dataset.blockContextOptions = "expanded";
+});
+
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
@@ -1998,33 +2022,34 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 		"annotationClassSuffix:$"
 	].join(",");
 	includeLink.dataset.annotationClassSuffix = "-partial";
-
-	return true;
 });
 
-/*====================================================*/
-/*	.include-annotation.include-omit-metadata
+/*====================================================================*/
+/*	.include-annotation-core
+		`class="include-annotation"`
 		`data-include-selector=".annotation-abstract, .file-includes"`
  */
-Transclude.addIncludeLinkAliasClass("include-omit-metadata", (includeLink) => {
-	if (Transclude.isAnnotatedLinkFull(includeLink) == false)
-		return false;
-
+Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => {
 	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
-
-	return true;
 });
 
-/*=============================================*/
-/*	.include-block-context-expanded
-		`class="include-block-context"`
-		`data-block-context-options="expanded"`
+/*==========================================================*/
+/*	.include-content-core
+		`class="include-content"
+		`data-include-selector-not="#footnotes, #further-reading, 
+			#backlinks-section, #link-bibliography-section, 
+			#page-metadata .link-tags, #page-metadata .page-metadata-fields"`
  */
-Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLink) => {
-	includeLink.classList.add("include-block-context");
-	includeLink.dataset.blockContextOptions = "expanded";
-
-	return true;
+Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
+	includeLink.classList.add("include-content");
+	includeLink.dataset.includeSelectorNot = [
+		"#footnotes", 
+		"#further-reading", 
+		"#backlinks-section", 
+		"#link-bibliography-section", 
+// 		"#page-metadata .link-tags", 
+// 		"#page-metadata .page-metadata-fields"
+	].join(", ");
 });
 
 /*==========================================================*/
@@ -2037,8 +2062,6 @@ Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) =
 	includeLink.classList.add("include-unwrap");
 	includeLink.dataset.includeSelectorNot = "h1, h2, h3, h4, h5, h6";
 	includeLink.dataset.includeSelectorNotOptions = "first";
-
-	return true;
 });
 
 /*==========================================================*/
@@ -2047,6 +2070,4 @@ Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) =
  */
 Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 	includeLink.dataset.includeSelectorNot = ".caption-wrapper";
-
-	return true;
 });

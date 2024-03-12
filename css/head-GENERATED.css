@@ -928,6 +928,10 @@ body[class*='-index'] #TOC.TOC-links-only li {
 	margin-top: 2.25rem;
 }
 
+#markdownBody:first-child {
+	margin-top: 0;
+}
+
 .markdownBody {
 	--base-block-spacing: 0.25em;
 
