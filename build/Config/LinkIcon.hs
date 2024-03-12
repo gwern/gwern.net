@@ -245,6 +245,7 @@ linkIconRulesDouble u
  | u'' u "www.rollingstone.com" = ("𝓡𝐒", "text") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
  | u'' u "www.popsci.com" = ("PS", "text,sans") -- Popular Science magazine (no usable or recognizable logos)
  | u'' u "www.crunchbase.com" = ("cb", "text,sans") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>
+ | u'' u "newcriterion.com" = ("NC", "text") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>
  | otherwise = ("", "")
 
 -- Tri/triple TLAs
@@ -363,6 +364,7 @@ linkIconRulesQuad u
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon
  | u'' u "www.scmp.com" = ("SCMP", "text,quad") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?)
+ | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains.
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -981,6 +983,9 @@ linkIconTestUnitsText =
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
          , ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text")
          , ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic")
+         , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad")
+         , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad")
+         , ("https://read.atavist.com/american-hippopotamus", "Atvt", "text,quad")
          , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text")
          , ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text")
          , ("https://www.theguardian.com/books/2013/jul/10/man-behind-dickens-dostoevsky-hoax",  "the-guardian","svg")
@@ -1056,6 +1061,7 @@ linkIconTestUnitsText =
          , ("https://www.crunchbase.com/person/james-c-gaither", "cb", "text,sans")
          , ("https://www.tiktok.com/@dale_ebert/video/7301073510267407658", "tiktok", "svg")
          , ("https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty", "SCMP", "text,quad")
+         , ("https://newcriterion.com/issues/2006/10/a-good-list", "NC", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

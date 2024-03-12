@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-03 17:03:45 gwern"
+# When:  Time-stamp: "2024-03-11 12:10:25 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -29,11 +29,13 @@ wrap () { OUTPUT=$($1 2>&1)
               echo -e "$OUTPUT";
               echo -n "End: "; red "$WARN";
           fi; }
-ge  () { grep -E "$@"; } #  --color=always
+ge  () { grep -E "$@"; }
+gec  () { ge --color=always "$@"; }
 gev () { ge --invert-match "$@"; }
 gf  () { grep -F "$@"; }
+gfc  () { gf --color=always "$@"; }
 gfv () { gf --invert-match "$@"; }
-export -f bold red wrap ge gev gf gfv
+export -f bold red wrap ge gec gev gf gfc gfv
 
 file2Path () { echo "$1" | sed -e 's/~\/wiki//' -e 's/\/home\/gwern\/wiki\//\//' -e 's/\.\//\//' -e 's/https:\/\/gwern\.net//g' -e 's/^/\//' -e 's/^\/\//\//'; }
 path2File () {

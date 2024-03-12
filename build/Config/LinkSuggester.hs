@@ -251,7 +251,7 @@ whiteList = [ ( "/crop#hands"
   , ( "/doc/anime/eva/notenki-memoirs/2002-takeda-notenkimemoirs#the-daicon-3-decision"
     , [ "DAICON III" ]
     )
-  , ( "/doc/dual-n-back/2010-zhang.pdf"
+  , ( "/doc/statistics/bias/2010-zhang.pdf"
     , [ "'Chinese journal finds 31% of submissions plagiarized', Zhang 2010"
       ]
     )

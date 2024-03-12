@@ -36,7 +36,7 @@ main = do full <- readGtxSlow (C.root ++ "metadata/full.gtx") -- for hand create
                     let hits = filter (`anyInfix` stdin) finalSingleLine
                     putStrLn $ unlines $ hits ++ lookups
 
-blacklist :: String -> [(Path,MetadataItem)] -> [(String,(MetadataItem,String))]
+blacklist :: String -> MetadataList -> [(String,(MetadataItem,String))]
 blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title,_,_,_,_,_,_)) -> not (title=="" ||
                                                                                                   "en.wikipedia.org" `isInfixOf` f ||
                                                                                                   ("/doc/"`isPrefixOf`f && "/index" `isSuffixOf` f)))

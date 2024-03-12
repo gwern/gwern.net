@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-11 11:59:43 gwern"
+When:  Time-stamp: "2024-03-11 12:50:18 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -116,8 +116,8 @@ parseGtx content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
                    in filter (\(f,_) -> f /= "---") sublists' -- guard against off-by-one & misparsing
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
-tupleize (f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
-                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
+tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
+                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 
@@ -135,12 +135,12 @@ untupleize today (f, (t, a, d, dc, kvs, tags, abstract)) = map (T.strip . T.pack
                                                 , abstract
                                                   ]
 
-doiOrKV :: String -> [(String,String)]
-doiOrKV s | s == ""       = []
-          | s == "[]"     = []
-          | head s == '[' = read s
-          | '/' `elem` s  = [("doi",s)]
-          | otherwise     = error $ "doiOrKV parsing: " ++ s
+doiOrKV :: [T.Text] -> String -> [(String,String)]
+doiOrKV mi s | s == ""       = []
+             | s == "[]"     = []
+             | head s == '[' = read s
+             | '/' `elem` s  = [("doi",s)]
+             | otherwise     = error $ "doiOrKV parsing: " ++ s ++ " : " ++ show mi
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
