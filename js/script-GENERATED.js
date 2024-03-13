@@ -7162,8 +7162,8 @@ Content = {
 	class="include-content-core"
 
 		class="include-content"
-		data-include-selector-not="#footnotes, #further-reading, 
-			#backlinks-section, #link-bibliography-section, 
+		data-include-selector-not="#footnotes, #backlinks-section, 
+			#similars-section, #link-bibliography-section, 
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
@@ -8856,16 +8856,16 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 /*==========================================================*/
 /*	.include-content-core
 		`class="include-content"
-		`data-include-selector-not="#footnotes, #further-reading, 
-			#backlinks-section, #link-bibliography-section, 
+		`data-include-selector-not="#footnotes, #backlinks-section, 
+			#similars-section, #link-bibliography-section, 
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"`
  */
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
 		"#footnotes", 
-		"#further-reading", 
 		"#backlinks-section", 
+		"#similars-section",
 		"#link-bibliography-section", 
 		"#page-metadata .link-tags", 
 		"#page-metadata .page-metadata-fields"
@@ -17768,7 +17768,7 @@ DarkMode = { ...DarkMode,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
+		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
 		[ "light", "Dark", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
 		[ "dark", "Light", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
 	],
