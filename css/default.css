@@ -2473,6 +2473,7 @@ section.footnotes > ol > li.highlighted::after {
 /*  Footnote self-links.
  */
 section.footnotes .footnote-self-link {
+	display: initial;
     position: absolute;
     top: 2px;
     right: calc(100% + 0.75em);
@@ -2482,12 +2483,18 @@ section.footnotes .footnote-self-link {
     z-index: 1;
     opacity: 0;
 }
+/*	Hide outside of a footnotes section.
+ */
+.footnote-self-link {
+	display: none;
+}
 
 /*=------------------------=*/
 /*= Back-to-citation links =*/
 /*=------------------------=*/
 
 .footnotes .footnote-back {
+	display: initial;
     margin: 0 0 0 0.5em;
     position: relative;
     display: inline-block;
@@ -2498,6 +2505,11 @@ section.footnotes .footnote-self-link {
     padding: 0.1em 0.25em 0.15em 0.25em;
     width: 1em;
     z-index: 1;
+}
+/*	Hide outside of a footnotes section.
+ */
+.footnote-back {
+	display: none;
 }
 
 .markdownBody .footnotes a.footnote-back {
