@@ -5291,6 +5291,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Zoomed / resized popups. │*/
 /*└──────────────────────────┘*/
 
+.popup.zoomed .popframe-scroll-view,
+.popup.resized .popframe-scroll-view {
+	max-height: calc(100% - var(--popup-title-bar-height));
+}
+
 .popup.zoomed .popframe-content-view,
 .popup.resized .popframe-content-view {
     max-width: 971px;

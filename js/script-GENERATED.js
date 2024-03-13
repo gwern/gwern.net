@@ -1803,6 +1803,7 @@ Popups = {
 	popupContainer: null,
 
 	popupBeingDragged: null,
+	popupBeingResized: null,
 
 	hoverEventsActive: true,
 
@@ -1859,7 +1860,9 @@ Popups = {
 
 		//	Add mousemove listener, to enable hover on mouse move.
 		window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
-			Popups.hoverEventsActive = true;
+			if (   Popups.popupBeingDragged == null
+				&& Popups.popupBeingResized == null)
+				Popups.hoverEventsActive = true;
 		});
 
 		//	Add scroll listener, to disable hover on scroll.
@@ -2385,7 +2388,7 @@ Popups = {
 	setPopupTilingControlKeys: (keystring) => {
 		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-		Popups.popupTilingControlKeys = keystring || "aswdqexzfcv";
+		Popups.popupTilingControlKeys = keystring || "aswdqexzfrcv";
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
 	},
 
@@ -2488,9 +2491,6 @@ Popups = {
 				break;
 		}
 
-		//  Update popup position.
-		Popups.positionPopup(popup);
-
 		//  Update popup size.
 		popup.style.maxWidth = "unset";
 		popup.style.maxHeight = "unset";
@@ -2517,9 +2517,8 @@ Popups = {
 				popup.style.height = "50vh";
 				break;
 		}
-		popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 
-		//  Pin popup.
+		//  Pin popup. (This also updates the popup’s position.)
 		Popups.pinPopup(popup);
 
 		//  Clear timers.
@@ -2545,7 +2544,6 @@ Popups = {
 		popup.style.height = "";
 		popup.style.maxWidth = "";
 		popup.style.maxHeight = "";
-		popup.scrollView.style.maxHeight = "";
 
 		//  Update popup position.
 		Popups.positionPopup(popup);
@@ -2728,7 +2726,6 @@ Popups = {
 		getButtonIcon: (buttonType) => {
 			let icon = Popups.titleBarComponents.buttonIcons[buttonType];
 			return icon.startsWith("<") ? icon : GW.svg(icon);
-// 			return GW.svg(Popups.titleBarComponents.buttonIcons[buttonType]);
 		},
 
 		/*  Icons for various popup title bar buttons.
@@ -3077,6 +3074,9 @@ Popups = {
 			immediately: false
 		}, options);
 
+		if (popup == Popups.popupBeingResized)
+			return;
+
 		let target = popup.spawningTarget;
 
 		let spawnPoint = options.spawnPoint ?? target.lastMouseEnterLocation;
@@ -3095,139 +3095,130 @@ Popups = {
 
 		//  Wait for the “naive” layout to be completed, and then...
 		let computePosition = () => {
-			/*  This is the width and height of the popup, as already determined
-				by the layout system, and taking into account the popup’s content,
-				and the max-width, min-width, etc., CSS properties.
-			 */
-			let popupIntrinsicRect = Popups.getPopupViewportRect(popup);
-			let popupIntrinsicWidth = popupIntrinsicRect.width;
-			let popupIntrinsicHeight = popupIntrinsicRect.height;
-
 			let provisionalPopupXPosition = 0.0;
 			let provisionalPopupYPosition = 0.0;
 
-			let offToTheSide = false;
-			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
-											   - (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
-											   + (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-			if (   Popups.containingPopFrame(target)
-				|| Popups.preferSidePositioning(target)) {
-				/*  The popup is a nested popup, or the target specifies that it
-					prefers to have popups spawned to the side; we try to put
-					the popup off to the left or right.
-				 */
-				offToTheSide = true;
-			}
-
-			provisionalPopupYPosition = spawnPoint.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
-			if (provisionalPopupYPosition < 0.0)
-				provisionalPopupYPosition = 0.0;
-
-			//  Determine whether to put the popup off to the right, or left.
-			if (  targetViewportRect.right
-				+ Popups.popupBreathingRoomX
-				+ popupIntrinsicWidth
-				  <= document.documentElement.offsetWidth) {
-				//  Off to the right.
-				provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
-			} else if (  targetViewportRect.left
-					   - Popups.popupBreathingRoomX
-					   - popupIntrinsicWidth
-						 >= 0) {
-				//  Off to the left.
-				provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
-			} else {
-				//  Not off to either side, in fact.
-				offToTheSide = false;
-			}
-
-			/*  Can the popup fit above the target? If so, put it there.
-				Failing that, can it fit below the target? If so, put it there.
-			 */
-			if (offToTheSide == false) {
-				if (  popupSpawnYOriginForSpawnAbove
-					- popupIntrinsicHeight
-					  >= 0) {
-					//  Above.
-					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-				} else if (  popupSpawnYOriginForSpawnBelow
-						   + popupIntrinsicHeight
-						     <= window.innerHeight) {
-					//  Below.
-					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
-				} else {
-					//  The popup does not fit above or below!
-					if (options.tight != true) {
-						//	Let’s try and pack it in more tightly...
-						Popups.positionPopup(popup, { tight: true, immediately: true });
-						return;
-					} else {
-						/*	... or, failing that, we will have to put it off to
-							the right after all.
-						 */
-						offToTheSide = true;
-					}
-				}
-			}
-
-			if (offToTheSide == false) {
-				/*  Place popup off to the right (and either above or below),
-					as per the previous block of code.
-				 */
-				provisionalPopupXPosition = spawnPoint.x + Popups.popupBreathingRoomX;
-			}
-
-			/*  Does the popup extend past the right edge of the container?
-				If so, move it left, until its right edge is flush with
-				the container’s right edge.
-			 */
-			if (  provisionalPopupXPosition
-				+ popupIntrinsicWidth
-				  > document.documentElement.offsetWidth) {
-				//  We add 1.0 here to prevent wrapping due to rounding.
-				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - document.documentElement.offsetWidth + 1.0);
-			}
-
-			/*  Now (after having nudged the popup left, if need be),
-				does the popup extend past the *left* edge of the container?
-				Make its left edge flush with the container's left edge.
-			 */
-			if (provisionalPopupXPosition < 0)
-				provisionalPopupXPosition = 0;
-
 			//  Special cases for maximizing/restoring and pinning/unpinning.
-			let getPositionToRestore = (popup) => {
-				xPos = parseFloat(popup.dataset.previousXPosition);
-				yPos = parseFloat(popup.dataset.previousYPosition);
+			console.log("Zoomed? " + (Popups.popupIsZoomed(popup) ? "yes" : "no"));
+			if (Popups.popupIsZoomed(popup)) {
+				provisionalPopupXPosition = popup.zoomToX;
+				provisionalPopupYPosition = popup.zoomToY;
+			} else if (Popups.popupWasRestored(popup)) {
+				provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
+				provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
 
 				//  Clear saved position.
 				delete popup.dataset.previousXPosition;
 				delete popup.dataset.previousYPosition;
 
 				Popups.removeClassesFromPopFrame(popup, "restored");
+			} else if (   Popups.popupIsPinned(popup)
+					   || Popups.popupWasUnpinned(popup)) {
+				provisionalPopupXPosition = popup.viewportRect.left;
+				provisionalPopupYPosition = popup.viewportRect.top;
 
-				return [ xPos, yPos ];
-			};
-			if (Popups.popupIsZoomed(popup)) {
-				provisionalPopupXPosition = popup.zoomToX;
-				provisionalPopupYPosition = popup.zoomToY;
-			} else if (Popups.popupIsPinned(popup) == true) {
-				if (Popups.popupWasRestored(popup)) {
-					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
-				} else {
-					provisionalPopupXPosition = popup.viewportRect.left;
-					provisionalPopupYPosition = popup.viewportRect.top;
-				}
-			} else {
-				if (Popups.popupWasUnpinned(popup)) {
-					provisionalPopupXPosition = popup.viewportRect.left;
-					provisionalPopupYPosition = popup.viewportRect.top;
-
+				if (Popups.popupWasUnpinned(popup))
 					Popups.removeClassesFromPopFrame(popup, "unpinned");
-				} else if (Popups.popupWasRestored(popup)) {
-					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
+			} else {
+				//	Base case.
+
+				/*  This is the width and height of the popup, as already determined
+					by the layout system, and taking into account the popup’s content,
+					and the max-width, min-width, etc., CSS properties.
+				 */
+				let popupIntrinsicRect = Popups.getPopupViewportRect(popup);
+				let popupIntrinsicWidth = popupIntrinsicRect.width;
+				let popupIntrinsicHeight = popupIntrinsicRect.height;
+
+				let offToTheSide = false;
+				let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
+												   - (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+				let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
+												   + (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
+				if (   Popups.containingPopFrame(target)
+					|| Popups.preferSidePositioning(target)) {
+					/*  The popup is a nested popup, or the target specifies that it
+						prefers to have popups spawned to the side; we try to put
+						the popup off to the left or right.
+					 */
+					offToTheSide = true;
 				}
+
+				provisionalPopupYPosition = spawnPoint.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
+				if (provisionalPopupYPosition < 0.0)
+					provisionalPopupYPosition = 0.0;
+
+				//  Determine whether to put the popup off to the right, or left.
+				if (  targetViewportRect.right
+					+ Popups.popupBreathingRoomX
+					+ popupIntrinsicWidth
+					  <= document.documentElement.offsetWidth) {
+					//  Off to the right.
+					provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
+				} else if (  targetViewportRect.left
+						   - Popups.popupBreathingRoomX
+						   - popupIntrinsicWidth
+							 >= 0) {
+					//  Off to the left.
+					provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
+				} else {
+					//  Not off to either side, in fact.
+					offToTheSide = false;
+				}
+
+				/*  Can the popup fit above the target? If so, put it there.
+					Failing that, can it fit below the target? If so, put it there.
+				 */
+				if (offToTheSide == false) {
+					if (  popupSpawnYOriginForSpawnAbove
+						- popupIntrinsicHeight
+						  >= 0) {
+						//  Above.
+						provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
+					} else if (  popupSpawnYOriginForSpawnBelow
+							   + popupIntrinsicHeight
+								 <= window.innerHeight) {
+						//  Below.
+						provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
+					} else {
+						//  The popup does not fit above or below!
+						if (options.tight != true) {
+							//	Let’s try and pack it in more tightly...
+							Popups.positionPopup(popup, { tight: true, immediately: true });
+							return;
+						} else {
+							/*	... or, failing that, we will have to put it off to
+								the right after all.
+							 */
+							offToTheSide = true;
+						}
+					}
+				}
+
+				if (offToTheSide == false) {
+					/*  Place popup off to the right (and either above or below),
+						as per the previous block of code.
+					 */
+					provisionalPopupXPosition = spawnPoint.x + Popups.popupBreathingRoomX;
+				}
+
+				/*  Does the popup extend past the right edge of the container?
+					If so, move it left, until its right edge is flush with
+					the container’s right edge.
+				 */
+				if (  provisionalPopupXPosition
+					+ popupIntrinsicWidth
+					  > document.documentElement.offsetWidth) {
+					//  We add 1.0 here to prevent wrapping due to rounding.
+					provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - document.documentElement.offsetWidth + 1.0);
+				}
+
+				/*  Now (after having nudged the popup left, if need be),
+					does the popup extend past the *left* edge of the container?
+					Make its left edge flush with the container's left edge.
+				 */
+				if (provisionalPopupXPosition < 0)
+					provisionalPopupXPosition = 0;
 			}
 
 			//  Set only position, not size.
@@ -3246,8 +3237,12 @@ Popups = {
 			requestAnimationFrame(computePosition);
 	},
 
-	setPopupViewportRect: (popup, rect, options = { }) => {
+	setPopupViewportRect: (popup, rect, options) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
+
+		options = Object.assign({
+			clampPositionToScreen: false
+		}, options);
 
 		if (options.clampPositionToScreen) {
 			//  Viewport width must account for vertical scroll bar.
@@ -3281,8 +3276,6 @@ Popups = {
 
 			popup.style.width = `${(Math.round(rect.width))}px`;
 			popup.style.height = `${(Math.round(rect.height))}px`;
-
-			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
 
 		requestAnimationFrame(() => {
@@ -3485,7 +3478,7 @@ Popups = {
 
 		//  The mousemove event that triggers the continuous resizing.
 		window.onmousemove = (event) => {
-			window.popupBeingResized = popup;
+			Popups.popupBeingResized = popup;
 
 			Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
 			Popups.addClassesToPopFrame(popup, "resized");
@@ -3556,7 +3549,7 @@ Popups = {
 		//  Reset cursor to normal.
 		document.documentElement.style.cursor = "";
 
-		let popup = window.popupBeingResized;
+		let popup = Popups.popupBeingResized;
 		if (popup) {
 			Popups.removeClassesFromPopFrame(popup, "resizing");
 
@@ -3566,7 +3559,8 @@ Popups = {
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
 		}
-		window.popupBeingResized = null;
+		Popups.popupBeingResized = null;
+		Popups.hoverEventsActive = true;
 
 		window.removeEventListener("mouseup", Popups.popupResizeMouseUp);
 	},
@@ -3641,6 +3635,9 @@ Popups = {
 
 		//  We define the mousemove listener here to capture variables.
 		window.onmousemove = (event) => {
+			if (Popups.popupBeingDragged == null)
+				Popups.pinPopup(popup);
+
 			Popups.popupBeingDragged = popup;
 
 			//  Mark popup as being dragged.
@@ -3706,11 +3703,9 @@ Popups = {
 					Popups.setPopupFadeTimer(popupInStack.spawningTarget);
 				});
 			}
-
-			//  Pin popup.
-			Popups.pinPopup(popup);
 		}
 		Popups.popupBeingDragged = null;
+		Popups.hoverEventsActive = true;
 
 		//  Remove the listener (ie. we only want this fired once).
 		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
@@ -3778,8 +3773,6 @@ Popups = {
 	//	Added by: Popups.addTarget
 	targetMouseLeave: (event) => {
 		GWLog("Popups.targetMouseLeave", "popups.js", 2);
-
-		event.target.lastMouseEnterLocation = null;
 
 		Popups.clearPopupTimers(event.target);
 
@@ -3862,9 +3855,12 @@ Popups = {
 				Popups.zoomPopup(Popups.focusedPopup(), "full");
 				break;
 			case Popups.popupTilingControlKeys.substr(9,1):
-				Popups.pinOrUnpinPopup(Popups.focusedPopup());
+				Popups.restorePopup(Popups.focusedPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(10,1):
+				Popups.pinOrUnpinPopup(Popups.focusedPopup());
+				break;
+			case Popups.popupTilingControlKeys.substr(11,1):
 				Popups.collapseOrUncollapsePopup(Popups.focusedPopup());
 				break;
 			default:
