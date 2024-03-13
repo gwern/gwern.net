@@ -3195,9 +3195,7 @@ function sequentialBlockOf(element, direction, options) {
 	let terminus = (direction == "next" ? "first" : "last");
 
 	//	Skip elements that don’t participate in block flow.
-	if (   isSkipped(element[siblingKey], options)
-		|| (   isNodeEmpty(element[siblingKey]) == true
-			&& isNonEmpty(element[siblingKey], options) == false))
+	if (isSkipped(element[siblingKey], options))
 		return sequentialBlockOf(element[siblingKey], direction, options);
 
 	//	Look inside “transparent” wrappers (that don’t affect layout).
@@ -3206,6 +3204,11 @@ function sequentialBlockOf(element, direction, options) {
 		if (terminalBlock)
 			return terminalBlock;
 	}
+
+	//	Skip empty elements.
+	if (   isNodeEmpty(element[siblingKey]) == true
+		&& isNonEmpty(element[siblingKey], options) == false)
+		return sequentialBlockOf(element[siblingKey], direction, options);
 
 	//	An actual block element (the base case).
 	if (isBlock(element[siblingKey], options))
