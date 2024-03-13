@@ -1448,6 +1448,10 @@ table caption {
     background-color: inherit;
 }
 
+table tbody {
+	--text-alignment: left;
+}
+
 table th,
 table td {
     padding: 7px 10px;
