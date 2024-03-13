@@ -2030,6 +2030,7 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 		`data-include-selector=".annotation-abstract, .file-includes"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => {
+	includeLink.classList.add("include-annotation");
 	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
 });
 
@@ -2047,8 +2048,8 @@ Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 		"#further-reading", 
 		"#backlinks-section", 
 		"#link-bibliography-section", 
-// 		"#page-metadata .link-tags", 
-// 		"#page-metadata .page-metadata-fields"
+		"#page-metadata .link-tags", 
+		"#page-metadata .page-metadata-fields"
 	].join(", ");
 });
 

@@ -8853,6 +8853,7 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 		`data-include-selector=".annotation-abstract, .file-includes"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => {
+	includeLink.classList.add("include-annotation");
 	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
 });
 
@@ -8870,8 +8871,8 @@ Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 		"#further-reading", 
 		"#backlinks-section", 
 		"#link-bibliography-section", 
-// 		"#page-metadata .link-tags", 
-// 		"#page-metadata .page-metadata-fields"
+		"#page-metadata .link-tags", 
+		"#page-metadata .page-metadata-fields"
 	].join(", ");
 });
 
@@ -13380,14 +13381,24 @@ addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAn
 	eventInfo.container.querySelectorAll(".file-include-collapse").forEach(fileIncludeCollapse => {
 		let includeLink = fileIncludeCollapse.querySelector("a");
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (embedInjectEventInfo) => {
+			/*	Don’t scroll to an embed in the main document if there are 
+				popups on screen.
+			 */
+			if (   embedInjectEventInfo.document == document
+				&& Extracts.popFrameProvider == Popups
+				&& Popups.allSpawnedPopups().length > 0)
+				return;
+
 			let embed = embedInjectEventInfo.container.firstElementChild;
 
-			//	Scroll into view.
-			scrollElementIntoView(embed);
+			//	Scroll into view (but not if it’s off-screen).
+			if (isOnScreen(embed))
+				scrollElementIntoView(embed);
 			if (   embed.tagName == "IFRAME"
 				&& Extracts.popFrameProvider.containingPopFrame(embed) != null)
 				embed.addEventListener("load", (event) => {
-					scrollElementIntoView(embed);
+					if (isOnScreen(embed))
+						scrollElementIntoView(embed);
 				});
 
 			//	Designate now-last collapse for styling.
