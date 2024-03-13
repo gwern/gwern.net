@@ -7162,8 +7162,8 @@ Content = {
 	class="include-content-core"
 
 		class="include-content"
-		data-include-selector-not="#footnotes, #further-reading, 
-			#backlinks-section, #link-bibliography-section, 
+		data-include-selector-not="#footnotes, #backlinks-section, 
+			#similars-section, #link-bibliography-section, 
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
@@ -8856,16 +8856,16 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 /*==========================================================*/
 /*	.include-content-core
 		`class="include-content"
-		`data-include-selector-not="#footnotes, #further-reading, 
-			#backlinks-section, #link-bibliography-section, 
+		`data-include-selector-not="#footnotes, #backlinks-section, 
+			#similars-section, #link-bibliography-section, 
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"`
  */
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
 		"#footnotes", 
-		"#further-reading", 
 		"#backlinks-section", 
+		"#similars-section",
 		"#link-bibliography-section", 
 		"#page-metadata .link-tags", 
 		"#page-metadata .page-metadata-fields"
