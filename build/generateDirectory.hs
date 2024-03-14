@@ -166,7 +166,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
                  selfLinksSection) ++
 
              (if null titledLinks then [] else
-                 -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
+                 -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popovers, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popovers.
                  [Para []] ++
                  [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Links"]] ++
                  titledLinksSections) ++

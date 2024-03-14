@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-03-08 12:06:25 gwern"
+# When:  Time-stamp: "2024-03-12 20:08:43 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -146,8 +146,8 @@ else
                         true
                     else
                         ## open original vs archived preview in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted.
-                        ## EXPERIMENTAL: we use `deconstruct_singlefile.php` to explode >10MB .html files from the original monolithic static linearized HTML to a normal HTML file which loads files (put into a subdirectory) including images lazily; this helps avoid the problem where a page may have 100MB+ of images/videos, and so opening the SingleFile snapshot at all entails downloading & rendering *all* of it, because it's all inlined into the .html file as data-uri text (which adds insult to injury by adding a lot of text-encoding overhead, bloating it further). This is good for archiving and ensuring all the assets are there, and so it's good to use the monolith as an intermediate, but then maybe parsing it back out to a normal HTML is the version readers ought to actually see...
-                        if [[ $(stat -c%s "./doc/www/$DOMAIN/$HASH.html") -ge 10000000 ]]; then
+                        ## EXPERIMENTAL: we use `deconstruct_singlefile.php` to explode >5MB .html files from the original monolithic static linearized HTML to a normal HTML file which loads files (put into a subdirectory) including images lazily; this helps avoid the problem where a page may have 100MB+ of images/videos, and so opening the SingleFile snapshot at all entails downloading & rendering *all* of it, because it's all inlined into the .html file as data-uri text (which adds insult to injury by adding a lot of text-encoding overhead, bloating it further). This is good for archiving and ensuring all the assets are there, and so it's good to use the monolith as an intermediate, but then maybe parsing it back out to a normal HTML is the version readers ought to actually see...
+                        if [[ $(stat -c%s "./doc/www/$DOMAIN/$HASH.html") -ge 5000000 ]]; then
                             php ./static/build/deconstruct_singlefile.php "./doc/www/$DOMAIN/$HASH.html"
                             cp "./doc/www/$DOMAIN/$HASH.html.bak" "/tmp/$HASH.html"
                             x-www-browser "./doc/www/$DOMAIN/$HASH.html$ANCHOR" "/tmp/$HASH.html" "$URL" &
