@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-03-12 15:25:35 gwern"
+When: Time-stamp: "2024-03-13 21:10:43 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -20,8 +20,8 @@ import Data.Char (toLower)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (fromMaybe)
-import System.Environment (lookupEnv)
-import Hakyll (compile, composeRoutes, constField,
+import System.Environment (getArgs, withArgs, lookupEnv)
+import Hakyll (compile, composeRoutes, constField, fromGlob,
                symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
@@ -56,7 +56,10 @@ main :: IO ()
 main =
  do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     let slow = "true" == fromMaybe "" arg
-    hakyll $ do
+    args <- getArgs
+    let args' = filter (/="build") args
+    -- NOTE: reset the `getArgs` to pass through just "build", as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
+    withArgs [head args] $ hakyll $ do
                preprocess cd
                when slow $ preprocess testAll
 
@@ -69,7 +72,8 @@ main =
                                writeAnnotationFragments am meta True
 
                preprocess $ printGreen ("Begin site compilation…" :: String)
-               match "**.md" $ do
+               let targets = if null args' then "**.md" else fromGlob $ head args'
+               match targets $ do
                    -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                    -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
                    route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
@@ -85,11 +89,11 @@ main =
                                 >>= imgUrls
 
                let static        = route idRoute >> compile copyFileCompiler
-               version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
+               when (null args') $ version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
 
                -- handle the simple static non-.md files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
                let staticSymlink = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
-               version "static" $ mapM_ (`match` staticSymlink) [
+               when (null args') $ version "static" $ mapM_ (`match` staticSymlink) [
                                        "doc/**",
                                        "**.hs",
                                        "**.sh",
@@ -164,7 +168,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
                               noScriptTemplate ++ "$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
 
    -- NOTE: we need to do the site-wide `<noscript>` warning  to make sure it is inside the #markdownBody and gets all of the CSS styling that we expect it to.
-    noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of key <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popins & transclusions, collapsible sections, backlinks, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you must enable JavaScript.]</p></div></noscript>"
+    noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of key <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popovers & transclusions, collapsible sections, backlinks, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you must enable JavaScript.]</p></div></noscript>"
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
