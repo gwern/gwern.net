@@ -32,7 +32,7 @@ import Text.Pandoc (Inline(Code, Link, RawInline, Str, Strong), Format(Format), 
 import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
-import LinkBacklink (getLinkBibLink)
+import LinkBacklink (getLinkBibLink, getAnnotationLinkCheck)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
@@ -55,16 +55,15 @@ writeLinkBibliographyFragment am md path =
     Just (_,_,_,_,_,_,abstract) -> do
       let self = takeWhile (/='#') path
       let selfAbsolute = "https://gwern.net" ++ self
-      let (path',_) = getLinkBibLink path
-      lbExists <- doesFileExist path
-      let essay = head path == '/' && '.' `notElem` path
-      -- TODO: this is still slow because we have to write out all the annotation link-bibs too, regardless of change. need to check for the annotation HTML fragment's timestamp, not just essay timestamps
-      shouldWrite <- if essay then -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
-                                   if not lbExists then return True else
-                                     do essayLastModified <- getModificationTime (tail (takeWhile (/='#') path) ++ ".md")
-                                        lbLastModified    <- getModificationTime path'
-                                        return (essayLastModified >= lbLastModified)
-                      else return True
+      let x@(path',_) = getLinkBibLink path
+      lbExists <- doesFileExist path'
+      let essayp = head path == '/' && '.' `notElem` path
+      shouldWrite <- if not lbExists then return True else -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
+                                     do target <- if essayp then return $ tail (takeWhile (/='#') path) ++ ".md" else fmap fst (getAnnotationLinkCheck path)
+                                        originalLastModified <- getModificationTime target
+                                        lbLastModified       <- getModificationTime path'
+                                        return (originalLastModified >= lbLastModified)
+
       when shouldWrite $ parseExtractCompileWrite am md path path' self selfAbsolute abstract
 
 parseExtractCompileWrite :: ArchiveMetadata -> Metadata -> String -> FilePath -> String -> String -> String -> IO ()

@@ -17,6 +17,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
 import Control.DeepSeq (deepseq, NFData)
+import System.Posix.Files (touchFile)
 
 import Text.Regex (subRegex, mkRegex)
 
@@ -34,9 +35,10 @@ writeUpdatedFile template target contentsNew =
        createDirectoryIfMissing True (takeDirectory target)
        TIO.writeFile target contentsNew
        else do contentsOld <- TIO.readFile target
-               when (contentsNew /= contentsOld) $ do tempPath <- emptySystemTempFile ("hakyll-"++template)
-                                                      TIO.writeFile tempPath contentsNew
-                                                      renameFile tempPath target
+               if (contentsNew /= contentsOld) then do tempPath <- emptySystemTempFile ("hakyll-"++template)
+                                                       TIO.writeFile tempPath contentsNew
+                                                       renameFile tempPath target
+               else touchFile target -- mark as up to date
 
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')

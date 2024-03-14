@@ -137,7 +137,7 @@ tagsShort2LongRewrites =
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
-   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology") ]
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -398,6 +398,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/okcupid", "OKCupid")
           , ("psychology/nature", "psych of nature")
           , ("psychology/dark-knowledge", "‘dark knowledge’ (human)")
+          , ("psychedelic/LSD", "LSD")
           , ("psychedelic", "psychedelics")
           , ("statistics/prediction", "forecasting")
           , ("statistics/prediction/election", "election forecast")
@@ -447,6 +448,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("darknet-market", "DNM")
           , ("nootropic/quantified-self/weather", "weather & mood")
           , ("nootropic/quantified-self", "QS")
+          , ("nootropic/lsd", "LSD microdosing")
           , ("philosophy/frank-ramsey", "Frank Ramsey")
           , ("cs/end-to-end-principle", "end-to-end")
           , ("cs/python", "Python")

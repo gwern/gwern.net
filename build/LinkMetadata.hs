@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-12 11:20:00 gwern"
+When:  Time-stamp: "2024-03-13 18:24:41 gwern"
 License: CC-0
 -}
 
@@ -482,7 +482,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
        let tle' = if null tle then "<code>"++f++"</code>" else if "<em>"`isPrefixOf`tle && "</em>"`isSuffixOf`tle then tle else "“"++tle++"”"
            lid = let tmpID = generateID f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
-           -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popin the second time.
+           -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popover the second time.
            lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
            lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
            lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
