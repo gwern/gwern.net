@@ -62,6 +62,7 @@ $asset_type_map = [
 	'image/jpeg'                  => 'jpg',
 	'image/pjpeg'                 => 'jpg',
 	'application/javascript'      => 'js',
+	'application/x-javascript'    => 'js',
 	'audio/x-m4a'                 => 'm4a',
 	'audio/mp4'                   => 'm4a',
 	'audio/midi'                  => 'mid',
