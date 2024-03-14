@@ -1334,7 +1334,6 @@ Popups = {
 			let provisionalPopupYPosition = 0.0;
 
 			//  Special cases for maximizing/restoring and pinning/unpinning.
-			console.log("Zoomed? " + (Popups.popupIsZoomed(popup) ? "yes" : "no"));
 			if (Popups.popupIsZoomed(popup)) {
 				provisionalPopupXPosition = popup.zoomToX;
 				provisionalPopupYPosition = popup.zoomToY;
