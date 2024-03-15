@@ -8,7 +8,7 @@ bestNEmbeddings = 20
 
 -- how many characters long should a formatted annotation be before it is worth trying to embed?
 minimumLength :: Int
-minimumLength = 700
+minimumLength = 200
 
 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://platform.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 maximumLength :: Int
@@ -47,3 +47,8 @@ blackListURLs = [] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.02455
 minDistance, maxDistance :: Double
 maxDistance = 0.63 -- chosen ad hoc by looking at a small sample and noting there seemed to be a cliff of relevancy at ~0.60 as of 2023-09-04 using text-embedding-ada-002 - WARNING: must be rechecked for every engine change!
 minDistance = 0.02 -- avoids self-matches and other odd errors
+
+-- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
+-- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
+minTagAuto :: Int
+minTagAuto = 3
