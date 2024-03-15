@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-11 12:50:18 gwern"
+When:  Time-stamp: "2024-03-15 13:43:52 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -117,7 +117,7 @@ parseGtx content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
 tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
-                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
+                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] || abstract==["<!-- [GTX padding] -->"] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 

@@ -515,7 +515,7 @@ linkIconTestUnitsText =
          , ("/doc/sociology/technology/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg")
          , ("/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans")
          , ("/doc/tea/gwern-tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg")
-         , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb",  "misc","svg")
+         , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb.xz",  "misc","svg")
          , ("/doc/touhou/2013-c84-downloads.json",  "txt","svg")
          , ("/doc/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad")

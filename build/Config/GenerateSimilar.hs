@@ -6,10 +6,6 @@ import Data.List (isPrefixOf, isSuffixOf)
 bestNEmbeddings :: Int
 bestNEmbeddings = 20
 
--- how many characters long should a formatted annotation be before it is worth trying to embed?
-minimumLength :: Int
-minimumLength = 200
-
 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://platform.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 maximumLength :: Int
 maximumLength = 32700
