@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-15 13:43:52 gwern"
+When:  Time-stamp: "2024-03-15 16:49:33 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -66,7 +66,7 @@ One alternative I didn’t explore too thoroughly was the idea of writing each a
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Gtx where
+module GTX where
 
 import Data.Char (isSpace)
 import Data.Containers.ListUtils (nubOrd)
@@ -85,22 +85,22 @@ import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithD
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
-readGtx :: ((FilePath, MetadataItem) -> (FilePath, MetadataItem)) -> FilePath -> IO MetadataList
-readGtx hook f = do f' <- do filep <- doesFileExist f
+readGTX :: ((FilePath, MetadataItem) -> (FilePath, MetadataItem)) -> FilePath -> IO MetadataList
+readGTX hook f = do f' <- do filep <- doesFileExist f
                              if filep then return f
                                else do fileAbsoluteP <- doesFileExist (C.root ++ f)
-                                       if not fileAbsoluteP then printRed ("Gtx path does not exist: " ++ f ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return f
+                                       if not fileAbsoluteP then printRed ("GTX path does not exist: " ++ f ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return f
                                          else return (C.root ++ f)
                     content <- TIO.readFile f'
-                    return $ map hook $ parseGtx content
+                    return $ map hook $ parseGTX content
 
-readGtxFast :: FilePath -> IO MetadataList
-readGtxFast = readGtx id
+readGTXFast :: FilePath -> IO MetadataList
+readGTXFast = readGTX id
 
-readGtxSlow :: FilePath -> IO MetadataList
-readGtxSlow path = do C.cd
+readGTXSlow :: FilePath -> IO MetadataList
+readGTXSlow path = do C.cd
                       allTags <- listTagsAll
-                      readGtx (postprocessing allTags) path
+                      readGTX (postprocessing allTags) path
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
                                                      (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, kvs,
@@ -109,8 +109,8 @@ readGtxSlow path = do C.cd
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
            reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
 
-parseGtx :: T.Text -> MetadataList
-parseGtx content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- delete the first 4 characters, which are the mandatory '---\n' header, then split at the '---' separators into sublists of "title\nauthor\ndate\ndoi\ntags\nabstract..."
+parseGTX :: T.Text -> MetadataList
+parseGTX content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- delete the first 4 characters, which are the mandatory '---\n' header, then split at the '---' separators into sublists of "title\nauthor\ndate\ndoi\ntags\nabstract..."
                        sublists   = map T.lines subContent
                        sublists'  = map tupleize sublists
                    in filter (\(f,_) -> f /= "---") sublists' -- guard against off-by-one & misparsing
@@ -121,8 +121,8 @@ tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
 tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 
-writeGtx :: FilePath -> MetadataList -> IO ()
-writeGtx f ml = do today <- currentDayString
+writeGTX :: FilePath -> MetadataList -> IO ()
+writeGTX f ml = do today <- currentDayString
                    let lists = concatMap (untupleize today) ml
                    void $ GL.lock $ writeUpdatedFile "gtx" f $ T.unlines lists
 
@@ -145,15 +145,15 @@ doiOrKV mi s | s == ""       = []
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
 rewriteLinkMetadata half full gtx
-  = do old <- readGtxFast gtx
+  = do old <- readGTXFast gtx
        -- de-duplicate by removing anything in auto.yaml which has been promoted to full/half:
        let (halfURLs,fullURLs) = (map fst half, map fst full)
        let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old
        let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-       let newGtx = map (\(a,(b,c,d,dc,kvs,ts,f)) -> let defTag = tag2Default a in (a,(b,c,d,dc,kvs, filter (/=defTag) ts, f))) $ -- flatten [(Path, (String, String, String, String, String))]
+       let newGTX = map (\(a,(b,c,d,dc,kvs,ts,f)) -> let defTag = tag2Default a in (a,(b,c,d,dc,kvs, filter (/=defTag) ts, f))) $ -- flatten [(Path, (String, String, String, String, String))]
                      M.toList new
-       writeGtx gtx newGtx
+       writeGTX gtx newGTX
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
@@ -164,5 +164,5 @@ appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppS
                                                    -- We could attempt to append a '---', but then that risks double-lines of '---\n---', or we could attempt to modify GTX parsing to be more permissive on only the final entry in a GTX file, but that dangerously complicates the parsing logic.
                                                    -- So we adopt a simpler solution: when generating a new 'auto.gtx' entry, always done using `appendLinkMetadata`, insert a 'page left intentionally blank' marker. A simple HTML comment will not trigger any length limits or annotation-creation, doesn't use up much space, doesn't affect the rest of the code, doesn't risk mis-parses or duplicated lines etc. (If the unnecessary ones become a concern, they can always be deleted, as long as the final one is left in place.)
                                                    let abstractPadded = if null abst then "<!-- [GTX padding] -->" else abst
-                                                   let newGtx = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abstractPadded))
-                                                   void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGtx
+                                                   let newGTX = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abstractPadded))
+                                                   void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGTX

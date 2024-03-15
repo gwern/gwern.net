@@ -625,7 +625,7 @@ clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length l
 Experiment: can we sort full.gtx by embedding for better browsing/serendipity?
 result: sorta. Doing global greedy distance, which works well on short lists, seems to yield unfortunately random behavior when run globally across 7144 annotations in full.gtx. You need to nest within-tag, and then do a few iterations of bubble-sort to clean it up & reduce issues like date-inversions.
 
-mdl <- Gtx.readGtxSlow "metadata/full.gtx"
+mdl <- GTX.readGTXSlow "metadata/full.gtx"
 let seed = head $ map fst mdl
 let paths = map fst mdl
 edb <- readEmbeddings
@@ -638,6 +638,6 @@ sortedEntries <- mapM (\tag -> let filteredEntries = filter (filterByTag [tag]) 
 let sortMetadataList sortedEntries mdl = Data.Maybe.mapMaybe (\e -> fmap (\m -> (e, m)) (lookup e mdl)) sortedEntries
 partialSort = sortOn (\(_, (_, _, date, _, _, tags, title)) -> (head tags, date, title))
 let mdl' = reverse $ nub $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ sortMetadataList (concat sortedEntries) mdl
-Gtx.writeGtx "metadata/full.gtx" mdl
-Gtx.writeGtx "metadata/full-sorted.gtx" (sort mdl')
+GTX.writeGTX "metadata/full.gtx" mdl
+GTX.writeGTX "metadata/full-sorted.gtx" (sort mdl')
 -}

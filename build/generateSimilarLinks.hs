@@ -49,7 +49,7 @@ main = do Config.Misc.cd
 
           -- if we are only updating the embeddings, then we stop there and do nothing more. (This
           -- is useful for using `inotifywait` (from the `inotifytools` Debian package) to 'watch' the
-          -- Gtx databases for new entries, and immediately embed them then & there, so
+          -- GTX databases for new entries, and immediately embed them then & there, so
           -- `preprocess-markdown.hs`'s single-shot mode gets updated quickly with recently-written
           -- annotations, instead of always waiting for the nightly rebuild. When doing batches of
           -- new annotations, they are usually all relevant to each other, but won't appear in the
