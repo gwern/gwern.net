@@ -633,8 +633,8 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 	annotation abstract of an annotated media include link, but the abstract is
 	actually empty (because it’s a partial annotation).
  */
-addContentLoadHandler(GW.contentLoadHandlers.remoteEmptyFigureCaptions = (eventInfo) => {
-    GWLog("wrapFigures", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.removeEmptyFigureCaptions = (eventInfo) => {
+    GWLog("removeEmptyFigureCaptions", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("figcaption").forEach(figcaption => {
 		if (isNodeEmpty(figcaption, { alsoExcludeSelector: "a" }))
@@ -740,8 +740,8 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 /*  Allow for floated figures at the start of annotation abstracts
     (only on sufficiently wide viewports).
  */
-addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailInAnnotation = (eventInfo) => {
-    GWLog("relocateThumbnailInAnnotation", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailsInAnnotations = (eventInfo) => {
+    GWLog("relocateThumbnailsInAnnotations", "rewrite.js", 1);
 
     if (GW.mediaQueries.mobileWidth.matches)
         return;
@@ -906,7 +906,7 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 	class.
  */
 addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
-    GWLog("applyIframeScrollFix", "rewrite.js", 1);
+    GWLog("markLoadedEmbeds", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
 		embed.addEventListener("load", (event) => {
@@ -973,7 +973,7 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (ev
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
 addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
-    GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
+    GWLog("wrapMarginNotes", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
         let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
@@ -1402,8 +1402,8 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
 
     Requires typography.js to be loaded prior to this file.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotation = (eventInfo) => {
-    GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotations = (eventInfo) => {
+    GWLog("rectifyTypographyInAnnotations", "rewrite.js", 1);
 
     Typography.processElement(eventInfo.container,
         (  Typography.replacementTypes.QUOTES
@@ -1497,8 +1497,8 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
 /*  Remove the “Link Bibliography:” bold text when transcluding a link
     bibliography into a page’s Link Bibliography section.
  */
-addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingFromLinkBibliography = (eventInfo) => {
-    GWLog("removeSubheadingFromLinkBibliography", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingsFromLinkBibliographies = (eventInfo) => {
+    GWLog("removeSubheadingsFromLinkBibliographies", "rewrite.js", 1);
 
     if (eventInfo.container.closest("section#link-bibliography-section")) {
         let subheading = eventInfo.container.querySelector("#link-bibliography > .aux-links-list-label");
@@ -1675,7 +1675,7 @@ function updateTOCVisibility(TOC) {
 /*  If the table of contents has but one entry (or none at all), hide it.
  */
 addContentLoadHandler(GW.contentLoadHandlers.updateTOCVisibility = (eventInfo) => {
-    GWLog("removeTOCIfSingleEntry", "rewrite.js", 1);
+    GWLog("updateTOCVisibility", "rewrite.js", 1);
 
     let TOC = eventInfo.container.querySelector(".TOC");
     if (TOC == null)
@@ -1788,7 +1788,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     {side|foot}notes associated with that citation.
  */
 addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
-    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
+    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
 
     let allCitations = eventInfo.container.querySelectorAll(".footnote-ref");
 
@@ -1829,7 +1829,7 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 /*  Highlight footnote self-links on hover.
  */
 addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
-    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
+    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
     //  Highlight footnote on hover over self-link.
     eventInfo.container.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {

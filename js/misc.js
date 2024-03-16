@@ -572,7 +572,7 @@ function aggregateMarginNotes(eventInfo) {
 		if (marginNote.textContent.trim() == "☞")
 			return;
 
-		let section = marginNote.closest("section, .markdownBody, blockquote.data-field");
+		let section = marginNote.closest("section, .markdownBody, .annotation-abstract");
 		if (section == null)
 			return;
 
