@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-14 09:14:33 gwern"
+# When:  Time-stamp: "2024-03-16 11:57:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -105,7 +105,7 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “'
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “'; s '[("doi","")]' '';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -669,7 +669,7 @@ else
     λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)."
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -- ./metadata/full.gtx ./metadata/half.gtx | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '"text,quad"' -e '"text,sans"' -- ./metadata/full.gtx ./metadata/half.gtx | \
              ge -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)."
 
@@ -1161,14 +1161,14 @@ else
     λ(){ find . -type f -name "*.html.html.html"; }
     wrap λ "Found a triple-.html HTML file; weird! Syntax-highlighting gone astray?"
 
-    λ(){ find . -type f -mtime +2 -name "*#*" -or -type f -name "temp[0-9]*"; }
+    λ(){ find . -type f -ctime +2 -name "*#*" -or -type f -name "temp[0-9]*"; }
     wrap λ "Stale temporary files?"
 
     λ(){ find ./* -type d -empty; }
     wrap λ "Unused or empty directories?"
 
     bold "Checking for HTML anomalies…"
-    λ(){ BROKEN_HTMLS="$(find ./ -type f -mtime -31 -name "*.html" | gfv 'static/' | \
+    λ(){ BROKEN_HTMLS="$(find ./ -type f -ctime -31 -name "*.html" | gfv 'static/' | \
                          parallel --max-args=500 "gf --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied' -e '403 Forbidden'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS; do
@@ -1177,7 +1177,7 @@ else
     wrap λ "Archives of broken links"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e '4a4187fdcd0c848285640ce9842ebdf1bf179369' -e '5fda79427f76747234982154aad027034ddf5309' \
+    λ(){ find ./ -type f -ctime -31 -name "*.html" | gfv -e '4a4187fdcd0c848285640ce9842ebdf1bf179369' -e '5fda79427f76747234982154aad027034ddf5309' \
                                                 -e 'f0cab2b23e1929d87f060beee71f339505da5cad' -e 'a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5' \
                                                 -e '2015-01-15-outlawmarket-index.html' -e 'ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html' \
                                                 -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
@@ -1188,14 +1188,14 @@ else
     wrap λ "Corrupted filetype HTMLs" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -ctime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
     λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     bold "Checking for PDF anomalies…"
-    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
+    λ(){ BROKEN_PDFS="$(find ./ -type f -ctime -31 -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
                                 grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
@@ -1222,7 +1222,7 @@ else
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | sort | parallel checkSpamHeader
+        find ./doc/ -type f -ctime -31 -name "*.pdf" | gfv -e 'doc/www/' | sort | parallel checkSpamHeader
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy initial pages to the end.)" &
 
@@ -1233,39 +1233,63 @@ else
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }
     export -f removeEncryption
-    find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
+    find ./ -type f -ctime -31 -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
 
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
-    λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
+    λ(){ find ./doc/ -type f -ctime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
     wrap λ "Corrupted JPGs" &
 
-    λ(){ find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data'; }
+    λ(){ find ./doc/ -type f -ctime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data'; }
     wrap λ "Corrupted PNGs" &
 
-    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | xargs mogrify -background white -alpha remove -alpha off; }
+    λ(){  find ./doc/ -type f -ctime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | xargs mogrify -background white -alpha remove -alpha off; }
     wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
-    λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    λ(){ JPGS_BIG="$(find ./doc/ -type f -ctime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
          compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
 
     bold "Compressing new PNGs…"
-    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/') &
+    png.sh $(find ./doc/ -type f -name "*.png" -ctime -3 | gfv -e './doc/www/misc/') &
 
     # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
     bold "Compressing new GIFs…"
-    gifsicle --batch --colors=256 --optimize=3 $(find ./doc/www/ -type f -name "*.gif" -mtime -3) &
+    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made.
+      local gif="$1"
+
+      if [ ! -f "$gif" ]; then
+        return
+      fi
+
+      local temp_gif=$(mktemp)
+
+      gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null
+
+      local original_size=$(stat --printf="%s" "$gif")
+      local optimized_size=$(stat --printf="%s" "$temp_gif")
+
+      local size_diff=$((original_size - optimized_size))
+      local min_reduction=$(echo "scale=0; $original_size * 0.1 / 1" | bc)
+
+      if [ "$size_diff" -ge "$min_reduction" ]; then
+        mv "$temp_gif" "$gif" && echo "Optimized $gif"
+      else
+        rm "$temp_gif"
+      fi
+    }
+    export -f optimize_gif
+    find ./doc/www/ -type f -name "*.gif" -ctime -3 | parallel optimize_gif
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing. We should probably return to a regular image thumbnail system, so we never downscale the originals, and serve appropriate thumbnails instead.
-    λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | gfv -e 'doc/www/' -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' -e '1999-marklombardi-olivernorthlakeresourcespanamairancontra198486-v4-detail.jpg' ); do
+    λ() { for IMAGE in $(find ./doc/ -type f -ctime -31 -name "*.jpg" -or -name "*.png" | gfv -e 'doc/www/' -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' -e '1999-marklombardi-olivernorthlakeresourcespanamairancontra198486-v4-detail.jpg' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1700 )); then
                   echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
@@ -1274,7 +1298,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)" &
 
-    λ() { find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' | sort | parallel png2JPGQualityCheck; }
+    λ() { find doc/ -type f -ctime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' | sort | parallel png2JPGQualityCheck; }
     wrap λ "PNGs that should be JPGs?" &
 
     bold "Running site functionality checks…"
