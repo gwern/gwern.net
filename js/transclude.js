@@ -922,10 +922,10 @@ function includeContent(includeLink, content) {
 	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updatePageTOCIfNeeded(includeLink.eventInfo);
+        updatePageTOCIfNeeded();
 
 	//	Aggregate margin notes.
-	aggregateMarginNotesIfNeeded(includeLink.eventInfo);
+	aggregateMarginNotesIfNeededInDocument(containingDocument);
 
 	//	Import style sheets, if need be.
 	if (   containingDocument == document
@@ -1144,7 +1144,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 		});
 
         //  Update page TOC to add footnotes section entry.
-        updatePageTOCIfNeeded(includeLink.eventInfo);
+        updatePageTOCIfNeeded();
 
         //  Unwrap.
         unwrap(footnotesSectionWrapper);

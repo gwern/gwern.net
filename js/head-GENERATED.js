@@ -2925,27 +2925,6 @@ function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, con
 	});
 }
 
-/******************************************************************************/
-/*	Do layout in the given container. (Apply all layout processors to all block
-	containers within the given container.)
- */
-function doLayoutInContainer(container) {
-	let containingDocument = container.getRootNode();
-	let baseDocumentLocation = baseLocationForDocument(containingDocument);
-
-	let blockContainersSelector = selectorize(GW.layout.blockContainers);
-
-	let blockContainers = container.matches(blockContainersSelector)
-						  ? [ container ]
-						  : container.querySelectorAll(".markdownBody");
-
-	blockContainers.forEach(blockContainer => {
-		GW.layout.layoutProcessors.forEach(processorSpec => {
-			applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, containingDocument, baseDocumentLocation);
-		});
-	});
-}
-
 /****************************************************/
 /*	Activates dynamic layout for the given container.
  */
@@ -2953,7 +2932,7 @@ function startDynamicLayoutInContainer(container) {
 	let containingDocument = container.getRootNode();
 	let baseDocumentLocation = baseLocationForDocument(containingDocument);
 
-	let blockContainersSelector = selectorize(GW.layout.blockContainers);
+	let selectorize = selectorizeForContainer(container);
 
 	let observer = new MutationObserver((mutationsList, observer) => {
 		//	Construct list of all block containers affected by these mutations.
@@ -2961,7 +2940,7 @@ function startDynamicLayoutInContainer(container) {
 
 		for (mutationRecord of mutationsList) {
 			//	Find block container in which the mutated element is contained.
-			let nearestBlockContainer = mutationRecord.target.closest(blockContainersSelector);
+			let nearestBlockContainer = mutationRecord.target.closest(selectorize(GW.layout.blockContainers));
 
 			//	Avoid adding a container twice, and apply exclusions.
 			if (   nearestBlockContainer
@@ -3008,7 +2987,11 @@ doWhenBodyExists(() => {
 
 	//	Add listener to redo layout when orientation changes.
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
-		doLayoutInContainer(document.body);
+		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
+			GW.layout.layoutProcessors.forEach(processorSpec => {
+				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container);
+			});
+		});
 	});
 });
 
@@ -3364,8 +3347,11 @@ function isBareWrapper(element) {
 /**************************************************************************/
 /*	Returns assembled and appropriately prefixed selector from given parts.
  */
-function selectorize(parts) {
-	return parts.map(part => (part == ".markdownBody" ? part : `.markdownBody ${part}`)).join(", ");
+function selectorizeForContainer(container) {
+	if (container instanceof DocumentFragment)
+		return (parts) => (parts);
+	else
+		return (parts) => (parts.map(part => (part == ".markdownBody" ? part : `.markdownBody ${part}`)).join(", "));
 }
 
 /***************************************************************/
@@ -3478,6 +3464,8 @@ function stripDropcapClassesFrom(block) {
 /*	Apply block layout classes to appropriate elements in given container.
  */
 addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
+	let selectorize = selectorizeForContainer(container);
+
 	//	Designate headings.
 	container.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
@@ -3737,6 +3725,8 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 /*	Apply block spacing in the given container.
  */
 addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
+	let selectorize = selectorizeForContainer(container);
+
 	//	Apply block spacing.
 	container.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))

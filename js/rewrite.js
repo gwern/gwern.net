@@ -988,7 +988,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
     GWLog("aggregateMarginNotes", "rewrite.js", 1);
 
-	aggregateMarginNotesIfNeeded(eventInfo);
+	aggregateMarginNotesInDocument(eventInfo.document);
 }, "rewrite");
 
 
@@ -1588,7 +1588,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-    updatePageTOCIfNeeded(eventInfo);
+    updatePageTOC();
 }, "rewrite", (info) => (info.container == document.body));
 
 /*************************************************/

@@ -546,29 +546,29 @@ GW.marginNotes = {
 /****************************************************************************/
 /*	Aggregate margin notes, on the next animation frame, if not already done.
  */
-function aggregateMarginNotesIfNeeded(eventInfo) {
-	if (GW.marginNotes.aggregationNeededInDocuments.includes(eventInfo.document) == false)
-		GW.marginNotes.aggregationNeededInDocuments.push(eventInfo.document);
+function aggregateMarginNotesIfNeededInDocument(doc) {
+	if (GW.marginNotes.aggregationNeededInDocuments.includes(doc) == false)
+		GW.marginNotes.aggregationNeededInDocuments.push(doc);
 
 	requestAnimationFrame(() => {
-		if (GW.marginNotes.aggregationNeededInDocuments.includes(eventInfo.document) == false)
+		if (GW.marginNotes.aggregationNeededInDocuments.includes(doc) == false)
 			return;
 
-		GW.marginNotes.aggregationNeededInDocuments.remove(eventInfo.document);
+		GW.marginNotes.aggregationNeededInDocuments.remove(doc);
 
-		aggregateMarginNotes(eventInfo);
+		aggregateMarginNotesInDocument(doc);
 	});
 }
 
 /**************************/
 /*	Aggregate margin notes.
  */
-function aggregateMarginNotes(eventInfo) {
-    GWLog("aggregateMarginNotes", "misc.js", 2);
+function aggregateMarginNotesInDocument(doc) {
+    GWLog("aggregateMarginNotesInDocument", "misc.js", 2);
 
 	let marginNotesBlockClass = "margin-notes-block";
 
-	eventInfo.document.querySelectorAll(".marginnote").forEach(marginNote => {
+	doc.querySelectorAll(".marginnote").forEach(marginNote => {
 		if (marginNote.textContent.trim() == "☞")
 			return;
 
@@ -671,7 +671,7 @@ function aggregateMarginNotes(eventInfo) {
 	});
 
 	//	Update visibility of margin note blocks.
-	eventInfo.document.querySelectorAll(`.${marginNotesBlockClass}`).forEach(marginNotesBlock => {
+	doc.querySelectorAll(`.${marginNotesBlockClass}`).forEach(marginNotesBlock => {
 		marginNotesBlock.classList.toggle("hidden", marginNotesBlock.children.length < GW.marginNotes.minimumAggregatedNotesCount);
 	});
 }
@@ -708,7 +708,7 @@ GW.TOC = { };
 /*********************************************************************/
 /*	Update page TOC, on the next animation frame, if not already done.
  */
-function updatePageTOCIfNeeded(eventInfo) {
+function updatePageTOCIfNeeded() {
 	GW.TOC.needsUpdate = true;
 
 	requestAnimationFrame(() => {
@@ -717,7 +717,7 @@ function updatePageTOCIfNeeded(eventInfo) {
 
 		GW.TOC.needsUpdate = false;
 
-		updatePageTOC(eventInfo);
+		updatePageTOC();
 	});
 }
 
@@ -727,7 +727,7 @@ function updatePageTOCIfNeeded(eventInfo) {
  */
 //  Called by: updateMainPageTOC (rewrite.js)
 //  Called by: includeContent (transclude.js)
-function updatePageTOC(eventInfo) {
+function updatePageTOC() {
     GWLog("updatePageTOC", "misc.js", 2);
 
     let TOC = document.querySelector("#TOC");
@@ -7740,10 +7740,10 @@ function includeContent(includeLink, content) {
 	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
     	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updatePageTOCIfNeeded(includeLink.eventInfo);
+        updatePageTOCIfNeeded();
 
 	//	Aggregate margin notes.
-	aggregateMarginNotesIfNeeded(includeLink.eventInfo);
+	aggregateMarginNotesIfNeededInDocument(containingDocument);
 
 	//	Import style sheets, if need be.
 	if (   containingDocument == document
@@ -7962,7 +7962,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 		});
 
         //  Update page TOC to add footnotes section entry.
-        updatePageTOCIfNeeded(includeLink.eventInfo);
+        updatePageTOCIfNeeded();
 
         //  Unwrap.
         unwrap(footnotesSectionWrapper);
@@ -13034,7 +13034,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
     GWLog("aggregateMarginNotes", "rewrite.js", 1);
 
-	aggregateMarginNotesIfNeeded(eventInfo);
+	aggregateMarginNotesInDocument(eventInfo.document);
 }, "rewrite");
 
 
@@ -13634,7 +13634,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => {
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
-    updatePageTOCIfNeeded(eventInfo);
+    updatePageTOC();
 }, "rewrite", (info) => (info.container == document.body));
 
 /*************************************************/
