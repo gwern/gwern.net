@@ -55,7 +55,7 @@ writeLinkBibliographyFragment am md path =
     Just (_,_,_,_,_,_,abstract) -> do
       let self = takeWhile (/='#') path
       let selfAbsolute = "https://gwern.net" ++ self
-      let x@(path',_) = getLinkBibLink path
+      let (path',_) = getLinkBibLink path
       lbExists <- doesFileExist path'
       let essayp = head path == '/' && '.' `notElem` path
       shouldWrite <- if not lbExists then return True else -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:

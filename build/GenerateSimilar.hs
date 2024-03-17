@@ -38,10 +38,10 @@ import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, replaceChecked, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
 
-import Config.Misc (currentDay)
-import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, minimumLength, maximumLength, maxDistance, blackList, minimumSuggestions)
+import Config.Misc (currentDay, cd)
+import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -72,7 +72,7 @@ last4 :: (a, b, c, d) -> d
 last4  (_,_,_,d) = d
 
 readEmbeddings :: IO Embeddings
-readEmbeddings = readEmbeddingsPath C.embeddingsPath
+readEmbeddings = Config.Misc.cd >> readEmbeddingsPath C.embeddingsPath
 readEmbeddingsPath :: FilePath -> IO Embeddings
 readEmbeddingsPath p = do exists <- doesFileExist p
                           if not exists then return [] else
@@ -96,7 +96,7 @@ pruneEmbeddings md edb = let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d
                              in map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList validEdbDB
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
-missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, _, tags, abst) -> length (t++aut++show tags++abst) > C.minimumLength) md
+missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(_, _, _, _, _, _, abst) -> abst /= "") md
                                urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
                                missing      = urlsToCheck \\ urlsEmbedded
                                in map (\u -> (u, fromJust $ M.lookup u md)) missing
@@ -184,7 +184,7 @@ embed edb mdb bdb i@(p,_) =
                                                     Just (t,a,d,_,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
-            (modelType,embedding) <- oaAPIEmbed doc
+            (modelType,embedding) <- oaAPIEmbed p doc
             today <- currentDay
             return (p,today,T.unpack doc,modelType,embedding)
  where new = takeBaseName p
@@ -193,18 +193,18 @@ embed edb mdb bdb i@(p,_) =
        dehttp = replace "http://" "" . replace "https://" ""
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
-oaAPIEmbed :: T.Text -> IO (String,[Double])
-oaAPIEmbed doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replaceChecked "\n" "\\n" $ -- JSON escaping of newlines
+oaAPIEmbed :: FilePath -> T.Text -> IO (String,[Double])
+oaAPIEmbed p doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
                                                                                                    T.unpack doc]
-                    case status of
-                      ExitFailure err -> error $ "Exit Failure: " ++ intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr]
-                      _ -> do let results = lines $ U.toString mb
-                              case results of
-                                [] -> error $ "Failed to read any embed.sh output at all? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
-                                (modelType:latents) -> let embeddingM = readMaybe (unlines latents) :: Maybe [Double] in
-                                                         case embeddingM of
-                                                           Nothing -> error $ "Failed to read embed.sh's generated embeddings? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
-                                                           Just embedding -> return (modelType, embedding)
+                      case status of
+                        ExitFailure err -> error $ "Exit Failure: " ++ intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr]
+                        _ -> do let results = lines $ U.toString mb
+                                case results of
+                                  [] -> error $ "Failed to read any embed.sh output at all for the path: " ++ p ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
+                                  (modelType:latents) -> let embeddingM = readMaybe (unlines latents) :: Maybe [Double] in
+                                                           case embeddingM of
+                                                             Nothing -> error $ "Failed to read embed.sh's generated embeddings? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
+                                                             Just embedding -> return (modelType, embedding)
 
 type Distances = [(String, [String])]
 
@@ -442,14 +442,15 @@ writeListName :: ListName -> IO ()
 writeListName = writeUpdatedFile "listname" "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) . filter (\(_,nick) -> nick/="") . M.toList -- ensure consistent set-like lookups by sorting
 
 -- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
-type ListSortedMagicList = [([FilePath], [FilePath])]
+type ListSortedMagicList = [([FilePath],   -- key: a set of URLs (sorted alphabetically for canonicalness) to query for a sort-by-embedding version
+                              [FilePath])] -- value: the sorted-by-embedding version
 type ListSortedMagic = M.Map [FilePath] [FilePath]
 readListSortedMagic :: IO ListSortedMagic
 readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
                          exists <- doesFileExist p
                          if not exists then return M.empty else
                            do ls <- fmap T.unpack $ TIO.readFile p
-                              return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
+                              return $ if ls=="" then M.empty else M.fromList $ map (\(a,b) -> (sort a,b)) $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
          validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then
                                        error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
@@ -521,15 +522,11 @@ sortSimilarsStartingWithNewest md sortDB items = do
     restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
     restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
--- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
--- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
-minTagAuto :: Int
-minTagAuto = 3
-
 sortSimilars :: Embeddings -> ListSortedMagic -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ _ []    = return []
 sortSimilars _ _ _ [a]   = return [a]
 sortSimilars _ _ ""   _  = error "sortSimilars given an invalid seed!"
+sortSimilars [] _ _   _  = error "sortSimilars given empty embeddings database!"
 sortSimilars edb sortDB seed paths = do
                              let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
                              let edbDB' = M.restrictKeys edbDB (S.fromList (seed:paths))
@@ -541,7 +538,7 @@ sortSimilars edb sortDB seed paths = do
                              -- print ("Seed: " ++ seed)
                              -- print "sortSimilars: done"
                              -- print ("edb' length: "  ++ show (length edb'))
-                             case M.lookup (seed:paths') sortDB of
+                             case M.lookup (sort (seed:paths')) sortDB of
                                Nothing -> do paths'' <- lookupNextAndShrink paths' edb' seed
                                              -- print ("seed: " ++ show seed)
                                              -- print ("paths: " ++ show paths)
@@ -566,7 +563,7 @@ lookupNextAndShrink targets embeddings previous = do results <- go targets embed
   where go ta em = do ddb <- embeddings2Forest em
                       -- putStrLn ("remainingTargets: " ++ ppShow ta) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) em)) >> putStrLn ("previous: " ++ previous)
                       case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
-                              Nothing ->  putStr "Exited at Nothing in lookupNextAndShrink, this should never happen?" >> error ""
+                              Nothing ->  error $ "Exited at Nothing in lookupNextAndShrink, this should never happen? " ++ previous ++ " : " ++ show ta
                               Just (b,c,d,e) -> do -- putStrLn $ "findNearest: " ++ show (findNearest ddb 6 C.maxDistance (previous,b,c,d,e))
                                                    let matchs = filter (/=previous) $ findNearest ddb 6 C.maxDistance (previous,b,c,d,e) :: [FilePath]
                                                    if null matchs then
@@ -613,6 +610,7 @@ mergeSingletons (x:y:xs)
   | otherwise     = x : mergeSingletons (y : xs)
 
 clusterIntoSublist :: Embeddings -> [FilePath] -> [[FilePath]]
+clusterIntoSublist [] x    = error $ "clusterIntoSubList: passed empty embedding database for arguments " ++ show x
 clusterIntoSublist _ []    = [[]]
 clusterIntoSublist _ [a]   = [[a]]
 clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length list :: Double)) - 1) in
@@ -622,3 +620,24 @@ clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length l
                                       listDistanceDescending = (sort $ zip (pairwiseDistances list') [0::Int ..]) :: [((Double,FilePath), Int)]
                                       distancesLargestIndices = map snd $ take k listDistanceDescending
                                     in mergeSingletons $ splitAtIndices distancesLargestIndices list
+
+{-
+Experiment: can we sort full.gtx by embedding for better browsing/serendipity?
+result: sorta. Doing global greedy distance, which works well on short lists, seems to yield unfortunately random behavior when run globally across 7144 annotations in full.gtx. You need to nest within-tag, and then do a few iterations of bubble-sort to clean it up & reduce issues like date-inversions.
+
+mdl <- GTX.readGTXSlow "metadata/full.gtx"
+let seed = head $ map fst mdl
+let paths = map fst mdl
+edb <- readEmbeddings
+sortDB <- readListSortedMagic -- cache of past sort-by-embedding
+
+let filterByTag tags (_, (_, _, _, _, _, entryTags, _)) = not . null $ intersect tags entryTags
+tags <- Tags.listTagsAll -- Get all tags
+sortedEntries <- mapM (\tag -> let filteredEntries = filter (filterByTag [tag]) mdl in let paths = map fst filteredEntries in sortSimilars edb sortDB (fst $ head filteredEntries) paths) tags
+
+let sortMetadataList sortedEntries mdl = Data.Maybe.mapMaybe (\e -> fmap (\m -> (e, m)) (lookup e mdl)) sortedEntries
+partialSort = sortOn (\(_, (_, _, date, _, _, tags, title)) -> (head tags, date, title))
+let mdl' = reverse $ Data.Containers.ListUtils.nubOrd $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ sortMetadataList (concat sortedEntries) mdl
+GTX.writeGTX "metadata/full.gtx" mdl
+GTX.writeGTX "metadata/full-sorted.gtx" (sort mdl')
+-}

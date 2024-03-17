@@ -486,4 +486,4 @@ siteBlackList = [
           "tylervigen.com", "foundation.wikimedia.org", "cdn.discordapp.com","internetshakespeare.uvic.ca", "forecasting.substack.com", "git-scm.com",
           "www.emacswiki.org", "geminiprotocol.net", "figshare.com", "www.semafor.com", "google-research.github.io", "deepmind.google",
           "www.crd.york.ac.uk", "www.crunchbase.com", "dx.doi.org", "gawker.com", "cvm.missouri.edu", "gigamonkeys.com", "www.tiktok.com",
-          "conversationswithtyler.com", "karger.com","diabetesjournals.org", "benbest.com", "conservancy.umn.edu"]
+          "conversationswithtyler.com", "karger.com","diabetesjournals.org", "benbest.com", "conservancy.umn.edu", "a16z.com", "esolangs.org"]

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-11 12:10:25 gwern"
+# When:  Time-stamp: "2024-03-16 19:35:38 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -100,7 +100,7 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
           (crossref "$ORIGINAL" &);
           }
 # sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
-pdfcut-append () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
+pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&

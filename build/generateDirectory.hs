@@ -39,7 +39,8 @@ import Typography (identUniquefy)
 import MetadataFormat (extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (cd)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, minTagAuto, readListName, readListSortedMagic, ListName, ListSortedMagic)
+import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
+import Config.GenerateSimilar as CGS (minTagAuto)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -325,7 +326,7 @@ generateListItems am p = BulletList (map (\(f,a) -> LM.generateAnnotationTranscl
 
 generateSections :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
 generateSections am links linksSorted linkswp = (if null links then [] else annotated) ++
-                                                (if length linksSorted < minTagAuto then [] else sorted) ++
+                                                (if length linksSorted < CGS.minTagAuto then [] else sorted) ++
                                                 (if null linkswp then [] else wp)
     where annotated = (generateSections' am) 2 links
           sorted

@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.Misc where
 
-import Data.Time.Calendar (toModifiedJulianDay, toGregorian)
+import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
@@ -24,6 +24,13 @@ currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 currentDayString :: IO String
 currentDayString = fmap (formatTime defaultTimeLocale "%Y-%m-%d") Data.Time.Clock.getCurrentTime
+
+currentMonthAgo :: String
+currentMonthAgo = unsafePerformIO $ do
+  today <- fmap utctDay getCurrentTime
+  let monthAgo = addDays (-daysAgo) today
+  return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
+  where daysAgo = 31 :: Integer
 
 -- for Columns.hs:
 listLengthMaxN :: Int

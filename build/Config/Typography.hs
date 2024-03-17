@@ -82,4 +82,4 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Winter", "Writing", "Year", "Yearly", "Zilch", "In", "Judging", "From", "Experiment",
                                   "Between", "Caseness", "Goodbye", "By", "Around", "Christmas", "One", "Wars", "Michigan", "Act", "Circa",
                                   "Horizon", "Study", "Alamos", "Dover", "War", "London", "York", "Paris", "Berlin", "Francisco", "As", "Why",
-                                  "Indicators", "China", "China’s", "Books", "During", "Halloween", "Sweden", "Norway", "Finland"]
+                                  "Indicators", "China", "China’s", "Books", "During", "Halloween", "Sweden", "Norway", "Finland", "Suicides"]

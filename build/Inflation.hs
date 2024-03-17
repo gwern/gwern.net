@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-02-28 17:28:06 gwern"
+-- When:  Time-stamp: "2024-03-15 16:50:25 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -93,7 +93,7 @@ nominalToRealInflationAdjusterHTML "" s = s
 nominalToRealInflationAdjusterHTML date s
   | '$' `notElem` s = s -- no possible amount to adjust
   | "<span data-inflation=\"" `isInfixOf` s || "<span class=\"inflation-adjusted\"" `isInfixOf` s = s -- already adjusted
-  -- invalid date to adjust to; NOTE: in theory, this is only called in LinkMetadata.hs & every date read from Gtx should have passed `dateRegex` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
+  -- invalid date to adjust to; NOTE: in theory, this is only called in LinkMetadata.hs & every date read from GTX should have passed `dateRegex` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
   | not (date =~ dateRegex) = error ("nominalToRealInflationAdjusterHTML: passed a malformed date? " ++ date ++ "; s: " ++ s)
   -- All OK; start adjusting:
   | otherwise =

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-13 18:24:41 gwern"
+When:  Time-stamp: "2024-03-16 21:55:19 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGtxFast, writeGtx, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -42,7 +42,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -60,7 +60,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySu
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
-import Gtx (appendLinkMetadata, readGtxFast, readGtxSlow, rewriteLinkMetadata, writeGtx)
+import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -91,15 +91,15 @@ addPageLink x = x
 --
 -- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGtx f "metadata/full.gtx"
-                                       walkAndUpdateLinkMetadataGtx f "metadata/half.gtx"
-                                       walkAndUpdateLinkMetadataGtx f "metadata/auto.gtx"
+walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
+                                       walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"
+                                       walkAndUpdateLinkMetadataGTX f "metadata/auto.gtx"
                                        when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting.")
 
-walkAndUpdateLinkMetadataGtx :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
-walkAndUpdateLinkMetadataGtx f file = do db <- readGtxFast file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
+walkAndUpdateLinkMetadataGTX :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
+walkAndUpdateLinkMetadataGTX f file = do db <- readGTXFast file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
                                          db' <-  mapM f db
-                                         writeGtx file db'
+                                         writeGTX file db'
                                          printGreen $ "Updated " ++ file
 
 -- This can be run every few months to update abstracts (they generally don't change much).
@@ -112,7 +112,7 @@ updateGwernEntries = do rescrapeGTX gwernEntries "metadata/full.gtx"
 
 -- eg. to rescrape a specific abstract: `rescrapeGTX (\p -> p == "/notes/Attention") "metadata/half.gtx"`
 rescrapeGTX :: (Path -> Bool) -> Path -> IO ()
-rescrapeGTX filterF gtxpath = do dbl <- readGtxFast gtxpath
+rescrapeGTX filterF gtxpath = do dbl <- readGTXFast gtxpath
                                  let paths = filter filterF $ map fst dbl
                                  foldM_ (rescrapeItem gtxpath) dbl paths
 
@@ -121,8 +121,8 @@ rescrapeItem gtx dblist path =
   case lookup path dblist of
    Just old -> do new <- updateGwernEntry (path,old)
                   if (path,old) /= new then do let dblist' = new : filter ((/=) path . fst) dblist
-                                               writeGtx gtx dblist'
-                                               readGtxFast gtx
+                                               writeGTX gtx dblist'
+                                               readGTXFast gtx
                    else return dblist
    Nothing -> return dblist
 
@@ -138,18 +138,18 @@ updateGwernEntry x@(path,(title,author,date,dc,kvs,tags,_)) = if False then retu
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
-             full <- readGtxFast "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
-             half <- readGtxFast "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
-             auto <- readGtxFast "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
+             full <- readGTXFast "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+             half <- readGTXFast "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
+             auto <- readGTXFast "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
 
 readLinkMetadataSlow :: IO Metadata
 readLinkMetadataSlow = do
-             full <- readGtxSlow "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
-             half <- readGtxSlow "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
-             auto <- readGtxSlow "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
+             full <- readGTXSlow "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+             half <- readGTXSlow "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
+             auto <- readGTXSlow "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
@@ -159,7 +159,7 @@ readLinkMetadataSlow = do
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
-             full <- readGtxSlow "metadata/full.gtx"
+             full <- readGTXSlow "metadata/full.gtx"
 
              -- Quality checks:
              -- requirements:
@@ -192,7 +192,7 @@ readLinkMetadataAndCheck = do
 
              -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.gtx' without destroying all of the checks' validity.
-             half <- readGtxSlow "metadata/half.gtx"
+             half <- readGTXSlow "metadata/half.gtx"
              let (fullPaths,halfPaths) = (map fst full, map fst half)
              let redundantHalfs = fullPaths `intersect` halfPaths
              unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & full.gtx: " >> printGreen (show redundantHalfs))
@@ -210,7 +210,7 @@ readLinkMetadataAndCheck = do
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup  first
-             auto <- readGtxSlow "metadata/auto.gtx"
+             auto <- readGTXSlow "metadata/auto.gtx"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
@@ -295,7 +295,7 @@ readLinkMetadataNewest n = do md <- fmap M.toList $ readLinkMetadata
 
 -- read a GTX database and look for annotations that need to be paragraphized.
 warnParagraphizeGTX :: FilePath -> IO ()
-warnParagraphizeGTX path = do gtx <- readGtxFast path
+warnParagraphizeGTX path = do gtx <- readGTXFast path
                               let unparagraphized = filter (\(f,(_,_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
                               unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
@@ -445,10 +445,10 @@ addID maybeMetadataItem inline = case inline of
             "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,dtChanged,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > C.minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
+  | length abstrct > C.minimumAnnotationLength  = addChangedRecentlyClass $ addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
   | otherwise = addClass "link-annotated-partial" x'
@@ -460,6 +460,10 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
       | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
     x' = Link (a,b,c) e (f,g')
+    -- because it's a convenient place, 'addHasAnnotation' also checks if a fully-annotated Link (eg. an essay) was recently modified & sets a '.link-modified-recently' class for CSS styling:
+    addChangedRecentlyClass :: Inline -> Inline
+    addChangedRecentlyClass x = if dtChanged == "" || dtChanged < C.currentMonthAgo then x else
+                                  addClass "link-modified-recently" x
 addHasAnnotation _ z = z
 
 -- was this link given either a partial or full annotation?
@@ -568,7 +572,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
                               else C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
                               | liveP && not localP     = "External Link"
-                              | otherwise               = "HTML"
+                              | otherwise               = "page"
    fileDescription           = Str $ T.pack $
                                      fileTypeDescriptionString
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")

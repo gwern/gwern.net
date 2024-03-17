@@ -36,7 +36,7 @@ import qualified Data.Text as T (pack)
 
 import Config.Misc as C (root)
 import LinkMetadata (annotateLink, readLinkMetadata)
-import Gtx (readGtxFast, writeGtx)
+import GTX (readGTXFast, writeGTX)
 import LinkMetadataTypes (MetadataList, MetadataItem, Failure(Temporary, Permanent))
 import Tags (guessTagFromShort, listTagsAll)
 import Utils (printGreen, printRed, replace, sed)
@@ -76,7 +76,7 @@ changeOneTag link tag = do
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
-          [full,half,auto] <- mapM readGtxFast ["metadata/full.gtx", "metadata/half.gtx", "metadata/auto.gtx"]
+          [full,half,auto] <- mapM readGTXFast ["metadata/full.gtx", "metadata/half.gtx", "metadata/auto.gtx"]
           printGreen ("Executing: " ++ tag ++ " tag on link: " ++ link'')
           changeAndWriteTags tag link'' full half auto
 
@@ -88,13 +88,13 @@ changeAndWriteTags :: String -> String -> MetadataList -> MetadataList -> Metada
 changeAndWriteTags t i c p a = do let cP = hasItem i c
                                       pP = hasItem i p
                                       aP = hasItem i a
-                                  if cP then writeUpdatedGtx c "metadata/full.gtx" (changeTag i c t) else
-                                    if pP then writeUpdatedGtx p "metadata/half.gtx" (changeTag i p t) else
-                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedGtx a "metadata/auto.gtx" autoNew >> writeUpdatedGtx a "metadata/half.gtx" (changeTag i halfNew t)
+                                  if cP then writeUpdatedGTX c "metadata/full.gtx" (changeTag i c t) else
+                                    if pP then writeUpdatedGTX p "metadata/half.gtx" (changeTag i p t) else
+                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedGTX a "metadata/auto.gtx" autoNew >> writeUpdatedGTX a "metadata/half.gtx" (changeTag i halfNew t)
                                       else addNewLink t i
 
-writeUpdatedGtx :: MetadataList -> String -> MetadataList -> IO ()
-writeUpdatedGtx oldList target newList = when (oldList /= newList) $ writeGtx target newList
+writeUpdatedGTX :: MetadataList -> String -> MetadataList -> IO ()
+writeUpdatedGTX oldList target newList = when (oldList /= newList) $ writeGTX target newList
 
 -- what if a link is completely new and is not in either full.gtx (handwritten) or auto.gtx
 -- (often auto-annotated)? If we write it directly into half.gtx, then for many links like
