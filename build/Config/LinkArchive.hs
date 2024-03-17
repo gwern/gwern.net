@@ -82,15 +82,17 @@ localizeLinktestCases = [
     , ("https://darkrunescape.fandom.com/wiki/Doubling_money_scam", ("", "", "https://antifandom.com/darkrunescape/wiki/Doubling_money_scam", []))
     , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433?view=theater", []))
     , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
+    , ("https://en.wikipedia.org/wiki/George_Washington", ("", "", "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent", []))
+    , ("https://web.archive.org/web/20200928174939/http://thismarketingblogdoesnotexist.com/", ("", "", "https://web.archive.org/web/20200928174939if_/http://thismarketingblogdoesnotexist.com/", []))
+    , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",
+       ("/doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html", "", "https://web.archive.org/web/20230718144747if_/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", []))
+    -- LW/GW/EAF:
     , ("https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", ("", "", "https://www.greaterwrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist/comment/kuKaKje3en6bnhgFD?format=preview&theme=classic", []))
     , ("https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", ("", "", "https://www.greaterwrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was?format=preview&theme=classic", []))
     , ("https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", ("", "", "https://www.greaterwrong.com/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than?format=preview&theme=classic", []))
     , ("https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", ("", "", "https://ea.greaterwrong.com/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams?format=preview&theme=classic", []))
     , ("https://arbital.com/p/edge_instantiation/", ("/doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html", "", "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic", []))
-    , ("https://en.wikipedia.org/wiki/George_Washington", ("", "", "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent", []))
-    , ("https://web.archive.org/web/20200928174939/http://thismarketingblogdoesnotexist.com/", ("", "", "https://web.archive.org/web/20200928174939if_/http://thismarketingblogdoesnotexist.com/", []))
-    , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",
-       ("/doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html", "", "https://web.archive.org/web/20230718144747if_/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", []))
+    , ("https://www.lesswrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper#3_1__Whisper_learns_language_modelling_bigrams", ("", "", "https://www.greaterwrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper?format=preview&theme=classic#3_1__Whisper_learns_language_modelling_bigrams", []))
     ]
 
 localizeLinkTestDB :: ArchiveMetadata
@@ -122,6 +124,8 @@ localizeLinkTestDB = M.fromList $
 -- → "https://ea.greaterwrong​.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
 -- > Config.LinkArchive.transformURItoGW "https://arbital.com/p/edge_instantiation/"
 -- → "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic"
+-- > transformURItoGW "https://www.lesswrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper#3_1__Whisper_learns_language_modelling_bigrams"
+-- → "https://www.greaterwrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper?format=preview&theme=classic#3_1__Whisper_learns_language_modelling_bigrams"
 transformURItoGW :: String -> String
 transformURItoGW uri = fromMaybe uri $ do
     parsedURI <- parseURI uri
@@ -131,11 +135,14 @@ transformURItoGW uri = fromMaybe uri $ do
     let transformedURI = transformToMirrorURI mirrorPrefix parsedURI auth
     let transformedCommentURI = handleCommentId transformedURI
     return $ if shouldTransform hostname uri
-        then let transformedStr = uriToString id transformedCommentURI ""
-             in if null (uriQuery transformedCommentURI)
-                then transformedStr ++ "?format=preview&theme=classic"
-                else transformedStr ++ "&format=preview&theme=classic"
-        else uri
+    then let fragment = uriFragment transformedCommentURI
+             baseURI = transformedCommentURI { uriFragment = "" }
+             transformedStr = uriToString id baseURI ""
+             queryParams = if null (uriQuery transformedCommentURI)
+                           then "?format=preview&theme=classic"
+                           else "&format=preview&theme=classic"
+         in transformedStr ++ queryParams ++ fragment
+    else uri
   where
     originalDomains :: [String]
     originalDomains = [".lesswrong.com", ".alignmentforum.org", ".effectivealtruism.org", "arbital.com"]
