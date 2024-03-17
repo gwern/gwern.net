@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-15 16:49:33 gwern"
+When:  Time-stamp: "2024-03-15 18:47:20 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -146,7 +146,7 @@ doiOrKV mi s | s == ""       = []
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
 rewriteLinkMetadata half full gtx
   = do old <- readGTXFast gtx
-       -- de-duplicate by removing anything in auto.yaml which has been promoted to full/half:
+       -- de-duplicate by removing anything in auto.gtx which has been promoted to full/half:
        let (halfURLs,fullURLs) = (map fst half, map fst full)
        let betterURLs = nubOrd (halfURLs ++ fullURLs) -- these *should* not have any duplicates, but...
        let old' = filter (\(p,_) -> p `notElem` betterURLs) old

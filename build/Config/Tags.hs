@@ -486,6 +486,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/transformer/t5", "T5 Transformer")
           , ("ai/nn/transformer/alphafold", "AlphaFold")
           , ("ai/nn/transformer/gpt/claude",             "Claude AI")
+          , ("ai/nn/transformer/gpt/whisper",            "Whisper NN")
           , ("ai/nn/transformer/gpt/2/poetry",           "GPT-2 poetry")
           , ("ai/nn/transformer/gpt/2/nonfiction",       "GPT-2 (nonfiction)")
           , ("ai/nn/transformer/gpt/2/humor",            "GPT-2 humor")

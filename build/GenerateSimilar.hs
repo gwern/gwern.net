@@ -637,7 +637,7 @@ sortedEntries <- mapM (\tag -> let filteredEntries = filter (filterByTag [tag]) 
 
 let sortMetadataList sortedEntries mdl = Data.Maybe.mapMaybe (\e -> fmap (\m -> (e, m)) (lookup e mdl)) sortedEntries
 partialSort = sortOn (\(_, (_, _, date, _, _, tags, title)) -> (head tags, date, title))
-let mdl' = reverse $ nub $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ sortMetadataList (concat sortedEntries) mdl
+let mdl' = reverse $ Data.Containers.ListUtils.nubOrd $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ partialSort $ sortMetadataList (concat sortedEntries) mdl
 GTX.writeGTX "metadata/full.gtx" mdl
 GTX.writeGTX "metadata/full-sorted.gtx" (sort mdl')
 -}

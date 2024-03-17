@@ -12,7 +12,7 @@ import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace, head, append)
+import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace, head, append, reverse, takeWhile)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
@@ -242,7 +242,7 @@ hasExtensionS :: String -> String -> Bool
 hasExtensionS ext p = hasExtension (T.pack ext) (T.pack p)
 
 extension :: T.Text -> T.Text
-extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
+extension = T.pack . maybe "" (System.FilePath.takeExtension . uriPath) . parseURIReference . T.unpack
 
 isLocal :: T.Text -> Bool
 isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
@@ -365,8 +365,15 @@ hasKeyAL key list = key `elem` map fst list
 kvLookup :: String -> [(String, String)] -> String
 kvLookup key xs = maybe "" id (lookup key xs)
 
+kvLookupT :: T.Text -> [(T.Text, T.Text)] -> T.Text
+kvLookupT key xs = maybe "" id (lookup key xs)
+
 kvDOI :: [(String,String)] -> String
 kvDOI = kvLookup "doi"
+
+kvDOIT :: [(T.Text,T.Text)] -> T.Text
+kvDOIT = kvLookupT "doi"
+
 
 -- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
 -- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.
@@ -412,3 +419,8 @@ hasAny :: Eq a => [a]           -- ^ List of elements to look for
 hasAny [] _          = False             -- An empty search list: always false
 hasAny _ []          = False             -- An empty list to scan: always false
 hasAny search (x:xs) = x `elem` search || hasAny search xs
+
+
+-- Data.Text equivalent of System.FilePath.takeExtension
+takeExtension :: T.Text -> T.Text
+takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
