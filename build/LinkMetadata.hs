@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-16 21:55:19 gwern"
+When:  Time-stamp: "2024-03-17 14:45:01 gwern"
 License: CC-0
 -}
 
@@ -419,7 +419,7 @@ hasAnnotationOrIDInline metadata inline = case inline of
             in case M.lookup canonicalUrl metadatadb of
                 Nothing                     -> addID Nothing link
                 Just ("","","","",[],[],"") -> addID Nothing link
-                Just metadataItem           -> addID (Just metadataItem) (addHasAnnotation metadataItem link)
+                Just metadataItem           -> addID (Just metadataItem) (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem link)
 
 addID :: Maybe MetadataItem -> Inline -> Inline
 addID maybeMetadataItem inline = case inline of
@@ -445,10 +445,10 @@ addID maybeMetadataItem inline = case inline of
             "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,dtChanged,_,_,abstrct) (Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > C.minimumAnnotationLength  = addChangedRecentlyClass $ addClass "link-annotated" x' -- full annotation, no problem.
+  | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
   | otherwise = addClass "link-annotated-partial" x'
@@ -460,11 +460,13 @@ addHasAnnotation (title,aut,dt,dtChanged,_,_,abstrct) (Link (a,b,c) e (f,g))
       | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
     x' = Link (a,b,c) e (f,g')
-    -- because it's a convenient place, 'addHasAnnotation' also checks if a fully-annotated Link (eg. an essay) was recently modified & sets a '.link-modified-recently' class for CSS styling:
-    addChangedRecentlyClass :: Inline -> Inline
-    addChangedRecentlyClass x = if dtChanged == "" || dtChanged < C.currentMonthAgo then x else
-                                  addClass "link-modified-recently" x
 addHasAnnotation _ z = z
+
+-- checks if a fully-annotated Link (eg. an essay) with an abstract was recently modified & sets a '.link-modified-recently' class for CSS styling:
+addRecentlyChanged :: MetadataItem -> Inline -> Inline
+addRecentlyChanged (_,_,_,"",       _,_,_) x = x
+addRecentlyChanged (_,_,_,_,       _,_,"") x = x
+addRecentlyChanged (_,_,_,dtChanged,_,_,_) x = if dtChanged < C.currentMonthAgo then x else addClass "link-modified-recently" x
 
 -- was this link given either a partial or full annotation?
 wasAnnotated :: Inline -> Bool
@@ -507,7 +509,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-           link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
+           link = addRecentlyChanged x $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
        in
@@ -544,7 +546,7 @@ generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataIte
 generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
                                 let tle' = if null tle then "<code>"++f++"</code>" else tle
                                     -- NOTE: we set this on special-case links like Twitter links anyway, even if they technically do not have 'an annotation'; the JS will handle `.include-annotation` correctly anyway
-                                    link = linkIcon $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
+                                    link = linkIcon $ addRecentlyChanged x $ addHasAnnotation x $ Link ("", ["id-not", "include-annotation"], [])
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
 
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am False (f, ("",undefined,undefined,undefined,undefined,undefined,undefined))
