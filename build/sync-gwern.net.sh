@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-16 11:57:03 gwern"
+# When:  Time-stamp: "2024-03-16 22:25:41 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -519,7 +519,7 @@ else
                    -e '^link-tag$' -e '^link-tags$' -e '^cite$' -e '^cite-joiner$' -e '^collapse$' -e '^columns$' -e '^directory-indexes-downwards$' \
                    -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
                    -e '^full-width$' -e '^haskell$' -e '^header$' -e '^horizontal-rule-nth-0$' -e '^horizontal-rule-nth-1$' \
-                   -e '^horizontal-rule-nth-2$' -e '^icon-not$' -e '^inline$' -e '^invert$' -e '^invert-auto$' -e '^invert-not$' \
+                   -e '^horizontal-rule-nth-2$' -e '^icon-not$' -e '^link-modified-recently$' -e '^inline$' -e '^invert$' -e '^invert-auto$' -e '^invert-not$' \
                    -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$'  \
                    -e '^link-live-not$' -e '^tex-logotype$' -e '^math$' -e '^odd$' -e '^page-thumbnail$' \
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
@@ -1261,7 +1261,7 @@ else
 
     # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
     bold "Compressing new GIFs…"
-    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made.
+    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made <https://github.com/kohler/gifsicle/issues/201>.
       local gif="$1"
 
       if [ ! -f "$gif" ]; then

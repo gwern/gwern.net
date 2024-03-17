@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-13 18:24:41 gwern"
+When:  Time-stamp: "2024-03-16 21:55:19 gwern"
 License: CC-0
 -}
 
@@ -42,7 +42,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
@@ -445,10 +445,10 @@ addID maybeMetadataItem inline = case inline of
             "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,dtChanged,_,_,abstrct) (Link (a,b,c) e (f,g))
   | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > C.minimumAnnotationLength    = addClass "link-annotated" x' -- full annotation, no problem.
+  | length abstrct > C.minimumAnnotationLength  = addChangedRecentlyClass $ addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
   | otherwise = addClass "link-annotated-partial" x'
@@ -460,6 +460,10 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
       | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
     x' = Link (a,b,c) e (f,g')
+    -- because it's a convenient place, 'addHasAnnotation' also checks if a fully-annotated Link (eg. an essay) was recently modified & sets a '.link-modified-recently' class for CSS styling:
+    addChangedRecentlyClass :: Inline -> Inline
+    addChangedRecentlyClass x = if dtChanged == "" || dtChanged < C.currentMonthAgo then x else
+                                  addClass "link-modified-recently" x
 addHasAnnotation _ z = z
 
 -- was this link given either a partial or full annotation?
@@ -568,7 +572,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
                               else C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
                               | liveP && not localP     = "External Link"
-                              | otherwise               = "HTML"
+                              | otherwise               = "page"
    fileDescription           = Str $ T.pack $
                                      fileTypeDescriptionString
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
