@@ -23,7 +23,7 @@ import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import Network.HTTP (urlEncode)
 import System.FilePath (takeBaseName)
 import Control.Monad (when, foldM)
-import Data.Set as S (fromList)
+import qualified Data.Set as S (fromList, toList, Set)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
@@ -442,17 +442,17 @@ writeListName :: ListName -> IO ()
 writeListName = writeUpdatedFile "listname" "metadata/listname.hs" . T.pack . ppShow . map (\(fs,nick) -> (sort fs,nick)) . filter (\(_,nick) -> nick/="") . M.toList -- ensure consistent set-like lookups by sorting
 
 -- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
-type ListSortedMagicList = [([FilePath],   -- key: a set of URLs (sorted alphabetically for canonicalness) to query for a sort-by-embedding version
+type ListSortedMagicList = [(S.Set FilePath,   -- key: a set of URLs to query for a sort-by-embedding version
                               [FilePath])] -- value: the sorted-by-embedding version
-type ListSortedMagic = M.Map [FilePath] [FilePath]
+type ListSortedMagic = M.Map (S.Set FilePath) [FilePath]
 readListSortedMagic :: IO ListSortedMagic
 readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
                          exists <- doesFileExist p
                          if not exists then return M.empty else
                            do ls <- fmap T.unpack $ TIO.readFile p
-                              return $ if ls=="" then M.empty else M.fromList $ map (\(a,b) -> (sort a,b)) $ validateListSortedMagic (read ls :: ListSortedMagicList)
+                              return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
-         validateListSortedMagic l = if any (\(f,g) -> null f || null g  || any null f || any null g || sort f /= sort g) l then
+         validateListSortedMagic l = if any (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) l then
                                        error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
 writeListSortedMagic = writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" . T.pack . ppShow . M.toList
@@ -532,20 +532,21 @@ sortSimilars edb sortDB seed paths = do
                              let edbDB' = M.restrictKeys edbDB (S.fromList (seed:paths))
                              let edb' = map (\(a,(b,c,d,e)) -> (a,b,c,d,e)) $ M.toList edbDB'
                              let paths' = filter (/= seed) paths
+                             let newKey = S.fromList (seed:paths')
                              -- print "sortSimilars: begin"
                              -- putStrLn $ ppShow $ map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) edb'
                              -- putStrLn $ "paths': " ++ ppShow paths'
                              -- print ("Seed: " ++ seed)
                              -- print "sortSimilars: done"
                              -- print ("edb' length: "  ++ show (length edb'))
-                             case M.lookup (sort (seed:paths')) sortDB of
+                             case M.lookup newKey sortDB of
                                Nothing -> do paths'' <- lookupNextAndShrink paths' edb' seed
                                              -- print ("seed: " ++ show seed)
                                              -- print ("paths: " ++ show paths)
                                              -- print ("paths': " ++ show paths')
                                              -- print ("paths'': " ++ show paths'')
                                              sortDB' <- readListSortedMagic
-                                             let sortDB'' = M.insert (seed:paths') paths'' sortDB'
+                                             let sortDB'' = M.insert newKey paths'' sortDB'
                                              -- print ("writing new sortDB'': " ++ show sortDB'')
                                              writeListSortedMagic sortDB''
                                              -- print ("wrote new sortDB"::String)
