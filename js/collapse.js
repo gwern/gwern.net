@@ -279,6 +279,10 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			useExistingWrapper: true, 
 			moveClasses: [ "collapse", "expand-on-hover" ]
 		};
+		let bareContentSelector = [ 
+			"p",
+			".list"
+		].join(", ");
 		if ([ "DIV", "SECTION", "SPAN", "A" ].includes(collapseBlock.tagName)) {
 			//	Handle collapse-inducing include-links.
 			if (collapseBlock.tagName == "A")
@@ -333,10 +337,9 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			//	Designate “bare content” collapse blocks.
 			if (   collapseWrapper.classList.contains("collapse-block") == true
 				&& collapseWrapper.classList.contains("bare-content-not") == false) {
-				let bareContentTags = [ "P", "UL", "OL" ];
-				if (   bareContentTags.includes(collapseWrapper.firstElementChild.tagName)
+				if (   collapseWrapper.firstElementChild.matches(bareContentSelector)
 					|| (   collapseWrapper.classList.contains("has-abstract")
-						&& bareContentTags.includes(collapseWrapper.querySelector(".abstract-collapse").firstElementChild.tagName)))
+						&& collapseWrapper.querySelector(".abstract-collapse").firstElementChild.matches(bareContentSelector)))
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
@@ -345,6 +348,10 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				abstracts.
 			 */
 			collapseWrapper = wrapElement(collapseBlock, "div.collapse-block.no-abstract", wrapOptions);
+
+			//	Designate “bare content” collapse blocks.
+			if (collapseWrapper.firstElementChild.matches(bareContentSelector))
+				collapseWrapper.classList.add("bare-content");
 		}
 
 		//	Slight HTML structure rectification.

@@ -2773,6 +2773,11 @@ GW.layout = {
 		[ ".data-field.file-includes .collapse + .collapse",
 										 5, false ],
 
+		[ ".annotation .collapse.bare-content + .collapse.bare-content",
+										 4, false ],
+		[ ".annotation * + .collapse.bare-content",
+										 6, false ],
+
 		[ ".aux-links-append + .aux-links-append",
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + *",

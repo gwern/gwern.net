@@ -939,7 +939,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 		if (interviewWrapper.firstElementChild.tagName != "UL")
 			return;
 
-		let interview = newElement("UL", { class: "interview" });
+		let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
 
 		for (let child of Array.from(interviewWrapper.children)) {
 			if (child.tagName != "UL") {
