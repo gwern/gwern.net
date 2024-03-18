@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-17 14:45:01 gwern"
+When:  Time-stamp: "2024-03-17 19:00:24 gwern"
 License: CC-0
 -}
 
@@ -462,10 +462,10 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
     x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
 
--- checks if a fully-annotated Link (eg. an essay) with an abstract was recently modified & sets a '.link-modified-recently' class for CSS styling:
+-- checks if a Link was recently modified & sets a '.link-modified-recently' class for CSS styling:
 addRecentlyChanged :: MetadataItem -> Inline -> Inline
-addRecentlyChanged (_,_,_,"",       _,_,_) x = x
-addRecentlyChanged (_,_,_,_,       _,_,"") x = x
+-- addRecentlyChanged (_,_,_,"",       _,_,_) x = x
+-- addRecentlyChanged (_,_,_,_,       _,_,"") x = x
 addRecentlyChanged (_,_,_,dtChanged,_,_,_) x = if dtChanged < C.currentMonthAgo then x else addClass "link-modified-recently" x
 
 -- was this link given either a partial or full annotation?
