@@ -182,6 +182,58 @@ function randomAsset(assetPathnamePattern) {
 }
 
 
+/*******************/
+/* IMAGE INVERSION */
+/*******************/
+
+GW.invertOrNot = { };
+GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/batch/pred";
+
+/*******************************************************************/
+/*	Returns true if the given image should be inverted in dark mode.
+ */
+function shouldInvertImageInDarkMode(image) {
+	return (GW.invertOrNot[image.src].invert == true);
+}
+
+/*****************************************************************************/
+/*	Sends request to InvertOrNot for judgments about whether the images in the
+	given container ought to be inverted.
+
+	NOTE: Currently disabled. —SA 2024-03-18
+ */
+function requestImageInversionDataForImagesInContainer(container) {
+	return;
+
+	let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => 
+		GW.invertOrNot[image.src] ? null : image.src
+	).filter(x => x);
+	if (imageURLs.length == 0)
+		return;
+
+	console.log(imageURLs);
+
+	doAjax({
+		location: GW.invertOrNotAPIEndpoint,
+		method: "POST",
+		responseType: "JSON",
+		params: { images: imageURLs.map(url => { return { url: url }; }) },
+		onSuccess: (event) => {
+			console.log(event.target.response);
+
+			event.target.response.forEach(imageInfo => {
+				GW.invertOrNot[imageInfo.url] = {
+					invert: imageInfo.invert
+				};
+			});
+		},
+		onFailure: (event) => {
+			console.log(event);
+		}
+	});
+}
+
+
 /*********/
 /* LINKS */
 /*********/

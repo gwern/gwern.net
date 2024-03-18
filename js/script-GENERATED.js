@@ -182,6 +182,58 @@ function randomAsset(assetPathnamePattern) {
 }
 
 
+/*******************/
+/* IMAGE INVERSION */
+/*******************/
+
+GW.invertOrNot = { };
+GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/batch/pred";
+
+/*******************************************************************/
+/*	Returns true if the given image should be inverted in dark mode.
+ */
+function shouldInvertImageInDarkMode(image) {
+	return (GW.invertOrNot[image.src].invert == true);
+}
+
+/*****************************************************************************/
+/*	Sends request to InvertOrNot for judgments about whether the images in the
+	given container ought to be inverted.
+
+	NOTE: Currently disabled. —SA 2024-03-18
+ */
+function requestImageInversionDataForImagesInContainer(container) {
+	return;
+
+	let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => 
+		GW.invertOrNot[image.src] ? null : image.src
+	).filter(x => x);
+	if (imageURLs.length == 0)
+		return;
+
+	console.log(imageURLs);
+
+	doAjax({
+		location: GW.invertOrNotAPIEndpoint,
+		method: "POST",
+		responseType: "JSON",
+		params: { images: imageURLs.map(url => { return { url: url }; }) },
+		onSuccess: (event) => {
+			console.log(event.target.response);
+
+			event.target.response.forEach(imageInfo => {
+				GW.invertOrNot[imageInfo.url] = {
+					invert: imageInfo.invert
+				};
+			});
+		},
+		onFailure: (event) => {
+			console.log(event);
+		}
+	});
+}
+
+
 /*********/
 /* LINKS */
 /*********/
@@ -5017,6 +5069,9 @@ Annotations = { ...Annotations,
 					let abstractDocument = newDocument(abstractElement.childNodes);
 					Annotations.dataSources.local.postProcessReferenceEntry(abstractDocument, link);
 					abstractHTML = abstractDocument.innerHTML;
+
+					//	Request image inversion judgments from invertornot.
+					requestImageInversionDataForImagesInContainer(abstractDocument);
 				}
 
 				//	File includes (if any).
@@ -5289,6 +5344,9 @@ Annotations.dataSources.wikipedia = {
 									: `${titleHTML} (${pageTitleElementHTML})`)
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
+
+		//	Request image inversion judgments from invertornot.
+		requestImageInversionDataForImagesInContainer(referenceEntry);
 
 		return {
 			content: {
@@ -12401,6 +12459,22 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 /***********/
 /* FIGURES */
 /***********/
+
+/****************************************************************************/
+/*	Request image inversion data for images in the loaded content. (We omit
+	annotations from this load handler because requesting inversion data for 
+	images in annotations is handled by annotations.js; this is necessary 
+	because we do not fire a GW.contentDidLoad event when we load the raw
+	annotation source and extract the reference data, but rather only when we 
+	construct the annotation by filling a template with that reference data,
+	which is too late for an image inversion data request to do much good.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
+    GWLog("requestImageInversionData", "rewrite.js", 1);
+
+	//	Request image inversion judgments from invertornot.
+	requestImageInversionDataForImagesInContainer(eventInfo.container);
+}, ">rewrite", (info) => (info.contentType != "annotation"));
 
 /******************************************************************/
 /*	Wrap text nodes and inline elements in figcaptions in <p> tags.

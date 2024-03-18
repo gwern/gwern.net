@@ -355,6 +355,22 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 /* FIGURES */
 /***********/
 
+/****************************************************************************/
+/*	Request image inversion data for images in the loaded content. (We omit
+	annotations from this load handler because requesting inversion data for 
+	images in annotations is handled by annotations.js; this is necessary 
+	because we do not fire a GW.contentDidLoad event when we load the raw
+	annotation source and extract the reference data, but rather only when we 
+	construct the annotation by filling a template with that reference data,
+	which is too late for an image inversion data request to do much good.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
+    GWLog("requestImageInversionData", "rewrite.js", 1);
+
+	//	Request image inversion judgments from invertornot.
+	requestImageInversionDataForImagesInContainer(eventInfo.container);
+}, ">rewrite", (info) => (info.contentType != "annotation"));
+
 /******************************************************************/
 /*	Wrap text nodes and inline elements in figcaptions in <p> tags.
  */

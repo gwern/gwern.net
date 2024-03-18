@@ -529,6 +529,9 @@ Annotations = { ...Annotations,
 					let abstractDocument = newDocument(abstractElement.childNodes);
 					Annotations.dataSources.local.postProcessReferenceEntry(abstractDocument, link);
 					abstractHTML = abstractDocument.innerHTML;
+
+					//	Request image inversion judgments from invertornot.
+					requestImageInversionDataForImagesInContainer(abstractDocument);
 				}
 
 				//	File includes (if any).
@@ -801,6 +804,9 @@ Annotations.dataSources.wikipedia = {
 									: `${titleHTML} (${pageTitleElementHTML})`)
 								 : titleHTML);
 		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
+
+		//	Request image inversion judgments from invertornot.
+		requestImageInversionDataForImagesInContainer(referenceEntry);
 
 		return {
 			content: {
