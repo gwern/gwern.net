@@ -1131,6 +1131,7 @@ function doAjax(options) {
 		location: document.location,
 		method: "GET",
 		params: null,
+		serialization: "URL",
 		responseType: null,
 		headers: null,
 		onSuccess: null,
@@ -1157,9 +1158,6 @@ function doAjax(options) {
     			 	: "");
     req.open(options.method, location);
 
-    if (options.method == "POST")
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
     if (options.responseType)
 	    req.responseType = options.responseType;
 
@@ -1168,7 +1166,20 @@ function doAjax(options) {
 			req.setRequestHeader(headerName, headerValue);
 
     if (options.method == "POST") {
-        req.send(urlEncodeQuery(options.params));
+    	let payload;
+    	switch (options.serialization) {
+    	case "JSON":
+    		payload = JSON.stringify(options.params);
+			req.setRequestHeader("Content-Type", "application/json");
+    		break;
+		case "URL":
+		default:
+			payload = urlEncodeQuery(options.params);
+			req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			break;
+    	}
+
+        req.send(payload);
     } else {
         req.send();
     }
