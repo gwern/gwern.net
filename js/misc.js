@@ -202,7 +202,10 @@ function shouldInvertImageInDarkMode(image) {
  */
 function requestImageInversionDataForImagesInContainer(container) {
 	let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => 
-		GW.invertOrNot[image.src] ? null : image.src
+		(   URLFromString(image.src).pathname.match(/\.(png|jpe?g$)/i) 
+		 && GW.invertOrNot[image.src] == null)
+		? image.src
+		: null 
 	).filter(x => x);
 	if (imageURLs.length == 0)
 		return;
