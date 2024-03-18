@@ -446,16 +446,17 @@ type ListSortedMagicList = [(S.Set FilePath,   -- key: a set of URLs to query fo
                               [FilePath])] -- value: the sorted-by-embedding version
 type ListSortedMagic = M.Map (S.Set FilePath) [FilePath]
 readListSortedMagic :: IO ListSortedMagic
-readListSortedMagic = do let p = "metadata/listsortedmagic.hs"
+readListSortedMagic = do Config.Misc.cd
+                         let p = "metadata/listsortedmagic.hs"
                          exists <- doesFileExist p
                          if not exists then return M.empty else
                            do ls <- fmap T.unpack $ TIO.readFile p
                               return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
-         validateListSortedMagic l = if any (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) l then
-                                       error ("validateListSortedMagic: read file failed sanity check: " ++ show l) else l
+         validateListSortedMagic l = let errors = filter (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) l
+                                         in if errors /= []  then error ("validateListSortedMagic: read file failed sanity check: " ++ show errors) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
-writeListSortedMagic = writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" . T.pack . ppShow . M.toList
+writeListSortedMagic x = Config.Misc.cd >> (writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" $ T.pack $ ppShow $ nubOrd $ M.toList x)
 
 -- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.

@@ -30,7 +30,7 @@ currentMonthAgo = unsafePerformIO $ do
   today <- fmap utctDay getCurrentTime
   let monthAgo = addDays (-daysAgo) today
   return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
-  where daysAgo = 31 :: Integer
+  where daysAgo = 31 * 2 :: Integer
 
 -- for Columns.hs:
 listLengthMaxN :: Int

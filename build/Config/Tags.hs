@@ -56,7 +56,7 @@ wholeTagRewritesRegexes = [("^cs/", "CS/")
                      ]
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
--- testing: unique keys
+-- testing: unique keys; keys are all-lowercase (on-disk directories are always lowercase)
 tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
 tagsShort2LongRewrites =
    [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot")
@@ -398,7 +398,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychology/okcupid", "OKCupid")
           , ("psychology/nature", "psych of nature")
           , ("psychology/dark-knowledge", "‘dark knowledge’ (human)")
-          , ("psychedelic/LSD", "LSD")
+          , ("psychedelic/lsd", "LSD")
           , ("psychedelic", "psychedelics")
           , ("statistics/prediction", "forecasting")
           , ("statistics/prediction/election", "election forecast")
