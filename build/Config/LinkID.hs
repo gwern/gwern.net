@@ -388,4 +388,6 @@ linkIDOverrides =
        , ("https://www.reddit.com/r/TheMotte/comments/cjqd9i/lee_kuan_yew_review_part_three_race_language_and/", "tracingwoodgrains-2019-3")
        , ("https://www.reddit.com/r/TheMotte/comments/cmoo25/lee_kuan_yew_review_part_four_the_pathway_to_power/", "tracingwoodgrains-2019-4")
        , ("https://www.semafor.com/article/03/24/2023/the-secret-history-of-elon-musk-sam-altman-and-openai", "albergotti-2023-2")
+       , ("/doc/cs/algorithm/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
+       , ("https://www.inkandswitch.com/local-first.html", "kleppmann-et-al-2019-blog")
       ]

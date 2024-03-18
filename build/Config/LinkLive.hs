@@ -2371,7 +2371,7 @@ goodLinks =
             , "https://bmk.sh/2020/08/17/Building-AGI-Using-Language-Models/"
             -- , "https://boingboing.net/2012/08/09/make-yourself-healthy-searchi.html" -- spoofing fake 403 errors
             , "https://bwc.thelab.dc.gov/"
-            , "https://cacm.acm.org/magazines/2017/8/219606-the-science-of-brute-force/fulltext"
+            , "https://cacm.acm.org/research/the-science-of-brute-force/"
             , "https://caniuse.com/?search=hyphenate"
             , "https://carbonplan.org/research/forest-offsets"
             , "https://casual-effects.com/markdeep/"

@@ -5,7 +5,7 @@ import Control.Monad (unless)
 import Data.List (foldl')
 import Network.URI (isURIReference)
 import qualified Data.Set as Set (empty, insert, member)
-import Data.Char (isAlpha)
+import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack)
 
 import Text.Pandoc (Inline(Link))
@@ -136,6 +136,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ ensure "Test.LinkSuggester.whiteList" "isURIReferenceT" (isURIReferenceT . fst) Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
+              , length $ ensure "Test.Config.Tags.tagsLong2Short" "isLower" (all Data.Char.isLower . filter Data.Char.isAlpha . fst) Config.Tags.tagsLong2Short
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
