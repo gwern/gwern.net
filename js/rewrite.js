@@ -225,46 +225,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 /* BLOCKQUOTES */
 /***************/
 
-/****************************************/
-/*	Rectify HTML structure of interviews.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
-    GWLog("rewriteInterviews", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("div.interview, div.interview > div.collapse").forEach(interviewWrapper => {
-		if (interviewWrapper.firstElementChild.tagName != "UL")
-			return;
-
-		let interview = interviewWrapper.firstElementChild;
-		interview.classList.add("interview");
-
-		for (let exchange of interview.children) {
-			exchange.classList.add("exchange");
-
-			for (let utterance of exchange.firstElementChild.children) {
-				utterance.classList.add("utterance");
-
-				let speaker = utterance.querySelector("strong");
-
-				//	If the speaker is wrapped, find the outermost wrapper.
-				let nextNode;
-				while (   speaker.parentElement
-					   && speaker.parentElement.tagName != "P")
-					speaker = speaker.parentElement;
-				nextNode = speaker.nextSibling;
-				speaker.classList.add("speaker");
-				speaker.querySelector("speaker")?.classList.remove("speaker");
-
-				//	Move colon.
-				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1) + " ";
-				nextNode.textContent = nextNode.textContent.slice(1).trimStart();
-			}
-		}
-
-		unwrap(interviewWrapper);
-	});
-}, "rewrite");
-
 /*************************************************************************/
 /*	Returns the nesting level (an integer in [1,blockquoteCyclePeriod]) of 
 	a <blockquote> element.
@@ -962,6 +922,56 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (ev
 	        	unwrap(columnList.parentElement);
 		}
     });
+}, "rewrite");
+
+
+/**************/
+/* INTERVIEWS */
+/**************/
+
+/****************************************/
+/*	Rectify HTML structure of interviews.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
+    GWLog("rewriteInterviews", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".interview, .interview > .collapse").forEach(interviewWrapper => {
+		if (interviewWrapper.firstElementChild.tagName != "UL")
+			return;
+
+		let interview = newElement("UL", { class: "interview" });
+
+		for (let child of Array.from(interviewWrapper.children)) {
+			if (child.tagName != "UL") {
+				child.remove();
+				continue;
+			}
+
+			let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
+			exchange.append(child);
+
+			for (let utterance of exchange.firstElementChild.children) {
+				utterance.classList.add("utterance");
+
+				let speaker = utterance.querySelector("strong");
+
+				//	If the speaker is wrapped, find the outermost wrapper.
+				let nextNode;
+				while (   speaker.parentElement
+					   && speaker.parentElement.tagName != "P")
+					speaker = speaker.parentElement;
+				nextNode = speaker.nextSibling;
+				speaker.classList.add("speaker");
+				speaker.querySelector("speaker")?.classList.remove("speaker");
+
+				//	Move colon.
+				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1) + " ";
+				nextNode.textContent = nextNode.textContent.slice(1).trimStart();
+			}
+		}
+
+		interviewWrapper.replaceWith(interview);
+	});
 }, "rewrite");
 
 
