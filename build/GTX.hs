@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-15 18:47:20 gwern"
+When:  Time-stamp: "2024-03-17 20:06:18 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -100,7 +100,9 @@ readGTXFast = readGTX id
 readGTXSlow :: FilePath -> IO MetadataList
 readGTXSlow path = do C.cd
                       allTags <- listTagsAll
-                      readGTX (postprocessing allTags) path
+                      results <- readGTX (postprocessing allTags) path
+                      let badEntries = filter (\(p,_) -> p `elem` ["---", "---.md", ""]) results
+                      if null badEntries then return results else error ("readGTXSlow: invalid entries found in " ++ path ++ ": " ++ show badEntries)
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
                                                      (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, kvs,
