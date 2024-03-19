@@ -582,7 +582,8 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         let media = figure.querySelector(mediaSelector);
         let caption = figure.querySelector("figcaption");
 
-        if (!(media && caption))
+        if (   media   == null
+        	|| caption == null)
             return;
 
         //  Create an inner wrapper for the figure contents.
@@ -1079,7 +1080,7 @@ Hyphenopoly.config({
 addContentInjectHandler(GW.contentInjectHandlers.hyphenate = (eventInfo) => {
     GWLog("hyphenate", "rewrite.js", 1);
 
-    if (!(Hyphenopoly.hyphenators))
+    if (Hyphenopoly.hyphenators == null)
         return;
 
     if (GW.isX11())
@@ -1555,13 +1556,13 @@ addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyCompactSty
  */
 function setTOCCollapseState(collapsed = false) {
     let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    if (TOC == null)
         return;
 
     TOC.classList.toggle("collapsed", collapsed);
 
     let button = TOC.querySelector(".toc-collapse-toggle-button");
-    if (!button)
+    if (button == null)
         return;
 
     button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
@@ -1574,7 +1575,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
     GWLog("injectTOCMinimizeButton", "rewrite.js", 1);
 
     let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    if (TOC == null)
         return;
 
     let button = newElement("BUTTON", {
@@ -1722,7 +1723,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (ev
     GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
     let footnotesSection = eventInfo.container.querySelector("#footnotes");
-    if (!footnotesSection)
+    if (footnotesSection == null)
         return;
 
     let footnotesSectionSelfLink = newElement("A", {
@@ -1978,7 +1979,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
             read, or an unread identifier.
          */
         let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
-        if (!target)
+        if (target == null)
             return;
 
         link.dataset.linkIconType = "svg";

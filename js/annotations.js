@@ -703,7 +703,7 @@ Annotations.dataSources.wikipedia = {
 			/*	Check whether we have tried to load a part of the page which
 				does not exist.
 			 */
-			if (!targetElement)
+			if (targetElement == null)
 				return null;
 
 			if (/H[0-9]/.test(targetElement.tagName)) {
@@ -860,8 +860,9 @@ Annotations.dataSources.wikipedia = {
 			if (Annotations.dataSources.wikipedia.matches(link)) {
 				link.classList.add(Annotations.annotatedLinkFullClass);
 			} else {
-				if (!(   link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))
-					  || link.pathname == "/w/index.php"))
+				if ((   link.pathname.startsWith("/wiki/Special:")
+					 || link.pathname == "/w/index.php"
+					 ) == false)
 					link.classList.add("link-live");
 			}
 		}

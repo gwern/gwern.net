@@ -5239,7 +5239,7 @@ Annotations.dataSources.wikipedia = {
 			/*	Check whether we have tried to load a part of the page which
 				does not exist.
 			 */
-			if (!targetElement)
+			if (targetElement == null)
 				return null;
 
 			if (/H[0-9]/.test(targetElement.tagName)) {
@@ -5396,8 +5396,9 @@ Annotations.dataSources.wikipedia = {
 			if (Annotations.dataSources.wikipedia.matches(link)) {
 				link.classList.add(Annotations.annotatedLinkFullClass);
 			} else {
-				if (!(   link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))
-					  || link.pathname == "/w/index.php"))
+				if ((   link.pathname.startsWith("/wiki/Special:")
+					 || link.pathname == "/w/index.php"
+					 ) == false)
 					link.classList.add("link-live");
 			}
 		}
@@ -12683,7 +12684,8 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         let media = figure.querySelector(mediaSelector);
         let caption = figure.querySelector("figcaption");
 
-        if (!(media && caption))
+        if (   media   == null
+        	|| caption == null)
             return;
 
         //  Create an inner wrapper for the figure contents.
@@ -13180,7 +13182,7 @@ Hyphenopoly.config({
 addContentInjectHandler(GW.contentInjectHandlers.hyphenate = (eventInfo) => {
     GWLog("hyphenate", "rewrite.js", 1);
 
-    if (!(Hyphenopoly.hyphenators))
+    if (Hyphenopoly.hyphenators == null)
         return;
 
     if (GW.isX11())
@@ -13656,13 +13658,13 @@ addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyCompactSty
  */
 function setTOCCollapseState(collapsed = false) {
     let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    if (TOC == null)
         return;
 
     TOC.classList.toggle("collapsed", collapsed);
 
     let button = TOC.querySelector(".toc-collapse-toggle-button");
-    if (!button)
+    if (button == null)
         return;
 
     button.title = collapsed ? "Expand table of contents" : "Collapse table of contents";
@@ -13675,7 +13677,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
     GWLog("injectTOCMinimizeButton", "rewrite.js", 1);
 
     let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    if (TOC == null)
         return;
 
     let button = newElement("BUTTON", {
@@ -13823,7 +13825,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (ev
     GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
     let footnotesSection = eventInfo.container.querySelector("#footnotes");
-    if (!footnotesSection)
+    if (footnotesSection == null)
         return;
 
     let footnotesSectionSelfLink = newElement("A", {
@@ -14079,7 +14081,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
             read, or an unread identifier.
          */
         let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
-        if (!target)
+        if (target == null)
             return;
 
         link.dataset.linkIconType = "svg";
@@ -14908,7 +14910,7 @@ function expandCollapseBlocksToReveal(node, options) {
 		fireStateChangedEvent: true
 	}, options);
 
-	if (!node)
+	if (node == null)
 		return;
 
     // If the node is not an element (e.g. a text node), get its parent element.
@@ -14917,7 +14919,7 @@ function expandCollapseBlocksToReveal(node, options) {
     /*  If the given element is not within any collapsed block, there is nothing
         to do.
      */
-    if (!isWithinCollapsedBlock(element))
+    if (isWithinCollapsedBlock(element) == false)
     	return false;
 
     //  Determine if nearest collapse block needs expanding.
@@ -15018,7 +15020,7 @@ function isWithinCollapsedBlock(element) {
         be within a *currently-collapsed* collapse block.
      */
     let collapseParent = element.closest(".collapse");
-    if (!collapseParent)
+    if (collapseParent == null)
     	return false;
 
     /*  If the element is within a collapse block and that collapse block is
@@ -15664,7 +15666,7 @@ function revealTarget(options) {
 	}, options);
 
     let target = getHashTargetedElement();
-    if (!target)
+    if (target == null)
     	return;
 
 	let didReveal = revealElement(target, {

@@ -62,7 +62,7 @@ function expandCollapseBlocksToReveal(node, options) {
 		fireStateChangedEvent: true
 	}, options);
 
-	if (!node)
+	if (node == null)
 		return;
 
     // If the node is not an element (e.g. a text node), get its parent element.
@@ -71,7 +71,7 @@ function expandCollapseBlocksToReveal(node, options) {
     /*  If the given element is not within any collapsed block, there is nothing
         to do.
      */
-    if (!isWithinCollapsedBlock(element))
+    if (isWithinCollapsedBlock(element) == false)
     	return false;
 
     //  Determine if nearest collapse block needs expanding.
@@ -172,7 +172,7 @@ function isWithinCollapsedBlock(element) {
         be within a *currently-collapsed* collapse block.
      */
     let collapseParent = element.closest(".collapse");
-    if (!collapseParent)
+    if (collapseParent == null)
     	return false;
 
     /*  If the element is within a collapse block and that collapse block is
@@ -818,7 +818,7 @@ function revealTarget(options) {
 	}, options);
 
     let target = getHashTargetedElement();
-    if (!target)
+    if (target == null)
     	return;
 
 	let didReveal = revealElement(target, {
