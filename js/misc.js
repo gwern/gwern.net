@@ -849,7 +849,7 @@ function updatePageTOC() {
 
 	//	Rectify typography in new entries.
 	newEntries.forEach(entry => {
-		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
+		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS);
 	});
 
 	//	Update visibility.

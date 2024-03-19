@@ -170,7 +170,8 @@ Typography = {
 
 		return str;
 	},
-	excludedTags: [ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
+	excludedTags: [ 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
+	unmodifiedTags: [ 'CODE '],
 	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
 		if (Typography.excludedTags.includes(element.nodeName))
 			return null;
@@ -198,7 +199,8 @@ Typography = {
 
 		let [ text, textNodes ] = decomposeElement(element);
 		let segments = textNodes.map(node => node.nodeValue.length);
-		text = Typography.processString(text, replacementTypes, segments);
+		if (Typography.unmodifiedTags.includes(element.nodeName) == false)
+			text = Typography.processString(text, replacementTypes, segments);
 		let currentSegmentStart = 0;
 		for (let i = 0; i < textNodes.length; i++) {
 			textNodes[i].nodeValue = text.slice(currentSegmentStart, currentSegmentStart + segments[i]);

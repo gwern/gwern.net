@@ -849,7 +849,7 @@ function updatePageTOC() {
 
 	//	Rectify typography in new entries.
 	newEntries.forEach(entry => {
-		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS, true);
+		Typography.processElement(entry, Typography.replacementTypes.WORDBREAKS);
 	});
 
 	//	Update visibility.
@@ -11666,7 +11666,8 @@ Typography = {
 
 		return str;
 	},
-	excludedTags: [ 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
+	excludedTags: [ 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
+	unmodifiedTags: [ 'CODE '],
 	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
 		if (Typography.excludedTags.includes(element.nodeName))
 			return null;
@@ -11694,7 +11695,8 @@ Typography = {
 
 		let [ text, textNodes ] = decomposeElement(element);
 		let segments = textNodes.map(node => node.nodeValue.length);
-		text = Typography.processString(text, replacementTypes, segments);
+		if (Typography.unmodifiedTags.includes(element.nodeName) == false)
+			text = Typography.processString(text, replacementTypes, segments);
 		let currentSegmentStart = 0;
 		for (let i = 0; i < textNodes.length; i++) {
 			textNodes[i].nodeValue = text.slice(currentSegmentStart, currentSegmentStart + segments[i]);
@@ -13537,8 +13539,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotations = (e
     Typography.processElement(eventInfo.container,
         (  Typography.replacementTypes.QUOTES
          | Typography.replacementTypes.WORDBREAKS
-         | Typography.replacementTypes.ELLIPSES),
-        true);
+         | Typography.replacementTypes.ELLIPSES));
 
     //  Educate quotes in image alt-text.
     eventInfo.container.querySelectorAll("img").forEach(image => {
@@ -13727,7 +13728,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInTOC = (eventInfo
     GWLog("rectifyTypographyInTOC", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
-        Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
+        Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS);
     });
 }, "rewrite");
 

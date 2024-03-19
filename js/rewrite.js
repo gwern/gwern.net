@@ -1435,8 +1435,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotations = (e
     Typography.processElement(eventInfo.container,
         (  Typography.replacementTypes.QUOTES
          | Typography.replacementTypes.WORDBREAKS
-         | Typography.replacementTypes.ELLIPSES),
-        true);
+         | Typography.replacementTypes.ELLIPSES));
 
     //  Educate quotes in image alt-text.
     eventInfo.container.querySelectorAll("img").forEach(image => {
@@ -1625,7 +1624,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInTOC = (eventInfo
     GWLog("rectifyTypographyInTOC", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".TOC").forEach(TOC => {
-        Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS, true);
+        Typography.processElement(TOC, Typography.replacementTypes.WORDBREAKS);
     });
 }, "rewrite");
 
