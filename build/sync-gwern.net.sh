@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-17 10:27:07 gwern"
+# When:  Time-stamp: "2024-03-18 13:52:00 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -566,7 +566,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-link-tags' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'collapse}' -e 'interview}'; }
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
     λ(){
@@ -1000,7 +1000,6 @@ else
           cm "application/javascript" 'https://gwern.net/static/js/rewrite.js'
           cm "application/javascript" 'https://gwern.net/static/js/sidenotes.js'
           cm "application/json" 'https://gwern.net/doc/touhou/2013-c84-downloads.json'
-          cm "application/msaccess" 'https://gwern.net/doc/touhou/2013-06-08-acircle-tohoarrange.mdb'
           cm "application/msword" 'https://gwern.net/doc/iq/2014-tenijenhuis-supplement.doc'
           cm "application/octet-stream" 'https://gwern.net/doc/zeo/firmware-v2.6.3R-zeo.img'
           cm "application/pdf" 'https://gwern.net/doc/cs/hardware/2010-bates.pdf'
@@ -1044,7 +1043,7 @@ else
           cm "text/css; charset=utf-8" 'https://gwern.net/static/css/colors.css'
           cm "text/csv; charset=utf-8" 'https://gwern.net/doc/statistics/2013-google-index.csv'
           cm "text/html" 'https://gwern.net/atom.xml'
-          cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/2012-terencetao-anonymity.html'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/security/2012-terencetao-anonymity.html'
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/darknet-market/silk-road/1/2013-06-07-premiumdutch-profile.html'
           cm "text/html; charset=utf-8" 'https://gwern.net/'
           cm "text/html; charset=utf-8" 'https://gwern.net/note/attention'
@@ -1261,7 +1260,7 @@ else
 
     # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
     bold "Compressing new GIFs…"
-    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made <https://github.com/kohler/gifsicle/issues/201>.
+    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).
       local gif="$1"
 
       if [ ! -f "$gif" ]; then

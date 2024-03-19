@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-17 19:00:24 gwern"
+When:  Time-stamp: "2024-03-18 11:28:14 gwern"
 License: CC-0
 -}
 
@@ -511,7 +511,7 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
            -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
            link = addRecentlyChanged x $ Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-           abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
+           abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
          [Para
               ([link] ++

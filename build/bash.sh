@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-16 19:35:38 gwern"
+# When:  Time-stamp: "2024-03-18 18:25:35 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -116,6 +116,8 @@ crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then
 crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
 # WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
 export -f crop
+
+alias invert="mogrify -negate"
 
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
