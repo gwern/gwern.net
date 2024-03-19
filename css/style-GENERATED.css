@@ -2451,19 +2451,22 @@ table {
     border-collapse: collapse;
     width: 100%;
     font-size: 0.75em;
-    border-style: solid;
-    border-color: var(--GW-table-border-color);
-    border-width: 2px 0;
+    border-width: 0;
 }
 
 .table-wrapper {
     margin-left: auto;
     margin-right: auto;
+    border-width: 2px 0;
+    border-color: var(--GW-table-border-color);
+    border-style: solid;
 }
 
 .table-scroll-wrapper {
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
+    max-height: calc(100vh - 8rem);
+	overscroll-behavior: none;
 }
 
 /*=-------------------=*/
@@ -2507,8 +2510,16 @@ table caption {
     padding: 0.25em 0.75em;
     font-style: italic;
     font-size: 1.25em;
-    border-top: 2px solid var(--GW-table-caption-border-color);
+    border-bottom: 2px solid var(--GW-table-caption-border-color);
     background-color: inherit;
+}
+
+table thead {
+	position: sticky;
+	top: -1px;
+	z-index: 1;
+	background-color: var(--background-color);
+	box-shadow: 0 -1px 0 0 var(--GW-table-row-horizontal-border-color) inset;
 }
 
 table tbody {
@@ -2539,29 +2550,45 @@ table td > code {
     word-break: normal;
 }
 
-/*  Horizontal scroll bar styles (for WebKit/Chromium).
+/*  Scroll bar styles (for WebKit/Chromium).
     */
 .table-scroll-wrapper::-webkit-scrollbar {
+    width: 16px;
     height: 16px;
 }
+@media all and (max-width: 649px) {
+    .table-scroll-wrapper::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+}
+
 .table-scroll-wrapper::-webkit-scrollbar-thumb {
     background-image: var(--GW-checkerboard-scrollbar-background-image);
     background-size: 2px;
+}
+.table-scroll-wrapper::-webkit-scrollbar-thumb:horizontal {
     box-shadow:
         0 2px 0 0   var(--background-color) inset,
         0 0   0 1px var(--GW-table-scrollbar-border-color) inset,
         0 2px 0 1px var(--GW-table-scrollbar-border-color) inset;
 }
+.table-scroll-wrapper::-webkit-scrollbar-thumb:vertical {
+    box-shadow:
+		 0   -1px 0 0 var(--GW-table-scrollbar-border-color),
+		 0    1px 0 0 var(--GW-table-scrollbar-border-color),
+         1px  0   0 0 var(--GW-table-scrollbar-border-color) inset,
+        -1px  0   0 0 var(--GW-table-scrollbar-border-color) inset;
+}
 .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
-@media all and (max-width: 649px) {
-    .table-scroll-wrapper::-webkit-scrollbar {
-        height: 6px;
-    }
+
+.table-scroll-wrapper::-webkit-scrollbar-track:vertical {
+	border-left: 1px dotted var(--GW-table-scrollbar-border-color)
 }
 
-/*  Horizontal scroll bar styles (for Firefox).
+/*  Scroll bar styles (for Firefox).
     */
 .table-scroll-wrapper {
     scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--background-color);
@@ -2633,6 +2660,12 @@ blockquote table tr:nth-child(odd) td {
  */
 blockquote table table {
     font-size: 1em;
+}
+
+/*	Fix for z-index bug due to link styles.
+ */
+table .has-content.has-indicator-hook {
+	position: static;
 }
 
 /*  Hover row outline.
