@@ -187,7 +187,7 @@ function randomAsset(assetPathnamePattern) {
 /*******************/
 
 GW.invertOrNot = { };
-GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/batch/pred";
+GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/url";
 
 /*******************************************************************/
 /*	Returns true if the given image should be inverted in dark mode.
@@ -215,9 +215,9 @@ function requestImageInversionDataForImagesInContainer(container) {
 		method: "POST",
 		serialization: "JSON",
 		responseType: "json",
-		params: { images: imageURLs.map(url => { return { url: url }; }) },
+		params: imageURLs,
 		onSuccess: (event) => {
-			event.target.response.results.forEach(imageInfo => {
+			event.target.response.forEach(imageInfo => {
 				GW.invertOrNot[imageInfo.url] = {
 					invert: (imageInfo.invert == 1)
 				};
