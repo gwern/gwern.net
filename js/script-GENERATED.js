@@ -12371,6 +12371,17 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 /* TABLES */
 /**********/
 
+/**********************************************/
+/*	Remove Pandoc-inserted <colgroup> elements.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.deleteColgroups = (eventInfo) => {
+    GWLog("deleteColgroups", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("colgroup").forEach(colgroup => {
+		colgroup.remove();
+	});
+}, "rewrite");
+
 /**************************************************************************/
 /*  If there are tables, import tablesorter.js (if need be) and make tables
     sortable.
@@ -12392,7 +12403,7 @@ addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo
     }
 
     let sortTables = (eventInfo) => {
-        jQuery("table", eventInfo.document).tablesorter();
+        jQuery(".table:not(.table-sort-not) table", eventInfo.document).tablesorter();
     };
 
     if (window["jQuery"]) {
@@ -14124,9 +14135,11 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
         ".popframe-body.page-index",
         ".popframe-body.page-static-404",
 
-        /*  TOC links should never have link icons under any circumstances.
-         */
-        ".TOC"
+        //  TOC links should never have link icons under any circumstances.
+        ".TOC",
+
+		//	No link icons in table headers.
+		"thead"
     ].map(x => x + " a[data-link-icon]").join(", ");
 
     eventInfo.container.querySelectorAll(excludedLinkSelector).forEach(link => {

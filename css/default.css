@@ -1602,7 +1602,9 @@ blockquote table table {
 /*	Fix for z-index bug due to link styles.
  */
 table .has-content.has-indicator-hook {
-	position: static;
+	z-index: 0;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
 }
 
 /*  Hover row outline.
