@@ -2514,6 +2514,20 @@ table caption {
     background-color: inherit;
 }
 
+/*
+Sticky table headers: the column labels of larger tables are 'sticky', and will remain visible when the reader scrolls through a large table, so they can see at a glance what each column contains.
+
+Implementation: This is supported natively in CSS by `position:sticky`.
+However, the naive use of sticky table headers is fragile and runs into many problems (eg disappearing borders <https://stackoverflow.com/questions/50361698/border-style-do-not-work-with-sticky-position-element>, overflows, or _z_-index bugs where the sticky header is *below* table elements).
+It works mostly in: tables in the base page, not in a collapse, not wider than the page, not in a blockquote, not in popups/popovers, etc.
+Because of the limited scope & many bugs, the naive approach was not worth implementing: small simple tables don't need it, while the large complex tables that do are relatively rare & would probably trigger bugs.
+
+So we implement them in a more complex way to work around bugs.
+To limit sticky issues, we only do sticky headers on 'large' tables where 'large' > 1 viewport height (ie. a table which would require scrolling). So the table becomes v-scrollable within an inner scroll container (set to be substantially smaller than the window size so there is plenty of room to click on and 'untrap' the mouse), like code-blocks on mobile.
+Within that scroll container, the headers are sticky.
+Since they are confined to the inner container and don't need to interact with any other page elements, most of the problems of sticky elements are avoided.
+Then other issues are dealt with by a bunch of small CSS tweaks.
+*/
 table thead {
 	position: sticky;
 	top: -1px;
@@ -4131,11 +4145,11 @@ ol.link-bibliography-list-compact > li::before {
     margin: auto;
 }
 
-/*	WP wraps references entirely in <cite> elements; <cite> is styled by 
-	browsers (Chrome/FF) by default in italics. No one wants their entire 
-	reference in italics, so WP resets the font to the default style (whatever 
-	that is), and styles italics bits (like book titles) manually. We need to 
-	replicate that, or else references sections in our WP popups will be 
+/*	WP wraps references entirely in <cite> elements; <cite> is styled by
+	browsers (Chrome/FF) by default in italics. No one wants their entire
+	reference in italics, so WP resets the font to the default style (whatever
+	that is), and styles italics bits (like book titles) manually. We need to
+	replicate that, or else references sections in our WP popups will be
 	entirely italics!
  */
 .annotation.wikipedia-entry cite,
