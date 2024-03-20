@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-18 13:52:00 gwern"
+# When:  Time-stamp: "2024-03-19 15:08:55 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -523,7 +523,7 @@ else
                    -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$'  \
                    -e '^link-live-not$' -e '^tex-logotype$' -e '^math$' -e '^odd$' -e '^page-thumbnail$' \
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
-                   -e '^table-small$' -e '^TOC$' -e '^uri$' -e '^width-full$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
+                   -e '^table-small$' -e '^table-sort-not$' -e '^width-full$' -e '^TOC$' -e '^uri$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
                    -e '^c5$' -e '^c6$' -e '^c7$' -e '^c8$' -e '^c9$' -e '^c10$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$' -e '^reader-mode$' \
                    -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^admonition$' -e '^admonition-title$' \
                    -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \

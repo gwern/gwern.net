@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-03-05 12:41:36 gwern"
+# When:  Time-stamp: "2024-03-19 12:24:34 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -155,7 +155,7 @@ _upload() {
                   echo "/$TARGET $URL"
 
                   if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
-                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then image-margin-checker.py ~/wiki/"$TARGET" | grep -F " : YES"; fi
+                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then echo -n "Image needs padding: " && image-margin-checker.py ~/wiki/"$TARGET" | grep -F " : YES"; fi
 
                   firefox "$URL") &
 

@@ -453,7 +453,7 @@ readListSortedMagic = do Config.Misc.cd
                            do ls <- fmap T.unpack $ TIO.readFile p
                               return $ if ls=="" then M.empty else M.fromList $ validateListSortedMagic (read ls :: ListSortedMagicList)
    where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
-         validateListSortedMagic l = let errors = filter (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) l
+         validateListSortedMagic l = let errors = filter (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) $ nubOrd l
                                          in if errors /= []  then error ("validateListSortedMagic: read file failed sanity check: " ++ show errors) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
 writeListSortedMagic x = Config.Misc.cd >> (writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" $ T.pack $ ppShow $ nubOrd $ M.toList x)
