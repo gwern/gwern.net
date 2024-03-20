@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-19 15:08:55 gwern"
+# When:  Time-stamp: "2024-03-20 17:23:41 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -544,7 +544,7 @@ else
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
                    -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$'; \
+                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$' -e '^adsense$'; \
                    -e 'years-since' -e 'date-range'; } # subscript experiments
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
