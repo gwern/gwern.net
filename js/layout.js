@@ -1142,10 +1142,14 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		let nextBlockBSM = nextBlock?.style?.getPropertyValue("--bsm");
 		if (nextBlockBSM) {
 			/*	If the next block (in the strict sense, i.e. not counting list
-				items!) is a paragraph, then adjust margin.
+				items!) is a paragraph or non-collapse section heading, then 
+				adjust margin.
 			 */
-			let strictNextBlock = nextBlockOf(floatBlock);
-			if (strictNextBlock?.matches("p"))
+			let strictNextBlock = nextBlockOf(floatBlock, {
+				alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+				cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
+			});
+			if (strictNextBlock?.matches("p, .heading"))
 				nextBlockBSM = "" + (parseInt(nextBlockBSM) + 2);
 
 			floatBlock.style.setProperty("--bsm", nextBlockBSM);
