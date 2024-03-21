@@ -3827,7 +3827,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 				items!) is a paragraph, then adjust margin.
 			 */
 			let strictNextBlock = nextBlockOf(floatBlock);
-			if (strictNextBlock.matches("p"))
+			if (strictNextBlock?.matches("p"))
 				nextBlockBSM = "" + (parseInt(nextBlockBSM) + 2);
 
 			floatBlock.style.setProperty("--bsm", nextBlockBSM);
