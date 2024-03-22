@@ -7617,6 +7617,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody a.block-context-highlighted-temp {
     position: relative;
     z-index: 2;
+    background-color: var(--background-color);
     box-shadow:
          3px 1px 0 2px var(--background-color),
         -3px 1px 0 2px var(--background-color),
