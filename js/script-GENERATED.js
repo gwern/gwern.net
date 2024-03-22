@@ -12486,6 +12486,19 @@ addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventI
 	requestImageInversionDataForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.contentType != "annotation"));
 
+/****************************************************************************/
+/*	Apply image inversion data to images in the loaded content, if available.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (eventInfo) => {
+    GWLog("requestImageInversionData", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("figure img").forEach(image => {
+		if (   image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == false
+			&& GW.invertOrNot[image.src] != null)
+			image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
+	});
+}, "rewrite");
+
 /******************************************************************/
 /*	Wrap text nodes and inline elements in figcaptions in <p> tags.
  */
