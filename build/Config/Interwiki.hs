@@ -1955,7 +1955,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Gastric_inhibitory_polypeptide", "Glucose-dependent_insulinotropic_polypeptide")
           , ("Gastric_sleeve_surgery", "Sleeve_gastrectomy")
           , ("Gastroesophageal_reflux", "Gastroesophageal_reflux_disease")
-          , ("Gastropod", "Gastropoda")
           , ("Gates_Foundation", "Bill_%26_Melinda_Gates_Foundation")
           , ("Gaucher's_disease", "Gaucher%27s_disease")
           , ("Gauss's_principle_of_least_constraint", "Gauss%27s_principle_of_least_constraint")

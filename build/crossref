@@ -55,7 +55,7 @@ if [ "${*##*.}" = "pdf" ]; then
 
     DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
               sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
-    if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\", \"$DOI\")]"; fi
+    if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\",\"$DOI\")]"; fi
 
     echo # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
 

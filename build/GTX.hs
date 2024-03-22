@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-17 20:06:18 gwern"
+When:  Time-stamp: "2024-03-21 12:04:45 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -119,7 +119,7 @@ parseGTX content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
 tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
-                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] || abstract==["<!-- [GTX padding] -->"] then "" else T.unpack $ T.unlines abstract))
+                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 
@@ -161,10 +161,6 @@ rewriteLinkMetadata half full gtx
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
 appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppShow i)
                                                    today <- currentDayString
-                                                   -- GTX removes as much delimiting as possible for easier editing/generation. This lack of explicit closing becomes a problem in one case: hand-editing 'auto.gtx'.
-                                                   -- Because many tools will delete trailing whitespace, this renders manual editing of 'auto.gtx' risky, because the final entry (like most 'auto.gtx' entries) may not have any abstract contents at all: so we would edit some entry, but then the final trailing entry will be truncated up to the date-created field, which is the last field that always exists. This then fails to parse, breaking everything. (This is never an issue with full.gtx and rarely an issue with half.gtx.)
-                                                   -- We could attempt to append a '---', but then that risks double-lines of '---\n---', or we could attempt to modify GTX parsing to be more permissive on only the final entry in a GTX file, but that dangerously complicates the parsing logic.
-                                                   -- So we adopt a simpler solution: when generating a new 'auto.gtx' entry, always done using `appendLinkMetadata`, insert a 'page left intentionally blank' marker. A simple HTML comment will not trigger any length limits or annotation-creation, doesn't use up much space, doesn't affect the rest of the code, doesn't risk mis-parses or duplicated lines etc. (If the unnecessary ones become a concern, they can always be deleted, as long as the final one is left in place.)
-                                                   let abstractPadded = if null abst then "<!-- [GTX padding] -->" else abst
-                                                   let newGTX = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abstractPadded))
+                                                   -- GTX removes as much delimiting as possible for easier editing/generation. This lack of explicit closing becomes a problem in one case: hand-editing 'auto.gtx' if the final entry lacks a tag and our text editor removes all but the final blank line (which then truncates the GTX entry). We solve this by simply tagging the last entry by hand, so there is exactly one trailing newline but that's the 'abstract' line and so it's fine.
+                                                   let newGTX = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abst))
                                                    void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGTX
