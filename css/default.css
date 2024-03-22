@@ -3608,6 +3608,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-height: unset;
 }
 
+.popframe-body .table-scroll-wrapper {
+	max-height: unset;
+}
+
 .popframe-body .marginnote {
     display: initial;
 }
