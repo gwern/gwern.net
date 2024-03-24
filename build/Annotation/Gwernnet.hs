@@ -48,6 +48,8 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
+                        let dateModified = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dcterms.modified" then snd $ head w else "") metas
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then date else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
@@ -83,7 +85,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" || (null keywordTags && null gabstract) then
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
-                          else return $ Right (p, (title', author', date, "", doi, keywordTags, combinedAnnotation))
+                          else return $ Right (p, (title', author', date, dateModified, doi, keywordTags, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
