@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-18 11:28:14 gwern"
+When:  Time-stamp: "2024-03-24 15:36:31 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, readLinkMetadataNewest, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -89,7 +89,7 @@ addPageLink x = x
 --
 -- To rerun LinkAuto.hs (perhaps because some rules were added):
 --
--- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,abst)) -> return (a,(b,c,d,e,f, linkAutoHtml5String abst)))
+-- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,g,abst)) -> return (a,(b,c,d,e,f,g, linkAutoHtml5String abst)))
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"
@@ -97,7 +97,7 @@ walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/
                                        when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting.")
 
 walkAndUpdateLinkMetadataGTX :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
-walkAndUpdateLinkMetadataGTX f file = do db <- readGTXFast file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
+walkAndUpdateLinkMetadataGTX f file = do db <- readGTXSlow file -- TODO: refactor this to take a list of URLs to update, then I can do it incrementally & avoid the mysterious space leaks
                                          db' <-  mapM f db
                                          writeGTX file db'
                                          printGreen $ "Updated " ++ file
@@ -284,14 +284,6 @@ readLinkMetadataAndCheck = do
              unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
 
              return final
-
--- return the n most recent/newest annotations, in terms of created, not publication date.
-readLinkMetadataNewest :: Int -> IO Metadata
-readLinkMetadataNewest n = do md <- fmap M.toList $ readLinkMetadata
-                              let newest = sortItemPathDateCreated md
-                              let annotations = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst >= C.minimumAnnotationLength) newest
-                              let links       = take n $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <  C.minimumAnnotationLength) newest
-                              return $ M.fromList $ annotations ++ links
 
 -- read a GTX database and look for annotations that need to be paragraphized.
 warnParagraphizeGTX :: FilePath -> IO ()
@@ -638,10 +630,10 @@ lookupFallback m u = case M.lookup u m of
 -------------------------------------------------------------------------------------------------------------------------------
 
 sortItemDate :: [MetadataItem] -> [MetadataItem]
-sortItemDate = sortBy (flip compare `on` third)
+sortItemDate = reverse . sortBy (flip compare `on` third)
 
 sortItemPathDate :: [(Path,(MetadataItem,String))] -> [(Path,(MetadataItem,String))]
-sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
+sortItemPathDate = reverse . sortBy (flip compare `on` (third . fst . snd))
 
 third :: (a,b,c,d,dc,e,f) -> c
 third (_,_,rd,_,_,_,_) = rd
@@ -651,3 +643,13 @@ sortItemPathDateCreated = sortBy (flip compare `on` (fourth . snd))
 
 fourth :: (a,b,c,d,e,f,g) -> d
 fourth (_,_,_,th,_,_,_) = th
+
+sortItemPathDateModified :: MetadataList -> MetadataList
+sortItemPathDateModified = reverse . sortBy (flip compare `on` (fourth . snd))
+
+-- Modified version of `sortItemPathDateModified`: sort by date modified and then (within date) by path
+sortItemDateModified :: MetadataList -> MetadataList
+sortItemDateModified = sortBy (\(pathA, itemA) (pathB, itemB) ->
+                                let dateCompare = compare (fourth itemB) (fourth itemA) in
+                                  if dateCompare == EQ then compare pathA pathB
+                                  else dateCompare)

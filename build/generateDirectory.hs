@@ -16,7 +16,7 @@ import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
-import qualified Data.Map as M (keys, lookup, filterWithKey)
+import qualified Data.Map as M (keys, lookup, filter, filterWithKey, fromList, toList)
 import Data.Maybe (fromJust)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Text.Titlecase (titlecase)
@@ -30,7 +30,7 @@ import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata as LM (readLinkMetadata, readLinkMetadataNewest, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback)
+import LinkMetadata as LM (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
@@ -58,19 +58,18 @@ main = do C.cd
           let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
-          Prelude.mapM_ (Par.mapM_ (generateDirectory True am meta ldb sortDB dirs')) dirChunks
+          Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
           -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
-          unless (length dirs < 5) $ do
-            metaNewest <- readLinkMetadataNewest 100
-            generateDirectory False am metaNewest ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+          unless (length dirs < 5) $
+            generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
-generateDirectory filterp am md ldb sortDB dirs dir'' = do
+generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
@@ -83,8 +82,6 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
                             (if null before || last before == dir'' then "" else "previous: /"++last before++"index",
                               if length after < 2 || (after !! 1) == dir'' then "" else "next: /"++(after !! 1)++"index")
 
-  tagged <- listTagged filterp md (init dir'')
-
   -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
   let parentDirectory' = if parentDirectory == "." then "/index" else "/" ++ parentDirectory ++ "/index"
@@ -92,41 +89,46 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
                 listDirectory dir''
   let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
+  -- subset the Metadata database down to just the relevant entries for this particular tag-directory
+  -- handle the special-case of 'newest', which is a meta-tag-directory, so we need to process it down before passing it to `listTagged` (which needs to do a ton of I/O work)
+  let md' = if not newestp then md else filterDbNewest 10 50 50 md
+  tagged <- listTagged newestp md' (init dir'')
+
   -- We allow tags to be cross-listed, not just children.
   -- So '/doc/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/me section!) of '/doc/longevity/index'.
   -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
   let taggedDirs = sort $ map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
 
   -- we suppress what would be duplicate entries in the File/me section
-  let taggedAll = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+  let taggedAll  = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
   let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll
-  let tagged' = taggedAll \\ taggedSelf
+  let tagged'    = taggedAll \\ taggedSelf
 
   dirsChildren   <- listTagDirectoriesAll [dir'']
   dirsSeeAlsos   <- listTagDirectories False taggedDirs
 
-  triplets  <- listFiles md direntries'
+  triplets  <- listFiles md' direntries'
 
-  let linksSelf = reverse . sortByDateBoth $ taggedSelf  -- newest first, to show recent additions
-  let linksAll  = reverse $ sortByDate $ triplets++tagged'
+  let linksSelf = reverse $ sortByDateBoth taggedSelf  -- newest first, to show recent additions
+  let linksAll  = sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
 
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
-  Prelude.mapM_ (\(l,_,_) -> case M.lookup l md of
-                         Nothing -> void $ annotateLink md (Link nullAttr [] (T.pack l, ""))
+  Prelude.mapM_ (\(l,_,_) -> case M.lookup l md' of
+                         Nothing -> void $ annotateLink md' (Link nullAttr [] (T.pack l, ""))
                          _ -> return ()
         ) links
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
-  let selfTitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") linksSelf
-  let titledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") links
-  let untitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t == "") links
-  titledLinksSorted <- if not filterp then return []
+  let selfTitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") linksSelf
+  let titledLinks     = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") links
+  let untitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t == "") links
+  titledLinksSorted <- if newestp then return []
                         -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
-                       else sortSimilarsStartingWithNewestWithTag ldb sortDB md tagSelf titledLinks
+                       else sortSimilarsStartingWithNewestWithTag ldb sortDB md' tagSelf titledLinks
 
   let selfLinksSection = generateSections' am 2 selfTitledLinks
   let titledLinksSections   = generateSections am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
@@ -149,7 +151,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
                 do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
                    let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
                    abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file, 'note/catnip.md'
-                   essayp <- doesFileExist (tagBase ++ ".md")
+                   essayp    <- doesFileExist (tagBase ++ ".md")
                    return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content-core", "link-page"], [])
                                                                                                                              [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
                             else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
@@ -182,7 +184,7 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $
-           walk identUniquefy $ walk (hasAnnotation md) document  -- global rewrite to de-duplicate all of the inserted URLs
+           walk identUniquefy $ walk (hasAnnotation md') document  -- global rewrite to de-duplicate all of the inserted URLs
 
   case p of
     Left e   -> printRed (show e)
@@ -190,6 +192,19 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.md") contentsNew
   -- putStrLn $ "dir'' done: " ++ dir''
+
+-- we have 3 kinds of entries for a tag-directory: entries written by me, annotations, and partials/links; for /doc/newest, we want to take the 'newest' but set different limits: I don't write new essays nearly as often as I add new annotations or links, so we can't just take _n_ of each.
+-- And for new essays, but not annotations/links, we want to use a broader definition of 'new' to include *modified*: as modified >= created, we just use modification time instead
+filterDbNewest :: Int -> Int -> Int -> Metadata -> Metadata
+filterDbNewest selfN annotationN linkN md = let -- ml = M.toList md
+                                                mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p)) md
+                                                selfs      = take selfN $ sortItemDateModified $ M.toList $ M.filterWithKey (\p (_,aut,_,_,_,_,_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"] && not ('#' `elem` p)) mdAnnotated
+
+                                                annotations = take annotationN $ sortItemPathDateCreated $ M.toList $
+                                                              M.filter (\(_,aut,_,_,_,_,_) -> aut `notElem` ["Gwern", "gwern", "Gwern Branwen"]) mdAnnotated
+                                                links       = take linkN $ sortItemPathDateCreated $ M.toList $
+                                                              M.filter (\(_,_,_,_,_,_,abst) -> abst == "") md
+                                             in M.fromList $ selfs ++ annotations ++ links
 
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> [Block]
 generateLinkBibliographyItems [] = []
@@ -255,9 +270,9 @@ listFiles m direntries' = do
 -- tags are only in "doc/*", so "haskell/" etc is out. Tags drop the doc/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
-listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
+listTagged newestp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "doc/" "" dir in
-                     let tagged = if not filterp then m else M.filterWithKey (\u (_,_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
+                     let tagged = if newestp then m else M.filterWithKey (\u (_,_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nubOrd $ map truncateAnchors $ M.keys tagged
                           linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
                           let fileAnnotationsMi = map (lookupFallback m) files
@@ -271,7 +286,7 @@ listTagged filterp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
 -- We generally prefer to reverse this to descending order, to show newest-first.
 -- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
 sortByDate :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDate = reverse . sortBy compareEntries
+sortByDate = sortBy compareEntries
   where
     compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
       | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
@@ -281,7 +296,7 @@ sortByDate = reverse . sortBy compareEntries
       | otherwise = compare f f' -- Alphabetical order for the rest
 
 sortByDateBoth :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDateBoth = reverse . sortBy compareEntries
+sortByDateBoth = sortBy compareEntries
   where
     compareEntries (f, (_, _, d, dm, _, _, _), _) (f', (_, _, d2, dm2, _, _, _), _)
       | not (null d) || not (null d2) = compare (max d dm) (max d2 dm2) -- Reverse order for dates, to show newest first
@@ -289,7 +304,6 @@ sortByDateBoth = reverse . sortBy compareEntries
       | head f == '/' = LT -- '/' paths come after non '/' paths
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
-
 
 -- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
