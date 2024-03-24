@@ -107,10 +107,10 @@ generateDirectory filterp am md ldb sortDB dirs dir'' = do
 
   triplets  <- listFiles md direntries'
 
-  let linksSelf = reverse . sortByDate $ taggedSelf  -- newest first, to show recent additions
+  let linksSelf = reverse . sortByDateBoth $ taggedSelf  -- newest first, to show recent additions
   let linksAll  = reverse $ sortByDate $ triplets++tagged'
   -- split into WP vs non-WP:
-  let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isPrefixOf` f)) linksAll -- TODO: isWikipedia?
+  let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
 
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
@@ -280,6 +280,17 @@ sortByDate = reverse . sortBy compareEntries
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
 
+sortByDateBoth :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDateBoth = reverse . sortBy compareEntries
+  where
+    compareEntries (f, (_, _, d, dm, _, _, _), _) (f', (_, _, d2, dm2, _, _, _), _)
+      | not (null d) || not (null d2) = compare (max d dm) (max d2 dm2) -- Reverse order for dates, to show newest first
+      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f == '/' = LT -- '/' paths come after non '/' paths
+      | head f' == '/' = GT -- non '/' paths come before '/' paths
+      | otherwise = compare f f' -- Alphabetical order for the rest
+
+
 -- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
 getNewestDate [] = ""
@@ -328,7 +339,7 @@ generateSections :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> [(String,[(
 generateSections am links linksSorted linkswp = (if null links then [] else annotated) ++
                                                 (if length linksSorted < CGS.minTagAuto then [] else sorted) ++
                                                 (if null linkswp then [] else wp)
-    where annotated = (generateSections' am) 2 links
+    where annotated = generateSections' am 2 links
           sorted
             = [Header 2 ("", ["link-annotated-not"], [])
                  [Str "Sort By Magic"]] ++
