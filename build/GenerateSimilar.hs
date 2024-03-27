@@ -523,6 +523,14 @@ sortSimilarsStartingWithNewest md sortDB items = do
     restoreAssoc :: Eq a => [a] -> [(a,b)] -> [(a,b)]
     restoreAssoc keys list = map (\k -> (k, fromJust $ lookup k list)) keys
 
+sortSimilarsT :: Embeddings -> ListSortedMagic -> T.Text -> [T.Text] -> IO [T.Text]
+sortSimilarsT _ _ _ []    = return []
+sortSimilarsT _ _ _ [a]   = return [a]
+sortSimilarsT _ _ ""   _  = error "sortSimilarsT given an invalid seed!"
+sortSimilarsT [] _ _   _  = error "sortSimilarsT given empty embeddings database!"
+sortSimilarsT edb sortDB seed paths = do results <- sortSimilars edb sortDB (T.unpack seed) (map T.unpack paths)
+                                         return $ map T.pack results
+
 sortSimilars :: Embeddings -> ListSortedMagic -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ _ []    = return []
 sortSimilars _ _ _ [a]   = return [a]
@@ -553,6 +561,17 @@ sortSimilars edb sortDB seed paths = do
                                              -- print ("wrote new sortDB"::String)
                                              return paths''
                                Just paths''' -> return paths'''
+
+-- in some lists, like of backlinks, there is no guarantee of an embedding. So we only sort the embedded ones, put them first, and append the leftover un-embedded links
+sortListPossiblyUnembedded :: Embeddings -> ListSortedMagic -> (T.Text, [T.Text]) -> IO (T.Text, [T.Text])
+sortListPossiblyUnembedded edb sortDB x@(url, hits) =
+    let hits' = map T.unpack hits
+        urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
+        hitsEmbedded = hits' \\ urlsEmbedded
+        hitsEmbeddedNot = hitsEmbedded \\ hits'
+    in if length hitsEmbedded < 4 then return x else
+      do sorted <- sortSimilarsT edb sortDB url (map T.pack hitsEmbedded)
+         return (url, sorted ++ map T.pack hitsEmbeddedNot)
 
 lookupNextAndShrink :: [FilePath]
               -> [(FilePath, Integer, String, String, [Double])]

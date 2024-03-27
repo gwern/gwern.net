@@ -20,7 +20,7 @@ import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
 
-import Control.Monad.Parallel as Par (mapM)
+import qualified Control.Monad.Parallel as Par (mapM)
 
 -- import Columns as C (listLength)
 import LinkAuto (linkAutoFiltered)
@@ -32,6 +32,8 @@ import Query (extractLinkIDsWith, parseMarkdownOrHTML)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
 import qualified Config.Misc as C (backlinkBlackList, cd)
+
+import GenerateSimilar
 
 main :: IO ()
 main = do
@@ -54,8 +56,12 @@ main' = do
   forM_ filesCheck (\f -> do exist <- doesFileExist f
                              unless exist $ printRed ("Backlinks: files annotation error: file does not exist? " ++ f))
 
+  -- we want sort-by-embedding of all backlink sets (instead of sorting by date or path, which seem kinda dumb):
+  edb <- readEmbeddings
+  sortDB <- readListSortedMagic
+
   -- if all are valid, write out:
-  _ <- M.traverseWithKey (writeOutCallers md) bldb
+  _ <- M.traverseWithKey (writeOutCallers md edb sortDB) bldb
   fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
 
   let markdown = filter (".md" `isSuffixOf`) fs
@@ -69,8 +75,8 @@ main' = do
   let bldb' = linksdb `M.union` bldb
   writeBacklinksDB bldb'
 
-writeOutCallers :: Metadata -> T.Text -> [(T.Text, [T.Text])] -> IO ()
-writeOutCallers md target callerPairs
+writeOutCallers :: Metadata -> Embeddings -> ListSortedMagic -> T.Text -> [(T.Text, [T.Text])] -> IO ()
+writeOutCallers md edb sortDB target callerPairs
                                   = do let f = take 274 $ "metadata/annotation/backlink/" ++ urlEncode (T.unpack target) ++ ".html"
                                        -- guess at the anchor ID in the calling page, so the cross-page popup will pop up at the calling site,
                                        -- rather than merely popping up the entire page (and who knows *where* in it the reverse citation is).
@@ -78,15 +84,18 @@ writeOutCallers md target callerPairs
 
                                        -- it'll just pop up the page as a whole. It would be difficult to rewrite the schema and preserve all
                                        -- variant overrides...)
+
+                                       callerPairsSorted <- mapM (sortListPossiblyUnembedded edb sortDB) callerPairs -- a little tricky since many backlinks will have no embedding
+
                                        let preface = [Para [Strong [Str (if length (concatMap snd callerPairs) > 1 then "Backlinks" else "Backlink")], Str ":"]]
-                                       let content = BulletList $ concatMap (generateCaller md target) callerPairs
+                                       let content = BulletList $ concatMap (generateCaller md target) callerPairsSorted
 
                                        -- NOTE: auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP auto-links.
                                        let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("wikipedia.org/"`T.isInfixOf`url))) $
                                                     walk typographyTransform $ walk (hasAnnotation md) $ Pandoc nullMeta $ preface++[content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
-                                                              Left e -> error $ show target ++ show callerPairs ++ show e
+                                                              Left e -> error $ show target ++ show callerPairsSorted ++ show e ++ show callerPairs
                                                               Right output -> output `T.append` "\n"
 
                                        let backLinksHtmlFragment = html -- if C.listLength content > 60 || length callers' < 4 then html else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>" -- FIXME: temporarily removed while the context transclusion is worked out
