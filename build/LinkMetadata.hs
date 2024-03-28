@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-03-24 15:36:31 gwern"
+When:  Time-stamp: "2024-03-28 11:34:11 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, toLower, isNumber)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -454,11 +454,14 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
     x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
 
--- checks if a Link was recently modified & sets a '.link-modified-recently' class for CSS styling:
+-- checks if a Link was recently modified & sets a '.link-modified-recently' class (with usual negation '.link-modified-recently-not') for CSS styling.
+-- Exclusions: indexes/tag-directories, because they churn far too frequently (and contain intrinsically dated contents) to be worth highlighting to readers.
 addRecentlyChanged :: MetadataItem -> Inline -> Inline
--- addRecentlyChanged (_,_,_,"",       _,_,_) x = x
--- addRecentlyChanged (_,_,_,_,       _,_,"") x = x
-addRecentlyChanged (_,_,_,dtChanged,_,_,_) x = if dtChanged < C.currentMonthAgo then x else addClass "link-modified-recently" x
+addRecentlyChanged (_,_,_,"",       _,_,_) x = x
+addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Link _ _ (url,_)) =
+  if dtChanged < C.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url then x
+  else addClass "link-modified-recently" x
+addRecentlyChanged _ x = x
 
 -- was this link given either a partial or full annotation?
 wasAnnotated :: Inline -> Bool
