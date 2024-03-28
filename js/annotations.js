@@ -403,20 +403,15 @@ Annotations = { ...Annotations,
 									? referenceElement.dataset.hrefMobile
 									: referenceElement.href;
 
+				//	Construct title link class.
 				let titleLinkClass = "title-link";
-				//  Import certain link classes.
-				/*  Just ‘link-live’ for now, but the inclusion rule is: any class that
-					is used to test whether a link is of a certain type - see e.g.
-					Extracts.isForeignSiteLink() in extracts-content.js - for which link
-					type there can be annotations (so not, e.g., ‘footnote-ref’, because
-					there’s no such thing as an annotated footnote link). This way, the
-					title-link of the popup will correctly test as the *un-annotated*
-					link type of the original target.
-					—SA 2022-06-13
-				 */
-				[ "link-live" ].forEach(targetClass => {
-					if (referenceElement.classList.contains(targetClass))
-						titleLinkClass += ` ${targetClass}`;
+
+				//  Import link classes (excluding certain ones).
+				Array.from(referenceElement.classList).filter(referenceElementClass => [
+					"link-annotated",
+					"link-annotated-partial"
+				].includes(referenceElementClass) == false).forEach(referenceElementClass => {
+					titleLinkClass += ` ${referenceElementClass}`;
 				});
 
 				//	Special handling for links with separate ‘HTML’ URLs.
