@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-18 18:25:35 gwern"
+# When:  Time-stamp: "2024-03-22 12:24:27 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -146,7 +146,7 @@ png2JPGQualityCheck () {
         SIZE_REDUCTION_THRESHOLD=30 # %
         TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
         JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
-        JPG="$TMP_DIR/$JPG_BASENAME"
+        JPG="$(mktemp "$TMP_DIR/XXXXXX.jpg")"
 
         # Convert PNG to JPG at 15% quality (to ensure any artifacts show up clearly):
         convert "$ARG" -quality 15% "$JPG"

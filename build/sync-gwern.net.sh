@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-20 17:23:41 gwern"
+# When:  Time-stamp: "2024-03-24 21:45:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -570,7 +570,7 @@ else
     wrap λ "Misspelled/outdated classes in Markdown/HTML."
 
     λ(){
-        ghci -istatic/build/ static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; putStrLn $ unlines $ map (\(f,(t,auts,_,_,_,_)) -> f ++ " : " ++ t ++ " : " ++ auts) $ M.toList md; }' | \
+        ghci -istatic/build/ static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; putStrLn $ unlines $ map (\(f,(t,auts,_,_,_,_,_)) -> f ++ " : " ++ t ++ " : " ++ auts) $ M.toList md; }' | \
              `## blacklist of fraudsters or bad papers:` \
              gf \
                   `### authors:` \

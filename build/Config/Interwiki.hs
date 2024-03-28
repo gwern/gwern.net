@@ -5886,6 +5886,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Gastropoda", "Gastropod")
         , ("Glucagon_like_peptide-1_receptor_agonists", "GLP-1_receptor_agonist")
         , ("GPT_(language_model)", "Generative_pre-trained_transformer")
+        , ("GPT", "Generative_pre-trained_transformer")
         , ("Guy_Steele", "Guy_L._Steele_Jr.")
         , ("Han_purple", "Han_purple_and_Han_blue")
         , ("IAPAC", "Public_Affairs_Alliance_of_Iranian_Americans")

@@ -112,7 +112,7 @@ listTagDirectoriesAll = listTagDirectories True
 -- so eg. 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
 guessTagFromShort :: [String] -> String -> String
 guessTagFromShort _ "" = ""
-guessTagFromShort l s = fixedPoint (f l) s
+guessTagFromShort l s = fixedPoint (f (replace "=" "-" l)) s
  where f m t = let allTags = nubOrd $ sort m in
                  if t `elem` allTags then t else -- exact match, no guessing required
                  case lookup t tagsShort2Long of

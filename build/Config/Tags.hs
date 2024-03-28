@@ -137,7 +137,7 @@ tagsShort2LongRewrites =
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
-   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd") ]
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -191,6 +191,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychiatry/meditation/lewis", "Lewis’s meditation experiment")
           , ("psychiatry/lithium", "lithium-in-water")
           , ("psychiatry/autism", "autism")
+          , ("psychiatry/alcoholism", "alcoholism")
           , ("philosophy/religion", "religion")
           , ("philosophy/ontology", "ontology")
           , ("philosophy/mind", "mind")
