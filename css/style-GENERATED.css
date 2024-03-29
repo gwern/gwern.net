@@ -7657,6 +7657,23 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     margin: 0 8px;
 }
 
+/*	Special case for recently-modified links.
+ */
+.markdownBody a.block-context-highlighted.link-modified-recently:not(.in-list) {
+	--link-highlight-left-padding: 0.75em;
+
+	margin-left: calc(var(--link-highlight-left-padding) + 8px);
+    box-shadow:
+         3px                                                   1px 0 2px var(--background-color),
+         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 2px var(--background-color),
+         3px                                                   1px 0 3px var(--GW-highlighted-link-outline-color),
+         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 3px var(--GW-highlighted-link-outline-color),
+         3px                                                   1px 0 4px var(--background-color),
+         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 4px var(--background-color),
+         3px                                                   1px 0 5px var(--GW-highlighted-link-outline-color),
+         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 5px var(--GW-highlighted-link-outline-color);
+}
+
 .markdownBody :not(a) > span.block-context-highlighted:not(:empty) {
     --background-color: var(--GW-block-context-span-highlight-color);
 
