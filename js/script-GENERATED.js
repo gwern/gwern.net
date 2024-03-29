@@ -14230,9 +14230,9 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListIcons = (eventInfo) => {
     GWLog("setLinkIconStates", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a.link-modified-recently").forEach(link => {
+	eventInfo.container.querySelectorAll("li a.link-modified-recently").forEach(link => {
 		let containingGraf = link.closest("p");
-		if (containingGraf.matches("li > p:only-of-type")) {
+		if (containingGraf?.matches("li > p:only-of-type")) {
 			containingGraf.parentElement.classList.add("link-modified-recently-list-item");
 			link.classList.add("in-list");
 		}
