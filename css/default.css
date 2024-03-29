@@ -6574,7 +6574,8 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*  Block context.
  */
 .markdownBody a.block-context-highlighted,
-.markdownBody a.block-context-highlighted-temp {
+.markdownBody a.block-context-highlighted-temp,
+.markdownBody a > span.block-context-highlighted {
     position: relative;
     z-index: 2;
     background-color: var(--background-color);
@@ -6588,11 +6589,12 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
          3px 1px 0 5px var(--GW-highlighted-link-outline-color),
         -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
 }
-.markdownBody a.block-context-highlighted {
+.markdownBody a.block-context-highlighted,
+.markdownBody a > span.block-context-highlighted {
     margin: 0 8px;
 }
 
-.markdownBody span.block-context-highlighted:not(:empty) {
+.markdownBody :not(a) > span.block-context-highlighted:not(:empty) {
     --background-color: var(--GW-block-context-span-highlight-color);
 
     background-color: var(--background-color);
@@ -6600,7 +6602,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     box-shadow: 0 0 0 0.1em var(--background-color);
 }
 
-.markdownBody span.block-context-highlighted:empty::before {
+.markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
     background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
     background-origin: content-box;
