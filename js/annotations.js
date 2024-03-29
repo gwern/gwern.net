@@ -32,7 +32,9 @@ Annotations = { ...Annotations,
 	targetIdentifier: (target) => {
 		return (target.hostname == location.hostname
 			   ? target.pathname + target.hash
-			   : target.href);
+			   : (target instanceof HTMLAnchorElement
+			   	  ? target.getAttribute("href")
+			   	  : target.href));
 	},
 
 	/***************************/

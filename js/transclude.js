@@ -669,8 +669,9 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (typeof link == "string") {
 		includeLink.href = link;
-	} else if (   link instanceof HTMLAnchorElement
-			   || link instanceof URL) {
+	} else if (link instanceof HTMLAnchorElement) {
+		includeLink.href = link.getAttribute("href");
+	} else if (link instanceof URL) {
 		includeLink.href = link.href;
 	} else {
 		return null;

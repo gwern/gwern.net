@@ -4568,7 +4568,9 @@ Annotations = { ...Annotations,
 	targetIdentifier: (target) => {
 		return (target.hostname == location.hostname
 			   ? target.pathname + target.hash
-			   : target.href);
+			   : (target instanceof HTMLAnchorElement
+			   	  ? target.getAttribute("href")
+			   	  : target.href));
 	},
 
 	/***************************/
@@ -7538,8 +7540,9 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (typeof link == "string") {
 		includeLink.href = link;
-	} else if (   link instanceof HTMLAnchorElement
-			   || link instanceof URL) {
+	} else if (link instanceof HTMLAnchorElement) {
+		includeLink.href = link.getAttribute("href");
+	} else if (link instanceof URL) {
 		includeLink.href = link.href;
 	} else {
 		return null;
@@ -9361,7 +9364,9 @@ Extracts = {
     		   ? Annotations.targetIdentifier(target)
     		   : (target.hostname == location.hostname
                   ? target.pathname + target.hash
-                  : target.href);
+                  : (target instanceof HTMLAnchorElement
+			  		 ? target.getAttribute("href")
+			  		 : target.href));
     },
 
     /*  Returns true if the two targets will spawn identical popups

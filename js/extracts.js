@@ -317,7 +317,9 @@ Extracts = {
     		   ? Annotations.targetIdentifier(target)
     		   : (target.hostname == location.hostname
                   ? target.pathname + target.hash
-                  : target.href);
+                  : (target instanceof HTMLAnchorElement
+			  		 ? target.getAttribute("href")
+			  		 : target.href));
     },
 
     /*  Returns true if the two targets will spawn identical popups
