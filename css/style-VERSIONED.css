@@ -3185,18 +3185,24 @@ del {
     font-size: 1em;
 }
 
-a.link-modified-recently:not(.in-list) {
-	margin-left: 1em;
-	background-origin: content-box;
+/*	Recently-modified link icons.
+ */
+.has-recently-modified-icon .recently-modified-icon-hook {
+	padding-left: 0.9em;
 	position: relative;
+	background-color: var(--link-underline-background-color);
 }
-a.link-modified-recently:not(.in-list)::before {
-	content: var(--GW-image-single-white-star-on-black-circle-svg);
-	display: inline-block;
+.has-recently-modified-icon .recently-modified-icon-hook::before {
+	content: "";
+	background-image: var(--GW-image-single-white-star-on-black-circle-svg);
+	background-size: 0.65em 100%;
+	background-repeat: no-repeat;
+	background-position: center left;
 	position: absolute;
-	top: -0.2ex;
-	left: -0.9em;
-	width: 0.65em;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	opacity: 0.75;
 }
 
@@ -7657,23 +7663,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     margin: 0 8px;
 }
 
-/*	Special case for recently-modified links.
- */
-.markdownBody a.block-context-highlighted.link-modified-recently:not(.in-list) {
-	--link-highlight-left-padding: 0.75em;
-
-	margin-left: calc(var(--link-highlight-left-padding) + 8px);
-    box-shadow:
-         3px                                                   1px 0 2px var(--background-color),
-         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 2px var(--background-color),
-         3px                                                   1px 0 3px var(--GW-highlighted-link-outline-color),
-         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 3px var(--GW-highlighted-link-outline-color),
-         3px                                                   1px 0 4px var(--background-color),
-         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 4px var(--background-color),
-         3px                                                   1px 0 5px var(--GW-highlighted-link-outline-color),
-         calc(-1 * (var(--link-highlight-left-padding) + 3px)) 1px 0 5px var(--GW-highlighted-link-outline-color);
-}
-
 .markdownBody :not(a) > span.block-context-highlighted:not(:empty) {
     --background-color: var(--GW-block-context-span-highlight-color);
 
@@ -7890,7 +7879,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 .has-content.has-indicator-hook {
     margin: 0 0.08em;
-    padding-left: 0.3em;
     position: relative;
     z-index: 1;
 
@@ -7908,7 +7896,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .has-content .indicator-hook {
     position: relative;
     padding-left: 0.3em;
-    margin-left: -0.3em;
     z-index: -1;
 }
 .has-content:not(.has-indicator-hook) .indicator-hook {
