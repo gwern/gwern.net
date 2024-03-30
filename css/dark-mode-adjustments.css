@@ -271,6 +271,13 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
+/*	Recently-modified link icon.
+ */
+.has-recently-modified-icon .recently-modified-icon-hook::before,
+.icon-single-white-star-on-black-circle::before {
+	filter: invert(1);
+}
+
 /*	Math in Wikipedia pop-frames.
  */
 .annotation.wikipedia-entry .wikipedia-math-block-wrapper img,

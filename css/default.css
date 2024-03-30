@@ -2124,12 +2124,14 @@ del {
 
 /*	Recently-modified link icons.
  */
-.has-recently-modified-icon .recently-modified-icon-hook {
+.has-recently-modified-icon .recently-modified-icon-hook,
+.icon-single-white-star-on-black-circle {
 	padding-left: 0.9em;
 	position: relative;
 	background-color: var(--link-underline-background-color);
 }
-.has-recently-modified-icon .recently-modified-icon-hook::before {
+.has-recently-modified-icon .recently-modified-icon-hook::before,
+.icon-single-white-star-on-black-circle::before {
 	content: "";
 	background-image: var(--GW-image-single-white-star-on-black-circle-svg);
 	background-size: 0.65em 100%;
@@ -2141,6 +2143,10 @@ del {
 	width: 100%;
 	height: 100%;
 	opacity: 0.75;
+}
+
+.icon-single-white-star-on-black-circle::before {
+	background-position: center;
 }
 
 /*  Scratchpad for copy operations.
