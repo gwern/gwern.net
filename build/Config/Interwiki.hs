@@ -5901,4 +5901,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Speaker_diarization", "Speaker_diarisation")
         , ("Spoken-word", "Spoken_word")
         , ("Star-free_languages", "Star-free_language")
+        , ("Samuel_Huntington", "Samuel_P._Huntington")
         ]

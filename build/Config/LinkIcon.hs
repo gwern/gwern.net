@@ -162,7 +162,7 @@ linkIconRulesSingle u
  | otherwise = ("", "")
 
 linkIconRulesDouble u
- | u'' u "marginalrevolution.com" = ("M𝐑", "text") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
+ | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' u "www.frontiersin.org" = ("FS", "text,sans") -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
  | aU'' u ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = ("PG", "text") -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
  | u'' u "guzey.com" = ("A.G.", "text,sans")
@@ -702,6 +702,7 @@ linkIconTestUnitsText =
          , ("https://machinelearning.apple.com/research/hey-siri", "apple", "svg")
          , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg")
          , ("https://marginalrevolution.com/",  "M\119825","text")
+         , ("https://conversationswithtyler.com/episodes/seth-godin/",  "M\119825","text")
          , ("https://mason.gmu.edu/~rhanson/ideafutures.html",  "OB","text")
          , ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stack-exchange","svg")
          , ("https://mathshistory.st-andrews.ac.uk/Extras/Poincare_Intuition/", "M  T", "text,quad,sans")
