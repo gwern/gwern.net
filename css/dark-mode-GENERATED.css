@@ -599,7 +599,8 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 
 /*	Math in Wikipedia pop-frames.
  */
-.annotation.wikipedia-entry .mwe-math-element img {
+.annotation.wikipedia-entry .wikipedia-math-block-wrapper img,
+.annotation.wikipedia-entry .wikipedia-math-inline-wrapper img {
 	filter: invert(1);
 	background-color: var(--GW-wikipedia-math-image-background-color);
 }
