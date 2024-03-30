@@ -2129,7 +2129,7 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
 	links.
  */
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListIcons = (eventInfo) => {
-    GWLog("setLinkIconStates", "rewrite.js", 1);
+    GWLog("enableRecentlyModifiedLinkListIcons", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("li a.link-modified-recently").forEach(link => {
 		let containingGraf = link.closest("p");
@@ -2137,6 +2137,32 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListI
 			containingGraf.parentElement.classList.add("link-modified-recently-list-item");
 			link.classList.add("in-list");
 		}
+	});
+}, "rewrite");
+
+addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons = (eventInfo) => {
+    GWLog("enableRecentlyModifiedLinkIcons", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(link => {
+		if (link.querySelector(".recently-modified-icon-hook") != null)
+			return;
+
+		//	Inject indicator hook span.
+		link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
+
+		/*	Inject U+2060 WORD JOINER at start of first text node of the
+			link. (It _must_ be injected as a Unicode character into the
+			existing text node; injecting it within the .indicator-hook
+			span, or as an HTML escape code into the text node, or in
+			any other fashion, creates a separate text node, which
+			causes all sorts of problems - text shadow artifacts, etc.)
+		 */
+		let linkFirstTextNode = link.firstTextNode;
+		if (   linkFirstTextNode
+			&& linkFirstTextNode.textContent.startsWith("\u{2060}") == false)
+			linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+
+		link.classList.add("has-recently-modified-icon");
 	});
 }, "rewrite");
 
