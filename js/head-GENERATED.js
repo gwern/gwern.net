@@ -2605,7 +2605,18 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
-    [ "april-fools", isTodayAprilFools ],
+    [ "april-fools", isTodayAprilFools, () => {
+        document.body.classList.add("special-april-fools");
+
+		/*	Turn off the funny after a minute.
+		 */
+		let jokeDurationSeconds = 60;
+		setTimeout(() => {
+			document.body.classList.remove("special-april-fools");
+		}, jokeDurationSeconds * 1000);
+      }, () => {
+        document.body.classList.remove("special-april-fools");
+      } ],
 ];
 
 function toggleTestHalloween(enable) {
