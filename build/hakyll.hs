@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-03-13 21:10:43 gwern"
+When: Time-stamp: "2024-03-31 10:40:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -181,16 +181,16 @@ postCtx :: Metadata -> Context String
 postCtx md =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
-    titlePlainField "titlePlain" <>
+    titlePlainField "title-plain" <>
     descField False "title" "title" <>
-    descField True "description" "descriptionEscaped" <>
+    descField True "description" "description-escaped" <>
     descField False "description" "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
-    boolField "backlinksYes" (check notNewsletterOrIndex getBackLinkCheck)    <>
-    boolField "similarsYes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
-    boolField "linkbibYes"   (check (const True)         getLinkBibLinkCheck) <>
+    boolField "backlinks-yes" (check notNewsletterOrIndex getBackLinkCheck)    <>
+    boolField "similars-yes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
+    boolField "linkbib-yes"   (check (const True)         getLinkBibLinkCheck) <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
@@ -202,13 +202,13 @@ postCtx md =
     constField "status" "notes" <>
     constField "confidence" "log" <>
     constField "importance" "0" <>
-    constField "cssExtension" "dropcaps-de-zs" <>
-    constField "thumbnailCSS" "outline-not" <>
-    imageDimensionWidth "thumbnailHeight" <>
-    imageDimensionWidth "thumbnailWidth" <>
-    -- for use in templating, `<body class="page-$safeURL$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
-    escapedTitleField "safeURL" <>
-    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.md' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.md' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
+    constField "css-extension" "dropcaps-de-zs" <>
+    constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
+    imageDimensionWidth "thumbnail-height" <>
+    imageDimensionWidth "thumbnail-width" <>
+    -- for use in templating, `<body class="page-$safe-url$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
+    escapedTitleField "safe-url" <>
+    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escaped-url" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escaped-url$"', so 'Bitcoin-is-Worse-is-Better.md' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.md' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do
@@ -227,7 +227,7 @@ fieldsTagHTML m = field "tagsHTML" $ \item -> do
                    Right html -> return (T.unpack html)
 
 fieldsTagPlain :: Metadata -> Context String
-fieldsTagPlain m = field "tagsPlain" $ \item -> do
+fieldsTagPlain m = field "tags-plain" $ \item -> do
     maybeTags <- lookupTags m item
     case maybeTags of
       Nothing -> return "" -- noResult "no tag field"
@@ -251,13 +251,13 @@ imageDimensionWidth d = field d $ \item -> do
                   let (h,w) = case metadataMaybe of
                         Nothing -> ("530","441") -- /static/img/logo/logo-whitebg-large-border.png-530px.jpg dimensions
                         Just thumbnailPath -> let x@(result,_) = unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath in if result/="" then x else error ("failed to read dimensions of an image‽ " ++ show thumbnailPath ++ " : " ++ show x)
-                  if d == "thumbnailWidth" then return w else return h
+                  if d == "thumbnail-width" then return w else return h
 
 escapedTitleField :: String -> Context String
 escapedTitleField = mapContext (map toLower . replace "/" "-" . replace ".md" "") . pathField
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
--- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
+-- So we render a simplified ASCII version of every 'title' field, '$title-plain$', and use that in default.html when we need a non-display
 -- title.
 titlePlainField :: String -> Context String
 titlePlainField d = field d $ \item -> do

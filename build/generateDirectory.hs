@@ -134,11 +134,11 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let titledLinksSections   = generateSections am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems am untitledLinks
 
-  -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
+  -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
   let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst))
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -241,7 +241,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
                ".\"",
              thumbnail,
              thumbnailText,
-             "thumbnailCSS: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
+             "thumbnail-css: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
              "created: 'N/A'",
              if date=="" then "" else "modified: \'" ++ date++"\'",
              "status: 'in progress'",
@@ -249,7 +249,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              next,
              "confidence: log",
              "importance: 0",
-             "cssExtension: dropcaps-de-zs",
+             "css-extension: dropcaps-de-zs",
              "index: true",
              "backlink: False",
              "...\n"]

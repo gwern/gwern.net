@@ -58,9 +58,9 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnailText, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnailText set.
+                        let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnail-text, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnail-text set.
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
-                        when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
+                        when (null thumbnailText) $ printRed ("Warning: no thumbnail-text alt text defined for URL " ++ p)
                         let thumbnailCSS = words $ (\(TagOpen _ [_, ("content", css)]) -> css) $ head $ filter filterThumbnailCSS metas
 
                         (color,h,w) <- invertImage thumbnail'
