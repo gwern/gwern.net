@@ -323,7 +323,7 @@ doWhenBodyExists(() => {
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
 		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
 			GW.layout.layoutProcessors.forEach(processorSpec => {
-				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container);
+				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.body);
 			});
 		});
 	});
