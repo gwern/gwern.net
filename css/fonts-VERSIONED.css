@@ -1061,3 +1061,97 @@
 	font-display: swap;
 	unicode-range: U+005A;
 }
+
+/*******************/
+/* BLACKMOOR PLAIN */
+/*******************/
+
+@font-face {
+	font-family: 'Blackmoor Plain';
+	font-weight: normal;
+	src: url('/static/font/blackletter/BlackmoorPlain.otf?v=1711843694') format('opentype');
+	font-display: swap;
+}
+
+/******************/
+/* CLOISTER BLACK */
+/******************/
+
+@font-face {
+	font-family: 'Cloister Black';
+	font-weight: normal;
+	src: url('/static/font/blackletter/CloisterBlack.ttf?v=1711843780') format('truetype');
+	font-display: swap;
+}
+
+/***********/
+/* DEAREST */
+/***********/
+
+@font-face {
+	font-family: 'Dearest';
+	font-weight: normal;
+	src: url('/static/font/blackletter/Dearest.ttf?v=1711843786') format('truetype');
+	font-display: swap;
+}
+
+/********************/
+/* DEUTSCHE SCHRIFT */
+/********************/
+
+@font-face {
+	font-family: 'Deutsche Schrift';
+	font-weight: normal;
+	src: url('/static/font/blackletter/DeutscheSchrift.ttf?v=1711840346') format('truetype');
+	font-display: swap;
+}
+
+/*************************/
+/* ENGRAVERS OLD ENGLISH */
+/*************************/
+
+@font-face {
+	font-family: 'Engravers Old English';
+	font-weight: normal;
+	src: url('/static/font/blackletter/EngraversOldEnglish-Regular.ttf?v=1711843755') format('truetype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Engravers Old English';
+	font-weight: bold;
+	src: url('/static/font/blackletter/EngraversOldEnglish-Bold.ttf?v=1711843752') format('truetype');
+	font-display: swap;
+}
+
+/************************/
+/* GREAT PRIMER UNCIALS */
+/************************/
+
+@font-face {
+	font-family: 'Great Primer Uncials';
+	font-weight: normal;
+	src: url('/static/font/blackletter/GreatPrimerUncials.otf?v=1711843815') format('opentype');
+	font-display: swap;
+}
+
+/********************/
+/* GUTENBERG GOTHIC */
+/********************/
+
+@font-face {
+	font-family: 'Gutenberg Gothic';
+	font-weight: normal;
+	src: url('/static/font/blackletter/GutenbergGothic.ttf?v=1711843823') format('truetype');
+	font-display: swap;
+}
+
+/****************/
+/* HANSA GOTHIC */
+/****************/
+
+@font-face {
+	font-family: 'Hansa Gothic';
+	font-weight: normal;
+	src: url('/static/font/blackletter/HansaGothic.ttf?v=1711843831') format('truetype');
+	font-display: swap;
+}

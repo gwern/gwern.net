@@ -148,3 +148,46 @@ Kanzlei Initialen
 ttf
 font-display	swap
 <?php all_the_letters(); ?>
+
+Blackmoor Plain
+/static/font/blackletter/BlackmoorPlain
+otf
+font-display	swap
+`normal			`
+
+Cloister Black
+/static/font/blackletter/CloisterBlack
+ttf
+font-display	swap
+`normal			`
+
+Deutsche Schrift
+/static/font/blackletter/DeutscheSchrift
+ttf
+font-display	swap
+`normal			`
+
+Engravers Old English
+/static/font/blackletter/EngraversOldEnglish-
+ttf
+font-display	swap
+`normal			Regular
+`bold			Bold
+
+Great Primer Uncials
+/static/font/blackletter/GreatPrimerUncials
+otf
+font-display	swap
+`normal			`
+
+Gutenberg Gothic
+/static/font/blackletter/GutenbergGothic
+ttf
+font-display	swap
+`normal			`
+
+Hansa Gothic
+/static/font/blackletter/HansaGothic
+ttf
+font-display	swap
+`normal			`

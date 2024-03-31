@@ -215,6 +215,8 @@ function kv_tokenize($line) {
 				break;
 			default:
 				$value = count($parts) > 1 ? array_slice($parts, 1)[0] : '';
+				if ($value[0] == '`')
+					$value = substr($value, 1);
 				break;
 		}
 	}

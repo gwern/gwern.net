@@ -2073,6 +2073,20 @@ body.file-preview-source-code pre code {
 /* SPECIAL OCCASIONS */
 /*********************/
 
+/*=--------------=*/
+/*= April Fool’s =*/
+/*=--------------=*/
+
+body.special-april-fools {
+	--GW-modified-serif-font-stack: "Great Primer Uncials", var(--GW-serif-font-stack);
+
+	font-family: var(--GW-modified-serif-font-stack);
+}
+
+body.special-april-fools .marginnote {
+	font-family: var(--GW-modified-serif-font-stack);
+}
+
 /*=-----------=*/
 /*= Halloween =*/
 /*=-----------=*/

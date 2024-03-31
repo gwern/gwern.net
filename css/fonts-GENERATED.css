@@ -1061,3 +1061,86 @@
 	font-display: swap;
 	unicode-range: U+005A;
 }
+
+/*******************/
+/* BLACKMOOR PLAIN */
+/*******************/
+
+@font-face {
+	font-family: 'Blackmoor Plain';
+	font-weight: normal;
+	src: url('/static/font/blackletter/BlackmoorPlain.otf') format('opentype');
+	font-display: swap;
+}
+
+/******************/
+/* CLOISTER BLACK */
+/******************/
+
+@font-face {
+	font-family: 'Cloister Black';
+	font-weight: normal;
+	src: url('/static/font/blackletter/CloisterBlack.ttf') format('truetype');
+	font-display: swap;
+}
+
+/********************/
+/* DEUTSCHE SCHRIFT */
+/********************/
+
+@font-face {
+	font-family: 'Deutsche Schrift';
+	font-weight: normal;
+	src: url('/static/font/blackletter/DeutscheSchrift.ttf') format('truetype');
+	font-display: swap;
+}
+
+/*************************/
+/* ENGRAVERS OLD ENGLISH */
+/*************************/
+
+@font-face {
+	font-family: 'Engravers Old English';
+	font-weight: normal;
+	src: url('/static/font/blackletter/EngraversOldEnglish-Regular.ttf') format('truetype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Engravers Old English';
+	font-weight: bold;
+	src: url('/static/font/blackletter/EngraversOldEnglish-Bold.ttf') format('truetype');
+	font-display: swap;
+}
+
+/************************/
+/* GREAT PRIMER UNCIALS */
+/************************/
+
+@font-face {
+	font-family: 'Great Primer Uncials';
+	font-weight: normal;
+	src: url('/static/font/blackletter/GreatPrimerUncials.otf') format('opentype');
+	font-display: swap;
+}
+
+/********************/
+/* GUTENBERG GOTHIC */
+/********************/
+
+@font-face {
+	font-family: 'Gutenberg Gothic';
+	font-weight: normal;
+	src: url('/static/font/blackletter/GutenbergGothic.ttf') format('truetype');
+	font-display: swap;
+}
+
+/****************/
+/* HANSA GOTHIC */
+/****************/
+
+@font-face {
+	font-family: 'Hansa Gothic';
+	font-weight: normal;
+	src: url('/static/font/blackletter/HansaGothic.ttf') format('truetype');
+	font-display: swap;
+}

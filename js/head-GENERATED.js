@@ -2576,7 +2576,7 @@ function injectSpecialPageLogo(logoType, options = { }) {
     provided to remove those classes. (See the ‘halloween’ entry for example.)
  */
 GW.specialOccasions = [
-    [ "halloween", () => isTodayHalloween(), () => {
+    [ "halloween", isTodayHalloween, () => {
         //  Default to dark mode during Halloween.
         DarkMode.defaultMode = "dark";
 
@@ -2592,7 +2592,7 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
-    [ "christmas", () => isTodayChristmas(), () => {
+    [ "christmas", isTodayChristmas, () => {
         //  Different special styles for light and dark mode.
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
         let specialClass = DarkMode.computedMode() == "light"
@@ -2605,11 +2605,20 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
+    [ "april-fools", isTodayAprilFools ],
 ];
+
+function toggleTestHalloween(enable) {
+	if (enable)
+		localStorage.setItem("test-halloween", true);
+	else
+		localStorage.removeItem("test-halloween");
+}
 
 function isTodayHalloween() {
     //  The test page is Halloween Town.
-    if (document.body.classList.contains("test-halloween"))
+    if (   document.body.classList.contains("test-halloween")
+    	|| localStorage.getItem("test-halloween") == "true")
         return true;
 
     //  Only bother English-speakers with Anglosphere holidays like Halloween:
@@ -2618,6 +2627,7 @@ function isTodayHalloween() {
         let now = new Date();
         let date = now.toString().slice(4,10);
         let hour = now.getHours();
+
         /*  It is a sin to celebrate Halloween while there is daylight; however,
             calculating local sunset or local ambient light is too hard (where
             would we even get that geolocation or light sensor data from‽), so
@@ -2628,33 +2638,53 @@ function isTodayHalloween() {
         return false;
     }
 }
+
+function toggleTestChristmas(enable) {
+	if (enable)
+		localStorage.setItem("test-christmas", true);
+	else
+		localStorage.removeItem("test-christmas");
+}
+
 function isTodayChristmas() {
     //  The test page is Christmas Town.
-    if (document.body.classList.contains("test-christmas"))
+    if (   document.body.classList.contains("test-christmas")
+    	|| localStorage.getItem("test-christmas") == "true")
         return true;
 
     let now = new Date();
     let date = now.toString().slice(4,10);
     let hour = now.getHours();
+
     /*  Christmas = Christmas Eve + all Christmas Day; Christmas Eve starts in
         the evening, so again >=6PM.
      */
     return (date == "Dec 24" && hour >= 18) || (date == "Dec 25");
 }
-function isTodayAprilfools() {
+
+function toggleTestAprilFools(enable) {
+	if (enable)
+		localStorage.setItem("test-april-fools", true);
+	else
+		localStorage.removeItem("test-april-fools");
+}
+
+function isTodayAprilFools() {
     //  The test page is Fraktur-town
-    if (document.body.classList.contains("test-april-fools"))
+    if (   document.body.classList.contains("test-april-fools")
+    	|| localStorage.getItem("test-april-fools") == "true")
         return true;
 
     let now = new Date();
-    let month = now.getMonth(); // January is 0, so April will be 3
-    let date = now.getDate();
+    let date = now.toString().slice(4,10);
     let hour = now.getHours();
-    /*  We don't define April Fools as all-day April 1st,
-        because too early in the morning no one is awake enough for pranks, and after 3PM it's honestly kinda tiresome.
-    */
-    return (month === 3 && date === 1 && hour >= 8 && hour <= 15);
-    }
+
+    /*  We don’t define April Fools as all-day April 1st,
+        because too early in the morning no one is awake enough for pranks, 
+        and after 3PM it’s honestly kinda tiresome.
+     */
+    return (date == "Apr 1" && hour >= 8 && hour <= 15);
+}
 
 function applySpecialOccasionClasses() {
     for (occasion of GW.specialOccasions) {
@@ -4028,7 +4058,7 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1710872153",
+	"/static/img/icon/icons.svg": "1711844091",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
