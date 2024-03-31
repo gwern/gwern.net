@@ -2608,28 +2608,29 @@ GW.specialOccasions = [
     [ "april-fools", isTodayAprilFools, () => {
         document.body.classList.add("special-april-fools");
 
-		/*	Turn off the funny after a minute.
-		 */
-		let jokeDurationSeconds = 60;
-		setTimeout(() => {
-			document.body.classList.remove("special-april-fools");
-		}, jokeDurationSeconds * 1000);
+        /*  Turn off the funny after half a minute (the blackletter joke has worn old by then)
+         */
+        let jokeDurationSeconds = 30;
+        setTimeout(() => {
+            document.body.classList.remove("special-april-fools");
+        }, jokeDurationSeconds * 1000);
       }, () => {
         document.body.classList.remove("special-april-fools");
       } ],
 ];
 
 function toggleTestHalloween(enable) {
-	if (enable)
-		localStorage.setItem("test-halloween", true);
-	else
-		localStorage.removeItem("test-halloween");
+    if (enable)
+        localStorage.setItem("test-halloween", true);
+    else
+        localStorage.removeItem("test-halloween");
 }
 
+// test page: </lorem-halloween>
 function isTodayHalloween() {
     //  The test page is Halloween Town.
     if (   document.body.classList.contains("test-halloween")
-    	|| localStorage.getItem("test-halloween") == "true")
+        || localStorage.getItem("test-halloween") == "true")
         return true;
 
     //  Only bother English-speakers with Anglosphere holidays like Halloween:
@@ -2651,16 +2652,17 @@ function isTodayHalloween() {
 }
 
 function toggleTestChristmas(enable) {
-	if (enable)
-		localStorage.setItem("test-christmas", true);
-	else
-		localStorage.removeItem("test-christmas");
+    if (enable)
+        localStorage.setItem("test-christmas", true);
+    else
+        localStorage.removeItem("test-christmas");
 }
 
+// test page: </lorem-christmas>
 function isTodayChristmas() {
     //  The test page is Christmas Town.
     if (   document.body.classList.contains("test-christmas")
-    	|| localStorage.getItem("test-christmas") == "true")
+        || localStorage.getItem("test-christmas") == "true")
         return true;
 
     let now = new Date();
@@ -2674,16 +2676,17 @@ function isTodayChristmas() {
 }
 
 function toggleTestAprilFools(enable) {
-	if (enable)
-		localStorage.setItem("test-april-fools", true);
-	else
-		localStorage.removeItem("test-april-fools");
+    if (enable)
+        localStorage.setItem("test-april-fools", true);
+    else
+        localStorage.removeItem("test-april-fools");
 }
 
+// test page: </lorem-april-fools>
 function isTodayAprilFools() {
-    //  The test page is Fraktur-town
+    //  The test page isblackletterFraktur-town
     if (   document.body.classList.contains("test-april-fools")
-    	|| localStorage.getItem("test-april-fools") == "true")
+        || localStorage.getItem("test-april-fools") == "true")
         return true;
 
     let now = new Date();
@@ -2691,7 +2694,7 @@ function isTodayAprilFools() {
     let hour = now.getHours();
 
     /*  We don’t define April Fools as all-day April 1st,
-        because too early in the morning no one is awake enough for pranks, 
+        because too early in the morning no one is awake enough for pranks,
         and after 3PM it’s honestly kinda tiresome.
      */
     return (date == "Apr 1" && hour >= 8 && hour <= 15);
