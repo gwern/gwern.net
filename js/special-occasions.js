@@ -207,7 +207,7 @@ function isTodayAprilFools() {
         because too early in the morning no one is awake enough for pranks,
         and after 3PM it’s honestly kinda tiresome.
      */
-    return (date == "Apr 1" && hour >= 8 && hour <= 15);
+    return (date == "Apr 01" && hour >= 8 && hour <= 15);
 }
 
 function applySpecialOccasionClasses() {
