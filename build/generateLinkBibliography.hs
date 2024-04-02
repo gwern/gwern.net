@@ -19,7 +19,6 @@ module Main where
 import Control.Monad (when)
 import Data.List (isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
-import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup, keys)
 import System.FilePath (takeDirectory, takeFileName)
 
@@ -36,7 +35,7 @@ import LinkBacklink (getLinkBibLink, getAnnotationLinkCheck)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLs, extractLinks)
-import Typography (typographyTransform)
+import Typography (typographyTransform, titlecase')
 import Utils (writeUpdatedFile, replace, printRed)
 import Interwiki (convertInterwikiLinks)
 import qualified Config.Misc as C (mininumLinkBibliographyFragment)
@@ -123,7 +122,7 @@ generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
     if t=="" then
       Para [Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "")] : transcludeTarget
     else
-      Para [Link linkAttr [RawInline (Format "HTML") (T.pack $ titlecase t)] (T.pack f, "")] : transcludeTarget
+      Para [Link linkAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")] : transcludeTarget
 -- long items:
 generateLinkBibliographyItem am (f,a) = generateAnnotationTransclusionBlock am (f,a)
 

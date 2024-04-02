@@ -19,7 +19,6 @@ import Data.List.Split (chunksOf)
 import qualified Data.Map as M (keys, lookup, filter, filterWithKey, fromList, toList)
 import Data.Maybe (fromJust)
 import qualified Data.Text as T (append, pack, unpack, Text)
-import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
@@ -35,7 +34,7 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
-import Typography (identUniquefy)
+import Typography (identUniquefy, titlecase')
 import MetadataFormat (extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (cd)
@@ -226,7 +225,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
   in
     let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
         link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
-               else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author
+               else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
@@ -385,7 +384,7 @@ generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
                                     authorShort = authorsToCite f aut dt
                                     -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.
                                     sectionTitle = if "https://twitter.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
-                                                     T.pack $ "“"++titlecase t++"”" ++
+                                                     T.pack $ "“"++titlecase' t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  Header headerLevel (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]
