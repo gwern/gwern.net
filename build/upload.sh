@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-03-19 12:24:34 gwern"
+# When:  Time-stamp: "2024-03-31 14:53:09 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -22,7 +22,7 @@
 
 set -e
 
-if [ ! -f "$1" ] || [ ! -s "$1" ]; then echo "l25: '$1' is not a file or is empty‽" && exit 1; fi
+if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {
@@ -59,7 +59,7 @@ _upload() {
 
         if [[ -z "$new_file_path" ]]; then
           mv "$filename" "$new_filename"
-          echo "File '$filename' has been renamed to '$new_filename'"
+          bold "File '$filename' has been renamed to '$new_filename'"
           filename="$new_filename"
           break
         fi
@@ -68,7 +68,7 @@ _upload() {
 
     # if filename after possible renaming does not exist, that means we're using a new filename
     if [[ ! -e "$filename" ]]; then
-      echo "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
+      red "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
       return 1
     fi
 
@@ -116,11 +116,11 @@ _upload() {
           if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
               # the guess failed too, so bail out entirely:
               ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
-              echo "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
+              red "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
               return 2
           else
               # restart with fixed directory
-              echo "Retry as \"upload $FILENAME $GUESS\""
+              bold "Retrying as \"upload $FILENAME $GUESS\"…"
               upload "$FILENAME" "$GUESS"
           fi
       else
@@ -155,16 +155,16 @@ _upload() {
                   echo "/$TARGET $URL"
 
                   if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
-                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then echo -n "Image needs padding: " && image-margin-checker.py ~/wiki/"$TARGET" | grep -F " : YES"; fi
+                  if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then if [[ $(image-margin-checker.py ~/wiki/"$TARGET") == "YES" ]]; then red "Image needs padding!"; fi; fi
 
                   firefox "$URL") &
 
-              else echo "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
+              else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo
                    crossref "$TARGET"
                    return 4
               fi
-          else echo "First argument $FILENAME is not a file?"
+          else red "First argument $FILENAME is not a file?"
                return 1
           fi
       fi
