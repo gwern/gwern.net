@@ -2400,7 +2400,7 @@ goodLinks =
             , "https://docs.google.com/spreadsheets/d/19D8JUgf95t-f-oUAHqh8Nn2G90KO3gUiua9yAjBSSqI/edit"
             , "https://dominiccummings.com/2019/03/01/on-the-referendum-31-project-maven-procurement-lollapalooza-results-nuclear-agi-safety/"
             , "https://donsbot.com/2007/05/17/roll-your-own-window-manager-tracking-focus-with-a-zipper/"
-            , "https://downloads.haskell.org/ghc/latest/docs/libraries/base-4.15.0.0/Prelude.html"
+            , "https://hackage.haskell.org/package/base-4.19.1.0/docs/Prelude.html#v:until"
             , "https://dresdencodak.com/2009/09/22/caveman-science-fiction/"
             , "https://dumps.wikimedia.org/enwiki/latest/"
             , "https://e2eml.school/transformers.html"

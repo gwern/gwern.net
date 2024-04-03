@@ -386,6 +386,7 @@ htmlRewriteFixed =
          , ("O(<span class=\"math inline\">\\(L\\log L\\)</span>", "𝒪(<em>L</em> log <em>L</em>)")
          , (" O(sqrt(n)) ", " 𝒪(√<em>n</em>) ")
          , (" O(T)", " 𝒪(<em>T</em>)")
+         , ("\\(10^{-16}—10^{-10} \\sim \\textrm{M}_\\odot\\)", "10<sup>−16</sup>–10<sup>−10</sup>M<sub>☉</sub>")
          , ("<span class=\"math inline\">\\(0.15{-}1.3 {\\rm M}_{\\odot}\\)</span>", "0.15–1.3M<sub>☉</sub>")
          , ("<span class=\"math inline\">\\([0,1]\\)</span>", "[0,1]")
          , ("<span class=\"math inline\">\\(0.96\\)</span>", "0.96")

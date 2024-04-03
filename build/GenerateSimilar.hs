@@ -40,7 +40,7 @@ import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
 
-import Config.Misc (currentDay, cd)
+import Config.Misc (todayDay, cd)
 import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
@@ -185,7 +185,7 @@ embed edb mdb bdb i@(p,_) =
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
             (modelType,embedding) <- oaAPIEmbed p doc
-            today <- currentDay
+            today <- todayDay
             return (p,today,T.unpack doc,modelType,embedding)
  where new = takeBaseName p
        olds = filter (\(pold,_,_,_,_) -> if head pold == '/' then new == takeBaseName pold

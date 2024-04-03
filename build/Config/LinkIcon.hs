@@ -43,7 +43,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
-                     "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu"]
+                     "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:
@@ -325,7 +325,7 @@ linkIconRulesQuad u
  | u'' u "www.nejm.org" = ("NEJM", "text,quad")
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad")
  | u'' u "rjlipton.wordpress.com" = ("P = NP", "text,quad") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
- | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans")
+ | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans") -- overrides IA
  | u' u "mitpress.mit.edu/" = ("MIT", "text,tri,mono") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono")
@@ -380,7 +380,7 @@ linkIconRulesSVG u
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' u "paulgraham.com" = ("pg", "text,monospace") -- Paul Graham, known by username 'pg' on HN
  | u' u "ycombinator.com" = ("hacker-news", "svg") -- HN/YC (shared logo). primary user: news.ycombinator.com
- | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo.
+ | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overriden by SICP
  | u'' u "mega.nz" = ("mega", "svg") -- MegaUpload/Mega: filesharing (used for big files).
  | u'' u "intelligence.org" = ("miri", "svg") -- MIRI/intelligence.org.
  | u' u ".nytimes.com" = ("new-york-times", "svg") -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
@@ -714,7 +714,7 @@ linkIconTestUnitsText =
          , ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text")
          , ("https://michaelnielsen.org/blog/three-myths-about-scientific-peer-review/", "MN", "text")
          , ("https://mitpress.mit.edu/9780262536226/", "MIT", "text,tri,mono")
-         , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
+         , ("https://web.archive.org/web/20211103153805/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
          , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
          , ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans")
          , ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,tri,sans")
