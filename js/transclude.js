@@ -1418,8 +1418,10 @@ Transclude = {
 			contained within them, because if it were, then *that* section would
 			be the block context. So, any child sections are necessarily 
 			extraneous.)
+			(Do not do this if the section itself is the target element.)
 		 */
-		if (block.tagName == "SECTION") {
+		if (   block.tagName == "SECTION"
+			&& element != block) {
 			blockContext.querySelectorAll("section section").forEach(childSection => {
 				childSection.remove();
 			});
