@@ -3,6 +3,7 @@ module Config.Misc where
 
 import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
 import Data.Time.Clock (getCurrentTime, utctDay)
+import Data.Time (utcToLocalTime, localTimeOfDay, getCurrentTimeZone, todHour, Day(ModifiedJulianDay))
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory)
@@ -19,11 +20,8 @@ cd = setCurrentDirectory root
 currentYear :: Int
 currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime -- 2024
 
-currentDay :: IO Integer
-currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
-
-currentDayString :: IO String
-currentDayString = fmap (formatTime defaultTimeLocale "%Y-%m-%d") Data.Time.Clock.getCurrentTime
+todayDay :: IO Integer
+todayDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 currentMonthAgo :: String
 currentMonthAgo = unsafePerformIO $ do
@@ -31,6 +29,28 @@ currentMonthAgo = unsafePerformIO $ do
   let monthAgo = addDays (-daysAgo) today
   return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
   where daysAgo = 31 * 2 :: Integer
+
+-- New generic function to format a day, relative to today, as a string
+dayStringFromToday :: Integer -> IO String
+dayStringFromToday offset = do
+  todayJulian <- todayDay
+  let targetDay = ModifiedJulianDay (todayJulian + offset)
+  return $ formatTime defaultTimeLocale "%Y-%m-%d" targetDay
+
+todayDayString :: IO String
+todayDayString = dayStringFromToday 0
+
+yesterdayDayString :: IO String
+yesterdayDayString = dayStringFromToday (-1)
+
+-- is the current time before 9AM & after midnight, suggesting a late-night operation being done after a day of work? If so, we probably want to adjust any dates
+lateNight :: IO Bool
+lateNight = do
+  now <- getCurrentTime
+  timezone <- getCurrentTimeZone
+  let localTime = utcToLocalTime timezone now
+      hour = todHour $ localTimeOfDay localTime
+  return $ hour < 9
 
 -- for Columns.hs:
 listLengthMaxN :: Int

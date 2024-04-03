@@ -57,7 +57,7 @@ main = do C.cd
           let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
-          Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
+          -- Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
           -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
@@ -108,8 +108,8 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   triplets  <- listFiles md' direntries'
 
-  let linksSelf = reverse $ sortByDateBoth taggedSelf  -- newest first, to show recent additions
-  let linksAll  = sortByDate $ triplets++tagged'
+  let linksSelf = sortByDateModified taggedSelf  -- newest first, to show recent additions
+  let linksAll  = sortByDateModified $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
@@ -281,33 +281,23 @@ listTagged newestp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
     truncateAnchors :: String -> String
     truncateAnchors str = if '.' `elem` str then str else takeWhile (/='#') str
 
--- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
+-- sort a list of entries in ascending order using the annotation last-modified date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 -- We generally prefer to reverse this to descending order, to show newest-first.
 -- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
-sortByDate :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDate = sortBy compareEntries
+sortByDateModified :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDateModified = sortBy compareEntries
   where
-    compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
+    compareEntries (f, (_, _, _, d, _, _, _), _) (f', (_, _, _, d', _, _, _), _)
       | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
       | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
       | head f == '/' = LT -- '/' paths come after non '/' paths
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
 
-sortByDateBoth :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDateBoth = sortBy compareEntries
-  where
-    compareEntries (f, (_, _, d, dm, _, _, _), _) (f', (_, _, d2, dm2, _, _, _), _)
-      | not (null d) || not (null d2) = compare (max d dm) (max d2 dm2) -- Reverse order for dates, to show newest first
-      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
-      | head f == '/' = LT -- '/' paths come after non '/' paths
-      | head f' == '/' = GT -- non '/' paths come before '/' paths
-      | otherwise = compare f f' -- Alphabetical order for the rest
-
--- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
+-- assuming already-descending-sorted input from `sortByDateBoth`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
 getNewestDate [] = ""
-getNewestDate ((_,(_,_,date,_,_,_,_),_):_) = date
+getNewestDate ((_,(_,_,date,date',_,_,_),_):_) = max date date'
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =

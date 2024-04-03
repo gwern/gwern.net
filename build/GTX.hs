@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-03-21 12:04:45 gwern"
+When:  Time-stamp: "2024-04-03 13:59:46 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -79,7 +79,7 @@ import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 import System.GlobalLock as GL (lock)
 
-import Config.Misc as C (cd, root, currentDayString)
+import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
@@ -124,7 +124,7 @@ tupleize [] = error   "tuplize: empty list"
 tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
 
 writeGTX :: FilePath -> MetadataList -> IO ()
-writeGTX f ml = do today <- currentDayString
+writeGTX f ml = do today <- todayDayString -- 'writeGTX' is usually used interactively, so missing-dates are going to be 'today'
                    let lists = concatMap (untupleize today) ml
                    void $ GL.lock $ writeUpdatedFile "gtx" f $ T.unlines lists
 
@@ -160,7 +160,11 @@ rewriteLinkMetadata half full gtx
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 appendLinkMetadata :: Path -> MetadataItem -> IO ()
 appendLinkMetadata l i@(t,a,d,dc,kvs,ts,abst) = do printGreen (l ++ " : " ++ ppShow i)
-                                                   today <- currentDayString
+                                                   overnight <- lateNight
+                                                   -- in comparison to `writeGTX`, entries generated using `appendLinkMetadata` have usually been found by compiling the site, which means, given slowness of compilation, they may well have been added the previous day, or day before that;
+                                                   -- if we are running after midnight, assume all new links are from the *previous* day:
+                                                   today <- if overnight then yesterdayDayString else todayDayString
+
                                                    -- GTX removes as much delimiting as possible for easier editing/generation. This lack of explicit closing becomes a problem in one case: hand-editing 'auto.gtx' if the final entry lacks a tag and our text editor removes all but the final blank line (which then truncates the GTX entry). We solve this by simply tagging the last entry by hand, so there is exactly one trailing newline but that's the 'abstract' line and so it's fine.
                                                    let newGTX = T.unlines $ untupleize today (l, (t,a,d,dc,kvs,ts,abst))
                                                    void $ GL.lock $ TIO.appendFile "metadata/auto.gtx" newGTX
