@@ -743,7 +743,7 @@ Annotations.dataSources.wikipedia = {
 				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
 			} else {
 				//	The target is something else.
-				responseHTML = newDocument(Transclude.blockContext(targetElement, articleLink)).innerHTML
+				responseHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
 				titleHTML = articleLink.hash;
 			}
 		} else {
