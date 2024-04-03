@@ -7996,7 +7996,6 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .has-content .indicator-hook {
     position: relative;
     padding-left: 0.3em;
-    z-index: -1;
 }
 .has-content:not(.has-indicator-hook) .indicator-hook {
     display: none;
