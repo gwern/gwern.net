@@ -646,7 +646,7 @@ Annotations.dataSources.wikipedia = {
 	matches: (link) => {
 		return (   /(.+?)\.wikipedia\.org/.test(link.hostname)
 				&& link.pathname.startsWith("/wiki/")
-				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ])) == false);
+				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
 	},
 
 	//	Called by: Annotations.processedAPIResponseForLink
@@ -683,6 +683,7 @@ Annotations.dataSources.wikipedia = {
 		//	Show full page (sans TOC) if it’s a disambiguation page.
 		if (response.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
 			wholePage = true;
+
 
 			//	Send request to record failure in server logs.
 			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
@@ -743,7 +744,7 @@ Annotations.dataSources.wikipedia = {
 				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
 			} else {
 				//	The target is something else.
-				responseHTML = newDocument(Transclude.blockContext(targetElement, articleLink)).innerHTML
+				responseHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
 				titleHTML = articleLink.hash;
 			}
 		} else {

@@ -5182,7 +5182,7 @@ Annotations.dataSources.wikipedia = {
 	matches: (link) => {
 		return (   /(.+?)\.wikipedia\.org/.test(link.hostname)
 				&& link.pathname.startsWith("/wiki/")
-				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ])) == false);
+				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
 	},
 
 	//	Called by: Annotations.processedAPIResponseForLink
@@ -5219,6 +5219,7 @@ Annotations.dataSources.wikipedia = {
 		//	Show full page (sans TOC) if it’s a disambiguation page.
 		if (response.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
 			wholePage = true;
+
 
 			//	Send request to record failure in server logs.
 			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
@@ -5279,7 +5280,7 @@ Annotations.dataSources.wikipedia = {
 				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
 			} else {
 				//	The target is something else.
-				responseHTML = newDocument(Transclude.blockContext(targetElement, articleLink)).innerHTML
+				responseHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
 				titleHTML = articleLink.hash;
 			}
 		} else {
@@ -8281,9 +8282,24 @@ Transclude = {
 // 						|| block.parentNode instanceof Element == false))
 					break;
 
-		return ([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
-				? block.childNodes
-				: block);
+		let blockContext = newDocument([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
+									   ? block.childNodes
+									   : block);
+
+		/*	Remove any child sections. (We know the target element is not
+			contained within them, because if it were, then *that* section would
+			be the block context. So, any child sections are necessarily 
+			extraneous.)
+			(Do not do this if the section itself is the target element.)
+		 */
+		if (   block.tagName == "SECTION"
+			&& element != block) {
+			blockContext.querySelectorAll("section section").forEach(childSection => {
+				childSection.remove();
+			});
+		}
+
+		return blockContext;
 	},
 
     //  Called by: Transclude.sliceContentFromDocument
@@ -8463,10 +8479,8 @@ Transclude = {
 
 				if (   includeLink.classList.contains("include-block-context")
 					&& isBlockTranscludeLink == false) {
-					let blockContext = Transclude.blockContext(targetElement, includeLink);
-					if (blockContext) {
-						content = newDocument(blockContext);
-
+					content = Transclude.blockContext(targetElement, includeLink);
+					if (content) {
 						//	Mark targeted element, for styling purposes.
 						targetElement = targetElementInDocument(includeLink, content);
 						if (targetElement)
@@ -11499,7 +11513,7 @@ Extracts.config = {
 		"body.index #markdownBody",
 		"#sidebar",
 		".TOC",
-		".floating-header"
+		"#floating-header"
 	].join(", ")
 };
 
