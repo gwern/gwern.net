@@ -36,7 +36,7 @@ Extracts.config = {
 		"body.index #markdownBody",
 		"#sidebar",
 		".TOC",
-		".floating-header"
+		"#floating-header"
 	].join(", ")
 };
 
