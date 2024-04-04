@@ -24,6 +24,8 @@ import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
+import LinkArchive (readArchiveMetadata)
+import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -40,7 +42,7 @@ import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDolla
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
-import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases,)
+import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases)
 import qualified Config.Paragraph (whitelist)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
@@ -171,6 +173,13 @@ testAll = do Config.Misc.cd
 
              archives <- testLinkRewrites
              unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
+
+             printGreen ("Testing file-transclusions…" :: String)
+             md <- readLinkMetadata
+             am <- readArchiveMetadata
+             let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
+             let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
+             unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 
              printGreen ("Testing X-of-the-day data…" :: String)
              _ <- testXOTD
