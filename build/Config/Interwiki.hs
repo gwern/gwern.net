@@ -126,12 +126,14 @@ testCases = [
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
   , (Link nullAttr [Str "Help talk:Authority control"] ("!W",""),
     Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Template_talk:Authority_control", ""))
-  , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
-  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
       Link ("", ["backlink-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
+
+   -- NOTE: we ban all 'Wikipedia:.*Signpost.*' popups due to very strange newsletter HTML structure breaking parsing & popups too weirdly for Achmiz to fix; they can only be live-links:
+  , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!W",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
+  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
+    Link ("", ["backlink-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
 
    -- /lorem testcases: should all be annotations, but check that the presence of the slash (these slashes are genuine, and in the true article name, they aren't redirects which can be skipped, so we do need to verify we handle them correctly) doesn't screw up and trigger false negatives on annotation/live status:
   , (Link nullAttr  [Str "Bouba/kiki effect"] ("!W",""),
