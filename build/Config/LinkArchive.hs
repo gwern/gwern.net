@@ -1104,6 +1104,7 @@ whiteListMatchesFixed = [
       , "https://abagames.github.io/crisp-game-lib-11-games/?pakupaku" -- inactive (game) / low-quality (broken in snapshot?)
       , "https://billsworld.neocities.org/" -- low-quality (broken snapshot)
       , "http://timbaumann.info/svd-image-compression-demo/" -- interactive
+      , "https://killedbyapixel.github.io/TinyCode/games/CrossMyHeart/" -- interactive game
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage

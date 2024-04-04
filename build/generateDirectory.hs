@@ -57,9 +57,8 @@ main = do C.cd
           let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
-          -- Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
-
-          -- Par.mapM_ (generateDirectory True am meta ldb sortDB dirs') (dirs') -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created

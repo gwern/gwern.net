@@ -105,7 +105,7 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(_, _, _, _, _,
 -- We need to avoid HTML, and try to write everything in an 'obvious' way that a NN model will understand 'out of the box' without finetuning.
 -- Example of a processed text string for embedding:
 --
--- > ‘Littlewood’s Law and the Global Media’, by Gwern Branwen (2018). Keywords: insight-porn, philosophy/epistemology, politics, psychology/cognitive-bias, psychology/personality/psychopathy, sociology/technology, statistics/bias.
+-- > ‘Littlewood’s Law and the Global Media’, by Gwern Branwen (2018; updated 2020-01-01). Keywords: insight-porn, philosophy/epistemology, politics, psychology/cognitive-bias, psychology/personality/psychopathy, sociology/technology, statistics/bias.
 -- >
 -- > Selection effects in media become increasingly strong as populations and media increase, meaning that rare datapoints driven by unusual processes such as the mentally ill or hoaxers are increasingly unreliable as evidence of anything at all and must be ignored. At scale, anything that can happen will happen a small but nonzero times.
 -- >
@@ -143,12 +143,13 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(_, _, _, _, _,
 -- > - "Book Reviews", Gwern Branwen (2013)
 -- >
 formatDoc :: (String,MetadataItem) -> T.Text
-formatDoc (path,mi@(t,aut,dt,_,_,tags,abst)) =
-    let document = T.pack $ replace "\n" "\n\n" $ unlines [
+formatDoc (path,mi@(t,aut,dt,dtM,_,tags,abst)) =
+    let dateModified = if dtM == "" then "" else "; updated " ++ dtM
+        document = T.pack $ replace "\n" "\n\n" $ unlines [
           (if t=="" then "" else "'"++t++"'" ++
             if path=="" || head path == '/' then "" else " ("++path++")") ++
           (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncate aut) ++
-          (if dt==""then "." else" ("++take 4 dt++")."),
+          (if dt==""then "." else" ("++take 4 dt++dateModified++")."),
 
           if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ ".",
 
