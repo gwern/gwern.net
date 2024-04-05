@@ -2581,7 +2581,7 @@ section.footnotes .footnote-self-link {
 /*= Back-to-citation links =*/
 /*=------------------------=*/
 
-.footnotes .footnote-back {
+.footnotes a.footnote-back {
 	display: initial;
     margin: 0 0 0 0.5em;
     position: relative;
@@ -2596,7 +2596,7 @@ section.footnotes .footnote-self-link {
 }
 /*	Hide outside of a footnotes section.
  */
-.footnote-back {
+a.footnote-back {
 	display: none;
 }
 
