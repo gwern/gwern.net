@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-05 09:40:32 gwern"
+# When:  Time-stamp: "2024-04-06 11:22:22 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -920,46 +920,51 @@ else
 
  # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
  if [ "$SLOW" ]; then
-     # Define number of checks
-     CHECKS_N=2
+   CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
+   # Filter URLs: Exclude URLs present in the checked list:
+   FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+                        | while read -r URL; do
+                        if ! grep -Fxq "$URL" "$CHECKED_URLS_FILE"; then
+                            echo "$URL"
+                        fi
+                    done)
 
-     # Loop over for number of checks
-     for ((i=1; i<=CHECKS_N; i++))
-     do
-         CHECK_RANDOM_PAGE=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
-                            | shuf | head -1)
-         CHECK_RANDOM_PAGE_ENCODED=$(echo "$CHECK_RANDOM_PAGE" | xargs urlencode)
-         # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
-         CHECK_RANDOM_ANNOTATION_ENCODED=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k | \
-                                       shuf | head -1 | \
-                                       sed -e 's/metadata\/annotation\/\(.*\)/\1/' | \
-                                       xargs urlencode | xargs urlencode | \
-                                       sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/')
-         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
-                 --header "X-Auth-Email:gwern@gwern.net" \
-                 --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
-                 --header "Content-Type: application/json" \
-                 --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION_ENCODED\"]}" > /dev/null; )
+   CHECK_RANDOM_PAGE=$(echo "$FILTERED_PAGES" | shuf | head -1)
+   echo "$CHECK_RANDOM_PAGE" >> "$CHECKED_URLS_FILE" # update checked-list
+   CHECK_RANDOM_PAGE_ENCODED=$(echo "$CHECK_RANDOM_PAGE" | xargs urlencode)
 
-         if ((RANDOM % 100 > 50)); then
-             # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-             (if ((RANDOM % 100 > 90)); then sleep 30s && x-www-browser "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED"; fi;
-              sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on";
-              sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on";
-              if ((RANDOM % 100 > 99)); then
-                  # check page speed report for any regressions:
-                  x-www-browser "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop";
-                  bold "Checking print-mode CSS as well…"
-                  ## WARNING: we cannot simply use `--headless` & `--print-to-pdf` because Chrome does not, in fact, save the same PDF
-                  ## as it would if you print-to-PDF in-browser! It *mostly* does use the print CSS, but it skips things like transcludes
-                  ## that would correctly fire when you print in-browser, so is not useful for the purpose of checking for regressions.
-                  chromium "$CHECK_RANDOM_PAGE#reminder-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf 2> /dev/null &
-              fi;
-             )
-         fi
-     done
+   FILTERED_ANNOTATIONS=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k \
+                 | sed -e 's/metadata\/annotation\/\(.*\)/\1/' \
+                 | while read -r ANNOTATION_URL; do
+                     if ! grep -Fxq "$ANNOTATION_URL" "$CHECKED_URLS_FILE"; then
+                       echo "$ANNOTATION_URL"
+                     fi
+                   done; )
+   CHECK_RANDOM_ANNOTATION_ENCODED=$(echo "$FILTERED_ANNOTATIONS" | shuf | head -1 | xargs urlencode | xargs urlencode | sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/'; ) # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
+   echo "$CHECK_RANDOM_ANNOTATION_ENCODED" >> "$CHECKED_URLS_FILE"
 
-    sleep 30s; (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the x-of-the-day in a different & cache-free browser instance
+   ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
+           --header "X-Auth-Email:gwern@gwern.net" \
+           --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
+           --header "Content-Type: application/json" \
+           --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION_ENCODED\"]}" > /dev/null; )
+
+       # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
+        sleep 5s; x-www-browser "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED"
+        sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on"
+        sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on"
+        if ((RANDOM % 100 > 99)); then
+            # check Google PageSpeed report for any regressions:
+            x-www-browser "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop"
+            bold "Checking print-mode CSS as well…"
+            ## WARNING: we cannot simply use `--headless` & `--print-to-pdf` because Chrome does not, in fact, save the same PDF
+            ## as it would if you print-to-PDF in-browser! It *mostly* does use the print CSS, but it skips things like transcludes
+            ## that would correctly fire when you print in-browser, so is not useful for the purpose of checking for regressions.
+            chromium "$CHECK_RANDOM_PAGE#reminder-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf 2> /dev/null &
+        fi
+    fi
+
+    (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     if ((RANDOM % 100 > 99)); then x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
