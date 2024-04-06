@@ -43,7 +43,7 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
+                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Typography.hs' -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
                             sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
                 gw "$1";
 

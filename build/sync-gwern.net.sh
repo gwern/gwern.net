@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-04 10:10:53 gwern"
+# When:  Time-stamp: "2024-04-05 09:40:32 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -733,7 +733,7 @@ else
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -- ./metadata/*.gtx | \
-             gfv 'popular_shelves';
+             gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)."
 
@@ -769,7 +769,7 @@ else
        ge 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
 
-    λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""'; }
+    λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""' -e '[("doi","")]'; }
     wrap λ "Doubled double-quotes in GTX, usually an error."
 
     λ(){ gf -e "'''" -- ./metadata/full.gtx ./metadata/half.gtx; }

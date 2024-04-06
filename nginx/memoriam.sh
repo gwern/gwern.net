@@ -3,10 +3,11 @@
 # memoriam.sh: generate a `X-Clacks-Overhead` HTTP header nginx configuration line based on day-of-year & list of deceased.
 # Author: Gwern Branwen
 # Date: 2024-02-24
-# When:  Time-stamp: "2024-03-27 12:34:11 gwern"
+# When:  Time-stamp: "2024-04-04 20:04:27 gwern"
 # License: CC-0
 #
 # memoriam.sh is intended for generating HTTP headers (<https://en.wikipedia.org/wiki/List_of_HTTP_header_fields>) which memorialize a dead person.
+# (For other exotic HTTP headers seen in the wild, see <http://www.nextthing.org/archives/2005/08/07/fun-with-http-headers> <https://www.pingdom.com/blog/fun-and-unusual-http-response-headers/>.)
 # It was based on a Terry Pratchett steampunk anecdote about optical telegraph signaling semaphore towers,
 # and originally introduced to commemorate Terry Pratchett's death:
 # <http://xclacksoverhead.org/home/about> <https://www.reddit.com/r/discworld/comments/2yt9j6/gnu_terry_pratchett/>

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-04 19:22:34 gwern"
+When:  Time-stamp: "2024-04-04 22:58:31 gwern"
 License: CC-0
 -}
 
@@ -558,7 +558,7 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock _ _ x@("",                     _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
-generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
+-- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
 generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f

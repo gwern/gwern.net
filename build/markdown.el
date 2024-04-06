@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-03-19 12:41:17 gwern"
+;;; When:  Time-stamp: "2024-04-05 22:21:44 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -223,7 +223,6 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
     ("Section" "§" nil 0) ; 'SECTION SIGN'
     ("bc" "because" nil 0)
     ("moda" "modafinil" nil 0)
-    ("arrow" "→" nil 0)
     ("ss" "statistically-significant" nil 0)
     ("psi" "ψ" nil 0)
     ("arrowright" "→" nil 0)
