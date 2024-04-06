@@ -299,6 +299,21 @@ article {
 	margin-top: 0.75em;
 }
 
+/*************/
+/*	Page tags.
+ */
+#page-metadata .link-tags {
+    font-family: var(--GW-monospaced-font-stack);
+    font-style: italic;
+}
+#page-metadata .link-tags a {
+    white-space: nowrap;
+    margin-right: 0.05em;
+    background-position: 0% calc(100% - 1px);
+}
+#page-metadata .link-tags a:nth-child(n+2) {
+    margin-left: 0.10em;
+}
 
 /********************/
 /*	Page description.
@@ -318,20 +333,6 @@ article {
 }
 #page-metadata .page-description em {
     font-style: normal;
-}
-
-/*************/
-/*	Page tags.
- */
-#page-metadata .link-tags {
-    font-style: italic;
-}
-#page-metadata .link-tags a {
-    white-space: nowrap;
-    margin-right: 0.05em;
-}
-#page-metadata .link-tags a:nth-child(n+2) {
-    margin-left: 0.10em;
 }
 
 /************************/
@@ -358,7 +359,6 @@ article {
 #page-metadata .page-metadata-fields > span:last-child::after {
 	display: none;
 }
-
 
 /*	Flex order.
  */
@@ -405,7 +405,7 @@ article {
 	/*	Page tags.
 	 */
     #page-metadata .link-tags {
-        font-size: calc((18/20) * var(--GW-body-text-font-size));
+        font-size: calc((16/20) * var(--GW-body-text-font-size));
     }
 
 	/*	Page metadata fields.
@@ -427,6 +427,12 @@ article {
 @media all and (max-width: 649px) {
     #page-metadata {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
+    }
+
+	/*	Page tags.
+	 */
+    #page-metadata .link-tags {
+        font-size: calc((16/18) * var(--GW-body-text-font-size));
     }
 
 	/*	Page description.
