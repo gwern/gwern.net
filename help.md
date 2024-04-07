@@ -18,11 +18,11 @@ backlink: False
 **Features**:
 
 - Switch to Dark Mode: click [gear icon] to open *Theme Toggle* → click [moon icon]
-- Switch to Light Mode: click [gear icon] to open *Theme Toggle* → click [sun icon]
-- Switch to Reader Mode: click [gear icon] to open *Theme Toggle* → click [opened-book icon]
+- Light Mode: click [gear icon] to open *Theme Toggle* → click [sun icon]
+- Reader Mode: click [gear icon] to open *Theme Toggle* → click [opened-book icon]
 - Disable All Popups: click [gear icon] to open *Theme Toggle* → click [struck-out bubble icon]
 
-    [OR]{.smallcaps} hover any link → click [struck-out eye icon]
+    [Or]{.smallcaps} hover any link → click [struck-out eye icon]
 
 <div class="mobile-not">
 **Popup Keybindings**:
@@ -32,22 +32,22 @@ backlink: False
 - *Zoom*:
 
   - `a`: zoom popup to fill left half of screen
-  - `s`: ✱ bottom half
-  - `w`: ✱ top half
-  - `d`: ✱ right half
-  - `q`: ✱ top-left
-  - `e`: ✱ top-right
-  - `x`: ✱ bottom-right
-  - `z`: ✱ bottom-left
-  - `f`: ✱ full-screen
+  - `s`: ... bottom half
+  - `w`: ... top half
+  - `d`: ... right half
+  - `q`: ... top-left
+  - `e`: ... top-right
+  - `x`: ... bottom-right
+  - `z`: ... bottom-left
+  - `f`: ... full-screen
   - `r`: unzoom to original size
-- `c`: 'pin'/sticky popup
-- `v`: unpin/unsticky popup
+- `c`: 'pin'/sticky or 'unpin'/unsticky popup
+- `v`: collapse/uncollapse popup
 
 **Slideshow Keys**:
 
 - `Accesskey-L`: start image slideshow
-- `←`/`→`: previous/next image
+- `←`/`→` or `↑`/`↓`: previous/next image
 - `Esc` or `click`: Hide zoomed image
 - `Space bar:` Reset image size & position
 - `Scroll` to zoom in/out
@@ -58,10 +58,10 @@ backlink: False
 **Useful links**:
 
 <!-- - [full site user guide](/design#user-guide) -->
-- [home/index](/index) ([long summary version](/index-long))
-- about site: [writings](/about), [website design](/design), [Gwern](/me)
-- [browse all files](/doc/index), or [newest](/doc/newest/index)
-- [browse new pages](/changelog)
-- [Substack](https://gwern.substack.com/) [newsletter](/doc/newsletter/index)
+- [home/index](/index "‘Essays’, Gwern 2009") ([long summary version](/index-long))
+- about site: [writings](/about "‘About This Website’, Gwern 2010"), [website design](/design "‘Design Of This Website’, Gwern 2010"), [Gwern](/me "‘About Gwern’, Gwern 2009")
+- [browse all files](/doc/index "‘Essays’, Gwern 2009"), or [newest](/doc/newest/index "‘Essays’, Gwern 2009")
+- [browse new pages](/changelog "‘Changelog’, Gwern 2013")
+- [Substack](https://gwern.substack.com/ "‘Gwern.net newsletter (Substack subscription page)’, Branwen 2013") [newsletter](/doc/newsletter/index "‘Essays’, Gwern 2009")
 - [site search](https://www.google.com/search?q=site%3Agwern%2Enet)
 </div>
