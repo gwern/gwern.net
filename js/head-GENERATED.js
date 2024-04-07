@@ -2846,6 +2846,7 @@ GW.layout = {
 		[ ".admonition-title > p + p",   1, false ],
 
 		[ "p.footnote-back-block",		 1, false ],
+		[ "p.in-list + .annotation p",	10 ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
 		[ "p",							 0 ],
