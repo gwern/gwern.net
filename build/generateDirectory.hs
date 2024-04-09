@@ -108,7 +108,8 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   triplets  <- listFiles md' direntries'
 
   let linksSelf = sortByDateModified taggedSelf  -- newest first, to show recent additions
-  let linksAll  = sortByDateModified $ triplets++tagged'
+  let sorter = if newestp then sortByDateModified else sortByDatePublished
+  let linksAll  = sorter $ triplets++tagged'
   -- split into WP vs non-WP:
   let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
@@ -292,6 +293,17 @@ sortByDateModified = sortBy compareEntries
       | head f == '/' = LT -- '/' paths come after non '/' paths
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
+
+sortByDatePublished :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDatePublished = sortBy compareEntries
+  where
+    compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
+      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
+      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f == '/' = LT -- '/' paths come after non '/' paths
+      | head f' == '/' = GT -- non '/' paths come before '/' paths
+      | otherwise = compare f f' -- Alphabetical order for the rest
+
 
 -- assuming already-descending-sorted input from `sortByDateBoth`, output the date of the first (ie. newest) item:
 getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
