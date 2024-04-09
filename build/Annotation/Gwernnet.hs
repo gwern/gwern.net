@@ -101,7 +101,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let toc = findDivContent b
                         let toc' = case toc of
                               Nothing -> ""
-                              Just t -> "<div class=\"columns TOC\">" ++ t ++ "</div>"
+                              Just t -> let t' = trim t in if t' == "" then "" else "<div class=\"columns TOC\">" ++ t ++ "</div>"
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p' || "newsletter/" `isPrefixOf` p') p' description toc' f
 
