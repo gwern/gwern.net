@@ -102,6 +102,17 @@ $asset_type_map = [
 	'application/font-woff2'      => 'woff2',
 ];
 
+$image_file_extensions = [
+	'bmp',
+	'gif',
+	'icon',
+	'jp2',
+	'jpg',
+	'png',
+	'tiff',
+	'webp'
+];
+
 $asset_count = 0;
 
 // $output_file = '';
@@ -141,7 +152,8 @@ $asset_count = 0;
 // $output_file .= substr($input_file, $offset);
 
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
-	global $input_file_path, $asset_directory, $asset_base_name, $asset_type_map, $asset_count;
+	global $asset_type_map, $image_file_extensions;
+	global $input_file_path, $asset_directory, $asset_base_name, $asset_count;
 
 	$type = $m[2];
 	$data = $m[3];
@@ -153,6 +165,16 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	$asset_path = "{$asset_directory}/{$asset_name}";
 
 	file_force_contents($asset_path, base64_decode($data));
+
+	## Check image file integrity with ImageMagick.
+	## If file is bad, delete it, and leave the asset as base64.
+	if (in_array($asset_extension, $image_file_extensions)) {
+		$im_identify_result = `identify $asset_path 2>&1`;
+		if (strpos($im_identify_result, 'error') !== false) {
+			unlink($asset_path);
+			return $m[0];
+		}
+	}
 
 	return "{$quote}{$asset_base_name}/{$asset_name}{$quote}";
 }, $input_file);
