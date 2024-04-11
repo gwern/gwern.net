@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-03-31 10:40:12 gwern"
+When: Time-stamp: "2024-04-10 11:43:02 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -182,7 +182,7 @@ postCtx md =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     titlePlainField "title-plain" <>
-    descField False "title" "title" <>
+    descField True "title" "title" <>
     descField True "description" "description-escaped" <>
     descField False "description" "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.

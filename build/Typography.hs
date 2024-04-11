@@ -216,7 +216,7 @@ titlecase' t = let t' = titlecase $ titlecase'' t
              in t'''
    where titlecase'' :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' =  replaceMany [("=\"logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
+         titlecase'' t' =  replaceMany [("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
           capitalizeAfterApostrophe $ capitalizeAfterHyphen t t'
 
 capitalizeAfterHyphen :: String -> String -> String
