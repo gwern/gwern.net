@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-04-10 11:43:02 gwern"
+When: Time-stamp: "2024-04-11 15:14:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
+import Utils (printGreen, printRed, replace, replaceMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
 import Test (testAll)
 import Config.Misc (cd)
 
@@ -182,7 +182,8 @@ postCtx md =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     titlePlainField "title-plain" <>
-    descField True "title" "title" <>
+    descField True "title" "title-escaped" <>
+    descField False "title" "title" <>
     descField True "description" "description-escaped" <>
     descField False "description" "description" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
@@ -280,7 +281,7 @@ descField escape d d' = field d' $ \item -> do
                               return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ replace "<p>" "" $ replace "</p>" "" finalDesc -- strip <p></p>
+                         Right finalDesc -> return $ replaceMany [("<p>",""), ("</p>",""), ("&lt;p&gt;",""), ("&lt;/p&gt;","")] finalDesc -- strip <p></p> wrappers (both forms)
 
 pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
