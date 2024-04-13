@@ -439,7 +439,7 @@ Content = {
 
             referenceDataFromContent: (tweetPage, link) => {
                 //  Link metadata for title-links.
-                let titleLinkClass = "title-link link-live content-transform-not";
+                let titleLinkClass = "title-link";
                 let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
 
                 let nitterHost = Content.contentTypes.tweet.getNitterHost();
@@ -478,7 +478,16 @@ Content = {
                 tweetLinkURL.hash = "m";
 
                 //  Secondary title links.
-                let secondaryTitleLinksHTML = ` on <a href="${tweetLinkURL.href}" class="${titleLinkClass}" ${titleLinkIconMetadata}>${tweetDateString}</a>:`;
+                let tweetLinkClass = titleLinkClass + (link.dataset.urlArchive ? " link-live" : "");
+                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
+                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
+                									: "";
+                let secondaryTitleLinksHTML = ` on <a 
+                									href="${tweetLinkURL.href}" 
+                									class="${tweetLinkClass}" 
+                									${archivedTweetURLDataAttribute} 
+                									${titleLinkIconMetadata}
+                									>${tweetDateString}</a>:`;
 
                 //  Tweet content itself.
                 let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
@@ -531,7 +540,7 @@ Content = {
             },
 
             liveNitterHosts: [
-                "nitter.net"
+                "nitter.poast.org"
             ],
 
             getNitterHost: () => {
@@ -827,6 +836,11 @@ Content = {
 
         localDocument: {
             matches: (link) => {
+                //  Some local-document links are handled specially.
+                if ([ "tweet"
+                      ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
+                    return false;
+
                 //  Account for alternate and archive URLs.
                 let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
 

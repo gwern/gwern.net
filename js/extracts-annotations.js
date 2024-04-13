@@ -214,7 +214,8 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-include-template": "annotation-blockquote-inside"
+		"data-include-template": "annotation-blockquote-inside",
+		"data-annotation-data-source": "local"
 	}));
 
 	//	Add the whole thing to the pop-frame.
