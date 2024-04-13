@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-13 10:29:14 gwern"
+When:  Time-stamp: "2024-04-13 14:53:20 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, toLower, isNumber)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -439,7 +439,6 @@ addID maybeMetadataItem inline = case inline of
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
 addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
-  | "https://en.wikipedia.org" `T.isPrefixOf` f = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
   | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
@@ -581,7 +580,6 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
-    | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) = [] -- TODO: there must be some more principled way to do this, but we don't seem to have an `Interwiki.isWikipedia` or any equivalent...?
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
