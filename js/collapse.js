@@ -497,15 +497,15 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
-			let markdownBody = collapseBlock.closest(".markdownBody");
+			let contentColumn = collapseBlock.closest(".sidenote, .markdownBody");
 
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
-			let enclosingContentRect = markdownBody.getBoundingClientRect();
+			let enclosingContentRect = contentColumn.getBoundingClientRect();
 			let collapseLeftOffsetPx = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
-			if (markdownBody.id == "markdownBody") {
+			if (contentColumn.id == "markdownBody") {
 				let TOC = document.querySelector("#TOC");
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();

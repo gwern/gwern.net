@@ -15457,15 +15457,15 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
-			let markdownBody = collapseBlock.closest(".markdownBody");
+			let contentColumn = collapseBlock.closest(".sidenote, .markdownBody");
 
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
-			let enclosingContentRect = markdownBody.getBoundingClientRect();
+			let enclosingContentRect = contentColumn.getBoundingClientRect();
 			let collapseLeftOffsetPx = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
-			if (markdownBody.id == "markdownBody") {
+			if (contentColumn.id == "markdownBody") {
 				let TOC = document.querySelector("#TOC");
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();
@@ -16436,7 +16436,8 @@ Sidenotes = { ...Sidenotes,
 				the back-to-citation links (among possibly other things) may
 				not work right.
 			 */
-			regeneratePlaceholderIds(sidenoteContents);
+			if (referencedFootnote)
+				regeneratePlaceholderIds(sidenoteContents);
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
@@ -16527,13 +16528,7 @@ Sidenotes = { ...Sidenotes,
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 
-		//	Fire events.
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "Sidenotes.constructSidenotes",
-			container: Sidenotes.hiddenSidenoteStorage,
-			document: document,
-			loadLocation: location
-		});
+		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,

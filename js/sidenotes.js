@@ -606,7 +606,8 @@ Sidenotes = { ...Sidenotes,
 				the back-to-citation links (among possibly other things) may
 				not work right.
 			 */
-			regeneratePlaceholderIds(sidenoteContents);
+			if (referencedFootnote)
+				regeneratePlaceholderIds(sidenoteContents);
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
@@ -697,13 +698,7 @@ Sidenotes = { ...Sidenotes,
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 
-		//	Fire events.
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "Sidenotes.constructSidenotes",
-			container: Sidenotes.hiddenSidenoteStorage,
-			document: document,
-			loadLocation: location
-		});
+		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Sidenotes.constructSidenotes",
 			container: Sidenotes.hiddenSidenoteStorage,
