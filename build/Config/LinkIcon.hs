@@ -346,7 +346,7 @@ linkIconRulesQuad u
  | u'' u "www.huffpost.com" = ("HUFF", "text,quad,sans")
  | u'' u "longreads.com" = ("Long", "text,quad")
  | u'' u "warontherocks.com" = ("WOTR", "text,quad,sans")
- | u'' u "krebsonsecurity.com" = ("Kreb", "text,quad,sans") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
+ | u'' u "krebsonsecurity.com" = ("Krebs", "text,quad,sans") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
  | u'' u "www.nextplatform.com" = ("NEXT", "text,quad,sans") -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
  | u'' u "www.vetta.org" = ("Legg", "text,quad,sans") -- Shane Legg (DeepMind)
  | u'' u "www.spiegel.de" = ("SPGL", "text,quad") -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
@@ -688,7 +688,7 @@ linkIconTestUnitsText =
          , ("https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0023175",  "plos","svg")
          , ("https://kk.org/books/out-of-control",  "KK","text,sans")
          , ("https://knowyourmeme.com/memes/navy-seal-copypasta", "KYM", "text,tri")
-         , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
+         , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Krebs", "text,quad,sans")
          , ("http://sl4.org/archive/0812/index.html#19570",  "LW","text")
          , ("https://laion.ai/blog/coca/", "laion", "svg")
          , ("https://latitude.io/blog/how-we-accidentally-gave-our-bots-their-personalities/", "AID", "text,tri,sans")

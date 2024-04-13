@@ -88,7 +88,7 @@ tagsShort2LongRewrites =
    , ("ai/datasets", "ai/dataset"), ("ai/gan", "ai/nn/gan"), ("safety", "reinforcement-learning/safe")
    , ("ads", "economics/advertising"), ("rl/scaling", "reinforcement-learning/scaling"), ("rl/scale", "reinforcement-learning/scaling")
    , ("reinforcement-learning/scale", "reinforcement-learning/scaling"), ("rl-scaling", "reinforcement-learning/scaling"), ("scaling/rl", "reinforcement-learning/scaling")
-   , ("scaling/reinforcement-learning", "reinforcement-learning/scaling"), ("reinforcement-learning/alphago", "reinforcement-learning/model/alphago"), ("evolution/human", "genetics/selection/natural/human")
+   , ("scaling/reinforcement-learning", "reinforcement-learning/scaling"), ("reinforcement-learning/alphago", "reinforcement-learning/model/alphago"), ("evolution/human", "genetics/selection/natural/human"), ("rl/model", "reinforcement-learning/model")
    , ("rl/chess", "reinforcement-learning/chess"), ("xrisk", "existential-risk"), ("risk", "existential-risk")
    , ("human-adversarial", "ai/nn/adversarial/human"), ("adversarial-human", "ai/nn/adversarial/human"), ("mlps", "ai/nn/fully-connected")
    , ("mlp", "ai/nn/fully-connected"), ("gpt-4", "ai/nn/transformer/gpt/4"), ("gpt4", "ai/nn/transformer/gpt/4")

@@ -240,7 +240,7 @@ htmlRewriteRegexpAfter = [
          , (" ([0-9]+) out of ([0-9]+) ", " \\1⁄\\2 ") -- need space-separation due to examples like 'smartphones are now used by 5.8 out of 7.0 billion people on earth'
          , (" ([0-9][0-9]?[0-9]?) of ([0-9][0-9]?[0-9]?) ", " \\1⁄\\2 ")
          , ("([0-9]+) of ([0-9]+)", "\\1⁄\\2")
-         , (" ([.0-9]+)[xX]", " \\1×")
+         , (" ([~.0-9]+)[xX]", " \\1×")
          , ("=-\\.([.0-9]+)", " = -0.\\1")
          , ("([0-9]*[02456789])th ", "\\1<sup>th</sup> ")
          , ("([0-9]*[1])st ",        "\\1<sup>st</sup> ")
@@ -1714,6 +1714,7 @@ htmlRewriteFixed =
          , (" u.s. ", " U.S. ")
          , (" ofthe", " of the")
          , (" ofdata", " of data")
+         , ("onCIFAR", "on CIFAR")
          , ("thatuse", "that use")
          , ("nuture", "nurture")
          , ("\8201", " ")

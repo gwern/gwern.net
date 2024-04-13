@@ -390,4 +390,5 @@ linkIDOverrides =
        , ("https://www.semafor.com/article/03/24/2023/the-secret-history-of-elon-musk-sam-altman-and-openai", "albergotti-2023-2")
        , ("/doc/cs/algorithm/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
        , ("https://www.inkandswitch.com/local-first.html", "kleppmann-et-al-2019-blog")
+       , ("/doc/cat/psychology/2023-mcgrath-supplement.pdf", "mcgrath-et-al-supplement")
       ]

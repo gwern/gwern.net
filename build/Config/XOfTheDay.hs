@@ -297,7 +297,7 @@ siteBlackList = [
           "www.theverge.com", "www.thisfursonadoesnotexist.com", "www.thiswaifudoesnotexist.net", "www.thoughtco.com", "www.timesofisrael.com",
           "www.tlmc.eu", "www.tomodachi.de", "www.tomshardware.com", "www.tor.com", "www.torproject.org",
           "www.tranquiltuesdays.com", "www.trixietracker.com", "www.tuftandneedle.com", "www.tweelingenregister.org", "www.uk-anime.net",
-          "www.ukbiobank.ac.uk", "www.ultrasparky.org", "www.unf.edu", "www.unicode.org", "www.unirioja.es",
+          "www.ukbiobank.ac.uk", "www.ultrasparky.org", "www.unicode.org", "www.unirioja.es",
           "www.unitedpharmacies-uk.md", "www.unm.edu", "www.unqualified-reservations.org", "www.unz.com", "www.upi.com",
           "www.uptontea.com", "www.urbandharma.org", "www.urbandictionary.com", "www.urth.net", "www.usagi.org",
           "www.usenix.org", "www.vanityfair.com", "www.verywellhealth.com", "www.vesta.earth", "www.vetta.org",
