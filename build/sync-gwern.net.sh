@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-14 15:11:09 gwern"
+# When:  Time-stamp: "2024-04-14 17:55:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -899,7 +899,7 @@ else
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ gwern@176.9.41.242:"/home/gwern/gwern.net"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
-    SPEED=""; if [ "$SLOW" ]; then if ((RANDOM % 100 < 95)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi; else SPEED="--size-only"; fi
+    SPEED=""; if [ "$SLOW" ]; then if everyNDays 31; then SPEED="--size-only"; else SPEED="--delete --checksum"; fi; else SPEED="--size-only"; fi
     rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ gwern@176.9.41.242:"/home/gwern/gwern.net" || true
     wait
     set +e
@@ -953,7 +953,7 @@ else
         sleep 5s; x-www-browser "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED"
         sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on"
         sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on"
-        if ((RANDOM % 100 > 99)); then
+        if everyNDays 100; then
             # check Google PageSpeed report for any regressions:
             x-www-browser "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop"
             bold "Checking print-mode CSS as well…"
@@ -966,13 +966,13 @@ else
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    if ((RANDOM % 100 > 99)); then x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"; fi
+    everyNDays 200 && x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
-    if ((RANDOM % 100 > 90)); then ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'; fi
+    everyNDays 50 && ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'
 
     # it is rare, but some duplicates might've crept into the X-of-the-day databases:
-    if ((RANDOM % 100 > 99)); then (runghc -istatic/build/ ./static/build/duplicatequotesitefinder.hs &); fi
+    everyNDays 30 && (runghc -istatic/build/ ./static/build/duplicatequotesitefinder.hs &)
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"

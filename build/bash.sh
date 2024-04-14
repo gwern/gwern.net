@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-03-22 12:24:27 gwern"
+# When:  Time-stamp: "2024-04-14 18:00:12 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -473,4 +473,11 @@ mvuri () {
   fi
 
   echo -n -e '\a'; # ring bell because done
+}
+
+# everyNDays: returns a boolean true every _N_ whole-number days in a systematic way based on date modulus; can be used in place of `$RANDOM` calls to do an operation 'randomly' every once in a while, by calling `everyNDays N && ...` or `if everyNDays N; then ...; else; ... fi`.
+# (Better than actual randomness because it avoids clumping/starvation, or potentially doing all of the operations on the same run by chance; and far simpler than any explicit tracking of state/date.)
+# The optional second whole-number argument is an 'offset' to avoid clumping of multiple calls with the same _N_; they can be offset by relatively-prime numbers or just plain incremented.
+everyNDays() {
+    (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset to stagger or space out multiple calls of _N_ relative to each other
 }
