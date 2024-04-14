@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-14 11:34:56 gwern"
+When:  Time-stamp: "2024-04-14 15:01:58 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, authorsTruncate, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -23,7 +23,7 @@ import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, from
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
-import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\), intersperse)
 import Data.List.HT (search)
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
@@ -55,8 +55,8 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Te
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
-import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, authorsInitialize, balanced, authorsTruncate, dateTruncateBad)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
+import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, split)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -474,13 +474,20 @@ isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated-partial" x
 
 authorCollapse :: String -> [Inline]
-authorCollapse aut =
-  let authorShort = authorsTruncate aut
-      authorsInitialized = authorsInitialize aut
-      authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authorsInitialized
-                        else Span ("", ["author", "cite-author"], []) authorsInitialized
-      author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
-  in author
+authorCollapse aut
+  | aut `elem` ["", "N/A", "N/\8203A"] = []
+  | otherwise =
+  let authors = intersperse (Str ", ") $ map (\t -> Str (T.pack t)) $ split ", " aut
+      -- authorsInitialize -- must be done inside the link-ification step, so skip for now
+      authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors -- a single author doesn't need a collapse
+                                               else if length authors < 8 then
+                                                      Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authors
+                                                    else let authorsInitial = take 5 authors
+                                                             authorsRest = drop 5 authors
+                                                         in Span ("", ["author", "collapse"], [])
+                                                            [Span ("", ["abstract-collapse", "cite-author-plural"], [("title",T.pack aut)]) authorsInitial
+                                                            , Span nullAttr authorsRest]
+  in [Space, authorSpan]
 
 generateAnnotationBlock :: ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock am (f, ann) blp slp lb =
