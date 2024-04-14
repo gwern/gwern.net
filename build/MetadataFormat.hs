@@ -181,12 +181,6 @@ guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
                                            if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...
                                            then date else sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
 
--- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
--- (We can make it relatively short because the full author list will be preserved as part of it.)
--- simple string-based author-list truncation, with no attempt to do inline-collapse: take the first 100 characters + whatever is necessary to finish the next author (as defined by the space-comma separation)
-authorsTruncateString :: String -> String
-authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
-
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
 -- dates of the form 'YYYY-01-01' (or 'YYYY-01') are invariably lies, and mean just 'YYYY'.

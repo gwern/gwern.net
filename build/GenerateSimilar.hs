@@ -39,7 +39,7 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
-import MetadataFormat (authorsTruncateString)
+import MetadataAuthor (authorsTruncateString)
 
 import Config.Misc (todayDay, cd)
 import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions)

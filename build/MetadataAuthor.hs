@@ -1,0 +1,131 @@
+{- MetadataAuthor.hs: module for managing 'author' metadata:
+
+- canonicalization of names (rewriting all aliases/abbreviations/usernames to a single canonical name which can be easily linked)
+- presenting lists of authors in an inline-collapse
+
+18:55:34 < gwern> I've been thinking about how to make the author link working. since the frontend is just displaying the html from the backend,
+                  it's not that hard to link authors in a simple way, but it's more of an issue of a scalable long-term-manageable backend. here's what I'm thinking
+                  so far: the author GTX field is defined as space-comma-separated lists of authors (each is either plain…
+18:55:34 < gwern> …text or an HTML fragment); first, a 'canonicalization' database of fixed-string rewrites is applied to rewrite abbreviations/incomplete
+                  names/nicks/usernames to canonical names, like 'ESYudkowsky' (Twitter) or 'Yudkowsky' or 'E. Yudkowsky' -> 'Eliezer Yudkowsky'; this is applied on
+                  annotation creation and writing out GTXes to update for any new rewrites. for compilation, authors are…
+18:55:34 < gwern> …rewritten using another set of fixed-string rewrites, from author to HTMLized authors (usually an <a> rewrite); these are compiled as normal and
+                  will get all the usual archiving & annotating in theory, so there would be something like `("Eliezer Yudkowsky",a "https://yudkowsky.net")`, but
+                  there could be non-links or overrides like `("Foo", id)` as appropriate. for disambiguating authors of…
+18:55:34 < gwern> …the same name, they can simply be given an arbitrary suffix in the original metadata by hand and then a rewrite used like `("John Smith-1", a
+                  "https://foo.com"), ("John Smith-2", a "https://bar.com")`. as a fallback, default Wikipedia links are used: a WP db is checked for True/False/not
+                  listed; if True, authors get rewritten to 'https://en.wikipedia.org/wiki/$AUTHOR', False,…
+18:55:34 < gwern> …identity/nothing, and if not listed, the WP API is pinged and if there is a non-disambiguation article, it is assumed to be the right guy and added to
+                  the WP db with True, otherwise, False. finally, an author-prioritization (similar to the link-icon or x-of-the-day checks) function runs after
+                  every full site sync and spits out unhandled authors with >_n_ entries which should have a link defined…
+18:55:34 < gwern> …for them or be added to the author-prioritize blacklist.
+19:06:04 < gwern> the linkify step doesn't need to care about whether something is linked already because if it has any html in it, then it
+                  presumably doesn't match any rewrites. a downside here is that there's no way to look at the GTX entries themselves and say 'oh, X is not linked?
+                  but I know exactly where that ought to go'. but if you inject the links back into the GTX to overwrite the…
+19:06:04 < gwern> …original plaintext, that has a lot of problems too like outdated links...
+19:07:18 < gwern> authors in popups are not linked
+19:07:34 <> Authors in popups... OK, I see
+19:08:15 < gwern> (currently, I once in a while, when it seems especially important, I will manually add one to the abstract itself like '[<bio>]' or '[<WP>]', but
+                  obviously, not great)
+19:08:58 <> gwern: So, you're envisioning the author being a link to... what, directly the author's website?
+19:09:16 < gwern> well, whatever. usually wikipedia, I expect. most people have pretty crummy sites if they have any
+19:12:50 <> gwern: This seems somewhat less than ideal. I see two obvious drawbacks: first, what if the author has multiple URLs associated with
+                             them? For example, Eliezer has his yudkowsky.net, also his twitter, also his GW author page - and that's to say nothing of his bio on
+                             MIRI's site, his WP entry, etc. Second: what URL it is useful to show the user in reference to an author, depends on the context: if the
+                             context is a tweet, then
+19:12:50 <>  the author link should definitely at least include his twitter, if not be directly to it.
+19:13:36 <> gwern: It seems much more sensible for the author link to pop up an annotation for the author, which should at the least list all
+                             applicable URLs for that author (optionally: with the most contextually relevant one highlighted!); and then it can also have a bit of
+                             description of the author
+19:13:42 < gwern> well, the URL can of course have its own annotation. (I don't know if it would be necessary to avoid self-linking there)
+19:14:47 < gwern> so if I really wanted to dump in all the Eliezer URLs, I would now have somewhere logical to do so: whatever URL is chosen as the
+                  author-URL (which I didn't before, there's not really any logical place on gwern.net right now for 'here's 5 useful urls about Eliezer, but I'm not
+                  writing an essay or anything about it')
+19:15:47 <> I think it would be sensible for the actual link target URL to itself vary depending on context (but the annotation should always be
+                             that of the author, and invariant)
+19:16:02 < gwern> and since the author fields can just be HTML, they can be overridden in place. if I really want the author URL for a specific
+                  Eliezer tweet to be his ESYudkowsky top-level/user twitter page, I just edit the GTX entry accordingly. it won't go there automatically, but as you
+                  say, that can't possibly be done automatically in general perfectly
+19:16:26 <> e.g. for an Eliezer tweet, his name links to his twitter but pops up the EY annotation; for some other mention of Eliezer (perhaps a
+                             Sequence post), his name links to his LW author page (but pops up his same annotation)
+19:16:42 < gwern> go to half.gtx where the tweet entry is, manually edit 'Eliezer Yudkowsky' (having been canonicalized) to '<a
+                  href="twitter.com/ESYudkowsky">Eliezer Yudkowsky</a>', done
+19:17:25 < gwern> (as there is no rewrite for '<a href=...', it doesn't get written to yudkowsky.net by the existing 'Eliezer Yudkowsky'->'yudkowsky.net' rule)
+19:18:53 <> So, if what I describe is doable, then def. do it IMO
+19:19:17 < gwern> and if I need to keep doing this, well, that's where the homonym comes in. there's actually two 'Eliezer Yudkowsky's', Yudkowsky-1 (yudkowsky.net)
+                  and Yudkowsky-2 (twitter.com/ESYudkowsky)... the canonicalizer just changes the rule: 'ESYudkowsky'->'Eliezer Yudkowsky-2'
+19:19:48 < gwern> and if you want a LW Yudkowsky, well, that's... 'EliezerYudkowsky'? -> 'Yudkowsky-3'
+19:20:33 < gwern> (and if you need a URL, the canonicalizer can be passed the entire new annotation and just execute arbitrary functions of all of the fields, from
+                  URL to DOI to abstract)
+but I think this satisfies most of the
+                  needs and fits into the backend reasonably well. and I can experiment easily with improvements like calling LLMs to do web searches to find the
+                  best URL for a specific author with specific annotations as context
+20:05:15 < gwern> let's see... the WP db would have to live in metadata/, not /static, because with like 25k annotations, and author lists of up to
+                  hundreds, and very little author overlap, there's probably easily 50k unique authors. not something to check in, especially with the churn of like
+                  every Arxiv paper these days adding a dozen new authors -_-. and because there are so many,…
+20:05:15 < gwern> …populating the initial links will be a bit tricky too. I'll probably start with the link-suggester database: take every author name, & pull out
+                  the URLs with that name as the link text; that will often be the right author url. then run the WP non-disambig check and associate as many as
+                  possible with a WP entry. then just take the frequency list and go one by one...
+21:12:30 < gwern> on further thought, I think there is going to be one front-end change necessitated by author links: Wikipedia links need partials
+                  now. part of the point of author links is to make them more first class - there's no way to search or browse by author. but with author-links, you
+                  get that for free with backlinks - if 'Eliezer Yudkowsky' is linked to yudkowsky.net in every…
+21:12:30 < gwern> …relevant full or partial annotation which has the author 'Eliezer Yudkowsky', that is now a backlink. except, of course, for Wikipedia links which
+                  are currently excluded from backlinks/partials as having no particular use. but now there will be a use. so I guess implementation-wise, I have to
+                  stop excluding WP from the backlinks system, and start writing out partials for WP links, and…
+21:12:30 < gwern> …setting .link-annotated-partial on WP links, and the frontend popups code will need to know to wrap WP popups inside a partial-style frame. (the
+                  other alternative I thought of, writing out partials which have a WP transclusion inside them, seems a lot worse. more complicated and probably
+                  would look a lot worse than special-casing it would be able to do.)
+21:39:25 < gwern> it seems like a good idea to do eventually, this will just be a very motivating use-case. doesn't seem too hard? I mean, suppress
+                  the title & author compared to a regular partial, but otherwise, the same. a partial... but with a wikipedia article inside it
+21:43:59 < gwern> (the wikipedia article can act exactly as usual. it's just the partial frame-wrapper that carries the links to backlinks etc)
+
+
+Author: Gwern Branwen
+Date: 2024-04-14
+When:  Time-stamp: "2024-04-14 15:16:14 gwern"
+License: CC-0
+-}
+
+module MetadataAuthor where
+
+import Data.List (intersperse)
+import Data.Text as T (pack)
+import Text.Pandoc (Inline(Span, Space, Str), nullAttr)
+
+import Utils (split)
+
+-- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
+-- (We can make it relatively short because the full author list will be preserved as part of it.)
+-- simple string-based author-list truncation, with no attempt to do inline-collapse: take the first 100 characters + whatever is necessary to finish the next author (as defined by the space-comma separation)
+authorsTruncateString :: String -> String
+authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
+
+authorCollapse :: String -> [Inline]
+authorCollapse aut
+  | aut `elem` ["", "N/A", "N/\8203A"] = []
+  | otherwise =
+  let authors = intersperse (Str ", ") $ map (\t -> Str (T.pack t)) $ split ", " aut
+      -- authorsInitialize -- must be done inside the link-ification step, so skip for now
+      authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors
+                                               else if length authors < 8 then
+                                                      Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authors
+                                                    else let authorsInitial = take 5 authors  -- at >4, we give up trying to display them all & show just the first 3 by default (so we 'snap back' to default 3 authors max, after allowing a bit of elasticity of up to 4, to avoid the situation where we have an inline-collapse with just 1 author tucked away in it - which is annoying because it means cognitive / visual overhead & effort which is then disappointed to see just 1 author hidden - make it worth the reader's while to bother to uncollapse it!)
+                                                             authorsRest = drop 5 authors
+                                                         in Span ("", ["author", "collapse"], [])
+                                                            [Span ("", ["abstract-collapse", "cite-author-plural"], [("title",T.pack aut)]) authorsInitial
+                                                            , Span nullAttr authorsRest]
+  in [Space, authorSpan]
+
+
+authorCollapseTest, authorCollapseTestCases :: [(String, [Inline])]
+authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) authorCollapseTestCases
+-- config testing: all unique
+authorCollapseTestCases =
+  [ ("a", [Space,Span ("",["author","cite-author"],[]) [Str "a"]])
+  , ("a, b", [Space,Span ("",["author","cite-author-plural"],[("title","a, b")]) [Str "a",Str ", ",Str "b"]])
+  , ("a, b, c", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
+  , ( "a, b, c, d", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c, d")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Str ", ",Str "d"]])
+  , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
+  , ( "a, b, c, d, e, f", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
+  , ( "a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, g")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
+    ]

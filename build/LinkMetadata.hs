@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-14 15:01:58 gwern"
+When:  Time-stamp: "2024-04-14 17:31:51 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, from
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
-import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\), intersperse)
+import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.HT (search)
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
@@ -56,11 +56,12 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, split)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
+import MetadataAuthor (authorCollapse)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -472,22 +473,6 @@ isAnnotatedInline :: Inline -> Bool
 isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated" x ||
                             hasClass "link-annotated-partial" x
-
-authorCollapse :: String -> [Inline]
-authorCollapse aut
-  | aut `elem` ["", "N/A", "N/\8203A"] = []
-  | otherwise =
-  let authors = intersperse (Str ", ") $ map (\t -> Str (T.pack t)) $ split ", " aut
-      -- authorsInitialize -- must be done inside the link-ification step, so skip for now
-      authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors -- a single author doesn't need a collapse
-                                               else if length authors < 8 then
-                                                      Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authors
-                                                    else let authorsInitial = take 5 authors
-                                                             authorsRest = drop 5 authors
-                                                         in Span ("", ["author", "collapse"], [])
-                                                            [Span ("", ["abstract-collapse", "cite-author-plural"], [("title",T.pack aut)]) authorsInitial
-                                                            , Span nullAttr authorsRest]
-  in [Space, authorSpan]
 
 generateAnnotationBlock :: ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock am (f, ann) blp slp lb =

@@ -15,7 +15,7 @@ import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)
 import LinkMetadataTypes (MetadataItem, MetadataList)
 import Utils (anyInfix, replace, sed)
-import MetadataFormat (authorsTruncateString)
+import MetadataAuthor (authorsTruncateString)
 
 type Path = String
 

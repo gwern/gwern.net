@@ -26,6 +26,7 @@ import Tags (testTags)
 import Typography (titleCaseTest)
 import LinkArchive (readArchiveMetadata)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
+import MetadataAuthor (authorCollapseTest, authorCollapseTestCases)
 
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -151,6 +152,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
+              , length $ isUniqueAll authorCollapseTestCases
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
@@ -173,6 +175,8 @@ testAll = do Config.Misc.cd
 
              archives <- testLinkRewrites
              unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
+
+             unless (null authorCollapseTest) $ printRed ("Author-collapse test suite has errors in: " ++ show authorCollapseTest)
 
              printGreen ("Testing file-transclusions…" :: String)
              md <- readLinkMetadata
