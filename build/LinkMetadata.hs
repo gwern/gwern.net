@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-13 14:53:20 gwern"
+When:  Time-stamp: "2024-04-14 11:34:56 gwern"
 License: CC-0
 -}
 
@@ -318,7 +318,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am False True (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
@@ -473,8 +473,17 @@ isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated" x ||
                             hasClass "link-annotated-partial" x
 
-generateAnnotationBlock :: ArchiveMetadata -> Bool -> Bool -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
+authorCollapse :: String -> [Inline]
+authorCollapse aut =
+  let authorShort = authorsTruncate aut
+      authorsInitialized = authorsInitialize aut
+      authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authorsInitialized
+                        else Span ("", ["author", "cite-author"], []) authorsInitialized
+      author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
+  in author
+
+generateAnnotationBlock :: ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock am (f, ann) blp slp lb =
   case ann of
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_,_)  -> nonAnnotatedLink
@@ -487,11 +496,8 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
            lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
            lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
            lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
-           authorShort = authorsTruncate aut
-           authorsInitialized = if truncAuthorsp then [Str (T.pack authorShort)] else authorsInitialize aut
-           authorSpan = if aut/=authorShort then Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authorsInitialized
-                        else Span ("", ["author", "cite-author"], []) authorsInitialized
-           author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
+           author = authorCollapse aut
+
            date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
                                                  if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                            [Str (T.pack $ dateTruncateBad dt)]]
@@ -503,9 +509,8 @@ generateAnnotationBlock am truncAuthorsp annotationP (f, ann) blp slp lb =
                                                                                    [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-           -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter.com partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
-             Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
+             Link (lid, ["link-annotated"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
@@ -598,6 +603,7 @@ isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 
+-- config testing: 'isUniqueKeys'
 fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
 fileTranscludesTest md am =
   let testFileTransclude md' am' bool path = let Just x = M.lookup path md' in generateFileTransclusionBlock am' bool (path, x)
@@ -633,13 +639,13 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/anime/2019-05-06-stylegan-malefaces-1ksamples.tar", [])
     , (simpleTestT "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
     , (simpleTestT "http://dev.kanotype.net:8003/deepdanbooru/", [])
-    , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [])
+    , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Tweet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html","")]]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","include-replace-container","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
     , (simpleTestF "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "https://caniuse.com/?search=text-wrap%3A%20pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])
     , (simpleTestF "https://www.mdpi.com/2073-4409/10/7/1740/htm", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "page"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","MDPI"),("link-icon-type","text,quad,sans"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "https://www.mdpi.com/2073-4409/10/7/1740/htm"] ("https://www.mdpi.com/2073-4409/10/7/1740/htm","")]]]])
-    , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard", [])
+    , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","wikipedia"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]]])
     , (simpleTestT "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON Lines"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","txt"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl"] ("/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl","")]]]])
     , (simpleTestT "/doc/touhou/2013-c85-download.json", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","txt"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/touhou/2013-c85-download.json"] ("/doc/touhou/2013-c85-download.json","")]]]])
     , (simpleTestT "/doc/personal/rss-subscriptions.opml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "OPML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","txt"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/personal/rss-subscriptions.opml"] ("/doc/personal/rss-subscriptions.opml","")]]]])

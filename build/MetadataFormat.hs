@@ -183,8 +183,9 @@ guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
-authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
+-- simple string-based author-list truncation, with no attempt to do inline-collapse: take the first 100 characters + whatever is necessary to finish the next author (as defined by the space-comma separation)
+authorsTruncateString :: String -> String
+authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this

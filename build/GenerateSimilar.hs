@@ -34,11 +34,12 @@ import Data.Conduit.List (sourceList)
 
 import LinkBacklink (getSimilarLink, getForwardLinks, readBacklinksDB, Backlinks)
 import Columns as CL (listLength)
-import LinkMetadata (readLinkMetadata, authorsTruncate, sortItemPathDate)
+import LinkMetadata (readLinkMetadata, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
+import MetadataFormat (authorsTruncateString)
 
 import Config.Misc (todayDay, cd)
 import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions)
@@ -148,7 +149,7 @@ formatDoc (path,mi@(t,aut,dt,dtM,_,tags,abst)) =
         document = T.pack $ replace "\n" "\n\n" $ unlines [
           (if t=="" then "" else "'"++t++"'" ++
             if path=="" || head path == '/' then "" else " ("++path++")") ++
-          (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncate aut) ++
+          (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncateString aut) ++
           (if dt==""then "." else" ("++take 4 dt++dateModified++")."),
 
           if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ ".",
@@ -182,7 +183,7 @@ embed edb mdb bdb i@(p,_) =
                                       "\n\nReverse citations:\n\n- " ++ intercalate "\n- " (nubOrd $
                                         map (\b -> case M.lookup b mdb of
                                                     Nothing -> ""
-                                                    Just (t,a,d,_,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncate a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
+                                                    Just (t,a,d,_,_,_,_) -> "\"" ++ t ++ "\", " ++ authorsTruncateString a ++ (if d=="" then "" else " (" ++ take 4 d ++ ")")) backlinks)
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
             (modelType,embedding) <- oaAPIEmbed p doc

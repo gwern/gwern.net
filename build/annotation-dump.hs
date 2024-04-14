@@ -11,10 +11,11 @@ import Data.Text.IO as TIO (getContents)
 
 import Config.Misc as C (root)
 import LinkID (authorsToCite, generateURL)
-import LinkMetadata (authorsTruncate, sortItemPathDate)
+import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)
 import LinkMetadataTypes (MetadataItem, MetadataList)
 import Utils (anyInfix, replace, sed)
+import MetadataFormat (authorsTruncateString)
 
 type Path = String
 
@@ -50,7 +51,7 @@ toSingleLine (f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
     "\x1b[32m "++f++" \x1b[0m",
     show tags,
     "\x1b[35m\""++b++"\"\x1b[0m",
-    " (" ++ authorsTruncate c ++ ")",
+    " (" ++ authorsTruncateString c ++ ")",
     d,
     sed " +" " " $ replace "\n" " " abst] ++
     (let url = generateURL f mi in if null url then [] else ["\x1b[32m "++url++"\x1b[0m"])

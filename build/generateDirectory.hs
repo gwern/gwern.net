@@ -29,13 +29,13 @@ import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata as LM (readLinkMetadata, generateAnnotationTransclusionBlock, authorsTruncate, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
+import LinkMetadata as LM (readLinkMetadata, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy, titlecase')
-import MetadataFormat (extractTwitterUsername)
+import MetadataFormat (extractTwitterUsername, authorsTruncateString)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
@@ -215,8 +215,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
-      authorShort = authorsTruncate aut
-      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
+      authorShort = authorsTruncateString aut
+      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncateString aut)]
                     else Str (T.pack authorShort)
       author = if aut=="" || aut=="N/A" then []
                else
