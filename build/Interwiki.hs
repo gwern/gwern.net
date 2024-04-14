@@ -104,9 +104,9 @@ wpPopupClasses u = ["backlink-not", "id-not"] ++ case parseURIReference (T.unpac
                                             in
                                              if not ("wikipedia.org" `T.isSuffixOf` domain) && "http" `T.isPrefixOf` u then [] else
                                                         let u' = T.takeWhile (/= ':') $ replaceManyT [("/wiki/", "")] article in
-                                                          [if u' `elem` apiNamespacesNo || "Signpost" `T.isInfixOf` article -- specialcase: Signpost articles apparently break popups with very strange HTML
-                                                            then "link-annotated-not" else "link-annotated",
-                                                           if u' `elem` linkliveNamespacesNo then "link-live-not"      else "link-live"]
+                                                          (if u' `elem` apiNamespacesNo || "Signpost" `T.isInfixOf` article -- specialcase: Signpost articles apparently break popups with very strange HTML
+                                                            then ["content-transform-not"] else []) ++
+                                                           (if u' `elem` linkliveNamespacesNo then ["link-live-not"] else ["link-live"])
 
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-09 10:28:46 gwern"
+# When:  Time-stamp: "2024-04-14 15:11:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -521,7 +521,7 @@ else
                    -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
                    -e '^full-width$' -e '^haskell$' -e '^header$' -e '^horizontal-rule-nth-0$' -e '^horizontal-rule-nth-1$' \
                    -e '^horizontal-rule-nth-2$' -e '^icon-not$' -e '^link-modified-recently$' -e '^icon-single-white-star-on-black-circle$' -e '^inline$' -e '^invert$' -e '^invert-auto$' -e '^invert-not$' \
-                   -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$'  \
+                   -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$' -e '^content-transform-not$' \
                    -e '^link-live-not$' -e '^tex-logotype$' -e '^math$' -e '^odd$' -e '^page-thumbnail$' \
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
                    -e '^table-small$' -e '^table-sort-not$' -e '^width-full$' -e '^TOC$' -e '^uri$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
