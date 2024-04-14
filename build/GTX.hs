@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-04-03 13:59:46 gwern"
+When:  Time-stamp: "2024-04-14 19:07:18 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -82,6 +82,7 @@ import System.GlobalLock as GL (lock)
 import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
+import MetadataAuthor (authorsCanonicalize)
 import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
@@ -129,13 +130,17 @@ writeGTX f ml = do today <- todayDayString -- 'writeGTX' is usually used interac
                    void $ GL.lock $ writeUpdatedFile "gtx" f $ T.unlines lists
 
 untupleize :: String -> (Path, MetadataItem) -> [T.Text]
-untupleize today (f, (t, a, d, dc, kvs, tags, abstract)) = map (T.strip . T.pack) ["---"
-                                                , f
-                                                , t, a, d, if null dc then today else dc
-                                                , if null kvs then "" else show $ nubOrd kvs
-                                                , unwords tags
-                                                , abstract
-                                                  ]
+untupleize today (f, (t, aut, d, dc, kvs, tags, abstract)) =
+  map (T.strip . T.pack) ["---"
+                         , f
+                         , t
+                         , authorsCanonicalize aut
+                         , d
+                         , if null dc then today else dc
+                         , if null kvs then "" else show $ nubOrd kvs
+                         , unwords tags
+                         , abstract
+                         ]
 
 doiOrKV :: [T.Text] -> String -> [(String,String)]
 doiOrKV mi s | s == ""       = []

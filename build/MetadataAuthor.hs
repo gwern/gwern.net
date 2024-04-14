@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 {- MetadataAuthor.hs: module for managing 'author' metadata:
 
 - canonicalization of names (rewriting all aliases/abbreviations/usernames to a single canonical name which can be easily linked)
@@ -88,17 +90,22 @@ License: CC-0
 
 module MetadataAuthor where
 
-import Data.List (intersperse)
-import Data.Text as T (pack)
+import Data.List (intersperse, intercalate)
+import qualified Data.Text as T (pack, splitOn, intercalate, Text)
 import Text.Pandoc (Inline(Span, Space, Str), nullAttr)
 
-import Utils (split)
+import Utils (split, replaceExact)
+
+import qualified Config.MetadataAuthor as C
 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
 -- simple string-based author-list truncation, with no attempt to do inline-collapse: take the first 100 characters + whatever is necessary to finish the next author (as defined by the space-comma separation)
 authorsTruncateString :: String -> String
 authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after))
+
+authorCollapseTest :: [(String, [Inline])]
+authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) C.authorCollapseTestCases
 
 authorCollapse :: String -> [Inline]
 authorCollapse aut
@@ -116,16 +123,7 @@ authorCollapse aut
                                                             , Span nullAttr authorsRest]
   in [Space, authorSpan]
 
-
-authorCollapseTest, authorCollapseTestCases :: [(String, [Inline])]
-authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) authorCollapseTestCases
--- config testing: all unique
-authorCollapseTestCases =
-  [ ("a", [Space,Span ("",["author","cite-author"],[]) [Str "a"]])
-  , ("a, b", [Space,Span ("",["author","cite-author-plural"],[("title","a, b")]) [Str "a",Str ", ",Str "b"]])
-  , ("a, b, c", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
-  , ( "a, b, c, d", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c, d")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Str ", ",Str "d"]])
-  , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
-  , ( "a, b, c, d, e, f", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
-  , ( "a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, g")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
-    ]
+authorsCanonicalizeT :: T.Text -> T.Text
+authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) C.canonicals) . T.splitOn ", "
+authorsCanonicalize :: String -> String
+authorsCanonicalize = intercalate ", " . replaceExact C.canonicals . split ", "
