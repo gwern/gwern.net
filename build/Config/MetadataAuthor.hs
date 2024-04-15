@@ -189,6 +189,9 @@ canonicals = map (\(a,b) -> (b,a))
   , ("gwernbranwen", "Gwern")
   , ("gwern.branwen", "Gwern")
   , ("Gwern Branwen", "Gwern")
+  , ("Donald E. Knuth", "Donald Knuth")
+  , ("Knuth", "Donald Knuth")
+  , ("Don Knuth", "Donald Knuth")
   ]
 
 -- Config tests: unique all, no loops
@@ -437,6 +440,8 @@ authorLinkDB = [ ("George Washington", "https://en.wikipedia.org/wiki/George_Was
     , ( "Anthropic" , "https://en.wikipedia.org/wiki/Anthropic" )
     , ( "Albert Einstein"
       , "https://en.wikipedia.org/wiki/Albert_Einstein")
+    , ("Carl Shulman", "https://timelines.issarice.com/wiki/Timeline_of_Carl_Shulman_publications#Full_timeline")
+    , ("Anders Sandberg", "https://en.wikipedia.org/wiki/Anders_Sandberg")
     ]
 
 -- Config tests: unique list
