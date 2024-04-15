@@ -3,7 +3,9 @@
 module Config.MetadataAuthor where
 
 -- import qualified Data.Text as T (Text)
-import Text.Pandoc (Inline(Span, Space, Str))
+import Text.Pandoc (Inline(Link, Span, Space, Str))
+
+import qualified Data.Text as T
 
 -- config testing: all unique
 authorCollapseTestCases :: [(String, [Inline])]
@@ -15,6 +17,10 @@ authorCollapseTestCases =
   , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
   , ( "a, b, c, d, e, f", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
   , ( "a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, g")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
+
+  -- test with link rewrites enabled:
+  , ("a, b, c, d, e, f, George Washington",
+     [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, George Washington")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
     ]
 
 -- list of rewrites for 'alternative name' → 'canonical name'
@@ -92,6 +98,7 @@ canonicals = map (\(a,b) -> (b,a))
   , ("Jim Fan", "DrJimFan")
   , ("Joel Simon", "_joelsimon")
   , ("John Allard", "john__allard")
+  , ("John Carmack", "ID_AA_Carmack")
   , ("Jordan Ellenberg", "JSEllenberg")
   , ("Josh Whiton", "joshwhiton")
   , ("Joshua Batson", "thebasepoint")
@@ -151,6 +158,10 @@ canonicals = map (\(a,b) -> (b,a))
   , ("Sam Altman", "sama")
   , ("Sam Parr", "thesamparr")
   , ("Sam Toyer", "sdtoyer")
+  , ("Sarah Cone", "sarah_cone")
+  , ("Shawn Presser", "shawwn")
+  , ("Shawn Presser", "shawwwn")
+  , ("Shawn Presser", "shawwwwn")
   , ("Shawn Wang", "swyx")
   , ("Shayne Redford", "ShayneRedford")
   , ("Sherjil Ozair", "sherjilozair")
@@ -170,7 +181,9 @@ canonicals = map (\(a,b) -> (b,a))
   , ("Zachary Lee", "wenquai")
   , ("Zlatý Retvítr", "retvitr")
   , ("pinkddle", "vi")
-  , ("Shawn Presser", "shawwwwn")
-  , ("Shawn Presser", "shawwwn")
-  , ("Shawn Presser", "shawwn")
   ]
+
+-- Config tests: unique all, no loops
+authorLinkDB :: [(T.Text, T.Text)]
+authorLinkDB = [("George Washington", "https://en.wikipedia.org/wiki/George_Washington")
+               , ("Eliezer Yudkowsky", "https://www.yudkowsky.net/")]

@@ -41,14 +41,14 @@
                              description of the author
 19:13:42 < gwern> well, the URL can of course have its own annotation. (I don't know if it would be necessary to avoid self-linking there)
 19:14:47 < gwern> so if I really wanted to dump in all the Eliezer URLs, I would now have somewhere logical to do so: whatever URL is chosen as the
-                  author-URL (which I didn't before, there's not really any logical place on gwern.net right now for 'here's 5 useful urls about Eliezer, but I'm not
+                  author-URL (which I didn't before, there's not really any logical place on Gwern.net right now for 'here's 5 useful urls about Eliezer, but I'm not
                   writing an essay or anything about it')
 19:15:47 <> I think it would be sensible for the actual link target URL to itself vary depending on context (but the annotation should always be
                              that of the author, and invariant)
 19:16:02 < gwern> and since the author fields can just be HTML, they can be overridden in place. if I really want the author URL for a specific
                   Eliezer tweet to be his ESYudkowsky top-level/user twitter page, I just edit the GTX entry accordingly. it won't go there automatically, but as you
                   say, that can't possibly be done automatically in general perfectly
-19:16:26 <> e.g. for an Eliezer tweet, his name links to his twitter but pops up the EY annotation; for some other mention of Eliezer (perhaps a
+19:16:26 <> eg. for an Eliezer tweet, his name links to his twitter but pops up the EY annotation; for some other mention of Eliezer (perhaps a
                              Sequence post), his name links to his LW author page (but pops up his same annotation)
 19:16:42 < gwern> go to half.gtx where the tweet entry is, manually edit 'Eliezer Yudkowsky' (having been canonicalized) to '<a
                   href="twitter.com/ESYudkowsky">Eliezer Yudkowsky</a>', done
@@ -91,8 +91,9 @@ License: CC-0
 module MetadataAuthor where
 
 import Data.List (intersperse, intercalate)
-import qualified Data.Text as T (pack, splitOn, intercalate, Text)
-import Text.Pandoc (Inline(Span, Space, Str), nullAttr)
+import qualified Data.Text as T (find, pack, splitOn, intercalate, Text)
+import Data.Maybe (isJust)
+import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
 
 import Utils (split, replaceExact)
 
@@ -111,8 +112,7 @@ authorCollapse :: String -> [Inline]
 authorCollapse aut
   | aut `elem` ["", "N/A", "N/\8203A"] = []
   | otherwise =
-  let authors = intersperse (Str ", ") $ map (\t -> Str (T.pack t)) $ split ", " aut
-      -- authorsInitialize -- must be done inside the link-ification step, so skip for now
+  let authors = intersperse (Str ", ") $ map (\t -> linkify $ T.pack t) $ split ", " aut
       authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors
                                                else if length authors < 8 then
                                                       Span ("", ["author", "cite-author-plural"], [("title",T.pack aut)]) authors
@@ -127,3 +127,15 @@ authorsCanonicalizeT :: T.Text -> T.Text
 authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) C.canonicals) . T.splitOn ", "
 authorsCanonicalize :: String -> String
 authorsCanonicalize = intercalate ", " . replaceExact C.canonicals . split ", "
+
+authorsLinkify :: T.Text -> [Inline]
+authorsLinkify = intersperse (Str ", ") . map linkify . T.splitOn ", "
+
+linkify :: T.Text -> Inline
+linkify ""  = Space
+linkify " " = Space
+linkify aut -- skip anything which might be HTML:
+  | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
+  | otherwise = case lookup aut C.authorLinkDB of
+                  Nothing -> Str aut
+                  Just u -> Link nullAttr [Str aut] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
