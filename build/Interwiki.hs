@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig) where
 
-import Data.List (intersect)
+import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
 import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
@@ -14,6 +14,21 @@ import Text.Pandoc.Walk (walk)
 import Cycle (isCycleLess, findCycles)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
+
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, )
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+
+-- if there is a WP article, is it a disambiguation page? (we generally want to avoid linking to those)
+isWPDisambig :: T.Text -> IO (Maybe Bool)
+isWPDisambig articleName = do
+  let encodedArticleName = E.encodeTextWith E.isAllowed articleName
+  let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
+  request <- parseRequest (T.unpack url)
+  response <- httpLBS request
+  let responseBody = U.toString $ getResponseBody response
+  return $ if "Not found" `isInfixOf` responseBody then Nothing
+           else if "\"type\":\"disambiguation\"" `isInfixOf` responseBody then Just True
+                else Just False
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
