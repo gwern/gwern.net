@@ -45,7 +45,7 @@ import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases)
 import qualified Config.Paragraph (whitelist)
-import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB)
+import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -154,7 +154,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
               , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll Config.MetadataAuthor.authorLinkDB
-              , length $ isUniqueValues Config.MetadataAuthor.canonicals
+              , length $ isUniqueValues Config.MetadataAuthor.canonicals, length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
               , length $ isCycleLess Config.MetadataAuthor.canonicals, length $ isCycleLess Config.MetadataAuthor.authorLinkDB
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple

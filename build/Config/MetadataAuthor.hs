@@ -185,11 +185,16 @@ canonicals = map (\(a,b) -> (b,a))
   , ("Sutskever", "Ilya Sutskever")
   , ("Engelbart", "Douglas Engelbart")
   , ("Anno", "Hideaki Anno")
+  , ("gwern", "Gwern")
+  , ("gwernbranwen", "Gwern")
+  , ("gwern.branwen", "Gwern")
+  , ("Gwern Branwen", "Gwern")
   ]
 
 -- Config tests: unique all, no loops
 authorLinkDB :: [(T.Text, T.Text)]
 authorLinkDB = [ ("George Washington", "https://en.wikipedia.org/wiki/George_Washington")
+               , ("Gwern", "/me")
                , ("Eliezer Yudkowsky", "https://www.yudkowsky.net/")
     , ( "Jorge Luis Borges"
       , "https://en.wikipedia.org/wiki/Jorge_Luis_Borges"
@@ -433,3 +438,7 @@ authorLinkDB = [ ("George Washington", "https://en.wikipedia.org/wiki/George_Was
     , ( "Albert Einstein"
       , "https://en.wikipedia.org/wiki/Albert_Einstein")
     ]
+
+-- Config tests: unique list
+authorLinkBlacklist :: [T.Text]
+authorLinkBlacklist = []
