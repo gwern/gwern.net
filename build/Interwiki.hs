@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEn) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEnURL) where
 
 import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
@@ -42,8 +42,8 @@ isWPDisambig articleName = do
 handleException :: SomeException -> IO (Either String (Response U.ByteString))
 handleException _ = return $ Left "An exception occurred"
 
-toWikipediaEn :: T.Text -> T.Text
-toWikipediaEn title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
+toWikipediaEnURL :: T.Text -> T.Text
+toWikipediaEnURL title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
 
 escapeWikiArticleTitle :: T.Text -> T.Text
 escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
