@@ -91,11 +91,12 @@ License: CC-0
 module MetadataAuthor where
 
 import Data.List (intersperse, intercalate)
-import qualified Data.Text as T (find, pack, splitOn, intercalate, Text)
-import Data.Maybe (isJust, isNothing)
+import qualified Data.Map.Strict as M (lookup)
+import qualified Data.Text as T (find, pack, splitOn, Text)
+import Data.Maybe -- (isJust, isNothing)
 import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
 
-import Utils (split, replaceExact, frequency)
+import Utils (split, frequency)
 
 import qualified Config.MetadataAuthor as C
 
@@ -123,10 +124,10 @@ authorCollapse aut
                                                             , Span nullAttr authorsRest]
   in [Space, authorSpan]
 
-authorsCanonicalizeT :: T.Text -> T.Text
-authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) C.canonicals) . T.splitOn ", "
+-- authorsCanonicalizeT :: T.Text -> T.Text
+-- authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) C.canonicals) . T.splitOn ", "
 authorsCanonicalize :: String -> String
-authorsCanonicalize = intercalate ", " . replaceExact C.canonicals . split ", "
+authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a (M.lookup a C.canonicals)) . split ", "
 
 authorsLinkify :: T.Text -> [Inline]
 authorsLinkify = intersperse (Str ", ") . map linkify . T.splitOn ", "
@@ -136,13 +137,14 @@ linkify ""  = Space
 linkify " " = Space
 linkify aut -- skip anything which might be HTML:
   | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
-  | otherwise = case lookup aut C.authorLinkDB of
+  | otherwise = case M.lookup aut C.authorLinkDB of
                   Nothing -> Str aut
                   Just u -> Link nullAttr [Str aut] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
 
 authorPrioritize :: [T.Text] -> [(Int,T.Text)]
-authorPrioritize auts =
-  reverse $ frequency $ map fst $ filter (\(_,b) -> isNothing b) $ map (\a -> (a, lookup a C.authorLinkDB)) $ filter (`notElem` C.authorLinkBlacklist) auts
+authorPrioritize auts = reverse $ frequency $ map fst $
+  filter (\(_,b) -> isNothing b) $ map (\a -> (a, M.lookup a C.authorLinkDB)) $
+  filter (`notElem` C.authorLinkBlacklist) auts
 
 {-
 > md <- LinkMetadata.readLinkMetadata :: IO LinkMetadataTypes.Metadata
@@ -150,3 +152,5 @@ authorPrioritize auts =
 > take 200 $ authorPrioritize $ map T.pack $ concatMap (Utils.split ", ") $ map (\(_,(_,aut,_,_,_,_,_)) -> aut) $ mdl
 [(86,"Nicholas G. Martin"),(77,"Sergey Levine"),(67,"Peter M. Visscher"),(63,"Dorret I. Boomsma"),(59,"Ian J. Deary"),(57,"Sarah E. Medland"),(57,"Quoc V. Le"),(56,"Pieter Abbeel"),(53,"Jian Yang"),(52,"Kari Stefansson"),(49,"Robert Plomin"),(49,"Oriol Vinyals"),(47,"Naomi R. Wray"),(45,"Ole A. Andreassen"),(43,"Thomas Werge"),(43,"Grant W. Montgomery"),(43,"Andres Metspalu"),(42,"Benjamin M. Neale"),(41,"David Silver"),(41,"Andrew M. McIntosh"),(40,"Stephan Ripke"),(40,"Kenneth S. Kendler"),(37,"Patrick F. Sullivan"),(37,"George Davey Smith"),(36,"Paul Lichtenstein"),(36,"Luke Zettlemoyer"),(36,"Jordan W. Smoller"),(36,"Caroline Hayward"),(35,"Danielle Posthuma"),(34,"Jaakko Kaprio"),(33,"Yejin Choi"),(33,"Matt McGue"),(33,"Chelsea Finn"),(33,"Alec Radford"),(32,"T\245nu Esko"),(32,"Ruth J. F. Loos"),(32,"Michael Boehnke"),(32,"Mark J. Daly"),(32,"Karen Simonyan"),(32,"Anders D. B\248rglum"),(31,"Nancy L. Pedersen"),(31,"Dario Amodei"),(30,"Yoshua Bengio"),(30,"Unnur Thorsteinsdottir"),(30,"Tanner Greer"),(30,"Gonneke Willemsen"),(30,"Aarno Palotie"),(29,"Veikko Salomaa"),(29,"Matthew C. Keller"),(29,"Mark I. McCarthy"),(29,"Joel Gelernter"),(29,"James F. Wilson"),(29,"Gail Davies"),(29,"David M. Hougaard"),(28,"Patrik K. E. Magnusson"),(28,"Nicolas Heess"),(28,"Lili Milani"),(28,"Koray Kavukcuoglu"),(28,"Jouke-Jan Hottenga"),(28,"Gerome Breen"),(28,"David Lubinski"),(27,"William G. Iacono"),(27,"Timothy M. Frayling"),(27,"Nando de Freitas"),(27,"Mike Lewis"),(27,"Michael C. O\8217Donovan"),(27,"Margaret J. Wright"),(27,"Elliot M. Tucker-Drob"),(27,"Arthur R. Jensen"),(26,"Yi Tay"),(26,"Jason Weston"),(26,"Jakob Grove"),(26,"Eric Boerwinkle"),(26,"Andr\233 G. Uitterlinden"),(26,"Andrew C. Heath"),(26,"Albert Hofman"),(25,"Vilmundur Gudnason"),(25,"Srdjan Djurovic"),(25,"Ole Mors"),(25,"Nicholas J. Wareham"),(25,"Manuel Mattheisen"),(25,"Jianfeng Gao"),(25,"Jerome I. Rotter"),(25,"Jascha Sohl-Dickstein"),(25,"Daniel I. Chasman"),(25,"Christian Gieger"),(25,"Abdel Abdellaoui"),(24,"Timothy Lillicrap"),(24,"Stefano Ermon"),(24,"Robert R. Jackson"),(24,"Omer Levy"),(24,"Merete Nordentoft"),(24,"Julian C. Stanley"),(24,"John R. B. Perry"),(24,"Johan G. Eriksson"),(24,"Jared Kaplan"),(24,"Andrew R. Wood"),(23,"Trevor Darrell"),(23,"Tim Salimans"),(23,"Tamara B. Harris"),(23,"Scott D. Gordon"),(23,"Ross Girshick"),(23,"Reedik M\228gi"),(23,"Po-Ru Loh"),(23,"Noah A. Smith"),(23,"Michael J. Owen"),(23,"Markus M. N\246then"),(23,"Loic Yengo"),(23,"Henning Tiemeier"),(23,"Han Zhang"),(23,"Gudmar Thorleifsson"),(23,"Erik Ingelsson"),(23,"Cathryn M. Lewis"),(22,"Yukinori Okada"),(22,"Terho Lehtim\228ki"),(22,"Samuli Ripatti"),(22,"Najaf Amin"),(22,"Mohammad Norouzi"),(22,"Michel G. Nivard"),(22,"Magnus Johannesson"),(22,"K. Paige Harden"),(22,"Jonathan R. I. Coleman"),(22,"John Schulman"),(22,"John P. A. Ioannidis"),(22,"Jie Tang"),(22,"James J. Lee"),(22,"Howard J. Edenberg"),(22,"Harry Campbell"),(22,"Hannaneh Hajishirzi"),(22,"David J. Porteous"),(22,"David A. Hinds"),(22,"Andrew P. Morris"),(22,"Alkes L. Price"),(22,"Alexander Teumer"),(21,"Thore Graepel"),(21,"Shane Legg"),(21,"Sekar Kathiresan"),(21,"Razvan Pascanu"),(21,"Percy Liang"),(21,"Panos Deloukas"),(21,"Noam Shazeer"),(21,"Michael E. Goddard"),(21,"Kari E. North"),(21,"Jonathan Ho"),(21,"Jonas Bybjerg-Grauholm"),(21,"Igor Rudan"),(21,"Igor Mordatch"),(21,"Hreinn Stefansson"),(21,"Harold Snieder"),(21,"Furu Wei"),(21,"Fernando Rivadeneira"),(21,"Cornelia M. van Duijn"),(21,"Colin Raffel"),(21,"Claudia Langenberg"),(21,"Cecilia M. Lindgren"),(21,"Benjamin W. Domingue"),(20,"Sven Cichon"),(20,"Scott Alexander"),(20,"Rol"),(20,"Renato Polimanti"),(20,"Preben Bo Mortensen"),(20,"Paul M. Ridker"),(20,"Neil Houlsby"),(20,"Marcus Hutter"),(20,"Marcella Rietschel"),(20,"Karen L. Mohlke"),(20,"Joulin"),(20,"Jeff Clune"),(20,"George M. Church"),(20,"David Cesarini"),(20,"Bruce M. Psaty"),(20,"Arm"),(20,"Anonymous"),(20,"Anima Anandkumar"),(20,"Anders M. Dale"),(19,"Wei Zhao"),(19,"Tim D. Spector"),(19,"Terrie E. Moffitt"),(19,"Sarah E. Harris"),(19,"Sam McCandlish"),(19,"Ruslan Salakhutdinov"),(19,"Peter Kraft"),(19,"Peter K. Joshi"),(19,"Nicholas J. Timpson"),(19,"Markus Perola"),(19,"Markku Laakso"),(19,"Kathleen Mullan Harris"),(19,"Joel Z. Leibo"),(19,"Ingrid Melle"),(19,"Dan Rujescu"),(19,"Barret Zoph"),(19,"Antonio Torralba"),(18,"Yoichiro Kamatani"),(18,"Samuel R. Bowman"),(18,"Orhan Firat"),(18,"OpenAI"),(18,"Lenore J. Launer"),(18,"Kristian Hveem")]
 -}
+
+-- TODO: a function to open up Google+WP searches for the top 5 candidates after every full sync?

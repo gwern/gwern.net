@@ -3,6 +3,7 @@ module Test where
 
 import Control.Monad (unless)
 import Data.List (foldl')
+import qualified Data.Map.Strict as M (toList)
 import Network.URI (isURIReference)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
@@ -153,9 +154,9 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
-              , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll Config.MetadataAuthor.authorLinkDB
-              , length $ isUniqueValues Config.MetadataAuthor.canonicals, length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
-              , length $ isCycleLess Config.MetadataAuthor.canonicals, length $ isCycleLess Config.MetadataAuthor.authorLinkDB
+              , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
+              , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub

@@ -2,10 +2,10 @@
 
 module Config.MetadataAuthor where
 
--- import qualified Data.Text as T (Text)
-import Text.Pandoc (Inline(Link, Span, Space, Str))
 
-import qualified Data.Text as T
+import qualified Data.Map.Strict as M (fromList, Map)
+import Text.Pandoc (Inline(Link, Span, Space, Str))
+import qualified Data.Text as T (Text)
 
 -- config testing: all unique
 authorCollapseTestCases :: [(String, [Inline])]
@@ -25,10 +25,9 @@ authorCollapseTestCases =
 
 -- list of rewrites for 'alternative name' → 'canonical name'
 -- Config tests: unique values, no loops
-canonicals :: [(String, String)]
-canonicals = map (\(a,b) -> (b,a))
-  [
-    ("ESYudkowsky", "Eliezer Yudkowsky")
+canonicals :: M.Map String String
+canonicals = M.fromList
+  [ ("ESYudkowsky", "Eliezer Yudkowsky")
   , ("AaronKoelker", "Aaron Koelker")
   , ("alexalbert__", "Alex Albert")
   , ("alicemazzy", "Alice Maz")
@@ -192,13 +191,20 @@ canonicals = map (\(a,b) -> (b,a))
   , ("Donald E. Knuth", "Donald Knuth")
   , ("Knuth", "Donald Knuth")
   , ("Don Knuth", "Donald Knuth")
+  , ("Hans J. Eysenck", "Hans Eysenck")
+  , ("Hans Jürgen Eysenck", "Hans Eysenck")
+  , ("Eysenck", "Hans Eysenck")
+  , ("Frank P. Ramsey", "Frank Ramsey")
+  , ("Polu", "Stanislas Polu")
+  , ("spolu", "Stanislas Polu")
   ]
 
 -- Config tests: unique all, no loops
-authorLinkDB :: [(T.Text, T.Text)]
-authorLinkDB = [ ("George Washington", "https://en.wikipedia.org/wiki/George_Washington")
-               , ("Gwern", "/me")
-               , ("Eliezer Yudkowsky", "https://www.yudkowsky.net/")
+authorLinkDB :: M.Map T.Text T.Text
+authorLinkDB = M.fromList
+  [ ("George Washington", "https://en.wikipedia.org/wiki/George_Washington")
+  , ("Gwern", "/me")
+  , ("Eliezer Yudkowsky", "https://www.yudkowsky.net/")
     , ( "Jorge Luis Borges"
       , "https://en.wikipedia.org/wiki/Jorge_Luis_Borges"
       )

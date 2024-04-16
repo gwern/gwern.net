@@ -15,8 +15,10 @@ import Cycle (isCycleLess, findCycles)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
-import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody)
-import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody,)
+import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
+import Control.Exception (catch, SomeException)
+import Network.HTTP.Client (Response)
 
 -- if there is an English WP article, is it a disambiguation page? (we generally want to avoid linking to those)
 -- use curl to call the WP API and (to avoid complicated JSON processing overhead) simply look for the fixed string '"type":"disambiguation"', and return Just True/False.
@@ -26,11 +28,18 @@ isWPDisambig articleName = do
   let encodedArticleName = escapeWikiArticleTitle articleName
   let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
   request <- parseRequest (T.unpack url)
-  response <- httpLBS request
-  let responseBody = U.toString $ getResponseBody response
-  return $ if "Not found" `isInfixOf` responseBody then Nothing
-           else if "\"type\":\"disambiguation\"" `isInfixOf` responseBody then Just True
-                else Just False
+  result <- catch (Right <$> httpLBS request) handleException
+  case result of
+    Left _ -> return Nothing  -- On any exception, ignore error message & return Nothing
+    Right response -> return $
+      let responseBody = U.toString $ getResponseBody response
+      in if "Not found" `isInfixOf` responseBody
+         then Nothing
+         else Just ("\"type\":\"disambiguation\"" `isInfixOf` responseBody)
+
+-- Exception handler for all exceptions
+handleException :: SomeException -> IO (Either String (Response U.ByteString))
+handleException _ = return $ Left "An exception occurred"
 
 toWikipediaEn :: T.Text -> T.Text
 toWikipediaEn title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
