@@ -23,6 +23,7 @@ import Network.HTTP.Client (Response)
 -- if there is an English WP article, is it a disambiguation page? (we generally want to avoid linking to those)
 -- use curl to call the WP API and (to avoid complicated JSON processing overhead) simply look for the fixed string '"type":"disambiguation"', and return Just True/False.
 -- While if there is apparently no article at all, return `Nothing` (as callers may need to treat non-existent WP articles differently from disambig WP articles).
+-- Bash shell equivalent: `API_RESPONSE=$(curl --silent "https://en.wikipedia.org/api/rest_v1/page/summary/$(basename "$URL")"); if [[ $API_RESPONSE == *'"type":"disambiguation"'* ]]; then echo "Warning: $URL is a disambiguation page."`
 isWPDisambig :: T.Text -> IO (Maybe Bool)
 isWPDisambig articleName = do
   let encodedArticleName = escapeWikiArticleTitle articleName
