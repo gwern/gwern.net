@@ -6,7 +6,7 @@ import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text))]
-overrideLinkIcons = []
+overrideLinkIcons = [("/index#abstract", ("",""))]
 
 ------------------------------------------------------------------------------------------
 

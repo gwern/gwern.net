@@ -208,6 +208,11 @@ canonicals = M.fromList
   , ("anon.", "Anonymous")
   , ("23andMe Research Team", "23andMe")
   , ("Noah A. Smith", "Noah Smith")
+  , ("sarah_cone", "Sarah Cone")
+  , ("R. Impagliazzo", "Russell Impagliazzo")
+  , ("Gary L. Drescher", "Gary Drescher")
+  , ("Doug Hofstadter", "Douglas Hofstadter")
+  , ("Douglas R. Hofstadter", "Douglas Hofstadter")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -222,12 +227,26 @@ authorLinkDB = M.fromList $
     , ("Nick Bostrom","https://nickbostrom.com/")
     , ("Said Achmiz","https://wiki.obormot.net/")
     , ("Shawn Presser","https://twitter.com/theshawwn")
-    , ("Gwern", "https://gwern.net/me")
+    , ("Gwern", "https://gwern.net/index#abstract")
     , ("Scott Alexander", "https://www.astralcodexten.com/")
     , ("Lucas Beyer", "https://scholar.google.com/citations?user=p2gwhK4AAAAJ")
     , ("Tanner Greer", "https://scholars-stage.org/")
     , ("Noah Smith", "https://en.wikipedia.org/wiki/Noah_Smith_(writer)")
     , ("William Chan", "http://williamchan.ca/")
+    , ("Roberto Trotta", "https://robertotrotta.com/")
+    , ("Hyeonwoo Kim", "https://hyunw.kim/")
+    , ("Scott Cunningham", "https://en.wikipedia.org/wiki/Scott_Cunningham_(economist)")
+    , ("Charles A. Taylor", "https://ca-taylor.com/")
+    , ("Shi Feng", "https://ihsgnef.github.io/")
+    , ("Jonathan Gruber", "https://en.wikipedia.org/wiki/Jonathan_Gruber_(economist)")
+    , ("Jacob Andreas", "https://www.mit.edu/~jda/")
+    , ("Max Bain", "https://maxbain.com/")
+    , ("David Lewis", "https://en.wikipedia.org/wiki/David_Lewis_(philosopher)")
+    , ("Xiang Cheng", "https://sites.google.com/berkeley.edu/xiangcheng/home")
+    , ("FDA", "https://en.wikipedia.org/wiki/Food_and_Drug_Administration")
+    , ("Sergey Slyusarev", "https://github.com/jemmybutton")
+    , ("James Richardson", "https://en.wikipedia.org/wiki/James_Richardson_(poet)")
+    , ("Morgan McGuire", "https://casual-effects.com/")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -241,6 +260,7 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
 authorWpLinkDB :: [T.Text]
 authorWpLinkDB =
  ["A. A. Brill","A. Ali","A. Bradford Hill","A. C. Littleton","A. G. W. Cameron","A. J. Holmes","A. Jameson",
+  "Russell Impagliazzo",
   "A. K. Bera","A. L. Barker","A. L. Sadler","A. Murat Eren","A. Narayanan","A. Tversky","Aanund Hylland",
   "Aapo Kyrola","Aaron Clauset","Aaron Cochrane","Aaron D. Ames","Aaron E. Carroll","Aaron Edwards","Aaron Gordon",
   "Aaron Isaacs","Aaron Klein","Aaron Naparstek","Aaron Reeves","Aaron Roth","Aaron Streets","Abdoulaye Diabate",
