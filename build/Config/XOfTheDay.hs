@@ -487,4 +487,4 @@ siteBlackList = [
           "www.emacswiki.org", "geminiprotocol.net", "figshare.com", "www.semafor.com", "google-research.github.io", "deepmind.google",
           "www.crd.york.ac.uk", "www.crunchbase.com", "dx.doi.org", "gawker.com", "cvm.missouri.edu", "gigamonkeys.com", "www.tiktok.com",
           "conversationswithtyler.com", "karger.com","diabetesjournals.org", "benbest.com", "conservancy.umn.edu", "a16z.com",
-          "esolangs.org", "www.cognition-labs.com", "www.media.mit.edu","www.axios.com"]
+          "esolangs.org", "www.cognition-labs.com", "www.media.mit.edu","www.axios.com", "www.folger.edu"]

@@ -374,6 +374,8 @@ kvDOI = kvLookup "doi"
 kvDOIT :: [(T.Text,T.Text)] -> T.Text
 kvDOIT = kvLookupT "doi"
 
+replaceExact :: Eq a => [(a, a)] -> [a] -> [a]
+replaceExact assoc xs = [maybe x id (lookup x assoc) | x <- xs]
 
 -- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
 -- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.
@@ -386,7 +388,7 @@ replaceChecked before after str
   where result = replace before after str
         variables = [before, after, str, result]
         variablesS = show variables
--- TODO: would it be useful to have a 'replaceDeleteStrict' which allows a "" `after` argument, since that's one of the most common use-cases/
+-- TODO: would it be useful to have a 'replaceDeleteStrict' which allows a "" `after` argument, since that's one of the most common use-cases?
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))

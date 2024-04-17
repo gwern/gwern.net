@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEnURL) where
 
-import Data.List (intersect)
+import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
 import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
@@ -14,6 +14,43 @@ import Text.Pandoc.Walk (walk)
 import Cycle (isCycleLess, findCycles)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
+
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody,)
+import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
+import Control.Exception (catch, SomeException)
+import Network.HTTP.Client (Response)
+
+-- if there is an English WP article, is it a disambiguation page? (we generally want to avoid linking to those)
+-- use curl to call the WP API and (to avoid complicated JSON processing overhead) simply look for the fixed string '"type":"disambiguation"', and return Just True/False.
+-- While if there is apparently no article at all, return `Nothing` (as callers may need to treat non-existent WP articles differently from disambig WP articles).
+-- Bash shell equivalent: `API_RESPONSE=$(curl --silent "https://en.wikipedia.org/api/rest_v1/page/summary/$(basename "$URL")"); if [[ $API_RESPONSE == *'"type":"disambiguation"'* ]]; then echo "Warning: $URL is a disambiguation page."`
+isWPDisambig :: T.Text -> IO (Maybe Bool)
+isWPDisambig articleName = do
+  let encodedArticleName = escapeWikiArticleTitle articleName
+  let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
+  request <- parseRequest (T.unpack url)
+  result <- catch (Right <$> httpLBS request) handleException
+  case result of
+    Left _ -> return Nothing  -- On any exception, ignore error message & return Nothing
+    Right response -> return $
+      let responseBody = U.toString $ getResponseBody response
+      in if "Not found" `isInfixOf` responseBody
+         then Nothing
+         else Just ("\"type\":\"disambiguation\"" `isInfixOf` responseBody)
+
+-- Exception handler for all exceptions
+handleException :: SomeException -> IO (Either String (Response U.ByteString))
+handleException _ = return $ Left "An exception occurred"
+
+toWikipediaEnURL :: T.Text -> T.Text
+toWikipediaEnURL title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
+
+escapeWikiArticleTitle :: T.Text -> T.Text
+escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
+                               replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $
+                               deunicode title
+    where deunicode :: T.Text -> T.Text
+          deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -53,10 +90,7 @@ convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, arti
     interwikiurl _ "" = error (show x)
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
                        in
-                         fixedPoint wpURLRedirectRewrites $ u `T.append` (E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
-                                                                           replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode a')
-    deunicode :: T.Text -> T.Text
-    deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
+                         fixedPoint wpURLRedirectRewrites $ u `T.append` escapeWikiArticleTitle a'
 convertInterwikiLinksInline _ x = x
 
 -- special case rewrites: for example, automatically rewrite anchor texts ending in "'s" to delete it (eg. "George Washington's" to "George Washington") if it is not a special-case where that is part of the official name (eg. "Antoine's"). This makes writing much easier because you can simply write '[George Washington's](!W) first act as president was' instead of ''[George Washington's](!W "George Washington") first act...'. This sort of possessive rewriting gets especially annoying in long runs of "$CREATOR's $MEDIA" like in reviews.
@@ -95,7 +129,7 @@ interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCy
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: T.Text -> [T.Text]
-wpPopupClasses u = ["backlink-not", "id-not"] ++ case parseURIReference (T.unpack u) of
+wpPopupClasses u = ["id-not"] ++ case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
                           Nothing -> []

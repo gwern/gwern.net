@@ -3,6 +3,7 @@ module Test where
 
 import Control.Monad (unless)
 import Data.List (foldl')
+import qualified Data.Map.Strict as M (toList)
 import Network.URI (isURIReference)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
@@ -10,6 +11,7 @@ import qualified Data.Text as T (unpack)
 
 import Text.Pandoc (Inline(Link))
 
+import Cycle (isCycleLess)
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, ensure)
 
@@ -18,15 +20,14 @@ import Annotation (tooltipToMetadata)
 import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (testLinkRewrites)
+import LinkArchive (readArchiveMetadata, testLinkRewrites)
 import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
-import LinkArchive (readArchiveMetadata)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
-import MetadataAuthor (authorCollapseTest, authorCollapseTestCases)
+import MetadataAuthor (authorCollapseTest)
 
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -45,6 +46,7 @@ import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases)
 import qualified Config.Paragraph (whitelist)
+import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist)
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -152,7 +154,10 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
-              , length $ isUniqueAll authorCollapseTestCases
+              , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
+              , length $ ensure "Test.authorLinkDB" "isURLT (URL of second)" (all isURLT) (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
