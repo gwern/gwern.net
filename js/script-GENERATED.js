@@ -3119,7 +3119,8 @@ Popups = {
 		options = Object.assign({
 			spawnPoint: null,
 			tight: false,
-			immediately: false
+			immediately: false,
+			reset: false
 		}, options);
 
 		if (popup == Popups.popupBeingResized)
@@ -3136,12 +3137,17 @@ Popups = {
 		/*	When the target’s bounding rect is composed of multiple client rects
 			(as when the target is a link that wraps across a line break), we
 			must select the right rect, to prevent the popup from spawning far
-			away from the cursor.
+			away from the cursor. (We expand client rects by 0.5 when we do hit 
+			testing, to compensate for rounding bugs in pointer location.)
 		 */
-		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
+		let targetViewportRect =    Array.from(target.getClientRects()).map(rect =>
+										new DOMRect(rect.x - 0.5,
+													rect.y - 0.5,
+													rect.width  + 1.0,
+													rect.height + 1.0)
+									).find(rect => pointWithinRect(spawnPoint, rect))
 								 ?? target.getBoundingClientRect();
 
-		//  Wait for the “naive” layout to be completed, and then...
 		let computePosition = () => {
 			let provisionalPopupXPosition = 0.0;
 			let provisionalPopupYPosition = 0.0;
@@ -3195,22 +3201,24 @@ Popups = {
 				if (provisionalPopupYPosition < 0.0)
 					provisionalPopupYPosition = 0.0;
 
-				//  Determine whether to put the popup off to the right, or left.
-				if (  targetViewportRect.right
-					+ Popups.popupBreathingRoomX
-					+ popupIntrinsicWidth
-					  <= document.documentElement.offsetWidth) {
-					//  Off to the right.
-					provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
-				} else if (  targetViewportRect.left
-						   - Popups.popupBreathingRoomX
-						   - popupIntrinsicWidth
-							 >= 0) {
-					//  Off to the left.
-					provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
-				} else {
-					//  Not off to either side, in fact.
-					offToTheSide = false;
+				if (offToTheSide == true) {
+					//  Determine whether to put the popup off to the right, or left.
+					if (  targetViewportRect.right
+						+ Popups.popupBreathingRoomX
+						+ popupIntrinsicWidth
+						  <= document.documentElement.offsetWidth) {
+						//  Off to the right.
+						provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
+					} else if (  targetViewportRect.left
+							   - Popups.popupBreathingRoomX
+							   - popupIntrinsicWidth
+								 >= 0) {
+						//  Off to the left.
+						provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
+					} else {
+						//  Not off to either side, in fact.
+						offToTheSide = false;
+					}
 				}
 
 				/*  Can the popup fit above the target? If so, put it there.
@@ -3277,11 +3285,23 @@ Popups = {
 			document.activeElement.blur();
 		};
 
-		//	Either position immediately, or let native layout complete first.
-		if (options.immediately == true)
+		//	Either position immediately, or let “naive” layout complete first.
+		if (options.immediately == true) {
 			computePosition();
-		else
+		} else {
+			if (   options.reset
+				&& Popups.popupIsPinned(popup) == false)
+				Popups.clearPopupViewportRect(popup);
+
 			requestAnimationFrame(computePosition);
+		}
+	},
+
+	clearPopupViewportRect: (popup) => {
+		GWLog("Popups.clearPopupViewportRect", "popups.js", 3);
+
+		popup.style.left = "";
+		popup.style.top = "";
 	},
 
 	setPopupViewportRect: (popup, rect, options) => {
@@ -4535,6 +4555,8 @@ Popins = {
 
 GW.notificationCenter.fireEvent("Popins.didLoad");
 Annotations = {
+	basePathname: "/metadata/annotation/",
+
 	annotatedLinkFullClass: "link-annotated",
 	annotatedLinkPartialClass: "link-annotated-partial"
 };
@@ -4579,17 +4601,7 @@ Annotations = { ...Annotations,
 
 	//	Convenience method.
 	cachedDocumentForLink: (link) => {
-		/*	If the data source for this link delegates its functionality to
-			a different data source, request the cached document from the
-			delegate’s provider object.
-		 */
-		let dataSource = Annotations.dataSourceForLink(link);
-		if (   dataSource
-			&& dataSource.delegateDataProvider)
-			return dataSource.delegateDataProvider.cachedDocumentForLink(link);
-
 		let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
-
 		if (   cachedAPIResponse
 			&& cachedAPIResponse != "LOADING_FAILED"
 			&& cachedAPIResponse instanceof DocumentFragment) {
@@ -4603,15 +4615,6 @@ Annotations = { ...Annotations,
      */
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     cachedDataExists: (link) => {
-		/*	If the data source for this link delegates its functionality to
-			a different data source, request the cached data from the
-			delegate’s provider object.
-		 */
-		let dataSource = Annotations.dataSourceForLink(link);
-		if (   dataSource
-			&& dataSource.delegateDataProvider)
-			return dataSource.delegateDataProvider.cachedDataExists(link);
-
         let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
         return (   cachedAPIResponse != null
         		&& cachedAPIResponse != "LOADING_FAILED");
@@ -4660,15 +4663,6 @@ Annotations = { ...Annotations,
     	failed) or null (if the annotation has not been loaded).
      */
     referenceDataForLink: (link) => {
-		/*	If the data source for this link delegates its functionality to
-			a different data source, request the cached data from the
-			delegate’s provider object.
-		 */
-		let dataSource = Annotations.dataSourceForLink(link);
-		if (   dataSource
-			&& dataSource.delegateDataProvider)
-			return dataSource.delegateDataProvider.referenceDataForLink(link);
-
     	let referenceData = Annotations.cachedReferenceDataForLink(link);
 		if (   referenceData == null
 			&& Annotations.cachedDataExists(link)) {
@@ -4698,56 +4692,30 @@ Annotations = { ...Annotations,
 	/*	Loading.
 	 */
 
-	//	Called by: Annotations.sourceURLForLink
-	//	Called by: Annotations.processedAPIResponseForLink
-	//	Called by: Annotations.referenceDataFromParsedAPIResponse
-	dataSourceForLink: (link) => {
-		//	Enables `data-annotation-data-source="foo"` (e.g., "local").
-		if (   link.dataset.annotationDataSource
-			&& Object.keys(Annotations.dataSources).includes(link.dataset.annotationDataSource))
-			return Annotations.dataSources[link.dataset.annotationDataSource];
-
-		for (let [ sourceName, dataSource ] of Object.entries(Annotations.dataSources)) {
-			if (sourceName == "local")
-				continue;
-
-			if (   (   dataSource.matches
-					&& dataSource.matches(link))
-				|| (   dataSource.delegateDataSource
-					&& dataSource.delegateDataSource.matches
-					&& dataSource.delegateDataSource.matches(link)))
-				return dataSource;
-		}
-
-		return Annotations.dataSources.local;
-	},
-
-	//	Called by: Annotations.load
-	processedAPIResponseForLink: (response, link) => {
-		return Annotations.dataSourceForLink(link).processAPIResponse(response);
-	},
-
 	/*	Returns the URL of the annotation resource for the given link.
 	 */
 	//	Called by: Annotations.load
 	//	Called by: Annotations.cachedAPIResponseForLink
 	//	Called by: Annotations.cacheAPIResponseForLink
 	sourceURLForLink: (link) => {
-		return Annotations.dataSourceForLink(link).sourceURLForLink(link);
+		return URLFromString(  Annotations.basePathname
+							 + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
+							 + ".html");
+	},
+
+	//	Called by: Annotations.load
+	processedAPIResponseForLink: (response, link) => {
+		let responseDoc = newDocument(response);
+
+		//	Request the image, to cache it.
+		let thumbnail = responseDoc.querySelector(".page-thumbnail");
+		if (thumbnail)
+			doAjax({ location: URLFromString(thumbnail.src) });
+
+		return responseDoc;
 	},
 
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
-		/*	If the data source for this link delegates its functionality to
-			a different data source, the delegate’s provider object should
-			handle loading.
-		 */
-		let dataSource = Annotations.dataSourceForLink(link);
-		if (   dataSource
-			&& dataSource.delegateDataProvider) {
-			dataSource.delegateDataProvider.waitForDataLoad(link, loadHandler, loadFailHandler);
-			return;
-		}
-
 		if (Annotations.cachedAPIResponseForLink(link) == "LOADING_FAILED") {
             if (loadFailHandler)
             	loadFailHandler(link);
@@ -4791,17 +4759,6 @@ Annotations = { ...Annotations,
     //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
     load: (link, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.load", "annotations.js", 2);
-
-		/*	If the data source for this link delegates its functionality to
-			a different data source, the delegate’s provider object should
-			handle loading.
-		 */
-		let dataSource = Annotations.dataSourceForLink(link);
-		if (   dataSource
-			&& dataSource.delegateDataProvider) {
-			dataSource.delegateDataProvider.load(link, loadHandler, loadFailHandler);
-			return;
-		}
 
 		/*	Get URL of the annotation resource.
 		 */
@@ -4856,8 +4813,7 @@ Annotations = { ...Annotations,
 
 					//	Send request to record failure in server logs.
 					GWServerLogError(sourceURL.href, "missing annotation");
-				},
-				headers: Annotations.dataSourceForLink(link).additionalAPIRequestHeaders
+				}
 			});
 		}
 
@@ -4871,845 +4827,246 @@ Annotations = { ...Annotations,
 		if (response == "LOADING_FAILED")
 			return null;
 
-		return Annotations.dataSourceForLink(link).referenceDataFromParsedAPIResponse(response, link);
-	},
+		let referenceElement = response.querySelector([ Annotations.annotatedLinkFullClass, 
+														Annotations.annotatedLinkPartialClass 
+														].map(className => `a.${className}`).join(", "));
 
-	/***************************/
-	/* ANNOTATION DATA SOURCES */
-	/***************************/
-	/*	Note on annotation data sources:
+		let titleHTML = referenceElement.innerHTML;
+		let titleText = referenceElement.textContent;
 
-		More data sources may be added. Any data source object must have these
-		four properties, each a function with the given signature:
+		//	On mobile, use mobile-specific link href, if provided.
+		let titleLinkHref = (   referenceElement.dataset.hrefMobile 
+							 && GW.isMobile())
+							? referenceElement.dataset.hrefMobile
+							: referenceElement.href;
 
-		.matches(URL|Element) => boolean
-		.sourceURLForLink(URL|Element) => URL
-		.processAPIResponse(string) => object
-		.referenceDataFromParsedAPIResponse(object, URL|Element) => object
+		//	Construct title link class.
+		let titleLinkClass = "title-link";
 
-		(Most data source objects also have additional properties, functions,
-		 etc., as necessary to implement the above functionality.)
+		//  Import link classes (excluding certain ones).
+		Array.from(referenceElement.classList).filter(referenceElementClass => [
+			"link-annotated",
+			"link-annotated-partial"
+		].includes(referenceElementClass) == false).forEach(referenceElementClass => {
+			titleLinkClass += ` ${referenceElementClass}`;
+		});
 
-		Examine implementation of these functions in .dataSources.local to
-		understand their purpose.
-	 */
+		//	Special handling for links with separate ‘HTML’ URLs.
+		if (   referenceElement.dataset.urlHtml
+			&& titleLinkClass.includes("link-live") == false)
+			titleLinkClass += " link-live";
 
-	dataSources: {
-		/********************************************************/
-		/*	Annotations generated server-side and hosted locally.
-		 */
+		//	Special data attributes for the title link.
+		let titleLinkDataAttributes = [ 
+			"urlHtml", 
+			"urlArchive",
+			"imageWidth",
+			"imageHeight",
+			"aspectRatio"
+		].map(attr => 
+			referenceElement.dataset[attr] 
+			? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
+			: null
+		).filter(Boolean);
 
-		local: {
-			/*	There could be a local annotation for any link. As this returns
-				true for all links, it is the fallback data source in the event 
-				that no other data sources match a link.
-			 */
-			matches: (link) => {
-				return true;
-			},
-
-			//	Called by: Annotations.processedAPIResponseForLink
-			//	Called by: Annotations.sourceURLForLink
-			sourceURLForLink: (link) => {
-				return URLFromString(  Annotations.dataSources.local.basePathname
-									 + fixedEncodeURIComponent(fixedEncodeURIComponent(Annotations.targetIdentifier(link)))
-									 + ".html");
-			},
-
-			//	Called by: Annotations.processedAPIResponseForLink
-			processAPIResponse: (response) => {
-				let responseDoc = newDocument(response);
-
-				//	Request the image, to cache it.
-				let thumbnail = responseDoc.querySelector(".page-thumbnail");
-				if (thumbnail)
-					doAjax({ location: URLFromString(thumbnail.src) });
-
-				return responseDoc;
-			},
-
-			//	Called by: Annotations.referenceDataFromParsedAPIResponse
-			referenceDataFromParsedAPIResponse: (response, link = null) => {
-				let referenceElement = response.querySelector(Annotations.dataSources.local.referenceElementSelector);
-
-				let titleHTML = referenceElement.innerHTML;
-				let titleText = referenceElement.textContent;
-
-				//	On mobile, use mobile-specific link href, if provided.
-				let titleLinkHref = (   referenceElement.dataset.hrefMobile 
-									 && GW.isMobile())
-									? referenceElement.dataset.hrefMobile
-									: referenceElement.href;
-
-				//	Construct title link class.
-				let titleLinkClass = "title-link";
-
-				//  Import link classes (excluding certain ones).
-				Array.from(referenceElement.classList).filter(referenceElementClass => [
-					"link-annotated",
-					"link-annotated-partial"
-				].includes(referenceElementClass) == false).forEach(referenceElementClass => {
-					titleLinkClass += ` ${referenceElementClass}`;
-				});
-
-				//	Special handling for links with separate ‘HTML’ URLs.
-				if (   referenceElement.dataset.urlHtml
-					&& titleLinkClass.includes("link-live") == false)
-					titleLinkClass += " link-live";
-
-				//	Link icon for the title link.
-				let titleLinkIconMetadata;
-				if (referenceElement.dataset.linkIcon) {
-					titleLinkIconMetadata = `data-link-icon-type="${(referenceElement.dataset.linkIconType)}"`
-										  + `data-link-icon="${(referenceElement.dataset.linkIcon)}"`;
-				} else if (link && link.dataset.linkIcon) {
-					titleLinkIconMetadata = `data-link-icon-type="${(link.dataset.linkIconType)}"`
-										  + `data-link-icon="${(link.dataset.linkIcon)}"`;
-				}
-
-				//	Special data attributes for the title link.
-				let titleLinkDataAttributes = [ 
-					"urlHtml", 
-					"urlArchive",
-					"imageWidth",
-					"imageHeight",
-					"aspectRatio"
-				].map(attr => 
-					referenceElement.dataset[attr] 
-					? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
-					: null
-				).filter(Boolean).join(" ");
-				if (titleLinkDataAttributes == "")
-					titleLinkDataAttributes = null;
-
-				//  Author list.
-				let authorElement = response.querySelector(".author");
-				//	Generate comma-separated author list; truncate with “…” abbreviation for ‘et al’ @ > 3.
-				let authorList;
-				if (authorElement) {
-					authorList = authorElement.innerHTML.split(", ").slice(0, 3).join(", ");
-					if (authorList.length < authorElement.innerHTML.length)
-						authorList += "…";
-				}
-				let authorHTML = authorElement 
-								 ? `<span class="data-field author cite-author">${authorList}</span>` 
-								 : null;
-
-				//  Date.
-				let dateElement = response.querySelector(".date");
-				let dateHTML = dateElement 
-							   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
-								  + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
-								  + `</span>`) 
-							   : null;
-
-				//	Link tags.
-				let tagsElement = response.querySelector(".link-tags");
-				let tagsHTML = tagsElement
-							   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
-							   : null;
-
-				//	Archive URL (if exists).
-				let archiveLinkHref = referenceElement.dataset.urlArchive ?? null;
-				let linkTarget = (GW.isMobile() ? "_self" : "_blank");
-				let archiveLinkHTML = archiveLinkHref
-									  ? `<span 
-									  	  class="data-field archiveURL"
-									  	  ><a
-									  	    title="Link to local archive for ${titleText}"
-									  	    href="${archiveLinkHref}"
-									  	    target="${linkTarget}"
-									  	    alt="Locally archived version of this URL"
-									  	    >archive</a></span>`
-									  : null;
-
-				//	The backlinks link (if exists).
-				let backlinksElement = response.querySelector(".backlinks");
-				let backlinksHTML = backlinksElement
-									? `<span 
-										class="data-field aux-links backlinks" 
-										>${backlinksElement.innerHTML}</span>`
-									: null;
-
-				//	The similar-links link (if exists).
-				let similarsElement = response.querySelector(".similars");
-				let similarsHTML = similarsElement
-								   ? `<span 
-									   class="data-field aux-links similars"
-									   >${similarsElement.innerHTML}</span>`
-								   : null;
-
-                //	The link-link-bibliography link (if exists).
-				let linkbibElement = response.querySelector(".link-bibliography");
-				let linkbibHTML = linkbibElement
-								  ? `<span 
-							  	      class="data-field aux-links link-bibliography"
-							  	      >${linkbibElement.innerHTML}</span>`
-							  	  : null;
-
-				//	All the aux-links (tags, archive, backlinks, similars, link link-bib).
-				let auxLinksHTML = ([ archiveLinkHTML, backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
-				if (auxLinksHTML || tagsHTML)
-					auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
-
-				//  Combined author, date, & aux-links.
-				let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
-
-				//	Abstract (if exists).
-				let abstractElement = response.querySelector("blockquote");
-				let abstractHTML = null;
-				if (abstractElement) {
-					let abstractDocument = newDocument(abstractElement.childNodes);
-					Annotations.dataSources.local.postProcessReferenceEntry(abstractDocument, link);
-					abstractHTML = abstractDocument.innerHTML;
-
-					//	Request image inversion judgments from invertornot.
-					requestImageInversionDataForImagesInContainer(abstractDocument);
-				}
-
-				//	File includes (if any).
-				let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
-				let fileIncludesHTML = null;
-				if (fileIncludesElement) {
-					/*	Remove any file embed links that lack a valid content 
-						type (e.g., foreign-site links that have not been 
-						whitelisted for embedding).
-					 */
-					Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
-						if (Content.contentTypeForLink(includeLink) == null)
-							includeLink.remove();
-					});
-
-					/*	Do not include the file includes section if no valid
-						include-links remain.
-					 */
-					if (isNodeEmpty(fileIncludesElement) == false)
-						fileIncludesHTML = fileIncludesElement.innerHTML;
-				}
-
-				//	Pop-frame title text.
-				let popFrameTitle = referenceElement.cloneNode(true);
-				//	Trim quotes.
-				let [ first, last ] = [ popFrameTitle.firstTextNode, popFrameTitle.lastTextNode ];
-				if (   /^['"‘“]/.test(first.textContent) == true
-					&& /['"’”]$/.test(last.textContent)  == true) {
-					first.textContent = first.textContent.slice(1);
-					last.textContent = last.textContent.slice(0, -1);
-				}
-				let popFrameTitleText = popFrameTitle.innerHTML;
-
-				return {
-					content: {
-						titleHTML:                titleHTML,
-						fullTitleHTML:            titleHTML,
-						titleText:                titleText,
-						titleLinkHref:            titleLinkHref,
-						titleLinkClass:           titleLinkClass,
-						titleLinkIconMetadata:    titleLinkIconMetadata,
-						titleLinkDataAttributes:  titleLinkDataAttributes,
-						author:                   authorHTML,
-						date:                     dateHTML,
-						auxLinks:                 auxLinksHTML,
-						authorDateAux:            authorDateAuxHTML,
-						abstract:                 abstractHTML,
-						fileIncludes:             fileIncludesHTML
-					},
-					template:                       "annotation-blockquote-inside",
-					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-					whichTab:                       (GW.isMobile() ? "current" : "new"),
-					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
-					popFrameTitleText:              popFrameTitleText,
-					popFrameTitleLinkHref:          titleLinkHref,
-					popFrameTitleArchiveLinkHref:   archiveLinkHref
-				};
-			},
-
-			/*  Post-process an already-constructed local annotation 
-				(do HTML cleanup, etc.).
-			 */
-			//	Called by: Annotations.dataSources.local.referenceDataFromParsedAPIResponse
-			postProcessReferenceEntry: (referenceEntry, link = null) => {
-				//	Unwrap extraneous <div>s, if present.
-				if (   referenceEntry.firstElementChild == referenceEntry.lastElementChild
-					&& referenceEntry.firstElementChild.tagName == "DIV")
-					unwrap(referenceEntry.firstElementChild);
-
-				//	If there’s a “See Also” section, rectify its classes.
-				let seeAlsoList = referenceEntry.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
-				if (seeAlsoList) {
-					seeAlsoList.classList.add("aux-links-list", "see-also-list");
-
-					let listLabel = previousBlockOf(seeAlsoList, { notBlockElements: [ ".columns" ] });
-					if (listLabel)
-						listLabel.classList.add("aux-links-list-label", "see-also-list-label");
-				}
-
-				//	Prevent erroneous collapse class.
-				referenceEntry.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
-					auxLinksAppendCollapse.classList.add("bare-content-not");
-				});
-
-				//	Unwrap more extraneous <div>s, if present.
-				let pageDescriptionClass = "page-description-annotation";
-				let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
-				if (pageDescription)
-					unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
-			},
-
-			basePathname: "/metadata/annotation/",
-			referenceElementSelector: [ Annotations.annotatedLinkFullClass,  Annotations.annotatedLinkPartialClass ].map(className => `a.${className}`).join(", ")
-		}
-	}
-};
-
-
-/**********/
-/*	Tweets.
- */
-Annotations.dataSources.twitter = {
-	get delegateDataProvider() { return Content; },
-	get delegateDataSource() { return Content.contentTypes.tweet; }
-};
-
-
-/**************************************************/
-/*  Wikipedia entries (page summaries or sections).
- */
-Annotations.dataSources.wikipedia = {
-	/*	The Wikipedia API only gives usable responses for most, not all,
-		Wikipedia URLs.
-	 */
-	matches: (link) => {
-		return (   /(.+?)\.wikipedia\.org/.test(link.hostname)
-				&& link.pathname.startsWith("/wiki/")
-				&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
-	},
-
-	//	Called by: Annotations.processedAPIResponseForLink
-	//	Called by: Annotations.sourceURLForLink
-	sourceURLForLink: (link) => {
-		annotationURL = URLFromString(link.href);
-
-		let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(annotationURL.pathname))[1]);
-		annotationURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
-		annotationURL.hash = "";
-
-		return annotationURL;
-	},
-
-	//	Called by: Annotations.processedAPIResponseForLink
-	processAPIResponse: (response) => {
-		return newDocument(response);
-	},
-
-	//	Called by: Annotations.referenceDataFromParsedAPIResponse
-	referenceDataFromParsedAPIResponse: (response, articleLink) => {
-		//	Article link.
-		let titleLinkHref = articleLink.href;
-
-		//	We use the mobile URL for popping up the live-link.
-		let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
-			hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
-		}).href;
-		let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
-
-		//	Do not show the whole page, by default.
-		let wholePage = false;
-
-		//	Show full page (sans TOC) if it’s a disambiguation page.
-		if (response.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
-			wholePage = true;
-
-
-			//	Send request to record failure in server logs.
-			GWServerLogError(Annotations.sourceURLForLink(articleLink).href + `--disambiguation-error`, "disambiguation page");
+		//	Link icon for the title link.
+		if (referenceElement.dataset.linkIcon) {
+			titleLinkDataAttributes.push(`data-link-icon-type="${(referenceElement.dataset.linkIconType)}"`);
+			titleLinkDataAttributes.push(`data-link-icon="${(referenceElement.dataset.linkIcon)}"`);
+		} else if (   link 
+				   && link.dataset.linkIcon) {
+			titleLinkDataAttributes.push(`data-link-icon-type="${(link.dataset.linkIconType)}"`)
+			titleLinkDataAttributes.push(`data-link-icon="${(link.dataset.linkIcon)}"`);
 		}
 
-		let pageTitleElementHTML = unescapeHTML(response.querySelector("title").innerHTML);
-		let responseHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
-		if (wholePage) {
-			responseHTML = response.innerHTML;
-			titleHTML = pageTitleElementHTML;
-			fullTitleHTML = pageTitleElementHTML;
-		} else if (articleLink.hash > "") {
-			let targetElement = response.querySelector(selectorFromHash(articleLink.hash));
+		//	Stringify.
+		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0
+								   ? titleLinkDataAttributes.join(" ")
+								   : null);
 
-			/*	Check whether we have tried to load a part of the page which
-				does not exist.
-			 */
-			if (targetElement == null)
-				return null;
+		//  Author list.
+		let authorElement = response.querySelector(".author");
+		let authorHTML = authorElement 
+						 ? `<span class="data-field author cite-author">${authorElement.innerHTML}</span>` 
+						 : null;
 
-			if (/H[0-9]/.test(targetElement.tagName)) {
-				//	The target is a section heading.
-				let targetHeading = targetElement;
-	
-				//	The id is on the heading, so the section is its parent.
-				let targetSection = targetHeading.parentElement.cloneNode(true);
+		//  Date.
+		let dateElement = response.querySelector(".date");
+		let dateHTML = dateElement 
+					   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
+						  + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
+						  + `</span>`) 
+					   : null;
 
-				//	Excise heading.
-				targetHeading = targetSection.firstElementChild;
-				targetHeading.remove();
+		//	Link tags.
+		let tagsElement = response.querySelector(".link-tags");
+		let tagsHTML = tagsElement
+					   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
+					   : null;
 
-				//	Content sans heading.
-				responseHTML = targetSection.innerHTML;
+		//	Archive URL (if exists).
+		let archiveLinkHref = referenceElement.dataset.urlArchive ?? null;
+		let linkTarget = (GW.isMobile() ? "_self" : "_blank");
+		let archiveLinkHTML = archiveLinkHref
+							  ? `<span 
+								  class="data-field archiveURL"
+								  ><a
+									title="Link to local archive for ${titleText}"
+									href="${archiveLinkHref}"
+									target="${linkTarget}"
+									alt="Locally archived version of this URL"
+									>archive</a></span>`
+							  : null;
 
-				//	Unwrap or delete links, but save them for inclusion in the template.
-				secondaryTitleLinksHTML = "";
-				//	First link is the section title itself.
-				targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
-					//  Process link, save HTML, unwrap.
-					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-					Annotations.dataSources.wikipedia.designateWikiLink(link);
-					secondaryTitleLinksHTML += link.outerHTML;
-					unwrap(link);
-				});
-				//	Additional links are other things, who knows what.
-				targetHeading.querySelectorAll("a").forEach(link => {
-					//  Process link, save HTML, delete.
-					Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-					Annotations.dataSources.wikipedia.designateWikiLink(link);
-					secondaryTitleLinksHTML += link.outerHTML;
-					link.remove();
-				});
-				if (secondaryTitleLinksHTML > "")
-					secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
+		//	The backlinks link (if exists).
+		let backlinksElement = response.querySelector(".backlinks");
+		let backlinksHTML = backlinksElement
+							? `<span 
+								class="data-field aux-links backlinks" 
+								>${backlinksElement.innerHTML}</span>`
+							: null;
 
-				//	Cleaned section title.
-				titleHTML = targetHeading.innerHTML;
-				fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
-			} else {
-				//	The target is something else.
-				responseHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
-				titleHTML = articleLink.hash;
+		//	The similar-links link (if exists).
+		let similarsElement = response.querySelector(".similars");
+		let similarsHTML = similarsElement
+						   ? `<span 
+							   class="data-field aux-links similars"
+							   >${similarsElement.innerHTML}</span>`
+						   : null;
+
+		//	The link-link-bibliography link (if exists).
+		let linkbibElement = response.querySelector(".link-bibliography");
+		let linkbibHTML = linkbibElement
+						  ? `<span 
+							  class="data-field aux-links link-bibliography"
+							  >${linkbibElement.innerHTML}</span>`
+						  : null;
+
+		//	All the aux-links (tags, archive, backlinks, similars, link link-bib).
+		let auxLinksHTML = ([ archiveLinkHTML, backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
+		if (auxLinksHTML || tagsHTML)
+			auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
+
+		//  Combined author, date, & aux-links.
+		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
+
+		//	Abstract (if exists).
+		let abstractElement = response.querySelector("blockquote");
+		let abstractHTML = null;
+		let thumbnailFigureHTML = null;
+		if (abstractElement) {
+			let abstractDocument = newDocument(abstractElement.childNodes);
+			Annotations.postProcessReferenceEntry(abstractDocument, link);
+
+			//	Request image inversion judgments from invertornot.
+			requestImageInversionDataForImagesInContainer(abstractDocument);
+
+			//	Thumbnail figure.
+			let pageThumbnailImage = abstractDocument.querySelector("img.page-thumbnail");
+			if (pageThumbnailImage) {
+				//	Make thumbnail image load eagerly instead of lazily.
+				pageThumbnailImage.loading = "eager";
+				pageThumbnailImage.decoding = "sync";
+
+				/*	On sufficiently wide viewports, pull out thumbnail for 
+					proper floating.
+				 */
+				if (GW.mediaQueries.mobileWidth.matches == false) {
+					let pageThumbnailFigure = pageThumbnailImage.closest("figure");
+					thumbnailFigureHTML = pageThumbnailFigure.outerHTML;
+					pageThumbnailFigure.remove();
+				}
 			}
-		} else {
-			responseHTML = response.querySelector("[data-mw-section-id='0']").innerHTML;
-			titleHTML = pageTitleElementHTML;
-			fullTitleHTML = pageTitleElementHTML;
 
-			//	Build TOC.
-			let sections = Array.from(response.querySelectorAll("section")).slice(1);
-			if (   sections 
-				&& sections.length > 0) {
-				responseHTML += `<div class="TOC columns">`;
-				let headingLevel = 0;
-				for (let i = 0; i < sections.length; i++) {
-					let section = sections[i];
-					let headingElement = section.firstElementChild;
-					let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
-					if (newHeadingLevel > headingLevel)
-						responseHTML += `<ul>`;
-
-					if (   i > 0 
-						&& newHeadingLevel <= headingLevel)
-						responseHTML += `</li>`;
-
-					if (newHeadingLevel < headingLevel)
-						responseHTML += `</ul>`;
-
-					//	We must encode, because the anchor might contain quotes.
-					let urlEncodedAnchor = fixedEncodeURIComponent(headingElement.id);
-
-					//	Get heading, parse as HTML, and unwrap links.
-					let heading = headingElement.cloneNode(true);
-					heading.querySelectorAll("a").forEach(unwrap);
-
-					//	Construct TOC entry.
-					responseHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
-
-					headingLevel = newHeadingLevel;
-				}
-				responseHTML += `</li></ul></div>`;
-			}
+			abstractHTML = abstractDocument.innerHTML;
 		}
 
-		let referenceEntry = newDocument(responseHTML);
-		Annotations.dataSources.wikipedia.postProcessReferenceEntry(referenceEntry, articleLink);
+		//	File includes (if any).
+		let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
+		let fileIncludesHTML = null;
+		if (fileIncludesElement) {
+			/*	Remove any file embed links that lack a valid content 
+				type (e.g., foreign-site links that have not been 
+				whitelisted for embedding).
+			 */
+			Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
+				if (Content.contentTypeForLink(includeLink) == null)
+					includeLink.remove();
+			});
 
-		let abstractHTML = referenceEntry.innerHTML;
+			/*	Do not include the file includes section if no valid
+				include-links remain.
+			 */
+			if (isNodeEmpty(fileIncludesElement) == false)
+				fileIncludesHTML = fileIncludesElement.innerHTML;
+		}
 
-		let titleText = newElement("SPAN", null, { innerHTML: titleHTML }).textContent;
-
-		//	Pop-frame title text. Mark sections with ‘§’ symbol.
-		let popFrameTitleHTML = (articleLink.hash > ""
-								 ? (fullTitleHTML
-									? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
-									: `${titleHTML} (${pageTitleElementHTML})`)
-								 : titleHTML);
-		let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
-
-		//	Request image inversion judgments from invertornot.
-		requestImageInversionDataForImagesInContainer(referenceEntry);
+		//	Pop-frame title text.
+		let popFrameTitle = referenceElement.cloneNode(true);
+		//	Trim quotes.
+		let [ first, last ] = [ popFrameTitle.firstTextNode, popFrameTitle.lastTextNode ];
+		if (   /^['"‘“]/.test(first.textContent) == true
+			&& /['"’”]$/.test(last.textContent)  == true) {
+			first.textContent = first.textContent.slice(1);
+			last.textContent = last.textContent.slice(0, -1);
+		}
+		let popFrameTitleText = popFrameTitle.innerHTML;
 
 		return {
 			content: {
-				titleHTML:                titleHTML,
-				fullTitleHTML:            fullTitleHTML,
-				secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
-				titleText:                titleText,
+				title:                    titleHTML,
 				titleLinkHref:            titleLinkHref,
-				titleLinkClass:           `title-link link-live`,
-				titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+				titleLinkClass:           titleLinkClass,
 				titleLinkDataAttributes:  titleLinkDataAttributes,
-				abstract: 		          abstractHTML,
-				dataSourceClass:          "wikipedia-entry",
+				author:                   authorHTML,
+				date:                     dateHTML,
+				auxLinks:                 auxLinksHTML,
+				authorDateAux:            authorDateAuxHTML,
+				abstract:                 abstractHTML,
+				thumbnailFigure:          thumbnailFigureHTML,
+				fileIncludes:             fileIncludesHTML
 			},
-			template:               "annotation-blockquote-inside",
-			linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
-			whichTab:               (GW.isMobile() ? "current" : "new"),
-			tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
-			popFrameTitleText:      popFrameTitleText,
-			popFrameTitleLinkHref:  titleLinkHref
+			template:                       "annotation-blockquote-inside",
+			linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
+			whichTab:                       (GW.isMobile() ? "current" : "new"),
+			tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
+			popFrameTemplate:               "annotation-blockquote-not",
+			popFrameTitleText:              popFrameTitleText,
+			popFrameTitleLinkHref:          titleLinkHref,
+			popFrameTitleArchiveLinkHref:   archiveLinkHref
 		};
 	},
 
-	additionalAPIRequestHeaders: {
-		"Accept": 'text/html; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/HTML/2.1.0"'
-	},
-
-	/*	Qualify a link in a Wikipedia article.
+	/*  Post-process an already-constructed local annotation 
+		(do HTML cleanup, etc.).
 	 */
-	qualifyWikipediaLink: (link, hostArticleLink) => {
-		if (link.getAttribute("href") == null)
-			return;
+	postProcessReferenceEntry: (referenceEntry, link = null) => {
+		//	Unwrap extraneous <div>s, if present.
+		if (   referenceEntry.firstElementChild == referenceEntry.lastElementChild
+			&& referenceEntry.firstElementChild.tagName == "DIV")
+			unwrap(referenceEntry.firstElementChild);
 
-		//  Qualify link.
-		if (link.getAttribute("rel") == "mw:WikiLink")
-			link.pathname = "/wiki" + link.getAttribute("href").slice(1);
-		if (link.getAttribute("href").startsWith("#"))
-			link.pathname = hostArticleLink.pathname;
-		if (link.hostname == location.hostname)
-			link.hostname = hostArticleLink.hostname;
-		if (   link.hostname == hostArticleLink.hostname
-			&& link.pathname.startsWith("/wiki/") == false
-			&& link.pathname.startsWith("/api/") == false)
-			link.pathname = "/wiki" + link.pathname;
-	},
+		//	If there’s a “See Also” section, rectify its classes.
+		let seeAlsoList = referenceEntry.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
+		if (seeAlsoList) {
+			seeAlsoList.classList.add("aux-links-list", "see-also-list");
 
-	/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
-	 */
-	designateWikiLink: (link) => {
-		if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
-			if (Annotations.dataSources.wikipedia.matches(link)) {
-				link.classList.add(Annotations.annotatedLinkFullClass);
-			} else {
-				if ((   link.pathname.startsWith("/wiki/Special:")
-					 || link.pathname == "/w/index.php"
-					 ) == false)
-					link.classList.add("link-live");
-			}
-		}
-	},
-
-	/*  Elements to excise from a Wikipedia entry.
-	 */
-	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
-	extraneousElementSelectors: [
-		"style",
-// 		".mw-ref",
-		".shortdescription",
-		"td hr",
-		".hatnote",
-		".portal",
-		".penicon",
-// 		".reference",
-		".Template-Fact",
-		".error",
-		".mwe-math-mathml-inline",
-		".mwe-math-mathml-display",
-        ".sidebar",
-        ".ambox",
-		".unicode.haudio",
-// 		"span[typeof='mw:File']",
-	],
-
-	/*  CSS properties to preserve when stripping inline styles.
-	 */
-	//	Used in: Annotations.dataSources.wikipedia.postProcessReferenceEntry
-	preservedInlineStyleProperties: [
-		"display",
-		"position",
-		"top",
-		"left",
-		"bottom",
-		"right",
-		"width",
-		"height",
-		"word-break"
-	],
-
-	/*  Post-process an already-constructed annotation created from a Wikipedia
-		entry (do HTML cleanup, etc.).
-	 */
-	//	Called by: Annotations.dataSources.wikipedia.referenceDataFromParsedAPIResponse
-	postProcessReferenceEntry: (referenceEntry, articleLink) => {
-		//  Remove unwanted elements.
-		referenceEntry.querySelectorAll(Annotations.dataSources.wikipedia.extraneousElementSelectors.join(", ")).forEach(element => {
-			element.remove();
-		});
-
-		//	Clean empty nodes.
-		referenceEntry.childNodes.forEach(node => {
-			if (isNodeEmpty(node))
-				node.remove();
-		});
-
-		//  Remove location maps (they don’t work right).
-		referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
-			(locmap.closest("tr") ?? locmap).remove();
-		});
-
-		//	Remove other maps.
-		referenceEntry.querySelectorAll("img").forEach(image => {
-			let imageSourceURL = URLFromString(image.src);
-			if (imageSourceURL.hostname == "maps.wikimedia.org")
-				image.remove();
-		});
-
-		//  Remove empty paragraphs.
-		referenceEntry.querySelectorAll("p:empty").forEach(emptyGraf => {
-			emptyGraf.remove();
-		});
-
-		//	Remove edit-links.
-		referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
-			editLink.remove();
-		});
-
-		//  Process links.
-		referenceEntry.querySelectorAll("a").forEach(link => {
-			//	De-linkify non-anchor self-links.
-			if (   link.hash     == ""
-				&& link.pathname == articleLink.pathname) {
-				unwrap(link);
-				return;
-			}
-
-			//  Qualify links.
-			Annotations.dataSources.wikipedia.qualifyWikipediaLink(link, articleLink);
-
-			//  Mark other Wikipedia links as also being annotated.
-			Annotations.dataSources.wikipedia.designateWikiLink(link);
-
-			//  Mark self-links (anchorlinks within the same article).
-			if (link.pathname == articleLink.pathname)
-				link.classList.add("link-self");
-		});
-
-		//	Prevent layout weirdness for footnote links.
-		referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
-			citationLink.classList.add("icon-not");
-			citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
-		});
-
-		//	Rectify back-to-citation links in “References” sections.
-		referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
-			backToCitationLink.classList.add("icon-not");
-			backToCitationLink.classList.add("wp-footnote-back");
-			backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
-		});
-
-		//	Strip inline styles and some related attributes.
-		let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
-		referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
-			//	Skip table elements; we handle those specially.
-			if (styledElement.matches(tableElementsSelector))
-				return;
-
-			if (styledElement.style.display != "none")
-				stripStyles(styledElement, { saveProperties: Annotations.dataSources.wikipedia.preservedInlineStyleProperties });
-		});
-		//	Special handling for table elements.
-		referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
-			if (tableElement.style.display != "none") {
-				if (tableElement.style.position == "relative")
-					stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
-				else
-					stripStyles(tableElement, { saveProperties: [ "text-align" ] });
-			}
-
-			[ "width", "height", "align" ].forEach(attribute => {
-				tableElement.removeAttribute(attribute);
-			});
-		});
-
-		//  Rectify table classes.
-		referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
-			table.classList.toggle("infobox", true);
-		});
-
-		//  Normalize table cell types.
-		referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
-			let rowSpan = (cell.rowSpan > 1) ? ` rowspan="${cell.rowSpan}"` : ``;
-			let colSpan = (cell.colSpan > 1) ? ` colspan="${cell.colSpan}"` : ``;
-			cell.outerHTML = `<td${rowSpan}${colSpan}>${cell.innerHTML}</td>`;
-		});
-
-		//  Un-linkify images.
-		referenceEntry.querySelectorAll("a img").forEach(linkedImage => {
-			let enclosingLink = linkedImage.closest("a");
-			enclosingLink.parentElement.replaceChild(linkedImage, enclosingLink);
-		});
-
-		//	Fix chemical formulas.
-		referenceEntry.querySelectorAll(".chemf br").forEach(br => {
-			br.remove();
-		});
-
-		//	Rectify quoteboxes.
-		referenceEntry.querySelectorAll("div.quotebox").forEach(quotebox => {
-			let blockquote = quotebox.querySelector("blockquote");
-			blockquote.classList.add("quotebox");
-			
-			let title = quotebox.querySelector(".quotebox-title");
-			if (title) {
-				blockquote.insertBefore(title, blockquote.firstElementChild);
-			}
-
-			let cite = quotebox.querySelector("blockquote + p");
-			if (cite) {
-				blockquote.insertBefore(cite, null);
-				cite.classList.add("quotebox-citation");
-			}
-
-			unwrap(quotebox);
-		});
-
-		//  Separate out the thumbnail and float it.
-		let thumbnail = referenceEntry.querySelector("img");
-		let thumbnailContainer;
-		if (thumbnail)
-			thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
-		if (   thumbnail
-			&& thumbnailContainer
-			&& thumbnailContainer.closest(".gallery") == null) {
-			while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
-				thumbnailContainer = thumbnailContainer.parentElement;
-
-			//  Create the figure and move the thumbnail(s) into it.
-			let figure = newElement("FIGURE", { "class": "thumbnail float-right" });
-			thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
-				if (image.closest("figure") == figure)
-					return;
-
-				let closestRow = image.closest("tr, .trow, [style*='display: table-row']");
-				if (closestRow == null)
-					return;
-
-				let allImagesInRow = closestRow.querySelectorAll("img");
-				if (allImagesInRow.length > 1) {
-					let rowWrapper = newElement("SPAN", { "class": "image-row-wrapper" });
-					rowWrapper.append(...allImagesInRow);
-					figure.append(rowWrapper);
-				} else {
-					figure.append(allImagesInRow[0]);
-				}
-
-				closestRow.remove();
-			});
-
-			//  Create the caption, if need be.
-			let caption = referenceEntry.querySelector(".mw-default-size + div, .infobox-caption");
-			if (   caption
-				&& caption.textContent > "")
-				figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
-
-			//  Insert the figure as the first child of the annotation.
-			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
-
-			//  Rectify classes.
-			thumbnailContainer.closest("table")?.classList.toggle("infobox", true);
-		} else if (   thumbnail
-				   && thumbnail.closest("figure")) {
-			let figure = thumbnail.closest("figure");
-
-			//  Insert the figure as the first child of the annotation.
-			referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
-			figure.classList.add("thumbnail", "float-right");
-
-			let caption = figure.querySelector("figcaption");
-			if (caption.textContent == "")
-				caption.remove();
+			let listLabel = previousBlockOf(seeAlsoList, { notBlockElements: [ ".columns" ] });
+			if (listLabel)
+				listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 		}
 
-		//	Rewrite other figures.
-		referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
-			let figure = newElement("FIGURE");
-
-			let images = figureBlock.querySelectorAll("img");
-			if (images.length == 0)
-				return;
-
-			images.forEach(image => {
-				figure.appendChild(image);
-			});
-
-			figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
-
-			figureBlock.parentNode.insertBefore(figure, figureBlock);
-			figureBlock.remove();
+		//	Prevent erroneous collapse class.
+		referenceEntry.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
+			auxLinksAppendCollapse.classList.add("bare-content-not");
 		});
 
-		//	Float all figures right.
-		referenceEntry.querySelectorAll("figure").forEach(figure => {
-			figure.classList.add("float-right");
-		});
-
-		//	Mark certain images as not to be wrapped in figures.
-		let noFigureImagesSelector = [
-			".mwe-math-element",
-			".mw-default-size",
-			".sister-logo",
-			".side-box-image",
-			"p"
-		].map(selector => `${selector} img`).join(", ");
-		referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
-			image.classList.add("figure-not");
-		});
-
-		//	Clean up math elements.
-		unwrapAll(".mwe-math-element", { root: referenceEntry });
-		referenceEntry.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
-			//	Unwrap the <dd>.
-			unwrap(inlineButReallyBlockMathElement.parentElement);
-			//	Unwrap the <dl>.
-			unwrap(inlineButReallyBlockMathElement.parentElement);
-			//	Rectify class.
-			inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
-		});
-		wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: referenceEntry });
-		wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: referenceEntry });
-
-		//	Move infoboxes out of the way.
-		let childElements = Array.from(referenceEntry.children);
-		let firstInfoboxIndex = childElements.findIndex(x => x.matches(".infobox"));
-		if (firstInfoboxIndex !== -1) {
-			let firstInfobox = childElements[firstInfoboxIndex];
-			let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
-			if (firstGrafAfterInfobox)
-				referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
-			wrapElement(firstInfobox, ".collapse");
-		}
-
-		//	Apply section classes.
-		referenceEntry.querySelectorAll("section").forEach(section => {
-			if (/[Hh][1-9]/.test(section.firstElementChild.tagName))
-				section.classList.add("level" + section.firstElementChild.tagName.slice(1));
-		});
-
-		//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
-		referenceEntry.querySelectorAll(".dmbox-body").forEach(noteBox => {
-			paragraphizeTextNodesOfElement(noteBox);
-			noteBox.parentElement.classList.add("admonition", "tip");
-		});
-
-		//	Clean empty nodes, redux.
-		referenceEntry.childNodes.forEach(node => {
-			if (isNodeEmpty(node))
-				node.remove();
-		});
-	}
+		//	Unwrap more extraneous <div>s, if present.
+		let pageDescriptionClass = "page-description-annotation";
+		let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
+		if (pageDescription)
+			unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
+	},
 };
 
 //	Fire load event.
@@ -5869,7 +5226,8 @@ Content = {
 
                     //  Send request to record failure in server logs.
                     GWServerLogError(link.href + `--missing-content`, "missing content");
-                }
+                },
+				headers: Content.contentTypeForLink(link).additionalAPIRequestHeaders
             });
         }
 
@@ -5970,7 +5328,7 @@ Content = {
         Each has the following necessary members:
 
             .matches(URL|Element) => boolean
-            .isPageContent: boolean
+            .isSliceable: boolean
 
         ... plus either these two:
 
@@ -6004,7 +5362,7 @@ Content = {
                 return link.classList.contains("link-dropcap");
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 let letter = link.dataset.letter;
@@ -6032,6 +5390,7 @@ Content = {
             matches: (link) => {
                 //  Some foreign-site links are handled specially.
                 if ([ "tweet",
+                	  "wikipediaEntry",
                       "remoteVideo",
                       "remoteImage"
                       ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
@@ -6044,7 +5403,7 @@ Content = {
                         && link.classList.contains("link-live"));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 //  WARNING: EXPERIMENTAL FEATURE!
@@ -6123,13 +5482,558 @@ Content = {
             }
         },
 
+		wikipediaEntry: {
+			/*	The Wikipedia API only gives usable responses for most, not all,
+				Wikipedia URLs.
+			 */
+			matches: (link) => {
+				return (   link.classList.contains("content-transform-not") == false
+						&& /(.+?)\.wikipedia\.org/.test(link.hostname)
+						&& link.pathname.startsWith("/wiki/")
+						&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
+			},
+
+			isSliceable: false,
+
+			sourceURLsForLink: (link) => {
+				let apiRequestURL = URLFromString(link.href);
+
+				let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(apiRequestURL.pathname))[1]);
+				apiRequestURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
+				apiRequestURL.hash = "";
+
+				return [ apiRequestURL ];
+			},
+
+            contentFromResponse: (response, link, sourceURL) => {
+                return {
+                    document: newDocument(response)
+                };
+            },
+
+			referenceDataFromContent: (wikipediaEntryPage, articleLink) => {
+				//	Article link.
+				let titleLinkHref = articleLink.href;
+
+				//	We use the mobile URL for popping up the live-link.
+				let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
+					hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
+				}).href;
+				let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+
+				//	Do not show the whole page, by default.
+				let wholePage = false;
+
+				//	Show full page (sans TOC) if it’s a disambiguation page.
+				if (wikipediaEntryPage.document.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
+					wholePage = true;
+
+					//	Send request to record failure in server logs.
+					GWServerLogError(Content.contentTypes.wikipediaEntry.sourceURLsForLink(articleLink).first.href + `--disambiguation-error`, "disambiguation page");
+				}
+
+				let pageTitleElementHTML = unescapeHTML(wikipediaEntryPage.document.querySelector("title").innerHTML);
+				let entryContentHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
+				if (wholePage) {
+					entryContentHTML = wikipediaEntryPage.document.innerHTML;
+					titleHTML = pageTitleElementHTML;
+					fullTitleHTML = pageTitleElementHTML;
+				} else if (articleLink.hash > "") {
+					let targetElement = wikipediaEntryPage.document.querySelector(selectorFromHash(articleLink.hash));
+
+					/*	Check whether we have tried to load a part of the page which
+						does not exist.
+					 */
+					if (targetElement == null)
+						return null;
+
+					if (/H[0-9]/.test(targetElement.tagName)) {
+						//	The target is a section heading.
+						let targetHeading = targetElement;
+	
+						//	The id is on the heading, so the section is its parent.
+						let targetSection = targetHeading.parentElement.cloneNode(true);
+
+						//	Excise heading.
+						targetHeading = targetSection.firstElementChild;
+						targetHeading.remove();
+
+						//	Content sans heading.
+						entryContentHTML = targetSection.innerHTML;
+
+						//	Unwrap or delete links, but save them for inclusion in the template.
+						secondaryTitleLinksHTML = "";
+						//	First link is the section title itself.
+						targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
+							//  Process link, save HTML, unwrap.
+							Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+							Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+							secondaryTitleLinksHTML += link.outerHTML;
+							unwrap(link);
+						});
+						//	Additional links are other things, who knows what.
+						targetHeading.querySelectorAll("a").forEach(link => {
+							//  Process link, save HTML, delete.
+							Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+							Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+							secondaryTitleLinksHTML += link.outerHTML;
+							link.remove();
+						});
+						if (secondaryTitleLinksHTML > "")
+							secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
+
+						//	Cleaned section title.
+						titleHTML = targetHeading.innerHTML;
+						fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+					} else {
+						//	The target is something else.
+						entryContentHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
+						titleHTML = articleLink.hash;
+					}
+				} else {
+					entryContentHTML = wikipediaEntryPage.document.querySelector("[data-mw-section-id='0']").innerHTML;
+					titleHTML = pageTitleElementHTML;
+					fullTitleHTML = pageTitleElementHTML;
+
+					//	Build TOC.
+					let sections = Array.from(wikipediaEntryPage.document.querySelectorAll("section")).slice(1);
+					if (   sections 
+						&& sections.length > 0) {
+						entryContentHTML += `<div class="TOC columns">`;
+						let headingLevel = 0;
+						for (let i = 0; i < sections.length; i++) {
+							let section = sections[i];
+							let headingElement = section.firstElementChild;
+							let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
+							if (newHeadingLevel > headingLevel)
+								entryContentHTML += `<ul>`;
+
+							if (   i > 0 
+								&& newHeadingLevel <= headingLevel)
+								entryContentHTML += `</li>`;
+
+							if (newHeadingLevel < headingLevel)
+								entryContentHTML += `</ul>`;
+
+							//	We must encode, because the anchor might contain quotes.
+							let urlEncodedAnchor = fixedEncodeURIComponent(headingElement.id);
+
+							//	Get heading, parse as HTML, and unwrap links.
+							let heading = headingElement.cloneNode(true);
+							heading.querySelectorAll("a").forEach(unwrap);
+
+							//	Construct TOC entry.
+							entryContentHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
+
+							headingLevel = newHeadingLevel;
+						}
+						entryContentHTML += `</li></ul></div>`;
+					}
+				}
+
+				let entryContent = newDocument(entryContentHTML);
+
+				//	Post-process entry content.
+				Content.contentTypes.wikipediaEntry.postProcessReferenceEntry(entryContent, articleLink);
+
+				//	Request image inversion judgments from invertornot.
+				requestImageInversionDataForImagesInContainer(entryContent);
+
+				//	Pull out initial figure.
+				let thumbnailFigureHTML = null;
+				if (GW.mediaQueries.mobileWidth.matches == false) {
+					let initialFigure = entryContent.querySelector("figure.float-right:first-child");
+					if (initialFigure) {
+						thumbnailFigureHTML = initialFigure.outerHTML;
+						initialFigure.remove();
+					}
+				}
+
+				entryContentHTML = entryContent.innerHTML;
+
+				//	Pop-frame title text. Mark sections with ‘§’ symbol.
+				let popFrameTitleHTML = (articleLink.hash > ""
+										 ? (fullTitleHTML
+											? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+											: `${titleHTML} (${pageTitleElementHTML})`)
+										 : titleHTML);
+				let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
+
+				return {
+					content: {
+						title:                    fullTitleHTML,
+						titleLinkHref:            titleLinkHref,
+						titleLinkClass:           `title-link link-live content-transform-not`,
+						titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+						titleLinkDataAttributes:  titleLinkDataAttributes,
+						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
+						entryContent: 		      entryContentHTML,
+						thumbnailFigure:          thumbnailFigureHTML
+					},
+					contentTypeClass:       "wikipedia-entry",
+					template:               "wikipedia-entry-blockquote-inside",
+					linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:               (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:       "wikipedia-entry-blockquote-not",
+					popFrameTitleText:      popFrameTitleText,
+					popFrameTitleLinkHref:  titleLinkHref
+				};
+			},
+
+			additionalAPIRequestHeaders: {
+				"Accept": 'text/html; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/HTML/2.1.0"'
+			},
+
+			/*	Qualify a link in a Wikipedia article.
+			 */
+			qualifyWikipediaLink: (link, hostArticleLink) => {
+				if (link.getAttribute("href") == null)
+					return;
+
+				//  Qualify link.
+				if (link.getAttribute("rel") == "mw:WikiLink")
+					link.pathname = "/wiki" + link.getAttribute("href").slice(1);
+				if (link.getAttribute("href").startsWith("#"))
+					link.pathname = hostArticleLink.pathname;
+				if (link.hostname == location.hostname)
+					link.hostname = hostArticleLink.hostname;
+				if (   link.hostname == hostArticleLink.hostname
+					&& link.pathname.startsWith("/wiki/") == false
+					&& link.pathname.startsWith("/api/") == false)
+					link.pathname = "/wiki" + link.pathname;
+			},
+
+			/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
+			 */
+			designateWikiLink: (link) => {
+				if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
+					if (Content.contentTypes.wikipediaEntry.matches(link)) {
+						link.classList.add("content-transform");
+					} else {
+						if ((   link.pathname.startsWith("/wiki/Special:")
+							 || link.pathname == "/w/index.php"
+							 ) == false)
+							link.classList.add("link-live");
+					}
+				}
+			},
+
+			/*  Elements to excise from a Wikipedia entry.
+			 */
+			extraneousElementSelectors: [
+				"style",
+		// 		".mw-ref",
+				".shortdescription",
+				"td hr",
+				".hatnote",
+				".portal",
+				".penicon",
+		// 		".reference",
+				".Template-Fact",
+				".error",
+				".mwe-math-mathml-inline",
+				".mwe-math-mathml-display",
+				".sidebar",
+				".ambox",
+				".unicode.haudio",
+		// 		"span[typeof='mw:File']",
+			],
+
+			/*  CSS properties to preserve when stripping inline styles.
+			 */
+			preservedInlineStyleProperties: [
+				"display",
+				"position",
+				"top",
+				"left",
+				"bottom",
+				"right",
+				"width",
+				"height",
+				"word-break"
+			],
+
+			/*  Post-process an already-constructed content-transformed
+				Wikipedia entry (do HTML cleanup, etc.).
+			 */
+			postProcessReferenceEntry: (referenceEntry, articleLink) => {
+				//  Remove unwanted elements.
+				referenceEntry.querySelectorAll(Content.contentTypes.wikipediaEntry.extraneousElementSelectors.join(", ")).forEach(element => {
+					element.remove();
+				});
+
+				//	Clean empty nodes.
+				referenceEntry.childNodes.forEach(node => {
+					if (isNodeEmpty(node))
+						node.remove();
+				});
+
+				//  Remove location maps (they don’t work right).
+				referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
+					(locmap.closest("tr") ?? locmap).remove();
+				});
+
+				//	Remove other maps.
+				referenceEntry.querySelectorAll("img").forEach(image => {
+					let imageSourceURL = URLFromString(image.src);
+					if (imageSourceURL.hostname == "maps.wikimedia.org")
+						image.remove();
+				});
+
+				//  Remove empty paragraphs.
+				referenceEntry.querySelectorAll("p:empty").forEach(emptyGraf => {
+					emptyGraf.remove();
+				});
+
+				//	Remove edit-links.
+				referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
+					editLink.remove();
+				});
+
+				//  Process links.
+				referenceEntry.querySelectorAll("a").forEach(link => {
+					//	De-linkify non-anchor self-links.
+					if (   link.hash     == ""
+						&& link.pathname == articleLink.pathname) {
+						unwrap(link);
+						return;
+					}
+
+					//  Qualify links.
+					Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+
+					//  Mark other Wikipedia links as also being annotated.
+					Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+
+					//  Mark self-links (anchorlinks within the same article).
+					if (link.pathname == articleLink.pathname)
+						link.classList.add("link-self");
+				});
+
+				//	Prevent layout weirdness for footnote links.
+				referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
+					citationLink.classList.add("icon-not");
+					citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
+				});
+
+				//	Rectify back-to-citation links in “References” sections.
+				referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
+					backToCitationLink.classList.add("icon-not");
+					backToCitationLink.classList.add("wp-footnote-back");
+					backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
+				});
+
+				//	Strip inline styles and some related attributes.
+				let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
+				referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
+					//	Skip table elements; we handle those specially.
+					if (styledElement.matches(tableElementsSelector))
+						return;
+
+					if (styledElement.style.display != "none")
+						stripStyles(styledElement, { saveProperties: Content.contentTypes.wikipediaEntry.preservedInlineStyleProperties });
+				});
+				//	Special handling for table elements.
+				referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
+					if (tableElement.style.display != "none") {
+						if (tableElement.style.position == "relative")
+							stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
+						else
+							stripStyles(tableElement, { saveProperties: [ "text-align" ] });
+					}
+
+					[ "width", "height", "align" ].forEach(attribute => {
+						tableElement.removeAttribute(attribute);
+					});
+				});
+
+				//  Rectify table classes.
+				referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
+					table.classList.toggle("infobox", true);
+				});
+
+				//  Normalize table cell types.
+				referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
+					let rowSpan = (cell.rowSpan > 1) ? ` rowspan="${cell.rowSpan}"` : ``;
+					let colSpan = (cell.colSpan > 1) ? ` colspan="${cell.colSpan}"` : ``;
+					cell.outerHTML = `<td${rowSpan}${colSpan}>${cell.innerHTML}</td>`;
+				});
+
+				//  Un-linkify images.
+				referenceEntry.querySelectorAll("a img").forEach(linkedImage => {
+					let enclosingLink = linkedImage.closest("a");
+					enclosingLink.parentElement.replaceChild(linkedImage, enclosingLink);
+				});
+
+				//	Fix chemical formulas.
+				referenceEntry.querySelectorAll(".chemf br").forEach(br => {
+					br.remove();
+				});
+
+				//	Rectify quoteboxes.
+				referenceEntry.querySelectorAll("div.quotebox").forEach(quotebox => {
+					let blockquote = quotebox.querySelector("blockquote");
+					blockquote.classList.add("quotebox");
+			
+					let title = quotebox.querySelector(".quotebox-title");
+					if (title) {
+						blockquote.insertBefore(title, blockquote.firstElementChild);
+					}
+
+					let cite = quotebox.querySelector("blockquote + p");
+					if (cite) {
+						blockquote.insertBefore(cite, null);
+						cite.classList.add("quotebox-citation");
+					}
+
+					unwrap(quotebox);
+				});
+
+				//  Separate out the thumbnail and float it.
+				let thumbnail = referenceEntry.querySelector("img");
+				let thumbnailContainer;
+				if (thumbnail)
+					thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
+				if (   thumbnail
+					&& thumbnailContainer
+					&& thumbnailContainer.closest(".gallery") == null) {
+					while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
+						thumbnailContainer = thumbnailContainer.parentElement;
+
+					//  Create the figure and move the thumbnail(s) into it.
+					let figure = newElement("FIGURE", { "class": "thumbnail float-right" });
+					thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
+						if (image.closest("figure") == figure)
+							return;
+
+						let closestRow = image.closest("tr, .trow, [style*='display: table-row']");
+						if (closestRow == null)
+							return;
+
+						let allImagesInRow = closestRow.querySelectorAll("img");
+						if (allImagesInRow.length > 1) {
+							let rowWrapper = newElement("SPAN", { "class": "image-row-wrapper" });
+							rowWrapper.append(...allImagesInRow);
+							figure.append(rowWrapper);
+						} else {
+							figure.append(allImagesInRow[0]);
+						}
+
+						closestRow.remove();
+					});
+
+					//  Create the caption, if need be.
+					let caption = referenceEntry.querySelector(".mw-default-size + div, .infobox-caption");
+					if (   caption
+						&& caption.textContent > "")
+						figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
+
+					//  Insert the figure as the first child of the entry.
+					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+
+					//  Rectify classes.
+					thumbnailContainer.closest("table")?.classList.toggle("infobox", true);
+				} else if (   thumbnail
+						   && thumbnail.closest("figure")) {
+					let figure = thumbnail.closest("figure");
+
+					//  Insert the figure as the first child of the entry.
+					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+					figure.classList.add("thumbnail", "float-right");
+
+					let caption = figure.querySelector("figcaption");
+					if (caption.textContent == "")
+						caption.remove();
+				}
+
+				//	Rewrite other figures.
+				referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
+					let figure = newElement("FIGURE");
+
+					let images = figureBlock.querySelectorAll("img");
+					if (images.length == 0)
+						return;
+
+					images.forEach(image => {
+						figure.appendChild(image);
+					});
+
+					figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
+
+					figureBlock.parentNode.insertBefore(figure, figureBlock);
+					figureBlock.remove();
+				});
+
+				//	Float all figures right.
+				referenceEntry.querySelectorAll("figure").forEach(figure => {
+					figure.classList.add("float-right");
+				});
+
+				//	Mark certain images as not to be wrapped in figures.
+				let noFigureImagesSelector = [
+					".mwe-math-element",
+					".mw-default-size",
+					".sister-logo",
+					".side-box-image",
+					"p"
+				].map(selector => `${selector} img`).join(", ");
+				referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
+					image.classList.add("figure-not");
+				});
+
+				//	Clean up math elements.
+				unwrapAll(".mwe-math-element", { root: referenceEntry });
+				referenceEntry.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
+					//	Unwrap the <dd>.
+					unwrap(inlineButReallyBlockMathElement.parentElement);
+					//	Unwrap the <dl>.
+					unwrap(inlineButReallyBlockMathElement.parentElement);
+					//	Rectify class.
+					inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
+				});
+				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: referenceEntry });
+				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: referenceEntry });
+
+				//	Move infoboxes out of the way.
+				let childElements = Array.from(referenceEntry.children);
+				let firstInfoboxIndex = childElements.findIndex(x => x.matches(".infobox"));
+				if (firstInfoboxIndex !== -1) {
+					let firstInfobox = childElements[firstInfoboxIndex];
+					let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
+					if (firstGrafAfterInfobox)
+						referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
+					wrapElement(firstInfobox, ".collapse");
+				}
+
+				//	Apply section classes.
+				referenceEntry.querySelectorAll("section").forEach(section => {
+					if (/[Hh][1-9]/.test(section.firstElementChild.tagName))
+						section.classList.add("level" + section.firstElementChild.tagName.slice(1));
+				});
+
+				//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
+				referenceEntry.querySelectorAll(".dmbox-body").forEach(noteBox => {
+					paragraphizeTextNodesOfElement(noteBox);
+					noteBox.parentElement.classList.add("admonition", "tip");
+				});
+
+				//	Clean empty nodes, redux.
+				referenceEntry.childNodes.forEach(node => {
+					if (isNodeEmpty(node))
+						node.remove();
+				});
+			}
+		},
+
         tweet: {
             matches: (link) => {
-                return (   [ "twitter.com", "x.com" ].includes(link.hostname)
+                return (   link.classList.contains("content-transform-not") == false
+						&& [ "twitter.com", "x.com" ].includes(link.hostname)
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
             },
 
-            isPageContent: true,
+            isSliceable: false,
 
             sourceURLsForLink: (link) => {
                 let urls = [ ];
@@ -6154,16 +6058,17 @@ Content = {
             },
 
             referenceDataFromContent: (tweetPage, link) => {
-                //  Link metadata for title-links.
-                let titleLinkClass = "title-link";
-                let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
-
+            	//	Nitter host.
                 let nitterHost = Content.contentTypes.tweet.getNitterHost();
 
+                //  Class and link icon for link to user’s page.
+                let authorLinkClass = "author-link";
+                let authorLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
+
                 //  URL for link to user’s page.
-                let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
-                titleLinkURL.hostname = nitterHost;
-                let titleLinkHref = titleLinkURL.href;
+                let authorLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
+                authorLinkURL.hostname = nitterHost;
+                let authorLinkHref = authorLinkURL.href;
 
                 //  Avatar.
                 let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
@@ -6178,60 +6083,62 @@ Content = {
                 let avatarImg = newElement("IMG", { src: avatarImgSrc, class: "avatar figure-not" });
 
                 //  Text of link to user’s page.
-                let titleParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
-                let titleText = `“${titleParts[1]}” (${titleParts[2]})`;
-                let titleHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
+                let authorLinkParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
+                let authorPlusAvatarHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
 
-                //  Link to tweet.
+				//	Class and link icon for link to tweet.
+                let tweetLinkClass = "tweet-link" + (link.dataset.urlArchive ? " link-live" : "");
+                let tweetLinkIconMetadata = authorLinkIconMetadata;
+
+                //  URL for link to tweet.
+                let tweetLinkURL = URLFromString(link.href);
+                tweetLinkURL.hostname = nitterHost;
+                tweetLinkURL.hash = "m";
+
+				//	Data attribute for archived tweet (if available).
+                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
+                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
+                									: "";
+				//	Text of link to tweet.
                 let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
                 let tweetDateString = ("" + tweetDate.getFullYear())
                                     + "-"
                                     + ("" + tweetDate.getMonth()).padStart(2, '0')
                                     + "-"
                                     + ("" + tweetDate.getDate()).padStart(2, '0');
-                let tweetLinkURL = URLFromString(link.href);
-                tweetLinkURL.hostname = nitterHost;
-                tweetLinkURL.hash = "m";
 
-                //  Secondary title links.
-                let tweetLinkClass = titleLinkClass + (link.dataset.urlArchive ? " link-live" : "");
-                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
-                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
-                									: "";
-                let secondaryTitleLinksHTML = ` on <a 
-                									href="${tweetLinkURL.href}" 
-                									class="${tweetLinkClass}" 
-                									${archivedTweetURLDataAttribute} 
-                									${titleLinkIconMetadata}
-                									>${tweetDateString}</a>:`;
+                //  Main tweet content.
+                let tweetContentHTML = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
-                //  Tweet content itself.
-                let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
+				//	Request image inversion judgments from invertOrNot.
+				requestImageInversionDataForImagesInContainer(newDocument(tweetContentHTML));
 
                 //  Attached media (video or images).
-                tweetContent += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
+                tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
 
                 //  Pop-frame title text.
-                let popFrameTitleText = `${titleHTML} on ${tweetDateString}`;
+                let popFrameTitleText = `${authorPlusAvatarHTML} on ${tweetDateString}`;
 
                 return {
                     content: {
-                        titleHTML:                titleHTML,
-                        fullTitleHTML:            titleHTML,
-                        secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
-                        titleText:                titleText,
-                        titleLinkHref:            titleLinkHref,
-                        titleLinkClass:           titleLinkClass,
-                        titleLinkIconMetadata:    titleLinkIconMetadata,
-                        abstract:                 tweetContent,
-                        dataSourceClass:          "tweet",
+                        authorLinkClass:          authorLinkClass,
+                        authorLinkHref:           authorLinkURL.href,
+                        authorLinkIconMetadata:   authorLinkIconMetadata,
+                        authorPlusAvatar:         authorPlusAvatarHTML,
+                        tweetLinkClass:           tweetLinkClass,
+                        tweetLinkHref:            tweetLinkURL.href,
+                        tweetLinkIconMetadata:    tweetLinkIconMetadata,
+                        tweetDate:                tweetDateString,
+                        tweetContent:             tweetContentHTML
                     },
-                    template:                       "annotation-blockquote-outside",
-                    linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-                    whichTab:                       (GW.isMobile() ? "current" : "new"),
-                    tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
-                    popFrameTitleText:              popFrameTitleText,
-                    popFrameTitleLinkHref:          tweetLinkURL.href
+                    contentTypeClass:       "tweet",
+                    template:               "tweet-blockquote-outside",
+                    linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+                    whichTab:               (GW.isMobile() ? "current" : "new"),
+                    tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:       "tweet-blockquote-not",
+                    popFrameTitleText:      popFrameTitleText,
+                    popFrameTitleLinkHref:  tweetLinkURL.href
                 };
             },
 
@@ -6284,7 +6191,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localCodeFile.codeFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             /*  We first try to retrieve a syntax-highlighted version of the
                 given code file, stored on the server as an HTML fragment. If
@@ -6371,7 +6278,7 @@ Content = {
                         && link.pathname.endsWith(".html"));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             sourceURLsForLink: (link) => {
                 let url = URLFromString(link.href);
@@ -6428,7 +6335,7 @@ Content = {
                 }
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 if ((Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) == false)
@@ -6478,7 +6385,7 @@ Content = {
                 }
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 let content = null;
@@ -6573,7 +6480,7 @@ Content = {
                         && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
@@ -6600,7 +6507,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localVideo.videoFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Import specified dimensions / aspect ratio.
@@ -6655,7 +6562,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localAudio.audioFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Use annotation abstract (if any) as figure caption.
@@ -6698,7 +6605,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Import specified dimensions / aspect ratio.
@@ -6750,7 +6657,7 @@ Content = {
                         || link.classList.contains("link-page"));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             sourceURLsForLink: (link) => {
                 let url = URLFromString(link.href);
@@ -7149,14 +7056,29 @@ Content = {
 	-------------------
 
 	The `data-include-template` attribute allows selection of include template 
-	to use. (Note that some include data sources specify a template by default;
-	the `data-include-template` attribute overrides the default in such cases.)
+	to use.
+
+	(Note that some include data sources specify a template by default;
+	 the `data-include-template` attribute overrides the default in such cases.)
+
 	If a template is specified, the included content is treated as a template
 	data source, rather than being included directly. (See comment for the
 	templateDataFromHTML() function for information about how template data
 	is specified in HTML. Note that some data sources provide template data in
 	pre-constructed object form, which bypasses the need to extract it from
 	HTML source.)
+
+	If the value of this attribute begins with the ‘$’ character, then the rest
+	if the attribute value (after the dollar sign) is treated as a key into the 
+	template data object, rather than directly as the name of a template file.
+	This allows a template data source to specify different templates for use
+	in different contexts. (For example, a template data source may specify a
+	default template, to be used when transcluding normally, and a different 
+	template to be used when the transcluded content is to be used as the 
+	content of a pop-frame. In such a case, the template data object might have
+	a field with key `popFrameTemplate` whose value is the name of a template,
+	and the include-link’s `data-include-template` attribute would have a value
+	of `$popFrameTemplate`.)
 
 	3. Selector-based inclusion/exclusion
 	-------------------------------------
@@ -7300,20 +7222,22 @@ Content = {
 
 		<span data-template-field="foo">Bar</span>
 
-	This element defines a data field with name `foo` and value `Bar`.
+			This element defines a data field with name `foo` and value `Bar`.
 
-		<span data-template-field="foo:$title" title="Bar"></span>
+		<span data-template-fields="foo:$title" title="Bar"></span>
 
-	This element defines a data field with name `foo` and value `Bar`.
+			This element defines one data field, with name `foo` and value `Bar`.
 
-		<span data-template-field="foo:$title, bar:.tagName" title="Baz"></span>
+		<span data-template-fields="foo:$title, bar:.tagName" title="Baz"></span>
 
-	This element defines two data fields: one with name `foo` and value `Baz`,
-	and one with name `bar` and value `SPAN`.
+			This element defines two data fields: one with name `foo` and value 
+			`Baz`,and one with name `bar` and value `SPAN`.
 
 		<span data-template-field="foo:title" title="Bar"></span>
 
-	This element defines no data fields.
+			This element defines no data fields. (Likely this is a typo, and 
+			the desired attribute name is actually `data-template-fields`; note
+			the plural form.)
  */
 //	(string|Document|DocumentFragment|Element) => object
 function templateDataFromHTML(html) {
@@ -7575,7 +7499,13 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		/*  See corresponding note in annotations.js.
 			—SA 2024-02-16
 		 */
-		[ "link-live", "link-page", "link-dropcap", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
+		[ "link-live", 
+		  "link-page", 
+		  "link-dropcap", 
+		  "link-annotated", 
+		  "link-annotated-partial", 
+		  "content-transform-not" 
+		  ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
@@ -7598,6 +7528,26 @@ function loadLocationForIncludeLink(includeLink) {
     } else {
     	return null;
     }
+}
+
+/*******************************************************************************/
+/*	Return appropriate contentType string for given include-link. (May be null.)
+ */
+function contentTypeIdentifierForIncludeLink(includeLink) {
+	let contentType = null;
+
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		|| (   Content.contentTypes.localFragment.matches(includeLink)
+			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
+		contentType = "annotation";
+	} else {
+		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
+		if (   referenceData 
+			&& referenceData.contentTypeClass != null)
+			contentType = referenceData.contentTypeClass.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+	}
+
+	return contentType;
 }
 
 /*****************************************************************/
@@ -7728,14 +7678,9 @@ function includeContent(includeLink, content) {
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
-	let contentType = null;
-	if (   Transclude.isAnnotationTransclude(includeLink)
-		|| (   Content.contentTypes.localFragment.matches(includeLink)
-			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname)))
-		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
-		contentType: contentType,
+		contentType: contentTypeIdentifierForIncludeLink(includeLink),
 		context: includeLink.eventInfo.context,
 		container: wrapper,
 		document: containingDocument,
@@ -8289,7 +8234,7 @@ Transclude = {
 			selectors.push("p");
 		}
 
-		for (selector of selectors)
+		for (let selector of selectors)
 			if (   (block = element.closest(selector) ?? block)
 				&& block.matches(Transclude.notBlockElementSelector) == false)
 // 				if (   Transclude.specificBlockElementSelectors.includes(selector)
@@ -8319,11 +8264,11 @@ Transclude = {
 	},
 
     //  Called by: Transclude.sliceContentFromDocument
-	isPageContent: (includeLink) => {
+	isSliceable: (includeLink) => {
 		let dataProvider = Transclude.dataProviderForLink(includeLink);
 		switch (dataProvider) {
 		case Content:
-			return Content.contentTypeForLink(includeLink).isPageContent;
+			return Content.contentTypeForLink(includeLink).isSliceable;
 		case Annotations:
 			return true;
 		}
@@ -8331,8 +8276,8 @@ Transclude = {
 
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
-		//	If it’s not page content, we don’t delve into its internals.
-		if (Transclude.isPageContent(includeLink) == false)
+		//	Check if slicing is permitted.
+		if (Transclude.isSliceable(includeLink) == false)
 			return newDocument(sourceDocument);
 
         //  If it’s a full page, extract just the page content.
@@ -8703,7 +8648,7 @@ Transclude = {
 					fireContentLoadEvent: true,
 					loadEventInfo: {
 						source: "transclude",
-						contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+						contentType: contentTypeIdentifierForIncludeLink(includeLink),
 						includeLink: includeLink
 					}
 				};
@@ -8731,8 +8676,12 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName = includeLink.dataset.includeTemplate || dataProvider.referenceDataForLink(includeLink).template;
+			let referenceData = dataProvider.referenceDataForLink(includeLink);
+			let templateName = includeLink.dataset.includeTemplate || referenceData.template;
 			if (templateName) {
+				if (templateName.startsWith("$"))
+					templateName = referenceData[templateName.slice(1)];
+
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
 						includeLink.delayed = true;
@@ -8975,24 +8924,23 @@ Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 	includeLink.dataset.includeSelectorNot = ".caption-wrapper";
 });
 Transclude.templates = {
-	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
-	<p class="data-field title <[IF2 authorDateAux]>author-date-aux<[IF2END]>">
+	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}>">
+	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>\\
-		<[IF2 [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]>\\
-		<[IF2 authorDateAux]><[IF3 author]>,\\ <[IF3END]><{authorDateAux}><[IF3 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF3END]><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>\\
+		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
 	</p>
-	<[IFEND]>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract">
+		<[IF2 thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IF2END]>
 		<{abstract}>
 		<[IF2 fileIncludes]>
 		<div class="data-field file-includes"><{fileIncludes}></div>
@@ -9004,20 +8952,19 @@ Transclude.templates = {
 		<[IF2END]>
 	<[IFEND]>
 </div>`,
-	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
+	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>
 	</p>
-	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -9028,20 +8975,19 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </div>`,
-	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
+	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>
 	</p>
-	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -9074,6 +9020,80 @@ Transclude.templates = {
 	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
 		><{popFrameTitleText}></a>`,
+	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
+	<p class="data-field tweet-links">
+		<a 
+		   class="<{authorLinkClass}>"
+		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{authorLinkIconMetadata}>
+			   ><{authorPlusAvatar}></a>\\
+		on \\
+		<a
+		   class="<{tweetLinkClass}>" 
+		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{tweetLinkHref}>" 
+		   <{archivedTweetURLDataAttribute}> 
+		   <{tweetLinkIconMetadata}>
+		   	   ><{tweetDate}></a>
+	</p>
+	<div class="data-field tweet-content"><{tweetContent}></div>
+</div>`,
+	"tweet-blockquote-outside": `<blockquote class="content-transform <{contentTypeClass}>">
+	<p class="data-field tweet-links">
+		<a 
+		   class="<{authorLinkClass}>"
+		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{authorLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{authorLinkIconMetadata}>
+			   ><{authorPlusAvatar}></a>\\
+		on \\
+		<a
+		   class="<{tweetLinkClass}>" 
+		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{tweetLinkHref}>" 
+		   <{archivedTweetURLDataAttribute}> 
+		   <{tweetLinkIconMetadata}>
+		   	   ><{tweetDate}></a>
+	</p>
+	<div class="data-field tweet-content"><{tweetContent}></div>
+</blockquote>`,
+	"wikipedia-entry-blockquote-inside": `<div class="content-transform <{contentTypeClass}>">
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+		   <{titleLinkIconMetadata}>
+			   ><{title}></a>:
+	</p>
+	<blockquote class="data-field entry-content">
+		<[IF thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IFEND]>
+		<{entryContent}>
+	</blockquote>
+</div>`,
+	"wikipedia-entry-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+		   <{titleLinkIconMetadata}>
+			   ><{title}></a>
+	</p>
+	<div class="data-field entry-content"><{entryContent}></div>
+</div>`,
 };
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
@@ -9525,11 +9545,6 @@ Extracts = {
             titleText = `<code>${titleText}</code>`;
     	}
 
-        /*  Because tab-handling is bad on mobile, readers expect the original
-            remote URL to open up in-tab, as readers will be single-threaded;
-            on desktop, we can open up in a tab for poweruser-browsing of
-            tab-explosions.
-         */
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
 			popFrameTitleText:      titleText
@@ -9537,6 +9552,11 @@ Extracts = {
     },
 
 	getStandardPopFrameTitleTemplateFillContext: () => {
+        /*  Because tab-handling is bad on mobile, readers expect the original
+            remote URL to open up in-tab, as readers will be single-threaded;
+            on desktop, we can open up in a tab for poweruser-browsing of
+            tab-explosions.
+         */
 		return {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
@@ -9587,7 +9607,7 @@ Extracts = {
 		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
 			//  Update pop-frame position.
 			if (Extracts.popFrameProvider == Popups)
-				Popups.positionPopup(popFrame);
+				Popups.positionPopup(popFrame, { reset: true });
 			else if (Extracts.popFrameProvider == Popins)
 				Popins.scrollPopinIntoView(popFrame);
 		}
@@ -10008,7 +10028,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation include-strict include-spinner-not",
-			"data-include-template": "annotation-blockquote-not"
+			"data-include-template": "$popFrameTemplate"
 		}));
     },
 
@@ -10057,11 +10077,6 @@ Extracts = { ...Extracts,
 	updatePopFrame_ANNOTATION: (popFrame) => {
         GWLog("Extracts.updatePopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
-        //  Mark annotations from non-local data sources.
-		let referenceData = Annotations.referenceDataForLink(popFrame.spawningTarget);
-        if (referenceData.content.dataSourceClass)
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
-
         //  Update pop-frame title.
         Extracts.updatePopFrameTitle(popFrame);
 	},
@@ -10075,6 +10090,7 @@ Extracts = { ...Extracts,
 			caption is not unnecessarily duplicated.
 		 */
 		if ([ "remoteImage", 
+			  "remoteVideo",
 			  "localImage", 
 			  "localVideo", 
 			  "localAudio" 
@@ -10086,10 +10102,6 @@ Extracts = { ...Extracts,
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
 			fileIncludes.remove();
 		}
-
-		//	Make anchor-links in Wikipedia annotations un-clickable.
-		if (popFrame.classList.contains("wikipedia-entry"))
-			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
     }
 };
 
@@ -10131,7 +10143,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial include-strict include-spinner-not",
-			"data-include-template": "annotation-blockquote-not"
+			"data-include-template": "$popFrameTemplate"
 		}));
     },
 
@@ -10184,8 +10196,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-include-template": "annotation-blockquote-inside",
-		"data-annotation-data-source": "local"
+		"data-include-template": "annotation-blockquote-inside"
 	}));
 
 	//	Add the whole thing to the pop-frame.
@@ -10962,6 +10973,81 @@ Extracts = { ...Extracts,
     }
 };
 
+/*=--------------------=*/
+/*= CONTENT TRANSFORMS =*/
+/*=--------------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "CONTENT_TRANSFORM",                 // Type name
+    "isContentTransformLink",            // Type predicate function
+	/*	NOTE: At some point, `content-transform` (or some analogous class) will
+		be added by the back-end code (or content.js for links in popups), so
+		will be removed from the line below.
+			—SA 2024-04-15
+	 */
+    "has-annotation content-transform",  // Target classes to add
+    "contentTransformForTarget",         // Pop-frame fill function
+    "content-transform"                  // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+	isContentTransformLink: (target) => {
+		return (   target.classList.contains("content-transform-not") == false
+				&& [ "tweet",
+					 "wikipediaEntry"
+					 ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1);
+	},
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+	contentTransformForTarget: (target) => {
+        GWLog("Extracts.contenTransformForTarget", "extracts-content.js", 2);
+
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict include-spinner-not",
+			"data-include-template": "$popFrameTemplate"
+        }));
+	},
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_CONTENT_TRANSFORM: (popup) => {
+        /*  Do not spawn popup if the transformed content is already visible
+            on screen. (This may occur if the target is in a popup that was
+            spawned from a backlinks popup for this same content as viewed on
+            a tag index page, for example.)
+         */
+        let escapedLinkURL = CSS.escape(decodeURIComponent(popup.spawningTarget.href));
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
+        if (targetAnalogueInLinkBibliography) {
+            let containingSection = targetAnalogueInLinkBibliography.closest("section");
+            if (   containingSection
+                && containingSection.querySelector("blockquote")
+                && Popups.isVisible(containingSection)) {
+                return null;
+            }
+        }
+
+        return popup;
+    },
+
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_CONTENT_TRANSFORM: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_CONTENT_TRANSFORM", "extracts-content.js", 2);
+
+		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+
+        //  Mark pop-frame with content type class.
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.contentTypeClass.split(" ")));
+
+		//	Make anchor-links in Wikipedia content transforms un-clickable.
+		if (referenceData.contentTypeClass == "wikipedia-entry")
+			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
+
+        //  Update pop-frame title.
+        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitleText);
+	}
+};
+
 /*=-----------------------=*/
 /*= LOCALLY HOSTED VIDEOS =*/
 /*=-----------------------=*/
@@ -11202,7 +11288,7 @@ Extracts = { ...Extracts,
         	provider. (Currently that is local page links, local fragment links,
         	and local code file links.)
          */
-        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link =>
+        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content'], a[class*='content-transform']")).filter(link =>
         	Content.contentTypeForLink(link) != null
         );
 
@@ -12515,19 +12601,19 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 
 /****************************************************************************/
 /*	Request image inversion data for images in the loaded content. (We omit
-	annotations from this load handler because requesting inversion data for 
-	images in annotations is handled by annotations.js; this is necessary 
-	because we do not fire a GW.contentDidLoad event when we load the raw
-	annotation source and extract the reference data, but rather only when we 
-	construct the annotation by filling a template with that reference data,
-	which is too late for an image inversion data request to do much good.)
+	from this load handler those GW.contentDidLoad events which are fired when 
+	we construct templated content from already extract reference data, as by 
+	then it is already too late; there is no time to send an invertOrNot API 
+	request and receive a response. Instead, requesting inversion data for 
+	images in templated content is handled by the data source object for that
+	content (either Content, in content.js, or Annotations, in annotations.js).
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
     GWLog("requestImageInversionData", "rewrite.js", 1);
 
 	//	Request image inversion judgments from invertornot.
 	requestImageInversionDataForImagesInContainer(eventInfo.container);
-}, ">rewrite", (info) => (info.contentType != "annotation"));
+}, ">rewrite", (info) => (info.source != "transclude"));
 
 /****************************************************************************/
 /*	Apply image inversion data to images in the loaded content, if available.
@@ -12655,8 +12741,8 @@ GW.dimensionSpecifiedMediaElementSelector = [
 	"video[width][height]"
 ].map(x => `figure ${x}`).join(", ");
 
-/**********************************************************/
-/*  Prevent reflow in annotations, reduce reflow elsewhere.
+/**************************************************************/
+/*  Prevent reflow for floats, reduce reflow for other figures.
  */
 addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
     GWLog("setMediaElementDimensions", "rewrite.js", 1);
@@ -12667,9 +12753,8 @@ addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventI
 
 	//	Set specified dimensions in CSS.
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
-        let fixWidth = (   eventInfo.contentType == "annotation"
-                        && (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
-                        	|| mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
+        let fixWidth = (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
+                        || mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ]));
         setMediaElementDimensions(mediaElement, fixWidth);
     });
 
@@ -12883,36 +12968,6 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         });
     });
 }, "rewrite", (info) => info.fullWidthPossible);
-
-/*****************************************************************/
-/*  Allow for floated figures at the start of annotation abstracts
-    (only on sufficiently wide viewports).
- */
-addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailsInAnnotations = (eventInfo) => {
-    GWLog("relocateThumbnailsInAnnotations", "rewrite.js", 1);
-
-    if (GW.mediaQueries.mobileWidth.matches)
-        return;
-
-    let annotationAbstract = eventInfo.container.querySelector(".annotation-abstract");
-    if (   annotationAbstract == null
-        || annotationAbstract.tagName == "BLOCKQUOTE")
-        return;
-
-    let container = annotationAbstract.closest(".annotation");
-    if (   container == null
-        || container == annotationAbstract)
-        return;
-
-    let initialFigure = annotationAbstract.querySelector(".annotation-abstract > figure.float-right:first-child");
-    if (initialFigure == null) {
-        let pageThumbnailImage = annotationAbstract.querySelector("img.page-thumbnail");
-        if (pageThumbnailImage)
-            initialFigure = pageThumbnailImage.closest("figure");
-    }
-    if (initialFigure)
-        container.insertBefore(initialFigure, container.firstElementChild);
-}, "rewrite");
 
 /******************************************************************************/
 /*	There is no browser native lazy loading for <video> tag `poster` attribute,
@@ -13193,6 +13248,27 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 /**************/
 /* TYPOGRAPHY */
 /**************/
+
+/*******************************************************************************/
+/*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
+    certain problematic characters, etc.) in content transforms.
+
+    Requires typography.js to be loaded prior to this file.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInContentTransforms = (eventInfo) => {
+    GWLog("rectifyTypographyInContentTransforms", "rewrite.js", 1);
+
+    Typography.processElement(eventInfo.container,
+        (  Typography.replacementTypes.QUOTES
+         | Typography.replacementTypes.WORDBREAKS
+         | Typography.replacementTypes.ELLIPSES));
+
+    //  Educate quotes in image alt-text.
+    eventInfo.container.querySelectorAll("img").forEach(image => {
+        image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
+    });
+}, "rewrite", (info) => (   info.contentType == "wikipediaEntry"
+						 || info.contentType == "tweet"));
 
 /***********************************/
 /*	Rectify typography in body text.
@@ -13486,19 +13562,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 }, "rewrite");
 
 /***************************************************************************/
-/*  Make the page thumbnail in an annotation load eagerly instead of lazily.
- */
-addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
-    GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
-
-    let firstImage = (eventInfo.container.querySelector(".page-thumbnail"))
-    if (firstImage) {
-        firstImage.loading = "eager";
-        firstImage.decoding = "sync";
-    }
-}, "rewrite", (info) => (info.contentType == "annotation"));
-
-/***************************************************************************/
 /*	Apply proper classes to inline file-include collapses, both on directory 
 	index pages and in annotations.
  */
@@ -13593,26 +13656,6 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
         }
     });
 }, "eventListeners", (info) => (info.contentType == "annotation"));
-
-/*******************************************************************************/
-/*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
-    certain problematic characters, etc.).
-
-    Requires typography.js to be loaded prior to this file.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotations = (eventInfo) => {
-    GWLog("rectifyTypographyInAnnotations", "rewrite.js", 1);
-
-    Typography.processElement(eventInfo.container,
-        (  Typography.replacementTypes.QUOTES
-         | Typography.replacementTypes.WORDBREAKS
-         | Typography.replacementTypes.ELLIPSES));
-
-    //  Educate quotes in image alt-text.
-    eventInfo.container.querySelectorAll("img").forEach(image => {
-        image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
-    });
-}, "rewrite", (info) => (info.contentType == "annotation"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight

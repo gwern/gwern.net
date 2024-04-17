@@ -1306,7 +1306,8 @@ Popups = {
 		options = Object.assign({
 			spawnPoint: null,
 			tight: false,
-			immediately: false
+			immediately: false,
+			reset: false
 		}, options);
 
 		if (popup == Popups.popupBeingResized)
@@ -1323,12 +1324,17 @@ Popups = {
 		/*	When the target’s bounding rect is composed of multiple client rects
 			(as when the target is a link that wraps across a line break), we
 			must select the right rect, to prevent the popup from spawning far
-			away from the cursor.
+			away from the cursor. (We expand client rects by 0.5 when we do hit 
+			testing, to compensate for rounding bugs in pointer location.)
 		 */
-		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect))
+		let targetViewportRect =    Array.from(target.getClientRects()).map(rect =>
+										new DOMRect(rect.x - 0.5,
+													rect.y - 0.5,
+													rect.width  + 1.0,
+													rect.height + 1.0)
+									).find(rect => pointWithinRect(spawnPoint, rect))
 								 ?? target.getBoundingClientRect();
 
-		//  Wait for the “naive” layout to be completed, and then...
 		let computePosition = () => {
 			let provisionalPopupXPosition = 0.0;
 			let provisionalPopupYPosition = 0.0;
@@ -1382,22 +1388,24 @@ Popups = {
 				if (provisionalPopupYPosition < 0.0)
 					provisionalPopupYPosition = 0.0;
 
-				//  Determine whether to put the popup off to the right, or left.
-				if (  targetViewportRect.right
-					+ Popups.popupBreathingRoomX
-					+ popupIntrinsicWidth
-					  <= document.documentElement.offsetWidth) {
-					//  Off to the right.
-					provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
-				} else if (  targetViewportRect.left
-						   - Popups.popupBreathingRoomX
-						   - popupIntrinsicWidth
-							 >= 0) {
-					//  Off to the left.
-					provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
-				} else {
-					//  Not off to either side, in fact.
-					offToTheSide = false;
+				if (offToTheSide == true) {
+					//  Determine whether to put the popup off to the right, or left.
+					if (  targetViewportRect.right
+						+ Popups.popupBreathingRoomX
+						+ popupIntrinsicWidth
+						  <= document.documentElement.offsetWidth) {
+						//  Off to the right.
+						provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
+					} else if (  targetViewportRect.left
+							   - Popups.popupBreathingRoomX
+							   - popupIntrinsicWidth
+								 >= 0) {
+						//  Off to the left.
+						provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
+					} else {
+						//  Not off to either side, in fact.
+						offToTheSide = false;
+					}
 				}
 
 				/*  Can the popup fit above the target? If so, put it there.
@@ -1464,11 +1472,23 @@ Popups = {
 			document.activeElement.blur();
 		};
 
-		//	Either position immediately, or let native layout complete first.
-		if (options.immediately == true)
+		//	Either position immediately, or let “naive” layout complete first.
+		if (options.immediately == true) {
 			computePosition();
-		else
+		} else {
+			if (   options.reset
+				&& Popups.popupIsPinned(popup) == false)
+				Popups.clearPopupViewportRect(popup);
+
 			requestAnimationFrame(computePosition);
+		}
+	},
+
+	clearPopupViewportRect: (popup) => {
+		GWLog("Popups.clearPopupViewportRect", "popups.js", 3);
+
+		popup.style.left = "";
+		popup.style.top = "";
 	},
 
 	setPopupViewportRect: (popup, rect, options) => {

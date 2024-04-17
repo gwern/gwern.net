@@ -261,14 +261,29 @@
 	-------------------
 
 	The `data-include-template` attribute allows selection of include template 
-	to use. (Note that some include data sources specify a template by default;
-	the `data-include-template` attribute overrides the default in such cases.)
+	to use.
+
+	(Note that some include data sources specify a template by default;
+	 the `data-include-template` attribute overrides the default in such cases.)
+
 	If a template is specified, the included content is treated as a template
 	data source, rather than being included directly. (See comment for the
 	templateDataFromHTML() function for information about how template data
 	is specified in HTML. Note that some data sources provide template data in
 	pre-constructed object form, which bypasses the need to extract it from
 	HTML source.)
+
+	If the value of this attribute begins with the ‘$’ character, then the rest
+	if the attribute value (after the dollar sign) is treated as a key into the 
+	template data object, rather than directly as the name of a template file.
+	This allows a template data source to specify different templates for use
+	in different contexts. (For example, a template data source may specify a
+	default template, to be used when transcluding normally, and a different 
+	template to be used when the transcluded content is to be used as the 
+	content of a pop-frame. In such a case, the template data object might have
+	a field with key `popFrameTemplate` whose value is the name of a template,
+	and the include-link’s `data-include-template` attribute would have a value
+	of `$popFrameTemplate`.)
 
 	3. Selector-based inclusion/exclusion
 	-------------------------------------
@@ -412,20 +427,22 @@
 
 		<span data-template-field="foo">Bar</span>
 
-	This element defines a data field with name `foo` and value `Bar`.
+			This element defines a data field with name `foo` and value `Bar`.
 
-		<span data-template-field="foo:$title" title="Bar"></span>
+		<span data-template-fields="foo:$title" title="Bar"></span>
 
-	This element defines a data field with name `foo` and value `Bar`.
+			This element defines one data field, with name `foo` and value `Bar`.
 
-		<span data-template-field="foo:$title, bar:.tagName" title="Baz"></span>
+		<span data-template-fields="foo:$title, bar:.tagName" title="Baz"></span>
 
-	This element defines two data fields: one with name `foo` and value `Baz`,
-	and one with name `bar` and value `SPAN`.
+			This element defines two data fields: one with name `foo` and value 
+			`Baz`,and one with name `bar` and value `SPAN`.
 
 		<span data-template-field="foo:title" title="Bar"></span>
 
-	This element defines no data fields.
+			This element defines no data fields. (Likely this is a typo, and 
+			the desired attribute name is actually `data-template-fields`; note
+			the plural form.)
  */
 //	(string|Document|DocumentFragment|Element) => object
 function templateDataFromHTML(html) {
@@ -687,7 +704,13 @@ function synthesizeIncludeLink(link, attributes, properties) {
 		/*  See corresponding note in annotations.js.
 			—SA 2024-02-16
 		 */
-		[ "link-live", "link-page", "link-dropcap", "link-annotated", "link-annotated-partial" ].forEach(targetClass => {
+		[ "link-live", 
+		  "link-page", 
+		  "link-dropcap", 
+		  "link-annotated", 
+		  "link-annotated-partial", 
+		  "content-transform-not" 
+		  ].forEach(targetClass => {
 			if (link.classList.contains(targetClass))
 				includeLink.classList.add(targetClass);
 		});
@@ -710,6 +733,26 @@ function loadLocationForIncludeLink(includeLink) {
     } else {
     	return null;
     }
+}
+
+/*******************************************************************************/
+/*	Return appropriate contentType string for given include-link. (May be null.)
+ */
+function contentTypeIdentifierForIncludeLink(includeLink) {
+	let contentType = null;
+
+	if (   Transclude.isAnnotationTransclude(includeLink)
+		|| (   Content.contentTypes.localFragment.matches(includeLink)
+			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
+		contentType = "annotation";
+	} else {
+		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
+		if (   referenceData 
+			&& referenceData.contentTypeClass != null)
+			contentType = referenceData.contentTypeClass.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+	}
+
+	return contentType;
 }
 
 /*****************************************************************/
@@ -840,14 +883,9 @@ function includeContent(includeLink, content) {
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
-	let contentType = null;
-	if (   Transclude.isAnnotationTransclude(includeLink)
-		|| (   Content.contentTypes.localFragment.matches(includeLink)
-			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname)))
-		contentType = "annotation";
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
-		contentType: contentType,
+		contentType: contentTypeIdentifierForIncludeLink(includeLink),
 		context: includeLink.eventInfo.context,
 		container: wrapper,
 		document: containingDocument,
@@ -1401,7 +1439,7 @@ Transclude = {
 			selectors.push("p");
 		}
 
-		for (selector of selectors)
+		for (let selector of selectors)
 			if (   (block = element.closest(selector) ?? block)
 				&& block.matches(Transclude.notBlockElementSelector) == false)
 // 				if (   Transclude.specificBlockElementSelectors.includes(selector)
@@ -1431,11 +1469,11 @@ Transclude = {
 	},
 
     //  Called by: Transclude.sliceContentFromDocument
-	isPageContent: (includeLink) => {
+	isSliceable: (includeLink) => {
 		let dataProvider = Transclude.dataProviderForLink(includeLink);
 		switch (dataProvider) {
 		case Content:
-			return Content.contentTypeForLink(includeLink).isPageContent;
+			return Content.contentTypeForLink(includeLink).isSliceable;
 		case Annotations:
 			return true;
 		}
@@ -1443,8 +1481,8 @@ Transclude = {
 
     //  Called by: Transclude.transclude
     sliceContentFromDocument: (sourceDocument, includeLink) => {
-		//	If it’s not page content, we don’t delve into its internals.
-		if (Transclude.isPageContent(includeLink) == false)
+		//	Check if slicing is permitted.
+		if (Transclude.isSliceable(includeLink) == false)
 			return newDocument(sourceDocument);
 
         //  If it’s a full page, extract just the page content.
@@ -1815,7 +1853,7 @@ Transclude = {
 					fireContentLoadEvent: true,
 					loadEventInfo: {
 						source: "transclude",
-						contentType: (Transclude.isAnnotationTransclude(includeLink) ? "annotation" : null),
+						contentType: contentTypeIdentifierForIncludeLink(includeLink),
 						includeLink: includeLink
 					}
 				};
@@ -1843,8 +1881,12 @@ Transclude = {
 			/*	If a template is specified by name, then we’ll need to make sure
 				that it’s loaded before we can fill it with data.
 			 */
-			let templateName = includeLink.dataset.includeTemplate || dataProvider.referenceDataForLink(includeLink).template;
+			let referenceData = dataProvider.referenceDataForLink(includeLink);
+			let templateName = includeLink.dataset.includeTemplate || referenceData.template;
 			if (templateName) {
+				if (templateName.startsWith("$"))
+					templateName = referenceData[templateName.slice(1)];
+
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
 						includeLink.delayed = true;

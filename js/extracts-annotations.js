@@ -38,7 +38,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated include-annotation include-strict include-spinner-not",
-			"data-include-template": "annotation-blockquote-not"
+			"data-include-template": "$popFrameTemplate"
 		}));
     },
 
@@ -87,11 +87,6 @@ Extracts = { ...Extracts,
 	updatePopFrame_ANNOTATION: (popFrame) => {
         GWLog("Extracts.updatePopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
-        //  Mark annotations from non-local data sources.
-		let referenceData = Annotations.referenceDataForLink(popFrame.spawningTarget);
-        if (referenceData.content.dataSourceClass)
-            Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.content.dataSourceClass.split(" ")));
-
         //  Update pop-frame title.
         Extracts.updatePopFrameTitle(popFrame);
 	},
@@ -105,6 +100,7 @@ Extracts = { ...Extracts,
 			caption is not unnecessarily duplicated.
 		 */
 		if ([ "remoteImage", 
+			  "remoteVideo",
 			  "localImage", 
 			  "localVideo", 
 			  "localAudio" 
@@ -116,10 +112,6 @@ Extracts = { ...Extracts,
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
 			fileIncludes.remove();
 		}
-
-		//	Make anchor-links in Wikipedia annotations un-clickable.
-		if (popFrame.classList.contains("wikipedia-entry"))
-			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
     }
 };
 
@@ -161,7 +153,7 @@ Extracts = { ...Extracts,
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "link-annotated-partial include-annotation-partial include-strict include-spinner-not",
-			"data-include-template": "annotation-blockquote-not"
+			"data-include-template": "$popFrameTemplate"
 		}));
     },
 
@@ -214,8 +206,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
 		"class": "link-annotated-partial include-annotation-partial include-strict",
-		"data-include-template": "annotation-blockquote-inside",
-		"data-annotation-data-source": "local"
+		"data-include-template": "annotation-blockquote-inside"
 	}));
 
 	//	Add the whole thing to the pop-frame.

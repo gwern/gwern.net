@@ -700,6 +700,81 @@ Extracts = { ...Extracts,
     }
 };
 
+/*=--------------------=*/
+/*= CONTENT TRANSFORMS =*/
+/*=--------------------=*/
+
+Extracts.targetTypeDefinitions.insertBefore([
+    "CONTENT_TRANSFORM",                 // Type name
+    "isContentTransformLink",            // Type predicate function
+	/*	NOTE: At some point, `content-transform` (or some analogous class) will
+		be added by the back-end code (or content.js for links in popups), so
+		will be removed from the line below.
+			—SA 2024-04-15
+	 */
+    "has-annotation content-transform",  // Target classes to add
+    "contentTransformForTarget",         // Pop-frame fill function
+    "content-transform"                  // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
+
+Extracts = { ...Extracts,
+    //  Called by: extracts.js (as `predicateFunctionName`)
+	isContentTransformLink: (target) => {
+		return (   target.classList.contains("content-transform-not") == false
+				&& [ "tweet",
+					 "wikipediaEntry"
+					 ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1);
+	},
+
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
+	contentTransformForTarget: (target) => {
+        GWLog("Extracts.contenTransformForTarget", "extracts-content.js", 2);
+
+        return newDocument(synthesizeIncludeLink(target, {
+			"class": "include-strict include-spinner-not",
+			"data-include-template": "$popFrameTemplate"
+        }));
+	},
+
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    preparePopup_CONTENT_TRANSFORM: (popup) => {
+        /*  Do not spawn popup if the transformed content is already visible
+            on screen. (This may occur if the target is in a popup that was
+            spawned from a backlinks popup for this same content as viewed on
+            a tag index page, for example.)
+         */
+        let escapedLinkURL = CSS.escape(decodeURIComponent(popup.spawningTarget.href));
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='link-bibliography'][href='${escapedLinkURL}']`);
+        if (targetAnalogueInLinkBibliography) {
+            let containingSection = targetAnalogueInLinkBibliography.closest("section");
+            if (   containingSection
+                && containingSection.querySelector("blockquote")
+                && Popups.isVisible(containingSection)) {
+                return null;
+            }
+        }
+
+        return popup;
+    },
+
+	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
+	updatePopFrame_CONTENT_TRANSFORM: (popFrame) => {
+        GWLog("Extracts.updatePopFrame_CONTENT_TRANSFORM", "extracts-content.js", 2);
+
+		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+
+        //  Mark pop-frame with content type class.
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.contentTypeClass.split(" ")));
+
+		//	Make anchor-links in Wikipedia content transforms un-clickable.
+		if (referenceData.contentTypeClass == "wikipedia-entry")
+			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
+
+        //  Update pop-frame title.
+        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitleText);
+	}
+};
+
 /*=-----------------------=*/
 /*= LOCALLY HOSTED VIDEOS =*/
 /*=-----------------------=*/
@@ -940,7 +1015,7 @@ Extracts = { ...Extracts,
         	provider. (Currently that is local page links, local fragment links,
         	and local code file links.)
          */
-        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content']")).filter(link =>
+        let allTargetsInContainer = Array.from(container.querySelectorAll("a[class*='has-content'], a[class*='content-transform']")).filter(link =>
         	Content.contentTypeForLink(link) != null
         );
 

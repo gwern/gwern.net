@@ -448,11 +448,6 @@ Extracts = {
             titleText = `<code>${titleText}</code>`;
     	}
 
-        /*  Because tab-handling is bad on mobile, readers expect the original
-            remote URL to open up in-tab, as readers will be single-threaded;
-            on desktop, we can open up in a tab for poweruser-browsing of
-            tab-explosions.
-         */
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
 			popFrameTitleText:      titleText
@@ -460,6 +455,11 @@ Extracts = {
     },
 
 	getStandardPopFrameTitleTemplateFillContext: () => {
+        /*  Because tab-handling is bad on mobile, readers expect the original
+            remote URL to open up in-tab, as readers will be single-threaded;
+            on desktop, we can open up in a tab for poweruser-browsing of
+            tab-explosions.
+         */
 		return {
 			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
 			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
@@ -510,7 +510,7 @@ Extracts = {
 		if (Extracts.popFrameProvider.isSpawned(popFrame)) {
 			//  Update pop-frame position.
 			if (Extracts.popFrameProvider == Popups)
-				Popups.positionPopup(popFrame);
+				Popups.positionPopup(popFrame, { reset: true });
 			else if (Extracts.popFrameProvider == Popins)
 				Popins.scrollPopinIntoView(popFrame);
 		}

@@ -1,22 +1,21 @@
 Transclude.templates = {
-	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
-	<p class="data-field title <[IF2 authorDateAux]>author-date-aux<[IF2END]>">
+	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}>">
+	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>\\
-		<[IF2 [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]>\\
-		<[IF2 authorDateAux]><[IF3 author]>,\\ <[IF3END]><{authorDateAux}><[IF3 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF3END]><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>\\
+		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
 	</p>
-	<[IFEND]>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract">
+		<[IF2 thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IF2END]>
 		<{abstract}>
 		<[IF2 fileIncludes]>
 		<div class="data-field file-includes"><{fileIncludes}></div>
@@ -28,20 +27,19 @@ Transclude.templates = {
 		<[IF2END]>
 	<[IFEND]>
 </div>`,
-	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
+	"annotation-blockquote-not": `<div class="annotation<{annotationClassSuffix}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>
 	</p>
-	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -52,20 +50,19 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </div>`,
-	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}> <{dataSourceClass}>">
-	<[IF fullTitleHTML]>
+	"annotation-blockquote-outside": `<blockquote class="annotation<{annotationClassSuffix}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
 		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
-		   <[IF2 linkTarget]>target="<{linkTarget}>"<[IF2END]>
-		   <[IF2 titleLinkDataAttributes]><{titleLinkDataAttributes}><[IF2END]>
-		   <{titleLinkIconMetadata}>
-			   ><{fullTitleHTML}></a>\\
-		<[IF2 secondaryTitleLinksHTML]><span class="secondary-title-links"><{secondaryTitleLinksHTML}></span><[IF2END]>
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>
 	</p>
-	<[IFEND]>
 	<[IF authorDateAux]>
 	<p class="data-field author-date-aux"><{authorDateAux}></p>
 	<[IFEND]>
@@ -98,4 +95,78 @@ Transclude.templates = {
 	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
 		><{popFrameTitleText}></a>`,
+	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
+	<p class="data-field tweet-links">
+		<a 
+		   class="<{authorLinkClass}>"
+		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{authorLinkIconMetadata}>
+			   ><{authorPlusAvatar}></a>\\
+		on \\
+		<a
+		   class="<{tweetLinkClass}>" 
+		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{tweetLinkHref}>" 
+		   <{archivedTweetURLDataAttribute}> 
+		   <{tweetLinkIconMetadata}>
+		   	   ><{tweetDate}></a>
+	</p>
+	<div class="data-field tweet-content"><{tweetContent}></div>
+</div>`,
+	"tweet-blockquote-outside": `<blockquote class="content-transform <{contentTypeClass}>">
+	<p class="data-field tweet-links">
+		<a 
+		   class="<{authorLinkClass}>"
+		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{authorLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{authorLinkIconMetadata}>
+			   ><{authorPlusAvatar}></a>\\
+		on \\
+		<a
+		   class="<{tweetLinkClass}>" 
+		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{tweetLinkHref}>" 
+		   <{archivedTweetURLDataAttribute}> 
+		   <{tweetLinkIconMetadata}>
+		   	   ><{tweetDate}></a>
+	</p>
+	<div class="data-field tweet-content"><{tweetContent}></div>
+</blockquote>`,
+	"wikipedia-entry-blockquote-inside": `<div class="content-transform <{contentTypeClass}>">
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+		   <{titleLinkIconMetadata}>
+			   ><{title}></a>:
+	</p>
+	<blockquote class="data-field entry-content">
+		<[IF thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IFEND]>
+		<{entryContent}>
+	</blockquote>
+</div>`,
+	"wikipedia-entry-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+		   <{titleLinkIconMetadata}>
+			   ><{title}></a>
+	</p>
+	<div class="data-field entry-content"><{entryContent}></div>
+</div>`,
 };

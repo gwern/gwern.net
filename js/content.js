@@ -153,7 +153,8 @@ Content = {
 
                     //  Send request to record failure in server logs.
                     GWServerLogError(link.href + `--missing-content`, "missing content");
-                }
+                },
+				headers: Content.contentTypeForLink(link).additionalAPIRequestHeaders
             });
         }
 
@@ -254,7 +255,7 @@ Content = {
         Each has the following necessary members:
 
             .matches(URL|Element) => boolean
-            .isPageContent: boolean
+            .isSliceable: boolean
 
         ... plus either these two:
 
@@ -288,7 +289,7 @@ Content = {
                 return link.classList.contains("link-dropcap");
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 let letter = link.dataset.letter;
@@ -316,6 +317,7 @@ Content = {
             matches: (link) => {
                 //  Some foreign-site links are handled specially.
                 if ([ "tweet",
+                	  "wikipediaEntry",
                       "remoteVideo",
                       "remoteImage"
                       ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
@@ -328,7 +330,7 @@ Content = {
                         && link.classList.contains("link-live"));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 //  WARNING: EXPERIMENTAL FEATURE!
@@ -407,13 +409,558 @@ Content = {
             }
         },
 
+		wikipediaEntry: {
+			/*	The Wikipedia API only gives usable responses for most, not all,
+				Wikipedia URLs.
+			 */
+			matches: (link) => {
+				return (   link.classList.contains("content-transform-not") == false
+						&& /(.+?)\.wikipedia\.org/.test(link.hostname)
+						&& link.pathname.startsWith("/wiki/")
+						&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
+			},
+
+			isSliceable: false,
+
+			sourceURLsForLink: (link) => {
+				let apiRequestURL = URLFromString(link.href);
+
+				let wikiPageName = fixedEncodeURIComponent(/\/wiki\/(.+?)$/.exec(decodeURIComponent(apiRequestURL.pathname))[1]);
+				apiRequestURL.pathname = `/api/rest_v1/page/html/${wikiPageName}`;
+				apiRequestURL.hash = "";
+
+				return [ apiRequestURL ];
+			},
+
+            contentFromResponse: (response, link, sourceURL) => {
+                return {
+                    document: newDocument(response)
+                };
+            },
+
+			referenceDataFromContent: (wikipediaEntryPage, articleLink) => {
+				//	Article link.
+				let titleLinkHref = articleLink.href;
+
+				//	We use the mobile URL for popping up the live-link.
+				let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
+					hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
+				}).href;
+				let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+
+				//	Do not show the whole page, by default.
+				let wholePage = false;
+
+				//	Show full page (sans TOC) if it’s a disambiguation page.
+				if (wikipediaEntryPage.document.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
+					wholePage = true;
+
+					//	Send request to record failure in server logs.
+					GWServerLogError(Content.contentTypes.wikipediaEntry.sourceURLsForLink(articleLink).first.href + `--disambiguation-error`, "disambiguation page");
+				}
+
+				let pageTitleElementHTML = unescapeHTML(wikipediaEntryPage.document.querySelector("title").innerHTML);
+				let entryContentHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
+				if (wholePage) {
+					entryContentHTML = wikipediaEntryPage.document.innerHTML;
+					titleHTML = pageTitleElementHTML;
+					fullTitleHTML = pageTitleElementHTML;
+				} else if (articleLink.hash > "") {
+					let targetElement = wikipediaEntryPage.document.querySelector(selectorFromHash(articleLink.hash));
+
+					/*	Check whether we have tried to load a part of the page which
+						does not exist.
+					 */
+					if (targetElement == null)
+						return null;
+
+					if (/H[0-9]/.test(targetElement.tagName)) {
+						//	The target is a section heading.
+						let targetHeading = targetElement;
+	
+						//	The id is on the heading, so the section is its parent.
+						let targetSection = targetHeading.parentElement.cloneNode(true);
+
+						//	Excise heading.
+						targetHeading = targetSection.firstElementChild;
+						targetHeading.remove();
+
+						//	Content sans heading.
+						entryContentHTML = targetSection.innerHTML;
+
+						//	Unwrap or delete links, but save them for inclusion in the template.
+						secondaryTitleLinksHTML = "";
+						//	First link is the section title itself.
+						targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
+							//  Process link, save HTML, unwrap.
+							Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+							Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+							secondaryTitleLinksHTML += link.outerHTML;
+							unwrap(link);
+						});
+						//	Additional links are other things, who knows what.
+						targetHeading.querySelectorAll("a").forEach(link => {
+							//  Process link, save HTML, delete.
+							Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+							Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+							secondaryTitleLinksHTML += link.outerHTML;
+							link.remove();
+						});
+						if (secondaryTitleLinksHTML > "")
+							secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
+
+						//	Cleaned section title.
+						titleHTML = targetHeading.innerHTML;
+						fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+					} else {
+						//	The target is something else.
+						entryContentHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
+						titleHTML = articleLink.hash;
+					}
+				} else {
+					entryContentHTML = wikipediaEntryPage.document.querySelector("[data-mw-section-id='0']").innerHTML;
+					titleHTML = pageTitleElementHTML;
+					fullTitleHTML = pageTitleElementHTML;
+
+					//	Build TOC.
+					let sections = Array.from(wikipediaEntryPage.document.querySelectorAll("section")).slice(1);
+					if (   sections 
+						&& sections.length > 0) {
+						entryContentHTML += `<div class="TOC columns">`;
+						let headingLevel = 0;
+						for (let i = 0; i < sections.length; i++) {
+							let section = sections[i];
+							let headingElement = section.firstElementChild;
+							let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
+							if (newHeadingLevel > headingLevel)
+								entryContentHTML += `<ul>`;
+
+							if (   i > 0 
+								&& newHeadingLevel <= headingLevel)
+								entryContentHTML += `</li>`;
+
+							if (newHeadingLevel < headingLevel)
+								entryContentHTML += `</ul>`;
+
+							//	We must encode, because the anchor might contain quotes.
+							let urlEncodedAnchor = fixedEncodeURIComponent(headingElement.id);
+
+							//	Get heading, parse as HTML, and unwrap links.
+							let heading = headingElement.cloneNode(true);
+							heading.querySelectorAll("a").forEach(unwrap);
+
+							//	Construct TOC entry.
+							entryContentHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
+
+							headingLevel = newHeadingLevel;
+						}
+						entryContentHTML += `</li></ul></div>`;
+					}
+				}
+
+				let entryContent = newDocument(entryContentHTML);
+
+				//	Post-process entry content.
+				Content.contentTypes.wikipediaEntry.postProcessReferenceEntry(entryContent, articleLink);
+
+				//	Request image inversion judgments from invertornot.
+				requestImageInversionDataForImagesInContainer(entryContent);
+
+				//	Pull out initial figure.
+				let thumbnailFigureHTML = null;
+				if (GW.mediaQueries.mobileWidth.matches == false) {
+					let initialFigure = entryContent.querySelector("figure.float-right:first-child");
+					if (initialFigure) {
+						thumbnailFigureHTML = initialFigure.outerHTML;
+						initialFigure.remove();
+					}
+				}
+
+				entryContentHTML = entryContent.innerHTML;
+
+				//	Pop-frame title text. Mark sections with ‘§’ symbol.
+				let popFrameTitleHTML = (articleLink.hash > ""
+										 ? (fullTitleHTML
+											? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
+											: `${titleHTML} (${pageTitleElementHTML})`)
+										 : titleHTML);
+				let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
+
+				return {
+					content: {
+						title:                    fullTitleHTML,
+						titleLinkHref:            titleLinkHref,
+						titleLinkClass:           `title-link link-live content-transform-not`,
+						titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
+						titleLinkDataAttributes:  titleLinkDataAttributes,
+						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
+						entryContent: 		      entryContentHTML,
+						thumbnailFigure:          thumbnailFigureHTML
+					},
+					contentTypeClass:       "wikipedia-entry",
+					template:               "wikipedia-entry-blockquote-inside",
+					linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:               (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:       "wikipedia-entry-blockquote-not",
+					popFrameTitleText:      popFrameTitleText,
+					popFrameTitleLinkHref:  titleLinkHref
+				};
+			},
+
+			additionalAPIRequestHeaders: {
+				"Accept": 'text/html; charset=utf-8; profile="https://www.mediawiki.org/wiki/Specs/HTML/2.1.0"'
+			},
+
+			/*	Qualify a link in a Wikipedia article.
+			 */
+			qualifyWikipediaLink: (link, hostArticleLink) => {
+				if (link.getAttribute("href") == null)
+					return;
+
+				//  Qualify link.
+				if (link.getAttribute("rel") == "mw:WikiLink")
+					link.pathname = "/wiki" + link.getAttribute("href").slice(1);
+				if (link.getAttribute("href").startsWith("#"))
+					link.pathname = hostArticleLink.pathname;
+				if (link.hostname == location.hostname)
+					link.hostname = hostArticleLink.hostname;
+				if (   link.hostname == hostArticleLink.hostname
+					&& link.pathname.startsWith("/wiki/") == false
+					&& link.pathname.startsWith("/api/") == false)
+					link.pathname = "/wiki" + link.pathname;
+			},
+
+			/*	Mark a wiki-link appropriately, as annotated, or live, or neither.
+			 */
+			designateWikiLink: (link) => {
+				if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
+					if (Content.contentTypes.wikipediaEntry.matches(link)) {
+						link.classList.add("content-transform");
+					} else {
+						if ((   link.pathname.startsWith("/wiki/Special:")
+							 || link.pathname == "/w/index.php"
+							 ) == false)
+							link.classList.add("link-live");
+					}
+				}
+			},
+
+			/*  Elements to excise from a Wikipedia entry.
+			 */
+			extraneousElementSelectors: [
+				"style",
+		// 		".mw-ref",
+				".shortdescription",
+				"td hr",
+				".hatnote",
+				".portal",
+				".penicon",
+		// 		".reference",
+				".Template-Fact",
+				".error",
+				".mwe-math-mathml-inline",
+				".mwe-math-mathml-display",
+				".sidebar",
+				".ambox",
+				".unicode.haudio",
+		// 		"span[typeof='mw:File']",
+			],
+
+			/*  CSS properties to preserve when stripping inline styles.
+			 */
+			preservedInlineStyleProperties: [
+				"display",
+				"position",
+				"top",
+				"left",
+				"bottom",
+				"right",
+				"width",
+				"height",
+				"word-break"
+			],
+
+			/*  Post-process an already-constructed content-transformed
+				Wikipedia entry (do HTML cleanup, etc.).
+			 */
+			postProcessReferenceEntry: (referenceEntry, articleLink) => {
+				//  Remove unwanted elements.
+				referenceEntry.querySelectorAll(Content.contentTypes.wikipediaEntry.extraneousElementSelectors.join(", ")).forEach(element => {
+					element.remove();
+				});
+
+				//	Clean empty nodes.
+				referenceEntry.childNodes.forEach(node => {
+					if (isNodeEmpty(node))
+						node.remove();
+				});
+
+				//  Remove location maps (they don’t work right).
+				referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
+					(locmap.closest("tr") ?? locmap).remove();
+				});
+
+				//	Remove other maps.
+				referenceEntry.querySelectorAll("img").forEach(image => {
+					let imageSourceURL = URLFromString(image.src);
+					if (imageSourceURL.hostname == "maps.wikimedia.org")
+						image.remove();
+				});
+
+				//  Remove empty paragraphs.
+				referenceEntry.querySelectorAll("p:empty").forEach(emptyGraf => {
+					emptyGraf.remove();
+				});
+
+				//	Remove edit-links.
+				referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
+					editLink.remove();
+				});
+
+				//  Process links.
+				referenceEntry.querySelectorAll("a").forEach(link => {
+					//	De-linkify non-anchor self-links.
+					if (   link.hash     == ""
+						&& link.pathname == articleLink.pathname) {
+						unwrap(link);
+						return;
+					}
+
+					//  Qualify links.
+					Content.contentTypes.wikipediaEntry.qualifyWikipediaLink(link, articleLink);
+
+					//  Mark other Wikipedia links as also being annotated.
+					Content.contentTypes.wikipediaEntry.designateWikiLink(link);
+
+					//  Mark self-links (anchorlinks within the same article).
+					if (link.pathname == articleLink.pathname)
+						link.classList.add("link-self");
+				});
+
+				//	Prevent layout weirdness for footnote links.
+				referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
+					citationLink.classList.add("icon-not");
+					citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
+				});
+
+				//	Rectify back-to-citation links in “References” sections.
+				referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
+					backToCitationLink.classList.add("icon-not");
+					backToCitationLink.classList.add("wp-footnote-back");
+					backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
+				});
+
+				//	Strip inline styles and some related attributes.
+				let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
+				referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
+					//	Skip table elements; we handle those specially.
+					if (styledElement.matches(tableElementsSelector))
+						return;
+
+					if (styledElement.style.display != "none")
+						stripStyles(styledElement, { saveProperties: Content.contentTypes.wikipediaEntry.preservedInlineStyleProperties });
+				});
+				//	Special handling for table elements.
+				referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
+					if (tableElement.style.display != "none") {
+						if (tableElement.style.position == "relative")
+							stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
+						else
+							stripStyles(tableElement, { saveProperties: [ "text-align" ] });
+					}
+
+					[ "width", "height", "align" ].forEach(attribute => {
+						tableElement.removeAttribute(attribute);
+					});
+				});
+
+				//  Rectify table classes.
+				referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
+					table.classList.toggle("infobox", true);
+				});
+
+				//  Normalize table cell types.
+				referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
+					let rowSpan = (cell.rowSpan > 1) ? ` rowspan="${cell.rowSpan}"` : ``;
+					let colSpan = (cell.colSpan > 1) ? ` colspan="${cell.colSpan}"` : ``;
+					cell.outerHTML = `<td${rowSpan}${colSpan}>${cell.innerHTML}</td>`;
+				});
+
+				//  Un-linkify images.
+				referenceEntry.querySelectorAll("a img").forEach(linkedImage => {
+					let enclosingLink = linkedImage.closest("a");
+					enclosingLink.parentElement.replaceChild(linkedImage, enclosingLink);
+				});
+
+				//	Fix chemical formulas.
+				referenceEntry.querySelectorAll(".chemf br").forEach(br => {
+					br.remove();
+				});
+
+				//	Rectify quoteboxes.
+				referenceEntry.querySelectorAll("div.quotebox").forEach(quotebox => {
+					let blockquote = quotebox.querySelector("blockquote");
+					blockquote.classList.add("quotebox");
+			
+					let title = quotebox.querySelector(".quotebox-title");
+					if (title) {
+						blockquote.insertBefore(title, blockquote.firstElementChild);
+					}
+
+					let cite = quotebox.querySelector("blockquote + p");
+					if (cite) {
+						blockquote.insertBefore(cite, null);
+						cite.classList.add("quotebox-citation");
+					}
+
+					unwrap(quotebox);
+				});
+
+				//  Separate out the thumbnail and float it.
+				let thumbnail = referenceEntry.querySelector("img");
+				let thumbnailContainer;
+				if (thumbnail)
+					thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
+				if (   thumbnail
+					&& thumbnailContainer
+					&& thumbnailContainer.closest(".gallery") == null) {
+					while ([ "TR", "TD", "TH" ].includes(thumbnailContainer.tagName))
+						thumbnailContainer = thumbnailContainer.parentElement;
+
+					//  Create the figure and move the thumbnail(s) into it.
+					let figure = newElement("FIGURE", { "class": "thumbnail float-right" });
+					thumbnailContainer.querySelectorAll(".infobox-image img, .thumb img").forEach(image => {
+						if (image.closest("figure") == figure)
+							return;
+
+						let closestRow = image.closest("tr, .trow, [style*='display: table-row']");
+						if (closestRow == null)
+							return;
+
+						let allImagesInRow = closestRow.querySelectorAll("img");
+						if (allImagesInRow.length > 1) {
+							let rowWrapper = newElement("SPAN", { "class": "image-row-wrapper" });
+							rowWrapper.append(...allImagesInRow);
+							figure.append(rowWrapper);
+						} else {
+							figure.append(allImagesInRow[0]);
+						}
+
+						closestRow.remove();
+					});
+
+					//  Create the caption, if need be.
+					let caption = referenceEntry.querySelector(".mw-default-size + div, .infobox-caption");
+					if (   caption
+						&& caption.textContent > "")
+						figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
+
+					//  Insert the figure as the first child of the entry.
+					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+
+					//  Rectify classes.
+					thumbnailContainer.closest("table")?.classList.toggle("infobox", true);
+				} else if (   thumbnail
+						   && thumbnail.closest("figure")) {
+					let figure = thumbnail.closest("figure");
+
+					//  Insert the figure as the first child of the entry.
+					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+					figure.classList.add("thumbnail", "float-right");
+
+					let caption = figure.querySelector("figcaption");
+					if (caption.textContent == "")
+						caption.remove();
+				}
+
+				//	Rewrite other figures.
+				referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
+					let figure = newElement("FIGURE");
+
+					let images = figureBlock.querySelectorAll("img");
+					if (images.length == 0)
+						return;
+
+					images.forEach(image => {
+						figure.appendChild(image);
+					});
+
+					figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
+
+					figureBlock.parentNode.insertBefore(figure, figureBlock);
+					figureBlock.remove();
+				});
+
+				//	Float all figures right.
+				referenceEntry.querySelectorAll("figure").forEach(figure => {
+					figure.classList.add("float-right");
+				});
+
+				//	Mark certain images as not to be wrapped in figures.
+				let noFigureImagesSelector = [
+					".mwe-math-element",
+					".mw-default-size",
+					".sister-logo",
+					".side-box-image",
+					"p"
+				].map(selector => `${selector} img`).join(", ");
+				referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
+					image.classList.add("figure-not");
+				});
+
+				//	Clean up math elements.
+				unwrapAll(".mwe-math-element", { root: referenceEntry });
+				referenceEntry.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
+					//	Unwrap the <dd>.
+					unwrap(inlineButReallyBlockMathElement.parentElement);
+					//	Unwrap the <dl>.
+					unwrap(inlineButReallyBlockMathElement.parentElement);
+					//	Rectify class.
+					inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
+				});
+				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: referenceEntry });
+				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: referenceEntry });
+
+				//	Move infoboxes out of the way.
+				let childElements = Array.from(referenceEntry.children);
+				let firstInfoboxIndex = childElements.findIndex(x => x.matches(".infobox"));
+				if (firstInfoboxIndex !== -1) {
+					let firstInfobox = childElements[firstInfoboxIndex];
+					let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
+					if (firstGrafAfterInfobox)
+						referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
+					wrapElement(firstInfobox, ".collapse");
+				}
+
+				//	Apply section classes.
+				referenceEntry.querySelectorAll("section").forEach(section => {
+					if (/[Hh][1-9]/.test(section.firstElementChild.tagName))
+						section.classList.add("level" + section.firstElementChild.tagName.slice(1));
+				});
+
+				//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
+				referenceEntry.querySelectorAll(".dmbox-body").forEach(noteBox => {
+					paragraphizeTextNodesOfElement(noteBox);
+					noteBox.parentElement.classList.add("admonition", "tip");
+				});
+
+				//	Clean empty nodes, redux.
+				referenceEntry.childNodes.forEach(node => {
+					if (isNodeEmpty(node))
+						node.remove();
+				});
+			}
+		},
+
         tweet: {
             matches: (link) => {
-                return (   [ "twitter.com", "x.com" ].includes(link.hostname)
+                return (   link.classList.contains("content-transform-not") == false
+						&& [ "twitter.com", "x.com" ].includes(link.hostname)
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
             },
 
-            isPageContent: true,
+            isSliceable: false,
 
             sourceURLsForLink: (link) => {
                 let urls = [ ];
@@ -438,16 +985,17 @@ Content = {
             },
 
             referenceDataFromContent: (tweetPage, link) => {
-                //  Link metadata for title-links.
-                let titleLinkClass = "title-link";
-                let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
-
+            	//	Nitter host.
                 let nitterHost = Content.contentTypes.tweet.getNitterHost();
 
+                //  Class and link icon for link to user’s page.
+                let authorLinkClass = "author-link";
+                let authorLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
+
                 //  URL for link to user’s page.
-                let titleLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
-                titleLinkURL.hostname = nitterHost;
-                let titleLinkHref = titleLinkURL.href;
+                let authorLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
+                authorLinkURL.hostname = nitterHost;
+                let authorLinkHref = authorLinkURL.href;
 
                 //  Avatar.
                 let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
@@ -462,60 +1010,62 @@ Content = {
                 let avatarImg = newElement("IMG", { src: avatarImgSrc, class: "avatar figure-not" });
 
                 //  Text of link to user’s page.
-                let titleParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
-                let titleText = `“${titleParts[1]}” (${titleParts[2]})`;
-                let titleHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
+                let authorLinkParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
+                let authorPlusAvatarHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
 
-                //  Link to tweet.
+				//	Class and link icon for link to tweet.
+                let tweetLinkClass = "tweet-link" + (link.dataset.urlArchive ? " link-live" : "");
+                let tweetLinkIconMetadata = authorLinkIconMetadata;
+
+                //  URL for link to tweet.
+                let tweetLinkURL = URLFromString(link.href);
+                tweetLinkURL.hostname = nitterHost;
+                tweetLinkURL.hash = "m";
+
+				//	Data attribute for archived tweet (if available).
+                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
+                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
+                									: "";
+				//	Text of link to tweet.
                 let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
                 let tweetDateString = ("" + tweetDate.getFullYear())
                                     + "-"
                                     + ("" + tweetDate.getMonth()).padStart(2, '0')
                                     + "-"
                                     + ("" + tweetDate.getDate()).padStart(2, '0');
-                let tweetLinkURL = URLFromString(link.href);
-                tweetLinkURL.hostname = nitterHost;
-                tweetLinkURL.hash = "m";
 
-                //  Secondary title links.
-                let tweetLinkClass = titleLinkClass + (link.dataset.urlArchive ? " link-live" : "");
-                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
-                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
-                									: "";
-                let secondaryTitleLinksHTML = ` on <a 
-                									href="${tweetLinkURL.href}" 
-                									class="${tweetLinkClass}" 
-                									${archivedTweetURLDataAttribute} 
-                									${titleLinkIconMetadata}
-                									>${tweetDateString}</a>:`;
+                //  Main tweet content.
+                let tweetContentHTML = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
-                //  Tweet content itself.
-                let tweetContent = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
+				//	Request image inversion judgments from invertOrNot.
+				requestImageInversionDataForImagesInContainer(newDocument(tweetContentHTML));
 
                 //  Attached media (video or images).
-                tweetContent += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
+                tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
 
                 //  Pop-frame title text.
-                let popFrameTitleText = `${titleHTML} on ${tweetDateString}`;
+                let popFrameTitleText = `${authorPlusAvatarHTML} on ${tweetDateString}`;
 
                 return {
                     content: {
-                        titleHTML:                titleHTML,
-                        fullTitleHTML:            titleHTML,
-                        secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
-                        titleText:                titleText,
-                        titleLinkHref:            titleLinkHref,
-                        titleLinkClass:           titleLinkClass,
-                        titleLinkIconMetadata:    titleLinkIconMetadata,
-                        abstract:                 tweetContent,
-                        dataSourceClass:          "tweet",
+                        authorLinkClass:          authorLinkClass,
+                        authorLinkHref:           authorLinkURL.href,
+                        authorLinkIconMetadata:   authorLinkIconMetadata,
+                        authorPlusAvatar:         authorPlusAvatarHTML,
+                        tweetLinkClass:           tweetLinkClass,
+                        tweetLinkHref:            tweetLinkURL.href,
+                        tweetLinkIconMetadata:    tweetLinkIconMetadata,
+                        tweetDate:                tweetDateString,
+                        tweetContent:             tweetContentHTML
                     },
-                    template:                       "annotation-blockquote-outside",
-                    linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-                    whichTab:                       (GW.isMobile() ? "current" : "new"),
-                    tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
-                    popFrameTitleText:              popFrameTitleText,
-                    popFrameTitleLinkHref:          tweetLinkURL.href
+                    contentTypeClass:       "tweet",
+                    template:               "tweet-blockquote-outside",
+                    linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
+                    whichTab:               (GW.isMobile() ? "current" : "new"),
+                    tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:       "tweet-blockquote-not",
+                    popFrameTitleText:      popFrameTitleText,
+                    popFrameTitleLinkHref:  tweetLinkURL.href
                 };
             },
 
@@ -568,7 +1118,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localCodeFile.codeFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             /*  We first try to retrieve a syntax-highlighted version of the
                 given code file, stored on the server as an HTML fragment. If
@@ -655,7 +1205,7 @@ Content = {
                         && link.pathname.endsWith(".html"));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             sourceURLsForLink: (link) => {
                 let url = URLFromString(link.href);
@@ -712,7 +1262,7 @@ Content = {
                 }
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 if ((Content.contentTypes.remoteImage.isWikimediaUploadsImageLink(link)) == false)
@@ -762,7 +1312,7 @@ Content = {
                 }
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 let content = null;
@@ -857,7 +1407,7 @@ Content = {
                         && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
             },
 
-            isPageContent: false,
+            isSliceable: false,
 
             contentFromLink: (link) => {
                 let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
@@ -884,7 +1434,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localVideo.videoFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Import specified dimensions / aspect ratio.
@@ -939,7 +1489,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localAudio.audioFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Use annotation abstract (if any) as figure caption.
@@ -982,7 +1532,7 @@ Content = {
                 return link.pathname.endsWithAnyOf(Content.contentTypes.localImage.imageFileExtensions.map(x => `.${x}`));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             contentFromLink: (link) => {
                 //  Import specified dimensions / aspect ratio.
@@ -1034,7 +1584,7 @@ Content = {
                         || link.classList.contains("link-page"));
             },
 
-            isPageContent: true,
+            isSliceable: true,
 
             sourceURLsForLink: (link) => {
                 let url = URLFromString(link.href);

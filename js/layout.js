@@ -93,18 +93,22 @@ GW.layout = {
 		[ ".heading + section",			 5, false ],
 		[ ".heading + *",				 4, false ],
 
-		[ ".annotation p.data-field.title + p.data-field",
+		[ ".tweet .tweet-content",		 3, false ],
+		[ ".tweet .tweet-content p",	 3, false ],
+		[ ".tweet figure",				 8, false ],
+
+		[ "p.data-field.title + p.data-field",
 										 1, false ],
-		[ ".annotation p.data-field.title + .data-field.annotation-abstract",
+		[ "p.data-field.title + .data-field",
 										 3, false ],
+
+		[ ".annotation .data-field.file-includes .collapse + annotation .collapse",
+										 5, false ],
 		[ ".annotation .data-field + .annotation .collapse",
 										 5, false ],
-		[ ".data-field.file-includes .collapse + .collapse",
-										 5, false ],
-
-		[ ".annotation .collapse.bare-content + .collapse.bare-content",
+		[ ".annotation .collapse.bare-content + annotation .collapse.bare-content",
 										 4, false ],
-		[ ".annotation * + .collapse.bare-content",
+		[ ".annotation * + annotation .collapse.bare-content",
 										 6, false ],
 
 		[ ".aux-links-append + .aux-links-append",
@@ -120,7 +124,7 @@ GW.layout = {
 		[ ".admonition-title > p + p",   1, false ],
 
 		[ "p.footnote-back-block",		 1, false ],
-		[ "p.in-list + .annotation p",	10 ],
+		[ "p.in-list + p.data-field",	10 ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
 		[ "p",							 0 ],
@@ -936,7 +940,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				".section-metadata",
 				".margin-notes-block",
 				".page-description-annotation",
-				".annotation .data-field",
+				".data-field",
 				".admonition-title > p"
 			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, {

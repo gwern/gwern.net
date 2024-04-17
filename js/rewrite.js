@@ -368,19 +368,19 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 
 /****************************************************************************/
 /*	Request image inversion data for images in the loaded content. (We omit
-	annotations from this load handler because requesting inversion data for 
-	images in annotations is handled by annotations.js; this is necessary 
-	because we do not fire a GW.contentDidLoad event when we load the raw
-	annotation source and extract the reference data, but rather only when we 
-	construct the annotation by filling a template with that reference data,
-	which is too late for an image inversion data request to do much good.)
+	from this load handler those GW.contentDidLoad events which are fired when 
+	we construct templated content from already extract reference data, as by 
+	then it is already too late; there is no time to send an invertOrNot API 
+	request and receive a response. Instead, requesting inversion data for 
+	images in templated content is handled by the data source object for that
+	content (either Content, in content.js, or Annotations, in annotations.js).
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
     GWLog("requestImageInversionData", "rewrite.js", 1);
 
 	//	Request image inversion judgments from invertornot.
 	requestImageInversionDataForImagesInContainer(eventInfo.container);
-}, ">rewrite", (info) => (info.contentType != "annotation"));
+}, ">rewrite", (info) => (info.source != "transclude"));
 
 /****************************************************************************/
 /*	Apply image inversion data to images in the loaded content, if available.
@@ -508,8 +508,8 @@ GW.dimensionSpecifiedMediaElementSelector = [
 	"video[width][height]"
 ].map(x => `figure ${x}`).join(", ");
 
-/**********************************************************/
-/*  Prevent reflow in annotations, reduce reflow elsewhere.
+/**************************************************************/
+/*  Prevent reflow for floats, reduce reflow for other figures.
  */
 addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
     GWLog("setMediaElementDimensions", "rewrite.js", 1);
@@ -520,9 +520,8 @@ addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventI
 
 	//	Set specified dimensions in CSS.
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
-        let fixWidth = (   eventInfo.contentType == "annotation"
-                        && (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
-                        	|| mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ])));
+        let fixWidth = (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
+                        || mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ]));
         setMediaElementDimensions(mediaElement, fixWidth);
     });
 
@@ -736,36 +735,6 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         });
     });
 }, "rewrite", (info) => info.fullWidthPossible);
-
-/*****************************************************************/
-/*  Allow for floated figures at the start of annotation abstracts
-    (only on sufficiently wide viewports).
- */
-addContentLoadHandler(GW.contentLoadHandlers.relocateThumbnailsInAnnotations = (eventInfo) => {
-    GWLog("relocateThumbnailsInAnnotations", "rewrite.js", 1);
-
-    if (GW.mediaQueries.mobileWidth.matches)
-        return;
-
-    let annotationAbstract = eventInfo.container.querySelector(".annotation-abstract");
-    if (   annotationAbstract == null
-        || annotationAbstract.tagName == "BLOCKQUOTE")
-        return;
-
-    let container = annotationAbstract.closest(".annotation");
-    if (   container == null
-        || container == annotationAbstract)
-        return;
-
-    let initialFigure = annotationAbstract.querySelector(".annotation-abstract > figure.float-right:first-child");
-    if (initialFigure == null) {
-        let pageThumbnailImage = annotationAbstract.querySelector("img.page-thumbnail");
-        if (pageThumbnailImage)
-            initialFigure = pageThumbnailImage.closest("figure");
-    }
-    if (initialFigure)
-        container.insertBefore(initialFigure, container.firstElementChild);
-}, "rewrite");
 
 /******************************************************************************/
 /*	There is no browser native lazy loading for <video> tag `poster` attribute,
@@ -1046,6 +1015,27 @@ addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) 
 /**************/
 /* TYPOGRAPHY */
 /**************/
+
+/*******************************************************************************/
+/*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
+    certain problematic characters, etc.) in content transforms.
+
+    Requires typography.js to be loaded prior to this file.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInContentTransforms = (eventInfo) => {
+    GWLog("rectifyTypographyInContentTransforms", "rewrite.js", 1);
+
+    Typography.processElement(eventInfo.container,
+        (  Typography.replacementTypes.QUOTES
+         | Typography.replacementTypes.WORDBREAKS
+         | Typography.replacementTypes.ELLIPSES));
+
+    //  Educate quotes in image alt-text.
+    eventInfo.container.querySelectorAll("img").forEach(image => {
+        image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
+    });
+}, "rewrite", (info) => (   info.contentType == "wikipediaEntry"
+						 || info.contentType == "tweet"));
 
 /***********************************/
 /*	Rectify typography in body text.
@@ -1339,19 +1329,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 }, "rewrite");
 
 /***************************************************************************/
-/*  Make the page thumbnail in an annotation load eagerly instead of lazily.
- */
-addContentLoadHandler(GW.contentLoadHandlers.setEagerLoadingForAnnotationImages = (eventInfo) => {
-    GWLog("setEagerLoadingForAnnotationImages", "rewrite.js", 1);
-
-    let firstImage = (eventInfo.container.querySelector(".page-thumbnail"))
-    if (firstImage) {
-        firstImage.loading = "eager";
-        firstImage.decoding = "sync";
-    }
-}, "rewrite", (info) => (info.contentType == "annotation"));
-
-/***************************************************************************/
 /*	Apply proper classes to inline file-include collapses, both on directory 
 	index pages and in annotations.
  */
@@ -1446,26 +1423,6 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteAuxLinksLinksInTransclud
         }
     });
 }, "eventListeners", (info) => (info.contentType == "annotation"));
-
-/*******************************************************************************/
-/*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
-    certain problematic characters, etc.).
-
-    Requires typography.js to be loaded prior to this file.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInAnnotations = (eventInfo) => {
-    GWLog("rectifyTypographyInAnnotations", "rewrite.js", 1);
-
-    Typography.processElement(eventInfo.container,
-        (  Typography.replacementTypes.QUOTES
-         | Typography.replacementTypes.WORDBREAKS
-         | Typography.replacementTypes.ELLIPSES));
-
-    //  Educate quotes in image alt-text.
-    eventInfo.container.querySelectorAll("img").forEach(image => {
-        image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
-    });
-}, "rewrite", (info) => (info.contentType == "annotation"));
 
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight

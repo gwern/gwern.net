@@ -1,0 +1,16 @@
+<div class="content-transform <{contentTypeClass}>">
+	<[IF thumbnailFigure]>
+	<{thumbnailFigure}>
+	<[IFEND]>
+	<p class="data-field title">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+		   <{titleLinkIconMetadata}>
+			   ><{title}></a>
+	</p>
+	<div class="data-field entry-content"><{entryContent}></div>
+</div>

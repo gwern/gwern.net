@@ -1203,6 +1203,8 @@
     --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
     --GW-popups-annotation-popup-min-height: 120px;
+    --GW-popups-wikipedia-entry-popup-min-width: 480px;
+    --GW-popups-wikipedia-entry-popup-min-height: 120px;
     --GW-popups-tweet-popup-min-height: 120px;
     --GW-popups-tweet-avatar-size: 75px;
     --GW-popups-aux-links-popup-min-width: 480px;
@@ -4064,6 +4066,214 @@ a.footnote-back {
 }
 
 
+/**********************************/
+/* TRANSCLUDED TABLES OF CONTENTS */
+/**********************************/
+
+/*  TOCs in annotations and content transforms.
+ */
+blockquote .TOC,
+.content-transform .TOC,
+.annotation .TOC {
+    padding: 0.5em 0.5em 0.75em 0.75em;
+
+    /*  The following four properties are to prevent both overlap and
+        margin-collapse of the TOC when there’s a floated thumbnail figure
+        that juts down below the abstract text.
+     */
+    clear: both;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
+/**********************/
+/* CONTENT TRANSFORMS */
+/**********************/
+
+/*=-------------------=*/
+/*= WIKIPEDIA ENTRIES =*/
+/*=-------------------=*/
+
+.wikipedia-entry p.data-field {
+    --text-alignment: left;
+    --text-indent: 0em;
+}
+
+.wikipedia-entry .data-field.title .title-link {
+	font-weight: bold;
+}
+
+.wikipedia-entry figure {
+    clear: both;
+}
+
+.wikipedia-entry figure.float .image-wrapper {
+    max-width: 100%;
+}
+
+.wikipedia-entry .image-row-wrapper {
+    display: flex;
+}
+
+.wikipedia-entry .table-wrapper {
+    clear: both;
+}
+.wikipedia-entry .infobox {
+    font-size: 0.9em;
+}
+.wikipedia-entry .infobox table {
+    font-size: 0.935em;
+}
+.wikipedia-entry .infobox tbody tr:hover {
+    outline: none;
+}
+.wikipedia-entry .infobox th[colspan="2"],
+.wikipedia-entry .infobox td[colspan="2"],
+.wikipedia-entry .infobox th.sidebar-title,
+.wikipedia-entry .infobox th.sidebar-heading {
+    text-align: center;
+}
+.wikipedia-entry .infobox th {
+    border-top: 1px solid var(--GW-table-row-horizontal-border-color);
+}
+.wikipedia-entry .infobox tr:first-of-type th {
+    font-size: 1.25em;
+}
+.wikipedia-entry .infobox td:first-child {
+    font-weight: bold;
+}
+.wikipedia-entry .infobox td ul {
+    margin: 0.25em 0;
+    padding: 0 0 0 1.5em;
+}
+.wikipedia-entry .quotebox-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: -0.125em 0 0.25em 0;
+}
+.wikipedia-entry .quotebox-cite {
+    margin-top: 0.5em;
+}
+.wikipedia-entry #Timeline-row {
+    display: flex;
+    width: fit-content;
+    margin: 0.25em auto;
+}
+.wikipedia-entry th br ~ * {
+    font-weight: normal;
+    font-size: calc((1 / 1.25) * 1em);
+}
+.wikipedia-entry .hatnote {
+    margin: 0 0 0.75em 0;
+    font-style: italic;
+}
+.wikipedia-entry .chemf {
+    word-break: break-all;
+}
+.wikipedia-entry .side-box {
+    border: 1px dotted currentColor;
+    float: right;
+    clear: right;
+    padding: 0.5em 0.75em;
+    max-width: calc(50% - 2em);
+    margin: 0 0 1em 1em;
+    overflow: auto;
+    position: relative;
+    z-index: 1;
+}
+.wikipedia-entry .side-box.sister-box ul {
+    padding: 0;
+    margin: 1em 0 0 0;
+}
+.wikipedia-entry .side-box.sister-box ul li::before {
+    content: none;
+}
+.wikipedia-entry .side-box.sister-box ul .sister-logo {
+    margin: 0 0.5em 0 0;
+    display: inline-block;
+    vertical-align: text-top;
+    width: 1.5em;
+    text-align: center;
+}
+
+/*  Special case for inline math in Wikipedia pop-frames.
+ */
+.wikipedia-entry .wikipedia-math-inline-wrapper {
+    vertical-align: baseline;
+    position: relative;
+    bottom: -0.15em;
+}
+/*  Ditto, but block math.
+ */
+.wikipedia-entry .wikipedia-math-block-wrapper {
+    margin: 1em 0;
+}
+.wikipedia-entry .wikipedia-math-block-wrapper img {
+    display: block;
+    margin: auto;
+}
+
+/*	WP wraps references entirely in <cite> elements; <cite> is styled by
+	browsers (Chrome/FF) by default in italics. No one wants their entire
+	reference in italics, so WP resets the font to the default style (whatever
+	that is), and styles italics bits (like book titles) manually. We need to
+	replicate that, or else references sections in our WP popups will be
+	entirely italics!
+ */
+.wikipedia-entry cite,
+.wikipedia-entry dfn {
+    font-style: inherit;
+}
+
+.wikipedia-entry .wp-footnote-back {
+	padding: 0 0.25em;
+	margin: 0 0.5em 0 0;
+}
+
+/*=--------=*/
+/*= TWEETS =*/
+/*=--------=*/
+
+.tweet {
+    --avatar-margin: 1em;
+    --avatar-border-width: 1px;
+}
+
+.tweet p.data-field {
+    --text-alignment: left;
+    --text-indent: 0em;
+}
+
+.tweet .data-field.tweet-links a {
+	font-weight: bold;
+}
+
+.tweet img.avatar {
+    display: block;
+    width: var(--GW-popups-tweet-avatar-size);
+    height: var(--GW-popups-tweet-avatar-size);
+    float: left;
+    margin: 0.25em var(--avatar-margin) var(--avatar-margin) 0;
+    border-radius: 50%;
+    border: var(--avatar-border-width) solid var(--GW-figure-outline-color);
+}
+
+.tweet .data-field.tweet-content p {
+    text-indent: 0;
+    padding-left: calc(var(--GW-popups-tweet-avatar-size) + var(--avatar-margin) + 2 * var(--avatar-border-width));
+}
+
+.tweet figure {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0.1em;
+    max-width: unset;
+}
+
+
 /***************/
 /* ANNOTATIONS */
 /***************/
@@ -4120,33 +4330,14 @@ a.footnote-back {
     border-top: 1px dotted currentColor;
 }
 
-/*  Images (such as the ones in Wikipedia annotations).
-    */
+/*  Images.
+ */
 .annotation figure {
     clear: both;
 }
 
 .annotation figure.float .image-wrapper {
     max-width: 100%;
-}
-
-.annotation .image-row-wrapper {
-    display: flex;
-}
-
-/*  TOCs in annotations.
- */
-blockquote .TOC {
-    padding: 0.5em 0.5em 0.75em 0.75em;
-
-    /*  The following four properties are to prevent both overlap and
-        margin-collapse of the TOC when there’s a floated thumbnail figure
-        that juts down below the abstract text.
-     */
-    clear: both;
-    display: inline-block;
-    box-sizing: border-box;
-    width: 100%;
 }
 
 /*  “Aux links” (see also, similars, backlinks, link bibliography).
@@ -4169,158 +4360,6 @@ ol.link-bibliography-list-compact > li::before {
     ol.link-bibliography-list-compact {
         --list-left-padding: 1.75em;
     }
-}
-
-/*********************/
-/*  Wikipedia entries.
- */
-
-.annotation.wikipedia-entry .table-wrapper {
-    clear: both;
-}
-.annotation.wikipedia-entry .infobox {
-    font-size: 0.9em;
-}
-.annotation.wikipedia-entry .infobox table {
-    font-size: 0.935em;
-}
-.annotation.wikipedia-entry .infobox tbody tr:hover {
-    outline: none;
-}
-.annotation.wikipedia-entry .infobox th[colspan="2"],
-.annotation.wikipedia-entry .infobox td[colspan="2"],
-.annotation.wikipedia-entry .infobox th.sidebar-title,
-.annotation.wikipedia-entry .infobox th.sidebar-heading {
-    text-align: center;
-}
-.annotation.wikipedia-entry .infobox th {
-    border-top: 1px solid var(--GW-table-row-horizontal-border-color);
-}
-.annotation.wikipedia-entry .infobox tr:first-of-type th {
-    font-size: 1.25em;
-}
-.annotation.wikipedia-entry .infobox td:first-child {
-    font-weight: bold;
-}
-.annotation.wikipedia-entry .infobox td ul {
-    margin: 0.25em 0;
-    padding: 0 0 0 1.5em;
-}
-.annotation.wikipedia-entry .quotebox-title {
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.25em;
-    margin: -0.125em 0 0.25em 0;
-}
-.annotation.wikipedia-entry .quotebox-cite {
-    margin-top: 0.5em;
-}
-.annotation.wikipedia-entry #Timeline-row {
-    display: flex;
-    width: fit-content;
-    margin: 0.25em auto;
-}
-.annotation.wikipedia-entry th br ~ * {
-    font-weight: normal;
-    font-size: calc((1 / 1.25) * 1em);
-}
-.annotation.wikipedia-entry .hatnote {
-    margin: 0 0 0.75em 0;
-    font-style: italic;
-}
-.annotation.wikipedia-entry .chemf {
-    word-break: break-all;
-}
-.annotation.wikipedia-entry .side-box {
-    border: 1px dotted currentColor;
-    float: right;
-    clear: right;
-    padding: 0.5em 0.75em;
-    max-width: calc(50% - 2em);
-    margin: 0 0 1em 1em;
-    overflow: auto;
-    position: relative;
-    z-index: 1;
-}
-.annotation.wikipedia-entry .side-box.sister-box ul {
-    padding: 0;
-    margin: 1em 0 0 0;
-}
-.annotation.wikipedia-entry .side-box.sister-box ul li::before {
-    content: none;
-}
-.annotation.wikipedia-entry .side-box.sister-box ul .sister-logo {
-    margin: 0 0.5em 0 0;
-    display: inline-block;
-    vertical-align: text-top;
-    width: 1.5em;
-    text-align: center;
-}
-
-/*  Special case for inline math in Wikipedia pop-frames.
- */
-.annotation.wikipedia-entry .wikipedia-math-inline-wrapper {
-    vertical-align: baseline;
-    position: relative;
-    bottom: -0.15em;
-}
-/*  Ditto, but block math.
- */
-.annotation.wikipedia-entry .wikipedia-math-block-wrapper {
-    margin: 1em 0;
-}
-.annotation.wikipedia-entry .wikipedia-math-block-wrapper img {
-    display: block;
-    margin: auto;
-}
-
-/*	WP wraps references entirely in <cite> elements; <cite> is styled by
-	browsers (Chrome/FF) by default in italics. No one wants their entire
-	reference in italics, so WP resets the font to the default style (whatever
-	that is), and styles italics bits (like book titles) manually. We need to
-	replicate that, or else references sections in our WP popups will be
-	entirely italics!
- */
-.annotation.wikipedia-entry cite,
-.annotation.wikipedia-entry dfn {
-    font-style: inherit;
-}
-
-.annotation.wikipedia-entry .wp-footnote-back {
-	padding: 0 0.25em;
-	margin: 0 0.5em 0 0;
-}
-
-/**********/
-/*  Tweets.
- */
-
-.annotation.tweet {
-    --avatar-margin: 1em;
-    --avatar-border-width: 1px;
-}
-
-.annotation.tweet img.avatar {
-    display: block;
-    width: var(--GW-popups-tweet-avatar-size);
-    height: var(--GW-popups-tweet-avatar-size);
-    float: left;
-    margin: 0.25em var(--avatar-margin) var(--avatar-margin) 0;
-    border-radius: 50%;
-    border: var(--avatar-border-width) solid var(--GW-figure-outline-color);
-}
-
-.annotation.tweet .data-field.annotation-abstract {
-    margin-top: 0.75em;
-}
-.annotation.tweet .data-field.annotation-abstract p {
-    text-indent: 0;
-    margin-top: 0.75em;
-    padding-left: calc(var(--GW-popups-tweet-avatar-size) + var(--avatar-margin) + 2 * var(--avatar-border-width));
-}
-.annotation.tweet figure {
-    margin: 2em auto 0.1em auto;
-    max-width: unset;
 }
 
 
@@ -4762,19 +4801,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     --text-indent: 1.75em;
 }
 
-.popframe-body .TOC {
-    padding: 0.5em 0.5em 0.75em 0.75em;
-
-    /*  The following for properties are to prevent both overlap and
-        margin-collapse of the TOC when there’s a floated thumbnail figure
-        that juts down below the abstract text.
-     */
-    clear: both;
-    display: inline-block;
-    box-sizing: border-box;
-    width: 100%;
-}
-
 .popframe-body section.level1 > .heading {
     font-size: 1.75em;
 }
@@ -4835,12 +4861,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌────────────────────────┐*/
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
-
-/*  For example, Wikipedia annotations.
- */
-.popframe-body > .annotation:only-child > p.data-field.title:only-of-type {
-    font-size: 1.125em;
-}
 
 /*  Collapses in annotations.
  */
@@ -5048,6 +5068,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     --popframe-loading-failed-message: "File not found.";
 }
 
+/*┌─────────────────────────────┐*/
+/*│ Wikipedia entry pop-frames. │*/
+/*└─────────────────────────────┘*/
+
+.popframe-body.wikipedia-entry .data-field.title .title-link {
+    font-size: 1.125em;
+}
+
 /*┌───────────────────┐*/
 /*│ Tweet pop-frames. │*/
 /*└───────────────────┘*/
@@ -5056,10 +5084,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 	height: 1.125em;
 	width: auto;
 	margin: 0 0.5em 0 0;
-}
-
-.popframe-body.tweet > .tweet:only-child > p.data-field.title:only-of-type {
-    font-size: 1em;
 }
 
 /*┌──────────────────────────────┐*/
@@ -5619,11 +5643,20 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
+/*┌─────────────────────────┐*/
+/*│ Wikipedia entry popups. │*/
+/*└─────────────────────────┘*/
+
+.popup.content-transform.wikipedia-entry {
+    min-width: var(--GW-popups-wikipedia-entry-popup-min-width);
+    min-height: var(--GW-popups-wikipedia-entry-popup-min-height);
+}
+
 /*┌───────────────┐*/
 /*│ Tweet popups. │*/
 /*└───────────────┘*/
 
-.popup.annotation.tweet {
+.popup.content-transform.tweet {
     min-height: var(--GW-popups-tweet-popup-min-height);
 }
 
@@ -6982,7 +7015,7 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #image-focus-overlay .caption .image-url {
     position: relative;
     margin: 0;
-    padding: 0.625em 1.25em 0.875em 1.25em;
+    padding: 0.625em 2em 0.875em 1.25em;
     border-radius: 8px;
     background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     cursor: copy;
