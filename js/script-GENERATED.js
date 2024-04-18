@@ -4764,8 +4764,8 @@ Annotations = { ...Annotations,
 		 */
         let sourceURL = Annotations.sourceURLForLink(link);
 
-		/*	Depending on the data source, `response` could be HTML,
-			JSON, or other. We construct and cache a reference data object,
+		/*	For local annotations, the (already processed) `response` is a 
+			DocumentFragment. We construct and cache a reference data object, 
 			then fire the appropriate event.
 		 */
 		let processResponse = (response) => {
@@ -5079,7 +5079,8 @@ Content = {
     cachedContent: { },
 
     contentCacheKeyForLink: (link) => {
-        return (Content.sourceURLsForLink(link)?.first ?? link).href;
+    	return (   Content.contentTypeForLink(link)?.contentCacheKeyForLink?.(link) 
+    			?? (Content.sourceURLsForLink(link)?.first ?? link).href);
     },
 
     cacheContentForLink: (content, link) => {
@@ -5096,10 +5097,9 @@ Content = {
     },
 
     cachedDocumentForLink: (link) => {
-        let contentType = Content.contentTypeForLink(link);
         let content = Content.cachedContentForLink(link);
         return (content && content != "LOADING_FAILED"
-                ? (contentType.referenceDataFromContent ? content.document : content)
+                ? content.document
                 : null);
     },
 
@@ -5244,9 +5244,29 @@ Content = {
         return Content.contentTypeForLink(link)?.contentFromResponse?.(response, link, sourceURL);
     },
 
-    /****************************/
-    /*  Reference data retrieval.
+    /**************************************/
+    /*  Reference data retrieval & caching.
      */
+
+    cachedReferenceData: { },
+
+	referenceDataCacheKeyForLink: (link) => {
+		return (Content.contentTypeForLink(link)?.referenceDataCacheKeyForLink?.(link) ?? null);
+	},
+
+	cachedReferenceDataForLink: (link) => {
+		let cacheKey = Content.referenceDataCacheKeyForLink(link);
+		if (cacheKey)
+			return Content.cachedReferenceData[cacheKey];
+
+		return null;
+	},
+
+	cacheReferenceDataForLink: (referenceData, link) => {
+		let cacheKey = Content.referenceDataCacheKeyForLink(link);
+		if (cacheKey)
+			Content.cachedReferenceData[cacheKey] = referenceData;
+	},
 
     referenceDataForLink: (link) => {
         let content = Content.cachedContentForLink(link);
@@ -5254,12 +5274,18 @@ Content = {
             || content == "LOADING_FAILED") {
             return content;
         } else {
-            return Content.referenceDataFromContent(content, link);
+			let referenceData = Content.cachedReferenceDataForLink(link);
+			if (referenceData == null) {
+				referenceData = Content.referenceDataFromContent(content, link);
+				Content.cacheReferenceDataForLink(referenceData, link);
+			}
+
+			return referenceData;
         }
     },
 
     referenceDataFromContent: (content, link) => {
-        return (Content.contentTypeForLink(link).referenceDataFromContent?.(content, link) ?? { content: content });
+        return (Content.contentTypeForLink(link).referenceDataFromContent?.(content, link) ?? { content: content.document });
     },
 
     /***********/
@@ -5270,9 +5296,17 @@ Content = {
         if (typeof url == "string")
             url = URLFromString(url);
 
+        /*	PDF optional settings to embed more cleanly: fit width, and disable 
+        	‘bookmarks’ & ‘thumbnails’ (just not enough space).
+
+        	<https://gwern.net/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=6>
+        	<https://github.com/mozilla/pdf.js/wiki/Viewer-options> 
+
+        	WARNING: browsers are unreliable in whether they properly apply 
+        	these options; Firefox appears to, but not Chrome, and there can be 
+        	iframe issues as well.
+         */
         let src = url.pathname.endsWith(".pdf")
-        /* PDF optional settings <https://gwern.net/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=6> <https://github.com/mozilla/pdf.js/wiki/Viewer-options> to embed more cleanly: fit width, and disable 'bookmarks' & 'thumbnails' (just not enough space); */
-        /* WARNING: browsers are unreliable in whether they properly apply these options; Firefox appears to, but not Chrome, and there can be iframe issues as well. */
                   ? url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none"
                   : url.href;
         let cssClass = "loaded-not"
@@ -5325,27 +5359,48 @@ Content = {
     /**************************************************************/
     /*  CONTENT TYPES
 
-        Each has the following necessary members:
+        Each content type definition has the following REQUIRED members:
 
             .matches(URL|Element) => boolean
+
             .isSliceable: boolean
+
+				This property determines whether content documents returned for 
+				links of this content type may be “sliced”, via element IDs, 
+				selectors, or by other means. If its value is false, then the 
+				returned content documents may only be transcluded in their 
+				entirety.
 
         ... plus either these two:
 
             .sourceURLsForLink(URL|Element) => [ URL ]
+
             .contentFromResponse(string, URL|Element, URL) => object
 
         ... or this one:
 
             .contentFromLink(URL|Element) => object
 
-        A content type may also have the following optional members:
+        A content type definition may also have the following OPTIONAL members:
+
+			.contentCacheKeyForLink(URL|Element) => string
+
+				If this member function is not present, a default content cache
+				key (based on the first source URL for the link, or else the URL
+				of the link itself) will be used.
 
             .referenceDataFromContent(object, URL|Element) => object
 
-                NOTE: If this method is not present, then .contentFromResponse
-                or .contentFromLink (whichever is present) should return a
-                DocumentFragment instead of a dictionary object.
+				NOTE: If this member function is not present, we must ensure 
+				that the object returned from .contentFromResponse() or 
+				.contentFromLink() has a .document member. (This should be a
+				DocumentFragment object which contains the primary content for
+				the link.)
+
+			.referenceDataCacheKeyForLink(URL|Element) => string
+
+				NOTE: If this member function is not present, then reference 
+				data will not be cached for links of this content type.
      */
 
     contentTypeForLink: (link) => {
@@ -5368,7 +5423,7 @@ Content = {
                 let letter = link.dataset.letter;
                 let dropcapType = link.dataset.dropcapType;
 
-                let content = newDocument(
+                let contentDocument = newDocument(
                       `<p>A capital letter <strong>${letter}</strong> dropcap initial, from the `
                     + `<a class="link-page" href="/dropcap#${dropcapType}"><strong>${dropcapType}</strong></a>`
                     + ` dropcap font.</p>`
@@ -5382,7 +5437,9 @@ Content = {
                     loadLocation: new URL(link.href)
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             }
         },
 
@@ -5462,9 +5519,13 @@ Content = {
                                           ? `sandbox="allow-scripts allow-same-origin"`
                                           : `sandbox`);
 
-                return newDocument(Content.objectHTMLForURL(embedSrc, {
+				let contentDocument = newDocument(Content.objectHTMLForURL(embedSrc, {
                     additionalAttributes: additionalAttributes.join(" ")
                 }));
+
+                return {
+                	document: contentDocument
+                };
             },
 
             shouldEnableScriptsForURL: (url) => {
@@ -5511,7 +5572,11 @@ Content = {
                 };
             },
 
-			referenceDataFromContent: (wikipediaEntryPage, articleLink) => {
+			referenceDataCacheKeyForLink: (link) => {
+				return link.href;
+			},
+
+			referenceDataFromContent: (wikipediaEntryContent, articleLink) => {
 				//	Article link.
 				let titleLinkHref = articleLink.href;
 
@@ -5525,21 +5590,21 @@ Content = {
 				let wholePage = false;
 
 				//	Show full page (sans TOC) if it’s a disambiguation page.
-				if (wikipediaEntryPage.document.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
+				if (wikipediaEntryContent.document.querySelector("meta[property='mw:PageProp/disambiguation']") != null) {
 					wholePage = true;
 
 					//	Send request to record failure in server logs.
 					GWServerLogError(Content.contentTypes.wikipediaEntry.sourceURLsForLink(articleLink).first.href + `--disambiguation-error`, "disambiguation page");
 				}
 
-				let pageTitleElementHTML = unescapeHTML(wikipediaEntryPage.document.querySelector("title").innerHTML);
+				let pageTitleElementHTML = unescapeHTML(wikipediaEntryContent.document.querySelector("title").innerHTML);
 				let entryContentHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
 				if (wholePage) {
-					entryContentHTML = wikipediaEntryPage.document.innerHTML;
+					entryContentHTML = wikipediaEntryContent.document.innerHTML;
 					titleHTML = pageTitleElementHTML;
 					fullTitleHTML = pageTitleElementHTML;
 				} else if (articleLink.hash > "") {
-					let targetElement = wikipediaEntryPage.document.querySelector(selectorFromHash(articleLink.hash));
+					let targetElement = wikipediaEntryContent.document.querySelector(selectorFromHash(articleLink.hash));
 
 					/*	Check whether we have tried to load a part of the page which
 						does not exist.
@@ -5591,12 +5656,12 @@ Content = {
 						titleHTML = articleLink.hash;
 					}
 				} else {
-					entryContentHTML = wikipediaEntryPage.document.querySelector("[data-mw-section-id='0']").innerHTML;
+					entryContentHTML = wikipediaEntryContent.document.querySelector("[data-mw-section-id='0']").innerHTML;
 					titleHTML = pageTitleElementHTML;
 					fullTitleHTML = pageTitleElementHTML;
 
 					//	Build TOC.
-					let sections = Array.from(wikipediaEntryPage.document.querySelectorAll("section")).slice(1);
+					let sections = Array.from(wikipediaEntryContent.document.querySelectorAll("section")).slice(1);
 					if (   sections 
 						&& sections.length > 0) {
 						entryContentHTML += `<div class="TOC columns">`;
@@ -5631,25 +5696,25 @@ Content = {
 					}
 				}
 
-				let entryContent = newDocument(entryContentHTML);
+				let contentDocument = newDocument(entryContentHTML);
 
 				//	Post-process entry content.
-				Content.contentTypes.wikipediaEntry.postProcessReferenceEntry(entryContent, articleLink);
+				Content.contentTypes.wikipediaEntry.postProcessEntryContent(contentDocument, articleLink);
 
 				//	Request image inversion judgments from invertornot.
-				requestImageInversionDataForImagesInContainer(entryContent);
+				requestImageInversionDataForImagesInContainer(contentDocument);
 
 				//	Pull out initial figure.
 				let thumbnailFigureHTML = null;
 				if (GW.mediaQueries.mobileWidth.matches == false) {
-					let initialFigure = entryContent.querySelector("figure.float-right:first-child");
+					let initialFigure = contentDocument.querySelector("figure.float-right:first-child");
 					if (initialFigure) {
 						thumbnailFigureHTML = initialFigure.outerHTML;
 						initialFigure.remove();
 					}
 				}
 
-				entryContentHTML = entryContent.innerHTML;
+				entryContentHTML = contentDocument.innerHTML;
 
 				//	Pop-frame title text. Mark sections with ‘§’ symbol.
 				let popFrameTitleHTML = (articleLink.hash > ""
@@ -5757,42 +5822,42 @@ Content = {
 			/*  Post-process an already-constructed content-transformed
 				Wikipedia entry (do HTML cleanup, etc.).
 			 */
-			postProcessReferenceEntry: (referenceEntry, articleLink) => {
+			postProcessEntryContent: (contentDocument, articleLink) => {
 				//  Remove unwanted elements.
-				referenceEntry.querySelectorAll(Content.contentTypes.wikipediaEntry.extraneousElementSelectors.join(", ")).forEach(element => {
+				contentDocument.querySelectorAll(Content.contentTypes.wikipediaEntry.extraneousElementSelectors.join(", ")).forEach(element => {
 					element.remove();
 				});
 
 				//	Clean empty nodes.
-				referenceEntry.childNodes.forEach(node => {
+				contentDocument.childNodes.forEach(node => {
 					if (isNodeEmpty(node))
 						node.remove();
 				});
 
 				//  Remove location maps (they don’t work right).
-				referenceEntry.querySelectorAll(".locmap").forEach(locmap => {
+				contentDocument.querySelectorAll(".locmap").forEach(locmap => {
 					(locmap.closest("tr") ?? locmap).remove();
 				});
 
 				//	Remove other maps.
-				referenceEntry.querySelectorAll("img").forEach(image => {
+				contentDocument.querySelectorAll("img").forEach(image => {
 					let imageSourceURL = URLFromString(image.src);
 					if (imageSourceURL.hostname == "maps.wikimedia.org")
 						image.remove();
 				});
 
 				//  Remove empty paragraphs.
-				referenceEntry.querySelectorAll("p:empty").forEach(emptyGraf => {
+				contentDocument.querySelectorAll("p:empty").forEach(emptyGraf => {
 					emptyGraf.remove();
 				});
 
 				//	Remove edit-links.
-				referenceEntry.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
+				contentDocument.querySelectorAll("a[title^='Edit this on Wiki'], a[title^='Edit this at Wiki']").forEach(editLink => {
 					editLink.remove();
 				});
 
 				//  Process links.
-				referenceEntry.querySelectorAll("a").forEach(link => {
+				contentDocument.querySelectorAll("a").forEach(link => {
 					//	De-linkify non-anchor self-links.
 					if (   link.hash     == ""
 						&& link.pathname == articleLink.pathname) {
@@ -5812,13 +5877,13 @@ Content = {
 				});
 
 				//	Prevent layout weirdness for footnote links.
-				referenceEntry.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
+				contentDocument.querySelectorAll("a[href*='#cite_note-']").forEach(citationLink => {
 					citationLink.classList.add("icon-not");
 					citationLink.innerHTML = "&NoBreak;" + citationLink.textContent.trim();
 				});
 
 				//	Rectify back-to-citation links in “References” sections.
-				referenceEntry.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
+				contentDocument.querySelectorAll("a[rel='mw:referencedBy']").forEach(backToCitationLink => {
 					backToCitationLink.classList.add("icon-not");
 					backToCitationLink.classList.add("wp-footnote-back");
 					backToCitationLink.innerHTML = backToCitationLink.textContent.trim();
@@ -5826,7 +5891,7 @@ Content = {
 
 				//	Strip inline styles and some related attributes.
 				let tableElementsSelector = "table, thead, tfoot, tbody, tr, th, td";
-				referenceEntry.querySelectorAll("[style]").forEach(styledElement => {
+				contentDocument.querySelectorAll("[style]").forEach(styledElement => {
 					//	Skip table elements; we handle those specially.
 					if (styledElement.matches(tableElementsSelector))
 						return;
@@ -5835,7 +5900,7 @@ Content = {
 						stripStyles(styledElement, { saveProperties: Content.contentTypes.wikipediaEntry.preservedInlineStyleProperties });
 				});
 				//	Special handling for table elements.
-				referenceEntry.querySelectorAll(tableElementsSelector).forEach(tableElement => {
+				contentDocument.querySelectorAll(tableElementsSelector).forEach(tableElement => {
 					if (tableElement.style.display != "none") {
 						if (tableElement.style.position == "relative")
 							stripStyles(tableElement, { saveProperties: [ "text-align", "position", "width", "height" ] });
@@ -5849,30 +5914,30 @@ Content = {
 				});
 
 				//  Rectify table classes.
-				referenceEntry.querySelectorAll("table.sidebar").forEach(table => {
+				contentDocument.querySelectorAll("table.sidebar").forEach(table => {
 					table.classList.toggle("infobox", true);
 				});
 
 				//  Normalize table cell types.
-				referenceEntry.querySelectorAll("th:not(:only-child)").forEach(cell => {
+				contentDocument.querySelectorAll("th:not(:only-child)").forEach(cell => {
 					let rowSpan = (cell.rowSpan > 1) ? ` rowspan="${cell.rowSpan}"` : ``;
 					let colSpan = (cell.colSpan > 1) ? ` colspan="${cell.colSpan}"` : ``;
 					cell.outerHTML = `<td${rowSpan}${colSpan}>${cell.innerHTML}</td>`;
 				});
 
 				//  Un-linkify images.
-				referenceEntry.querySelectorAll("a img").forEach(linkedImage => {
+				contentDocument.querySelectorAll("a img").forEach(linkedImage => {
 					let enclosingLink = linkedImage.closest("a");
 					enclosingLink.parentElement.replaceChild(linkedImage, enclosingLink);
 				});
 
 				//	Fix chemical formulas.
-				referenceEntry.querySelectorAll(".chemf br").forEach(br => {
+				contentDocument.querySelectorAll(".chemf br").forEach(br => {
 					br.remove();
 				});
 
 				//	Rectify quoteboxes.
-				referenceEntry.querySelectorAll("div.quotebox").forEach(quotebox => {
+				contentDocument.querySelectorAll("div.quotebox").forEach(quotebox => {
 					let blockquote = quotebox.querySelector("blockquote");
 					blockquote.classList.add("quotebox");
 			
@@ -5891,7 +5956,7 @@ Content = {
 				});
 
 				//  Separate out the thumbnail and float it.
-				let thumbnail = referenceEntry.querySelector("img");
+				let thumbnail = contentDocument.querySelector("img");
 				let thumbnailContainer;
 				if (thumbnail)
 					thumbnailContainer = thumbnail.closest(".infobox-image, .thumb");
@@ -5924,13 +5989,13 @@ Content = {
 					});
 
 					//  Create the caption, if need be.
-					let caption = referenceEntry.querySelector(".mw-default-size + div, .infobox-caption");
+					let caption = contentDocument.querySelector(".mw-default-size + div, .infobox-caption");
 					if (   caption
 						&& caption.textContent > "")
 						figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
 
 					//  Insert the figure as the first child of the entry.
-					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+					contentDocument.insertBefore(figure, contentDocument.firstElementChild);
 
 					//  Rectify classes.
 					thumbnailContainer.closest("table")?.classList.toggle("infobox", true);
@@ -5939,7 +6004,7 @@ Content = {
 					let figure = thumbnail.closest("figure");
 
 					//  Insert the figure as the first child of the entry.
-					referenceEntry.insertBefore(figure, referenceEntry.firstElementChild);
+					contentDocument.insertBefore(figure, contentDocument.firstElementChild);
 					figure.classList.add("thumbnail", "float-right");
 
 					let caption = figure.querySelector("figcaption");
@@ -5948,7 +6013,7 @@ Content = {
 				}
 
 				//	Rewrite other figures.
-				referenceEntry.querySelectorAll("div.thumb").forEach(figureBlock => {
+				contentDocument.querySelectorAll("div.thumb").forEach(figureBlock => {
 					let figure = newElement("FIGURE");
 
 					let images = figureBlock.querySelectorAll("img");
@@ -5966,7 +6031,7 @@ Content = {
 				});
 
 				//	Float all figures right.
-				referenceEntry.querySelectorAll("figure").forEach(figure => {
+				contentDocument.querySelectorAll("figure").forEach(figure => {
 					figure.classList.add("float-right");
 				});
 
@@ -5978,13 +6043,13 @@ Content = {
 					".side-box-image",
 					"p"
 				].map(selector => `${selector} img`).join(", ");
-				referenceEntry.querySelectorAll(noFigureImagesSelector).forEach(image => {
+				contentDocument.querySelectorAll(noFigureImagesSelector).forEach(image => {
 					image.classList.add("figure-not");
 				});
 
 				//	Clean up math elements.
-				unwrapAll(".mwe-math-element", { root: referenceEntry });
-				referenceEntry.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
+				unwrapAll(".mwe-math-element", { root: contentDocument });
+				contentDocument.querySelectorAll("dl dd .mwe-math-fallback-image-inline").forEach(inlineButReallyBlockMathElement => {
 					//	Unwrap the <dd>.
 					unwrap(inlineButReallyBlockMathElement.parentElement);
 					//	Unwrap the <dl>.
@@ -5992,34 +6057,34 @@ Content = {
 					//	Rectify class.
 					inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
 				});
-				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: referenceEntry });
-				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: referenceEntry });
+				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: contentDocument });
+				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: contentDocument });
 
 				//	Move infoboxes out of the way.
-				let childElements = Array.from(referenceEntry.children);
+				let childElements = Array.from(contentDocument.children);
 				let firstInfoboxIndex = childElements.findIndex(x => x.matches(".infobox"));
 				if (firstInfoboxIndex !== -1) {
 					let firstInfobox = childElements[firstInfoboxIndex];
 					let firstGrafAfterInfobox = childElements.slice(firstInfoboxIndex).find(x => x.matches("p"));
 					if (firstGrafAfterInfobox)
-						referenceEntry.insertBefore(firstGrafAfterInfobox, firstInfobox);
+						contentDocument.insertBefore(firstGrafAfterInfobox, firstInfobox);
 					wrapElement(firstInfobox, ".collapse");
 				}
 
 				//	Apply section classes.
-				referenceEntry.querySelectorAll("section").forEach(section => {
+				contentDocument.querySelectorAll("section").forEach(section => {
 					if (/[Hh][1-9]/.test(section.firstElementChild.tagName))
 						section.classList.add("level" + section.firstElementChild.tagName.slice(1));
 				});
 
 				//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
-				referenceEntry.querySelectorAll(".dmbox-body").forEach(noteBox => {
+				contentDocument.querySelectorAll(".dmbox-body").forEach(noteBox => {
 					paragraphizeTextNodesOfElement(noteBox);
 					noteBox.parentElement.classList.add("admonition", "tip");
 				});
 
 				//	Clean empty nodes, redux.
-				referenceEntry.childNodes.forEach(node => {
+				contentDocument.childNodes.forEach(node => {
 					if (isNodeEmpty(node))
 						node.remove();
 				});
@@ -6034,6 +6099,10 @@ Content = {
             },
 
             isSliceable: false,
+
+			contentCacheKeyForLink: (link) => {
+				return link.href;
+			},
 
             sourceURLsForLink: (link) => {
                 let urls = [ ];
@@ -6057,7 +6126,11 @@ Content = {
                 };
             },
 
-            referenceDataFromContent: (tweetPage, link) => {
+			referenceDataCacheKeyForLink: (link) => {
+				return link.href;
+			},
+
+            referenceDataFromContent: (tweetContent, link) => {
             	//	Nitter host.
                 let nitterHost = Content.contentTypes.tweet.getNitterHost();
 
@@ -6066,25 +6139,25 @@ Content = {
                 let authorLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="twitter"`;
 
                 //  URL for link to user’s page.
-                let authorLinkURL = URLFromString(tweetPage.document.querySelector(".main-tweet a.username").href);
+                let authorLinkURL = URLFromString(tweetContent.document.querySelector(".main-tweet a.username").href);
                 authorLinkURL.hostname = nitterHost;
                 let authorLinkHref = authorLinkURL.href;
 
                 //  Avatar.
-                let avatarImgElement = tweetPage.document.querySelector(".main-tweet img.avatar").cloneNode(true);
+                let avatarImgElement = tweetContent.document.querySelector(".main-tweet img.avatar").cloneNode(true);
                 let avatarImgSrc = avatarImgElement.getAttribute("src");
                 if (avatarImgSrc.startsWith("data:image/svg+xml")) {
                     avatarImgElement.setAttribute("style", avatarImgElement.getAttribute("style")
                                                            + ";"
-                                                           + tweetPage.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
+                                                           + tweetContent.document.querySelector("style").innerHTML.match(/:root\{(.+?)\}/)[1]);
                     let avatarImgSrcVar = avatarImgElement.style.getPropertyValue("background-image").match(/var\((.+?)\)/)[1];
                     avatarImgSrc = avatarImgElement.style.getPropertyValue(avatarImgSrcVar).match(/url\("(.+?)"\)/)[1];
                 }
                 let avatarImg = newElement("IMG", { src: avatarImgSrc, class: "avatar figure-not" });
 
                 //  Text of link to user’s page.
-                let authorLinkParts = tweetPage.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
-                let authorPlusAvatarHTML = `${avatarImg.outerHTML}“${titleParts[1]}” (<code>${titleParts[2]}</code>)`;
+                let authorLinkParts = tweetContent.document.querySelector("title").textContent.match(/^(.+?) \((@.+?)\):/);
+                let authorPlusAvatarHTML = `${avatarImg.outerHTML}“${authorLinkParts[1]}” (<code>${authorLinkParts[2]}</code>)`;
 
 				//	Class and link icon for link to tweet.
                 let tweetLinkClass = "tweet-link" + (link.dataset.urlArchive ? " link-live" : "");
@@ -6100,7 +6173,7 @@ Content = {
                 									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
                 									: "";
 				//	Text of link to tweet.
-                let tweetDate = new Date(Date.parse(tweetPage.document.querySelector(".main-tweet .tweet-date").textContent));
+                let tweetDate = new Date(Date.parse(tweetContent.document.querySelector(".main-tweet .tweet-date").textContent));
                 let tweetDateString = ("" + tweetDate.getFullYear())
                                     + "-"
                                     + ("" + tweetDate.getMonth()).padStart(2, '0')
@@ -6108,28 +6181,29 @@ Content = {
                                     + ("" + tweetDate.getDate()).padStart(2, '0');
 
                 //  Main tweet content.
-                let tweetContentHTML = tweetPage.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
+                let tweetContentHTML = tweetContent.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
 				//	Request image inversion judgments from invertOrNot.
 				requestImageInversionDataForImagesInContainer(newDocument(tweetContentHTML));
 
                 //  Attached media (video or images).
-                tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetPage.document);
+                tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetContent.document);
 
                 //  Pop-frame title text.
                 let popFrameTitleText = `${authorPlusAvatarHTML} on ${tweetDateString}`;
 
                 return {
                     content: {
-                        authorLinkClass:          authorLinkClass,
-                        authorLinkHref:           authorLinkURL.href,
-                        authorLinkIconMetadata:   authorLinkIconMetadata,
-                        authorPlusAvatar:         authorPlusAvatarHTML,
-                        tweetLinkClass:           tweetLinkClass,
-                        tweetLinkHref:            tweetLinkURL.href,
-                        tweetLinkIconMetadata:    tweetLinkIconMetadata,
-                        tweetDate:                tweetDateString,
-                        tweetContent:             tweetContentHTML
+                        authorLinkClass:                authorLinkClass,
+                        authorLinkHref:                 authorLinkURL.href,
+                        authorLinkIconMetadata:         authorLinkIconMetadata,
+                        authorPlusAvatar:               authorPlusAvatarHTML,
+                        tweetLinkClass:                 tweetLinkClass,
+                        tweetLinkHref:                  tweetLinkURL.href,
+                        tweetLinkIconMetadata:          tweetLinkIconMetadata,
+                        archivedTweetURLDataAttribute:  archivedTweetURLDataAttribute,
+                        tweetDate:                      tweetDateString,
+                        tweetContent:                   tweetContentHTML
                     },
                     contentTypeClass:       "tweet",
                     template:               "tweet-blockquote-outside",
@@ -6211,17 +6285,17 @@ Content = {
             },
 
             contentFromResponse: (response, link, sourceURL) => {
-                let content;
+                let contentDocument;
 
                 //  Parse (encoding and wrapping first, if need be).
                 if (sourceURL.pathname == link.pathname + ".html") {
                     //  Syntax-highlighted code (already HTML-encoded).
-                    content = newDocument(response);
+                    contentDocument = newDocument(response);
 
                     //  We want <body> contents only, no metadata and such.
-                    let nodes = Array.from(content.childNodes);
-                    let codeWrapper = content.querySelector("div.sourceCode");
-                    content.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
+                    let nodes = Array.from(contentDocument.childNodes);
+                    let codeWrapper = contentDocument.querySelector("div.sourceCode");
+                    contentDocument.replaceChildren(...(nodes.slice(nodes.indexOf(codeWrapper))));
 
                     //  Handle truncated syntax-highlighted code files.
                     if (codeWrapper.nextElementSibling?.tagName == "P") {
@@ -6235,7 +6309,7 @@ Content = {
                     }
 
                     //  Set ‘line’ class and fix blank lines.
-                    Array.from(content.querySelector("code").children).forEach(lineSpan => {
+                    Array.from(contentDocument.querySelector("code").children).forEach(lineSpan => {
                         lineSpan.classList.add("line");
                         if (lineSpan.innerHTML.length == 0)
                             lineSpan.innerHTML = "&nbsp;";
@@ -6248,14 +6322,16 @@ Content = {
                     ).split("\n").map(
                         line => (`<span class="line">${(line || "&nbsp;")}</span>`)
                     ).join("\n");
-                    content = newDocument(  `<div class="sourceCode">`
+                    contentDocument = newDocument(  `<div class="sourceCode">`
                                           + `<pre class="raw-code"><code>`
                                           + htmlEncodedResponse
                                           + `</code></pre>`
                                           + `</div>`);
                 }
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             codeFileExtensions: [
@@ -6289,11 +6365,11 @@ Content = {
             },
 
             contentFromResponse: (response, link, sourceURL) => {
-                let content = newDocument(response);
+                let contentDocument = newDocument(response);
 
                 let auxLinksLinkType = AuxLinks.auxLinksLinkType(sourceURL);
                 if (auxLinksLinkType) {
-                    let auxLinksList = content.querySelector("ul, ol");
+                    let auxLinksList = contentDocument.querySelector("ul, ol");
                     if (auxLinksList) {
                         auxLinksList.classList.add("aux-links-list", auxLinksLinkType + "-list");
                         auxLinksList.previousElementSibling.classList.add("aux-links-list-label", auxLinksLinkType + "-list-label");
@@ -6315,12 +6391,14 @@ Content = {
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.localFragment.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: sourceURL
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             permittedContentTypes: [ "text/html" ]
@@ -6347,12 +6425,12 @@ Content = {
                 /*  Note that we pass in the original link’s classes; this
                     is good for classes like ‘invert’, ‘width-full’, etc.
                  */
-                let content = newDocument(`<figure><img
-                                            class="${link.classList}"
-                                            src="${link.href}"
-                                            loading="eager"
-                                            decoding="sync"
-                                            >${caption}</figure>`);
+                let contentDocument = newDocument(`<figure><img
+                											class="${link.classList}"
+                											src="${link.href}"
+                											loading="eager"
+                											decoding="sync"
+                											>${caption}</figure>`);
 
                 //  Remove extraneous classes.
                 Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
@@ -6360,12 +6438,14 @@ Content = {
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.remoteImage.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: new URL(link.href)
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             isWikimediaUploadsImageLink: (link) => {
@@ -6388,7 +6468,7 @@ Content = {
             isSliceable: true,
 
             contentFromLink: (link) => {
-                let content = null;
+                let contentDocument = null;
 
                 if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
                     let srcdocStyles =
@@ -6408,7 +6488,7 @@ Content = {
                     let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
                     //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-                    content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+                    contentDocument = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
                         additionalClasses: "youtube",
                         additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen`
                     }));
@@ -6418,13 +6498,15 @@ Content = {
                     if (link.search > "")
                         videoEmbedURL.search = link.search;
 
-                    content = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
+                    contentDocument = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
                         additionalClasses: "vimeo",
                         additionalAttributes: `allow="autoplay; fullscreen; picture-in-picture" allowfullscreen`
                     }));
                 }
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             isYoutubeLink: (link) => {
@@ -6490,9 +6572,13 @@ Content = {
                 if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
                     additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
 
-                return newDocument(Content.objectHTMLForURL(embedSrc, {
+                let contentDocument = newDocument(Content.objectHTMLForURL(embedSrc, {
                     additionalAttributes: additionalAttributes.join(" ")
                 }));
+
+				return {
+                	document: contentDocument
+                };
             },
 
             documentFileExtensions: [ "html", "pdf", "csv", "doc", "docx", "ods", "xls", "xlsx" ]
@@ -6523,31 +6609,33 @@ Content = {
                 /*  Note that we pass in the original link’s classes; this
                     is good for classes like ‘invert’, ‘width-full’, etc.
                  */
-                let content = newDocument(`<figure><video
-                                            ${dimensions}
-                                            class="${link.classList}"
-                                            controls="controls"
-                                            preload="none"
-                                            data-video-poster="${posterPathname}"
-                                            >`
-                                        + `<source
-                                            src="${link.href}"
-                                            type="video/${videoFileExtension}"
-                                            >`
-                                        + `</video>${caption}</figure>`);
+                let contentDocument = newDocument(`<figure><video
+                											${dimensions}
+                											class="${link.classList}"
+                											controls="controls"
+                											preload="none"
+                											data-video-poster="${posterPathname}"
+                											>`
+                										+ `<source
+                											src="${link.href}"
+                											type="video/${videoFileExtension}"
+                											>`
+                										+ `</video>${caption}</figure>`);
 
                 //  Remove extraneous classes.
-                Content.removeExtraneousClassesFromMediaElement(content.querySelector("video"));
+                Content.removeExtraneousClassesFromMediaElement(contentDocument.querySelector("video"));
 
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.localVideo.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: new URL(link.href)
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             videoFileExtensions: [ "mp4", "webm" ]
@@ -6571,26 +6659,28 @@ Content = {
                 /*  Note that we pass in the original link’s classes; this
                     is good for classes like ‘invert’, ‘width-full’, etc.
                  */
-                let content = newDocument(`<figure><audio
-                                            class="${link.classList}"
-                                            controls="controls"
-                                            preload="none"
-                                            >`
-                                        + `<source src="${link.href}">`
-                                        + `</audio>${caption}</figure>`);
+                let contentDocument = newDocument(`<figure><audio
+                											class="${link.classList}"
+                											controls="controls"
+                											preload="none"
+                											>`
+                										+ `<source src="${link.href}">`
+                										+ `</audio>${caption}</figure>`);
 
                 //  Remove extraneous classes.
-                Content.removeExtraneousClassesFromMediaElement(content.querySelector("audio"));
+                Content.removeExtraneousClassesFromMediaElement(contentDocument.querySelector("audio"));
 
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.localAudio.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: new URL(link.href)
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             audioFileExtensions: [ "mp3" ]
@@ -6617,26 +6707,28 @@ Content = {
                 /*  Note that we pass in the original link’s classes; this
                     is good for classes like ‘invert’, ‘width-full’, etc.
                  */
-                let content = newDocument(`<figure><img
-                                            ${dimensions}
-                                            class="${link.classList}"
-                                            src="${link.href}"
-                                            loading="eager"
-                                            decoding="sync"
-                                            >${caption}</figure>`);
+                let contentDocument = newDocument(`<figure><img
+                											${dimensions}
+                											class="${link.classList}"
+                											src="${link.href}"
+                											loading="eager"
+                											decoding="sync"
+                											>${caption}</figure>`);
 
                 //  Remove extraneous classes.
-                Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
+                Content.removeExtraneousClassesFromMediaElement(contentDocument.querySelector("img"));
 
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.localImage.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: new URL(link.href)
                 });
 
-                return content;
+                return {
+                	document: contentDocument
+                };
             },
 
             imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ]
@@ -6668,35 +6760,35 @@ Content = {
             },
 
             contentFromResponse: (response, link, sourceURL) => {
-                let page = response
-                           ? newDocument(response)
-                           : document;
+                let contentDocument = response
+                					  ? newDocument(response)
+                					  : document;
 
                 if (response)
-                    page.baseLocation = sourceURL;
+                    contentDocument.baseLocation = sourceURL;
 
                 //  Get the body classes.
-                let pageBodyClasses = page.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
+                let pageBodyClasses = contentDocument.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
 
                 //  Get the page title.
-                let pageTitle = page.querySelector("title").innerHTML.match(Content.contentTypes.localPage.pageTitleRegexp)[1];
+                let pageTitle = contentDocument.querySelector("title").innerHTML.match(Content.contentTypes.localPage.pageTitleRegexp)[1];
 
                 //  Get the page thumbnail URL and metadata.
                 let pageThumbnailHTML;
-                let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
+                let pageThumbnailMetaTag = contentDocument.querySelector("meta[property='og:image']");
                 if (pageThumbnailMetaTag) {
                     let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
 
                     //  Alt text, if provided.
-                    let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
+                    let pageThumbnailAltMetaTag = contentDocument.querySelector("meta[property='og:image:alt']");
                     let pageThumbnailAltText = (pageThumbnailAltMetaTag
                                                 ? pageThumbnailAltMetaTag.getAttribute("content")
                                                 : `Thumbnail image for “${pageTitle}”`
                                                 ).replace(/"/g, "&quot;");
 
                     //  Image dimensions.
-                    let pageThumbnailWidth = page.querySelector("meta[property='og:image:width']").getAttribute("content");
-                    let pageThumbnailHeight = page.querySelector("meta[property='og:image:height']").getAttribute("content");
+                    let pageThumbnailWidth = contentDocument.querySelector("meta[property='og:image:width']").getAttribute("content");
+                    let pageThumbnailHeight = contentDocument.querySelector("meta[property='og:image:height']").getAttribute("content");
 
                     //  Construct and save the <img> tag.
                     if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false)
@@ -6716,43 +6808,43 @@ Content = {
                     //  Fire contentDidLoad event.
                     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                         source: "Content.contentTypes.localPage.load",
-                        container: page,
-                        document: page,
+                        container: contentDocument,
+                        document: contentDocument,
                         loadLocation: sourceURL
                     });
                 }
 
                 return {
+                    document:       contentDocument,
                     title:          pageTitle,
                     bodyClasses:    pageBodyClasses,
-                    thumbnailHTML:  pageThumbnailHTML,
-                    document:       page
+                    thumbnailHTML:  pageThumbnailHTML
                 };
             },
 
-            referenceDataFromContent: (page, link) => {
+            referenceDataFromContent: (pageContent, link) => {
                 //  The page content is the page body plus the metadata block.
-                let pageContent = newDocument();
+                let bodyContentDocument = newDocument();
                 //  Add the page metadata block.
-                let pageMetadataBlock = page.document.querySelector("#page-metadata");
+                let pageMetadataBlock = pageContent.document.querySelector("#page-metadata");
                 if (pageMetadataBlock) {
-                    pageContent.append(newDocument(pageMetadataBlock));
+                    bodyContentDocument.append(newDocument(pageMetadataBlock));
 
-                    pageMetadataBlock = pageContent.querySelector("#page-metadata");
+                    pageMetadataBlock = bodyContentDocument.querySelector("#page-metadata");
                     pageMetadataBlock.classList.remove("markdownBody");
                     if (pageMetadataBlock.className == "")
                         pageMetadataBlock.removeAttribute("class");
                 }
                 //  Add the page main content block.
-                pageContent.append(newDocument(page.document.querySelector("#markdownBody").childNodes));
+                bodyContentDocument.append(newDocument(pageContent.document.querySelector("#markdownBody").childNodes));
 
                 //  Find the target element and/or containing block, if any.
-                let element = targetElementInDocument(link, pageContent);
+                let element = targetElementInDocument(link, bodyContentDocument);
 
                 //  Pop-frame title text.
                 let popFrameTitleTextParts = [ ];
                 if (link.pathname != location.pathname)
-                    popFrameTitleTextParts.push(page.title);
+                    popFrameTitleTextParts.push(pageContent.title);
 
                 //  Section title or block id.
                 if (element) {
@@ -6777,10 +6869,10 @@ Content = {
                 }
 
                 return {
-                    content:                 pageContent,
-                    pageTitle:               page.title,
-                    pageBodyClasses:         page.bodyClasses,
-                    pageThumbnailHTML:       page.thumbnailHTML,
+                    content:                 bodyContentDocument,
+                    pageTitle:               pageContent.title,
+                    pageBodyClasses:         pageContent.bodyClasses,
+                    pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
                     popFrameTitleText:       popFrameTitleTextParts.join(" "),
                     popFrameTitleTextShort:  popFrameTitleTextParts.first

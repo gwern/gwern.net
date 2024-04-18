@@ -208,8 +208,8 @@ Annotations = { ...Annotations,
 		 */
         let sourceURL = Annotations.sourceURLForLink(link);
 
-		/*	Depending on the data source, `response` could be HTML,
-			JSON, or other. We construct and cache a reference data object,
+		/*	For local annotations, the (already processed) `response` is a 
+			DocumentFragment. We construct and cache a reference data object, 
 			then fire the appropriate event.
 		 */
 		let processResponse = (response) => {
