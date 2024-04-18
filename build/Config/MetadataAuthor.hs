@@ -182,6 +182,7 @@ canonicals = M.fromList
   , ("vi", "pinkddle")
   , ("Student", "William Sealy Gosset")
   , ("R.A. Fisher", "R. A. Fisher")
+  , ("Fisher", "R. A. Fisher")
   , ("Sutskever", "Ilya Sutskever")
   , ("Engelbart", "Douglas Engelbart")
   , ("Anno", "Hideaki Anno")
@@ -213,6 +214,7 @@ canonicals = M.fromList
   , ("Gary L. Drescher", "Gary Drescher")
   , ("Doug Hofstadter", "Douglas Hofstadter")
   , ("Douglas R. Hofstadter", "Douglas Hofstadter")
+  , ("Irving John Good", "I. J. Good")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
