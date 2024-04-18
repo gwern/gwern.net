@@ -323,30 +323,36 @@ Annotations = { ...Annotations,
 			titleLinkDataAttributes.push(`data-link-icon="${(link.dataset.linkIcon)}"`);
 		}
 
-		//	Stringify.
+		//	Stringify data attributes.
 		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0
 								   ? titleLinkDataAttributes.join(" ")
 								   : null);
 
 		//  Author list.
+		let authorHTML = null;
 		let authorElement = response.querySelector(".author");
-		let authorHTML = authorElement 
-						 ? `<span class="data-field author cite-author">${authorElement.innerHTML}</span>` 
-						 : null;
+		if (authorElement) {
+			let authorListClass = [ "data-field", ...(authorElement.classList) ].join(" ");
+			authorHTML = `<span class="${authorListClass}">${authorElement.innerHTML}</span>`
+		}
 
 		//  Date.
+		let dateHTML = null;
 		let dateElement = response.querySelector(".date");
-		let dateHTML = dateElement 
-					   ? (  `<span class="data-field cite-date" title="${dateElement.textContent}">` 
-						  + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
-						  + `</span>`) 
-					   : null;
+		if (dateElement) {
+			let dateClass = [ "data-field", ...(dateElement.classList) ].join(" ");
+			dateHTML = `<span class="${dateClass}" title="${dateElement.textContent}">` 
+					 + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
+					 + `</span>`;
+		}
 
 		//	Link tags.
+		let tagsHTML = null;
 		let tagsElement = response.querySelector(".link-tags");
-		let tagsHTML = tagsElement
-					   ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>`
-					   : null;
+		if (tagsElement) {
+			let tagsListClass = [ "data-field", ...(tagsElement.classList) ].join(" ");
+			tagsHTML = `<span class="${tagsListClass}">${tagsElement.innerHTML}</span>`;
+		}
 
 		//	Archive URL (if exists).
 		let archiveLinkHref = referenceElement.dataset.urlArchive ?? null;
