@@ -165,21 +165,21 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
              (if null selfLinksSection then [] else
                 [Para []] ++
-                 [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Gwern"]] ++
+                 [Header 1 ("", ["display-pop-not"], []) [Str "Gwern"]] ++
                  selfLinksSection) ++
 
              (if null titledLinks then [] else
                  -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popovers, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popovers.
                  [Para []] ++
-                 [Header 1 ("", ["display-pop-not", "link-annotated-not"], []) [Str "Links"]] ++
+                 [Header 1 ("", ["display-pop-not"], []) [Str "Links"]] ++
                  titledLinksSections) ++
 
              (if null untitledLinks then [] else
-                 Header 1 ("", ["link-annotated-not"], []) [Str "Miscellaneous"] :
+                 Header 1 nullAttr [Str "Miscellaneous"] :
                  [untitledLinksSection]) ++
 
                (if null linkBibList then [] else
-                 Para [] : Header 1 ("link-bibliography-section", ["link-annotated-not"], []) [Str "Link Bibliography"] :
+                 Para [] : Header 1 ("link-bibliography-section", [], []) [Str "Link Bibliography"] :
                  linkBibList)
 
   let document = Pandoc nullMeta body
@@ -234,9 +234,9 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
   = unlines $ filter (not . null) [ "---",
              "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
-              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
-              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
-              (if linkN == 0 then ""       else (if (directoryN/=0 && annotationN/=0 && linkN/=0) then ", & " else " & ") ++ show linkN ++ " <a class='icon-not link-annotated-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
+              (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
+              (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
+              (if linkN == 0 then ""       else (if (directoryN/=0 && annotationN/=0 && linkN/=0) then ", & " else " & ") ++ show linkN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
               " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
                ".\"",
              thumbnail,
@@ -320,7 +320,7 @@ generateDirectoryItems parent current ds =
  where
        parent'' = case parent of
                      Nothing -> []
-                     Just p -> [[Para [Span ("",[],[]) [Link ("",
+                     Just p -> [[Para [Span nullAttr [Link ("",
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
@@ -356,7 +356,7 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
                                                 (if null linkswp then [] else wp)
     where annotated = generateSections' am 2 links
           sorted
-            = [Header 2 ("", ["link-annotated-not"], [])
+            = [Header 2 nullAttr
                  [Str "Sort By Magic"]] ++
                  [Div ("",[],[("demo-type", "sort-by-magic-preface")])
                    [Para [Str "Annotations sorted by machine learning into ", Link nullAttr [Str "inferred 'tags'"] ("/design#future-tag-features",""), Str ". This provides an alternative way to browse: instead of by ", Emph [Str "date"], Str " order, one can browse in ", Emph [Str "topic"], Str " order. The 'sorted' list has been automatically clustered into multiple sections & auto-labeled for easier browsing."],
@@ -365,14 +365,14 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
                  ] ++
                  concatMap generateReferenceToPreviousSection linksSorted
           wp
-            = [Header 2 ("titled-links-wikipedia", ["link-annotated-not"], [])
+            = [Header 2 ("titled-links-wikipedia", [], [])
                  [Str "Wikipedia"],
                OrderedList (1, DefaultStyle, DefaultDelim)
                  (map (LM.generateAnnotationTransclusionBlock am) linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["link-annotated-not", "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
+generateReferenceToPreviousSection (tag,items) = [Header 3 ("", [, "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
                                              concatMap (\(f,(_,aut,dt,_,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else
@@ -389,6 +389,6 @@ generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
                                                      T.pack $ "“"++titlecase' t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 Header headerLevel (sectionID, ["link-annotated-not"], []) [RawInline (Format "html") sectionTitle]
+                                 Header headerLevel (sectionID, [], []) [RawInline (Format "html") sectionTitle]
                                  : LM.generateAnnotationTransclusionBlock am (f,a))
    where twitterTitle u dte = let username = extractTwitterUsername u in username ++ (if null dte then "" else " @ " ++ show dte)

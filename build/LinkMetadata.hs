@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-14 17:31:51 gwern"
+When:  Time-stamp: "2024-04-17 22:10:10 gwern"
 License: CC-0
 -}
 
@@ -494,11 +494,11 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                                  if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                            [Str (T.pack $ dateTruncateBad dt)]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-           backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not", "link-annotated-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
-           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not", "link-annotated-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
+           backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks", "icon-not"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
+           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars", "icon-not"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
-                                                                                   [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not", "link-annotated-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
+                                                                                   [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter.com partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
@@ -579,7 +579,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
-                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]]
+                                                      [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
     -- image/video/audio:
     | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
         [Para $ (if alwaysLabelP then [Strong [Str "View ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "include-replace-container", "width-full"],[]) [title] (T.pack f', "")]]

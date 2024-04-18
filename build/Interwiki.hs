@@ -122,7 +122,7 @@ interwikiTestSuite = let redirectsCircular = map fst C.redirectDB `intersect` ma
 interwikiCycleTestSuite :: [(T.Text, T.Text)]
 interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCycles C.redirectDB
 
--- Set link-live/link-live-not and link-annotated/link-annotated-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.
+-- Set link-live/link-live-not classes on a WP link depending on its namespace. As the quality of WP API annotations, and the possibility of iframe popups, varies across WP namespaces, we can't simply set them universally.
 --
 -- A WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg' . Note that we need to match on the colon separator, we can't just match the namespace prefix, because the prefixes are not unique without it, eg. 'https://en.wikipedia.org/wiki/Image_segmentation' is *not* in the `Image` namespace—because images have a colon, and so they would be `Image:...`. It may also be to another language's Wikipedia, eg. <https://it.wikipedia.org/wiki/Liber_Figurarum>.
 -- So just checking for 'en.wikipedia.org/wiki/' prefix is not enough.

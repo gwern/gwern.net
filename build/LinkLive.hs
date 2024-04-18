@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-02-19 16:53:59 gwern"
+When:  Time-stamp: "2024-04-17 22:09:09 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -104,7 +104,7 @@ linkLivePrioritize = do b <- readBacklinksDB
         -- Append an example of a prioritized link to /lorem#link-testcases for manual review, to skip copy-paste hassle
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
-                                      TIO.appendFile C.testPage $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}"
+                                      TIO.appendFile C.testPage $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}" -- NOTE: we explicitly disable any annotation with `.link-annotated-not` to ensure it pops up as a live link the first time, to save us a little effort when reviewing
 
 -- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) should be live?
 wikipedia :: T.Text -> Maybe Bool

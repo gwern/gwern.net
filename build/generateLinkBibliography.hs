@@ -113,7 +113,7 @@ generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
       -- we try to append a blockquote with the `.include-block-context` class, to make it look like the backlinks approach to transcluding the context
       -- at a glance:
       transcludeTarget = if not (isPagePath (T.pack f) && '#' `elem` f) then [] else
-                           [BlockQuote [Para [Link ("", ["backlink-not", "include-block-context", "link-annotated-not"], [])
+                           [BlockQuote [Para [Link ("", ["backlink-not", "include-block-context", "link-annotated-not"], []) -- TODO: do we need .link-annotated-not if we are explicitly transcluding .include-block-context?
                                                [Str "[Transclude the forward-link's context]"] (T.pack f,"")]]]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
