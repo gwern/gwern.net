@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-14 17:55:36 gwern"
+# When:  Time-stamp: "2024-04-18 22:24:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -526,7 +526,7 @@ else
                    -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
                    -e '^table-small$' -e '^table-sort-not$' -e '^width-full$' -e '^TOC$' -e '^uri$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
                    -e '^c5$' -e '^c6$' -e '^c7$' -e '^c8$' -e '^c9$' -e '^c10$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$' -e '^reader-mode$' \
-                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^admonition$' -e '^admonition-title$' \
+                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^abstract-collapse-only$' -e '^admonition$' -e '^admonition-title$' \
                    -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
                    -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
                    -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
