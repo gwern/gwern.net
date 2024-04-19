@@ -5000,6 +5000,14 @@ Annotations = { ...Annotations,
 					includeLink.remove();
 			});
 
+			/*	Set special template for file includes of content transforms.
+			 */
+			Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
+				if (   Content.isContentTransformLink(includeLink)
+					&& includeLink.dataset.includeTemplate == null)
+					includeLink.dataset.includeTemplate = "$annotationFileIncludeTemplate";
+			});
+
 			/*	Do not include the file includes section if no valid
 				include-links remain.
 			 */
@@ -5297,6 +5305,12 @@ Content = {
     /***********/
     /*  Helpers.
      */
+
+	isContentTransformLink: (link) => {
+		return ([ "tweet",
+        		  "wikipediaEntry"
+        		  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1);
+	},
 
     objectHTMLForURL: (url, options = { }) => {
         if (typeof url == "string")
@@ -5741,14 +5755,15 @@ Content = {
 						entryContent: 		      entryContentHTML,
 						thumbnailFigure:          thumbnailFigureHTML
 					},
-					contentTypeClass:       "wikipedia-entry",
-					template:               "wikipedia-entry-blockquote-inside",
-					linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
-					whichTab:               (GW.isMobile() ? "current" : "new"),
-					tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
-					popFrameTemplate:       "wikipedia-entry-blockquote-not",
-					popFrameTitleText:      popFrameTitleText,
-					popFrameTitleLinkHref:  titleLinkHref
+					contentTypeClass:               "wikipedia-entry",
+					template:                       "wikipedia-entry-blockquote-inside",
+					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:                       (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:               "wikipedia-entry-blockquote-not",
+					popFrameTitleText:              popFrameTitleText,
+					popFrameTitleLinkHref:          titleLinkHref,
+					annotationFileIncludeTemplate:  "wikipedia-entry-blockquote-title-not"
 				};
 			},
 
@@ -6218,7 +6233,7 @@ Content = {
                     tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
 					popFrameTemplate:       "tweet-blockquote-not",
                     popFrameTitleText:      popFrameTitleText,
-                    popFrameTitleLinkHref:  tweetLinkURL.href
+                    popFrameTitleLinkHref:  tweetLinkURL.href,
                 };
             },
 
@@ -8777,8 +8792,8 @@ Transclude = {
 			let referenceData = dataProvider.referenceDataForLink(includeLink);
 			let templateName = includeLink.dataset.includeTemplate || referenceData.template;
 			if (templateName) {
-				if (templateName.startsWith("$"))
-					templateName = referenceData[templateName.slice(1)];
+				while (templateName.startsWith("$"))
+					templateName = referenceData[templateName.slice(1)] || referenceData.template;
 
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)
@@ -9191,6 +9206,14 @@ Transclude.templates = {
 			   ><{title}></a>
 	</p>
 	<div class="data-field entry-content"><{entryContent}></div>
+</div>`,
+	"wikipedia-entry-blockquote-title-not": `<div class="content-transform <{contentTypeClass}>">
+	<blockquote class="data-field entry-content">
+		<[IF thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IFEND]>
+		<{entryContent}>
+	</blockquote>
 </div>`,
 };
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.

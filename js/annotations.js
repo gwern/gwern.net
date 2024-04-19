@@ -444,6 +444,14 @@ Annotations = { ...Annotations,
 					includeLink.remove();
 			});
 
+			/*	Set special template for file includes of content transforms.
+			 */
+			Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
+				if (   Content.isContentTransformLink(includeLink)
+					&& includeLink.dataset.includeTemplate == null)
+					includeLink.dataset.includeTemplate = "$annotationFileIncludeTemplate";
+			});
+
 			/*	Do not include the file includes section if no valid
 				include-links remain.
 			 */

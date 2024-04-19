@@ -219,6 +219,12 @@ Content = {
     /*  Helpers.
      */
 
+	isContentTransformLink: (link) => {
+		return ([ "tweet",
+        		  "wikipediaEntry"
+        		  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1);
+	},
+
     objectHTMLForURL: (url, options = { }) => {
         if (typeof url == "string")
             url = URLFromString(url);
@@ -662,14 +668,15 @@ Content = {
 						entryContent: 		      entryContentHTML,
 						thumbnailFigure:          thumbnailFigureHTML
 					},
-					contentTypeClass:       "wikipedia-entry",
-					template:               "wikipedia-entry-blockquote-inside",
-					linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
-					whichTab:               (GW.isMobile() ? "current" : "new"),
-					tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
-					popFrameTemplate:       "wikipedia-entry-blockquote-not",
-					popFrameTitleText:      popFrameTitleText,
-					popFrameTitleLinkHref:  titleLinkHref
+					contentTypeClass:               "wikipedia-entry",
+					template:                       "wikipedia-entry-blockquote-inside",
+					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
+					whichTab:                       (GW.isMobile() ? "current" : "new"),
+					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
+					popFrameTemplate:               "wikipedia-entry-blockquote-not",
+					popFrameTitleText:              popFrameTitleText,
+					popFrameTitleLinkHref:          titleLinkHref,
+					annotationFileIncludeTemplate:  "wikipedia-entry-blockquote-title-not"
 				};
 			},
 
@@ -1139,7 +1146,7 @@ Content = {
                     tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
 					popFrameTemplate:       "tweet-blockquote-not",
                     popFrameTitleText:      popFrameTitleText,
-                    popFrameTitleLinkHref:  tweetLinkURL.href
+                    popFrameTitleLinkHref:  tweetLinkURL.href,
                 };
             },
 

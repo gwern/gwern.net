@@ -1884,8 +1884,8 @@ Transclude = {
 			let referenceData = dataProvider.referenceDataForLink(includeLink);
 			let templateName = includeLink.dataset.includeTemplate || referenceData.template;
 			if (templateName) {
-				if (templateName.startsWith("$"))
-					templateName = referenceData[templateName.slice(1)];
+				while (templateName.startsWith("$"))
+					templateName = referenceData[templateName.slice(1)] || referenceData.template;
 
 				Transclude.doWhenTemplateLoaded(templateName, (template, delayed) => {
 					if (delayed)

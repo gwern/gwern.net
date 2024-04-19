@@ -169,4 +169,12 @@ Transclude.templates = {
 	</p>
 	<div class="data-field entry-content"><{entryContent}></div>
 </div>`,
+	"wikipedia-entry-blockquote-title-not": `<div class="content-transform <{contentTypeClass}>">
+	<blockquote class="data-field entry-content">
+		<[IF thumbnailFigure]>
+		<{thumbnailFigure}>
+		<[IFEND]>
+		<{entryContent}>
+	</blockquote>
+</div>`,
 };
