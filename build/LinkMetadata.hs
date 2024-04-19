@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-17 22:10:10 gwern"
+When:  Time-stamp: "2024-04-18 19:59:48 gwern"
 License: CC-0
 -}
 
@@ -577,6 +577,8 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
+    | ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
+      [Para [Link ("",["id-not", "include-content", "include-replace-container"],[]) [title] (T.pack f, "")]] -- NOTE: Twitter special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
@@ -631,7 +633,7 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/anime/2019-05-06-stylegan-malefaces-1ksamples.tar", [])
     , (simpleTestT "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
     , (simpleTestT "http://dev.kanotype.net:8003/deepdanbooru/", [])
-    , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Tweet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html","")]]]])
+    , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content","include-replace-container"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://twitter.com/AxSauer/status/1524325956030275586","")]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","include-replace-container","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])

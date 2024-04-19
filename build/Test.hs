@@ -172,6 +172,13 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
 testAll :: IO ()
 testAll = do Config.Misc.cd
 
+             printGreen ("Testing file-transclusions…" :: String)
+             md <- readLinkMetadata
+             am <- readArchiveMetadata
+             let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
+             let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
+             unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
+
              printGreen ("Tested config rules for uniqueness requirements, verified: " ++ show testConfigs)
 
              printGreen ("Testing interwiki rewrite rules…" :: String)
@@ -182,13 +189,6 @@ testAll = do Config.Misc.cd
              unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
 
              unless (null authorCollapseTest) $ printRed ("Author-collapse test suite has errors in: " ++ show authorCollapseTest)
-
-             printGreen ("Testing file-transclusions…" :: String)
-             md <- readLinkMetadata
-             am <- readArchiveMetadata
-             let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
-             let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
-             unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 
              printGreen ("Testing X-of-the-day data…" :: String)
              _ <- testXOTD
