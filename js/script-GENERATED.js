@@ -4841,20 +4841,18 @@ Annotations = { ...Annotations,
 							: referenceElement.href;
 
 		//	Construct title link class.
-		let titleLinkClass = "title-link";
+		let titleLinkClasses = [ "title-link" ];
 
 		//  Import link classes (excluding certain ones).
-		Array.from(referenceElement.classList).filter(referenceElementClass => [
+		titleLinkClasses.push(...(Array.from(referenceElement.classList).filter(referenceElementClass => [
 			"link-annotated",
 			"link-annotated-partial"
-		].includes(referenceElementClass) == false).forEach(referenceElementClass => {
-			titleLinkClass += ` ${referenceElementClass}`;
-		});
+		].includes(referenceElementClass) == false)));
 
 		//	Special handling for links with separate ‘HTML’ URLs.
 		if (   referenceElement.dataset.urlHtml
-			&& titleLinkClass.includes("link-live") == false)
-			titleLinkClass += " link-live";
+			&& titleLinkClasses.includes("link-live") == false)
+			titleLinkClasses.push("link-live");
 
 		//	Special data attributes for the title link.
 		let titleLinkDataAttributes = [ 
@@ -5030,7 +5028,7 @@ Annotations = { ...Annotations,
 			content: {
 				title:                    titleHTML,
 				titleLinkHref:            titleLinkHref,
-				titleLinkClass:           titleLinkClass,
+				titleLinkClass:           titleLinkClasses.join(" "),
 				titleLinkDataAttributes:  titleLinkDataAttributes,
 				author:                   authorHTML,
 				date:                     dateHTML,
