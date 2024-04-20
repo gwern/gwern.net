@@ -67,7 +67,7 @@ main = do Config.Misc.cd
           ddb <- embeddings2Forest edb''
           sortDB <- readListSortedMagic
           unless (args == ["--only-embed"]) $ do
-              printGreen "Begin computing & writing out missing similarity-rankings…"
+              printGreen "Begin computing & writing out _n_ missing similarity-rankings…"
               Par.mapM_ (mapM_
                         (\f -> do exists <- similaritemExistsP f
                                   unless exists $
@@ -80,11 +80,13 @@ main = do Config.Misc.cd
                                                                       when (f `elem` todoLinks) $ expireMatches (snd nmatchesSorted)
                                                                       writeOutMatch md bdb nmatchesSorted
                         ))
-                mdlChunks
+                $ take 40 mdlChunks
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
                 printGreen "Rewriting all embeddings…"
+                printGreen "Rewriting all edb''…"
                 Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
+                printGreen "Rewriting all mdlChunks…"
                 Par.mapM_ (mapM_ (\f ->
                                     case M.lookup f edbDB of
                                        Nothing        -> return ()
