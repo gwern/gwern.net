@@ -372,7 +372,7 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
 generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Header 3 ("", [, "collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
+generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
                                              concatMap (\(f,(_,aut,dt,_,_,_,_)) ->
                                                   let linkId = generateID f aut dt in
                                                     if linkId=="" then [] else

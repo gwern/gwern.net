@@ -1017,6 +1017,8 @@ linkIconTestUnitsText =
          , ("https://www.youtube.com/watch?v=cG7v9eCq2u4&t=33m49s",  "youtube","svg")
          , ("https://www.yudkowsky.net/rational/technical", "yud", "svg")
          , ("https://xtools.wmcloud.org/pages/en.wikipedia.org/Gwern", "wikipedia","svg")
+         , ("https://en.wikipedia.org/wiki/Named-entity_recognition", "wikipedia","svg")
+         , ("https://en.wikipedia.org/wiki/Document_classification", "wikipedia","svg")
          , ("https://yunnansourcing.com/",  "ys","text")
          , ("https://yunnansourcing.us/", "ys","text")
          , ("http://thehub7dnl5nmcz5.onion/index.php?topic=2261.msg17459", "Hub", "text,tri,sans")

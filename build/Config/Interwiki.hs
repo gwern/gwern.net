@@ -5923,4 +5923,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("KNN", "k-nearest_neighbors_algorithm")
         , ("kNN", "k-nearest_neighbors_algorithm")
         , ("Bagging", "Bootstrap_aggregating")
+        , ("Purina", "Nestlé Purina PetCare")
         ]
