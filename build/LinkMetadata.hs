@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-18 21:08:57 gwern"
+When:  Time-stamp: "2024-04-19 15:49:45 gwern"
 License: CC-0
 -}
 
@@ -556,7 +556,7 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock _ _ x@("",                     _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
 -- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
-generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], dataArguments) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
    localP = isLocal $ T.pack f'
@@ -575,6 +575,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
    title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack tle
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
+   dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title; doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
