@@ -14449,6 +14449,9 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListI
 	});
 }, "rewrite");
 
+/****************************************************************************/
+/*	Enable special icons for recently modified links (that are not in lists).
+ */
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons = (eventInfo) => {
     GWLog("enableRecentlyModifiedLinkIcons", "rewrite.js", 1);
 
@@ -15489,7 +15492,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		let childNodesArray = Array.from(collapseWrapper.childNodes);
 		collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
 			return (   node instanceof Element 
-					&& node.matches(".heading, .abstract-collapse"));
+					&& node.matches(".heading, .abstract-collapse, .abstract-collapse-only"));
 		}) + 1));
 		collapseWrapper.append(collapseContentWrapper);
 
