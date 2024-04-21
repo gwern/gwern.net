@@ -2097,6 +2097,9 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListI
 	});
 }, "rewrite");
 
+/****************************************************************************/
+/*	Enable special icons for recently modified links (that are not in lists).
+ */
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons = (eventInfo) => {
     GWLog("enableRecentlyModifiedLinkIcons", "rewrite.js", 1);
 
