@@ -220,7 +220,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "embeddings2Forest called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 15 3 31 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 4 32 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -301,7 +301,7 @@ expireMatches = mapM_ (removeFile . fst . getSimilarLink)
 
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p,matches) =
-  if length matches < C.minimumSuggestions then return () else
+  if length matches < C.minimumSuggestions then print ("GS.writeOutMatch: skipping " ++ p) >> return () else
   case M.lookup p md of
     Nothing                   -> return ()
     Just ( _,_,_,_,_,_,  "")  -> return ()
@@ -310,6 +310,7 @@ writeOutMatch md bdb (p,matches) =
           let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
           let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
           writeUpdatedFile "similar" f similarLinksHtmlFragment
+          putStrLn $ "Wrote: " ++ p ++ " (" ++ f ++ ")"
 
 generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
 generateMatches md bdb linkTagsP singleShot p abst matches =

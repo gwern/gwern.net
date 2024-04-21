@@ -3,7 +3,7 @@
 
 module Main where
 
-import Control.Monad (unless, when)
+import Control.Monad (unless, when, filterM)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (sort)
 import Data.List.Split (chunksOf)
@@ -25,8 +25,7 @@ main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
           let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
-          let chunkSize = 25
-          let mdlChunks = chunksOf chunkSize mdl
+          mdlMissing <- filterM (fmap not . similaritemExistsP) mdl
           bdb <- readBacklinksDB
           edb <- readEmbeddings
           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
@@ -67,22 +66,25 @@ main = do Config.Misc.cd
           ddb <- embeddings2Forest edb''
           sortDB <- readListSortedMagic
           unless (args == ["--only-embed"]) $ do
-              printGreen "Begin computing & writing out _n_ missing similarity-rankings…"
-              Par.mapM_ (mapM_
-                        (\f -> do exists <- similaritemExistsP f
-                                  unless exists $
-                                               case M.lookup f edbDB of
+
+              printGreen $ "Begin computing & writing out " ++ show (length mdlMissing) ++ " missing similarity-rankings…"
+              let mdlMissingChunks = chunksOf 15 mdlMissing
+              mapM_
+                    (Par.mapM_ (\f ->       case M.lookup f edbDB of
                                                  Nothing        -> return ()
                                                  Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                                       -- rerank the _n_ matches to put them into a more internally-coherent ordering by pairwise distance minimization, rather than merely minimizing distance to the target URL:
                                                                       hitsSorted <- sortSimilars edb sortDB (head hits) hits
                                                                       let nmatchesSorted = (path, hitsSorted)
                                                                       when (f `elem` todoLinks) $ expireMatches (snd nmatchesSorted)
+                                                                      putStrLn $ "gSL.nmatchesSorted: " ++ show nmatchesSorted
                                                                       writeOutMatch md bdb nmatchesSorted
-                        ))
-                $ take 40 mdlChunks
+                        )) mdlMissingChunks
+
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
+                let chunkSize = 550
+                let mdlChunks = chunksOf chunkSize mdlMissing
                 printGreen "Rewriting all embeddings…"
                 printGreen "Rewriting all edb''…"
                 Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
