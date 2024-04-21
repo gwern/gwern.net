@@ -550,6 +550,14 @@ section.collapse > .heading {
     transition: none;
 }
 
+/*****************************/
+/*	Shown only when collapsed.
+ */
+
+.collapse.expanded > .abstract-collapse-only {
+	display: none;
+}
+
 /********************/
 /*  Collapse summary.
  */
