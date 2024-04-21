@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-19 15:49:45 gwern"
+When:  Time-stamp: "2024-04-21 15:17:07 gwern"
 License: CC-0
 -}
 
@@ -439,7 +439,8 @@ addID maybeMetadataItem inline = case inline of
             "; This should never happen."
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,_,abstrct) (Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
+  | wasAnnotated x = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
   | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial...
@@ -635,7 +636,8 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
     , (simpleTestT "http://dev.kanotype.net:8003/deepdanbooru/", [])
     , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content","include-replace-container"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://twitter.com/AxSauer/status/1524325956030275586","")]]])
-    , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("link-icon","wikipedia"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]]])
+    , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard",
+       [Div ("",["aux-links-transclude-file"],[("include-template","$annotationFileIncludeTemplate")]) [Para [Link ("",["id-not","include-content","include-replace-container"],[]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","include-replace-container","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
