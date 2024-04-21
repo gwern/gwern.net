@@ -12,17 +12,16 @@ import Interwiki (toWikipediaEnURL)
 authorCollapseTestCases :: [(String, [Inline])]
 authorCollapseTestCases =
   [ ("a", [Space,Span ("",["author","cite-author"],[]) [Str "a"]])
-  , ("a, b", [Space,Span ("",["author","cite-author-plural"],[("title","a, b")]) [Str "a",Str ", ",Str "b"]])
-  , ("a, b, c", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
-  , ( "a, b, c, d", [Space,Span ("",["author","cite-author-plural"],[("title","a, b, c, d")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Str ", ",Str "d"]])
-  , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
-  , ( "a, b, c, d, e, f", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
-  , ( "a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, g")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
+  , ("a, b", [Space,Span ("",["author"],[("title","a, b")]) [Str "a",Str ", ",Str "b"]])
+  , ("a, b, c", [Space,Span ("",["author"],[("title","a, b, c")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
+  , ("a, b, c, d", [Space,Span ("",["author"],[("title","a, b, c, d")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Str ", ",Str "d"]])
+  , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
+  , ("a, b, c, d, e, f",[Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e, f")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
+  , ("a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e, f, g")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
 
   -- test with link rewrites enabled:
-  , ("a, b, c, d, e, f, George Washington",
-     [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse","cite-author-plural"],[("title","a, b, c, d, e, f, George Washington")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
-    ]
+  , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e, f, George Washington")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
+         ]
 
 -- list of rewrites for 'alternative name' → 'canonical name'
 -- Config tests: unique values, no loops
@@ -181,7 +180,7 @@ canonicals = M.fromList
   , ("retvitr", "Zlatý Retvítr")
   , ("vi", "pinkddle")
   , ("Student", "William Sealy Gosset")
-  , ("R. A. Fisher", "R. A. Fisher")
+  , ("R.A. Fisher", "R. A. Fisher")
   , ("Fisher", "R. A. Fisher")
   , ("Sutskever", "Ilya Sutskever")
   , ("Engelbart", "Douglas Engelbart")
@@ -223,6 +222,8 @@ canonicals = M.fromList
   , ("Daniel Bernstein", "Daniel J. Bernstein")
   , ("djb", "Daniel J. Bernstein")
   , ("John Barrington [Ian Stewart]", "Ian Stewart")
+  , ("Daniel C. Dennett", "Daniel Dennett")
+  , ("K. Eric Drexler", "Eric Drexler")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -269,6 +270,7 @@ authorLinkDB = M.fromList $
     , ("Blake Richards", "https://mila.quebec/en/person/blake-richards/")
     , ("Arvind Narayanan", "https://en.wikipedia.org/wiki/Arvind_Narayanan")
     , ("Ian Stewart", "https://en.wikipedia.org/wiki/Ian_Stewart_(mathematician)")
+    , ("Mark S. Miller", "https://en.wikipedia.org/wiki/Mark_S._Miller")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 

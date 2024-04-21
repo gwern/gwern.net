@@ -94,7 +94,7 @@ import Data.List (intersperse, intercalate)
 import qualified Data.Map.Strict as M (lookup)
 import qualified Data.Text as T (find, pack, splitOn, Text)
 import Data.Maybe -- (isJust, isNothing)
-import Text.Pandoc (Inline(Link, Span, Space, Str, Subscript), nullAttr)
+import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
 
 import Utils (split, frequency)
 
@@ -121,7 +121,7 @@ authorCollapse aut
                                                              authorsRest = drop 5 authors
                                                          in Span ("", ["author", "collapse"], [])
                                                             [Span ("", ["abstract-collapse"], [("title",T.pack aut)]) authorsInitial
-                                                            , Span ("", ["abstract-collapse-only"], []) [Subscript [Str "…"]]
+                                                            , Span ("", ["abstract-collapse-only"], []) [Span ("", ["cite-author-plural"], []) []]
                                                             , Span nullAttr authorsRest]
   in [Space, authorSpan]
 
