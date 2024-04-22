@@ -58,10 +58,13 @@ writeLinkBibliographyFragment am md path =
       lbExists <- doesFileExist path'
       let essayp = head path == '/' && '.' `notElem` path
       shouldWrite <- if not lbExists then return True else -- if it doesn't exist, it could be arbitrarily out of date so we default to trying to write it:
-                                     do target <- if essayp then return $ tail (takeWhile (/='#') path) ++ ".md" else fmap fst (getAnnotationLinkCheck path)
-                                        originalLastModified <- getModificationTime target
-                                        lbLastModified       <- getModificationTime path'
-                                        return (originalLastModified >= lbLastModified)
+                                     do target <- if essayp then return $ tail (takeWhile (/='#') path) ++ ".md"
+                                                  else fmap fst (getAnnotationLinkCheck path)
+                                        originalExists <- doesFileExist target
+                                        if not originalExists then return True else do
+                                          originalLastModified <- getModificationTime target
+                                          lbLastModified       <- getModificationTime path'
+                                          return (originalLastModified >= lbLastModified)
 
       when shouldWrite $ parseExtractCompileWrite am md path path' self selfAbsolute abstract
 
