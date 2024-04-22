@@ -7243,7 +7243,7 @@ Content = {
 	class="include-annotation-partial"
 
 		class="include-annotation"
-		data-include-selector-not=".annotation-abstract, .file-includes"
+		data-include-selector-not=".annotation-abstract, .file-includes, figure"
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
@@ -8972,13 +8972,13 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract, .file-includes"`
+		`data-include-selector-not=".annotation-abstract, .file-includes, figure"`
 		`data-template-fields="annotationClassSuffix:$"`
 		`data-annotation-class-suffix="-partial"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes";
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure";
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"
@@ -13632,8 +13632,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 		partialAnnotation.querySelector(".data-field.author-date-aux").lastTextNode.nodeValue = ")";
 
         //  Rewrite title-link.
-        let titleLink = partialAnnotation.querySelector("a.title-link");
-        titleLink.classList.add(Annotations.annotatedLinkFullClass);
+        partialAnnotation.querySelector("a.title-link").classList.add(Annotations.annotatedLinkFullClass);
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
@@ -13646,7 +13645,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 
     eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
         //  If already done, do not redo.
-        if (partialAnnotation.firstElementChild.classList.contains("data-field"))
+        if (partialAnnotation.querySelector(".data-field") != null)
             return;
 
         //  Identify reference link.

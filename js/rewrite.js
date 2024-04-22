@@ -1280,8 +1280,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 		partialAnnotation.querySelector(".data-field.author-date-aux").lastTextNode.nodeValue = ")";
 
         //  Rewrite title-link.
-        let titleLink = partialAnnotation.querySelector("a.title-link");
-        titleLink.classList.add(Annotations.annotatedLinkFullClass);
+        partialAnnotation.querySelector("a.title-link").classList.add(Annotations.annotatedLinkFullClass);
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
@@ -1294,7 +1293,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventI
 
     eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
         //  If already done, do not redo.
-        if (partialAnnotation.firstElementChild.classList.contains("data-field"))
+        if (partialAnnotation.querySelector(".data-field") != null)
             return;
 
         //  Identify reference link.
