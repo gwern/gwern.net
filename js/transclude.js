@@ -337,7 +337,7 @@
 	class="include-annotation-partial"
 
 		class="include-annotation"
-		data-include-selector-not=".annotation-abstract, .file-includes, figure"
+		data-include-selector-not=".annotation-abstract, .file-includes, figure, .data-field-separator"
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
@@ -2066,13 +2066,13 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract, .file-includes, figure"`
+		`data-include-selector-not=".annotation-abstract, .file-includes, figure, .data-field-separator"`
 		`data-template-fields="annotationClassSuffix:$"`
 		`data-annotation-class-suffix="-partial"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure";
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure, .data-field-separator";
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"

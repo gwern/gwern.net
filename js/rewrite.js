@@ -1276,9 +1276,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
         if (Annotations.referenceDataForLink(eventInfo.includeLink).content.abstract == null)
             return;
 
-		//	Remove colon.
-		partialAnnotation.querySelector(".data-field.author-date-aux").lastTextNode.nodeValue = ")";
-
         //  Rewrite title-link.
         partialAnnotation.querySelector("a.title-link").classList.add(Annotations.annotatedLinkFullClass);
     });
