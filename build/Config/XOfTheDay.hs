@@ -127,7 +127,7 @@ siteBlackList = [
           "ncase.me", "nces.ed.gov", "nearcyan.com", "neojaponisme.com", "neomarxisme.com",
           "netecon.seas.harvard.edu", "neurosciencenews.com", "cognitivefun.net", "newcriterion.com", "new.nubrain.com",
           "news.bbc.co.uk", "news.microsoft.com", "news.ycombinator.com", "ngm.nationalgeographic.com", "nickdrozd.github.io",
-          "nitro.biosci.arizona.edu", "nitter.net", "nmteaco.com", "n.neurology.org", "noahpinion.substack.com",
+          "nitro.biosci.arizona.edu", "nmteaco.com", "n.neurology.org", "noahpinion.substack.com",
           "nonsymbolic.org", "nootropicsdepot.com", "norvig.com", "nostalgebraist.tumblr.com", "novelai.net",
           "nowak.ece.wisc.edu", "numinous.productions", "nutritionj.biomedcentral.com", "nv-adlr.github.io",
           "nymag.com", "nypost.com", "ohtori.nu", "okmij.org", "old.reddit.com", "www.reddit.com",

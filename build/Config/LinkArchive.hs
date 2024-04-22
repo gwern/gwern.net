@@ -74,7 +74,7 @@ localizeLinktestCases = [
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://twitter.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
-    , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", ["link-annotated"]))
+    , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", []))
     , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://freedium.cfd/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
@@ -690,10 +690,6 @@ whiteListMatchesFixed = [
       , "www.cna.org" -- landing/homepage, not useful to archive
       , "www.caniuse.com" -- updated service
       , "archiveofourown.org" -- blocks archiving
-      -- Nitter mirrors seem to be setting X headers to block live popups, but linkrot & uptime remains a problem, so time to start mirroring them:
-      -- , "nitter.net/search" -- example/updated
-      -- , "nitter.net/search" -- example/updated
-      -- , "nitter.net" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated
@@ -1105,6 +1101,7 @@ whiteListMatchesFixed = [
       , "https://billsworld.neocities.org/" -- low-quality (broken snapshot)
       , "http://timbaumann.info/svd-image-compression-demo/" -- interactive
       , "https://killedbyapixel.github.io/TinyCode/games/CrossMyHeart/" -- interactive game
+      , "https://samwho.dev/bloom-filters/" -- interactive
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage

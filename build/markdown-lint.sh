@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2024-02-26 16:19:45 gwern"
+# When:  Time-stamp: "2024-04-22 19:18:05 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -71,9 +71,6 @@ do
 
         λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on Gwern.net to make them visible to Google Scholar/provide backups"
-
-        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
-        wrap λ "Switch Twitter.com to Nitter links"
 
         λ(){ egp -e 'http://www.pnas.org/content/.*/.*/.*.abstract' -e '[^\.]t\.test\(' -e '^\~\~\{\.' \
                  -e 'ncbi.nlm.nih.gov/pubmed/[[:digit:]][[:digit:]]*' \
@@ -217,7 +214,7 @@ do
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e '^\$' -e '^/doc/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e 'nitter.net' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e '^\$' -e '^/doc/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e '.mp4' -e '.mp3' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'youtu.be/' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runghc -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?
