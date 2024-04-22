@@ -27,11 +27,18 @@ else
         if [[ "$1" =~ http://.* && "$2" =~ https://.* && "$2" == "$HTTPS2" && ! "$1" == "$HTTP" ]]; then
             gwhttp "$1"
         else
-            # proceed with trying to do a normal sitewide replacement:
+            # Blacklist files from all hits due to issues like being temporary files or containing gibberish
+            EXCLUDE="-e '.#' -e '_site/' -e 'static/js/tablesorter.js'"
+            EXCLUDE_SEARCH="$EXCLUDE -e 'auto.hs'  -e 'static/build/Config/LinkArchive.hs'  -e 'metadata/annotation/' -e 'backlink/'"
+            ## blacklist from string-replacement, usually because they contain search-and-replace literals of their own and so would break if 'fixed':
+            EXCLUDE_SEARCH_AND_REPLACE="$EXCLUDE -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/MetadataAuthor.hs' -e 'static/build/Typography.hs'" # -e 'static/includes/' -e 'static/build/Utils.hs'
+
+            # proceed with trying to do a normal site-wide replacement:
             FILES=$((find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
-                        grep -F -v -e '.#' -e 'backlink/' -e '_site/' -e 'static/includes/' -e 'static/build/Utils.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/build/Config/MetadataFormat.hs' | \
+                        grep -F -v $EXCLUDE_SEARCH_AND_REPLACE | \
                         xargs grep -F --files-with-matches "$1" | sort)
+
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2
             else
@@ -43,7 +50,7 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v -e '.#' -e 'auto.hs' -e 'static/build/LinkMetadata.hs' -e 'static/build/Typography.hs' -e 'static/build/Config/MetadataAuthor.hs' -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/LinkArchive.hs' -e 'static/js/tablesorter.js' -e metadata/annotation/ -e '.#' -e '_site/' | \
+                            grep -F -v $EXCLUDE_SEARCH  | \
                             sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
                 gw "$1";
 
@@ -62,7 +69,7 @@ else
             fi
         fi
     else
-        echo "Wrong number of unique arguments: $@" 1>&2
+        echo "Wrong number of unique arguments: $*" 1>&2
         exit 2
     fi
 fi
