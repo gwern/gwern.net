@@ -7243,7 +7243,7 @@ Content = {
 	class="include-annotation-partial"
 
 		class="include-annotation"
-		data-include-selector-not=".annotation-abstract, .file-includes, figure"
+		data-include-selector-not=".annotation-abstract, .file-includes, figure, .data-field-separator"
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
@@ -8972,13 +8972,13 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
 /*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
-		`data-include-selector-not=".annotation-abstract, .file-includes, figure"`
+		`data-include-selector-not=".annotation-abstract, .file-includes, figure, .data-field-separator"`
 		`data-template-fields="annotationClassSuffix:$"`
 		`data-annotation-class-suffix="-partial"`
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure";
+	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure, .data-field-separator";
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"
@@ -9044,8 +9044,8 @@ Transclude.templates = {
 		   target="<{linkTarget}>"
 		   <{titleLinkDataAttributes}>
 			   ><{title}></a>\\
-		<[IF [ abstract | fileIncludes ] & !authorDateAux & ! [ annotationClassSuffix "-partial" ] ]>:<[IFEND]>\\
-		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] & ! [ annotationClassSuffix "-partial" ] ]>:<[IF2END]><[IFEND]>
+		<[IF [ abstract | fileIncludes ] & !authorDateAux ]><span class="data-field-separator">:</span><[IFEND]>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IF2 [ abstract | fileIncludes ] ]><span class="data-field-separator">:</span><[IF2END]><[IFEND]>
 	</p>
 	<[IF abstract]>
 	<blockquote class="data-field annotation-abstract">
@@ -13627,9 +13627,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
         //  Check to see whether the abstract exists.
         if (Annotations.referenceDataForLink(eventInfo.includeLink).content.abstract == null)
             return;
-
-		//	Remove colon.
-		partialAnnotation.querySelector(".data-field.author-date-aux").lastTextNode.nodeValue = ")";
 
         //  Rewrite title-link.
         partialAnnotation.querySelector("a.title-link").classList.add(Annotations.annotatedLinkFullClass);
