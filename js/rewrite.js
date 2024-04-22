@@ -1285,48 +1285,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
 
-/*****************************************************************/
-/*  Partial annotations, defined inline (in directories and such).
- */
-addContentLoadHandler(GW.contentLoadHandlers.rewritePartialAnnotations = (eventInfo) => {
-    GWLog("rewritePartialAnnotations", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll(".annotation-partial").forEach(partialAnnotation => {
-        //  If already done, do not redo.
-        if (partialAnnotation.querySelector(".data-field") != null)
-            return;
-
-        //  Identify reference link.
-        let referenceLink = partialAnnotation.querySelector("a");
-
-        //  If already in progress, do not interfere.
-        if (Transclude.isIncludeLink(referenceLink))
-            return;
-
-        //  Designate reference link, for annotations.js to identify it.
-        referenceLink.classList.add("link-annotated-partial");
-
-        //  Load data into Annotations.
-        Annotations.cacheAPIResponseForLink(newDocument(partialAnnotation),
-                                            referenceLink);
-
-        //  Replace reference block contents with synthetic include-link.
-        partialAnnotation.replaceChildren(synthesizeIncludeLink(referenceLink, {
-            "class": "include-annotation include-replace-container link-annotated-partial",
-            "data-template-fields": "annotationClassSuffix:$",
-            "data-annotation-class-suffix": "-partial"
-        }));
-
-        //  Fire GW.contentDidLoadEvent (to trigger transclude).
-        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-            source: "rewritePartialAnnotations",
-            container: partialAnnotation,
-            document: eventInfo.document,
-            loadLocation: eventInfo.loadLocation
-        });
-    });
-}, "rewrite");
-
 /***************************************************************************/
 /*	Apply proper classes to inline file-include collapses, both on directory 
 	index pages and in annotations.
