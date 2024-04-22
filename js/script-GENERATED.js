@@ -13304,13 +13304,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 		let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
 
 		for (let child of Array.from(interviewWrapper.children)) {
-			if (child.tagName != "UL") {
-				child.remove();
+			if (child.tagName != "UL")
 				continue;
-			}
 
 			let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
-			exchange.append(child);
+			exchange.append(child.cloneNode(true));
 
 			for (let utterance of exchange.firstElementChild.children) {
 				utterance.classList.add("utterance");
@@ -13318,17 +13316,15 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 				let speaker = utterance.querySelector("strong");
 
 				//	If the speaker is wrapped, find the outermost wrapper.
-				let nextNode;
 				while (   speaker.parentElement
-					   && speaker.parentElement.tagName != "P")
+					   && speaker.parentElement.tagName != "P"
+					   && speaker.nextSibling?.textContent.startsWith(":") == false)
 					speaker = speaker.parentElement;
-				nextNode = speaker.nextSibling;
 				speaker.classList.add("speaker");
-				speaker.querySelector("speaker")?.classList.remove("speaker");
 
 				//	Move colon.
-				(speaker.querySelector("strong") ?? speaker).innerHTML += nextNode.textContent.slice(0, 1) + " ";
-				nextNode.textContent = nextNode.textContent.slice(1).trimStart();
+				speaker.innerHTML += ": ";
+				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 			}
 		}
 
