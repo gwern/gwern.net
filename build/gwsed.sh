@@ -11,7 +11,7 @@ else
     if [ $# -eq 2 ] && [ "$1" != "$2" ]; then
         LENGTH1=$(echo -e "$1" | wc --lines)
         LENGTH2=$(echo -e "$2" | wc --lines)
-        if [ $LENGTH1 != "1" ] || [ $LENGTH2 != "1" ]; then
+        if [ "$LENGTH1" != "1" ] || [ "$LENGTH2" != "1" ]; then
             echo "Either $1 or $2 appears to be multiple lines, which is probably a mistake, so not rewriting."
             exit 2;
         fi
@@ -28,15 +28,15 @@ else
             gwhttp "$1"
         else
             # Blacklist files from all hits due to issues like being temporary files or containing gibberish
-            EXCLUDE="-e '.#' -e '_site/' -e 'static/js/tablesorter.js'"
-            EXCLUDE_SEARCH="$EXCLUDE -e 'auto.hs'  -e 'static/build/Config/LinkArchive.hs'  -e 'metadata/annotation/' -e 'backlink/'"
-            ## blacklist from string-replacement, usually because they contain search-and-replace literals of their own and so would break if 'fixed':
-            EXCLUDE_SEARCH_AND_REPLACE="$EXCLUDE -e 'static/build/Config/MetadataFormat.hs' -e 'static/build/Config/MetadataAuthor.hs' -e 'static/build/Typography.hs'" # -e 'static/includes/' -e 'static/build/Utils.hs'
+            EXCLUDE=( -e '.#' -e '_site/' -e 'static/js/tablesorter.js' )
+            EXCLUDE_SEARCH=("${EXCLUDE[@]}" -e 'auto.hs' -e 'metadata/annotation/' -e 'backlink/')
+            EXCLUDE_SEARCH_AND_REPLACE=("${EXCLUDE[@]}" -e 'Config/LinkArchive.hs' -e 'Config/MetadataFormat.hs' -e 'Config/MetadataAuthor.hs' -e 'Typography.hs') # -e 'static/includes/' -e 'Utils.hs'
+
 
             # proceed with trying to do a normal site-wide replacement:
-            FILES=$((find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
+            FILES=$( (find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
-                        grep -F -v $EXCLUDE_SEARCH_AND_REPLACE | \
+                        grep -F -v "${EXCLUDE_SEARCH_AND_REPLACE[@]}" | \
                         xargs grep -F --files-with-matches "$1" | sort)
 
             if [ -z "$FILES" ]; then
@@ -50,14 +50,14 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v $EXCLUDE_SEARCH  | \
+                            grep -F -v "${EXCLUDE_SEARCH[@]}" | \
                             sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
                 gw "$1";
 
                 # special-case cleanup: if adding an affiliation, we need to clean up inconsistent doubled
                 # gwsed /doc/foo.pdf /doc/foo.pdf#deepmind && gwsed "#deepmind#deepmind" "#deepmind"
                 if [[ "$2" =~ "$1"\#.+ ]];
-                then SUFFIX=$(echo "$2" | sed -e 's/.*#//g'); echo $SUFFIX;
+                then SUFFIX="${2##*#}"; echo "$SUFFIX";
                      gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX"; gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX";
                 fi
                 # Special case cleanup: Remove any doubled trailing slashes
