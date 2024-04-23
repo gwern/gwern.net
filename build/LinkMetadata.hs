@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-23 14:01:40 gwern"
+When:  Time-stamp: "2024-04-23 16:29:22 gwern"
 License: CC-0
 -}
 
@@ -34,7 +34,6 @@ import Text.Pandoc (readerExtensions, Inline(Link, Span),
                     readHtml, nullAttr, nullMeta,
                     Inline(Code, Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_, mapM)
@@ -55,7 +54,7 @@ import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Te
 import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
-import MetadataFormat (processDOI, cleanAbstractsHTML, dateRegex, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
+import MetadataFormat (processDOI, cleanAbstractsHTML, isDate, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
 import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
@@ -251,11 +250,11 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
-             mapM_ (\a -> unless (null a) $ when (a =~ dateRegex || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
+             mapM_ (\a -> unless (null a) $ when (isDate a || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (dt =~ dateRegex || null dt || dc =~ dateRegex || null dc)) finalL
+             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc)) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad)
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.

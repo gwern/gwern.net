@@ -12,7 +12,7 @@ import qualified Data.Text as T (unpack)
 import Text.Pandoc (Inline(Link))
 
 import Cycle (isCycleLess)
-import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced)
+import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced, isDate)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, ensure)
 
 -- module self-tests:
@@ -145,6 +145,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
+              , length $ ensure "Test.Inflation.dates" "isDate" (isDate . fst) $ Config.Inflation.bitcoinUSDExchangeRateHistory
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ ensure "Test.LinkAuto.custom" "isURiReferenceT" (isURIReferenceT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides

@@ -83,6 +83,9 @@ footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$"
 sectionAnonymousRegex = "^#section-[0-9]+$"
 badUrlRegex           = "http.*http|doc/.*doc/"::String
 
+isDate :: String -> Bool
+isDate d = d =~ dateRegex
+
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
 checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concatenating Arxiv URLs when tagging.
