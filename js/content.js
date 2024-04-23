@@ -212,7 +212,10 @@ Content = {
     },
 
     referenceDataFromContent: (content, link) => {
-        return (Content.contentTypeForLink(link).referenceDataFromContent?.(content, link) ?? { content: content.document });
+    	let contentType = Content.contentTypeForLink(link);
+    	return (contentType.referenceDataFromContent
+    			? contentType.referenceDataFromContent(content, link)
+    			: { content: content.document });
     },
 
     /***********/
@@ -542,10 +545,12 @@ Content = {
 					/*	Check whether we have tried to load a part of the page which
 						does not exist.
 					 */
-					if (targetElement == null)
-						return null;
+					if (targetElement == null) {
+						titleHTML = titleLinkHref;
+						fullTitleHTML = titleLinkHref;
 
-					if (/H[0-9]/.test(targetElement.tagName)) {
+						//	No entry content, because the target was not found.
+					} else if (/H[0-9]/.test(targetElement.tagName)) {
 						//	The target is a section heading.
 						let targetHeading = targetElement;
 	
