@@ -92,7 +92,7 @@ module MetadataAuthor where
 
 import Data.List (intersperse, intercalate)
 import qualified Data.Map.Strict as M (lookup)
-import qualified Data.Text as T (find, pack, splitOn, Text)
+import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text)
 import Data.Maybe -- (isJust, isNothing)
 import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
 
@@ -140,7 +140,8 @@ linkify aut -- skip anything which might be HTML:
   | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
   | otherwise = case M.lookup aut C.authorLinkDB of
                   Nothing -> Str aut
-                  Just u -> Link nullAttr [Str aut] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
+                  Just u -> let aut' = T.takeWhile (/= '#') aut in -- author disambiguation is done by appending an anchor-style disambig like '#foo'; once we have done the lookup, we no longer need it and delete it for display
+                                Link nullAttr [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
 
 authorPrioritize :: [T.Text] -> [(Int,T.Text)]
 authorPrioritize auts = reverse $ frequency $ map fst $

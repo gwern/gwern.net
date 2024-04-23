@@ -21,6 +21,7 @@ authorCollapseTestCases =
 
   -- test with link rewrites enabled:
   , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e, f, George Washington")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
+  , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[("title","a, b, c, d, e, f, George Washington#SS")]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
          ]
 
 -- list of rewrites for 'alternative name' → 'canonical name'
@@ -229,7 +230,8 @@ canonicals = M.fromList
 -- Config tests: unique all, no loops, all values are URLs
 authorLinkDB :: M.Map T.Text T.Text
 authorLinkDB = M.fromList $
-   [ ("Alexey Guzey","https://guzey.com/")
+   [ ("George Washington#SS", "https://en.wikipedia.org/wiki/SS_George_Washington")
+    , ("Alexey Guzey","https://guzey.com/")
     , ("Carl Shulman","https://timelines.issarice.com/wiki/Timeline_of_Carl_Shulman_publications#Full_timeline")
     , ("I. Richard Savage","https://projecteuclid.org/journals/statistical-science/volume-14/issue-1/A-conversation-with-I-Richard-Savage-with-the-assistance-of/10.1214/ss/1009211808.full")
     , ("James Yu","https://jamesyu.org/")
@@ -271,6 +273,7 @@ authorLinkDB = M.fromList $
     , ("Arvind Narayanan", "https://en.wikipedia.org/wiki/Arvind_Narayanan")
     , ("Ian Stewart", "https://en.wikipedia.org/wiki/Ian_Stewart_(mathematician)")
     , ("Mark S. Miller", "https://en.wikipedia.org/wiki/Mark_S._Miller")
+    , ("David Décary-Hétu", "https://www.cicc-iccc.org/en/people/regular_researchers/david_decary_hetu")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
