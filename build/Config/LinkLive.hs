@@ -634,7 +634,6 @@ goodDomainsSimple =
     , "www.politico.com"
     , "www.popsci.com"
     , "www.pragmatic.ml"
-    , "www.princeton.edu"
     , "www.prolific.com"
     , "www.psychiatryinvestigation.org"
     , "www.punchlinedesign.net"
@@ -2284,6 +2283,7 @@ badDomainsSimple = [ "2chan.us"
    , "memteaimports.com"
    , "garote.bdmonkeys.net"
    , "diff.wikimedia.org"
+   , "animate-your-word.github.io"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -2706,7 +2706,6 @@ goodLinks =
             , "https://web.archive.org/web/20150211211107/https://support.google.com/news/answer/1638638"
             , "https://web.archive.org/web/20150816235023/https://www.thedenverchannel.com/news/colorado-springs-area/air-force-academy-cadet-3rd-class-nathaniel-penalosa-accused-of-using-and-distributing-drugs-on-base"
             , "https://web.archive.org/web/20160205133519/https://www.baka-tsuki.org/project/index.php?title=Utsuro_no_Hako:Volume_1"
-            , "https://web.archive.org/web/20170419194138/https://www.princeton.edu/mudd/finding_aids/mathoral/pmcxrota.htm"
             , "https://web.archive.org/web/20171020041641/http://nitro.biosci.arizona.edu/zbook/NewVolume_2/newvol2.html"
             , "https://web.archive.org/web/20190415123208/https://thiscardoesnotexist.glitch.me/"
             , "https://web.archive.org/web/20230604002332/https://thiseyedoesnotexist.com/story/"
@@ -4459,4 +4458,5 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://github.com/fyu/lsun"
             , "http://garote.bdmonkeys.net/commandline/"
             , "https://diff.wikimedia.org/2012/03/27/analysis-of-the-quality-of-newcomers-in-wikipedia-over-time/"
+            , "https://animate-your-word.github.io/demo/"
             ]

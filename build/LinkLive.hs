@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-04-17 22:09:09 gwern"
+When:  Time-stamp: "2024-04-22 23:30:05 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -79,11 +79,12 @@ overrideLinkLive :: [T.Text]
 overrideLinkLive = []
 
 -- Nothing = unknown/untested; Just True = known good; Just False = known bad
+-- precedence for overrides: bad {simple, sub} > good {simple, sub} > WP > misc
 urlLive :: T.Text -> Maybe Bool
-urlLive u | u'      `elem`  C.goodDomainsSimple = Just True
-          | anySuffixT u'   C.goodDomainsSub    = Just True
-          | u'     `elem`   C.badDomainsSimple  = Just False
+urlLive u | u'     `elem`   C.badDomainsSimple  = Just False
           | anySuffixT u'   C.badDomainsSub     = Just False
+          | u'      `elem`  C.goodDomainsSimple = Just True
+          | anySuffixT u'   C.goodDomainsSub    = Just True
           | anyInfixT u C.wikipediaURLs  = wikipedia u
           | otherwise = C.miscUrlRules u
    where u' = host u

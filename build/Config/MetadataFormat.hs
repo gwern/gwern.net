@@ -1670,6 +1670,7 @@ htmlRewriteFixed =
          , ("generalise", "generalize")
          , ("generalisi", "generalizi")
          , ("generalisa", "generaliza")
+         , ("Generalisation", "Generalization")
          , (" visualisation", " visualization")
          , (" disincentivis", " disincentiviz")
          , (" incentivis", " incentiviz")

@@ -233,7 +233,7 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
-      randSeed = 13
+      randSeed = 14
   in
     runIdentity $
     forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
