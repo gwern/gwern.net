@@ -7105,12 +7105,16 @@ Content = {
 		When the `include-rectify-not` option is used, this rectification is
 		not done.
 
+		(Not currently used on gwern.net.)
+
     include-identify-not
         Normally, if the include-link has a nonempty ‘id’ attribute, and that
         ID does not occur in the transcluded content (after any unwrapping; see
         ‘include-unwrap’, above, for details), the content will be wrapped in a
         DIV element, which will be given the ID of the include-link. When the
         `include-identify-not` option is used, this will not be done.
+
+		(Not currently used on gwern.net.)
 
 	include-spinner
     include-spinner-not
@@ -7119,6 +7123,11 @@ Content = {
         absence of either of these classes, the spinner will be shown or not,
         depending on context. Using either class causes the spinner to be shown
         or not shown (respectively), unconditionally.
+
+		(Note that these two classes, unlike the others listed in this section,
+		 DO NOT mark a link as an include-link. They must be used in conjunction
+		 with the `include` class, or with one or more of the optional include
+		 classes listed here.)
 
 
     III. ADVANCED
@@ -8201,6 +8210,7 @@ Transclude = {
         "include-unwrap",
         "include-block-context",
         "include-replace-container",
+        "include-rectify-not",
         "include-identify-not"
     ],
 
