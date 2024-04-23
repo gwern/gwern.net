@@ -23,7 +23,7 @@ miscUrlRules u
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise = Nothing
 
--- all tested using `isDomain` in `Test`, and are unique lists:
+-- all tested using `isDomain` in `Test`, and are unique lists, and no overlap between: `goodDomainsSub`/`badDomainsSub`, `goodDomainsSimple`/`badDomainsSimple`, `goodLinks`/`badLinks`.
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
                    ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org",
@@ -745,6 +745,7 @@ goodDomainsSimple =
     , "mitp-content-server.mit.edu"
     , "allenai.org"
     , "dialnet.unirioja.es"
+    , "www.princeton.edu"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -2046,7 +2047,6 @@ badDomainsSimple = [ "2chan.us"
    , "www.postandcourier.com"
    , "www.preclinicaltrials.eu"
    , "www.pressandjournal.co.uk"
-   , "www.princeton.edu"
    , "www.prnewswire.com"
    , "www.progressive.org"
    , "www.projectrho.com"

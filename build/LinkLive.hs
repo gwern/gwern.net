@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-04-22 23:30:05 gwern"
+When:  Time-stamp: "2024-04-23 10:47:20 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -38,7 +38,7 @@ module LinkLive (linkLive, linkLiveString, alreadyLive, linkLiveTest, linkLiveTe
 
 import Control.Monad (forM_, when, unless)
 import Data.Char (toLower)
-import Data.List (isInfixOf, sort)
+import Data.List (intersect, isInfixOf, sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, Text)
@@ -120,6 +120,14 @@ linkLiveTest = filter (\(u, bool) -> bool /=
                                        (url u == Link ("",["link-live"], []) [] (u,""))
                       )
                linkLiveTestUnits
+
+  ++ overlapping
+  where overlap xs ys = zip (xs `intersect` ys) (repeat False)
+        overlapping = concat [
+          overlap C.goodDomainsSub C.badDomainsSub,
+          overlap C.goodDomainsSimple C.badDomainsSimple,
+          overlap C.goodLinks C.badLinks
+          ]
 
 -- check the live test-cases with curl for `X-Frame` HTTPS headers; the presence of these guarantees liveness no longer works and they need to be updated.
 linkLiveTestHeaders :: IO ()
