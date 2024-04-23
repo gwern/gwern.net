@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-22 15:11:38 gwern"
+When:  Time-stamp: "2024-04-23 14:01:40 gwern"
 License: CC-0
 -}
 
@@ -557,7 +557,7 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock _ _ x@("",                     _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
 -- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
-generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], dataArguments) generateFileTransclusionBlock']
+generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
    localP = isLocal $ T.pack f'
@@ -580,7 +580,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
-      [Para [Link ("",["id-not", "include-content", "include-replace-container"],[]) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
+      [Para [Link ("",["id-not", "include-content", "include-replace-container"],dataArguments) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-replace-container", "include-lazy"], [("replace-container-selector", ".collapse")]) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
@@ -637,7 +637,7 @@ fileTranscludesTest md am =
     , (simpleTestT "http://dev.kanotype.net:8003/deepdanbooru/", [])
     , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content","include-replace-container"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://twitter.com/AxSauer/status/1524325956030275586","")]]])
     , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard",
-       [Div ("",["aux-links-transclude-file"],[("include-template","$annotationFileIncludeTemplate")]) [Para [Link ("",["id-not","include-content","include-replace-container"],[]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
+       [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content","include-replace-container"],[("include-template","$annotationFileIncludeTemplate")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-replace-container","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","include-replace-container","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
