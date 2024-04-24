@@ -120,7 +120,7 @@ authorCollapse aut
                                                     else let authorsInitial = take 5 authors  -- at >4, we give up trying to display them all & show just the first 3 by default (so we 'snap back' to default 3 authors max, after allowing a bit of elasticity of up to 4, to avoid the situation where we have an inline-collapse with just 1 author tucked away in it - which is annoying because it means cognitive / visual overhead & effort which is then disappointed to see just 1 author hidden - make it worth the reader's while to bother to uncollapse it!)
                                                              authorsRest = drop 5 authors
                                                          in Span ("", ["author", "collapse"], [])
-                                                            [Span ("", ["abstract-collapse"], [("title",T.pack aut)]) authorsInitial
+                                                            [Span ("", ["abstract-collapse"], []) authorsInitial
                                                             , Span ("", ["abstract-collapse-only"], []) [Span ("", ["cite-author-plural"], []) []]
                                                             , Span nullAttr authorsRest]
   in [Space, authorSpan]
