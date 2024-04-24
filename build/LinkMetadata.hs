@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-23 16:29:22 gwern"
+When:  Time-stamp: "2024-04-24 17:00:44 gwern"
 License: CC-0
 -}
 
@@ -502,7 +502,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter.com partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
-             addHasAnnotation x $ Link (lid, [], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
+             Link (lid, [if null abst then "link-annotated-partial" else "link-annotated"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
