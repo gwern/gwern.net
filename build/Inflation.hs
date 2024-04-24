@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-03-15 16:50:25 gwern"
+-- When:  Time-stamp: "2024-04-23 21:38:22 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -109,7 +109,7 @@ nominalToRealInflationAdjuster x@(Span (a, b, [(k, v)]) inlines) = if  k /= "inf
                                                                      else nominalToRealInflationAdjuster (Link (a,b,[]) inlines (v,""))
 nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (Inflation.hs: nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
-  | t == '$' = dollarAdjuster currentYear x
+  | t == '$'     = dollarAdjuster currentYear x
   | t == '\8383' = bitcoinAdjuster currentYear x --- official Bitcoin Unicode: '₿'/'\8383'; obsoletes THAI BAHT SIGN
   where t = T.head ts
 nominalToRealInflationAdjuster x = x
@@ -177,9 +177,7 @@ inflationAdjustUSD d yOld yCurrent = if yOld>=1913 && yCurrent>=1913 then d * to
 bitcoinAdjuster :: Int -> Inline -> Inline
 bitcoinAdjuster _ l@(Link _ _ ("", _)) = error $ "Inflation adjustment (bitcoinAdjuster) failed on malformed link: " ++ show l
 bitcoinAdjuster currentyear l@(Link _ text (oldDates, _)) =
- if (adjustedDollar / oldDollar) < C.minPercentage
- then Str $ T.pack ("\8383"++oldBitcoinString)
- else Span ("",
+   Span ("",
             ["inflation-adjusted"],
             [("year-original",oldDate),         ("amount-original",T.pack oldBitcoinString),
              ("year-current",T.pack $ show currentyear), ("amount-current", T.pack adjustedBitcoinString),
