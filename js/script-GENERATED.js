@@ -15463,11 +15463,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		//  Inject the disclosure button.
 		if (collapseWrapper.classList.contains("collapse-inline")) {
+			//	Additional wrapper for inline collapses.
+			let collapseContentOuterWrapper = wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
+
 			//	Button at start.
-			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
 
 			//	Button at end.
-			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
 		} else {
 			collapseWrapper.insertBefore(newDisclosureButton({ block: true }), collapseContentWrapper);
 		}
@@ -15543,7 +15546,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 	}, options);
 
 	let action = GW.isMobile() ? "Tap" : "Click";
-	let labelHTML = isCollapsed(collapseBlock)
+	let labelText = isCollapsed(collapseBlock)
 					? `${action} to expand`
 					: `${action} to collapse`;
 
@@ -15551,13 +15554,13 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
 		disclosureButton.querySelectorAll(".part .label").forEach(label => {
-			label.innerHTML = labelHTML;
+			label.innerHTML = labelText;
 		});
 
 		disclosureButton.classList.toggle("labels-visible", options.showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
-	} else {
-		[ collapseBlock.firstElementChild, collapseBlock.lastElementChild ].forEach(disclosureButton => {
-			disclosureButton.title = labelHTML;
+	} else { //	Inline collapse.
+		collapseBlock.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+			disclosureButton.title = labelText;
 		});
 	}
 }
@@ -15781,7 +15784,11 @@ function expandLockCollapseBlock(collapseBlock) {
 		collapseBlock.removeAttribute("style");
 
 	//	Unwrap subordinate containers.
-	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
+	Array.from(collapseBlock.children).filter(x => x.matches([
+		".collapse-content-outer-wrapper",
+		".collapse-content-wrapper",
+		".abstract-collapse:not(.abstract)"
+	].join(", "))).forEach(unwrap);
 	
 	//	Unwrap collapse block itself if it’s a bare wrapper.
 	if (   isBareWrapper(collapseBlock)
