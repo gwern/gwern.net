@@ -1424,7 +1424,10 @@ section.collapse > .heading {
 
 /*  Inline (collapsed).
  */
-.collapse-inline.expanded-not > .collapse-content-wrapper {
+.collapse-inline.expanded-not > .collapse-content-outer-wrapper {
+	display: inline-block;
+}
+.collapse-inline.expanded-not > .collapse-content-outer-wrapper > .collapse-content-wrapper {
     display: inline-block;
     max-width: 0;
     max-height: 0;
@@ -1614,13 +1617,13 @@ section.collapse > .heading {
 
 /*  Inline disclosure button.
  */
-.collapse-inline > .disclosure-button,
-.collapse-inline > .disclosure-button .icon {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button,
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
-.collapse-inline > .disclosure-button {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button {
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-color);
 
     height: 1em;
@@ -1628,54 +1631,48 @@ section.collapse > .heading {
     position: relative;
     bottom: 0.15em;
 }
-.collapse-inline.expanded > .disclosure-button {
-    --collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
-
-    height: calc(1em * 4/3);
-    bottom: 0;
-}
-.collapse-inline.expanded > .disclosure-button {
-    --collapse-button-text-color: var(--GW-collapse-inline-expanded-disclosure-button-text-color);
-}
-.collapse-inline > .disclosure-button:hover,
-.collapse-inline > .disclosure-button.hover {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button:hover,
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button.hover {
     --collapse-button-text-color: var(--GW-collapse-inline-disclosure-button-text-hover-color);
 }
 
-.collapse-inline > .disclosure-button .icon {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .icon {
     height: 100%;
     color: var(--collapse-button-text-color);
     transition:
         color 0.1s ease;
 }
-.collapse-inline.expanded > .disclosure-button.start .icon,
-.collapse-inline.has-abstract.expanded-not > .disclosure-button.start .icon {
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start {
+	display: none;
+}
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start .icon,
+.collapse-inline.has-abstract.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon {
     margin-right: -0.2em;
 }
 
-.collapse-inline > .disclosure-button .icon svg {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .icon svg {
     display: block;
     width: 1em;
     height: 100%;
 }
 
-.collapse-inline > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     height: 90%;
-    margin: 0 -0.4em 0 0;
+    margin: 0 -0.5em 0 0;
 }
-.collapse-inline.expanded-not > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+.collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
 	margin: 0 -0.5em 0 -0.3em;
 }
 
-.collapse-inline.expanded > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     transform: rotateZ(0.5turn);
 }
-.collapse-inline.expanded-not:hover > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+.collapse-inline.expanded-not:hover > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     transform: rotateZ(0.5turn);
     transition:
         transform 1s ease;
 }
-.collapse-inline.expanded-not.just-clicked > .disclosure-button.end:hover .icon svg:nth-last-of-type(2) {
+.collapse-inline.expanded-not.just-clicked > .collapse-content-outer-wrapper > .disclosure-button.end:hover .icon svg:nth-last-of-type(2) {
     transform: none;
     transition: none;
 }

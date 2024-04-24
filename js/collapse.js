@@ -373,11 +373,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		//  Inject the disclosure button.
 		if (collapseWrapper.classList.contains("collapse-inline")) {
+			//	Additional wrapper for inline collapses.
+			let collapseContentOuterWrapper = wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
+
 			//	Button at start.
-			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
 
 			//	Button at end.
-			collapseWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
 		} else {
 			collapseWrapper.insertBefore(newDisclosureButton({ block: true }), collapseContentWrapper);
 		}
@@ -691,7 +694,11 @@ function expandLockCollapseBlock(collapseBlock) {
 		collapseBlock.removeAttribute("style");
 
 	//	Unwrap subordinate containers.
-	Array.from(collapseBlock.children).filter(x => x.matches(".collapse-content-wrapper, .abstract-collapse:not(.abstract)")).forEach(unwrap);
+	Array.from(collapseBlock.children).filter(x => x.matches([
+		".collapse-content-outer-wrapper",
+		".collapse-content-wrapper",
+		".abstract-collapse:not(.abstract)"
+	].join(", "))).forEach(unwrap);
 	
 	//	Unwrap collapse block itself if it’s a bare wrapper.
 	if (   isBareWrapper(collapseBlock)
