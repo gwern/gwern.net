@@ -503,11 +503,11 @@ section.collapse > .heading {
 }
 
 .collapse-inline > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-    height: 85%;
+    height: 90%;
     margin: 0 -0.4em 0 0;
 }
 .collapse-inline.expanded-not > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.4em 0 -0.2em;
+	margin: 0 -0.5em 0 -0.3em;
 }
 
 .collapse-inline.expanded > .disclosure-button.end .icon svg:nth-last-of-type(2) {
