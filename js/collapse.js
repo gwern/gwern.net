@@ -456,7 +456,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 	}, options);
 
 	let action = GW.isMobile() ? "Tap" : "Click";
-	let labelHTML = isCollapsed(collapseBlock)
+	let labelText = isCollapsed(collapseBlock)
 					? `${action} to expand`
 					: `${action} to collapse`;
 
@@ -464,13 +464,13 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
 		disclosureButton.querySelectorAll(".part .label").forEach(label => {
-			label.innerHTML = labelHTML;
+			label.innerHTML = labelText;
 		});
 
 		disclosureButton.classList.toggle("labels-visible", options.showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
-	} else {
-		[ collapseBlock.firstElementChild, collapseBlock.lastElementChild ].forEach(disclosureButton => {
-			disclosureButton.title = labelHTML;
+	} else { //	Inline collapse.
+		collapseBlock.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+			disclosureButton.title = labelText;
 		});
 	}
 }
