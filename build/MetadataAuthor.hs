@@ -116,7 +116,7 @@ authorCollapse aut
   let authors = intersperse (Str ", ") $ map (\t -> linkify $ T.pack t) $ split ", " aut
       authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors
                                                else if length authors < 8 then
-                                                      Span ("", ["author"], [("title",T.pack aut)]) authors
+                                                      Span ("", ["author"], []) authors
                                                     else let authorsInitial = take 5 authors  -- at >4, we give up trying to display them all & show just the first 3 by default (so we 'snap back' to default 3 authors max, after allowing a bit of elasticity of up to 4, to avoid the situation where we have an inline-collapse with just 1 author tucked away in it - which is annoying because it means cognitive / visual overhead & effort which is then disappointed to see just 1 author hidden - make it worth the reader's while to bother to uncollapse it!)
                                                              authorsRest = drop 5 authors
                                                          in Span ("", ["author", "collapse"], [])
