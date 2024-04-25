@@ -5799,8 +5799,12 @@ Content = {
 					return;
 
 				//  Qualify link.
-				if (   link.getAttribute("rel") == "mw:WikiLink"
-					|| link.parentElement.matches("sup.mw-ref"))
+				if (link.matches([
+						"a[rel='mw:WikiLink']",
+						"a[rel='mw:referencedBy']",
+						"span[rel='mw:referencedBy'] a",
+						"sup.mw-ref a",
+						].join(", ")))
 					link.pathname = "/wiki" + link.getAttribute("href").slice(1);
 				if (link.getAttribute("href").startsWith("#"))
 					link.pathname = hostArticleLink.pathname;
