@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-14 18:00:12 gwern"
+# When:  Time-stamp: "2024-04-23 21:24:09 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -122,12 +122,12 @@ alias invert="mogrify -negate"
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
     for FILE in "$@"; do
-        mogrify -bordercolor white -border 25 "$(path2File "$FILE")"
+        mogrify -bordercolor white -border 30 "$(path2File "$FILE")"
     done
 }
 pad-black () {
     for FILE in "$@"; do
-        mogrify -bordercolor black -border 25 "$(path2File "$FILE")"
+        mogrify -bordercolor black -border 30 "$(path2File "$FILE")"
     done
 }
 crop-pad () { crop "$@" && pad "$@"; }

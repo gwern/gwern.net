@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-22 20:00:08 gwern"
+# When:  Time-stamp: "2024-04-23 20:34:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -738,10 +738,10 @@ else
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
-    wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)."
+    wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
 
     λ(){ ge -e ' [0-9]/[0-9]+ ' -- ./metadata/*.gtx | gfv -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11' -e 'TRFK 31/8' -e 'TRFK 303/577' -e 'TRFK 6/8'; }
-    wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?"
+    wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?" &
 
     λ(){ gf -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
                  -e 'www.tandfonline.com/doi/abs/' -e 'jstor.org' -e 'springer.com' -e 'springerlink.com' \
@@ -770,16 +770,16 @@ else
                  -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
        ge 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
-    wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted."
+    wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted." &
 
     λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""' -e '[("doi","")]'; }
-    wrap λ "Doubled double-quotes in GTX, usually an error."
+    wrap λ "Doubled double-quotes in GTX, usually an error." &
 
     λ(){ gf -e "'''" -- ./metadata/full.gtx ./metadata/half.gtx; }
-    wrap λ "Triple quotes in GTX, should be curly quotes for readability/safety."
+    wrap λ "Triple quotes in GTX, should be curly quotes for readability/safety." &
 
     λ(){ gev '^- - ' -- ./metadata/*.gtx | gf -e ' -- '; }
-    wrap λ "Markdown hyphen problems in GTX metadata database"
+    wrap λ "Markdown hyphen problems in GTX metadata database" &
 
     λ(){ ge -e '^    - _' $PAGES | gfv -e '_Additional Poems_' -e '_Aim for the Top!_' -e '_[Cognitive Surplus](!W)_' \
                                               -e '_Fontemon_' -e '_Forbes_' -e '_[Four Major Plays of Chikamatsu](!W)_' \
@@ -791,62 +791,62 @@ else
                                               -e '_[Seeds in the Heart: Japanese Literature from Earliest Times to the Late Sixteenth Century](!W)_' \
                                               -e '_[Neon Genesis Evangelion (manga)](!W)_' -e '_[Dendrocnide moroides](!W)_';
           }
-    wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?"
+    wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?" &
 
     λ(){ grep --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES; }
-    wrap λ "Markdown files: garbage or control characters detected?"
+    wrap λ "Markdown files: garbage or control characters detected?" &
 
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
-    wrap λ "Metadata HTML files: garbage or control characters detected?"
+    wrap λ "Metadata HTML files: garbage or control characters detected?" &
 
     λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.gtx; }
-    wrap λ "Wikipedia annotations in GTX metadata database, but will be ignored by popups! Override with non-WP URL?"
+    wrap λ "Wikipedia annotations in GTX metadata database, but will be ignored by popups! Override with non-WP URL?" &
 
     λ(){ ge -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.gtx; }
-    wrap λ "Wrong filepaths in GTX metadata database—missing prefix?"
+    wrap λ "Wrong filepaths in GTX metadata database—missing prefix?" &
 
     λ(){ gec -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.gtx | \
              gfv -e '%' -e '<figure>' -e 'alt="Figure ' -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
-    wrap λ "Missing superscript abbreviations in GTX metadata database"
+    wrap λ "Missing superscript abbreviations in GTX metadata database" &
 
     λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
-    wrap λ "Superscript abbreviations are weirdly capitalized?"
+    wrap λ "Superscript abbreviations are weirdly capitalized?" &
 
     λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' ; }
-    wrap λ "Superscripts/subscripts have spaces in front?"
+    wrap λ "Superscripts/subscripts have spaces in front?" &
 
     λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
-    wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database"
+    wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database" &
 
     λ(){ gf -e ' significant'  ./metadata/full.gtx; }
-    wrap λ "Misleading language in full.gtx"
+    wrap λ "Misleading language in full.gtx" &
 
     λ(){ gf -e '/doc/www/'  ./metadata/full.gtx; }
-    wrap λ "Generated local archive links showing up in manual annotations."
+    wrap λ "Generated local archive links showing up in manual annotations." &
 
     λ(){ gf -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
-    wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
+    wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!" &
 
     λ(){ ge -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.gtx; }
-    wrap λ "Bad paths in metadata databases: redundant anchors"
+    wrap λ "Bad paths in metadata databases: redundant anchors" &
 
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
-    wrap λ "Broken anchors in directory indexes."
+    wrap λ "Broken anchors in directory indexes." &
 
     λ(){ ls | gf -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | ge -e '^[014-9]' 2> /dev/null; }
-    wrap λ "Files in root wiki directory which should be in docs/ (perhaps a move gone awry)?"
+    wrap λ "Files in root wiki directory which should be in docs/ (perhaps a move gone awry)?" &
 
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }
-    wrap λ "Malformed filenames: dangerous strings in them?"
+    wrap λ "Malformed filenames: dangerous strings in them?" &
 
     λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | gfv -e 'cattleya幻想写景' -e '緑華野菜子'; }
-    wrap λ "Malformed filenames: dangerous characters in them?"
+    wrap λ "Malformed filenames: dangerous characters in them?" &
 
     λ(){ find . -type f | grep --perl-regexp -e "[^\x21-\x7E]" | gfv -e 'cattleya幻想写景' -e '緑華野菜子'; }
-    wrap λ "Malformed filenames: dangerous non-ASCII/Unicode characters in them?"
+    wrap λ "Malformed filenames: dangerous non-ASCII/Unicode characters in them?" &
 
     λ(){ find ./ -type f -name "[12][0-9][0-9]-*" -or -name "[12][0-9][0-9][0-9][0-9]-*"; }
-    wrap λ "Malformed filenames: year prefixes which have one too many or few digits?"
+    wrap λ "Malformed filenames: year prefixes which have one too many or few digits?" &
 
     λ(){
         set +e;
@@ -878,7 +878,7 @@ else
     wrap λ "Anchors linked but not defined inside page?" &
 
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
-    wrap λ "Broken symbolic links"
+    wrap λ "Broken symbolic links" &
 
     ## Is the remote server up?
     ping -q -c 5 gwern.net  &>/dev/null

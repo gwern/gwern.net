@@ -105,6 +105,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
                              ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""),
                              (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"),
                              (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
+                             (" CAAB,", ","), (" DVM,", ","), (" D.V.M.", ","),
                              (" M. D. MMM", "")]
 
 -- testing: unique list
