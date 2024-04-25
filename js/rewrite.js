@@ -1817,18 +1817,12 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
-    let exclusionSelector = [
-        ".backlink-source"
-    ].join(", ");
-
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (link.closest(exclusionSelector) != null)
-            return;
-
-        if (   (   link.getAttribute("href").startsWith("#")
+        if (   eventInfo.localize == true
+            && (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
                 // if initial base page load
-            && (   eventInfo.container == document.body
+			&& (   eventInfo.container == document.body
                 // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                 // if the link refers to the loaded content container itself

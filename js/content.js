@@ -228,6 +228,18 @@ Content = {
         		  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1);
 	},
 
+	shouldLocalizeContentFromLink: (link) => {
+		let shouldLocalize = Content.referenceDataForLink(link)?.shouldLocalize;
+		if (   shouldLocalize == true
+			|| shouldLocalize == false)
+			return shouldLocalize;
+
+		if (Content.contentTypeForLink(link) == Content.contentTypes.localPage)
+			return true;
+
+		return false;
+	},
+
     objectHTMLForURL: (url, options = { }) => {
         if (typeof url == "string")
             url = URLFromString(url);

@@ -751,21 +751,23 @@ function firstTextNodeOfGraf(graf) {
 /* TABLE OF CONTENTS */
 /*********************/
 
-GW.TOC = { };
+GW.TOC = {
+	containersToUpdate: [ ]
+};
 
 /*********************************************************************/
 /*	Update page TOC, on the next animation frame, if not already done.
  */
-function updatePageTOCIfNeeded() {
-	GW.TOC.needsUpdate = true;
+function updatePageTOCIfNeeded(container = document) {
+	if (container == document) {
+		GW.TOC.containersToUpdate = [ document ];
+	} else if (GW.TOC.containersToUpdate.includes(container) == false) {
+		GW.TOC.containersToUpdate.push(container);
+	}
 
 	requestAnimationFrame(() => {
-		if (GW.TOC.needsUpdate == false)
-			return;
-
-		GW.TOC.needsUpdate = false;
-
-		updatePageTOC();
+		while (GW.TOC.containersToUpdate.length > 0)
+			updatePageTOC(GW.TOC.containersToUpdate.shift());
 	});
 }
 
@@ -775,7 +777,7 @@ function updatePageTOCIfNeeded() {
  */
 //  Called by: updateMainPageTOC (rewrite.js)
 //  Called by: includeContent (transclude.js)
-function updatePageTOC() {
+function updatePageTOC(container = document) {
     GWLog("updatePageTOC", "misc.js", 2);
 
     let TOC = document.querySelector("#TOC");
@@ -788,7 +790,7 @@ function updatePageTOC() {
 	//	Collect new entries, for later processing (if need be).
 	let newEntries = [ ];
 
-	document.querySelectorAll("#markdownBody section").forEach(section => {
+	container.querySelectorAll("#markdownBody section").forEach(section => {
 		//	If this section already has a TOC entry, return.
 		if (TOC.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
 			return;

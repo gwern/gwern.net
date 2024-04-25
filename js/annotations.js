@@ -39,6 +39,10 @@ Annotations = { ...Annotations,
 			   	  : target.href));
 	},
 
+	shouldLocalizeContentFromLink: (link) => {
+		return false;
+	},
+
 	/***************************/
 	/*	Caching (API responses).
 	 */

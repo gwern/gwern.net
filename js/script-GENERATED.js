@@ -751,21 +751,23 @@ function firstTextNodeOfGraf(graf) {
 /* TABLE OF CONTENTS */
 /*********************/
 
-GW.TOC = { };
+GW.TOC = {
+	containersToUpdate: [ ]
+};
 
 /*********************************************************************/
 /*	Update page TOC, on the next animation frame, if not already done.
  */
-function updatePageTOCIfNeeded() {
-	GW.TOC.needsUpdate = true;
+function updatePageTOCIfNeeded(container = document) {
+	if (container == document) {
+		GW.TOC.containersToUpdate = [ document ];
+	} else if (GW.TOC.containersToUpdate.includes(container) == false) {
+		GW.TOC.containersToUpdate.push(container);
+	}
 
 	requestAnimationFrame(() => {
-		if (GW.TOC.needsUpdate == false)
-			return;
-
-		GW.TOC.needsUpdate = false;
-
-		updatePageTOC();
+		while (GW.TOC.containersToUpdate.length > 0)
+			updatePageTOC(GW.TOC.containersToUpdate.shift());
 	});
 }
 
@@ -775,7 +777,7 @@ function updatePageTOCIfNeeded() {
  */
 //  Called by: updateMainPageTOC (rewrite.js)
 //  Called by: includeContent (transclude.js)
-function updatePageTOC() {
+function updatePageTOC(container = document) {
     GWLog("updatePageTOC", "misc.js", 2);
 
     let TOC = document.querySelector("#TOC");
@@ -788,7 +790,7 @@ function updatePageTOC() {
 	//	Collect new entries, for later processing (if need be).
 	let newEntries = [ ];
 
-	document.querySelectorAll("#markdownBody section").forEach(section => {
+	container.querySelectorAll("#markdownBody section").forEach(section => {
 		//	If this section already has a TOC entry, return.
 		if (TOC.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
 			return;
@@ -4595,6 +4597,10 @@ Annotations = { ...Annotations,
 			   	  : target.href));
 	},
 
+	shouldLocalizeContentFromLink: (link) => {
+		return false;
+	},
+
 	/***************************/
 	/*	Caching (API responses).
 	 */
@@ -5311,6 +5317,18 @@ Content = {
 		return ([ "tweet",
         		  "wikipediaEntry"
         		  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1);
+	},
+
+	shouldLocalizeContentFromLink: (link) => {
+		let shouldLocalize = Content.referenceDataForLink(link)?.shouldLocalize;
+		if (   shouldLocalize == true
+			|| shouldLocalize == false)
+			return shouldLocalize;
+
+		if (Content.contentTypeForLink(link) == Content.contentTypes.localPage)
+			return true;
+
+		return false;
 	},
 
     objectHTMLForURL: (url, options = { }) => {
@@ -7116,6 +7134,22 @@ Content = {
 
 		(Not currently used on gwern.net.)
 
+	include-localize-not
+		When content specified by an include-link is transcluded into the base
+		page, and the transcluded content has headings, should those headings be 
+		added to the page’s table of contents? When transcluded content has 
+		footnote references, should those citations be integrated into the host
+		page’s footnote numbering, and should the associated footnotes be added
+		to the host page’s footnotes section?
+
+		Normally, the answer (and it’s the same answer for both questions, and 
+		several related ones such as link qualification) is determined on the 
+		basis of the content type of the transcluded content, the context in 
+		which it’s being transcluded (e.g., a backlink context block), and some
+		other factors. If the `include-localize-not` option is used, however,
+		the content will NOT be “localized”, no matter what other conditions
+		may obtain.
+
 	include-spinner
     include-spinner-not
         Shows or hides the “loading spinner” that is shown at the site of the
@@ -7683,6 +7717,25 @@ function parsePipedOptions(attributeValue) {
 	return attributeValue?.split("|").map(x => x.trim()).filter(x => x > "");
 }
 
+/******************************************************************************/
+/*	Returns true if content specified by the given include-link should be
+	“localized” (i.e., integrated into the page structure - footnotes, table of
+	contents, etc. - of the document into which it is being transcluded); false
+	otherwise.
+ */
+function shouldLocalizeContentFromLink(includeLink) {
+	if (includeLink.classList.contains("include-localize-not"))
+		return false;
+
+	if (includeLink.eventInfo.localize == false)
+		return false;
+
+	if (Transclude.dataProviderForLink(includeLink).shouldLocalizeContentFromLink?.(includeLink) == false)
+		return false;
+
+	return true;
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -7799,10 +7852,15 @@ function includeContent(includeLink, content) {
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
+	//	Determine whether to “localize” content.
+	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
+
     //  Fire GW.contentDidInject event.
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+	if (shouldLocalize)
+		flags |= GW.contentDidInjectEventFlags.localize;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		contentType: contentTypeIdentifierForIncludeLink(includeLink),
@@ -7875,13 +7933,13 @@ function includeContent(includeLink, content) {
 
     //  Update footnotes, if need be, when transcluding into a full page.
     if (   transcludingIntoFullPage
-    	&& Transclude.isAnnotationTransclude(includeLink) == false)
+		&& shouldLocalize)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
 	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
-    	&& Transclude.isAnnotationTransclude(includeLink) == false)
-        updatePageTOCIfNeeded();
+		&& shouldLocalize)
+        updatePageTOCIfNeeded(wrapper);
 
 	//	Aggregate margin notes.
 	aggregateMarginNotesIfNeededInDocument(containingDocument);
@@ -8103,7 +8161,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 		});
 
         //  Update page TOC to add footnotes section entry.
-        updatePageTOCIfNeeded();
+        updatePageTOCIfNeeded(footnotesSectionWrapper);
 
         //  Unwrap.
         unwrap(footnotesSectionWrapper);
@@ -8174,7 +8232,8 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 	});
 
 	//	Fire inject event.
-	let flags = GW.contentDidInjectEventFlags.clickable;
+	let flags = (  GW.contentDidInjectEventFlags.clickable
+				 | GW.contentDidInjectEventFlags.localize);
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
@@ -10473,7 +10532,8 @@ Extracts = { ...Extracts,
 	 */
 	isFullBacklinkContextLink: (target) => {
 		return (   target.closest(".backlink-source") != null
-				&& target.classList.contains("link-page"));
+				&& target.classList.contains("link-page")
+				&& Annotations.isAnnotatedLink(target) == false);
 	},
 
 	/*	Annotation title-links on mobile.
@@ -14184,18 +14244,12 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
-    let exclusionSelector = [
-        ".backlink-source"
-    ].join(", ");
-
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (link.closest(exclusionSelector) != null)
-            return;
-
-        if (   (   link.getAttribute("href").startsWith("#")
+        if (   eventInfo.localize == true
+            && (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
                 // if initial base page load
-            && (   eventInfo.container == document.body
+			&& (   eventInfo.container == document.body
                 // if the link refers to an element also in the loaded content
                 || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                 // if the link refers to the loaded content container itself
@@ -16671,7 +16725,7 @@ Sidenotes = { ...Sidenotes,
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
 			loadLocation: location,
-			flags: 0
+			flags: GW.contentDidInjectEventFlags.fullWidthPossible.localize
 		});
 	},
 

@@ -894,6 +894,12 @@ GW.notificationCenter = {
                 a mobile (narrow) viewport, regardless of the actual dimensions
                 of the loaded content’s container (i.e. they will not actually
                 be “full-width”).
+
+			‘localize’
+				Specifies whether content should be “localized” to the context
+				into which it is being injected. (Affects things like link
+				qualification. See transclude.js for more information.) 
+				Generally true for page content, false for auxiliary content.
  */
 
 GW.contentLoadHandlers = { };
@@ -933,7 +939,8 @@ GW.notificationCenter.handlerPhaseOrders["GW.contentDidInject"] = [ "rewrite", "
 GW.contentDidInjectEventFlags = {
     clickable:          1 << 0,
     stripCollapses:     1 << 1,
-    fullWidthPossible:  1 << 2
+    fullWidthPossible:  1 << 2,
+    localize:           1 << 3
 };
 
 /*  Event-specific pre-fire processing for the ‘GW.contentDidInject’ event.
@@ -1195,7 +1202,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document: document,
         loadLocation: pageURL,
         flags: (  GW.contentDidInjectEventFlags.clickable
-                | GW.contentDidInjectEventFlags.fullWidthPossible)
+                | GW.contentDidInjectEventFlags.fullWidthPossible
+                | GW.contentDidInjectEventFlags.localize)
     });
 });
 window.addEventListener("load", () => {

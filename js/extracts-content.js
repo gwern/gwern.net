@@ -66,7 +66,8 @@ Extracts = { ...Extracts,
 	 */
 	isFullBacklinkContextLink: (target) => {
 		return (   target.closest(".backlink-source") != null
-				&& target.classList.contains("link-page"));
+				&& target.classList.contains("link-page")
+				&& Annotations.isAnnotatedLink(target) == false);
 	},
 
 	/*	Annotation title-links on mobile.
