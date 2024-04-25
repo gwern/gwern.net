@@ -6035,8 +6035,6 @@ Content = {
 						closestRow.remove();
 					});
 
-					console.log(figure.outerHTML);
-
 					//  Create the caption, if need be.
 					let caption = contentDocument.querySelector(".mw-default-size + div, .infobox-caption, .thumbcaption");
 					if (   caption
