@@ -6035,11 +6035,18 @@ Content = {
 						closestRow.remove();
 					});
 
+					console.log(figure.outerHTML);
+
 					//  Create the caption, if need be.
-					let caption = contentDocument.querySelector(".mw-default-size + div, .infobox-caption");
+					let caption = contentDocument.querySelector(".mw-default-size + div, .infobox-caption, .thumbcaption");
 					if (   caption
-						&& caption.textContent > "")
+						&& caption.textContent > "") {
 						figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": caption.innerHTML }));
+
+						let closestRow = caption.closest("tr, .trow, [style*='display: table-row']");
+						if (closestRow)
+							closestRow.remove();
+					}
 
 					//  Insert the figure as the first child of the entry.
 					contentDocument.insertBefore(figure, contentDocument.firstElementChild);
@@ -13047,7 +13054,9 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
-            let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;
+            let mediaBlock = (   mediaElement.closest(".image-row-wrapper") 
+            				  ?? mediaElement.closest(".image-wrapper") 
+            				  ?? mediaElement);
             innerWrapper.appendChild(mediaBlock);
         });
 

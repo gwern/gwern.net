@@ -615,7 +615,9 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
-            let mediaBlock = mediaElement.closest(".image-wrapper") || mediaElement;
+            let mediaBlock = (   mediaElement.closest(".image-row-wrapper") 
+            				  ?? mediaElement.closest(".image-wrapper") 
+            				  ?? mediaElement);
             innerWrapper.appendChild(mediaBlock);
         });
 
