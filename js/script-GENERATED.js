@@ -13341,12 +13341,12 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 				//	If the speaker is wrapped, find the outermost wrapper.
 				while (   speaker.parentElement
 					   && speaker.parentElement.tagName != "P"
-					   && speaker.nextSibling?.textContent.startsWith(":") == false)
+					   && speaker.nextSibling?.textContent.startsWith(":") != true)
 					speaker = speaker.parentElement;
 				speaker.classList.add("speaker");
 
 				//	Move colon.
-				speaker.innerHTML += ": ";
+				(speaker.querySelector("strong") ?? speaker).innerHTML += ":";
 				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 			}
 		}
