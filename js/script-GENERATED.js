@@ -5192,12 +5192,18 @@ Content = {
 
         let processResponse = (response) => {
             let content = Content.contentFromLink?.(link) ?? Content.contentFromResponse?.(response, link, sourceURL);
-            if (content) {
+            if (content?.document) {
                 Content.cacheContentForLink(content, link);
 
                 GW.notificationCenter.fireEvent("Content.contentDidLoad", {
                     link: link
                 });
+            } else if (content?.loadURLs) {
+            	sourceURLsRemaining = sourceURLsRemaining ?? [ ];
+            	sourceURLsRemaining.unshift(...(content.loadURLs));
+
+				Content.load(link, null, null, sourceURLsRemaining);
+				return;
             } else {
                 Content.cacheContentForLink("LOADING_FAILED", link);
 
@@ -5217,16 +5223,14 @@ Content = {
             doAjax({
                 location: sourceURL.href,
                 onSuccess: (event) => {
-                    let contentType = Content.contentTypeForLink(link);
-                    let httpContentTypeHeader = event.target.getResponseHeader("Content-Type");
-                    if (   contentType.permittedContentTypes
-                        && (   httpContentTypeHeader == null
-                            || contentType.permittedContentTypes.includes(httpContentTypeHeader.match(/(.+?)(?:;|$)/)[1]) == false)) {
+                	let permittedContentTypes = Content.contentTypeForLink(link).permittedContentTypes;
+                	let httpContentType = event.target.getResponseHeader("Content-Type")?.match(/(.+?)(?:;|$)/)[1];
+                	if (permittedContentTypes?.includes(httpContentType) == false) {
                         //  Send request to record failure in server logs.
                         GWServerLogError(link.href + `--bad-content-type`, "bad content type");
 
                         return;
-                    }
+                	}
 
                     processResponse(event.target.responseText);
                 },
@@ -5606,9 +5610,19 @@ Content = {
 			},
 
             contentFromResponse: (response, link, sourceURL) => {
-                return {
-                    document: newDocument(response)
-                };
+				let contentDocument = newDocument(response);
+				let redirectLink = contentDocument.querySelector("link[rel='mw:PageProp/redirect']");
+				if (redirectLink) {
+					return {
+						loadURLs: Content.contentTypes.wikipediaEntry.sourceURLsForLink(modifiedURL(link, {
+							pathname: "/wiki" + redirectLink.getAttribute("href").slice(1)
+						}))
+					}
+				} else {
+					return {
+						document: contentDocument
+					};
+				}
             },
 
 			referenceDataCacheKeyForLink: (link) => {
