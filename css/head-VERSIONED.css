@@ -1296,6 +1296,14 @@ blockquote,
 	--border-color: var(--GW-blockquote-border-color-level-four);
 }
 
+/*	Headings in blockquotes.
+ */
+@media all and (min-width: 1180px) {
+    blockquote .heading {
+		margin-left: 0;
+	}
+}
+
 
 /*********/
 /* LISTS */
