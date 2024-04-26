@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-03-13 18:57:37 gwern"
+When:  Time-stamp: "2024-04-26 18:52:32 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -90,7 +90,7 @@ getBackLinkCount "" = return 0
 getBackLinkCount p = do (file,_) <- getBackLinkCheck p
                         if null file then return 0 else do
                           fileContents <- TIO.readFile file
-                          return $ T.count "backlink-not" fileContents
+                          return $ T.count "[backlink context]" fileContents -- WARNING: cannot count '.backlink-not' because not necessarily 1:1 with the bl count
 getSimilarLinkCount :: FilePath -> IO Int
 getSimilarLinkCount "" = return 0
 getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p

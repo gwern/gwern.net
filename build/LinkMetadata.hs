@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-24 17:12:39 gwern"
+When:  Time-stamp: "2024-04-26 18:40:03 gwern"
 License: CC-0
 -}
 
@@ -312,7 +312,16 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
                   -- Now, tooltips already handle title/author/date, so we only need partials in the case of things with tags, abstracts, backlinks, or similar-links, which cannot be handled by tooltips (since HTML tooltips only let you pop up some raw unstyled Unicode text, not clickable links).
-                  when (any (not . null) [concat (drop 1 ts), abst, (if blN > 1 then bl else ""), (if slN > 5 then sl else "")]) $ do
+
+
+                  -- if we do not have a 'full' abstract, we have a miscellaneous set of metadata, none of which are all *that* important on their own, but which together can be worth showing to the reader as a 'partial' annotation.
+                  -- How do we decide how much miscellaneous metadata is enough? it is currently rather ad hoc. Currently, we treat each one as a kind of binary threshold, and if any are True, the partial status is true
+                  let partialScoring = 0 < sum [length (drop 2 ts),
+                                                 length abst,
+                                                 if blN > 1 then 1 else 0,
+                                                 if slN > 6 then 1 else 0]
+
+                  when partialScoring $ do
                       let titleHtml    = nominalToRealInflationAdjusterHTML c $ typesetHtmlField $ titlecase' a
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
