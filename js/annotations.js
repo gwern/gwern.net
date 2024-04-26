@@ -43,52 +43,16 @@ Annotations = { ...Annotations,
 		return false;
 	},
 
-	/***************************/
-	/*	Caching (API responses).
+	/***********/
+	/*	Caching.
 	 */
 
 	//	Convenience method.
 	cachedDocumentForLink: (link) => {
-		let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
-		if (   cachedAPIResponse
-			&& cachedAPIResponse != "LOADING_FAILED"
-			&& cachedAPIResponse instanceof DocumentFragment) {
-			return cachedAPIResponse;
-		} else {
-			return null;
-		}
+		return (Annotations.cachedReferenceDataForLink(link)?.document ?? null);
 	},
 
-    /*  Returns true iff a cached API response exists for the given link.
-     */
-    //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
-    cachedDataExists: (link) => {
-        let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
-        return (   cachedAPIResponse != null
-        		&& cachedAPIResponse != "LOADING_FAILED");
-    },
-
-	//	Used by: Annotations.cachedAPIResponseForLink
-	//	Used by: Annotations.cacheAPIResponseForLink
-	cachedAPIResponses: { },
-
-	responseCacheKeyForLink: (link) => {
-		return Annotations.sourceURLForLink(link).href;
-	},
-
-	//	Called by: Annotations.load
-	cachedAPIResponseForLink: (link) => {
-		return Annotations.cachedAPIResponses[Annotations.responseCacheKeyForLink(link)];
-	},
-
-	//	Called by: Annotations.load
-	cacheAPIResponseForLink: (response, link) => {
-		Annotations.cachedAPIResponses[Annotations.responseCacheKeyForLink(link)] = response;
-	},
-
-	/****************************/
-	/*	Caching (reference data).
-	 */
+	loadingFailedString: "LOADING_FAILED",
 
     /*  Storage for retrieved and cached annotations.
      */
@@ -106,34 +70,21 @@ Annotations = { ...Annotations,
 		Annotations.cachedReferenceData[Annotations.referenceDataCacheKeyForLink(link)] = referenceData;
 	},
 
+    /*  Returns true iff cached reference data exists for the given link.
+     */
+    //	Called by: Extracts.setUpAnnotationLoadEventsWithin (extracts-annotations.js)
+    cachedDataExists: (link) => {
+    	let referenceData = Annotations.cachedReferenceDataForLink(link);
+		return (   referenceData != null
+				&& referenceData != Annotations.loadingFailedString);
+    },
+
     /*  Returns cached annotation reference data for a given link, or else 
     	either “LOADING_FAILED” (if loading the annotation was attempted but 
     	failed) or null (if the annotation has not been loaded).
      */
     referenceDataForLink: (link) => {
-    	let referenceData = Annotations.cachedReferenceDataForLink(link);
-		if (   referenceData == null
-			&& Annotations.cachedDataExists(link)) {
-			/*	Perhaps we’ve got an API response cached, but we haven’t 
-				actually constructed reference data from it yet. (Maybe because 
-				the API response was acquired otherwise than by the usual load 
-				process. Or because the API response is the same as that for a 
-				different link, so we don’t need to load it again.)
-			 */
-			//	Get parsed API response.
-			let cachedAPIResponse = Annotations.cachedAPIResponseForLink(link);
-
-			//	Attempt to construct reference data from API response.
-			referenceData = Annotations.referenceDataFromParsedAPIResponse(cachedAPIResponse, link) ?? "LOADING_FAILED";
-			if (referenceData == "LOADING_FAILED")
-				//	Send request to record failure in server logs.
-				GWServerLogError(Annotations.sourceURLForLink(link).href + `--could-not-process`, "problematic annotation");
-
-			//	Cache reference data (successfully constructed or not).
-			Annotations.cacheReferenceDataForLink(referenceData, link);
-		}
-
-        return referenceData;
+    	return Annotations.cachedReferenceDataForLink(link);
     },
 
 	/***********/
@@ -151,26 +102,10 @@ Annotations = { ...Annotations,
 							 + ".html");
 	},
 
-	//	Called by: Annotations.load
-	processedAPIResponseForLink: (response, link) => {
-		let responseDoc = newDocument(response);
-
-		//	Request the image, to cache it.
-		let thumbnail = responseDoc.querySelector(".page-thumbnail");
-		if (thumbnail)
-			doAjax({ location: URLFromString(thumbnail.src) });
-
-		return responseDoc;
-	},
-
 	waitForDataLoad: (link, loadHandler = null, loadFailHandler = null) => {
-		if (Annotations.cachedAPIResponseForLink(link) == "LOADING_FAILED") {
-            if (loadFailHandler)
-            	loadFailHandler(link);
-
-			return;
-		} else if (Annotations.cachedAPIResponseForLink(link)) {
-			if (Annotations.referenceDataForLink(link) == "LOADING_FAILED") {
+		let referenceData = Annotations.referenceDataForLink(link);
+		if (referenceData != null) {
+			if (referenceData == Annotations.loadingFailedString) {
 				if (loadFailHandler)
 					loadFailHandler(link);
 			} else {
@@ -208,62 +143,50 @@ Annotations = { ...Annotations,
     load: (link, loadHandler = null, loadFailHandler = null) => {
         GWLog("Annotations.load", "annotations.js", 2);
 
-		/*	Get URL of the annotation resource.
-		 */
+		//	Get URL of the annotation resource.
         let sourceURL = Annotations.sourceURLForLink(link);
 
-		/*	For local annotations, the (already processed) `response` is a 
-			DocumentFragment. We construct and cache a reference data object, 
-			then fire the appropriate event.
-		 */
-		let processResponse = (response) => {
-			let referenceData = Annotations.referenceDataFromParsedAPIResponse(response, link);
+		//	Retrieve, parse, process, and cache the annotation data.
+		doAjax({
+			location: sourceURL.href,
+			onSuccess: (event) => {
+				let responseDocument = newDocument(event.target.responseText);
 
-			if (referenceData) {
-				Annotations.cacheReferenceDataForLink(referenceData, link);
+				//	Request the page thumbnail image, to cache it.
+				let thumbnail = responseDocument.querySelector(".page-thumbnail");
+				if (thumbnail)
+					doAjax({ location: URLFromString(thumbnail.src) });
 
-				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
-					link: link 
-				});
-			} else {
-				Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
+				/*	Construct and cache a reference data object, then fire the 
+					appropriate event.
+				 */
+				let referenceData = Annotations.referenceDataFromParsedAPIResponse(responseDocument, link);
+				if (referenceData) {
+					Annotations.cacheReferenceDataForLink(referenceData, link);
 
-				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
-					link: link 
-				});
+					GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
+						link: link 
+					});
+				} else {
+					Annotations.cacheReferenceDataForLink(Annotations.loadingFailedString, link);
 
-				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL.href + `--could-not-process`, "problematic annotation");
-			}
-		};
-
-		/*	Retrieve, parse, and cache the annotation resource; or use an
-			already-cached API response.
-		 */
-		let response = Annotations.cachedAPIResponseForLink(link);
-		if (response) {
-			processResponse(response);
-		} else {
-			doAjax({
-				location: sourceURL.href,
-				onSuccess: (event) => {
-					let response = Annotations.processedAPIResponseForLink(event.target.responseText, link);
-
-					Annotations.cacheAPIResponseForLink(response, link);
-
-					processResponse(response);
-				},
-				onFailure: (event) => {
-					Annotations.cacheAPIResponseForLink("LOADING_FAILED", link);
-					Annotations.cacheReferenceDataForLink("LOADING_FAILED", link);
-
-					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
+					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
+						link: link 
+					});
 
 					//	Send request to record failure in server logs.
-					GWServerLogError(sourceURL.href, "missing annotation");
+					GWServerLogError(sourceURL.href + `--could-not-process`, "problematic annotation");
 				}
-			});
-		}
+			},
+			onFailure: (event) => {
+				Annotations.cacheReferenceDataForLink(Annotations.loadingFailedString, link);
+
+				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
+
+				//	Send request to record failure in server logs.
+				GWServerLogError(sourceURL.href, "missing annotation");
+			}
+		});
 
 		//	Call any provided handlers, if/when appropriate.
 		if (loadHandler || loadFailHandler)
@@ -272,33 +195,30 @@ Annotations = { ...Annotations,
 
 	//	Called by: Annotations.load
 	referenceDataFromParsedAPIResponse: (response, link) => {
-		if (response == "LOADING_FAILED")
-			return null;
+		let titleLink = response.querySelector([ Annotations.annotatedLinkFullClass, 
+												 Annotations.annotatedLinkPartialClass 
+												 ].map(className => `a.${className}`).join(", "));
 
-		let referenceElement = response.querySelector([ Annotations.annotatedLinkFullClass, 
-														Annotations.annotatedLinkPartialClass 
-														].map(className => `a.${className}`).join(", "));
-
-		let titleHTML = referenceElement.innerHTML;
-		let titleText = referenceElement.textContent;
+		let titleHTML = titleLink.innerHTML;
+		let titleText = titleLink.textContent;
 
 		//	On mobile, use mobile-specific link href, if provided.
-		let titleLinkHref = (   referenceElement.dataset.hrefMobile 
+		let titleLinkHref = (   titleLink.dataset.hrefMobile 
 							 && GW.isMobile())
-							? referenceElement.dataset.hrefMobile
-							: referenceElement.href;
+							? titleLink.dataset.hrefMobile
+							: titleLink.href;
 
 		//	Construct title link class.
 		let titleLinkClasses = [ "title-link" ];
 
 		//  Import link classes (excluding certain ones).
-		titleLinkClasses.push(...(Array.from(referenceElement.classList).filter(referenceElementClass => [
+		titleLinkClasses.push(...(Array.from(titleLink.classList).filter(titleLinkClass => [
 			"link-annotated",
 			"link-annotated-partial"
-		].includes(referenceElementClass) == false)));
+		].includes(titleLinkClass) == false)));
 
 		//	Special handling for links with separate ‘HTML’ URLs.
-		if (   referenceElement.dataset.urlHtml
+		if (   titleLink.dataset.urlHtml
 			&& titleLinkClasses.includes("link-live") == false)
 			titleLinkClasses.push("link-live");
 
@@ -309,16 +229,16 @@ Annotations = { ...Annotations,
 			"imageWidth",
 			"imageHeight",
 			"aspectRatio"
-		].map(attr => 
-			referenceElement.dataset[attr] 
-			? `data-${(attr.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${referenceElement.dataset[attr]}"` 
+		].map(attributeName => 
+			titleLink.dataset[attributeName] 
+			? `data-${(attributeName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${titleLink.dataset[attributeName]}"` 
 			: null
 		).filter(Boolean);
 
 		//	Link icon for the title link.
-		if (referenceElement.dataset.linkIcon) {
-			titleLinkDataAttributes.push(`data-link-icon-type="${(referenceElement.dataset.linkIconType)}"`);
-			titleLinkDataAttributes.push(`data-link-icon="${(referenceElement.dataset.linkIcon)}"`);
+		if (titleLink.dataset.linkIcon) {
+			titleLinkDataAttributes.push(`data-link-icon-type="${(titleLink.dataset.linkIconType)}"`);
+			titleLinkDataAttributes.push(`data-link-icon="${(titleLink.dataset.linkIcon)}"`);
 		} else if (   link 
 				   && link.dataset.linkIcon) {
 			titleLinkDataAttributes.push(`data-link-icon-type="${(link.dataset.linkIconType)}"`)
@@ -357,7 +277,7 @@ Annotations = { ...Annotations,
 		}
 
 		//	Archive URL (if exists).
-		let archiveLinkHref = referenceElement.dataset.urlArchive ?? null;
+		let archiveLinkHref = titleLink.dataset.urlArchive ?? null;
 		let linkTarget = (GW.isMobile() ? "_self" : "_blank");
 		let archiveLinkHTML = archiveLinkHref
 							  ? `<span 
@@ -408,7 +328,7 @@ Annotations = { ...Annotations,
 		let thumbnailFigureHTML = null;
 		if (abstractElement) {
 			let abstractDocument = newDocument(abstractElement.childNodes);
-			Annotations.postProcessReferenceEntry(abstractDocument, link);
+			Annotations.postProcessAnnotationAbstract(abstractDocument, link);
 
 			//	Request image inversion judgments from invertornot.
 			requestImageInversionDataForImagesInContainer(abstractDocument);
@@ -462,17 +382,18 @@ Annotations = { ...Annotations,
 		}
 
 		//	Pop-frame title text.
-		let popFrameTitle = referenceElement.cloneNode(true);
+		let popFrameTitleLink = titleLink.cloneNode(true);
 		//	Trim quotes.
-		let [ first, last ] = [ popFrameTitle.firstTextNode, popFrameTitle.lastTextNode ];
+		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true
 			&& /['"’”]$/.test(last.textContent)  == true) {
 			first.textContent = first.textContent.slice(1);
 			last.textContent = last.textContent.slice(0, -1);
 		}
-		let popFrameTitleText = popFrameTitle.innerHTML;
+		let popFrameTitleText = popFrameTitleLink.innerHTML;
 
 		return {
+			document: response,
 			content: {
 				title:                    titleHTML,
 				titleLinkHref:            titleLinkHref,
@@ -500,14 +421,14 @@ Annotations = { ...Annotations,
 	/*  Post-process an already-constructed local annotation 
 		(do HTML cleanup, etc.).
 	 */
-	postProcessReferenceEntry: (referenceEntry, link = null) => {
+	postProcessAnnotationAbstract: (abstractDocument, link = null) => {
 		//	Unwrap extraneous <div>s, if present.
-		if (   referenceEntry.firstElementChild == referenceEntry.lastElementChild
-			&& referenceEntry.firstElementChild.tagName == "DIV")
-			unwrap(referenceEntry.firstElementChild);
+		if (   abstractDocument.firstElementChild == abstractDocument.lastElementChild
+			&& abstractDocument.firstElementChild.tagName == "DIV")
+			unwrap(abstractDocument.firstElementChild);
 
 		//	If there’s a “See Also” section, rectify its classes.
-		let seeAlsoList = referenceEntry.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
+		let seeAlsoList = abstractDocument.querySelector(_π(".see-also-append", " ", [ "ul", "ol" ]).join(", "));
 		if (seeAlsoList) {
 			seeAlsoList.classList.add("aux-links-list", "see-also-list");
 
@@ -517,13 +438,13 @@ Annotations = { ...Annotations,
 		}
 
 		//	Prevent erroneous collapse class.
-		referenceEntry.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
+		abstractDocument.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
 			auxLinksAppendCollapse.classList.add("bare-content-not");
 		});
 
 		//	Unwrap more extraneous <div>s, if present.
 		let pageDescriptionClass = "page-description-annotation";
-		let pageDescription = referenceEntry.querySelector(`div.${pageDescriptionClass}`);
+		let pageDescription = abstractDocument.querySelector(`div.${pageDescriptionClass}`);
 		if (pageDescription)
 			unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
 	},
