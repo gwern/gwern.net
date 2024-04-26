@@ -1341,7 +1341,8 @@ Transclude = {
         "include-block-context",
         "include-replace-container",
         "include-rectify-not",
-        "include-identify-not"
+        "include-identify-not",
+        "include-localize-not"
     ],
 
     transcludeAnnotationsByDefault: true,
