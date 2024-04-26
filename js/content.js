@@ -1394,7 +1394,7 @@ Content = {
                 											>${caption}</figure>`);
 
                 //  Remove extraneous classes.
-                Content.removeExtraneousClassesFromMediaElement(content.querySelector("img"));
+                Content.removeExtraneousClassesFromMediaElement(contentDocument.querySelector("img"));
 
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
