@@ -5925,4 +5925,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Bagging", "Bootstrap_aggregating")
         , ("Purina", "Nestl%C3%A9_Purina_PetCare")
         , ("UCT", "Monte_Carlo_tree_search")
+        , ("DOI", "Digital_object_identifier")
         ]

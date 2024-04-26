@@ -28,10 +28,9 @@ else
             gwhttp "$1"
         else
             # Blacklist files from all hits due to issues like being temporary files or containing gibberish
-            EXCLUDE=( -e '.#' -e '_site/' -e 'static/js/tablesorter.js' )
+            EXCLUDE=( -e '.#' -e '_site/' -e 'static/js/tablesorter.js' -e 'Config/MetadataFormat.hs' )
             EXCLUDE_SEARCH=("${EXCLUDE[@]}" -e 'auto.hs' -e 'metadata/annotation/' -e 'backlink/')
-            EXCLUDE_SEARCH_AND_REPLACE=("${EXCLUDE[@]}" -e 'Config/LinkArchive.hs' -e 'Config/MetadataFormat.hs' -e 'Config/MetadataAuthor.hs' -e 'Typography.hs') # -e 'static/includes/' -e 'Utils.hs'
-
+            EXCLUDE_SEARCH_AND_REPLACE=("${EXCLUDE[@]}" -e 'Config/LinkArchive.hs' -e 'Config/MetadataAuthor.hs' -e 'Typography.hs') # -e 'static/includes/' -e 'Utils.hs'
 
             # proceed with trying to do a normal site-wide replacement:
             FILES=$( (find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \

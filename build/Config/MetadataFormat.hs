@@ -1532,6 +1532,8 @@ htmlRewriteFixed =
          , (" hypothesise" ," hypothesize")
          , ("factorise" ,"factorize")
          , ("initialis", "initializ")
+         , (" signalling", " signaling")
+         , ("focussed", "focused")
          , ("wethen", "we then")
          , ("successfullylearns", "successfully learns")
          , ("n-of-1", "<em>n</em>-of-1")

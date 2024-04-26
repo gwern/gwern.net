@@ -232,6 +232,7 @@ canonicals = M.fromList
   , ("_akhaliq", "AK")
   , ("_vztu", "Zhengzhong Tu")
   , ("arankomatsuzaki", "Aran Komatsuzaki")
+  , ("mattshumer_", "Matt Shumer")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -283,6 +284,8 @@ authorLinkDB = M.fromList $
     , ("David Décary-Hétu", "https://www.cicc-iccc.org/en/people/regular_researchers/david_decary_hetu")
     , ("Mikel Olazaran", "https://scholar.google.com/citations?user=XoUNbRoAAAAJ")
     , ("Daniel Hendrycks", "https://people.eecs.berkeley.edu/~hendrycks/")
+    , ("Matt Shumer", "https://twitter.com/mattshumer_")
+    , ("Richard Ngo", "https://www.richardcngo.com/")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 

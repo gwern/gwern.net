@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-03-31 14:53:09 gwern"
+# When:  Time-stamp: "2024-04-25 19:11:38 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -23,6 +23,10 @@
 set -e
 
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
+
+# shortcut: if there's only 1 PNG argument & it's a known wiki file (ie. version-controlled in git), then that means we are converting it to JPG using `png2JPGQualityCheck`, and can skip manually setting the second argument to the `.jpg` extension.
+# (The converse currently never happens & so is unsupported.)
+[[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch "$1" 2>/dev/null) ]] && set -- "$1" "${1%.png}.jpg"
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {
@@ -150,7 +154,8 @@ _upload() {
                   (rsync --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                       rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
-                  cloudflare-expire "$TARGET_DIR/$(basename "$FILE")"
+                  cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
+                  curl --head "$URL" > /dev/null # verify it's downloadable
                   echo ""
                   echo "/$TARGET $URL"
 

@@ -50,7 +50,7 @@ escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem
                                replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $
                                deunicode title
     where deunicode :: T.Text -> T.Text
-          deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
+          deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " "), (" ", "")]
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
