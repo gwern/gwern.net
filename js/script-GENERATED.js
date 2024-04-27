@@ -1721,6 +1721,7 @@ doWhenPageLoaded(() => {
 	let searchWidgetId = "gcse-search";
 	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
 												+ `<a 
+													class="search"
 													href="/static/search.html" 
 													data-link-content-type="local-document"
 													>`
@@ -1755,7 +1756,13 @@ doWhenPageLoaded(() => {
 						if (searchWidgetLink.popup)
 							Popups.pinPopup(searchWidgetLink.popup);
 
-						observer.disconnect();
+						if (iframe.contentWindow.location.hash.includes("gsc.q")) {
+							Popups.addClassesToPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").display = "none";
+						} else {
+							Popups.removeClassesFromPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").display = "";
+						}
 					});
 
 					observer.observe(iframe.contentDocument.body, { subtree: true, childList: true });
