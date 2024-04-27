@@ -3177,46 +3177,37 @@ Popups = {
 			} else {
 				//	Base case.
 
-				/*  This is the width and height of the popup, as already determined
-					by the layout system, and taking into account the popup’s content,
-					and the max-width, min-width, etc., CSS properties.
+				/*  This is the width and height of the popup, as already 
+					determined by the layout system, and taking into account the 
+					popup’s content, and the max-width, min-width, etc., CSS 
+					properties.
 				 */
 				let popupIntrinsicRect = Popups.getPopupViewportRect(popup);
-				let popupIntrinsicWidth = popupIntrinsicRect.width;
-				let popupIntrinsicHeight = popupIntrinsicRect.height;
 
-				let offToTheSide = false;
-				let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
-												   - (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-				let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
-												   + (options.tight ? Popups.popupBreathingRoomYTight : Popups.popupBreathingRoomY);
-				if (   Popups.containingPopFrame(target)
-					|| Popups.preferSidePositioning(target)) {
-					/*  The popup is a nested popup, or the target specifies that it
-						prefers to have popups spawned to the side; we try to put
-						the popup off to the left or right.
-					 */
-					offToTheSide = true;
-				}
-
-				provisionalPopupYPosition = spawnPoint.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
-				if (provisionalPopupYPosition < 0.0)
-					provisionalPopupYPosition = 0.0;
+				/*  If the popup is a nested popup, or the target specifies that 
+					it prefers to have popups spawned to the side, we try to put
+					the popup off to the left or right. Otherwise, it’ll be 
+					above or below.
+				 */
+				let offToTheSide = (   Popups.containingPopFrame(target)
+									|| Popups.preferSidePositioning(target))
+								   ? true
+								   : false;
 
 				if (offToTheSide == true) {
 					//  Determine whether to put the popup off to the right, or left.
 					if (  targetViewportRect.right
 						+ Popups.popupBreathingRoomX
-						+ popupIntrinsicWidth
+						+ popupIntrinsicRect.width
 						  <= document.documentElement.offsetWidth) {
 						//  Off to the right.
 						provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
 					} else if (  targetViewportRect.left
 							   - Popups.popupBreathingRoomX
-							   - popupIntrinsicWidth
+							   - popupIntrinsicRect.width
 								 >= 0) {
 						//  Off to the left.
-						provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
+						provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicRect.width - Popups.popupBreathingRoomX;
 					} else {
 						//  Not off to either side, in fact.
 						offToTheSide = false;
@@ -3227,13 +3218,21 @@ Popups = {
 					Failing that, can it fit below the target? If so, put it there.
 				 */
 				if (offToTheSide == false) {
+					let popupBreathingRoomY = (options.tight 
+											   ? Popups.popupBreathingRoomYTight 
+											   : Popups.popupBreathingRoomY)
+					let popupSpawnYOriginForSpawnAbove = targetViewportRect.top
+													   - popupBreathingRoomY;
+					let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom
+													   + popupBreathingRoomY;
+
 					if (  popupSpawnYOriginForSpawnAbove
-						- popupIntrinsicHeight
+						- popupIntrinsicRect.height
 						  >= 0) {
 						//  Above.
-						provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
+						provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicRect.height;
 					} else if (  popupSpawnYOriginForSpawnBelow
-							   + popupIntrinsicHeight
+							   + popupIntrinsicRect.height
 								 <= window.innerHeight) {
 						//  Below.
 						provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
@@ -3253,10 +3252,30 @@ Popups = {
 				}
 
 				if (offToTheSide == false) {
-					/*  Place popup off to the right (and either above or below),
-						as per the previous block of code.
-					 */
+					//  Place popup above the target, slightly to the right.
 					provisionalPopupXPosition = spawnPoint.x + Popups.popupBreathingRoomX;
+				} else {
+					//	Place popup fully to the right or left.
+					if (  targetViewportRect.left
+						- Popups.popupBreathingRoomX
+						- popupIntrinsicRect.width
+						>= 0) {
+						//  Off to the left.
+						provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicRect.width - Popups.popupBreathingRoomX;
+					} else {
+						//  Off to the right.
+						provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
+					}
+				}
+
+				if (offToTheSide == true) {
+					/*	If popup is to the side, position it vertically so that
+						its middle is about level with the target. (Make sure 
+						the popup’s top edge is not above the viewport.)
+					 */
+					provisionalPopupYPosition = spawnPoint.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicRect.height);
+					if (provisionalPopupYPosition < 0.0)
+						provisionalPopupYPosition = 0.0;
 				}
 
 				/*  Does the popup extend past the right edge of the container?
@@ -3264,10 +3283,13 @@ Popups = {
 					the container’s right edge.
 				 */
 				if (  provisionalPopupXPosition
-					+ popupIntrinsicWidth
+					+ popupIntrinsicRect.width
 					  > document.documentElement.offsetWidth) {
 					//  We add 1.0 here to prevent wrapping due to rounding.
-					provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - document.documentElement.offsetWidth + 1.0);
+					provisionalPopupXPosition -= (  provisionalPopupXPosition 
+												  + popupIntrinsicRect.width 
+												  - document.documentElement.offsetWidth 
+												  + 1.0);
 				}
 
 				/*  Now (after having nudged the popup left, if need be),
