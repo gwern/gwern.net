@@ -1762,14 +1762,18 @@ doWhenPageLoaded(() => {
 
 						if (iframe.contentWindow.location.hash.includes("gsc.q")) {
 							Popups.addClassesToPopFrame(info.popup, "search-results");
-							iframe.contentDocument.querySelector(".search-results-placeholder").display = "none";
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
 						} else {
 							Popups.removeClassesFromPopFrame(info.popup, "search-results");
-							iframe.contentDocument.querySelector(".search-results-placeholder").display = "";
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
 						}
 					});
 
-					observer.observe(iframe.contentDocument.body, { subtree: true, childList: true });
+					observer.observe(iframe.contentDocument.body, {
+						subtree: true,
+						childList: true,
+						attributes: true
+					});
 				});
 			}
 		}, {
