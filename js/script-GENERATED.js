@@ -1112,11 +1112,14 @@ GW.pageToolbar = {
 
 		widget.classList.add("widget");
 
+		//	Add widget.
+		GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+
 		//	If setup has run, update state after adding widget.
 		if (GW.pageToolbar.setupComplete)
 			GW.pageToolbar.updateState();
 
-		return GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+		return widget;
 	},
 
 	/*	Removes a widget with the given ID and returns it.
@@ -1707,6 +1710,77 @@ GW.floatingHeader = {
 };
 
 doWhenPageLoaded(GW.floatingHeader.setup);
+
+
+/**********/
+/* SEARCH */
+/**********/
+
+doWhenPageLoaded(() => {
+	//	TODO: Fix mobile layout
+	if (GW.isMobile())
+		return;
+
+	//	Add search widget to page toolbar.
+	let searchWidgetId = "gcse-search";
+	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
+												+ `<a 
+													class="search"
+													href="/static/search.html" 
+													data-link-content-type="local-document"
+													>`
+												+ GW.svg("magnifying-glass")
+												+ `</a></div>`);
+
+	//	Disable normal link functionality.
+	let searchWidgetLink = searchWidget.querySelector("a");
+	searchWidgetLink.onclick = () => false;
+
+	//	Activate pop-frames.
+	Extracts.config.hooklessLinksContainersSelector += `, #${searchWidgetId}`;
+	Extracts.addTargetsWithin(searchWidget);
+
+	//	Configure popup behavior.
+	if (Extracts.popFrameProvider == Popups) {
+		searchWidgetLink.preferSidePositioning = () => true;
+		searchWidgetLink.cancelPopupOnClick = () => false;
+
+		//	Pin popup if widget is clicked.
+		searchWidgetLink.addActivateEvent((event) => {
+			if (searchWidgetLink.popup)
+				Popups.pinPopup(searchWidgetLink.popup);
+		});
+
+		//	Pin popup if a search is done.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+			let iframe = info.popup.document.querySelector("iframe");
+			if (iframe) {
+				iframe.addEventListener("load", (event) => {
+					let observer = new MutationObserver((mutationsList, observer) => {
+						if (searchWidgetLink.popup)
+							Popups.pinPopup(searchWidgetLink.popup);
+
+						if (iframe.contentWindow.location.hash.includes("gsc.q")) {
+							Popups.addClassesToPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
+						} else {
+							Popups.removeClassesFromPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
+						}
+					});
+
+					observer.observe(iframe.contentDocument.body, {
+						subtree: true,
+						childList: true,
+						attributes: true
+					});
+				});
+			}
+		}, {
+			condition: (info) => (info.popup.spawningTarget == searchWidgetLink)
+		});
+	}
+});
 
 
 /******************************/
@@ -3106,6 +3180,11 @@ Popups = {
 		return (target.preferSidePositioning?.() ?? false);
 	},
 
+	//	See also: misc.js
+	cancelPopupOnClick: (target) => {
+		return (target.cancelPopupOnClick?.() ?? true);
+	},
+
 	/*	Returns current popup position. (Usable only after popup is positioned.)
 	 */
 	popupPosition: (popup) => {
@@ -3306,7 +3385,11 @@ Popups = {
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
 
-			document.activeElement.blur();
+			/*	Disabling this; it doesn’t seem necessary, and makes the search
+				popup behave incorrectly. Revisit after some time to confirm.
+					—SA 2024-04-27
+			 */
+// 			document.activeElement.blur();
 		};
 
 		//	Either position immediately, or let “naive” layout complete first.
@@ -3891,12 +3974,14 @@ Popups = {
 		 */
 		let target = event.target.closest(".spawns-popup");
 
-		//	Cancel spawning of popups from the target.
-		Popups.clearPopupTimers(target);
+		if (Popups.cancelPopupOnClick(target)) {
+			//	Cancel spawning of popups from the target.
+			Popups.clearPopupTimers(target);
 
-		//	Despawn any (non-pinned) popup already spawned from the target.
-		if (target.popup)
-			Popups.despawnPopup(target.popup);
+			//	Despawn any (non-pinned) popup already spawned from the target.
+			if (target.popup)
+				Popups.despawnPopup(target.popup);
+		}
 	},
 
 	/*  The keyup event.
@@ -5390,7 +5475,14 @@ Content = {
      */
 
     contentTypeForLink: (link) => {
-        for (let [ typeName, contentType ] of Object.entries(Content.contentTypes))
+		if (link.dataset.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentType;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
             if (contentType.matches(link))
                 return contentType;
 
@@ -6578,8 +6670,12 @@ Content = {
                 let additionalAttributes = [ ];
 
                 //  Determine sandbox settings.
-                if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
+                let embedURL = URLFromString(embedSrc);
+                if (embedURL.pathname.startsWith("/static/") == true) {
+                	additionalAttributes.push(`sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"`);
+                } else if (embedURL.pathname.endsWith(".pdf") == false) {
                     additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
+                }
 
                 let contentDocument = newDocument(Content.objectHTMLForURL(embedSrc, {
                     additionalAttributes: additionalAttributes.join(" ")
@@ -7617,7 +7713,11 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (link instanceof HTMLAnchorElement) {
 		//	Import certain data attributes.
-		[ "backlinkTargetUrl", "urlArchive", "urlHtml" ].forEach(dataAttributeName => {
+		[ "linkContentType", 
+		  "backlinkTargetUrl", 
+		  "urlArchive", 
+		  "urlHtml" 
+		  ].forEach(dataAttributeName => {
 			if (link.dataset[dataAttributeName])
 				includeLink.dataset[dataAttributeName] = link.dataset[dataAttributeName];
 		});
@@ -10769,7 +10869,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Called by: Extracts.isLocalCodeFileLink
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
@@ -11373,7 +11472,7 @@ Extracts = { ...Extracts,
 				let title = iframe.contentDocument.title?.trim();
 				if (title > "")
 					Extracts.updatePopFrameTitle(popFrame, title);
-			});
+			}, { once: true });
 		}
     }
 };
@@ -11536,7 +11635,7 @@ Extracts = { ...Extracts,
 		let currentMode = Extracts.extractPopFramesEnabled() ? "on" : "off";
 
 		let modeSelectorInnerHTML = Extracts.modeOptions.map(modeOption => {
-			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			unselectedLabel = unselectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
@@ -11553,7 +11652,7 @@ Extracts = { ...Extracts,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
@@ -13306,7 +13405,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 				if (element)
 					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
 			}
-		});
+		}, { once: true });
 	});
 }, "eventListeners");
 
@@ -18168,7 +18267,7 @@ DarkMode = { ...DarkMode,
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
-			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = (   currentMode == "auto"
@@ -18190,7 +18289,7 @@ DarkMode = { ...DarkMode,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span 
 							class="label"
 							data-selected-label="${selectedLabel}"
@@ -18423,7 +18522,7 @@ ReaderMode = { ...ReaderMode,
 		let currentMode = ReaderMode.currentMode();
 
 		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
-			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
@@ -18445,7 +18544,7 @@ ReaderMode = { ...ReaderMode,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span 
 							class="label"
 							data-selected-label="${selectedLabel}"

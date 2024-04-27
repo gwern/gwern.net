@@ -721,7 +721,11 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (link instanceof HTMLAnchorElement) {
 		//	Import certain data attributes.
-		[ "backlinkTargetUrl", "urlArchive", "urlHtml" ].forEach(dataAttributeName => {
+		[ "linkContentType", 
+		  "backlinkTargetUrl", 
+		  "urlArchive", 
+		  "urlHtml" 
+		  ].forEach(dataAttributeName => {
 			if (link.dataset[dataAttributeName])
 				includeLink.dataset[dataAttributeName] = link.dataset[dataAttributeName];
 		});

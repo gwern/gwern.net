@@ -1112,11 +1112,14 @@ GW.pageToolbar = {
 
 		widget.classList.add("widget");
 
+		//	Add widget.
+		GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+
 		//	If setup has run, update state after adding widget.
 		if (GW.pageToolbar.setupComplete)
 			GW.pageToolbar.updateState();
 
-		return GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+		return widget;
 	},
 
 	/*	Removes a widget with the given ID and returns it.
@@ -1707,6 +1710,77 @@ GW.floatingHeader = {
 };
 
 doWhenPageLoaded(GW.floatingHeader.setup);
+
+
+/**********/
+/* SEARCH */
+/**********/
+
+doWhenPageLoaded(() => {
+	//	TODO: Fix mobile layout
+	if (GW.isMobile())
+		return;
+
+	//	Add search widget to page toolbar.
+	let searchWidgetId = "gcse-search";
+	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
+												+ `<a 
+													class="search"
+													href="/static/search.html" 
+													data-link-content-type="local-document"
+													>`
+												+ GW.svg("magnifying-glass")
+												+ `</a></div>`);
+
+	//	Disable normal link functionality.
+	let searchWidgetLink = searchWidget.querySelector("a");
+	searchWidgetLink.onclick = () => false;
+
+	//	Activate pop-frames.
+	Extracts.config.hooklessLinksContainersSelector += `, #${searchWidgetId}`;
+	Extracts.addTargetsWithin(searchWidget);
+
+	//	Configure popup behavior.
+	if (Extracts.popFrameProvider == Popups) {
+		searchWidgetLink.preferSidePositioning = () => true;
+		searchWidgetLink.cancelPopupOnClick = () => false;
+
+		//	Pin popup if widget is clicked.
+		searchWidgetLink.addActivateEvent((event) => {
+			if (searchWidgetLink.popup)
+				Popups.pinPopup(searchWidgetLink.popup);
+		});
+
+		//	Pin popup if a search is done.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+			let iframe = info.popup.document.querySelector("iframe");
+			if (iframe) {
+				iframe.addEventListener("load", (event) => {
+					let observer = new MutationObserver((mutationsList, observer) => {
+						if (searchWidgetLink.popup)
+							Popups.pinPopup(searchWidgetLink.popup);
+
+						if (iframe.contentWindow.location.hash.includes("gsc.q")) {
+							Popups.addClassesToPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
+						} else {
+							Popups.removeClassesFromPopFrame(info.popup, "search-results");
+							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
+						}
+					});
+
+					observer.observe(iframe.contentDocument.body, {
+						subtree: true,
+						childList: true,
+						attributes: true
+					});
+				});
+			}
+		}, {
+			condition: (info) => (info.popup.spawningTarget == searchWidgetLink)
+		});
+	}
+});
 
 
 /******************************/

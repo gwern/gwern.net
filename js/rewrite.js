@@ -911,7 +911,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 				if (element)
 					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
 			}
-		});
+		}, { once: true });
 	});
 }, "eventListeners");
 

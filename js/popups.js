@@ -1291,6 +1291,11 @@ Popups = {
 		return (target.preferSidePositioning?.() ?? false);
 	},
 
+	//	See also: misc.js
+	cancelPopupOnClick: (target) => {
+		return (target.cancelPopupOnClick?.() ?? true);
+	},
+
 	/*	Returns current popup position. (Usable only after popup is positioned.)
 	 */
 	popupPosition: (popup) => {
@@ -1491,7 +1496,11 @@ Popups = {
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
 
-			document.activeElement.blur();
+			/*	Disabling this; it doesn’t seem necessary, and makes the search
+				popup behave incorrectly. Revisit after some time to confirm.
+					—SA 2024-04-27
+			 */
+// 			document.activeElement.blur();
 		};
 
 		//	Either position immediately, or let “naive” layout complete first.
@@ -2076,12 +2085,14 @@ Popups = {
 		 */
 		let target = event.target.closest(".spawns-popup");
 
-		//	Cancel spawning of popups from the target.
-		Popups.clearPopupTimers(target);
+		if (Popups.cancelPopupOnClick(target)) {
+			//	Cancel spawning of popups from the target.
+			Popups.clearPopupTimers(target);
 
-		//	Despawn any (non-pinned) popup already spawned from the target.
-		if (target.popup)
-			Popups.despawnPopup(target.popup);
+			//	Despawn any (non-pinned) popup already spawned from the target.
+			if (target.popup)
+				Popups.despawnPopup(target.popup);
+		}
 	},
 
 	/*  The keyup event.
