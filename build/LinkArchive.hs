@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-04-22 23:27:01 gwern"
+When:  Time-stamp: "2024-04-26 19:38:59 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -94,7 +94,8 @@ dealing with the latest broken links. -}
 module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, localizeLinkURL, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
-import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter)
+import Data.Either (isLeft)
+import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter, size)
 import Data.List (isInfixOf, isPrefixOf, sortOn)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (isNothing, fromMaybe)
@@ -165,7 +166,9 @@ manualArchive n | n < 1 = error $ "manualArchive called with no work to do (𝑛
  do
   adb <- readArchiveMetadataAndCheck
   today <- CM.todayDay
-  let adbPending = M.filter (archiveItemDue today) adb
+  let adbPendingAll = M.filter isLeft adb
+  print $ "All pending URLs: " ++ show (M.size adbPendingAll)
+  let adbPending = M.filter (archiveItemDue today) adbPendingAll
   let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
   unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-23 21:24:09 gwern"
+# When:  Time-stamp: "2024-04-26 09:22:57 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -269,6 +269,11 @@ export -f gwhttp
 ## Move a file and sync it and update all callers:
 ## TODO: handle pages/essays, not just files? see </static/build/rename.hs> for a sketch.
 gwmv () {
+
+    # shortcut: if there's only 1 PNG argument & it's a known wiki file (ie. version-controlled in git), then that means we are converting it to JPG using `png2JPGQualityCheck`, and can skip manually setting the second argument to the `.jpg` extension.
+# (The converse currently never happens & so is unsupported.)
+    [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch "$1" 2>/dev/null) ]] && set -- "$1" "${1%.png}.jpg"
+
     if [ $# != 2 ]; then
         echo "Need two arguments: OLD file and NEW file! Only got: \"$@\""
         return 2

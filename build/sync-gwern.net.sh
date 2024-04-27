@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-24 22:57:42 gwern"
+# When:  Time-stamp: "2024-04-26 17:27:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -452,7 +452,7 @@ else
     set +e
 
     λ(){
-         echo "$PAGES_ALL" | parallel gf -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+         echo "$PAGES_ALL" | parallel grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      gfv -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
                                                           -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
                                 -e 'doc%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
@@ -471,7 +471,7 @@ else
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
          [ "$COMPILED_N" -le 115000 ] && echo "File count: $COMPILED_N" && exit 1;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 102400000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 100000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size too small?"
 
     λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 22000 ] && echo "$SUGGESTIONS_N"; }
@@ -493,7 +493,7 @@ else
     λ(){ ge -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.gtx metadata/*.hs | gev -e '#[[:alnum:]-]+#$'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
-    λ(){ ge -- '/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.gtx ./metadata/*.hs || true;
+    λ(){ ge -- '^http.*/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.gtx ./metadata/*.hs || true;
          gf -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"
 
@@ -503,7 +503,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
+    λ(){ find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -512,10 +512,10 @@ else
     λ(){ find metadata/annotation/ -name "*.html" \
              | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique | \
              gev -e '^see-also-append$' -e '^archive-not$' -e '^archive-local$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
-                   -e '^backlinks$' -e '^backlinks-append$' -e 'aux-links-append' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
+                   -e '^backlinks$' -e '^backlinks-append$' -e '^aux-links-append$' -e '^aux-links-transclude-file$' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
                    -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
-                   -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' -e '^include$' \
-                   -e '^include-strict$' -e '^inflation-adjusted$' -e '^logotype-tex$' -e '^logotype-latex$' -e '^logotype-latex-a$' -e '^logotype-latex-e$' \
+                   -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' \
+                   -e '^inflation-adjusted$' -e '^logotype-tex$' -e '^logotype-latex$' -e '^logotype-latex-a$' -e '^logotype-latex-e$' \
                    -e '^link-annotated$' -e '^link-live$' -e '^link-page$' -e '^link-page-not$' \
                    -e '^link-tag$' -e '^link-tags$' -e '^cite$' -e '^cite-joiner$' -e '^collapse$' -e '^columns$' -e '^directory-indexes-downwards$' \
                    -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
@@ -530,9 +530,11 @@ else
                    -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
                    -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
                    -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
-                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' -e '^include-annotation$' -e '^include-even-when-collapsed$' \
+                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' \
+                   -e '^include$' -e '^include-strict$' -e '^include-lazy$' -e '^include-annotation$' -e '^include-even-when-collapsed$' \
                    -e '^include-spinner-not$' -e '^include-replace-container$' -e '^include-replace-container-not$' -e '^include-unwrap$' \
-                   -e '^include-block-context$' -e '^include-omit-metadata$' -e '^include-content$' -e '^include-content-no-header$' -e '^include-block-context-expanded$' \
+                   -e '^include-block-context$' -e '^include-omit-metadata$' -e '^include-content$' -e '^include-content-no-header$' \
+                   -e '^include-block-context-expanded$' -e '^include-annotation-core$' -e '^include-content-core$' \
                    -e '^marginnote$' -e '^markdownBody$' -e '^mjpage$' -e '^mjpage__block$' -e '^mjx-base$' -e '^mjx-box$' -e '^MJXc-display$' \
                    -e '^mjx-cell$' -e '^mjx-char$' -e '^mjx-charbox$' -e '^mjx-chtml$' -e '^MJXc-space1$' -e '^MJXc-space2$' -e '^MJXc-space3$' \
                    -e '^MJXc-stacked$' -e '^MJXc-TeX-ams-R$' -e '^MJXc-TeX-cal-R$' -e '^MJXc-TeX-main-R$' -e '^MJXc-TeX-math-I$' \
@@ -541,24 +543,24 @@ else
                    -e '^mjx-mn$' -e '^mjx-mo$' -e '^mjx-mrow$' -e '^mjx-mspace$' -e '^mjx-msqrt$' -e '^mjx-mstyle$' -e '^mjx-msubsup$' \
                    -e '^mjx-msup$' -e '^mjx-mtext$' -e '^mjx-munderover$' -e '^mjx-numerator$' -e '^mjx-op$' -e '^mjx-over$' -e '^mjx-row$' \
                    -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
-                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^similar-links-search$' \
+                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^outline$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^similar-links-search$' \
                    -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
                    -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
                    -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$' -e '^adsense$'; \
+                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$' -e '^adsense$' \
                    -e 'years-since' -e 'date-range'; } # subscript experiments
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
-    λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | parallel --max-args=500 gf --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
+    λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | parallel --max-args=500 grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';
-         echo "$PAGES_ALL" | gfv 'Hafu' | parallel --max-args=500 ge --with-filename --color=always -e '<a .*href=".*">\?';
+         echo "$PAGES_ALL" | gfv 'Hafu' | parallel --max-args=500 grep -E --with-filename --color=always -e '<a .*href=".*">\?';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
     # λ(){ echo "$PAGES_ALL" | xargs --max-args=100 elinks -dump |
 
-    λ(){  find . -name "*.md" -exec ge --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
+    λ(){  find . -name "*.md" -exec grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
     λ(){ ge 'http.*http' metadata/archive.hs  | gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html'; }

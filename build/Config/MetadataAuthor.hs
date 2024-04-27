@@ -233,6 +233,7 @@ canonicals = M.fromList
   , ("_vztu", "Zhengzhong Tu")
   , ("arankomatsuzaki", "Aran Komatsuzaki")
   , ("mattshumer_", "Matt Shumer")
+  , ("R. H. Coase", "Ronald Coase")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -1516,4 +1517,4 @@ authorWpLinkDB =
     ,"Zhihui Wang","Zhiping Weng","Zhiwei Wang","Zhiwu Lu","Zhiyi Zhang"
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
-    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"]
+    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis","Ronald Coase"]
