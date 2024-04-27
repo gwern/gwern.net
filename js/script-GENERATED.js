@@ -11539,7 +11539,7 @@ Extracts = { ...Extracts,
 		let currentMode = Extracts.extractPopFramesEnabled() ? "on" : "off";
 
 		let modeSelectorInnerHTML = Extracts.modeOptions.map(modeOption => {
-			let [ name, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			unselectedLabel = unselectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
@@ -11556,7 +11556,7 @@ Extracts = { ...Extracts,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
@@ -18171,7 +18171,7 @@ DarkMode = { ...DarkMode,
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
-			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = (   currentMode == "auto"
@@ -18193,7 +18193,7 @@ DarkMode = { ...DarkMode,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span 
 							class="label"
 							data-selected-label="${selectedLabel}"
@@ -18426,7 +18426,7 @@ ReaderMode = { ...ReaderMode,
 		let currentMode = ReaderMode.currentMode();
 
 		let modeSelectorInnerHTML = ReaderMode.modeOptions.map(modeOption => {
-			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, icon ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
@@ -18448,7 +18448,7 @@ ReaderMode = { ...ReaderMode,
 					 data-name="${name}"
 					 title="${desc}"
 					 >`
-						+ `<span class="icon">${(GW.svg(icon))}</span>`
+						+ `<span class="icon">${(GW.svg(iconName))}</span>`
 						+ `<span 
 							class="label"
 							data-selected-label="${selectedLabel}"
