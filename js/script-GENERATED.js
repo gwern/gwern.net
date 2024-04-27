@@ -1752,10 +1752,10 @@ doWhenPageLoaded(() => {
 			if (iframe) {
 				iframe.addEventListener("load", (event) => {
 					let observer = new MutationObserver((mutationsList, observer) => {
-						if (searchWidgetLink.popup) {
+						if (searchWidgetLink.popup)
 							Popups.pinPopup(searchWidgetLink.popup);
-							observer.disconnect();
-						}
+
+						observer.disconnect();
 					});
 
 					observer.observe(iframe.contentDocument.body, { subtree: true, childList: true });
@@ -3370,7 +3370,11 @@ Popups = {
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
 
-			document.activeElement.blur();
+			/*	Disabling this; it doesn’t seem necessary, and makes the search
+				popup behave incorrectly. Revisit after some time to confirm.
+					—SA 2024-04-27
+			 */
+// 			document.activeElement.blur();
 		};
 
 		//	Either position immediately, or let “naive” layout complete first.

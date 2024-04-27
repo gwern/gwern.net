@@ -1752,10 +1752,10 @@ doWhenPageLoaded(() => {
 			if (iframe) {
 				iframe.addEventListener("load", (event) => {
 					let observer = new MutationObserver((mutationsList, observer) => {
-						if (searchWidgetLink.popup) {
+						if (searchWidgetLink.popup)
 							Popups.pinPopup(searchWidgetLink.popup);
-							observer.disconnect();
-						}
+
+						observer.disconnect();
 					});
 
 					observer.observe(iframe.contentDocument.body, { subtree: true, childList: true });
