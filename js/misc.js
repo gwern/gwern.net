@@ -1717,6 +1717,10 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /**********/
 
 doWhenPageLoaded(() => {
+	//	TODO: Fix mobile layout
+	if (GW.isMobile())
+		return;
+
 	//	Add search widget to page toolbar.
 	let searchWidgetId = "gcse-search";
 	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
