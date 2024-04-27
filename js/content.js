@@ -356,7 +356,14 @@ Content = {
      */
 
     contentTypeForLink: (link) => {
-        for (let [ typeName, contentType ] of Object.entries(Content.contentTypes))
+		if (link.dataset.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentType;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
             if (contentType.matches(link))
                 return contentType;
 
@@ -1544,8 +1551,12 @@ Content = {
                 let additionalAttributes = [ ];
 
                 //  Determine sandbox settings.
-                if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
+                let embedURL = URLFromString(embedSrc);
+                if (embedURL.pathname.startsWith("/static/") == true) {
+                	additionalAttributes.push(`sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"`);
+                } else if (embedURL.pathname.endsWith(".pdf") == false) {
                     additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
+                }
 
                 let contentDocument = newDocument(Content.objectHTMLForURL(embedSrc, {
                     additionalAttributes: additionalAttributes.join(" ")

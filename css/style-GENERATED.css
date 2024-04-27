@@ -7523,6 +7523,9 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 #page-toolbar .extracts-mode-selector {
     order: 3;
 }
+#page-toolbar #gcse-search {
+	order: 4;
+}
 
 #page-toolbar .mode-selector button .label {
     text-underline-position: from-font;
@@ -7621,6 +7624,19 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 .mode-selector-inline button:not(:disabled):active .label::after {
     transform: translateY(-2px);
+}
+
+
+/*****************/
+/* SEARCH WIDGET */
+/*****************/
+
+#gcse-search a {
+	display: block;
+	color: var(--GW-page-toolbar-button-selected-icon-color);
+}
+#gcse-search a svg {
+	display: block;
 }
 
 

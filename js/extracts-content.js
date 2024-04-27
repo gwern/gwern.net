@@ -335,7 +335,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Called by: Extracts.isLocalCodeFileLink
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
@@ -939,7 +938,7 @@ Extracts = { ...Extracts,
 				let title = iframe.contentDocument.title?.trim();
 				if (title > "")
 					Extracts.updatePopFrameTitle(popFrame, title);
-			});
+			}, { once: true });
 		}
     }
 };

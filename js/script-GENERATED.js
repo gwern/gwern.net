@@ -1712,6 +1712,62 @@ GW.floatingHeader = {
 doWhenPageLoaded(GW.floatingHeader.setup);
 
 
+/**********/
+/* SEARCH */
+/**********/
+
+doWhenPageLoaded(() => {
+	//	Add search widget to page toolbar.
+	let searchWidgetId = "gcse-search";
+	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
+												+ `<a 
+													href="/static/search.html" 
+													data-link-content-type="local-document"
+													>`
+												+ GW.svg("magnifying-glass")
+												+ `</a></div>`);
+
+	//	Disable normal link functionality.
+	let searchWidgetLink = searchWidget.querySelector("a");
+	searchWidgetLink.onclick = () => false;
+
+	//	Activate pop-frames.
+	Extracts.config.hooklessLinksContainersSelector += `, #${searchWidgetId}`;
+	Extracts.addTargetsWithin(searchWidget);
+
+	//	Configure popup behavior.
+	if (Extracts.popFrameProvider == Popups) {
+		searchWidgetLink.preferSidePositioning = () => true;
+		searchWidgetLink.cancelPopupOnClick = () => false;
+
+		//	Pin popup if widget is clicked.
+		searchWidgetLink.addActivateEvent((event) => {
+			if (searchWidgetLink.popup)
+				Popups.pinPopup(searchWidgetLink.popup);
+		});
+
+		//	Pin popup if a search is done.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+			let iframe = info.popup.document.querySelector("iframe");
+			if (iframe) {
+				iframe.addEventListener("load", (event) => {
+					let observer = new MutationObserver((mutationsList, observer) => {
+						if (searchWidgetLink.popup) {
+							Popups.pinPopup(searchWidgetLink.popup);
+							observer.disconnect();
+						}
+					});
+
+					observer.observe(iframe.contentDocument.body, { subtree: true, childList: true });
+				});
+			}
+		}, {
+			condition: (info) => (info.popup.spawningTarget == searchWidgetLink)
+		});
+	}
+});
+
+
 /******************************/
 /* GENERAL ACTIVITY INDICATOR */
 /******************************/
@@ -3109,6 +3165,11 @@ Popups = {
 		return (target.preferSidePositioning?.() ?? false);
 	},
 
+	//	See also: misc.js
+	cancelPopupOnClick: (target) => {
+		return (target.cancelPopupOnClick?.() ?? true);
+	},
+
 	/*	Returns current popup position. (Usable only after popup is positioned.)
 	 */
 	popupPosition: (popup) => {
@@ -3894,12 +3955,14 @@ Popups = {
 		 */
 		let target = event.target.closest(".spawns-popup");
 
-		//	Cancel spawning of popups from the target.
-		Popups.clearPopupTimers(target);
+		if (Popups.cancelPopupOnClick(target)) {
+			//	Cancel spawning of popups from the target.
+			Popups.clearPopupTimers(target);
 
-		//	Despawn any (non-pinned) popup already spawned from the target.
-		if (target.popup)
-			Popups.despawnPopup(target.popup);
+			//	Despawn any (non-pinned) popup already spawned from the target.
+			if (target.popup)
+				Popups.despawnPopup(target.popup);
+		}
 	},
 
 	/*  The keyup event.
@@ -5393,7 +5456,14 @@ Content = {
      */
 
     contentTypeForLink: (link) => {
-        for (let [ typeName, contentType ] of Object.entries(Content.contentTypes))
+		if (link.dataset.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentType;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
             if (contentType.matches(link))
                 return contentType;
 
@@ -6581,8 +6651,12 @@ Content = {
                 let additionalAttributes = [ ];
 
                 //  Determine sandbox settings.
-                if (URLFromString(embedSrc).pathname.endsWith(".pdf") == false)
+                let embedURL = URLFromString(embedSrc);
+                if (embedURL.pathname.startsWith("/static/") == true) {
+                	additionalAttributes.push(`sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"`);
+                } else if (embedURL.pathname.endsWith(".pdf") == false) {
                     additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
+                }
 
                 let contentDocument = newDocument(Content.objectHTMLForURL(embedSrc, {
                     additionalAttributes: additionalAttributes.join(" ")
@@ -7620,7 +7694,11 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (link instanceof HTMLAnchorElement) {
 		//	Import certain data attributes.
-		[ "backlinkTargetUrl", "urlArchive", "urlHtml" ].forEach(dataAttributeName => {
+		[ "linkContentType", 
+		  "backlinkTargetUrl", 
+		  "urlArchive", 
+		  "urlHtml" 
+		  ].forEach(dataAttributeName => {
 			if (link.dataset[dataAttributeName])
 				includeLink.dataset[dataAttributeName] = link.dataset[dataAttributeName];
 		});
@@ -10772,7 +10850,6 @@ Extracts.targetTypeDefinitions.insertBefore([
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
-    //  Called by: Extracts.isLocalCodeFileLink
     //  Called by: extracts.js (as `predicateFunctionName`)
     isAuxLinksLink: (target) => {
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
@@ -11376,7 +11453,7 @@ Extracts = { ...Extracts,
 				let title = iframe.contentDocument.title?.trim();
 				if (title > "")
 					Extracts.updatePopFrameTitle(popFrame, title);
-			});
+			}, { once: true });
 		}
     }
 };
@@ -13309,7 +13386,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 				if (element)
 					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
 			}
-		});
+		}, { once: true });
 	});
 }, "eventListeners");
 
