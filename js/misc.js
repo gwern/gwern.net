@@ -1112,11 +1112,14 @@ GW.pageToolbar = {
 
 		widget.classList.add("widget");
 
+		//	Add widget.
+		GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+
 		//	If setup has run, update state after adding widget.
 		if (GW.pageToolbar.setupComplete)
 			GW.pageToolbar.updateState();
 
-		return GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
+		return widget;
 	},
 
 	/*	Removes a widget with the given ID and returns it.
