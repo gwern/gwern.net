@@ -1717,10 +1717,6 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /**********/
 
 doWhenPageLoaded(() => {
-	//	TODO: Fix mobile layout
-	if (GW.isMobile())
-		return;
-
 	//	Add search widget to page toolbar.
 	let searchWidgetId = "gcse-search";
 	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
@@ -1743,44 +1739,67 @@ doWhenPageLoaded(() => {
 	Extracts.config.hooklessLinksContainersSelector += `, #${searchWidgetId}`;
 	Extracts.addTargetsWithin(searchWidget);
 
-	//	Configure popup behavior.
+	//	Event handler for popup spawn / popin inject.
+	let popFrameSpawnEventHandler = (eventInfo) => {
+		let popFrame = (eventInfo.popup ?? eventInfo.popin);
+		let iframe = popFrame.document.querySelector("iframe");
+		iframe.addEventListener("load", (event) => {
+			//	Focus search box on load.
+			iframe.contentDocument.querySelector("input").focus();
+
+			let observer = new MutationObserver((mutationsList, observer) => {
+				//	Pin popup if a search is done.
+				if (searchWidgetLink.popup)
+					Popups.pinPopup(searchWidgetLink.popup);
+
+				//	Show/hide placeholder text as appropriate.
+				if (iframe.contentWindow.location.hash.includes("gsc.q")) {
+					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "search-results");
+					iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
+				} else {
+					Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "search-results");
+					iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
+				}
+			});
+
+			observer.observe(iframe.contentDocument.body, {
+				subtree: true,
+				childList: true,
+				characterData: true
+			});
+		});
+	};
+
+	//	Configure pop-frame behavior.
 	if (Extracts.popFrameProvider == Popups) {
+		//	Configure popup positioning and click response.
 		searchWidgetLink.preferSidePositioning = () => true;
 		searchWidgetLink.cancelPopupOnClick = () => false;
 
-		//	Pin popup if widget is clicked.
+		//	Pin popup and focus search box if widget is clicked.
 		searchWidgetLink.addActivateEvent((event) => {
-			if (searchWidgetLink.popup)
-				Popups.pinPopup(searchWidgetLink.popup);
-		});
+			if (searchWidgetLink.popup) {
+				/*	Get reference to popup (since it will be detached from the 
+					link when it gets pinned).
+				 */
+				let popup = searchWidgetLink.popup;
 
-		//	Pin popup if a search is done.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-			let iframe = info.popup.document.querySelector("iframe");
-			if (iframe) {
-				iframe.addEventListener("load", (event) => {
-					let observer = new MutationObserver((mutationsList, observer) => {
-						if (searchWidgetLink.popup)
-							Popups.pinPopup(searchWidgetLink.popup);
+				Popups.pinPopup(popup);
 
-						if (iframe.contentWindow.location.hash.includes("gsc.q")) {
-							Popups.addClassesToPopFrame(info.popup, "search-results");
-							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
-						} else {
-							Popups.removeClassesFromPopFrame(info.popup, "search-results");
-							iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
-						}
-					});
-
-					observer.observe(iframe.contentDocument.body, {
-						subtree: true,
-						childList: true,
-						attributes: true
-					});
+				requestAnimationFrame(() => {
+					popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
 				});
 			}
-		}, {
+		});
+
+		//	Add popup spawn event handler.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
 			condition: (info) => (info.popup.spawningTarget == searchWidgetLink)
+		});
+	} else {
+		//	Add popin inject event handler.
+		GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
+			condition: (info) => (info.popin.spawningTarget == searchWidgetLink)
 		});
 	}
 });
@@ -4499,18 +4518,22 @@ Popins = {
 	scrollPopinIntoView: (popin) => {
 		let popinViewportRect = Popins.getPopinViewportRect(popin);
 
-		let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
+		if (popin.closest(".markdownBody") == null) {
+			popin.style.top = "0";
+		} else {
+			let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
 
-		let scrollWindowBy = 0;
-		if (popinViewportRect.bottom > window.innerHeight) {
-			scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
-		} else if (popinViewportRect.top < 0) {
-			scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
-		}
+			let scrollWindowBy = 0;
+			if (popinViewportRect.bottom > window.innerHeight) {
+				scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
+			} else if (popinViewportRect.top < 0) {
+				scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
+			}
 
-		if (scrollWindowBy > 0) {
-			window.scrollBy(0, scrollWindowBy);
-			popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
+			if (scrollWindowBy > 0) {
+				window.scrollBy(0, scrollWindowBy);
+				popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
+			}
 		}
 
 		//	Set scroll view height.

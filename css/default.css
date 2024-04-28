@@ -4696,7 +4696,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color)); */
 }
 
-.popin-ancestor {
+.markdownBody .popin-ancestor {
     position: relative !important;
     z-index: 100 !important;
 }
@@ -5049,11 +5049,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Links with an open popin. │*/
 /*└───────────────────────────┘*/
 
-a.spawns-popin:not(.footnote-ref) {
+.markdownBody a.spawns-popin:not(.footnote-ref) {
     transition:
         box-shadow 0.15s ease 0.05s;
 }
-a.spawns-popin.popin-open:not(.footnote-ref) {
+.markdownBody a.spawns-popin.popin-open:not(.footnote-ref) {
     position: relative;
     z-index: 2;
     box-shadow:

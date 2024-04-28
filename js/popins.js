@@ -448,18 +448,22 @@ Popins = {
 	scrollPopinIntoView: (popin) => {
 		let popinViewportRect = Popins.getPopinViewportRect(popin);
 
-		let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
+		if (popin.closest(".markdownBody") == null) {
+			popin.style.top = "0";
+		} else {
+			let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
 
-		let scrollWindowBy = 0;
-		if (popinViewportRect.bottom > window.innerHeight) {
-			scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
-		} else if (popinViewportRect.top < 0) {
-			scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
-		}
+			let scrollWindowBy = 0;
+			if (popinViewportRect.bottom > window.innerHeight) {
+				scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
+			} else if (popinViewportRect.top < 0) {
+				scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
+			}
 
-		if (scrollWindowBy > 0) {
-			window.scrollBy(0, scrollWindowBy);
-			popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
+			if (scrollWindowBy > 0) {
+				window.scrollBy(0, scrollWindowBy);
+				popin.dataset.windowScrollOffset = windowScrollOffsetForThisPopin + scrollWindowBy;
+			}
 		}
 
 		//	Set scroll view height.
