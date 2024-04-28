@@ -1729,7 +1729,10 @@ doWhenPageLoaded(() => {
 													href="/static/search.html" 
 													data-link-content-type="local-document"
 													>`
+												+ `<span class="icon">`
 												+ GW.svg("magnifying-glass")
+												+ `</span>`
+												+ `<span class="label">Search</span>`
 												+ `</a></div>`);
 
 	//	Disable normal link functionality.

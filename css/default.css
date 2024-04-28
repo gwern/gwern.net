@@ -5287,7 +5287,12 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
     background-color: var(--background-color);
 }
 
-#page-toolbar .widget button .label {
+#page-toolbar .widget a {
+	font-family: var(--GW-sans-serif-font-stack);
+}
+
+#page-toolbar .widget button .label,
+#page-toolbar .widget a .label {
     color: var(--GW-page-toolbar-button-text-color);
 }
 #page-toolbar .widget button:disabled .label {
@@ -5320,7 +5325,8 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 
 /*  Icons-only toolbar mode.
  */
-#page-toolbar.button-labels-not .widget button .label {
+#page-toolbar.button-labels-not .widget button .label,
+#page-toolbar.button-labels-not .widget a .label {
     display: none;
 }
 
@@ -5367,14 +5373,18 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
         box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
+#page-toolbar.vertical .widget button,
+#page-toolbar.vertical .widget a {
+    position: relative;
+}
 #page-toolbar.vertical .widget button {
     height: var(--toolbar-button-size);
-    position: relative;
 }
 #page-toolbar.vertical .widget button .icon {
     padding: 4px;
 }
-#page-toolbar.vertical .widget button .label {
+#page-toolbar.vertical .widget button .label,
+#page-toolbar.vertical .widget a .label {
     position: absolute;
     right: calc(100% + 5px);
     top: 0;
@@ -5396,7 +5406,9 @@ a.spawns-popin.popin-open:not(.footnote-ref) {
 }
 @media all and (hover: hover) {
     #page-toolbar.vertical .widget:not(.flashing) button:hover .label,
-    #page-toolbar.vertical .widget.show-selected-button-label button.selected .label {
+    #page-toolbar.vertical .widget.show-selected-button-label button.selected .label,
+    #page-toolbar.vertical .widget:not(.flashing) a:hover .label,
+    #page-toolbar.vertical .widget.show-selected-button-label a.selected .label {
         opacity: 1;
     }
     #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label {
