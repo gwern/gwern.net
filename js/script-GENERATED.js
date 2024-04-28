@@ -1716,92 +1716,197 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /* SEARCH */
 /**********/
 
-doWhenPageLoaded(() => {
-	//	Add search widget to page toolbar.
-	let searchWidgetId = "gcse-search";
-	let searchWidget = GW.pageToolbar.addWidget(  `<div id="${searchWidgetId}">`
-												+ `<a 
-													class="search"
-													href="/static/search.html" 
-													data-link-content-type="local-document"
-													>`
-												+ `<span class="icon">`
-												+ GW.svg("magnifying-glass")
-												+ `</span>`
-												+ `<span class="label">Search</span>`
-												+ `</a></div>`);
+GW.search = {
+	searchWidgetId: "gcse-search",
 
-	//	Disable normal link functionality.
-	let searchWidgetLink = searchWidget.querySelector("a");
-	searchWidgetLink.onclick = () => false;
+	keyCommandSpawnSearchWidgetFlashStayDuration: 3000,
 
-	//	Activate pop-frames.
-	Extracts.config.hooklessLinksContainersSelector += `, #${searchWidgetId}`;
-	Extracts.addTargetsWithin(searchWidget);
+	searchWidget: null,
+	searchWidgetLink: null,
 
-	//	Event handler for popup spawn / popin inject.
-	let popFrameSpawnEventHandler = (eventInfo) => {
-		let popFrame = (eventInfo.popup ?? eventInfo.popin);
-		let iframe = popFrame.document.querySelector("iframe");
-		iframe.addEventListener("load", (event) => {
-			//	Focus search box on load.
-			iframe.contentDocument.querySelector("input").focus();
+	pinSearchPopup: (options) => {
+		options = Object.assign({
+			focus: false,
+			popup: GW.search.searchWidgetLink?.popup
+		}, options);
 
-			let observer = new MutationObserver((mutationsList, observer) => {
-				//	Pin popup if a search is done.
-				if (searchWidgetLink.popup)
-					Popups.pinPopup(searchWidgetLink.popup);
+		if (options.popup) {
+			Popups.pinPopup(options.popup);
 
-				//	Show/hide placeholder text as appropriate.
-				if (iframe.contentWindow.location.hash.includes("gsc.q")) {
-					Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "search-results");
-					iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
-				} else {
-					Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "search-results");
-					iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
-				}
-			});
-
-			observer.observe(iframe.contentDocument.body, {
-				subtree: true,
-				childList: true,
-				characterData: true
-			});
-		});
-	};
-
-	//	Configure pop-frame behavior.
-	if (Extracts.popFrameProvider == Popups) {
-		//	Configure popup positioning and click response.
-		searchWidgetLink.preferSidePositioning = () => true;
-		searchWidgetLink.cancelPopupOnClick = () => false;
-
-		//	Pin popup and focus search box if widget is clicked.
-		searchWidgetLink.addActivateEvent((event) => {
-			if (searchWidgetLink.popup) {
-				/*	Get reference to popup (since it will be detached from the 
-					link when it gets pinned).
-				 */
-				let popup = searchWidgetLink.popup;
-
-				Popups.pinPopup(popup);
-
+			if (options.focus) {
 				requestAnimationFrame(() => {
-					popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
+					options.popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
 				});
 			}
-		});
+		}
+	},
 
-		//	Add popup spawn event handler.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
-			condition: (info) => (info.popup.spawningTarget == searchWidgetLink)
-		});
-	} else {
-		//	Add popin inject event handler.
-		GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
-			condition: (info) => (info.popin.spawningTarget == searchWidgetLink)
-		});
+	setup: () => {
+		//	Add search widget to page toolbar.
+		GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}">`
+														  + `<a 
+														  	   class="search"
+														  	   href="/static/search.html" 
+														  	   data-link-content-type="local-document"
+														  	   >`
+														  + `<span class="icon">`
+														  + GW.svg("magnifying-glass")
+														  + `</span>`
+														  + `<span class="label">Search</span>`
+														  + `</a></div>`);
+
+		//	Disable normal link functionality.
+		GW.search.searchWidgetLink = GW.search.searchWidget.querySelector("a");
+		GW.search.searchWidgetLink.onclick = () => false;
+
+		//	Activate pop-frames.
+		Extracts.config.hooklessLinksContainersSelector += `, #${GW.search.searchWidgetId}`;
+		Extracts.addTargetsWithin(GW.search.searchWidget);
+
+		//	Event handler for popup spawn / popin inject.
+		let popFrameSpawnEventHandler = (eventInfo) => {
+			let popFrame = (eventInfo.popup ?? eventInfo.popin);
+
+			let iframe = popFrame.document.querySelector("iframe");
+			iframe.addEventListener("load", (event) => {
+				let inputBox = iframe.contentDocument.querySelector("input");
+
+				//	Focus search box on load.
+				inputBox.focus();
+
+				let observer = new MutationObserver((mutationsList, observer) => {
+					//	Pin popup if a search is done.
+					GW.search.pinSearchPopup();
+
+					//	Show/hide placeholder text as appropriate.
+					if (iframe.contentWindow.location.hash.includes("gsc.q")) {
+						Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "search-results");
+						iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
+					} else {
+						Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "search-results");
+						iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
+					}
+				});
+
+				observer.observe(iframe.contentDocument.body, {
+					subtree: true,
+					childList: true,
+					characterData: true
+				});
+
+				if (Extracts.popFrameProvider == Popups) {
+					inputBox.addEventListener("blur", (event) => {
+						inputBox.justLostFocus = true;
+					});
+					iframe.contentDocument.addEventListener("keyup", (event) => {
+						let allowedKeys = [ "Escape", "Esc", "/" ];
+						if (allowedKeys.includes(event.key) == false)
+							return;
+
+						event.preventDefault();
+
+						switch(event.key) {
+							case "Escape":
+							case "Esc": {
+								if (inputBox.justLostFocus) {
+									inputBox.justLostFocus = false;
+								} else if (Popups.popupIsPinned(popFrame)) {
+									Popups.unpinPopup(popFrame);
+								} else {
+									Popups.despawnPopup(popFrame);
+								}
+
+								break;
+							}
+							case "/": {
+								GW.search.pinSearchPopup({ popup: popFrame, focus: true });
+
+								break;
+							}
+							default: {
+								break;
+							}
+						}
+					});
+				}
+			});
+		};
+
+		//	Configure pop-frame behavior.
+		if (Extracts.popFrameProvider == Popups) {
+			//	Configure popup positioning and click response.
+			GW.search.searchWidgetLink.preferSidePositioning = () => true;
+			GW.search.searchWidgetLink.cancelPopupOnClick = () => false;
+
+			//	Pin popup and focus search box if widget is clicked.
+			GW.search.searchWidgetLink.addActivateEvent((event) => {
+				GW.search.pinSearchPopup({ focus: true });
+			});
+
+			//	Add popup spawn event handler.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
+				condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+			});
+		} else {
+			//	Add popin inject event handler.
+			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
+				condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
+			});
+		}
 	}
+};
+
+doWhenPageLoaded(GW.search.setup);
+
+
+/****************/
+/* KEY COMMANDS */
+/****************/
+/*	Miscellaneous key commands.
+ */
+
+GW.keyCommands = { };
+
+GW.keyCommands.keyUp = (event) => {
+	GWLog("GW.keyCommands.keyUp", "popups.js", 3);
+	let allowedKeys = [ "/" ];
+	if (allowedKeys.includes(event.key) == false)
+		return;
+
+	event.preventDefault();
+
+	switch(event.key) {
+		case "/": {
+			//	Expand page toolbar and flash search widget.
+			GW.pageToolbar.toggleCollapseState(false);
+			GW.pageToolbar.flashWidget(GW.search.searchWidgetId, {
+				flashStayDuration: GW.search.keyCommandSpawnSearchWidgetFlashStayDuration
+			});
+
+			//	When the popup spawns, pin it and focus the search box.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				requestAnimationFrame(() => {
+					GW.search.pinSearchPopup({ focus: true });
+				});
+			}, {
+				once: true,
+				condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+			});
+
+			//	Spawn popup.
+			Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+};
+
+doWhenPageLoaded(() => {
+	if (Extracts.popFrameProvider == Popups)
+		document.addEventListener("keyup", GW.keyCommands.keyUp);
 });
 
 
@@ -2285,6 +2390,15 @@ Popups = {
 			Popups.injectPopup(popup);
 		}
 
+		//	Default spawn location (in case popup was spawned programmatically).
+		if (spawnPoint == null) {
+			let targetRect = target.getBoundingClientRect();
+			spawnPoint = {
+				x: targetRect.x,
+				y: targetRect.y
+			};
+		}
+
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(popup, { spawnPoint: spawnPoint });
 
@@ -2295,6 +2409,8 @@ Popups = {
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
 		});
+
+		return popup;
 	},
 
 	injectPopup: (popup) => {
@@ -2916,7 +3032,10 @@ Popups = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
+			let button = newElement("BUTTON", {
+				class: "popframe-title-bar-button",
+				tabindex: "-1"
+			});
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -4022,8 +4141,12 @@ Popups = {
 			case "Escape":
 			case "Esc":
 				if (   Popups.popupContainerIsVisible()
-					&& Popups.allSpawnedPopups().length > 0)
-					Popups.despawnPopup(Popups.focusedPopup());
+					&& Popups.allSpawnedPopups().length > 0) {
+					if (Popups.popupIsPinned(Popups.focusedPopup()))
+						Popups.unpinPopup(Popups.focusedPopup());
+					else
+						Popups.despawnPopup(Popups.focusedPopup());
+				}
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
 				Popups.zoomPopup(Popups.focusedPopup(), "left");
