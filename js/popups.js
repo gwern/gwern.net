@@ -374,6 +374,15 @@ Popups = {
 			Popups.injectPopup(popup);
 		}
 
+		//	Default spawn location (in case popup was spawned programmatically).
+		if (spawnPoint == null) {
+			let targetRect = target.getBoundingClientRect();
+			spawnPoint = {
+				x: targetRect.x,
+				y: targetRect.y
+			};
+		}
+
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(popup, { spawnPoint: spawnPoint });
 
@@ -384,6 +393,8 @@ Popups = {
 			//	Reset cursor to normal.
 			Popups.clearWaitCursorForTarget(target);
 		});
+
+		return popup;
 	},
 
 	injectPopup: (popup) => {
@@ -1005,7 +1016,10 @@ Popups = {
 
 		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
-			let button = newElement("BUTTON", { class: "popframe-title-bar-button" });
+			let button = newElement("BUTTON", {
+				class: "popframe-title-bar-button",
+				tabindex: "-1"
+			});
 
 			button.buttonAction = (event) => { event.stopPropagation(); };
 
@@ -2111,8 +2125,12 @@ Popups = {
 			case "Escape":
 			case "Esc":
 				if (   Popups.popupContainerIsVisible()
-					&& Popups.allSpawnedPopups().length > 0)
-					Popups.despawnPopup(Popups.focusedPopup());
+					&& Popups.allSpawnedPopups().length > 0) {
+					if (Popups.popupIsPinned(Popups.focusedPopup()))
+						Popups.unpinPopup(Popups.focusedPopup());
+					else
+						Popups.despawnPopup(Popups.focusedPopup());
+				}
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
 				Popups.zoomPopup(Popups.focusedPopup(), "left");

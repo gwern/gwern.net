@@ -5408,7 +5408,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     #page-toolbar.vertical .widget:not(.flashing) button:hover .label,
     #page-toolbar.vertical .widget.show-selected-button-label button.selected .label,
     #page-toolbar.vertical .widget:not(.flashing) a:hover .label,
-    #page-toolbar.vertical .widget.show-selected-button-label a.selected .label {
+    #page-toolbar.vertical .widget.show-selected-button-label a .label {
         opacity: 1;
     }
     #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label {
