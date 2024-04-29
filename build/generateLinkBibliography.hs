@@ -120,14 +120,12 @@ generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
                                                [Str "[Transclude the forward-link's context]"] (T.pack f,"")]]]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else ("",["id-not"],[])
-    in
     if t=="" then
-      Para [Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "")] : transcludeTarget
+      Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")] : transcludeTarget
     else
-      Para [Link linkAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")] : transcludeTarget
+      Para [Link nullAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")] : transcludeTarget
 -- long items:
-generateLinkBibliographyItem am (f,a) = generateAnnotationTransclusionBlock am (f,a)
+generateLinkBibliographyItem am (f,mi) = generateAnnotationTransclusionBlock am (f,mi)
 
 -- TODO: refactor out to Query?
 extractLinksFromPage :: String -> IO [String]

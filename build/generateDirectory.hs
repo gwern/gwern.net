@@ -18,7 +18,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
 import qualified Data.Map as M (keys, lookup, filter, filterWithKey, fromList, toList)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (append, pack, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
@@ -36,7 +36,7 @@ import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy, titlecase')
 import MetadataFormat (extractTwitterUsername)
-import MetadataAuthor (authorsTruncateString)
+import MetadataAuthor (authorCollapse)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
@@ -135,7 +135,8 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let untitledLinksSection  = generateListItems am untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
-  let imageFirst = take 1 $ concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages (toPandoc abstract)) links
+  let imageFirst = take 1 $ filter (\(Image _ _ (f,_)) -> not (".svg" `T.isInfixOf` f)) $ -- SVGs break as page thumbnails in many previews, so we exclude them
+        concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages $ toPandoc abstract) links
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst))
   let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
@@ -146,15 +147,15 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
 
   -- A tag index may have an optional Markdown essay/page explaining it; if it does, that is located at `/note/basename($TAG)`, and we transclude it at runtime. If there is no such `/note/`, then we fall back to checking for an entire top-level essay of the same name, `/basename($TAG)`, but that would be far too long to transclude as a whole, so we transclude the summary in that case.
-  -- (If we desire to transclude an annotation but the top-level essay file does not exactly coincidence with the tag-name, then the workaround is to simply create a `/note/basename($TAG)` which contains only a .include-annotation link in it.)
+  -- (If we desire to transclude an annotation but the top-level essay file does not exactly coincide with the tag-name, then the workaround is to simply create a `/note/basename($TAG)` which contains only a .include-annotation link in it.)
   abstract <- if not ("doc/" `isPrefixOf` dir'') then return [] else
                 do let tagBase = takeDirectory $ last $ splitPath  dir'' -- 'doc/cat/psychology/catnip/' -> 'catnip'
                    let abstractf = "/note/" ++ tagBase --- construct absolute path in the final website, '/note/catnip'
                    abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file, 'note/catnip.md'
                    essayp    <- doesFileExist (tagBase ++ ".md")
-                   return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content-core", "link-page"], [])
+                   return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content-core", "include-strict", "link-page"], [])
                                                                                                                              [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " notes page."))]]]
-                            else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
+                            else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation", "include-strict"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                  else []
 
   let linkBibList = generateLinkBibliographyItems $ filter (\(_,(_,_,_,_,_,_,_),lb) -> not (null lb)) links
@@ -216,17 +217,15 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
-      authorShort = authorsTruncateString aut
-      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncateString aut)]
-                    else Str (T.pack authorShort)
+      authorSpan  = authorCollapse aut
       author = if aut=="" || aut=="N/A" then []
                else
-                 [Str ",", Space, authorSpan] -- NOTE: no ':' as usual after the author in an annotation transclusion, because the link-bibliography will be its own section header with a ':' in it so would be redundant here.
+                 [Str ",", Space] ++ authorSpan -- NOTE: no ':' as usual after the author in an annotation transclusion, because the link-bibliography will be its own section header with a ':' in it so would be redundant here.
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
-    let linkAttr = if "https://en.wikipedia.org/wiki/" `isPrefixOf` f then ("",["include-annotation"],[]) else nullAttr
-        link = if t=="" then Link linkAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
-               else Code nullAttr (T.pack f') : Str ":" : Space : Link linkAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
+    let
+        link = if t=="" then Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
+               else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
