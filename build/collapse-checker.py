@@ -4,7 +4,7 @@
 # collapse-checker.py: check a HTML file for too-small/unnecessarily 'collapsed' HTML blocks
 # Author: Gwern Branwen
 # Date: 2024-01-04
-# When:  Time-stamp: "2024-02-04 18:09:51 gwern"
+# When:  Time-stamp: "2024-04-28 20:36:46 gwern"
 # License: CC-0
 #
 # Usage: $ collapse-checker.py foo.html
@@ -63,23 +63,29 @@ def read_and_parse_html(filename):
         print_red(f"Error reading file {filename}: {e}")
         return None
 
+def has_excluded_class(element, exclude_classes):
+    """Check if the element or any of its parents have a class that should be excluded."""
+    current_element = element
+    while current_element is not None:
+        if any(cls in exclude_classes for cls in current_element.get("class", [])):
+            return True
+        current_element = current_element.parent
+    return False
+
 def check_for_incorrect_collapse_usage(soup, filename):
     """Check the BeautifulSoup object for incorrect .collapse usage and log findings."""
     collapse_elements = soup.find_all(class_="collapse")
 
     exclude_elements = ["h1", "h2", "h3", "h4", "h5", "h6", "section", "span", "code", "pre", "figure", "img", "a"]
-    exclude_classes = {"backlinks-append", "similars-append", "link-bibliography-append"} # we exclude .aux-links-append because 'See Also' have the most redundant collapses
+    exclude_classes = {"backlinks-append", "similars-append", "link-bibliography-append", "aux-links-transclude-file"} # we exclude .aux-links-append because 'See Also' have the most redundant collapses
 
     for element in collapse_elements:
-        # Skip <span> elements, all header tags, and elements with specific classes
-        if element.name in exclude_elements or \
-           any(cls in exclude_classes for cls in element.get("class", [])):
+        # Check if the element itself or any parent should be excluded based on classes
+        if has_excluded_class(element, exclude_classes):
             continue
 
-        # Skip if element itself or any inner element has excluded classes or is an excluded tag
-        if element.name in exclude_elements or \
-           any(cls in exclude_classes for cls in element.get("class", [])) or \
-           element.find(class_="include-annotation") or element.find(class_="include"):
+        # Skip if element itself or any inner element has excluded tags
+        if element.name in exclude_elements or element.find(exclude_elements):
             continue
 
         # Initialize content volume assessment
