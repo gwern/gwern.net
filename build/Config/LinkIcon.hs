@@ -825,7 +825,7 @@ linkIconTestUnitsText =
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text")
          , ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text,tri")
-         , ("https://wayback.archive-it.org/org-350/20180911191924/https://www.nlm.nih.gov/news/calhoun_papers_released.html",  "internet-archive","svg")
+         , ("https://web.archive.org/web/20120702152514/https://www.nlm.nih.gov/news/calhoun_papers_released.html",  "internet-archive","svg")
          , ("https://web.archive.org/web/19981202185145/http://www.ex.org/2.4/11-news.html",  "internet-archive","svg")
          , ("https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
          , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri")

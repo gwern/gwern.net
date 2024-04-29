@@ -23,6 +23,7 @@ backlink: False
 - Disable All Popups: click [gear icon] to open *Theme Toggle* → click [struck-out bubble icon]
 
     [Or]{.smallcaps} hover any link → click [struck-out eye icon]
+- [Search Site](https://cse.google.com/cse?cx=009114923999563836576%3Adv0a4ndtmly): `/`, or click [magnifying-glass icon]
 
 <div class="mobile-not">
 **Popup Keybindings**:

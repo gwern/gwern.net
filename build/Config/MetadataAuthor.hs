@@ -234,6 +234,7 @@ canonicals = M.fromList
   , ("arankomatsuzaki", "Aran Komatsuzaki")
   , ("mattshumer_", "Matt Shumer")
   , ("R. H. Coase", "Ronald Coase")
+  , ("L. A. Belady", "László Bélády")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -287,6 +288,8 @@ authorLinkDB = M.fromList $
     , ("Daniel Hendrycks", "https://people.eecs.berkeley.edu/~hendrycks/")
     , ("Matt Shumer", "https://twitter.com/mattshumer_")
     , ("Richard Ngo", "https://www.richardcngo.com/")
+    , ("M. M. Lehman", "https://en.wikipedia.org/wiki/Manny_Lehman_(computer_scientist)")
+    , ("László Bélády", "https://en.wikipedia.org/wiki/L%C3%A1szl%C3%B3_B%C3%A9l%C3%A1dy")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -1517,4 +1520,4 @@ authorWpLinkDB =
     ,"Zhihui Wang","Zhiping Weng","Zhiwei Wang","Zhiwu Lu","Zhiyi Zhang"
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
-    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis","Ronald Coase"]
+    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis","Ronald Coase", "Michael C. Jensen", "William H. Meckling"]
