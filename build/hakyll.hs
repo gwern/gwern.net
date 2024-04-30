@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-04-11 15:14:26 gwern"
+When: Time-stamp: "2024-04-29 11:46:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -58,19 +58,25 @@ main =
     let slow = "true" == fromMaybe "" arg
     args <- getArgs
     let args' = filter (/="build") args
-    -- NOTE: reset the `getArgs` to pass through just "build", as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
+    let annotationBuildAllForce = filter (=="--annotation-rebuild") args'
+    let annotationOneShot       = filter (=="--annotation-missing-one-shot") args'
+    -- NOTE: reset the `getArgs` to pass through just the first argument (ie. "build", converting it back to `hakyll build`), as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
     withArgs [head args] $ hakyll $ do
-               preprocess cd
-               when slow $ preprocess testAll
+       preprocess cd
+       preprocess $ printGreen ("Local archives parsing…" :: String)
+       am           <- preprocess readArchiveMetadataAndCheck
+       preprocess $ printGreen ("Popup annotations parsing…" :: String)
+       meta <- preprocess readLinkMetadataSlow
 
-               preprocess $ printGreen ("Local archives parsing…" :: String)
-               am           <- preprocess readArchiveMetadataAndCheck
-
-               preprocess $ printGreen ("Popup annotations parsing…" :: String)
-               meta <- preprocess readLinkMetadataSlow
+       if not (null annotationBuildAllForce) then
+         preprocess $ do printGreen ("Rewriting all annotations…" :: String)
+                         writeAnnotationFragments am meta False
+       else do
                preprocess $ do printGreen ("Writing missing annotations…" :: String)
                                writeAnnotationFragments am meta True
+               if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations complete, and one-shot mode specified, so exiting now." else do
 
+               when slow $ preprocess testAll
                preprocess $ printGreen ("Begin site compilation…" :: String)
                let targets = if null args' then "**.md" else fromGlob $ head args'
                match targets $ do
