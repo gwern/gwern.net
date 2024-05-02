@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2024-04-22 19:18:05 gwern"
+# When:  Time-stamp: "2024-04-29 18:38:27 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -80,7 +80,7 @@ do
         λ(){ fgp -e ".pdf#subsection" -e ".pdf#Appendix" -- "$PAGE"; }
         wrap λ "Section PDF links break when archived locally due to PDF/A restrictions (thereby breaking the local-PDF popups), so avoid unusual anchors in favor of 'page=N' anchor links"
 
-        λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
+        λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' -e '^\.>' -e ' "\)[ );,$]' \
                   -e 'cssExtension: [a-c,e-z]' -e '^R> ' -e '^#+ Comments$' -- "$PAGE";
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
@@ -91,9 +91,6 @@ do
                   -e '" ](' -e '!Marin:' -e '](image/' -e '](images/'  -e '](/image/' -e '](/images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
                   -e '#close' -e '#page=page' -e '.pdf#section' -e '.pdf#subsection' -e '^<sup>' -e '<sup>^' -e '^</sup>' -e '</sup>^' -e ' : ' -e ']^[' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a stable permanent span ID)"
-
-        λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
-        wrap λ "Margin note possibly breaks dropcaps by being first item on the first line after an abstract"
 
         λ() { grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]'  -- "$PAGE"; }
         wrap λ "Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide"
@@ -200,8 +197,7 @@ do
                         -e '$title$' -e '<del>' -e '.smallcaps' -e '</q<' -e '<q>' -e '</q>' \
                         -e '$description$' -e '$author$' -e '$tags$' -e '$category$' \
                         -e '(!Wikipedia' -e '(!Hoogle' -e 'http://www.gwern.net' -e 'http://gwern.net' -e 'https://www.gwern.net' -e 'smallcaps}' \
-                        -e '!Marin' -e '**'  \
-                   | egp -e '\!Margin:.*↩'; } # ))
+                        -e '**'; }
         wrap λ "look for syntax errors making it to the final HTML output"
 
         λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }

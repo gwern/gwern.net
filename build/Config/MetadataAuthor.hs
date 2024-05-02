@@ -235,6 +235,7 @@ canonicals = M.fromList
   , ("mattshumer_", "Matt Shumer")
   , ("R. H. Coase", "Ronald Coase")
   , ("L. A. Belady", "László Bélády")
+  , ("Alice R. Spooner", "Alice Spooner")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -290,6 +291,17 @@ authorLinkDB = M.fromList $
     , ("Richard Ngo", "https://www.richardcngo.com/")
     , ("M. M. Lehman", "https://en.wikipedia.org/wiki/Manny_Lehman_(computer_scientist)")
     , ("László Bélády", "https://en.wikipedia.org/wiki/L%C3%A1szl%C3%B3_B%C3%A9l%C3%A1dy")
+    , ("Sanjiv Kumar", "https://scholar.google.com/citations?user=08CNqrYAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Aapo Kyrola", "https://www.cs.cmu.edu/~akyrola/")
+    , ("Abhishek Kumar", "https://scholar.google.com/citations?user=6vghMS0AAAAJ")
+    , ("Abigail Fisher", "https://profiles.ucl.ac.uk/4836-abi-fisher")
+    , ("Abigail Powers", "https://scholar.google.com/citations?hl=en&user=f7gqpBIAAAAJ")
+    , ("Adriana Munoz", "https://scholar.google.com/citations?user=jlfqfeEAAAAJ")
+    , ("A. Jameson", "http://aero-comlab.stanford.edu/jameson/index.html")
+    , ("Albert Wong", "https://scholar.google.com/citations?user=Z-JN7vIAAAAJ")
+    , ("Alex Calderwood", "https://scholar.google.com/citations?user=TIUe46YAAAAJ")
+    , ("Alice Spooner", "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C21&q=author%3A%22ALR+Spooner%22")
+    , ("Jonathan S. Rosenfeld", "https://scholar.google.com/citations?hl=en&user=8HYnMeYAAAAJ&view_op=list_works&sortby=pubdate")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -302,13 +314,13 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
 -- config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
 authorWpLinkDB =
-    ["A. A. Brill","A. Bradford Hill","A. C. Littleton","A. G. W. Cameron","A. Jameson","Russell Impagliazzo"
+    ["A. A. Brill","A. Bradford Hill","A. C. Littleton","A. G. W. Cameron","Russell Impagliazzo"
     ,"A. K. Bera","A. L. Barker","A. L. Sadler","A. Murat Eren","A. Narayanan"
-    ,"A. Tversky","Aanund Hylland","Aapo Kyrola","Aaron Clauset","Aaron Cochrane"
+    ,"A. Tversky","Aanund Hylland","Aaron Clauset","Aaron Cochrane"
     ,"Aaron D. Ames","Aaron E. Carroll","Aaron Gordon","Aaron Isaacs","Aaron Klein"
     ,"Aaron Reeves","Aaron Roth","Aaron Streets","Abdoulaye Diabate","Abdul Basit"
-    ,"Abdul Waheed","Abeba Birhane","Abhijit Banerjee","Abhishek Kumar","Abigail Fisher"
-    ,"Abigail Powers","Abraham A. Palmer","Abraham Flexner","Abraham Loeb","Abraham Palmer"
+    ,"Abdul Waheed","Abeba Birhane","Abhijit Banerjee",
+    "Abraham A. Palmer","Abraham Flexner","Abraham Loeb","Abraham Palmer"
     ,"Ada Palmer","Adam B. Jaffe","Adam Cifu","Adam D\8217Angelo","Adam Frank"
     ,"Adam Gazzaley","Adam M. Phillippy","Adam Pearce","Adam Platt","Adam Siepel"
     ,"Adam Stein","Adam Tauman Kalai","Adam Twardoch","Adam Zeman","Adebowale A. Adeyemo"
@@ -316,7 +328,7 @@ authorWpLinkDB =
     ,"Aditya Sinha","Adnan Custovic","Adolf Loos","Adolfo Garc\237a","Adrian Bejan"
     ,"Adrian Campos","Adrian Cortes","Adrian E. Raftery","Adrian Furnham","Adrian G. Barnett"
     ,"Adrian Liu","Adrian Raine","Adrian V. S. Hill","Adrian Zenz","Adriana Galv\225n"
-    ,"Adriana Munoz","Aggelos Kiayias","Agnar Helgason","Agus Salim","Ahmed Arif"
+    ,"Aggelos Kiayias","Agnar Helgason","Agus Salim","Ahmed Arif"
     ,"Ahmed Elnaggar","Ahmed Mustafa","Ahmed Radwan","Aja Huang","Ajay Gupta"
     ,"Ajay Sharma","Ajit Varki","Ajoy Sarkar","Akhilesh Jaiswal","Akira Fujita"
     ,"Akiyoshi Kitaoka","Akiyuki Nosaka","Alain Pellet","Alan Ashworth","Alan B. Krueger"
@@ -325,10 +337,10 @@ authorWpLinkDB =
     ,"Alan Kay","Alan Lerner","Alan Moore","Alan S. Kaufman","Alan Schatzberg"
     ,"Alan Sullivan","Alan Turing","Alan W. Black","Alan Yuille","Albert A. Bartlett"
     ,"Albert Einstein","Albert J. Stunkard","Albert Marcet","Albert O. Hirschman","Albert Walton"
-    ,"Albert Wohlstetter","Albert Wong","Albert Ziegler","Albert-L\225szl\243 Barab\225si","Alberto F. Alesina"
+    ,"Albert Wohlstetter","Albert Ziegler","Albert-L\225szl\243 Barab\225si","Alberto F. Alesina"
     ,"Alcino J. Silva","Aldert Vrij","Aldo Rustichini","Alec Smith","Alejandro Pardo"
     ,"Alek Sigley","Aleksei Timofeev","Alessandra Voena","Alessandro Liberati","Alessandro Vespignani"
-    ,"Alex Calderwood","Alex Chen","Alex Goldin","Alex Graves","Alex Heath"
+    ,"Alex Chen","Alex Goldin","Alex Graves","Alex Heath"
     ,"Alex Honnold","Alex Kacelnik","Alex Krizhevsky","Alex Pentland","Alex R. Piquero"
     ,"Alex Ramirez","Alex Tabarrok","Alex de Voogt","Alexa Beiser","Alexander Binder"
     ,"Alexander C. Smith","Alexander Grishin","Alexander Hart","Alexander Ljungqvist","Alexander Long"
@@ -338,7 +350,7 @@ authorWpLinkDB =
     ,"Alexandra Mendes","Alexandre Pouget","Alexei A. Efros","Alexey Kurakin","Alexis C. Madrigal"
     ,"Alexis Ohanian","Alfonso Valencia","Alfred J. Lewy","Alfred Moore","Alfredo Ramirez"
     ,"Ali Farhadi","Ali Ghodsi","Ali Hassani","Ali Jadbabaie","Ali Madani"
-    ,"Ali R. Rezai","Alice Chang","Alice H. Eagly","Alice Roberts","Alice Spooner"
+    ,"Ali R. Rezai","Alice Chang","Alice H. Eagly","Alice Roberts"
     ,"Alice Stanton","Alina Stoica","Alison Goate","Alison Gopnik","Alison Kraus"
     ,"Alison M. Goate","Alkes L. Price","Alkes Price","All Things Considered","Allan Rechtschaffen"
     ,"Allen Buchanan","Allen Downey","Allen Ginsberg","Allen Neuringer","Allen Roush"

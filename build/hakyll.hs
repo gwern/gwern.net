@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-04-29 11:46:51 gwern"
+When: Time-stamp: "2024-05-01 18:41:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -79,6 +79,7 @@ main =
                when slow $ preprocess testAll
                preprocess $ printGreen ("Begin site compilation…" :: String)
                let targets = if null args' then "**.md" else fromGlob $ head args'
+               unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print (show targets))
                match targets $ do
                    -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                    -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)

@@ -33,7 +33,7 @@ else
             EXCLUDE_SEARCH_AND_REPLACE=("${EXCLUDE[@]}" -e 'Config/LinkArchive.hs' -e 'Config/MetadataAuthor.hs' -e 'Typography.hs') # -e 'static/includes/' -e 'Utils.hs'
 
             # proceed with trying to do a normal site-wide replacement:
-            FILES=$( (find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
+            FILES=$( (ls ~/*.md; find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
                         grep -F -v "${EXCLUDE_SEARCH_AND_REPLACE[@]}" | \
                         xargs grep -F --files-with-matches "$1" | sort)
