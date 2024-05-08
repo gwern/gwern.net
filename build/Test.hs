@@ -45,7 +45,7 @@ import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDolla
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
-import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases)
+import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
 import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist)
 
@@ -164,6 +164,9 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ ensure "Test.Config.Tags.tagsLong2Short" "isLower" (all Data.Char.isLower . filter Data.Char.isAlpha . fst) Config.Tags.tagsLong2Short
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
+              , length $ isUniqueKeys Config.Misc.cleanArxivAbstracts
+              , length $ isUniqueKeys Config.Misc.arxivAbstractRegexps
+              , length $ isUniqueKeys Config.Misc.arxivAbstractFixedRewrites
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ ensure "Test.Inflation.dates" "isDate" (isDate . fst) $ Config.Inflation.bitcoinUSDExchangeRateHistory
               , length $ isUniqueAll Config.LinkAuto.custom
@@ -197,7 +200,7 @@ testAll = do Config.Misc.cd
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
                [dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
-               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.MetadataFormat.cleanAuthorsRegexps ++ Config.MetadataFormat.htmlRewriteRegexpBefore ++ Config.MetadataFormat.htmlRewriteRegexpAfter ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
+               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.MetadataFormat.cleanAuthorsRegexps ++ Config.MetadataFormat.htmlRewriteRegexpBefore ++ Config.MetadataFormat.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
              let regexUnitTests = filter (\(before,after) -> MetadataFormat.cleanAbstractsHTML before /= after) Config.MetadataFormat.htmlRewriteTestCases
              unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)
 

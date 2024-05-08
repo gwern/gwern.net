@@ -159,3 +159,37 @@ minFileSizeWarning = 15
 -- how long should a URL's annotation's abstract be if we consider it worth marking as 'annotated' and thus showing the reader & transcluding it etc?
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 250
+
+-- Arxiv
+--
+-- 'significan✱' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
+-- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless.
+-- testing: unique keys
+cleanArxivAbstracts :: [(String, String)]
+cleanArxivAbstracts = [(" significant", ""), (" significantly", ""), (" significance", "")
+                       , ("more significant", "important")
+                       , ("significant margin", "large margin")
+                       , ("significant capital", "large capital")
+                       , ("significant amount", "large amount")
+                       , ("significant cost", "large cost")
+                       , ("hugely significant", "important")
+                       , ("without significant overhead", "without much overhead")
+                       , ("significant risk", "large risk")
+                       , ("significant semantic complexity", "high semantic complexity")
+                       , ("more significantly correlate", "more correlate")
+                       , ("significantly yet smoothly", "substantially get smoothly")
+                       , ("significance metric", "statistical-significance metric")
+                      ]
+
+-- testing: unique keys, keys valid regexp
+arxivAbstractRegexps, arxivAbstractFixedRewrites :: [(String,String)]
+arxivAbstractRegexps = [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt\\{\\1})")
+                       , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
+                       , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
+                       , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
+                       , ("(\\{\\lambda})", "(λ)")
+                       ]
+arxivAbstractFixedRewrites = [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")
+                             , (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)")
+                             , ("\\{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**")
+                             , ("%we", "We"), (" #", " \\#")]

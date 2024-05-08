@@ -15,9 +15,9 @@ import System.IO.Unsafe (unsafePerformIO)
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI, trimTitle, processDOIArxiv)
-import Utils (printRed, replace, safeHtmlWriterOptions, replaceMany, sedMany, printGreen, inlineMath2Text)
+import Utils (printRed, printGreen, replace, safeHtmlWriterOptions, replaceMany, sedMany, inlineMath2Text)
 import Paragraph (processParagraphizer)
-import Config.Misc as C (cd)
+import Config.Misc as C -- (cd)
 
 arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
@@ -25,7 +25,8 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                (status,bs, arxivid) <- arxivDownload url'
                case status of
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
-                 _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
+                 _ -> do printGreen "Processing Arxiv metadata…"
+                         let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
                          C.cd -- ensure we are in the right place to enable calling `latex2unicode.py`
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
@@ -90,12 +91,8 @@ processArxivAbstract :: String -> String
 processArxivAbstract a = let cleaned = runPure $ do
                                      -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"; crude heuristic, if only 1 '$', then it's not being used for LaTeX math (eg. in <https://arxiv.org/abs/2108.05818#tencent>)
                                     let dollarSignsN = length $ filter (=='$') a
-                                    let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
-                                                       ("({\\lambda})", "(λ)")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)"), ("{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**"), ("%we", "We"), (" #", " \\#")]
+                                    let tex = sedMany C.arxivAbstractRegexps $
+                                              replaceMany C.arxivAbstractFixedRewrites
                                                           $ (if dollarSignsN == 1 then replaceMany [("$", "\\$")] else id) a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
@@ -104,21 +101,4 @@ processArxivAbstract a = let cleaned = runPure $ do
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} $ walk (unsafePerformIO . inlineMath2Text) pandoc
               in case cleaned of
                  Left e -> error $ " : " ++ ppShow e ++ " : " ++ a
-                 Right output -> cleanAbstractsHTML $ cleanArxivAbstracts $ T.unpack output
-
--- 'significan✱' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
--- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless
-cleanArxivAbstracts :: String -> String
-cleanArxivAbstracts = replaceMany [(" significant", ""), (" significantly", ""), (" significance", "")] .
-                            replaceMany [("more significant", "important"),
-                                        ("significant margin", "large margin"),
-                                        ("significant capital", "large capital"),
-                                        ("significant amount", "large amount"),
-                                        ("significant cost", "large cost"),
-                                        ("hugely significant", "important"),
-                                        ("without significant overhead", "without much overhead"),
-                                        ("significant risk", "large risk"),
-                                        ("significant semantic complexity", "high semantic complexity"),
-                                        ("more significantly correlate", "more correlate"),
-                                        ("significantly yet smoothly", "substantially get smoothly"),
-                                        ("significance metric", "statistical-significance metric")]
+                 Right output -> cleanAbstractsHTML $ replaceMany C.cleanArxivAbstracts $ T.unpack output
