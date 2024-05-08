@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-29 22:40:33 gwern"
+# When:  Time-stamp: "2024-05-07 20:24:39 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -11,26 +11,43 @@
 # generates a sitemap XML file, optimizes the MathJax use, checks for many kinds of errors, uploads,
 # and cleans up.
 
-# key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), urlencode
+# key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
-# `npm i -g mathjax-node-page`), parallel, xargs, php7…
+# `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, libreoffice, gifsicle, tidy, libxml2-utils…
 
 cd ~/wiki/
+# shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh
-
-if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
+set -x
+if  [ -z "$(pgrep hakyll)" ] &&
+    ! [[ -n $(command -v ghc) && -n $(command -v ghci) && -n $(command -v runghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
           -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
           -n $(command -v fdupes) && -n $(command -v urlencode) && -n $(command -v sed) && -n $(command -v parallel) && -n $(command -v xargs) && \
-          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
-          -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) && \
+          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v mogrify) && -n $(command -v pdftotext) && \
+          -n $(command -v static/build/link-extractor.hs) && \
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
           -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) && \
           -n $(command -v static/build/generateSimilarLinks.hs) && \
           -n $(command -v gifsicle) && \
-          -n $(command -v libreoffice) && \
-          -n $(command -v elinks) ]] &&
-       [ -z "$(pgrep hakyll)" ];
+          -n $(command -v libreoffice) &&  \
+          -n $(command -v ffmpeg) && \
+          -n $(command -v pandoc) && \
+          -n $(command -v x-www-browser) && \
+          -n $(command -v firefox) && \
+          -n $(command -v dos2unix) && \
+          -n $(command -v jpegtran) && \
+          -n $(command -v bc) && \
+          -n $(command -v pdftk) && \
+          -n $(command -v jq) && \
+          -n $(command -v emacs) && \
+          -n $(command -v feh) && \
+          -n $(command -v locate) && \
+          -n $(command -v ocrmypdf) && \
+          -n $(command -v inotifywait) && \
+          -n $(command -v xmllint) && \
+          -n $(command -v elinks) ]];
+    # -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage
 then
     red "Dependencies missing or Hakyll already running?"
 else
@@ -41,7 +58,7 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N=28
+    N=6
     SLOW="true"
     SKIP_DIRECTORIES=""
     TODAY=$(date '+%F')
@@ -64,7 +81,7 @@ else
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
-    (cd ./static/ && git status && timeout 10m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
+    (cd ./static/ && git status && timeout 5m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
     if [ "$SLOW" ]; then
 
@@ -117,7 +134,7 @@ else
     bold "Compiling…"
     cd ./static/build
     WARNINGS=""
-    if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
+    if [ "$SLOW" ]; then WARNINGS="-Wall"; fi # TODO: make -Werror clean for all the new GHC incomplete-pattern warnings
     compile () { ghc -O2 $WARNINGS -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
     if [ -z "$SKIP_DIRECTORIES" ]; then
@@ -178,7 +195,7 @@ else
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Writing missing annotations to support link-bibliography/tag-directory updates…"
         # We add new annotations daily, but all the code in link-bib/tag-directory deal with only the current annotations which have been written out to disk as HTML snippets; thus, since that is done in the main compilation phase, the default would be that annotations would be omitted the first day and only appear the next time. This is annoying and manually working around it is even more tedious, so we provide a 'one-shot' missing-annotation mode and call that phase immediately before the lb/tag phase:
-        ./static/build/hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot
+        ./static/build/hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot ; ./static/build/hakyll build clean
         bold "Updating link bibliographies…"
         ./static/build/generateLinkBibliography +RTS -N"$N" -RTS || true
 
@@ -291,7 +308,7 @@ else
             if [[ "$EMBED_IMAGES" == "true" ]]; then
                 CONVERSION_OPTION="html:HTML:EmbedImages"
             fi
-            libreoffice --headless --convert-to $CONVERSION_OPTION "$FILE" >/dev/null 2>&1;
+            timeout 5m libreoffice --headless --convert-to $CONVERSION_OPTION "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?";
             mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
         fi
     }
@@ -1261,10 +1278,17 @@ else
     λ(){ find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data'; }
     wrap λ "Corrupted PNGs" &
 
-    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | xargs mogrify -background white -alpha remove -alpha off; }
+    λ(){ find ./ -name "*.svg" | xargs --max-procs="$N" -I {} sh -c 'xmllint --noout "{}" 2>/dev/null && \
+                                identify "{}" >/dev/null 2>&1 || echo "{}"'; }
+    wrap λ "Corrupted SVGs" &
+
+    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | \
+              xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
+              xargs mogrify -background white -alpha remove -alpha off; }
     wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
-    λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
+    λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
+             parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
@@ -1304,7 +1328,8 @@ else
     find ./doc/www/ -type f -name "*.gif" -mtime -3 | parallel optimize_gif
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
-    ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing. We should probably return to a regular image thumbnail system, so we never downscale the originals, and serve appropriate thumbnails instead.
+    ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing.
+    ## We should probably return to a regular image thumbnail system, so we never downscale the originals, and serve appropriate thumbnails instead.
     λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | gfv -e 'doc/www/' -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' -e '1999-marklombardi-olivernorthlakeresourcespanamairancontra198486-v4-detail.jpg' ); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( SIZE_W > 1700 )); then
@@ -1338,7 +1363,7 @@ else
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
-    wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' instead)."
+    wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' for safety instead)."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then
