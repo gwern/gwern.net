@@ -5,9 +5,8 @@ import Data.Char (toLower)
 import Control.Monad (filterM, unless)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (isSuffixOf, isInfixOf, isPrefixOf, sort, intersperse)
-import System.Directory (doesFileExist)
-import System.Directory.Recursive (getDirFiltered, getSubdirsRecursive) -- dir-traverse
-import System.FilePath (takeDirectory)
+import System.Directory (doesFileExist, doesDirectoryExist, listDirectory)
+import System.FilePath (takeDirectory, (</>))
 import Text.Pandoc (Inline(Str, RawInline, Link, Span), Format(..), Block(Para, Div), nullAttr)
 import qualified Data.Map.Strict as M (elems, map, toList )
 import qualified Data.Text as T (append, pack, unpack, Text)
@@ -16,6 +15,35 @@ import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
 import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
 import Config.Tags as C
+import Config.Misc (cd)
+
+-- inline `dir-traverse` package to remove dependency since it's so small, & hasn't changed since release:
+-- original code: `import System.Directory.Recursive (getDirFiltered, getSubdirsRecursive) -- dir-traverse`
+-- NOTE: removed `unsafeInterleaveIO` <https://hackage.haskell.org/package/base-4.19.1.0/docs/src/GHC.IO.Unsafe.html#unsafeInterleaveIO> because we read tags strictly, for immediate use, and there's no benefit to deferring it.
+import Data.Foldable (fold)
+
+-- | Recursively get all subdirectories in the given directory.
+getSubdirsRecursive :: FilePath -> IO [FilePath]
+getSubdirsRecursive = getDirFiltered doesDirectoryExist
+
+-- | Recursively get all files and subdirectories in the given directory that
+-- satisfy the given predicate. Note that the content of subdirectories not
+-- matching the filter is ignored. In particular, that means something like
+-- @getDirFiltered doesFileExist@ will /not/ recursively return all files.
+getDirFiltered :: (FilePath -> IO Bool) -- ^ Filepath filter
+               -> FilePath
+               -> IO [FilePath]
+getDirFiltered p fp = do
+    all' <- listDirectory fp
+    all'' <- filterM p (mkRel <$> all')
+    dirs <- filterM doesDirectoryExist all''
+    case dirs of
+        [] -> pure all''
+        ds -> do
+            next <- foldMapA (getDirFiltered p) ds
+            pure $ all'' ++ next
+    where mkRel = (fp </>)
+          foldMapA = (fmap fold .) . traverse
 
 -- Remind to refine link tags: should be <100. (We count using the annotation database instead of counting files inside each directory because so many are now cross-tagged or virtual.)
 tagMax, tagPairMax :: Int
@@ -93,7 +121,8 @@ abbreviateTag :: T.Text -> T.Text
 abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsLong2Short . replace "/doc/" "" . T.unpack
 
 listTagsAll :: IO [String]
-listTagsAll = fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
+listTagsAll = do Config.Misc.cd
+                 fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
 
 -- given a list of ["doc/foo/index.md"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
 -- Bool argument = whether to include all sub-directories recursively.
