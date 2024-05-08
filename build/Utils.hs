@@ -20,6 +20,8 @@ import Control.DeepSeq (deepseq, NFData)
 import System.Posix.Files (touchFile)
 
 import Text.Regex (subRegex, mkRegex)
+import Control.Exception (catch, evaluate, SomeException)
+import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
                     writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
@@ -146,7 +148,7 @@ simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 -- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
-safeHtmlWriterOptions :: WriterOptions
+safeHtmlWriterOptions :: Text.Pandoc.WriterOptions
 safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExtension Ext_shortcut_reference_links pandocExtensions}
 
 -- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
@@ -314,8 +316,22 @@ fixedPoint = fixedPoint' 5000
        fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 5,000 iterations! Infinite loop? Last result: " ++ show i
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
+-- because the regex libraries throw fatal exceptions, which are highly uninformative, we have to do a lot of work to catch exceptions and print out useful debug info for identifying *what* regexp went wrong, rather than unhelpfully reporting "Exception 13" or whatever.
 sed :: String -> String -> String -> String
-sed before after s = if before == after then error ("Fatal error in `sed`: before == after: \"" ++ before ++ "\"") else subRegex (mkRegex before) s after
+sed before after s = unsafePerformIO $ do
+  let action = if before == after
+                 then error $ "Fatal error in `sed`: before == after: \"" ++ before ++ "\""
+                 else do
+                   let regex = mkRegex before
+                   let result = subRegex regex s after
+                   _ <- evaluate (length result)  -- Force full evaluation, so we catch it here and now, rather than it happening later and skipping the debugging info
+                   return result
+  catch action handleExceptions
+    where
+      handleExceptions :: SomeException -> IO String
+      handleExceptions e = return $ "Error occurred. Exception: " ++ show e ++
+                                    "; arguments were: '" ++ before ++
+                                    "' : '" ++ after ++ "' : '" ++ s ++ "'"
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
