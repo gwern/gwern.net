@@ -114,7 +114,7 @@ cleanAbstractsHTMLTest = testInfixRewriteLoops C.htmlRewriteFixed cleanAbstracts
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
-       cleanAbstractsHTML' = trim . sedMany C.htmlRewriteRegexpAfter . replaceMany C.htmlRewriteFixed . sedMany C.htmlRewriteRegexpBefore
+       cleanAbstractsHTML' = trim . sedMany C.htmlRewriteRegexpAfter -- . replaceMany C.htmlRewriteFixed . sedMany C.htmlRewriteRegexpBefore
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwern.net/" "/" l

@@ -72,7 +72,7 @@ printDoubleTests =
             ]
 
 -- infix rewrites
--- Testing: unique keys
+-- Testing: unique keys, test keys for regexp validity
 cleanAuthorsRegexps, cleanAuthorsFixedRewrites :: [(String,String)]
 cleanAuthorsRegexps = [
   ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2") -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
@@ -158,7 +158,14 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5"
                       , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore", "ÿþ"]
 
--- testing: unique keys
+-- tests: unique-all
+htmlRewriteTestCases :: [(String, String)]
+htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 256 GPUs")
+                       , ("*foo* bar", "<em>foo</em> bar")
+                       , ("Code is available at github.com/microsoft/SPACH.</p>", "Code is available at <a href=\"https://github.com/microsoft/SPACH\">github.com/microsoft/SPACH</a>.</p>")
+                       , ("...biochemical programs (preconditioning)2,3,4. Under...", "...biochemical programs (preconditioning)<sup>2,3,4</sup>. Under...")]
+
+-- testing: unique keys, valid regex keys
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexpAfter = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
@@ -166,8 +173,8 @@ htmlRewriteRegexpAfter = [
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")
          , ("([0-9])- (millisecond|second|minute|hour|day|week|month|year)", "\\1-\\2") -- line-break errors like 'we observed the mice for 2- minutes or 10-minutes afterwards'
-         , ("\\\\emph{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
-         , ("\\\\textit{([a-zA-Z0-9-]+)}", "<em>\\1</em>")
+         , ("\\\\emph\\{([a-zA-Z0-9-]+)\\}", "<em>\\1</em>")
+         , ("\\\\textit\\{([a-zA-Z0-9-]+)\\}", "<em>\\1</em>")
          -- rewrite *Markdown italics* to <em>HTML italics</em>, and strong/bold:
          , ("(.*)\\*(.+)\\*(.*)", "\\1<em>\\2</em>\\3")
          , ("(.*)\\*\\*(.+)\\*\\*(.*)", "\\1<strong>\\2</strong>\\3")
@@ -265,7 +272,7 @@ htmlRewriteRegexpAfter = [
          , ("<span class=\"math inline\">\\\\\\(\\\\textbf\\{([A-Za-z]+)\\}\\\\\\)</span>", "<strong>\\1</strong>") -- 'We dub ρ the <span class="math inline">\(\textbf{polarity}\)</span> parameter'
          , ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×") -- '<span class="math inline">\(\times\)</span>'
          , ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9]*)\\\\\\)</span>", "\\1<sup>\\2</sup>") -- '<span class="math inline">\(10^4\)</span>'
-         , ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^{([0-9]*)}\\\\\\)</span>", "\\1<sup>\\2</sup>") -- '<span class="math inline">\(10^{40}\)</span>'
+         , ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^\\{([0-9]*)\\}\\\\\\)</span>", "\\1<sup>\\2</sup>") -- '<span class="math inline">\(10^{40}\)</span>'
          , ("([A-z][a-z]+) ?et ?al ?\\(([0-9][0-9][0-9][0-9])\\)", "\\1 et al \\2") -- 'Dette et al (2013)'
          , ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3") -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'; 'et al' is handled by Pandoc already
          , ("([A-Z][a-z]+) &amp; ([A-Z][a-z]+), ([12][0-9][0-9][0-9])", "\\1 & \\2 \\3")
@@ -1809,6 +1816,7 @@ htmlRewriteFixed =
          ]
 
 -- regexps we need to run *before* we run the bulk of the fixed-string
+-- tests: unique keys, valid regexp keys
 htmlRewriteRegexpBefore = [ ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
          , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts; must be run *before* because JEL codes like 'R2' or 'L2' will be rewritten into sub/superscript under the assumption they are the scientific concepts, which then breaks the JEL match.
          ]

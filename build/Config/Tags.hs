@@ -33,7 +33,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     specialCases :: [(String -> Bool, String)]
     specialCases = [(\u -> anyInfix u ["evageeks.org","eva.onegeek.org", "evamonkey.com"], "anime/eva")]
 
--- testing: unique keys
+-- testing: unique keys, regex validation
 wholeTagRewritesRegexes  :: [(String,String)]
 wholeTagRewritesRegexes = [("^cs/", "CS/")
                      , ("^cs$", "CS")
@@ -137,7 +137,7 @@ tagsShort2LongRewrites =
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
-   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent") ]
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++

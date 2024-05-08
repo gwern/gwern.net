@@ -236,6 +236,7 @@ canonicals = M.fromList
   , ("R. H. Coase", "Ronald Coase")
   , ("L. A. Belady", "László Bélády")
   , ("Alice R. Spooner", "Alice Spooner")
+  , ("hsu_steve", "Steve Hsu")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs

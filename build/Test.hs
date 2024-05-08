@@ -12,7 +12,8 @@ import qualified Data.Text as T (unpack)
 import Text.Pandoc (Inline(Link))
 
 import Cycle (isCycleLess)
-import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced, isDate)
+import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced, isDate, cleanAbstractsHTML,
+                      dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, ensure)
 
 -- module self-tests:
@@ -43,10 +44,29 @@ import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
-import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases)
+import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsRegexps, htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases)
 import qualified Config.Paragraph (whitelist)
 import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist)
+
+import Text.Regex.Base.RegexLike (makeRegexM)
+import Text.Regex (Regex)
+import Control.Exception (try, SomeException)
+
+-- test function to validate lists of regex patterns
+testRegexPatterns :: [String] -> IO ()
+testRegexPatterns patterns = do
+    results <- mapM validateRegex patterns
+    let failures = [msg | Left msg <- results]
+    unless (null failures) $ mapM_ putStrLn failures
+ where -- Function to validate a regex pattern
+  validateRegex :: String -> IO (Either String ())
+  validateRegex pattern = do
+      result <- try (makeRegexM pattern :: IO Regex)
+      case result of
+          Left e -> return . Left $ "Regex compilation failed for pattern '" ++ pattern ++
+                                    "': " ++ show (e :: SomeException)
+          Right _ -> return $ Right ()
 
 -- Config checking: checking for various kinds of uniqueness/duplications.
 -- Enable additional runtime checks to very long config lists which risk error from overlap or redundancy. Prints out the duplicates.
@@ -157,6 +177,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
               , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
+              , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
               , length $ ensure "Test.authorLinkDB" "isURLT (URL of second)" (all isURLT) (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
@@ -172,6 +193,13 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
 
 testAll :: IO ()
 testAll = do Config.Misc.cd
+
+             printGreen ("Testing regexps for regex validity…" :: String)
+             testRegexPatterns $
+               [dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
+               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.MetadataFormat.cleanAuthorsRegexps ++ Config.MetadataFormat.htmlRewriteRegexpBefore ++ Config.MetadataFormat.htmlRewriteRegexpAfter ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
+             let regexUnitTests = filter (\(before,after) -> MetadataFormat.cleanAbstractsHTML before /= after) Config.MetadataFormat.htmlRewriteTestCases
+             unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)
 
              printGreen ("Testing file-transclusions…" :: String)
              md <- readLinkMetadata
