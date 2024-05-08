@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-07 21:40:58 gwern"
+# When:  Time-stamp: "2024-05-08 11:44:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -18,38 +18,23 @@
 cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh
-set -x
-if  [ -z "$(pgrep hakyll)" ] &&
-    ! [[ -n $(command -v ghc) && -n $(command -v ghci) && -n $(command -v runghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
-          -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
-          -n $(command -v fdupes) && -n $(command -v urlencode) && -n $(command -v sed) && -n $(command -v parallel) && -n $(command -v xargs) && \
-          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v mogrify) && -n $(command -v pdftotext) && \
-          -n $(command -v static/build/link-extractor.hs) && \
-          -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
-          -n $(command -v static/build/generateLinkBibliography.hs) && \
-          -n $(command -v static/build/generateBacklinks.hs) && \
-          -n $(command -v static/build/generateSimilarLinks.hs) && \
-          -n $(command -v gifsicle) && \
-          -n $(command -v libreoffice) &&  \
-          -n $(command -v ffmpeg) && \
-          -n $(command -v pandoc) && \
-          -n $(command -v x-www-browser) && \
-          -n $(command -v firefox) && \
-          -n $(command -v dos2unix) && \
-          -n $(command -v jpegtran) && \
-          -n $(command -v bc) && \
-          -n $(command -v pdftk) && \
-          -n $(command -v jq) && \
-          -n $(command -v emacs) && \
-          -n $(command -v feh) && \
-          -n $(command -v locate) && \
-          -n $(command -v ocrmypdf) && \
-          -n $(command -v inotifywait) && \
-          -n $(command -v xmllint) && \
-          -n $(command -v elinks) ]];
-    # -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage
+
+DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping rm rsync runghc sed tidy urlencode x-www-browser xargs xmllint static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
+DEPENDENCIES_MISSING=()
+for DEP in "${DEPENDENCIES[@]}"; do
+    if ! command -v "$DEP" &> /dev/null; then
+        DEPENDENCIES_MISSING+=("$DEP")
+    fi
+done
+if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
+    red "Error: missing dependencies!"
+    echo "$DEPENDENCIES_MISSING"
+    exit 1
+fi
+
+if  [ -n "$(pgrep hakyll)" ]
 then
-    red "Dependencies missing or Hakyll already running?"
+    red "or Hakyll already running?"
 else
     set -e
 
@@ -283,6 +268,8 @@ else
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
+
+    set -x
 
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
