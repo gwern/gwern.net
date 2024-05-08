@@ -23,10 +23,8 @@ import Text.Show.Pretty (ppShow)
 
 import Control.Monad.Parallel as Par (mapM) -- 'monad-parallel' package
 
-import Data.List.Unique as U (repeated) -- 'Unique' package
-
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile, printGreen)
+import Utils (writeUpdatedFile, printGreen, repeated)
 import qualified Config.LinkSuggester as C
 
 -- | Map over the filenames
@@ -46,7 +44,7 @@ main = do
   let dbFailedMinimum = ("Did not pass hitsMinimum filter", db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
 
   -- We want to filter out any anchor text which is associated with more than 1 URL (those are too ambiguous to be useful), any text which is in the system dictionary, and anything in the blacklist patterns or list.
-  let anchorTextsDupes = U.repeated $ concat $ M.elems dbMinimumLess
+  let anchorTextsDupes = Utils.repeated $ concat $ M.elems dbMinimumLess
   let dbTextDupeLess = M.union C.whiteListDB $ M.map (filter (`notElem` anchorTextsDupes)) dbMinimumLess
   let dbFailedDupe = ("Did not pass anchorTextDupes filter"::T.Text,                   dbMinimumLess `M.difference` dbTextDupeLess)
 

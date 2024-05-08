@@ -4,6 +4,7 @@ module Utils where
 import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
+import qualified Data.Map as M
 import Data.Containers.ListUtils (nubOrd)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference)
@@ -442,3 +443,11 @@ hasAny search (x:xs) = x `elem` search || hasAny search xs
 -- Data.Text equivalent of System.FilePath.takeExtension
 takeExtension :: T.Text -> T.Text
 takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
+
+
+-- | 'repeated' finds only the elements that are present more than once in the list.
+-- Example:
+--
+-- > repeated  "foo bar" == "o"
+repeated :: Ord a => [a] -> [a]
+repeated xs = M.keys $ M.filter (> (1::Int)) $ M.fromListWith (+) [(x,1) | x <- xs]
