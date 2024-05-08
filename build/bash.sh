@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-04-26 09:22:57 gwern"
+# When:  Time-stamp: "2024-05-07 10:26:53 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -12,10 +12,10 @@
 #
 # See also: /static/build/{upload, gwa, crossref, compressJpg2}
 
-source /usr/share/bash-completion/bash_completion # useful for better `upload` tab-completion
+source /usr/share/bash-completion/bash_completion || true # useful for better `upload` tab-completion
 
 # Default parallelism:
-export N="29"
+export N="7"
 
 set -e
 
@@ -212,7 +212,7 @@ e () { FILE=""
        else echo "File does not exist? $FILE"
        fi;
      }
-alias E="e"
+alias E="e" # typo
 alias ea="exiftool -All"
 alias exiftool="exiftool -overwrite_original"
 
@@ -249,7 +249,7 @@ gwal () { gwa "$@" | less -p "$@"; }
 
 ## #lesswrong IRC logs
 gwl () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
-         grep --context=1 --text --ignore-case -- "$QUERY" ~/doc/irclogs/*/\#lesswrong.log; }
+         grep -E --context=1 --text --ignore-case -- "$QUERY" ~/doc/irclogs/*/\#lesswrong.log; }
 
 # Gwern.net modifications:
 ## gwsed shortcut for the common use case of updating a domain HTTP → HTTPS; typically the URLs are otherwise unchanged, and don't need to be individually updated.
@@ -440,7 +440,7 @@ is_downloading() {
 mvuri () {
     # Check if inotifywait is installed
     if ! command -v inotifywait &> /dev/null; then
-        echo "inotifywait could not be found. Please install inotify-tools."
+        echo "inotifywait could not be found. Please install 'inotify-tools' package."
         exit
     fi
 

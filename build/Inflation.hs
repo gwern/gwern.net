@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-04-23 21:38:22 gwern"
+-- When:  Time-stamp: "2024-05-07 15:14:19 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -217,9 +217,12 @@ bitcoinQuery cy date = case M.lookup date db of
                                      let (firstDate,firstRate) = M.findMin db in
                                          if date > lastDate then lastRate else
                                            if date < firstDate then firstRate else
-                                             let Just (_,after) = M.lookupGE date db in
-                                               let Just (_,before) = M.lookupLE date db
-                                               in (after + before) / 2
+                                             let afterTuple = M.lookupGE date db
+                                                 beforeTuple = M.lookupLE date db in
+                                               case (afterTuple, beforeTuple) of
+                                                 (Nothing, _) -> error $ "Inflation.bitcoinQuery: after-date lookup failed, this should never happen: " ++ show cy ++ show date ++ show afterTuple ++ show beforeTuple
+                                                 (_, Nothing) -> error $ "Inflation.bitcoinQuery: before-date lookup failed, this should never happen:" ++ show cy ++ show date ++ show afterTuple ++ show beforeTuple
+                                                 (Just (_,after), Just(_,before)) -> (after + before) / 2
   where db = bitcoinUSDExchangeRate cy
 
 -- the exchange rates are, of course, historical: a 2013 USD/Bitcoin exchange rate is for a *2013* dollar, not a current dollar. So we update to a current dollar.

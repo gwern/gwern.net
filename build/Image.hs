@@ -44,6 +44,7 @@ isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm", ".avi"] --
 -- every image for color, and set an 'invert-auto' HTML class on the ones which are low. We can
 -- manually specify a 'invert' class on images which don't pass the heuristic but should.
 invertImageInline :: Metadata -> Inline -> IO Inline
+invertImageInline _ x@(Image _ _ ("",_)) = error $ "Image.invertImageInline called with a malformed image with no filename; this should never happen. Argument: " ++ show x
 invertImageInline md x@(Image (htmlid, classes, kvs) xs (p,t)) =
   do let inverted = addLazyLoadingImage $ Image (htmlid, "invert-auto":classes, kvs) xs (p,t)
      case invertGlobalOverride md (T.unpack p) of
@@ -72,6 +73,7 @@ invertGlobalOverride md p = case M.lookup p md of
                _ -> error $ "invertGlobalOverride: impossible pattern match result for: " ++ show p ++ " : " ++ show kvs
 
 invertFile :: T.Text -> IO (Bool, String, String)
+invertFile "" = error "Image.invertFile called with empty filename; that should never happen."
 invertFile p = do let p' = T.unpack p
                   let p'' = if head p' == '/' then tail p' else p'
                   invertImage p''
@@ -155,8 +157,11 @@ imageMagickDimensions f =
            (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f'']
            case status of
              ExitFailure exit -> error $ f ++ ":" ++ f'' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
-             _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
-                                 return (height, width)
+             _             -> do let string = B8.unpack bs
+                                 let dimensions = words $ head $ lines string
+                                 case dimensions of
+                                   [height, width] -> return (height, width)
+                                   _ -> error $ "Image.imageMagickDimensions: parsing of returned image dimensions failed, was: " ++ show dimensions
 
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
 -- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
@@ -188,33 +193,36 @@ staticImg x@(TagOpen "img" xs) = do
   let w = lookup "width" xs
   let lazy = lookup "loading" xs
   let loading = if isJust lazy then [] else [("loading","lazy")] -- don't override a loading="eager"
-  let Just p = lookup "src" xs
-  if (isNothing h || isNothing w || isNothing lazy) &&
-     not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
-     ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
-       do
-         let p' = urlDecode $ takeWhile (/='#') $ if head p == '/' then tail p else p
-         exists <- doesFileExist p'
-         if not exists then printRed "staticImg: File does not exist: " >> putStrLn p >> return x else
-          do (height,width) <- imageMagickDimensions p' `onException` printRed p
-             -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
-             -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
-             -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
-             let width' =  readMaybe width  ::Maybe Int
-             let height' = readMaybe height ::Maybe Int
-             case width' of
-                Nothing       -> printRed "staticImg: Image width can't be read: " >> print x >> return x
-                Just width'' -> case height' of
-                                 Nothing       -> printRed "staticImg: Image height can't be read: " >> print x >> return x
-                                 Just height'' ->
-                                   let dims = sizeAspectRatioKV width'' height''
-                                   in
-                                     if (takeExtension p == ".svg") then
-                                       -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
-                                       return $ TagOpen "img" $ uniq $ loading ++ dims ++ xs
-                                     else
-                                       -- lazy load & async render all images
-                                       return $ TagOpen "img" $ uniq $ loading ++ [("decoding", "async")] ++ dims ++ xs
+  let src = lookup "src" xs
+  case src of
+    Nothing -> error $ "Image.staticImg: no 'src' set on '<img>' tag? This should never happen. Original: " ++ show x
+    Just p ->
+     if (isNothing h || isNothing w || isNothing lazy) &&
+       not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
+       ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
+         do
+           let p' = urlDecode $ takeWhile (/='#') $ if head p == '/' then tail p else p
+           exists <- doesFileExist p'
+           if not exists then printRed "staticImg: File does not exist: " >> putStrLn p >> return x else
+            do (height,width) <- imageMagickDimensions p' `onException` printRed p
+               -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
+               -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
+               -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
+               let width' =  readMaybe width  ::Maybe Int
+               let height' = readMaybe height ::Maybe Int
+               case width' of
+                  Nothing       -> printRed "staticImg: Image width can't be read: " >> print x >> return x
+                  Just width'' -> case height' of
+                                   Nothing       -> printRed "staticImg: Image height can't be read: " >> print x >> return x
+                                   Just height'' ->
+                                     let dims = sizeAspectRatioKV width'' height''
+                                     in
+                                       if (takeExtension p == ".svg") then
+                                         -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
+                                         return $ TagOpen "img" $ uniq $ loading ++ dims ++ xs
+                                       else
+                                         -- lazy load & async render all images
+                                         return $ TagOpen "img" $ uniq $ loading ++ [("decoding", "async")] ++ dims ++ xs
     else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x

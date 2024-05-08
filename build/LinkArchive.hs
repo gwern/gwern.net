@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-04-26 19:38:59 gwern"
+When:  Time-stamp: "2024-05-07 11:00:04 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -106,7 +106,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.Posix.Files (getFileStatus, fileSize)
 import Data.FileStore.Utils (runShellCommand)
-import Network.URI.TLD (parseTLD)
+import Network.URI.TLD (parseTLD) -- tld
 import Text.Pandoc (Inline(Link), nullAttr)
 import Text.Show.Pretty (ppShow)
 import Data.ByteString.Base16 (encode) -- base16-bytestring

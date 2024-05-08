@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-04-14 19:07:18 gwern"
+When:  Time-stamp: "2024-05-07 11:26:47 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -77,7 +77,7 @@ import qualified Data.Text    as T (drop, lines, splitOn, pack, strip, unlines, 
 import System.Directory (doesFileExist)
 
 import Text.Show.Pretty (ppShow)
-import System.GlobalLock as GL (lock)
+import System.GlobalLock as GL (lock) -- global-lock
 
 import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)

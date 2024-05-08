@@ -5,7 +5,7 @@
 -- default: looks for lines >110 characters long inside codeblocks, which suggests source code that
 -- needs to be rewritten for more clarity.
 import System.Environment (getArgs)
-import Text.Pandoc (def, readMarkdown, runPure, pandocExtensions, queryWith, readerExtensions, topDown, Block(CodeBlock, Null), Pandoc)
+import Text.Pandoc (def, readMarkdown, runPure, pandocExtensions, queryWith, readerExtensions, topDown, Block(CodeBlock, Plain), Pandoc)
 import qualified Data.Text as T (append, empty, length, lines, pack, unlines, Text)
 import Data.Text.IO as TIO (readFile, putStr)
 
@@ -31,5 +31,5 @@ clean _ = []
 
 longCodeLines :: Block -> Block
 longCodeLines x@(CodeBlock _ cntnt) = let tooLong = T.unlines $ filter (\t -> T.length t >= 110) $ T.lines cntnt
-                                               in if T.length tooLong == 0 then Null else x
-longCodeLines _ = Null
+                                               in if T.length tooLong == 0 then Plain [] else x
+longCodeLines _ = Plain []

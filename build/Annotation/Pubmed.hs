@@ -20,13 +20,13 @@ pubmed l = do checkURL l
               (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
                 ExitFailure err -> printGreen (intercalate " : " [l, ppShow status, ppShow err, ppShow mb]) >> return (Left Permanent)
-                _ -> do
-                        let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
-                        if length parsed < 5 then return (Left Permanent) else
-                          do let (title:author:date:doi:abstrct) = parsed
-                             let ts = [] -- TODO: replace with ML call to infer tags
-                             abstract' <- fmap cleanAbstractsHTML $ processParagraphizer l $ linkAutoHtml5String $ processPubMedAbstract $ unlines abstrct
-                             return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, "", [("doi",trim $ processDOI doi)], ts, abstract'))
+                _ -> let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb in
+                       case parsed of
+                         (title:author:date:doi:abstrct) ->
+                                 do let ts = [] -- TODO: replace with ML call to infer tags
+                                    abstract' <- fmap cleanAbstractsHTML $ processParagraphizer l $ linkAutoHtml5String $ processPubMedAbstract $ unlines abstrct
+                                    return $ Right (l, (cleanAbstractsHTML $ trimTitle title, cleanAuthors $ trim author, trim date, "", [("doi",trim $ processDOI doi)], ts, abstract'))
+                         _ -> return (Left Permanent)
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do

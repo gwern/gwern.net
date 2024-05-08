@@ -64,26 +64,34 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                matchAll  = matched'' ++ matched' ++ matched
            in if null matchAll then [Str a] -- no citation anywhere
               else
-                let (fullMatch:first:second:third:_) = head matchAll
-                    (before:after) = T.splitOn fullMatch a
-                    citeYear = case decimal third :: Either String (Int, T.Text) of
-                                  Left _ -> 0
-                                  Right (y,_) -> y
-                in
-                  if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
-                     sed "^.* & " "" (T.unpack first) `elem` C.surnameFalsePositivesWhiteList then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
-                    [Str a]
-                  else
-                          [Str before] ++
-                          [Span ("", ["cite"], []) ((if T.strip second == "" then
-                                                       -- the easy single/double author case (we only mess with the date, nothing else)
-                                                       [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
-                                                       -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
-                                                       else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
-                                                             [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` T.replace " " " " (T.strip second) `T.append` " "]]) ++
-                                                    [Span ("", ["cite-date"], []) [Str third]])
-                          ] ++
-                          go (T.concat after)
+                case head matchAll of
+                  []       -> [Str a]
+                  _:[]     -> [Str a]
+                  _:_:[]   -> [Str a]
+                  _:_:_:[] -> [Str a]
+                  (fullMatch:first:second:third:_) ->
+                    let
+                        citeYear = case decimal third :: Either String (Int, T.Text) of
+                                     Left _ -> 0
+                                     Right (y,_) -> y
+                    in
+                      if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
+                         sed "^.* & " "" (T.unpack first) `elem` C.surnameFalsePositivesWhiteList then -- dates like "January 2020" are false positives, although unfortunately there are real surnames like 'May', where 'May 2020' is just ambiguous and this will have a false negative.
+                        [Str a]
+                      else
+                        (case T.splitOn fullMatch a of
+                              (before:after) -> [Str before] ++
+                                    [Span ("", ["cite"], []) ((if T.strip second == "" then
+                                                                 -- the easy single/double author case (we only mess with the date, nothing else)
+                                                                 [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
+                                                                 -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
+                                                                 else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
+                                                                       [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` T.replace " " " " (T.strip second) `T.append` " "]]) ++
+                                                              [Span ("", ["cite-date"], []) [Str third]])
+                                    ] ++
+                                    go (T.concat after)
+                              err -> error $ "Typography.citefyInline: splitting the 'fullMatch' into 'before'/'after' failed, even though a match should be guaranteed by here, and that should never happen. Arguments: " ++ show err ++ " : " ++ show fullMatch ++ " : " ++ show matchAll ++ " : " ++ show a
+                        )
 citefyInline _ x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex

@@ -6,7 +6,7 @@
 
 import Control.Monad (forM)
 import Data.List (sort, sortOn)
-import Data.List.Split (splitOn)
+import Data.List.Split (splitOn) -- split
 import System.Directory (doesDirectoryExist, getDirectoryContents)
 import System.FilePath ((</>), takeFileName)
 

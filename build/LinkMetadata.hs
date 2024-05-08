@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-04-26 18:40:03 gwern"
+When:  Time-stamp: "2024-05-07 11:29:49 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
-import Data.List.HT (search)
+import Data.List.HT (search) -- utility-ht
 import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist, getFileSize)
@@ -36,7 +36,7 @@ import Text.Pandoc (readerExtensions, Inline(Link, Span),
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Show.Pretty (ppShow)
 
-import qualified Control.Monad.Parallel as Par (mapM_, mapM)
+import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 
 import System.IO.Unsafe (unsafePerformIO)
 

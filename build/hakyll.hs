@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-05-01 18:41:19 gwern"
+When: Time-stamp: "2024-05-07 20:21:07 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -54,7 +54,7 @@ import Config.Misc (cd)
 
 main :: IO ()
 main =
- do arg <- lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
+ do arg <- System.Environment.lookupEnv "SLOW" -- whether to do the more expensive stuff; Hakyll eats the CLI arguments, so we pass it in as an exported environment variable instead
     let slow = "true" == fromMaybe "" arg
     args <- getArgs
     let args' = filter (/="build") args
@@ -76,86 +76,86 @@ main =
                                writeAnnotationFragments am meta True
                if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations complete, and one-shot mode specified, so exiting now." else do
 
-               when slow $ preprocess testAll
-               preprocess $ printGreen ("Begin site compilation…" :: String)
-               let targets = if null args' then "**.md" else fromGlob $ head args'
-               unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print (show targets))
-               match targets $ do
-                   -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
-                   -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
-                   route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
-                            setExtension ""
-                   -- <https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs>
-                   let readerOptions = defaultHakyllReaderOptions
-                   compile $ do
-                              ident <- getUnderlying
-                              indexpM <- getMetadataField ident "index"
-                              let indexp = fromMaybe "" indexpM
-                              pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
-                                >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta)
-                                >>= imgUrls
+                 when slow $ preprocess testAll
+                 preprocess $ printGreen ("Begin site compilation…" :: String)
+                 let targets = if null args' then "**.md" else fromGlob $ head args'
+                 unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print (show targets))
+                 match targets $ do
+                     -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
+                     -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
+                     route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
+                              setExtension ""
+                     -- <https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs>
+                     let readerOptions = defaultHakyllReaderOptions
+                     compile $ do
+                                ident <- getUnderlying
+                                indexpM <- getMetadataField ident "index"
+                                let indexp = fromMaybe "" indexpM
+                                pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
+                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta)
+                                  >>= imgUrls
 
-               let static        = route idRoute >> compile copyFileCompiler
-               when (null args') $ version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
+                 let static        = route idRoute >> compile copyFileCompiler
+                 when (null args') $ version "static" $ mapM_ (`match` static) ["metadata/**"] -- we want to overwrite annotations in-place with various post-processing things
 
-               -- handle the simple static non-.md files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
-               let staticSymlink = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
-               when (null args') $ version "static" $ mapM_ (`match` staticSymlink) [
-                                       "doc/**",
-                                       "**.hs",
-                                       "**.sh",
-                                       "**.txt",
-                                       "**.html",
-                                       "**.md",
-                                       "**.css",
-                                       "**.R",
-                                       "**.conf",
-                                       "**.php",
-                                       "**.svg",
-                                       "**.png",
-                                       "**.jpg",
-                                       -- skip "static/build/**" because of the temporary files
-                                       "static/css/**",
-                                       "static/font/**",
-                                       "static/img/**",
-                                       "static/include/**",
-                                       "static/nginx/**",
-                                       "static/redirect/**",
-                                       "static/template/**",
-                                       "static/**.conf",
-                                       "static/**.css",
-                                       "static/**.gif",
-                                       "static/**.git",
-                                       "static/**.gitignore",
-                                       "static/**.hs",
-                                       "static/**.html",
-                                       "static/**.ico",
-                                       "static/**.js",
-                                       "static/**.net",
-                                       "static/**.png",
-                                       "static/**.R",
-                                       "static/**.sh",
-                                       "static/**.svg",
-                                       "static/**.ttf",
-                                       "static/**.otf",
-                                       "static/**.php",
-                                       "static/**.py",
-                                       "static/**.wasm",
-                                       "static/**.el",
-                                       "static/LICENSE",
-                                       "static/build/.htaccess",
-                                       "static/build/upload",
-                                       "static/build/newsletter-lint",
-                                       "static/build/gwa",
-                                       "static/build/crossref",
-                                       "static/build/compressPdf",
-                                       "static/build/compressJPG2",
-                                       "test-include",
-                                       "atom.xml"] -- copy stub of deprecated RSS feed
+                 -- handle the simple static non-.md files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
+                 let staticSymlink = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
+                 when (null args') $ version "static" $ mapM_ (`match` staticSymlink) [
+                                         "doc/**",
+                                         "**.hs",
+                                         "**.sh",
+                                         "**.txt",
+                                         "**.html",
+                                         "**.md",
+                                         "**.css",
+                                         "**.R",
+                                         "**.conf",
+                                         "**.php",
+                                         "**.svg",
+                                         "**.png",
+                                         "**.jpg",
+                                         -- skip "static/build/**" because of the temporary files
+                                         "static/css/**",
+                                         "static/font/**",
+                                         "static/img/**",
+                                         "static/include/**",
+                                         "static/nginx/**",
+                                         "static/redirect/**",
+                                         "static/template/**",
+                                         "static/**.conf",
+                                         "static/**.css",
+                                         "static/**.gif",
+                                         "static/**.git",
+                                         "static/**.gitignore",
+                                         "static/**.hs",
+                                         "static/**.html",
+                                         "static/**.ico",
+                                         "static/**.js",
+                                         "static/**.net",
+                                         "static/**.png",
+                                         "static/**.R",
+                                         "static/**.sh",
+                                         "static/**.svg",
+                                         "static/**.ttf",
+                                         "static/**.otf",
+                                         "static/**.php",
+                                         "static/**.py",
+                                         "static/**.wasm",
+                                         "static/**.el",
+                                         "static/LICENSE",
+                                         "static/build/.htaccess",
+                                         "static/build/upload",
+                                         "static/build/newsletter-lint",
+                                         "static/build/gwa",
+                                         "static/build/crossref",
+                                         "static/build/compressPdf",
+                                         "static/build/compressJPG2",
+                                         "test-include",
+                                         "atom.xml"] -- copy stub of deprecated RSS feed
 
-               match "static/template/*.html" $ compile templateCompiler
+                 match "static/template/*.html" $ compile templateCompiler
 
-woptions :: WriterOptions
+woptions :: Text.Pandoc.WriterOptions
 woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
                                        writerTableOfContents = True,
                                        writerColumns = 130,

@@ -15,10 +15,10 @@ import Cycle (isCycleLess, findCycles)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
-import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody,)
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response) -- http-conduit
 import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
 import Control.Exception (catch, SomeException)
-import Network.HTTP.Client (Response)
+-- import Network.HTTP.Client (Response)
 
 -- if there is an English WP article, is it a disambiguation page? (we generally want to avoid linking to those)
 -- use curl to call the WP API and (to avoid complicated JSON processing overhead) simply look for the fixed string '"type":"disambiguation"', and return Just True/False.
@@ -29,7 +29,7 @@ isWPDisambig articleName = do
   let encodedArticleName = escapeWikiArticleTitle articleName
   let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
   request <- parseRequest (T.unpack url)
-  result <- catch (Right <$> httpLBS request) handleException
+  result <- catch (Right <$> httpLBS request) handleException :: IO (Either String (Response U.ByteString))
   case result of
     Left _ -> return Nothing  -- On any exception, ignore error message & return Nothing
     Right response -> return $

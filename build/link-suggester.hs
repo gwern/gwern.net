@@ -21,9 +21,9 @@ import System.Environment (getArgs)
 
 import Text.Show.Pretty (ppShow)
 
-import Control.Monad.Parallel as Par (mapM) -- monad-parallel
+import Control.Monad.Parallel as Par (mapM) -- 'monad-parallel' package
 
-import Data.List.Unique as U (repeated) -- Unique
+import Data.List.Unique as U (repeated) -- 'Unique' package
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 import Utils (writeUpdatedFile, printGreen)
