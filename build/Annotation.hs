@@ -8,7 +8,6 @@ import Network.HTTP (urlDecode)
 import Annotation.Biorxiv (biorxiv)
 import Annotation.Gwernnet (gwern)
 import Annotation.PDF (pdf)
-import Annotation.Pubmed (pubmed)
 import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
@@ -34,9 +33,6 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | "arxiv.org/abs/" `isInfixOf` l || "browse.arxiv.org/html/" `isInfixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
-                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
-                     -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                 | anyInfix l ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l
                  | "https://x.com" `isPrefixOf` l || "https://twitter.com/" `isPrefixOf` l = twitter l
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
