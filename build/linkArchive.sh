@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-03-12 20:08:43 gwern"
+# When:  Time-stamp: "2024-05-08 20:21:34 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -48,7 +48,7 @@ done
 
 if [[ -z $URL ]]; then echo "No URL argument in arguments? $*" && exit 99; fi
 
-USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0"
+USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/124.0"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the
@@ -122,13 +122,12 @@ else
             # NOTE: we must specify '--network="host"' to Docker, so that the Single-file app running inside Docker (which is its own private network namespace) can 'see' the local Nitter instance (running normally) for making Twitter snapshots; if we forget to do this, we get unhelpful 'connection error' messages like "$ docker run singlefile http://localhost:8081/novelaiofficial/status/1723601550927356343 → net::ERR_CONNECTION_REFUSED at http://localhost:8081/novelaiofficial/status/1723601550927356343"
             timeout --kill-after=300s 200s \
                     docker run --network="host" singlefile "$URL" --compress-CSS \
-                    --remove-scripts "$REMOVE_SCRIPTS" --remove-video-src false --remove-audio-src false \
-                    --accept-headers  "[{\"font\":\"application/font-woff2;q=1.0,application/font-woff;q=0.9,*/*;q=0.8\",\"image\":\"image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8\",\"stylesheet\":\"text/css,*/*;q=0.1\",\"script\":\"*/*\",\"document\":\"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\", \"Language\": \"en-US,en;q=0.5\", \"Encoding\": \"gzip, deflate, br\"}]" \
+                    --block-scripts "$REMOVE_SCRIPTS" --block-videos false --block-audios false \
                     --user-agent "$USER_AGENT" \
                     --browser-load-max-time "480000" \
                     --load-deferred-images-max-idle-time "40000" \
                     --max-resource-size 100 \
-                    --browser-wait-until "networkidle2" \
+                    --browser-wait-until "networkIdle" \
                     --browser-height "10000" \
                     > "$TARGET" # 1>&2
             set +x
