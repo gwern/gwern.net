@@ -20,7 +20,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Control.DeepSeq (deepseq, NFData)
 import System.Posix.Files (touchFile)
 
-import Text.Regex (subRegex, mkRegex)
+import Text.Regex (subRegex, mkRegex) -- WARNING: for Unicode support, this needs to be 'regex-compat-tdfa' package, otherwise, the search-and-replaces will go badly awry!
 import Control.Exception (catch, evaluate, SomeException)
 import System.IO.Unsafe (unsafePerformIO)
 

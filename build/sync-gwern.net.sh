@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-08 14:23:54 gwern"
+# When:  Time-stamp: "2024-05-09 12:55:29 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -11,7 +11,7 @@
 # generates a sitemap XML file, optimizes the MathJax use, checks for many kinds of errors, uploads,
 # and cleans up.
 
-# key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, urlencode
+# key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, regex-compat-tdfa (Unicode Haskell regexps), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
 # `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, libreoffice, gifsicle, tidy, libxml2-utils…
 
@@ -19,7 +19,7 @@ cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh
 
-DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping rm rsync runghc sed tidy urlencode x-www-browser xargs xmllint static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
+DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync runghc sed tidy urlencode x-www-browser xargs xmllint static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
 DEPENDENCIES_MISSING=()
 for DEP in "${DEPENDENCIES[@]}"; do
     if ! command -v "$DEP" &> /dev/null; then
@@ -186,7 +186,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N"$N" -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
     fi
   fi
 
@@ -268,8 +268,6 @@ else
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
-
-    set -x
 
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
@@ -963,12 +961,12 @@ else
            --data "{\"files\":[\"$CHECK_RANDOM_PAGE\", \"$CHECK_RANDOM_ANNOTATION_ENCODED\"]}" > /dev/null; )
 
        # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-        everyNdays 7 && x-www-browser "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED"
-        sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on"
-        sleep 5s; x-www-browser "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on"
+        everyNDays 7 && chromium "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED" &
+        sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on" &
+        sleep 15s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on" &
         if everyNDays 100; then
             # check Google PageSpeed report for any regressions:
-            x-www-browser "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop"
+            chromium "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop" &
             bold "Checking print-mode CSS as well…"
             ## WARNING: we cannot simply use `--headless` & `--print-to-pdf` because Chrome does not, in fact, save the same PDF
             ## as it would if you print-to-PDF in-browser! It *mostly* does use the print CSS, but it skips things like transcludes
@@ -979,7 +977,7 @@ else
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the x-of-the-day in a different & cache-free browser instance
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
-    everyNDays 200 && x-www-browser "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE"
+    everyNDays 200 && chromium "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE" &
 
     # some of the live popups have probably broken, since websites keep adding X-FRAME options…
     everyNDays 50 && ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'
@@ -1158,6 +1156,10 @@ else
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
     λ() { find . -executable -type f | gfv -e 'static/build/' -e 'nginx/memoriam.sh' -e 'haskell/lcp.hs' -e '.git/hooks/post-commit'; }
+    set -x
+
+    set -x
+
     wrap λ "Executable bit set on files that shouldn't be executable?"
 
     λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.gtx; }

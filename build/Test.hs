@@ -128,10 +128,10 @@ isUniqueValues xs
 isUniqueAll :: (Eq a, Ord a, Show a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
 isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 
-testXOTD :: IO ()
+testXOTD :: IO Int
 testXOTD = do s <- XOTD.readTTDB Config.XOfTheDay.siteDBPath
               q <- XOTD.readTTDB Config.XOfTheDay.quoteDBPath
-              print $ sum [length $ ensure "Test.testXOTD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
+              return $ sum [length $ ensure "Test.testXOTD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
                           , length $ isUniqueKeys3 s
                           , length $ ensure "Test.testXOTD.quotes" "not-isURL" (\(qt,a,_) -> not (isURL qt || isURL a)) q
                           , length $ isUniqueKeys3 q
@@ -222,8 +222,8 @@ testAll = do Config.Misc.cd
 
              unless (null authorCollapseTest) $ printRed ("Author-collapse test suite has errors in: " ++ show authorCollapseTest)
 
-             printGreen ("Testing X-of-the-day data…" :: String)
-             _ <- testXOTD
+             xn <- testXOTD
+             printGreen ("Testing X-of-the-day data… verified: " ++ show xn :: String)
 
              printGreen ("Testing link icon matches…" :: String)
              unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)

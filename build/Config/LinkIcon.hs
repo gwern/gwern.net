@@ -1040,7 +1040,7 @@ linkIconTestUnitsText =
          , ("/lorem.md",  "txt","svg")
          , ("/static/build/anchor-checker.php",  "code","svg")
          , ("/static/build/hakyll.hs",  "code","svg")
-         , ("/static/build/linkAbstract.R",  "code","svg")
+         , ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R",  "code","svg")
          , ("/static/build/markdown-lint.sh",  "code","svg")
          , ("/static/css/links.css",  "code","svg")
          , ("/static/font/dropcap/de-zs/DeutscheZierschrift-M.ttf",  "misc","svg")

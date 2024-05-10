@@ -41,7 +41,7 @@ titleCaseTestCases = [
             , ("West 'has Not Recovered'", "West 'Has Not Recovered'")
             , ("West \"has Not Recovered\"", "West \"Has Not Recovered\"")
             , ("West “has Not Recovered”", "West “Has Not Recovered”")
-            , ("Did I get Sam Altman fired from OpenAI?: Nathan\8217s redteaming experience, noticing how the board was not aware of GPT-4 jailbreaks & had not even tried GPT-4 prior to its early release", "Did I Get Sam Altman Fired from OpenAI?: Nathan\8217s Redteaming Experience, Noticing How the Board Was Not Aware of GPT-4 Jailbreaks & Had Not Even Tried GPT-4 prior to Its Early Release")
+            , ("Did I get Sam Altman fired from OpenAI?: Nathan\8217s red-teaming experience, noticing how the board was not aware of GPT-4 jailbreaks & had not even tried GPT-4 prior to its early release", "Did I Get Sam Altman Fired from OpenAI?: Nathan\8217s Red-Teaming Experience, Noticing How the Board Was Not Aware of GPT-4 Jailbreaks & Had Not Even Tried GPT-4 prior to Its Early Release")
             , ("Foo's bar", "Foo's Bar")
             , ("Foo’s bar", "Foo’s Bar")
             , ("Foo'Bar", "Foo'Bar")
