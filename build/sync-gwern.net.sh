@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-09 12:55:29 gwern"
+# When:  Time-stamp: "2024-05-10 12:18:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -71,7 +71,7 @@ else
     if [ "$SLOW" ]; then
 
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-        ( s() { gwsed "$@"; }
+        ( alias s="gwsed"
           ## domain rewrites:
           s 'https://mobile.twitter.com' 'https://twitter.com'; s 'https://www.twitter.com' 'https://twitter.com'; s 'https://x.com/' 'https://twitter.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://scribe.rip' 'https://freedium.cfd';
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
@@ -108,7 +108,13 @@ else
           s '#allen#allen' '#allen'; s '#deepmind#deepmind' '#deepmind'; s '&org=deepmind&org=deepmind' '&org=deepmind'; s '#nvidia#nvidia' '#nvidia'; s '#openai#openai' '#openai'; s '#google#google' '#google'; s '#uber#uber' '#uber';
 
           ## HTML/Markdown formatting:
-          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>'; s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' ''; s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse'; s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>'; s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “'; s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
+          s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>';
+          s 'augmentation,</a>' 'augmentation</a>,'; s 'Bitcoin,</a>' 'Bitcoin</a>,'; s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
+          s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
+          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
+          s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/';
+          s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
+          s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -172,7 +178,7 @@ else
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
     DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ zeo/ -type d \
-                      | sort | gfv -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
+                      | gfv -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
                                         -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \
                                         -e 'confidential/' -e 'private/' -e 'secret/' -e 'newest/')"
@@ -260,12 +266,12 @@ else
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
      find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' -e '.hi$' -e '.o$' | \
-         sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
+         xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
      find -L _site/ -not -name "*.md" -type f | gfv -e 'static/' -e 'doc/' -e 'fulltext' -e 'lorem' -e 'metadata/' -e '.md.html' -e 'private/' | \
          gev -e '/.*/index' -e '.md$' | \
-         sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
+         xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
@@ -279,7 +285,7 @@ else
             convert_file "$FILE"
         else
             local FILE_EXTS=("$@") # Remaining arguments are file extensions
-            find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) | sort | while read -r FILE; do
+            find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) | while read -r FILE; do
                 convert_file "$FILE"
             done
         fi
@@ -348,10 +354,10 @@ else
     }
     export -f syntaxHighlight
     set +e
-    find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/static/ -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f,l \
          -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.gtx" -or -name "*.xml" | \
-        sort |  gfv \
+        gfv \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.md' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
@@ -364,7 +370,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanCodeblockSelflinks || true
+    find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanCodeblockSelflinks || true
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
@@ -396,7 +402,7 @@ else
     }
     export -f staticCompileMathJax
     (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
-     find _site/metadata/annotation/ -name '*.html') | shuf | \
+     find _site/metadata/annotation/ -name '*.html') | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
     # essays only:
@@ -404,7 +410,7 @@ else
     PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
     # essays+tags+annotations+similars+backlinks:
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html' | sort)"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html')"
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
@@ -432,8 +438,8 @@ else
     #                           `# Big O notation: '𝒪(n)' in some browsers like my Chromium will touch the O/parenthesis (particularly noticeable in /Problem-14's abstract), so add a THIN SPACE (HAIR SPACE is not enough for the highly-tilted italic):` \
     #                           -e 's/𝒪(/𝒪 (/g' \
     #                         "$@"; }; export -f nonbreakSpace;
-    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
-    # find ./_site/metadata/annotation/ -type f -name "*.html" | sort | parallel --max-args=500 nonbreakSpace || true
+    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
+    # find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --max-args=500 nonbreakSpace || true
 
     bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
     footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
@@ -451,7 +457,7 @@ else
     "$@"; }; export -f cleanClasses
     echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
-    find ./_site/metadata/ -type f -name "*.html" | sort | parallel --max-args=500 cleanClasses || true
+    find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
 
   if [ "$SLOW" ]; then
     # Testing compilation results:
@@ -509,52 +515,67 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
+    λ(){ find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
 
     ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
-    λ(){ find metadata/annotation/ -name "*.html" \
-             | shuf | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique | \
-             gev -e '^see-also-append$' -e '^archive-not$' -e '^archive-local$' -e '^author$' -e '^full-authors-list$' -e '^aux-links$' -e '^backlink-not$' \
-                   -e '^backlinks$' -e '^backlinks-append$' -e '^aux-links-append$' -e '^aux-links-transclude-file$' -e '^bash$' -e '^Bash$' -e '^book-review-author$' \
-                   -e '^book-review-date$' -e '^book-review-rating$' -e '^book-review-title$' -e '^cite-author$' -e '^cite-author-plural$' \
-                   -e '^cite-date$' -e '^date$' -e '^display$' -e '^email$' -e '^external-page-embed$' -e '^id-not$' \
-                   -e '^inflation-adjusted$' -e '^logotype-tex$' -e '^logotype-latex$' -e '^logotype-latex-a$' -e '^logotype-latex-e$' \
-                   -e '^link-annotated$' -e '^link-live$' -e '^link-page$' -e '^link-page-not$' \
-                   -e '^link-tag$' -e '^link-tags$' -e '^cite$' -e '^cite-joiner$' -e '^collapse$' -e '^columns$' -e '^directory-indexes-downwards$' \
-                   -e '^directory-indexes-upwards$' -e '^epigraph$' -e '^even$' -e '^float-right$' -e '^float-left$' -e '^footnote-ref$' \
-                   -e '^full-width$' -e '^haskell$' -e '^header$' -e '^horizontal-rule-nth-0$' -e '^horizontal-rule-nth-1$' \
-                   -e '^horizontal-rule-nth-2$' -e '^icon-not$' -e '^link-modified-recently$' -e '^icon-single-white-star-on-black-circle$' -e '^inline$' -e '^invert$' -e '^invert-auto$' -e '^invert-not$' \
-                   -e '^javascript$' -e '^link-annotated-not$' -e '^link-annotated-partial$' -e '^content-transform-not$' \
-                   -e '^link-live-not$' -e '^tex-logotype$' -e '^math$' -e '^odd$' -e '^page-thumbnail$' \
-                   -e '^pascal$' -e '^python$' -e '^reader-mode-selector-inline$' -e '^smallcaps$' -e '^sourceCode$' -e '^subsup$' \
-                   -e '^table-small$' -e '^table-sort-not$' -e '^width-full$' -e '^TOC$' -e '^uri$' -e '^at$' -e '^bu$' -e '^c1$' -e '^c2$' -e '^c3$' -e '^c4$' \
-                   -e '^c5$' -e '^c6$' -e '^c7$' -e '^c8$' -e '^c9$' -e '^c10$' -e '^cf$' -e '^co$' -e '^dv$' -e '^fu$' -e '^kw$' -e '^op$' -e '^s1$' -e '^st$' -e '^reader-mode$' \
-                   -e '^scrape-abstract-not$'  -e '^abstract$' -e '^abstract-collapse$' -e '^abstract-collapse-only$' -e '^admonition$' -e '^admonition-title$' \
-                   -e '^book-review-meta$' -e '^book-review-review$' -e '^tip$' -e '^xml$' -e '^warning$' -e '^al$' -e '^an$' -e '^bn$' \
-                   -e '^cn$' -e '^cv$' -e '^do$' -e '^dt$' -e '^er$' -e '^error$' -e '^ex$' -e '^fl$' -e '^im$' -e '^in$' -e '^ot$' -e '^pp$' \
-                   -e '^re$' -e '^sc$' -e '^ss$' -e '^va$' -e '^citation$' -e '^directory-indexes$' -e '^directory-indexes-sideways$' \
-                   -e '^display-pop-not$' -e '^footnote-back$' -e '^footnotes$' -e '^image-focus-not$' \
-                   -e '^include$' -e '^include-strict$' -e '^include-lazy$' -e '^include-annotation$' -e '^include-even-when-collapsed$' \
-                   -e '^include-spinner-not$' -e '^include-replace-container$' -e '^include-replace-container-not$' -e '^include-unwrap$' \
-                   -e '^include-block-context$' -e '^include-omit-metadata$' -e '^include-content$' -e '^include-content-no-header$' \
-                   -e '^include-block-context-expanded$' -e '^include-annotation-core$' -e '^include-content-core$' \
-                   -e '^marginnote$' -e '^markdownBody$' -e '^mjpage$' -e '^mjpage__block$' -e '^mjx-base$' -e '^mjx-box$' -e '^MJXc-display$' \
-                   -e '^mjx-cell$' -e '^mjx-char$' -e '^mjx-charbox$' -e '^mjx-chtml$' -e '^MJXc-space1$' -e '^MJXc-space2$' -e '^MJXc-space3$' \
-                   -e '^MJXc-stacked$' -e '^MJXc-TeX-ams-R$' -e '^MJXc-TeX-cal-R$' -e '^MJXc-TeX-main-R$' -e '^MJXc-TeX-math-I$' \
-                   -e '^MJXc-TeX-size1-R$' -e '^MJXc-TeX-size2-R$' -e '^MJXc-TeX-size3-R$' -e '^MJXc-TeX-size4-R$' -e '^mjx-delim-h$' \
-                   -e '^mjx-delim-v$' -e '^mjx-denominator$' -e '^mjx-itable$' -e '^mjx-line$' -e '^mjx-math$' -e '^mjx-mfrac$' -e '^mjx-mi$' \
-                   -e '^mjx-mn$' -e '^mjx-mo$' -e '^mjx-mrow$' -e '^mjx-mspace$' -e '^mjx-msqrt$' -e '^mjx-mstyle$' -e '^mjx-msubsup$' \
-                   -e '^mjx-msup$' -e '^mjx-mtext$' -e '^mjx-munderover$' -e '^mjx-numerator$' -e '^mjx-op$' -e '^mjx-over$' -e '^mjx-row$' \
-                   -e '^mjx-stack$' -e '^mjx-sub$' -e '^mjx-sup$' -e '^mjx-surd$' -e '^mjx-texatom$' -e '^mjx-TeXmathchoice$' -e '^mjx-under$' \
-                   -e '^mjx-vsize$' -e '^new$' -e '^outline-not$' -e '^outline$' -e '^warning$' -e '^markdown-body$' -e '^similars$' -e '^similars-append$' -e '^similar-links-search$' \
-                   -e '^text-center$' -e '^abstract-tag-directory$' -e '^page-description-annotation$' -e '^link-bibliography$' \
-                   -e '^link-bibliography-append$' -e '^expand-on-hover$' -e '^tag-index-link-bibliography-block$' \
-                   -e 'doc-index-tag-short' -e '^decorate-not$' -e '^quote-of-the-day$' -e '^interview$' \
-                   -e '^reader-mode-note$' -e '^dropcap-dropcat$' -e '^desktop-not$' -e '^mobile-not$' -e '^adsense$' \
-                   -e 'years-since' -e 'date-range'; } # subscript experiments
+    λ(){
+        # parse all HTML files, print out classes to a unique newline-delimited list, and return classes not in the whitelist, for detailed examination as either bugs or new classes to whitelist:
+        declare -a html_classes_whitelist=(
+            "see-also-append" "archive-not" "archive-local" "author" "full-authors-list" "aux-links"
+            "backlink-not" "backlinks" "backlinks-append" "aux-links-append" "aux-links-transclude-file" "bash"
+            "Bash" "book-review-author" "book-review-date" "book-review-rating" "book-review-title" "cite-author"
+            "cite-author-plural" "cite-date" "date" "display" "email" "external-page-embed"
+            "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
+            "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
+            "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
+            "epigraph" "even" "float-right" "float-left" "footnote-ref" "full-width"
+            "haskell" "header" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
+            "link-modified-recently" "icon-single-white-star-on-black-circle" "inline" "invert" "invert-auto" "invert-not"
+            "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not" "tex-logotype"
+            "math" "odd" "page-thumbnail" "pascal" "python" "reader-mode-selector-inline"
+            "smallcaps" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
+            "TOC" "uri" "at" "bu" "c1" "c2"
+            "c3" "c4" "c5" "c6" "c7" "c8"
+            "c9" "c10" "cf" "co" "dv" "fu"
+            "kw" "op" "s1" "st" "reader-mode" "scrape-abstract-not"
+            "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title" "book-review-meta"
+            "book-review-review" "tip" "xml" "warning" "al" "an"
+            "bn" "cn" "cv" "do" "dt" "er"
+            "error" "ex" "fl" "im" "in" "ot"
+            "pp" "re" "sc" "ss" "va" "citation"
+            "directory-indexes" "directory-indexes-sideways" "display-pop-not" "footnote-back" "footnotes" "image-focus-not"
+            "include" "include-strict" "include-lazy" "include-annotation" "include-even-when-collapsed" "include-spinner-not"
+            "include-replace-container" "include-replace-container-not" "include-unwrap" "include-block-context" "include-omit-metadata" "include-content"
+            "include-content-no-header" "include-block-context-expanded" "include-annotation-core" "include-content-core" "marginnote" "markdownBody"
+            "mjpage" "mjpage__block" "mjx-base" "mjx-box" "MJXc-display" "mjx-cell"
+            "mjx-char" "mjx-charbox" "mjx-chtml" "MJXc-space1" "MJXc-space2" "MJXc-space3"
+            "MJXc-stacked" "MJXc-TeX-ams-R" "MJXc-TeX-cal-R" "MJXc-TeX-main-R" "MJXc-TeX-math-I" "MJXc-TeX-size1-R"
+            "MJXc-TeX-size2-R" "MJXc-TeX-size3-R" "MJXc-TeX-size4-R" "mjx-delim-h" "mjx-delim-v" "mjx-denominator"
+            "mjx-itable" "mjx-line" "mjx-math" "mjx-mfrac" "mjx-mi" "mjx-mn"
+            "mjx-mo" "mjx-mrow" "mjx-mspace" "mjx-msqrt" "mjx-mstyle" "mjx-msubsup"
+            "mjx-msup" "mjx-mtext" "mjx-munderover" "mjx-numerator" "mjx-op" "mjx-over"
+            "mjx-row" "mjx-stack" "mjx-sub" "mjx-sup" "mjx-surd" "mjx-texatom"
+            "mjx-TeXmathchoice" "mjx-under" "mjx-vsize" "new" "outline-not" "outline"
+            "warning" "markdown-body" "similars" "similars-append" "similar-links-search" "text-center"
+            "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
+            "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
+            "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
+        )
+        html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
+        html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
+
+        echo "$html_classes" | gev --line-regexp "$html_classes_regexpattern" --
+
+        # Check for whitelisted classes *not* present, suggesting a typo or stale entry in the whitelist:
+        for class in "${html_classes_whitelist[@]}"; do
+            if ! grep -E --invert-match --line-regexp --quiet "$class" <<< "$html_classes"; then
+                echo "'""$class""' is not in HTML classes"
+            fi
+        done | less
+    }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
     λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
@@ -591,17 +612,17 @@ else
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
-     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ find ./ -type f -name "*.md" -type f -exec grep -E -e 'css-extension:' {} \; | \
        gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
 
     λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --max-args=500 "gf --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
@@ -643,14 +664,14 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' --; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' --; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
          find ./metadata/annotation -maxdepth 1 -type f | xargs --max-args=500 ./static/build/collapse-checker.py; }
     wrap λ "Overuse of '.collapse' class in compiled HTML?"
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sort | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
@@ -916,7 +937,7 @@ else
     set +e
 
     bold "Expiring ≤100 updated files…"
-    # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
+    # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
     EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | gfv -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' -e '.gtx' -e 'static/redirect/' -e 'static/nginx' -e '.hs' | xargs ls -t 2>/dev/null | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-site.html"
     for URL in $EXPIRE; do
@@ -1156,10 +1177,6 @@ else
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
     λ() { find . -executable -type f | gfv -e 'static/build/' -e 'nginx/memoriam.sh' -e 'haskell/lcp.hs' -e '.git/hooks/post-commit'; }
-    set -x
-
-    set -x
-
     wrap λ "Executable bit set on files that shouldn't be executable?"
 
     λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e '403 Forbidden' ./metadata/auto.gtx; }
@@ -1189,7 +1206,7 @@ else
     bold "Checking for HTML anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -mtime -31 -name "*.html" | gfv 'static/' | \
                          parallel --max-args=500 "gf --ignore-case --files-with-matches \
-                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied' -e '403 Forbidden'" | sort)"
+                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied' -e '403 Forbidden'")"
          for BROKEN_HTML in $BROKEN_HTMLS; do
              grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | gfv -e 'Right' -e 'Just';
          done; }
@@ -1217,7 +1234,7 @@ else
     wrap λ "Corrupted text file? use 'dos2unix' on it."
 
     bold "Checking for PDF anomalies…"
-    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel --max-args=500 file | \
+    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel --max-args=500 file | \
                                 grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
@@ -1240,11 +1257,12 @@ else
                   -e 'This article appeared in a journal published by Elsevier. The attached' \
                   -e 'The user has requested enhancement of the downloaded file' \
                   -e 'See discussions, stats, and author profiles for this publication at: https://www.researchgate.net' \
-                  -e 'This paper has been accepted for publication in ')
+                  -e 'This paper has been accepted for publication in '\
+                  -e 'Online First Publication, ' )
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | sort | parallel checkSpamHeader
+        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | parallel checkSpamHeader
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy initial pages to the end.)" &
 
@@ -1255,7 +1273,7 @@ else
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }
     export -f removeEncryption
-    find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | sort | parallel removeEncryption &
+    find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel removeEncryption &
 
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
@@ -1271,7 +1289,7 @@ else
                                 identify "{}" >/dev/null 2>&1 || echo "{}"'; }
     wrap λ "Corrupted SVGs" &
 
-    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | sort | \
+    λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | \
               xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off; }
     wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
@@ -1328,7 +1346,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)" &
 
-    λ() { find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' | sort | parallel png2JPGQualityCheck; }
+    λ() { find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' | parallel png2JPGQualityCheck; }
     wrap λ "PNGs that should be JPGs?" &
 
     bold "Running site functionality checks…"
@@ -1368,7 +1386,7 @@ else
         done
 
         # check for any pages that could use multi-columns now:
-        λ(){ (find . -name "*.md"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | shuf | \
+        λ(){ (find . -name "*.md"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | \
                  parallel --max-args=500 runghc -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
