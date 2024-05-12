@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-07 10:26:53 gwern"
+# When:  Time-stamp: "2024-05-10 20:40:00 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -119,6 +119,12 @@ export -f crop
 
 alias invert="mogrify -negate"
 
+# report to InvertOrNot.com one image URL that incorrectly inverts/invert-nots for dark-mode: <https://invertornot.com/docs#/default/correction_api_correction_post>
+# `$ invert-error-report https://gwern.net/doc/math/2024-zhang-figure1-overfittingofmodelfamiliestogsm8k.png`
+invert-error-report () { curl --request 'POST' 'https://invertornot.com/api/correction' \
+                              --header 'accept: application/json' --header 'Content-Type: application/json' \
+                              --data '["'$1'"]'; }
+
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
     for FILE in "$@"; do
@@ -145,7 +151,7 @@ png2JPGQualityCheck () {
         QUALITY_THRESHOLD=31 # decibels
         SIZE_REDUCTION_THRESHOLD=30 # %
         TMP_DIR="${TMPDIR:-/tmp}" # Use TMPDIR if set, otherwise default to /tmp
-        JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
+        # JPG_BASENAME="$(basename "${ARG%.png}.jpg")"
         JPG="$(mktemp "$TMP_DIR/XXXXXX.jpg")"
 
         # Convert PNG to JPG at 15% quality (to ensure any artifacts show up clearly):
@@ -228,7 +234,7 @@ gw () {
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
            grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
-           xargs grep -F --color=always --ignore-case --with-filename "$QUERY" | cut -c 1-2548);
+           xargs grep -F --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
     if [ -z "$RESULTS" ]; then
         gwl "$@" # fall back to double-checking IRC logs
     else

@@ -36,7 +36,7 @@ else
             FILES=$( (ls ~/*.md; find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
                         grep -F -v "${EXCLUDE_SEARCH_AND_REPLACE[@]}" | \
-                        xargs grep -F --files-with-matches "$1" | sort)
+                        xargs grep -F --files-with-matches -- "$1" | sort)
 
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2

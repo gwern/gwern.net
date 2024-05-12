@@ -15,10 +15,12 @@ import LinkMetadataTypes (MetadataItem, Path, Failure(Permanent))
 import MetadataFormat (cleanAbstractsHTML, trimTitle, filterMeta, cleanAuthors, processDOI, pageNumberParse)
 import Paragraph (processParagraphizer)
 import Utils (printGreen, printRed, replace, trim)
+import Config.Misc as C (cd)
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf "" = error "Fatal error: `Annotation.PDF.pdf` called on empty string argument; this should never happen."
-pdf p = do let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
+pdf p = do C.cd
+           let p' = takeWhile (/='#') $ if head p == '/' then tail p else p
            existsp <- doesFileExist p'
            unless existsp $ error $ "PDF file doesn't exist? Tried to query " ++ p
            let pageNumber = pageNumberParse p

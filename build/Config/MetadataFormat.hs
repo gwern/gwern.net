@@ -157,14 +157,16 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "foo", "hcrj901068 151..157", "hred_91_110.42_66", "inhy_60_205.213_218", "ipg1200217a", "jasar08282 841..854", "jcp20186 373..378", "jcp25202 175..179", "jcpp_1798 1192..1199"
                       , "jn169326 872..877", "khan", "mbev_16_1218.1791_1798", "mgs;01jan95", "osteo-1203 257..264", "oup_cercor_bhy157 1..11 ++", "pnas201201895 1..8", "pnp06457 1125..1128", "s00221-005-2334-6ca-web 23..30"
                       , "stdin", "template", "title", "vsp0092 187..211", "ÿþ1", "ÿþ14-226", "“Alt", "chowe", "comp5"
-                      , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore", "ÿþ", "I.R.I.S."]
+                      , "dan", "decosta", "gottfredson", "van den Hurk", "Word", "pdftk-java 3.0.9", "bar", "tmp", "jvore", "ÿþ", "I.R.I.S.", "C&M", "C&amp;M", "()", "[]", "{}"]
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]
 htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 256 GPUs")
                        , ("*foo* bar", "<em>foo</em> bar")
                        , ("Code is available at github.com/microsoft/SPACH.</p>", "Code is available at <a href=\"https://github.com/microsoft/SPACH\">github.com/microsoft/SPACH</a>.</p>")
-                       , ("...biochemical programs (preconditioning)2,3,4. Under...", "...biochemical programs (preconditioning)<sup>2,3,4</sup>. Under...")]
+                       , ("...biochemical programs (preconditioning)2,3,4. Under...", "...biochemical programs (preconditioning)<sup>2,3,4</sup>. Under...")
+                       , ("or strokes (n = 7). Both presurgical and", "or strokes (<em>n</em> = 7). Both presurgical and")
+                       ]
 
 -- testing: unique keys, valid regex keys
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
@@ -1640,6 +1642,7 @@ htmlRewriteFixed =
          , ("Excess significance", "Excess statistical-significance")
          , ("their scientific significance", "their scientific importance")
          , ("behavioral significance", "behavioral importance")
+         , (" behaviour", " behavior")
          , (" practise", " practice")
          , (" aesthetic", " esthetic")
          , (" utilise", "use")
@@ -1804,6 +1807,8 @@ htmlRewriteFixed =
          , ("</em></em>", "</em>")
          , ("<strong><strong>", "<strong")
          , ("</strong></strong>", "</strong")
+         , ("<bold>Summary:\8195</bold>", "")
+         , ("<bold>Summary:</bold>", "")
          , ("ﬀ", "ff")
          , ("ﬄ", "ffl")
          , ("ﬁ", "fi")
