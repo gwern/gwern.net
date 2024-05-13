@@ -5,11 +5,11 @@ module Main where
 
 import Control.Monad (unless, when, filterM)
 import Data.Containers.ListUtils (nubOrd)
-import Data.List (sort)
+import Data.List (isSuffixOf, sort)
 import Data.List.Split (chunksOf)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
-import Data.Map.Strict as M (fromList, lookup, keys, filter)
+import qualified Data.Map.Strict as M (fromList, lookup, keys, filter)
 
 import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings, expireMatches, sortSimilars, readListSortedMagic)
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
@@ -24,7 +24,7 @@ maxEmbedAtOnce = 750
 main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
-          let mdl = sort $ M.keys $ M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
+          let mdl = sort $ filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ M.keys $ M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           mdlMissing <- filterM (fmap not . similaritemExistsP) mdl
           bdb <- readBacklinksDB
           edb <- readEmbeddings

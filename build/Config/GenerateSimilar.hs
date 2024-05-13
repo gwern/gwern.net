@@ -1,6 +1,7 @@
 module Config.GenerateSimilar where
 
 import Data.List (isPrefixOf, isSuffixOf)
+import GHC.Word (Word64)
 
 -- how many results do we want?
 bestNEmbeddings :: Int
@@ -48,3 +49,6 @@ minDistance = 0.01 -- avoids self-matches and other odd errors
 -- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
 minTagAuto :: Int
 minTagAuto = 3
+
+randSeed :: Word64
+randSeed = 15

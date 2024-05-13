@@ -1457,6 +1457,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Dromedaries", "Dromedary")
           , ("Drop_cap", "Initial#Drop_cap")
           , ("Drop_caps", "Initial#Types_of_initial")
+          , ("Dropout", "Dilution_(neural_networks)")
           , ("Dropout_%28neural_networks%29", "Dilution_(neural_networks)")
           , ("Dropout_(neural_networks)", "Dilution_(neural_networks)")
           , ("Drug_target", "Biological_target")
@@ -5927,4 +5928,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("UCT", "Monte_Carlo_tree_search")
         , ("DOI", "Digital_object_identifier")
         , ("Pattern_separation", "Place_cell#Pattern_separation")
+        , ("Stockfish", "Stockfish (chess)")
         ]

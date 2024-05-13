@@ -42,7 +42,7 @@ import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHt
 import MetadataAuthor (authorsTruncateString)
 
 import Config.Misc (todayDay, cd)
-import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions)
+import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions, randSeed)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -220,7 +220,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "embeddings2Forest called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 4 32 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 32 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -233,10 +233,9 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
-      randSeed = 14
   in
     runIdentity $
-    forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
+    forest C.randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
     embeddings2Conduit es
  where
    embeddings2Conduit :: Embeddings -> ConduitT () (Embed DVector Double String) Identity ()

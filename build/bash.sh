@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-10 20:40:00 gwern"
+# When:  Time-stamp: "2024-05-12 12:28:04 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -289,6 +289,7 @@ gwmv () {
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
         OLD=$(echo "$1" | tr -d '  ⁠' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | tr -d ' ⁠ ' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
+        if [[ "$NEW" == "" ]]; then echo "Processing arguments failed, exiting immediately!" ; echo "$OLD" "$NEW" ; return 8; fi
         # Check if the parent directory of the NEW path exists
         NEW_DIR=$(dirname "$HOME/wiki$NEW")
         if [ ! -d "$NEW_DIR" ]; then

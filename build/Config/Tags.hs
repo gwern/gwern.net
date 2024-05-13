@@ -137,7 +137,7 @@ tagsShort2LongRewrites =
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
-   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive") ]
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive"), ("nback", "dual-n-back"), ("savantism", "psychology/neuroscience/memory/savant"), ("idiot-savant", "psychology/neuroscience/memory/savant"), ("savant-syndrome", "psychology/neuroscience/memory/savant") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -175,6 +175,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("reinforcement-learning/imitation-learning",                          "imitation learning")
           , ("reinforcement-learning/offline",                          "offline RL")
           , ("reinforcement-learning/armstrong-controlproblem", "Armstrong’s control problem")
+          , ("psychology/neuroscience/memory/savant", "savantism")
+          , ("psychology/neuroscience/memory", "memory")
           , ("psychology/inner-voice", "inner-monologue (psych)")
           , ("psychology/writing", "writing psychology")
           , ("psychology/willpower", "willpower")

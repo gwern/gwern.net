@@ -1580,6 +1580,7 @@ htmlRewriteFixed =
          , ("peer–reported", "peer-reported")
          , ("profit-able", "profitable")
          , ("real- world", "real-world")
+         , ("ap- proach", "approach")
          , (" touse", " to use")
          , (" Copyright</p>", "")
          , (" GPT2", " GPT-2")

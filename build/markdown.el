@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-05-06 10:28:45 gwern"
+;;; When:  Time-stamp: "2024-05-12 11:11:55 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -711,6 +711,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("t1/2" . "t<sub>1⁄2</sub>")
                         (" m/s" . " m⁄s")
                         (" km/s" . " km⁄s")
+                        ("km2" . "km^2^")
                         ("µm3" . "µm^3^")
                         (" ug" . " μg")
                         ("ϰ2" . "ϰ^2^")
@@ -861,6 +862,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("95%CI" . "95% CI")
                         ("allowlist" . "whitelist")
                         ("denylist" . "blacklist")
+                        ("PGI" . "PGS")
                         (" <sup>" . "<sup>") ; can't auto-replace because of instances like isotopic elements with *prefixed* superscripts, eg ' <sup>60</sup>Co'
                                         ; replace all word-numbers with actual numbers:
                         (" one-hundred" . " 100")
