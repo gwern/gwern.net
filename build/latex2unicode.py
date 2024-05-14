@@ -59,7 +59,7 @@ Task:
 Input to convert: """ + target + "Converted output: "
 
 completion = client.chat.completions.create(
-  model="gpt-4-1106-preview", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
+  model="gpt-4o", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
   messages=[
     {"role": "system", "content": "You are a skilled mathematician & tasteful typographer, expert in LaTeX."},
     {"role": "user", "content": prompt }

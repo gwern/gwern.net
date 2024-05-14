@@ -48,7 +48,7 @@ prompt_text = f"You are a helpful research librarian. Below is a list of article
 
 completion = client.chat.completions.create(
     # "model": "gpt-4", # TODO: once caching is implemented, switch to GPT-4 for the highest-possible quality. (Unfortunately, it'd cost way too much to run them all through GPT-4 each time, which is how the current sort-by-magic auto-tagging works.)
-    model =  "gpt-4-1106-preview",
+    model =  "gpt-4o",
     messages=[
     {"role": "system", "content": "You are a helpful research librarian."},
     {"role": "user",   "content": prompt_text }
