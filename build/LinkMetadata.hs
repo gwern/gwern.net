@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-05-09 22:10:19 gwern"
+When:  Time-stamp: "2024-05-14 18:18:41 gwern"
 License: CC-0
 -}
 
@@ -19,6 +19,7 @@ module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMeta
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, toLower, isNumber)
+import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -237,7 +238,9 @@ readLinkMetadataAndCheck = do
                                                  printGreen $ ppShow balancedBrackets
 
              -- check validity of all external links:
-             let urlsAll = filter (\(x@(u:_),_) -> if u `elem` ['/', '!', '$', '\8383'] ||
+             let urlsAll = filter (\(x,_) -> if x == "" then error "LinkMetadata.urlsAll: empty URL!" else
+                                               let u = head x in
+                                               if u `elem` ['/', '!', '$', '\8383'] ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || not (anyPrefix x ["ttps://", "ttp://", "/wiki", "wiki/", "/http"]) then False
                                                  else not (isURIReference x)) finalL
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
@@ -356,8 +359,11 @@ typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtens
                         case fieldPandocMaybe of
                           Left errr -> error $ " : " ++ t ++ show errr
                           Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
-                            T.unpack fieldHtml
+                                               let compiledHTML = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
+                                                 case compiledHTML of
+                                                   Right fieldHtml -> T.unpack fieldHtml
+                                                   Left errors     -> error "LinkMetadata.typesetHtmlField: string failed to compile through Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
+
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -611,7 +617,7 @@ isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", "
 -- config testing: 'isUniqueKeys'
 fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
 fileTranscludesTest md am =
-  let testFileTransclude md' am' bool path = let Just x = M.lookup path md' in generateFileTransclusionBlock am' bool (path, x)
+  let testFileTransclude md' am' bool path = let x = fromJust $ M.lookup path md' in generateFileTransclusionBlock am' bool (path, x)
       simpleTestEmpty = testFileTransclude md M.empty True
       simpleTest = testFileTransclude md am
       simpleTestT = simpleTest True

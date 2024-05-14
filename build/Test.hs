@@ -155,7 +155,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
                length $ ensure "Test.linkIconTestUnitsText" "isURIReferenceT" (\(u,_,_) -> isURIReferenceT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
-              , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" (\(_, (Link _ _ (u,_))) -> isURLT u) Config.Interwiki.testCases)
+              , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" safeLink Config.Interwiki.testCases)
               , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)
               , length $ isUniqueAll Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "isURIReferenceT" (isURIReferenceT . fst) Config.LinkSuggester.whiteList
@@ -191,6 +191,9 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                 , ensure "Test.prioritizeLinkIconBlackList" "isDomainT" isDomainT Config.LinkIcon.prioritizeLinkIconBlackList]
               ] ++
               [length (ensure "Test.localizeLinktestCases" "URL/URI" (\(u, (af, mv, html, _)) -> isURLT u && isURIReferenceT af && (mv=="" || isURLT mv) && (html=="" || isURLT html)) Config.LinkArchive.localizeLinktestCases)]
+  where safeLink :: (Show a) => (a,Inline) -> Bool
+        safeLink (_, (Link _ _ (u,_))) = isURLT u
+        safeLink x = error $ "Test.isURLT (URL of second).safeLink: passed an Inline which was not a 'Link' (with a valid URL)? erroring out. Original: " ++ show x
 
 -------------------------------------------------------------------------------------------------------------------------------
 

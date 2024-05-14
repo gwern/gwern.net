@@ -9,22 +9,23 @@ import Data.List (isSuffixOf, sort)
 import Data.List.Split (chunksOf)
 import qualified Control.Monad.Parallel as Par (mapM_)
 import System.Environment (getArgs)
-import qualified Data.Map.Strict as M (fromList, lookup, keys, filter)
+import qualified Data.Map.Strict as M (fromList, lookup, filter, toList)
 
 import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings, expireMatches, sortSimilars, readListSortedMagic)
 import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
 import LinkBacklink (readBacklinksDB)
-import LinkMetadata (readLinkMetadata)
+import LinkMetadata (readLinkMetadata, sortItemPathDateModified)
 import Utils (printGreen)
 import qualified Config.Misc (cd)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 750
+maxEmbedAtOnce = 100
 
 main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
-          let mdl = sort $ filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ M.keys $ M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
+          let mdl = take maxEmbedAtOnce $ filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ map fst $ reverse $ sortItemPathDateModified $ M.toList $
+                M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           mdlMissing <- filterM (fmap not . similaritemExistsP) mdl
           bdb <- readBacklinksDB
           edb <- readEmbeddings
@@ -68,11 +69,12 @@ main = do Config.Misc.cd
           unless (args == ["--only-embed"]) $ do
 
               printGreen $ "Begin computing & writing out " ++ show (length mdlMissing) ++ " missing similarity-rankings…"
-              let mdlMissingChunks = chunksOf 15 mdlMissing
+              let mdlMissingChunks = chunksOf 10 mdlMissing
               mapM_
-                    (Par.mapM_ (\f ->       case M.lookup f edbDB of
+                    (mapM_ (\f ->       case M.lookup f edbDB of
                                                  Nothing        -> return ()
-                                                 Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
+                                                 Just (b,c,d,e) -> do
+                                                                      let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
                                                                       -- rerank the _n_ matches to put them into a more internally-coherent ordering by pairwise distance minimization, rather than merely minimizing distance to the target URL:
                                                                       hitsSorted <- sortSimilars edb sortDB (head hits) hits
                                                                       let nmatchesSorted = (path, hitsSorted)
@@ -83,7 +85,7 @@ main = do Config.Misc.cd
 
               printGreen "Wrote out missing."
               unless (args == ["--update-only-missing-embeddings"]) $ do
-                let chunkSize = 550
+                let chunkSize = 500
                 let mdlChunks = chunksOf chunkSize mdlMissing
                 printGreen "Rewriting all embeddings…"
                 printGreen "Rewriting all edb''…"

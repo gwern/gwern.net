@@ -1534,4 +1534,5 @@ authorWpLinkDB =
     ,"Zhihui Wang","Zhiping Weng","Zhiwei Wang","Zhiwu Lu","Zhiyi Zhang"
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
-    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis","Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"]
+    ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
+    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld"]

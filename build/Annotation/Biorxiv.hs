@@ -46,6 +46,13 @@ biorxiv p = do checkURL p
                                                        return $ Right (p, (title, author, date, "", [("doi",doi)], ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
-    parseMetadataTagsoup key = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "")
+    parseMetadataTagsoup key = map (safeKeyList key)
       -- 'TagOpen "meta" [("name","citation_abstract"),("lang","en"),("content","<h3>ABSTRACT</h3>\n<p>The vast majority of human mutations have minor allele frequencies (MAF) under 1%, with the plurality observed only once (ie. \8220singletons\8221). While Mendelian diseases are predominantly caused by rare alleles, their role in complex phenotypes remains largely unknown. We develop and rigorously validate an approach to jointly estimate the contribution of alleles with different frequencies, including singletons, to phenotypic variation. We apply our approach to transcriptional regulation, an intermediate between genetic variation and complex disease. Using whole genome DNA and RNA sequencing data from 360 European individuals, we find that singletons alone contribute ~23% of all <i>cis</i>-heritability across genes (dwarfing the contributions of other frequencies). We then integrate external estimates of global MAF from worldwide samples to improve our inference, and find that average <i>cis</i>-heritability is 15.3%. Strikingly, 50.9% of <i>cis</i>-heritability is contributed by globally rare variants (MAF&lt;0.1%), implicating purifying selection as a pervasive force shaping the regulatory architecture of most human genes.</p><h3>One Sentence Summary</h3>\n<p>The vast majority of variants so far discovered in humans are rare, and together they have a substantial impact on gene regulation.</p>")]'
-    parseMetadataTagsoupSecond key = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ b!!1 else "")
+    parseMetadataTagsoupSecond key = map (safeKeyList2 key)
+
+    safeKeyList :: String -> Tag String -> String
+    safeKeyList key' (TagOpen _ (a:b)) = if snd a == key' then snd $ head b else ""
+    safeKeyList key' x = error "Annotation.Biorxiv.safeKeyList: Tags malformed? original: " ++ show x ++ " : " ++ show key'
+
+    safeKeyList2 key'' (TagOpen _ (a:b)) =  if snd a == key'' then snd $ b!!1 else ""
+    safeKeyList2 key'' x = error "Annotation.Biorxiv.safeKeyList2: Tags malformed? original: " ++ show x ++ " : " ++ show key''

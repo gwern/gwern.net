@@ -19,15 +19,18 @@ openreview p = do checkURL p
                   case status of
                       ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                       _ -> do
-                             let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
-                             let keywords'
-                                    | null keywords || keywords == [""] = ""
-                                    | length keywords > 1 =
-                                      unlines (init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
-                                    | otherwise = "[Keywords: " ++ concat keywords ++ "]"
-                             let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
-                             let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                             let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
-                             return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [], [],
-                                                 -- due to pseudo-LaTeX
-                                                   abstractCombined))
+                             let results = lines $ U.toString bs
+                             case results of
+                               (title:author:date:tldr:desc:keywords) -> do
+                                    let keywords'
+                                           | null keywords || keywords == [""] = ""
+                                           | length keywords > 1 =
+                                             unlines (init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
+                                           | otherwise = "[Keywords: " ++ concat keywords ++ "]"
+                                    let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
+                                    let desc' = cleanAbstractsHTML $ processArxivAbstract desc
+                                    let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
+                                    return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [], [],
+                                                        -- due to pseudo-LaTeX
+                                                          abstractCombined))
+                               _ -> printRed ("OpenReview failed to parse enough metadata fields? " ++ unlines results) >> return (Left Permanent)

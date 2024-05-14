@@ -70,23 +70,23 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
-                        let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
+                        let title = cleanAbstractsHTML $ concatMap safeTitle metas
+                        let date = let dateTmp = concatMap safeDateIssued metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
-                        let dateModified = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dcterms.modified" then snd $ head w else "") metas
+                        let dateModified = let dateTmp = concatMap safeDateModified metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then date else dateTmp
-                        let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
+                        let description = concatMap safeDescription metas
                         let keywordTags = if "#" `isInfixOf` p then [] else
-                                            concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Utils.split ", " $ snd $ head y else []) metas
-                        let author = cleanAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
+                                            concatMap safeKeywords metas
+                        let author = cleanAuthors $ concatMap safeAuthor metas
                         let author' = if author == "Gwern Branwen" then "Gwern" else author
                         let thumbnail = if not (any filterThumbnail metas) then "" else
-                                          (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
+                                          safeContent $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnail-text, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnail-text set.
-                                          (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
+                                          safeContent $ head $ filter filterThumbnailText metas
                         when (null thumbnailText) $ printRed ("Warning: no thumbnail-text alt text defined for URL " ++ p)
-                        let thumbnailCSS = words $ (\(TagOpen _ [_, ("content", css)]) -> css) $ head $ filter filterThumbnailCSS metas
+                        let thumbnailCSS = words $ safeContent $ head $ filter filterThumbnailCSS metas
 
                         (color,h,w) <- invertImage thumbnail'
                         let color' = if "invert" `elem` thumbnailCSS || "invert-not" `elem` thumbnailCSS then ""
@@ -114,12 +114,31 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
                           else return $ Right (p, (title', author', date, dateModified, doi, keywordTags, combinedAnnotation))
         where
+          filterThumbnail, filterThumbnailText, filterThumbnailCSS :: Tag String -> Bool
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
           filterThumbnailCSS (TagOpen "meta" [("property", "gwern:thumbnail:css-classes"), _]) = True
           filterThumbnailCSS _ = False
+
+          safeTitle, safeDateIssued, safeDateModified, safeDescription, safeAuthor, safeContent :: Tag String -> String
+          safeKeywords :: Tag String -> [String]
+          safeTitle (TagOpen _ (t:u)) = if snd t == "title" then snd $ head u else ""
+          safeTitle x = error $ "Annotation.Gwernnet.safeTitle: malformed tags failed to be TagOpen? original: " ++ show x
+          safeDateIssued (TagOpen _ (v:w)) = if snd v == "dc.date.issued" then snd $ head w else ""
+          safeDateIssued x = error $ "Annotation.Gwernnet.safeDateIssued: malformed tags failed to be TagOpen? original: " ++ show x
+          safeDateModified (TagOpen _ (v:w)) = if snd v == "dcterms.modified" then snd $ head w else ""
+          safeDateModified x = error $ "Annotation.Gwernnet.safeDateModified: malformed tags failed to be TagOpen? original: " ++ show x
+          safeDescription (TagOpen _ (cc:dd)) = if snd cc == "description" then snd $ head dd else ""
+          safeDescription x = error $ "Annotation.Gwernnet.safeDescription: malformed tags failed to be TagOpen? original: " ++ show x
+          safeKeywords (TagOpen _ (x:y)) = if snd x == "keywords" then Utils.split ", " $ snd $ head y else []
+          safeKeywords x = error $ "Annotation.Gwernnet.safeKeywords: malformed tags failed to be TagOpen? original: " ++ show x
+          safeAuthor (TagOpen _ (aa:bb)) = if snd aa == "author" then snd $ head bb else ""
+          safeAuthor x = error $ "Annotation.Gwernnet.safeAuthor: malformed tags failed to be TagOpen? original: " ++ show x
+          safeContent (TagOpen _ [_, ("content", content)]) = content
+          safeContent x = error $ "Annotation.Gwernnet.safeContent: malformed tags failed to be TagOpen? original: " ++ show x
+
 
 -- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.md' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
