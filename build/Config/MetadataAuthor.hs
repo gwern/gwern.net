@@ -238,6 +238,7 @@ canonicals = M.fromList
   , ("Alice R. Spooner", "Alice Spooner")
   , ("hsu_steve", "Steve Hsu")
   , ("Darold Treffert", "Darold A. Treffert")
+  , ("ryanqnorth", "Ryan North")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -297,13 +298,15 @@ authorLinkDB = M.fromList $
     , ("Aapo Kyrola", "https://www.cs.cmu.edu/~akyrola/")
     , ("Abhishek Kumar", "https://scholar.google.com/citations?user=6vghMS0AAAAJ")
     , ("Abigail Fisher", "https://profiles.ucl.ac.uk/4836-abi-fisher")
-    , ("Abigail Powers", "https://scholar.google.com/citations?hl=en&user=f7gqpBIAAAAJ")
+    , ("Abigail Powers", "https://scholar.google.com/citations?user=f7gqpBIAAAAJ")
     , ("Adriana Munoz", "https://scholar.google.com/citations?user=jlfqfeEAAAAJ")
     , ("A. Jameson", "http://aero-comlab.stanford.edu/jameson/index.html")
     , ("Albert Wong", "https://scholar.google.com/citations?user=Z-JN7vIAAAAJ")
     , ("Alex Calderwood", "https://scholar.google.com/citations?user=TIUe46YAAAAJ")
-    , ("Alice Spooner", "https://scholar.google.com/scholar?hl=en&as_sdt=0%2C21&q=author%3A%22ALR+Spooner%22")
-    , ("Jonathan S. Rosenfeld", "https://scholar.google.com/citations?hl=en&user=8HYnMeYAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Alice Spooner", "https://scholar.google.com/scholar?as_sdt=0%2C21&q=author%3A%22ALR+Spooner%22")
+    , ("Jonathan S. Rosenfeld", "https://scholar.google.com/citations?user=8HYnMeYAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Doug Rohrer", "https://scholar.google.com/citations?user=lK2WfTUAAAAJ")
+    , ("Kevin Scott", "https://en.wikipedia.org/wiki/Kevin_Scott_(computer_scientist)")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -1535,4 +1538,4 @@ authorWpLinkDB =
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
-    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld"]
+    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North"]

@@ -11,7 +11,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
 import MetadataFormat (cleanAbstractsHTML)
-import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix)
+import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal)
 import Config.Paragraph as C
 
 import Query (extractURLs)
@@ -37,7 +37,7 @@ processParagraphizer p a = -- the path is necessary to check against the whiteli
 
 -- EXPERIMENTAL: the GPT-3/4 paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
 checkURLs :: Pandoc -> IO ()
-checkURLs p = let urls = extractURLs p in
+checkURLs p = let urls = filter (not . isLocal ) $ extractURLs p in
                 mapM_ (\u -> void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "x-www-browser" [T.unpack u]) urls
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs

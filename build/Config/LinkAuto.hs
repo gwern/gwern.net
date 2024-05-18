@@ -249,7 +249,7 @@ custom = [
         , ("ByT5", "https://arxiv.org/abs/2105.13626#google")
         , ("C4\\.5", "https://en.wikipedia.org/wiki/C4.5_algorithm")
         , ("CC[ -]12M", "https://arxiv.org/abs/2102.08981#google")
-        , ("(CLIP|Contrastive Language-Image Pre-Training)", "https://openai.com/research/clip")
+        , ("(CLIP|Contrastive Language-Image Pre-Training)", "https://openai.com/index/clip/")
         , ("CNVs?", "https://en.wikipedia.org/wiki/Copy_number_variation")
         , ("CPM", "https://arxiv.org/abs/2012.00413")
         , ("CPM-2", "https://arxiv.org/abs/2106.10715")

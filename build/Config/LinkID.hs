@@ -289,7 +289,7 @@ linkIDOverrides =
        , ("https://openaccess.thecvf.com/content/ICCV2021/papers/Zhang_SmartShadow_Artistic_Shadow_Drawing_Tool_for_Line_Drawings_ICCV_2021_paper.pdf", "zhang-et-al-2021-smartshadow")
        , ("https://openai.com/research/ai-and-efficiency", "hernandezbrown-2020-blog")
        , ("https://openai.com/research/better-language-models", "gpt-2-blog")
-       , ("https://openai.com/research/clip", "radford-et-al-blog")
+       , ("https://openai.com/index/clip/", "radford-et-al-blog")
        , ("https://openai.com/research/dall-e", "ramesh-et-al-2021-dalle-blog")
        , ("https://openai.com/research/fine-tuning-gpt-2", "ziegler-et-al-2019-blog")
        , ("https://openai.com/research/image-gpt", "chen-et-al-2020-blog")

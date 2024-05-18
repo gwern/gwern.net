@@ -2546,7 +2546,7 @@ goodLinks =
             , "https://minimaxir.com/2017/06/imgur-decline/"
             , "https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/sicp.html"
             , "https://mkv25.net/dfma/map-8269"
-            , "https://ml.berkeley.edu/blog/posts/clip-art/"
+            , "https://bair.berkeley.edu/blog/2020/07/11/auction/"
             , "https://mlp.fandom.com/wiki/The_Perfect_Pear"
             , "https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html"
             , "https://mssv.net/2020/08/02/what-args-can-teach-us-about-qanon/"

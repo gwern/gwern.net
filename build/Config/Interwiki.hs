@@ -5929,4 +5929,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("DOI", "Digital_object_identifier")
         , ("Pattern_separation", "Place_cell#Pattern_separation")
         , ("Stockfish", "Stockfish_(chess)")
+        , ("Imagen", "Imagen_(Google_Brain)")
         ]

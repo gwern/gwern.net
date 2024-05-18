@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-05-14 18:18:41 gwern"
+When:  Time-stamp: "2024-05-17 11:39:04 gwern"
 License: CC-0
 -}
 
@@ -91,6 +91,12 @@ addPageLink x = x
 -- To rerun LinkAuto.hs (perhaps because some rules were added):
 --
 -- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,g,abst)) -> return (a,(b,c,d,e,f,g, linkAutoHtml5String abst)))
+--
+-- To do IO (eg. calling an API):
+--
+-- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,dateModified,kvs,tags,abst)) ->
+-- >  do { abst' <- Paragraph.processParagraphizer path abst;
+-- >       return (path,(title,author,date,dateModified,kvs,tags, abst')) } )
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"

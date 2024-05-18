@@ -135,11 +135,11 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let untitledLinksSection  = generateListItems am untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
-  let imageFirst = take 1 $ filter (\(Image _ _ (f,_)) -> not (".svg" `T.isInfixOf` f)) $ -- SVGs break as page thumbnails in many previews, so we exclude them
+  let imageFirst = take 1 $ filter safeSVGNot $ -- SVGs break as page thumbnails in many previews, so we exclude them
         concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages $ toPandoc abstract) links
 
-  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst))
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else "") (head imageFirst))) ++ "'"
+  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -193,6 +193,17 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.md") contentsNew
   -- putStrLn $ "dir'' done: " ++ dir''
+  where safeSVGNot :: Inline -> Bool
+        safeSVGNot (Image _ _ (f,_)) = not (".svg" `T.isInfixOf` f)
+        safeSVGNot x = error $ "generateDirectory.hs:generateDirectory: safeSVGNot: passed an Inline which was not an Image, which should be impossble. Original: " ++ show x
+
+        safeImageExtractURL :: Inline -> T.Text
+        safeImageExtractURL (Image _ _ (imagelink,_)) = imagelink
+        safeImageExtractURL x = error $ "generateDirectory.hs:generateDirectory: safeImageExtractURL: passed an Inline which was not an Image, which should be impossble. Original: " ++ show x
+
+        safeImageExtractCaption :: Inline -> T.Text
+        safeImageExtractCaption (Image _ caption (_,altText)) = let captionText = inlinesToText caption in if captionText /= "" then captionText else if altText /= "" then altText else ""
+        safeImageExtractCaption x = error $ "generateDirectory.hs:generateDirectory: safeImageExtractCaption: passed an Inline which was not an Image, which should be impossble. Original: " ++ show x
 
 -- we have 3 kinds of entries for a tag-directory: entries written by me, annotations, and partials/links; for /doc/newest, we want to take the 'newest' but set different limits: I don't write new essays nearly as often as I add new annotations or links, so we can't just take _n_ of each.
 -- And for new essays, but not annotations/links, we want to use a broader definition of 'new' to include *modified*: as modified >= created, we just use modification time instead
@@ -231,7 +242,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
-             "title: " ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ " tag",
+             "title: ‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ "’ tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++

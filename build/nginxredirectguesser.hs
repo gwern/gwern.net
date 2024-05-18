@@ -32,13 +32,17 @@ main = do errors <- fmap lines getContents
           files <- listFilesRecursivelyWithBasename C.root
           one <- readFile "static/redirect/nginx.conf"
           two <- readFile "static/redirect/nginx-broken.conf"
-          let redirects = filter (\(_,b) -> b /= "/static/404\";") $ map (\(a:b:_) -> (a,b)) $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two
+          let redirects = filter (\(_,b) -> b /= "/static/404\";") $ map safeTuplize $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two
           let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\""::String)) a, b)) redirects
           let errorDistances = zip errors $ map (filter (\(d,_,_) -> d <= minDistance) . diffAndRank files redirectsCleaned) errors -- :: [(String, [(Int,String,String)])]
           let redirectPairs = (sortBySecondField $ map (\(err,candidates) -> (err, if null candidates then "" else (\(_,_,target) -> target) (head candidates))) errorDistances) :: [(String,String)]
           let redirectsGenerated = map (\(er, candidate) -> if null candidate then "\"~^" ++ replaceMany [(".pdf$", "\\.pdf.*$")] (escape er ++ "$") ++ "\" \"\";"
                                                              else "\"~^" ++ replaceMany [(".pdf$", "\\.pdf.*$")] (escape er ++ "$") ++ "\" \"" ++ candidate) redirectPairs
           mapM_ putStrLn redirectsGenerated
+
+  where safeTuplize []      = error "nginxredirectguesser: main: safeTuplize: empty list!"
+        safeTuplize [a]     = error $ "nginxredirectguesser: main: safeTuplize: only 1 item in list! original: " ++ show a
+        safeTuplize (a:b:_) = (a,b)
 
 escape :: String -> String
 escape = replaceMany [("?","\\?"), ("[", "\\["), ("]", "\\]"), ("(", "\\("), (")", "\\)"), ("^", "\\^"), ("$", "\\$")]

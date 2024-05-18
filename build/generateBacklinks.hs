@@ -23,7 +23,7 @@ import Control.Monad (forM_, unless)
 import qualified Control.Monad.Parallel as Par (mapM)
 
 -- import Columns as C (listLength)
-import LinkAuto (linkAuto, linkAutoFiltered)
+import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, hasAnnotationOrIDInline, isPagePath, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)

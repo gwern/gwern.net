@@ -104,7 +104,7 @@ linkIconRulesSingle u
  | u'' u "www.forbes.com" = ("F", "text") -- red capital F serif
  | u'' u "fortune.com" = ("F", "text,sans") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
  | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
- | u'' u "arxiv.org" || u'' u "browse.arxiv.org" || u'' u "proceedings.mlr.press" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
+ | u'' u "arxiv.org" || u'' u "browse.arxiv.org" || u'' u "proceedings.mlr.press" || u'' u "aclanthology.org" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'ACL' & 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
  | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u' u "theatlantic.com" = ("A", "text,italic") -- The Atlantic: replicate sloping by italics
  | u'' u "www.dailymail.co.uk" = ("𝔐", "text") -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
@@ -716,7 +716,7 @@ linkIconTestUnitsText =
          , ("https://michaelnielsen.org/blog/three-myths-about-scientific-peer-review/", "MN", "text")
          , ("https://mitpress.mit.edu/9780262536226/", "MIT", "text,tri,mono")
          , ("https://web.archive.org/web/20211103153805/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
-         , ("https://ml.berkeley.edu/blog/posts/clip-art/", "BAIR", "text,quad,mono")
+         , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono")
          , ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans")
          , ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,tri,sans")
          , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri")
@@ -753,6 +753,7 @@ linkIconTestUnitsText =
          , ("https://poniesatdawn.bandcamp.com/album/dreamwalkers",  "P@D","text,tri")
          , ("https://predictionbook.com/",  "?","text,sans,bold")
          , ("https://proceedings.mlr.press/v37/xuc15.pdf",  "\120536","text")
+         , ("https://aclanthology.org/2021.naacl-main.97/",  "\120536","text")
          , ("https://osf.io/preprints/psyarxiv/gjh95/",   "ψ", "text")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")
