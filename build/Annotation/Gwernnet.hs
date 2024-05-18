@@ -1,6 +1,7 @@
 module Annotation.Gwernnet where
 
 import Control.Monad (when)
+import Data.Char (toUpper)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 -- import Text.HTML.TagSoup (isTagOpenName, parseTags, renderOptions, renderTags, renderTagsOptions, Tag(TagClose, TagOpen, TagText))
@@ -115,30 +116,37 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                           else return $ Right (p, (title', author', date, dateModified, doi, keywordTags, combinedAnnotation))
         where
           filterThumbnail, filterThumbnailText, filterThumbnailCSS :: Tag String -> Bool
-          filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
-          filterThumbnail _ = False
-          filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
-          filterThumbnailText _ = False
-          filterThumbnailCSS (TagOpen "meta" [("property", "gwern:thumbnail:css-classes"), _]) = True
-          filterThumbnailCSS _ = False
+          filterThumbnail     = isMetaTag "og:image"
+          filterThumbnailText = isMetaTag "og:image:alt"
+          filterThumbnailCSS  = isMetaTag "gwern:thumbnail:css-classes"
+
+          isMetaTag :: String -> Tag String -> Bool
+          isMetaTag prop (TagOpen "meta" [("property", p'), _]) = p' == prop
+          isMetaTag _ _ = False
 
           safeTitle, safeDateIssued, safeDateModified, safeDescription, safeAuthor, safeContent :: Tag String -> String
           safeKeywords :: Tag String -> [String]
-          safeTitle (TagOpen _ (t:u)) = if snd t == "title" then snd $ head u else ""
-          safeTitle x = error $ "Annotation.Gwernnet.safeTitle: malformed tags failed to be TagOpen? original: " ++ show x
-          safeDateIssued (TagOpen _ (v:w)) = if snd v == "dc.date.issued" then snd $ head w else ""
-          safeDateIssued x = error $ "Annotation.Gwernnet.safeDateIssued: malformed tags failed to be TagOpen? original: " ++ show x
-          safeDateModified (TagOpen _ (v:w)) = if snd v == "dcterms.modified" then snd $ head w else ""
-          safeDateModified x = error $ "Annotation.Gwernnet.safeDateModified: malformed tags failed to be TagOpen? original: " ++ show x
-          safeDescription (TagOpen _ (cc:dd)) = if snd cc == "description" then snd $ head dd else ""
-          safeDescription x = error $ "Annotation.Gwernnet.safeDescription: malformed tags failed to be TagOpen? original: " ++ show x
-          safeKeywords (TagOpen _ (x:y)) = if snd x == "keywords" then Utils.split ", " $ snd $ head y else []
-          safeKeywords x = error $ "Annotation.Gwernnet.safeKeywords: malformed tags failed to be TagOpen? original: " ++ show x
-          safeAuthor (TagOpen _ (aa:bb)) = if snd aa == "author" then snd $ head bb else ""
-          safeAuthor x = error $ "Annotation.Gwernnet.safeAuthor: malformed tags failed to be TagOpen? original: " ++ show x
-          safeContent (TagOpen _ [_, ("content", content)]) = content
-          safeContent x = error $ "Annotation.Gwernnet.safeContent: malformed tags failed to be TagOpen? original: " ++ show x
 
+          safeTitle        = safeTagContent "title"
+          safeDateIssued   = safeTagContent "dc.date.issued"
+          safeDateModified = safeTagContent "dcterms.modified"
+          safeDescription  = safeTagContent "description"
+          safeAuthor       = safeTagContent "author"
+          safeContent      = safeMetaContent
+
+          safeKeywords (TagOpen _ (x:y)) = if snd x == "keywords" then Utils.split ", " $ snd $ head y else []
+          safeKeywords x = error $ malformedError "safeKeywords" x
+
+          safeTagContent :: String -> Tag String -> String
+          safeTagContent key (TagOpen _ (k:v)) = if snd k == key then snd $ head v else ""
+          safeTagContent key x = error $ malformedError ("safe" ++ map toUpper key) x
+
+          safeMetaContent :: Tag String -> String
+          safeMetaContent (TagOpen _ [_, ("content", content)]) = content
+          safeMetaContent x = error $ malformedError "safeContent" x
+
+          malformedError :: String -> Tag String -> String
+          malformedError func x = "Annotation.Gwernnet." ++ func ++ ": malformed tags failed to be TagOpen? original: " ++ show x
 
 -- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.md' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))

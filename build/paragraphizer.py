@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-03-10 18:05:57 gwern"
+# When:  Time-stamp: "2024-05-18 10:13:23 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
@@ -24,11 +24,6 @@
 # simply checking that after removing the new newlines, it equals the original input (ie. the *only*
 # difference is the inserted newlines). The result can still be bad but it's probably at least
 # better.
-#
-# WARNING: Newlines must be absent. GPT-3 remains quite fragile in dealing with Unicode and HTML [see OA docs]:
-# remove as much special formatting as possible like Unicode characters such as NON-BREAKING SPACE
-# or HTML tags like `<p>` or HTML entities like `&amp;`. GPT-3 will either give up and do nothing,
-# or mangle it (thereby failing the check & emitting the original input, wasting a call).
 #
 # Example:
 #
@@ -83,10 +78,16 @@ else:
     target = sys.argv[1]
 
 completion = client.chat.completions.create(
-  model="gpt-4-turbo-preview",
+  model="gpt-4o",
   messages=[
     {"role": "system", "content": "You are a helpful research assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
-    {"role": "user", "content": f"You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)\n Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/outputs; 4. conclusion/discussion; 5. supplementary information (eg. code, websites, datasets).\nAdditional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names; do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.\n\n<abstract>\n{target}\n</abstract>"}
+      {"role": "user", "content": f"""You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)
+Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/benchmarks/outputs; 4. conclusion/discussion/implications; 5. supplementary information (eg. URLs, code, websites, datasets).
+Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize species names as appropriate. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University"); do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.
+
+<abstract>
+{target}
+</abstract>"""}
   ]
 )
 

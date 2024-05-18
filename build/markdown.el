@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-05-12 11:11:55 gwern"
+;;; When:  Time-stamp: "2024-05-18 16:38:26 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -367,7 +367,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("­\n" . "")
                      ("­" . "")
                      ("–" . "--")
-                     ("—" . "---")
                      (" ‑\n" . "")
                      ("‑\n" . "")
                      ("‑" . "-") ; deal with NON-BREAKING HYPHEN which NEJM uses for both line-breaking and regular hyphens, /sigh
