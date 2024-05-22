@@ -49,12 +49,14 @@ balanced str = helper str "" 0 0
     matchingBracket '}' = '{'
     matchingBracket _ = error "Invalid bracket"
 
+-- A Twitter username is a 1–15 character alphanumeric/underscore string:
 -- must handle both "https://twitter.com/grantslatton/status/1703913578036904431" and "https://twitter.com/grantslatton":
 extractTwitterUsername :: String -> String
-extractTwitterUsername = sedMany [("^https:\\/\\/x\\.com\\/([a-z0-9]+)$", "\\1")
-                                 , ("^https:\\/\\/twitter\\.com\\/([a-z0-9]+)$", "\\1")
-                                 , ("^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$", "\\1")
-                                 ]
+extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
+   sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?$", "\\1")
+          , ("^https:\\/\\/twitter\\.com\\/([a-zA-Z0-9_]+)(/.*)?$", "\\1")
+          , ("^https:\\/\\/twitter\\.com\\/([^\\/]+)/status/[0-9]+$", "\\1")
+          ] url
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.

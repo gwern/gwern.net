@@ -1828,3 +1828,12 @@ htmlRewriteFixed =
 htmlRewriteRegexpBefore = [ ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
          , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts; must be run *before* because JEL codes like 'R2' or 'L2' will be rewritten into sub/superscript under the assumption they are the scientific concepts, which then breaks the JEL match.
          ]
+
+-- tests: unique keys, URL keys
+extractTwitterUsernameTestSuite :: [(String,String)]
+extractTwitterUsernameTestSuite = [("https://twitter.com/grantslatton/status/1703913578036904431", "grantslatton")
+                                  , ("https://x.com/grantslatton", "grantslatton")
+                                  , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
+                                  , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
+                                  , ("https://twitter.com/sakun135/status/1285408650052333568", "sakun135")
+                                  ]
