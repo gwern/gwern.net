@@ -62,8 +62,9 @@ main = do Config.Misc.cd
           -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to
           -- embed & save; if nothing, exit & restart the monitoring.']
           args <- getArgs
+          when (args /= ["--only-embed"] || args /= ["--update-only-missing-embeddings"] || args /= []) $ error $ "generateSimilarLinks: unrecognized arguments, erroring out; args were: " ++ show args
           -- Otherwise, we keep going & compute all the suggestions.
-          -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
+          -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct (?) that it's not a bottleneck, so we recompute it from the embeddings every time.
           ddb <- embeddings2Forest edb''
           sortDB <- readListSortedMagic
           unless (args == ["--only-embed"]) $ do
@@ -87,7 +88,7 @@ main = do Config.Misc.cd
               unless (args == ["--update-only-missing-embeddings"]) $ do
                 let chunkSize = 500
                 let mdlChunks = chunksOf chunkSize mdlMissing
-                printGreen "Rewriting all embeddings…"
+                printGreen ("Rewriting all embeddings:" ++ show mdlChunks)
                 printGreen "Rewriting all edb''…"
                 Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
                 printGreen "Rewriting all mdlChunks…"

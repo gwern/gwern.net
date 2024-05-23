@@ -746,6 +746,7 @@ goodDomainsSimple =
     , "allenai.org"
     , "dialnet.unirioja.es"
     , "www.princeton.edu"
+    , "sites.temple.edu"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -2647,7 +2648,7 @@ goodLinks =
             , "https://socialsciences.mcmaster.ca/econ/ugcm/3ll3/menger/money.txt"
             , "https://soranews24.com/2019/02/14/video-shows-off-hundreds-of-beautiful-ai-created-anime-girls-in-less-than-a-minute%E3%80%90video%E3%80%91/"
             , "https://spikejapan.wordpress.com/about/"
-            , "https://spp.fas.org/starwars/offdocs/rrspch.htm"
+            , "https://sites.temple.edu/immerman/address-to-the-nation-on-national-security-by-president-ronald-reagan-march-23-1983/"
             , "https://srconstantin.wordpress.com/2014/05/07/beyond-the-one-percent-categorizing-extreme-elites/"
             , "https://sre.google/sre-book/eliminating-toil/"
             , "https://stackroboflow.com/"

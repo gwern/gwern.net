@@ -33,7 +33,8 @@ import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
 import qualified Config.Misc as C (backlinkBlackList, cd)
 
-import GenerateSimilar
+import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSortedMagic,
+                        Embeddings, ListSortedMagic)
 
 main :: IO ()
 main = do

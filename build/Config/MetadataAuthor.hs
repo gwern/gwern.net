@@ -307,6 +307,8 @@ authorLinkDB = M.fromList $
     , ("Jonathan S. Rosenfeld", "https://scholar.google.com/citations?user=8HYnMeYAAAAJ&view_op=list_works&sortby=pubdate")
     , ("Doug Rohrer", "https://scholar.google.com/citations?user=lK2WfTUAAAAJ")
     , ("Kevin Scott", "https://en.wikipedia.org/wiki/Kevin_Scott_(computer_scientist)")
+    , ("Samuel J. Gershman", "https://gershmanlab.com/people/sam.html")
+    , ("Blake Bordelon", "https://blakebordelon.github.io/")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 

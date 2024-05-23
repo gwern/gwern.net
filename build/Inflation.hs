@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-05-07 15:14:19 gwern"
+-- When:  Time-stamp: "2024-05-19 23:04:18 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -126,7 +126,7 @@ dollarAdjuster :: Int -> Inline -> Inline
 dollarAdjuster _ l@(Link _ _ ("", _)) = error $ "Inflation.hs: dollarAdjuster: Inflation adjustment failed on malformed link (no old-date specified): " ++ show l
 dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
   -- if the adjustment is <X%, don't bother, it's not misleading enough yet to need adjusting:
-  if head text' /= '$' then error $ "Inflation.hs: dollarAdjuster: amount text must begin with a dollar sign: " ++ show l
+  if text' == "" || head text' /= '$' then error $ "Inflation.hs: dollarAdjuster: amount text must begin with a dollar sign: " ++ show l
   else
    if (adjustedDollar / oldDollar) < C.minPercentage || oldDollar == 0 -- (0/0) yields NaN which fails comparison so we would try to inflation-adjust $0
    then Span nullAttr text -- just strip out the inflation annotation & do nothing

@@ -38,9 +38,9 @@ writeUpdatedFile template target contentsNew =
        createDirectoryIfMissing True (takeDirectory target)
        TIO.writeFile target contentsNew
        else do contentsOld <- TIO.readFile target
-               if (contentsNew /= contentsOld) then do tempPath <- emptySystemTempFile ("hakyll-"++template)
-                                                       TIO.writeFile tempPath contentsNew
-                                                       renameFile tempPath target
+               if contentsNew /= contentsOld then do tempPath <- emptySystemTempFile ("hakyll-"++template)
+                                                     TIO.writeFile tempPath contentsNew
+                                                     renameFile tempPath target
                else touchFile target -- mark as up to date
 
 trim :: String -> String

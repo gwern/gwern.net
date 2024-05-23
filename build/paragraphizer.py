@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
+# paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-05-18 10:13:23 gwern"
+# When:  Time-stamp: "2024-05-19 14:34:17 gwern"
 # License: CC-0
 #
-# Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python paragraphizer.py
+# Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
 #
 # Paragraphizer attempts to reformat a single run-on paragraph into multiple shorter paragraphs,
 # presumably split by topic. This is particularly useful for research paper abstracts, which are
@@ -45,28 +45,15 @@
 # that retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and
 # achieves higher scores. We run extensive ablations to measure the contributions of the components
 # of our proposed method.
+#
 # $ OPENAI_API_KEY="sk-XYZ" xclip -o | python paragraphizer.py
-# Most deep reinforcement learning (RL) algorithms distill experience into parametric behavior
-# policies or value functions via gradient updates. While effective, this approach has several
-# disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate
-# experiences into the parametric model, (3) experiences that are not fully integrated do not
-# appropriately influence the agent's behavior, and (4) behavior is limited by the capacity of the
-# model.
+# Most deep [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning) (RL) algorithms distill experience into parametric behavior policies or value functions via gradient updates. While effective, this approach has several disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate experiences into the parametric model, (3) experiences that are not fully integrated do not appropriately influence the agent's behavior, and (4) behavior is limited by the capacity of the model.
 #
-# In this paper we explore an alternative paradigm in which we train a network to map a dataset of
-# past experiences to optimal behavior. Specifically, we augment an RL agent with a retrieval
-# process (parameterized as a neural network) that has direct access to a dataset of experiences.
-# This dataset can come from the agent's past experiences, expert demonstrations, or any other
-# relevant source. The retrieval process is trained to retrieve information from the dataset that
-# may be useful in the current context, to help the agent achieve its goal faster and more
-# efficiently.
+# In this paper, we explore an alternative paradigm in which we train a network to map a dataset of past experiences to optimal behavior. Specifically, we augment an RL agent with a retrieval process (parameterized as a neural network) that has direct access to a dataset of experiences. This dataset can come from the agent's past experiences, expert demonstrations, or any other relevant source. The retrieval process is trained to retrieve information from the dataset that may be useful in the current context, to help the agent achieve its goal faster and more efficiently.
 #
-# We integrate our method into two different RL agents: an offline DQN agent and an online R2D2
-# agent. In offline multi-task problems, we show that the retrieval-augmented DQN agent avoids task
-# interference and learns faster than the baseline DQN agent. On Atari, we show that
-# retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and achieves
-# higher scores. We run extensive ablations to measure the contributions of the components of our
-# proposed method.
+# We integrate our method into two different RL agents: an offline [DQN](https://en.wikipedia.org/wiki/Q-learning#Deep_Q-learning) agent and an online [R2D2](https://openreview.net/forum?id=r1lyTjAqYX) agent. In offline multi-task problems, we show that the retrieval-augmented DQN agent avoids task interference and learns faster than the baseline DQN agent. On [Atari](https://en.wikipedia.org/wiki/Atari), we show that retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and achieves higher scores.
+#
+# We run extensive ablations to measure the contributions of the components of our proposed method.
 
 import sys
 from openai import OpenAI

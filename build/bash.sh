@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-12 12:28:04 gwern"
+# When:  Time-stamp: "2024-05-22 12:35:13 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -109,6 +109,15 @@ pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments argumen
             mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
           (crossref "$ORIGINAL" &);
           }
+
+# concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
+pdf-append () {
+    if [ $# -lt 2 ]; then echo "Not enough arguments" && return 1; fi
+    ORIGINAL=$(path2File "$1")
+    TARGET=$(mktemp /tmp/XXXXXX.pdf)
+    pdftk "$@" cat output "$TARGET" && exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"
+    rm "$TARGET"
+}
 
 # trim whitespace from around JPG/PNG images
 crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then

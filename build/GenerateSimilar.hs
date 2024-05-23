@@ -53,7 +53,7 @@ singleShotRecommendations html =
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],[],html))
      ddb <- embeddings2Forest (newEmbedding:edb)
-     let (_,hits) = findN ddb (2*C.bestNEmbeddings) C.iterationLimit (Just 1) newEmbedding :: (String,[String])
+     let (_,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
      hitsSorted <- sortSimilars edb sortDB (head hits) hits
 
@@ -218,11 +218,11 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- [(0.8555555555555556,(60,1,32)),(0.46888888888888886,(21,5,12))]
 -- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
 embeddings2Forest :: Embeddings -> IO Forest
-embeddings2Forest []     = error "embeddings2Forest called with no arguments, which is meaningless."
-embeddings2Forest [_]    = error "embeddings2Forest called with only 1 arguments, which is useless."
+embeddings2Forest []     = error "GenerateSimilar.embeddings2Forest: called with no arguments, which is meaningless."
+embeddings2Forest [_]    = error "GenerateSimilar.embeddings2Forest: called with only 1 arguments, which is useless."
 embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 32 e
                          let fl = serialiseRPForest f
-                         when (length fl < 2) $ error "embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
+                         when (length fl < 2) $ error "GenerateSimilar.embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
 
 embeddings2ForestConfigurable :: Int -> Int -> Int -> Embeddings -> Forest
@@ -566,6 +566,10 @@ sortSimilars edb sortDB seed paths = do
 
 -- in some lists, like of backlinks, there is no guarantee of an embedding. So we only sort the embedded ones, put them first, and append the leftover un-embedded links
 sortListPossiblyUnembedded :: Embeddings -> ListSortedMagic -> (T.Text, [T.Text]) -> IO (T.Text, [T.Text])
+sortListPossiblyUnembedded [] _ list = error $ "GS.sortListPossiblyUnembedded: passed an empty embedding database, which should never happen; tuple of URLs: " ++ show list
+-- we do not check for an empty 'ListSortedMagic' database, because that is valid; it's just a cache, so maybe it's been blown away
+sortListPossiblyUnembedded _ _ list@("",_) = error $ "GS.sortListPossiblyUnembedded: passed an empty target URL, which should never happen; tuple of URLs: " ++ show list
+sortListPossiblyUnembedded _ _ list@(_,[]) = error $ "GS.sortListPossiblyUnembedded: passed an empty list of relevant URLs to the target URL, which should never happen; tuple of URLs: " ++ show list
 sortListPossiblyUnembedded edb sortDB x@(url, hits) =
     let hits' = map T.unpack hits
         urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
@@ -583,7 +587,9 @@ lookupNextAndShrink     []   _ _ = return []
 lookupNextAndShrink     [a]  _ previous = return $ previous:[a]
 lookupNextAndShrink targets embeddings previous = do results <- go targets embeddings
                                                      return $ previous:results
-  where go ta em = do ddb <- embeddings2Forest em
+  where go [] _ = return []
+        go ta [] = return ta
+        go ta em = do ddb <- embeddings2Forest em
                       -- putStrLn ("remainingTargets: " ++ ppShow ta) >> putStrLn ("remainingEmbeddings: " ++ ppShow (map (\(a,b,c,d,_) -> (a,b,take 100 c,d)) em)) >> putStrLn ("previous: " ++ previous)
                       case M.lookup previous (M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) em) of
                               Nothing ->  error $ "Exited at Nothing in lookupNextAndShrink, this should never happen? " ++ previous ++ " : " ++ show ta
