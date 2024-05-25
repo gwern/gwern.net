@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-05-17 11:39:04 gwern"
+When:  Time-stamp: "2024-05-25 19:42:55 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMeta
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, toLower, isNumber)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
@@ -523,7 +523,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                                                                    [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-           link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter.com partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
+           link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
              Link (lid, [if null abst then "link-annotated-partial" else "link-annotated"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
@@ -587,7 +587,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
                         round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
    fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
    fileTypeDescription = if "https://www.youtube.com/watch?v=" `isPrefixOf` f then "YouTube video"
-                         else if "https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f then "Tweet"
+                         else if "https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f then "Tweet"
                               else C.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
                               | liveP && not localP     = "External Link"
@@ -600,7 +600,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
    dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title; doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
    generateFileTransclusionBlock'
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
-    | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://twitter.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
+    | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
       [Para [Link ("",["id-not", "include-content"],dataArguments) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
@@ -623,7 +623,8 @@ isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", "
 -- config testing: 'isUniqueKeys'
 fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
 fileTranscludesTest md am =
-  let testFileTransclude md' am' bool path = let x = fromJust $ M.lookup path md' in generateFileTransclusionBlock am' bool (path, x)
+  let testFileTransclude md' am' bool path = let x = fromJustWithError path $ M.lookup path md'
+                                             in generateFileTransclusionBlock am' bool (path, x)
       simpleTestEmpty = testFileTransclude md M.empty True
       simpleTest = testFileTransclude md am
       simpleTestT = simpleTest True
@@ -656,7 +657,7 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/anime/2019-05-06-stylegan-malefaces-1ksamples.tar", [])
     , (simpleTestT "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
     , (simpleTestT "http://dev.kanotype.net:8003/deepdanbooru/", [])
-    , (simpleTestT "https://twitter.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://twitter.com/AxSauer/status/1524325956030275586","")]]])
+    , (simpleTestT "https://x.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://x.com/AxSauer/status/1524325956030275586","")]]])
     , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard",
        [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[("include-template","$annotationFileIncludeTemplate")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
@@ -682,6 +683,10 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/genetics/heritable/2015-polderman-supplement-2.xlsx", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "spreadsheet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","spreadsheet"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/genetics/heritable/2015-polderman-supplement-2.xlsx"] ("/doc/genetics/heritable/2015-polderman-supplement-2.xlsx","")]]]])
     , (simpleTestT "/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "patch"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg"),("replace-container-selector",".collapse")]) [Code ("",[],[]) "/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch"] ("/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch","")]]]])
     ]
+  where
+        fromJustWithError :: (Show k, Ord k) => k -> Maybe v -> v
+        fromJustWithError key maybeVal =
+          fromMaybe (error $ "fromJust: Key not found: " ++ show key) maybeVal
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...

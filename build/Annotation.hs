@@ -33,7 +33,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | "arxiv.org/abs/" `isInfixOf` l || "browse.arxiv.org/html/" `isInfixOf` l = arxiv l
                  | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l = openreview l
                  | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l
-                 | "https://x.com" `isPrefixOf` l || "https://twitter.com/" `isPrefixOf` l = twitter l
+                 | "https://x.com" `isPrefixOf` l = twitter l
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
                  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l' else return (Left Permanent)

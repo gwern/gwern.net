@@ -751,7 +751,7 @@ Links.targetLinkTypes = [
     [ "tumblr",             "svg",                  /(.+\.)?tumblr.com$/                ],
 
     //  Twitter.
-    [ "twitter",            "svg",                  /(.+\.)?twitter.com$/               ],
+    [ "twitter",            "svg",                  /(.+\.)?x.com$/               ],
     [ "twitter",            "svg",                  "nitter.net"                  ],
 
     //  Upton Tea.

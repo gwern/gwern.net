@@ -1831,9 +1831,9 @@ htmlRewriteRegexpBefore = [ ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
 
 -- tests: unique keys, URL keys
 extractTwitterUsernameTestSuite :: [(String,String)]
-extractTwitterUsernameTestSuite = [("https://twitter.com/grantslatton/status/1703913578036904431", "grantslatton")
+extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/1703913578036904431", "grantslatton")
                                   , ("https://x.com/grantslatton", "grantslatton")
                                   , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
                                   , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
-                                  , ("https://twitter.com/sakun135/status/1285408650052333568", "sakun135")
+                                  , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
                                   ]

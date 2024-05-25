@@ -85,11 +85,11 @@ linkIconRulesOverrides u
  | u'' u "www.theinformation.com" = ("the-information", "svg") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'? Overrides Microsoft & other tech companies
  | u'' u "www.semafor.com" = ("SMFR", "text,quad") -- Semafor <https://www.semafor.com/> <https://en.wikipedia.org/wiki/Semafor_(website)>; somewhat like _The Information_; official logo is a boring serif wordmark (<https://en.wikipedia.org/wiki/File:Semafor_logo.png>), and the favicon is an interesting 'cut off' 'S'-silhouette-in-square <https://www.semafor.com/safari-pinned-tab-icon.svg> but they've done a bad enough job branding it no one would recognize it, so we use a quad-abbreviation of 'SEMAFOR'
  | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
- | aU' u ["twitter.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,monospace") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
+ | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,monospace") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
- | u' u "#anthropic" || u' u "twitter.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
+ | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
  | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text") -- override Yahoo! email
  | otherwise = ("","")
@@ -175,7 +175,7 @@ linkIconRulesDouble u
  | u' u ".latimes.com" = ("𝔏A", "text")
  | u'' u "everything2.com" = ("E2", "text")
  | u'' u "examine.com" = ("Eχ", "text,sans")
- | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "twitter.com/EvaMonkey/" = ("EG", "text") -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "x.com/EvaMonkey/" = ("EG", "text") -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u' u "mozilla.org" = ("FF", "text,sans") -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' u "www.goodreads.com" = ("GR", "text") -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' u "kk.org" = ("KK", "text,sans") -- Kevin Kelly
@@ -241,7 +241,7 @@ linkIconRulesDouble u
  | u'' u "quantifiedself.com" || u'' u "forum.quantifiedself.com" || u' u "www.reddit.com/r/QuantifiedSelf/" = ("QS", "text,sans")
  | u'' u "www.research.va.gov" = ("VA", "text,sans") -- US Department of Veterans Affair (mostly linked for Million Veteran Project)
  | u'' u "apnews.com" = ("AP", "text,sans")
- | aU' u ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "twitter.com/razibkhan"] = ("RK", "text,sans") -- Razib Khan
+ | aU' u ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "x.com/razibkhan"] = ("RK", "text,sans") -- Razib Khan
  | u'' u "jaymans.wordpress.com" = ("J👨🏾", "text,sans") -- JayMan
  | u'' u "www.rollingstone.com" = ("𝓡𝐒", "text") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
  | u'' u "www.popsci.com" = ("PS", "text,sans") -- Popular Science magazine (no usable or recognizable logos)
@@ -360,7 +360,7 @@ linkIconRulesQuad u
  | u'' u "patrickcollison.com" = ("PC", "text,sans")
  | u'' u "oeis.org" = ("OEIS", "text,quad,sans") -- On-Line Encyclopedia of Integer Sequences
  | u'' u "bldgblog.com" = ("BLDG", "text,quad,monospace") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' u "twitter.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,monospace") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
+ | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,monospace") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' u "scale.com" = ("SCLE", "text,quad,monospace") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
@@ -396,7 +396,7 @@ linkIconRulesSVG u
  | u'' u "www.theguardian.com" || u'' u "www.guardian.co.uk" = ("the-guardian", "svg") -- El Grauniad.
  | u'' u "www.newyorker.com" = ("the-new-yorker", "svg") -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' u "tumblr.com" = ("tumblr", "svg")
- | aU'' u ["twitter.com", "blog.twitter.com", "developer.twitter.com", "x.com"] ||
+ | aU'' u ["x.com", "blog.x.com", "developer.x.com" ] ||
    -- we host local HTML mirrors of Twitter/Nitter for archiving & annotation-override reasons; rather than give them an uninformative HTML icon, we detect & override here to assign them the bird icon. They follow the schema `/doc/foo/$DATE-$AUTHOR-twitter-$TITLE.html`:
    (isLocal u && hasExtension ".html" u && "-twitter-" `T.isInfixOf` u) = ("twitter", "svg")
  | u'' u "www.uptontea.com" = ("upton-tea", "svg")
@@ -433,7 +433,7 @@ linkIconRulesSVG u
  | u'' u "nautil.us" = ("nautilus", "svg") -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG)
  | u'' u "www.scholarpedia.org" = ("scholarpedia", "svg") -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
  | u'' u "radiolab.org" = ("audio-waveform-lines", "svg") -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>
- | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://twitter.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
+ | u'' u "maggieappleton.com" = ("maggie-appleton", "svg")  -- <https://x.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM
  | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg")
  | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>
  | u'' u "www.tiktok.com" = ("tiktok", "svg")
@@ -614,7 +614,7 @@ linkIconTestUnitsText =
          , ("https://ctan.org/pkg/marginnote", "tex","svg")
          , ("https://danbooru.donmai.us/posts?tags=death_flag", "❐", "text")
          , ("https://derpibooru.org/tags/generator-colon-thisponydoesnotexist", "❐", "text")
-         , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
+         , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
          , ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg")
          , ("https://distill.pub/2016/augmented-rnns/",  "distillpub","svg")
          , ("https://dl.acm.org/doi/10.1145/3266037.3266090", "acm", "text,tri,sans")
@@ -811,12 +811,12 @@ linkIconTestUnitsText =
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://tug.org/FontCatalogue/goudyinitialen/", "tex","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
-         , ("https://twitter.com/EvaMonkey/", "EG", "text")
-         , ("https://twitter.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
+         , ("https://x.com/EvaMonkey/", "EG", "text")
+         , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg")
-         , ("https://twitter.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
-         , ("https://twitter.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
-         , ("https://twitter.com/razibkhan/status/1463204399954776073", "RK", "text,sans")
+         , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
+         , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
+         , ("https://x.com/razibkhan/status/1463204399954776073", "RK", "text,sans")
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg")
          , ("https://unsongbook.com/",  "\8501","text")
          , ("https://variety.com/2014/film/news/tokyo-festival-hideaki-anno-warns-of-trouble-ahead-for-japanese-animation-1201339991/", "𝓥", "text")

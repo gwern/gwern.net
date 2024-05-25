@@ -196,7 +196,7 @@ badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg",
              "there too", "there too!", "thin,", "this link", "this one", "this paper",
              "this post", "those affected", "to solve", "to test", "to the mean",
              "to why", "told not to", "top journals", "trans", "transcription/translation",
-             "turns out to be", "twin studies", "twitter.com", "type=pdf", "underspend",
+             "turns out to be", "twin studies", "x.com", "type=pdf", "underspend",
              "understand", "unigrams", "until 2014", "used it", "usually not", "v3",
              "vague musing", "very fast", "very tricky", "vice-versa", "vice.com",
              "video calls", "video demo", "visualizations", "vox.com", "w3.org", "was also",
@@ -1141,7 +1141,7 @@ whiteList = [ ( "/crop#hands"
   , ( "https://predictionbook.com/"
     , [ "PredictionBook" , "PredictionBook.com" ]
     )
-  , ( "https://twitter.com/theshawwn" , [ "Shawn Presser" ] )
+  , ( "https://x.com/theshawwn" , [ "Shawn Presser" ] )
   , ( "https://web.archive.org/web/20140527121332/https://www.infinityplus.co.uk/stories/under.htm"
     , [ "\"Understand\"" ]
     )

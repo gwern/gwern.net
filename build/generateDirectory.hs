@@ -395,7 +395,7 @@ generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                     -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.
-                                    sectionTitle = if "https://twitter.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
+                                    sectionTitle = if "https://x.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
                                                      T.pack $ "“"++titlecase' t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in

@@ -19,7 +19,7 @@ archiveDelay = 60
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
 isCheapArchive url = f url || f (transformURLsForArchiving url)
-  where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081", "twitter.com",
+  where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081", "x.com",
                                    "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
@@ -36,7 +36,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
                             . replace "https://www.reddit.com" "https://old.reddit.com"
-                            . replace "https://twitter.com/" "http://localhost:8081/"
+                            . replace "https://x.com/" "http://localhost:8081/"
                             . replace "https://medium.com" "https://freedium.cfd" -- clean Medium frontend; NOTE: we use <freedium.cfd> instead of <scribe.rip> because Scribe (by design) does not cache or save content, only proxies to Medium, so once a Medium article is unpredictably deleted/paywalled, a working Scribe mirror immediately breaks. Freedium will keep working.
                             . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
                             . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
@@ -45,7 +45,7 @@ transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
 -- `data-href-mobile`:
 transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://browse.arxiv.org/html/\\1?fallback=original\\2" .
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://browse.arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
-  replace "https://twitter.com" "https://nitter.net"
+  replace "https://x.com" "https://nitter.net"
 
 -- `data-url-html`:
 transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
@@ -73,8 +73,8 @@ localizeLinktestCases = [
     , ("https://arxiv.org/abs/hep-ph/0204295", ("/doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf", "https://browse.arxiv.org/html/hep-ph/0204295?fallback=original", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
-    , ("https://twitter.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
-    , ("https://twitter.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", []))
+    , ("https://x.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
+    , ("https://x.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", []))
     , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://freedium.cfd/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
@@ -98,7 +98,7 @@ localizeLinktestCases = [
 localizeLinkTestDB :: ArchiveMetadata
 localizeLinkTestDB = M.fromList $
   -- links should not have archives (must be specified to be permanent failures to avoid the link-archive test suite trying to archive them):
-  map (\a -> (a,Right Nothing)) ["https://twitter.com/alexeyguzey/status/1068583101633359874", "https://darkrunescape.fandom.com/wiki/Doubling_money_scam", "https://archive.org/details/in.ernet.dli.2015.90433", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", "https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", "https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", "https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", "https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", "https://en.wikipedia.org/wiki/George_Washington"]
+  map (\a -> (a,Right Nothing)) ["https://x.com/alexeyguzey/status/1068583101633359874", "https://darkrunescape.fandom.com/wiki/Doubling_money_scam", "https://archive.org/details/in.ernet.dli.2015.90433", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", "https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", "https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", "https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", "https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", "https://en.wikipedia.org/wiki/George_Washington"]
   -- links which should have archives:
   ++ map (\(a,b) -> (a,Right (Just b))) [("https://arxiv.org/abs/1909.05858#salesforce", "doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce")
                     , ("https://arxiv.org/abs/hep-ph/0204295", "doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf")
@@ -109,7 +109,7 @@ localizeLinkTestDB = M.fromList $
                     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", "doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google")
                     , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", "doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html")
                     , ("https://arbital.com/p/edge_instantiation/", "doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html")
-                    , ("https://twitter.com/gdb/status/1495821544370708486", "doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html")
+                    , ("https://x.com/gdb/status/1495821544370708486", "doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html")
                     , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", "doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html")
                     ]
 

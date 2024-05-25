@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-05-18 16:38:26 gwern"
+;;; When:  Time-stamp: "2024-05-25 19:33:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -552,7 +552,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("http://reddit.com"   . "https://www.reddit.com")
                         ("https://reddit.com"  . "https://www.reddit.com")
                         ("http://i.reddit.com" . "https://www.reddit.com")
-                        ("https://mobile.twitter.com" . "https://twitter.com")
+                        ("https://mobile.x.com" . "https://x.com")
                         (" d=" . " _d_ = ") ; italicize p-values & sample sizes:
                         (" d = " . " _d_ = ")
                         ("(d = " . "(_d_ = ")

@@ -6,7 +6,7 @@ Content = {
     cachedContent: { },
 
     contentCacheKeyForLink: (link) => {
-    	return (   Content.contentTypeForLink(link)?.contentCacheKeyForLink?.(link) 
+    	return (   Content.contentTypeForLink(link)?.contentCacheKeyForLink?.(link)
     			?? (Content.sourceURLsForLink(link)?.first ?? link).href);
     },
 
@@ -248,14 +248,14 @@ Content = {
         if (typeof url == "string")
             url = URLFromString(url);
 
-        /*	PDF optional settings to embed more cleanly: fit width, and disable 
+        /*	PDF optional settings to embed more cleanly: fit width, and disable
         	‘bookmarks’ & ‘thumbnails’ (just not enough space).
 
         	<https://gwern.net/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=6>
-        	<https://github.com/mozilla/pdf.js/wiki/Viewer-options> 
+        	<https://github.com/mozilla/pdf.js/wiki/Viewer-options>
 
-        	WARNING: browsers are unreliable in whether they properly apply 
-        	these options; Firefox appears to, but not Chrome, and there can be 
+        	WARNING: browsers are unreliable in whether they properly apply
+        	these options; Firefox appears to, but not Chrome, and there can be
         	iframe issues as well.
          */
         let src = url.pathname.endsWith(".pdf")
@@ -317,10 +317,10 @@ Content = {
 
             .isSliceable: boolean
 
-				This property determines whether content documents returned for 
-				links of this content type may be “sliced”, via element IDs, 
-				selectors, or by other means. If its value is false, then the 
-				returned content documents may only be transcluded in their 
+				This property determines whether content documents returned for
+				links of this content type may be “sliced”, via element IDs,
+				selectors, or by other means. If its value is false, then the
+				returned content documents may only be transcluded in their
 				entirety.
 
         ... plus either these two:
@@ -343,15 +343,15 @@ Content = {
 
             .referenceDataFromContent(object, URL|Element) => object
 
-				NOTE: If this member function is not present, we must ensure 
-				that the object returned from .contentFromResponse() or 
+				NOTE: If this member function is not present, we must ensure
+				that the object returned from .contentFromResponse() or
 				.contentFromLink() has a .document member. (This should be a
 				DocumentFragment object which contains the primary content for
 				the link.)
 
 			.referenceDataCacheKeyForLink(URL|Element) => string
 
-				NOTE: If this member function is not present, then reference 
+				NOTE: If this member function is not present, then reference
 				data will not be cached for links of this content type.
      */
 
@@ -586,7 +586,7 @@ Content = {
 					} else if (/H[0-9]/.test(targetElement.tagName)) {
 						//	The target is a section heading.
 						let targetHeading = targetElement;
-	
+
 						//	The id is on the heading, so the section is its parent.
 						let targetSection = targetHeading.parentElement.cloneNode(true);
 
@@ -633,7 +633,7 @@ Content = {
 
 					//	Build TOC.
 					let sections = Array.from(wikipediaEntryContent.document.querySelectorAll("section")).slice(1);
-					if (   sections 
+					if (   sections
 						&& sections.length > 0) {
 						entryContentHTML += `<div class="TOC columns">`;
 						let headingLevel = 0;
@@ -644,7 +644,7 @@ Content = {
 							if (newHeadingLevel > headingLevel)
 								entryContentHTML += `<ul>`;
 
-							if (   i > 0 
+							if (   i > 0
 								&& newHeadingLevel <= headingLevel)
 								entryContentHTML += `</li>`;
 
@@ -917,7 +917,7 @@ Content = {
 				contentDocument.querySelectorAll("div.quotebox").forEach(quotebox => {
 					let blockquote = quotebox.querySelector("blockquote");
 					blockquote.classList.add("quotebox");
-			
+
 					let title = quotebox.querySelector(".quotebox-title");
 					if (title) {
 						blockquote.insertBefore(title, blockquote.firstElementChild);
@@ -1076,7 +1076,7 @@ Content = {
         tweet: {
             matches: (link) => {
                 return (   link.classList.contains("content-transform-not") == false
-						&& [ "twitter.com", "x.com" ].includes(link.hostname)
+						&& [ "x.com" ].includes(link.hostname)
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
             },
 
@@ -1151,8 +1151,8 @@ Content = {
                 tweetLinkURL.hash = "m";
 
 				//	Data attribute for archived tweet (if available).
-                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
-                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
+                let archivedTweetURLDataAttribute = link.dataset.urlArchive
+                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"`
                 									: "";
 				//	Text of link to tweet.
                 let tweetDate = new Date(Date.parse(tweetContent.document.querySelector(".main-tweet .tweet-date").textContent));
