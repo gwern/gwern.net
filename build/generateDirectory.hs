@@ -12,7 +12,7 @@ module Main where
 -- directory (mostly showing random snippets).
 
 import Control.Monad (filterM, void, unless)
-import Control.Monad.Parallel as Par (mapM_)
+-- import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
@@ -55,11 +55,11 @@ main = do C.cd
           ldb <- readListName
           sortDB <- readListSortedMagic
 
-          let chunkSize = 6 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
+          let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
           -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
-          Prelude.mapM_ (Par.mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
+          Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created

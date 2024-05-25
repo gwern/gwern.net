@@ -43,7 +43,8 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com",
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
-                     "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"]
+                     "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
+                              , "nces.ed.gov"]
 ------------------------------------------------------------------------------------------
 
 -- Helper functions for URL matches:
@@ -305,8 +306,10 @@ linkIconRulesTriple u
  | u'' u "archiveofourown.org" = ("Ao3", "text,tri") -- Archive of Our Own <https://archiveofourown.org/> <https://en.wikipedia.org/wiki/Archive_of_Our_Own>
  | u'' u "www.nlsinfo.org" = ("NLS", "text,tri,sans") -- the National Longitudinal Surveys (BLS), eg. NLSY79 <https://en.wikipedia.org/wiki/National_Longitudinal_Surveys>
  | aU'' u ["www.fda.gov","fis.fda.gov","clinicaltrials.gov", "classic.clinicaltrials.gov"] = ("FDA", "text,tri,sans") -- U.S. Food & Drug Administration
- | u'' u "silkroadvb5piz3r.onion" || u'' u "silkroad5v7dywlc.onion" = ("SR1", "text,sans")
- | aU'' u ["bls.gov", "data.bls.gov", "www.bls.gov"] = ("BLS", "text,sans")
+ | u'' u "silkroadvb5piz3r.onion" || u'' u "silkroad5v7dywlc.onion" = ("SR1", "text,tri,sans")
+ | aU'' u ["bls.gov", "data.bls.gov", "www.bls.gov"] = ("BLS", "text,tri,sans")
+ | u'' u "ocw.mit.edu" = ("OCW", "text,tri,sans") -- OpenCourseWare: MIT MOOCs <https://en.wikipedia.org/wiki/OpenCourseWare>
+ | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar.
  | otherwise = ("","")
 
  -- Quad-letter (square) icons.
@@ -393,7 +396,7 @@ linkIconRulesSVG u
  | u'' u "www.theguardian.com" || u'' u "www.guardian.co.uk" = ("the-guardian", "svg") -- El Grauniad.
  | u'' u "www.newyorker.com" = ("the-new-yorker", "svg") -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' u "tumblr.com" = ("tumblr", "svg")
- | aU'' u ["twitter.com", "blog.twitter.com", "developer.twitter.com"] ||
+ | aU'' u ["twitter.com", "blog.twitter.com", "developer.twitter.com", "x.com"] ||
    -- we host local HTML mirrors of Twitter/Nitter for archiving & annotation-override reasons; rather than give them an uninformative HTML icon, we detect & override here to assign them the bird icon. They follow the schema `/doc/foo/$DATE-$AUTHOR-twitter-$TITLE.html`:
    (isLocal u && hasExtension ".html" u && "-twitter-" `T.isInfixOf` u) = ("twitter", "svg")
  | u'' u "www.uptontea.com" = ("upton-tea", "svg")
@@ -588,7 +591,6 @@ linkIconTestUnitsText =
          , ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text")
          , ("https://blogs.nvidia.com/blog/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
          , ("https://blottyparchment.livejournal.com/7541.html?thread=233845", "LJ", "text,sans")
-         , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,sans")
          , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "springerlink", "svg")
          , ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,tri,sans")
          , ("https://boards.4chan.org/jp/", "4CH", "text,sans")
@@ -611,7 +613,6 @@ linkIconTestUnitsText =
          , ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stack-exchange","svg")
          , ("https://ctan.org/pkg/marginnote", "tex","svg")
          , ("https://danbooru.donmai.us/posts?tags=death_flag", "❐", "text")
-         , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=1&year1=199201&year2=201101", "BLS", "text,sans")
          , ("https://derpibooru.org/tags/generator-colon-thisponydoesnotexist", "❐", "text")
          , ("https://developer.twitter.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg")
          , ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg")
@@ -673,8 +674,8 @@ linkIconTestUnitsText =
          , ("https://ideas.repec.org/p/nbr/nberwo/27053.html", "NBER", "text,quad")
          , ("https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,mono,quad")
          , ("https://i.imgur.com/atMz0jg.png",  "image","svg")
-         , ("http://silkroad5v7dywlc.onion/index.php?topic=2889.0", "SR1", "text,sans")
-         , ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,sans")
+         , ("http://silkroad5v7dywlc.onion/index.php?topic=2889.0", "SR1", "text,tri,sans")
+         , ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,tri,sans")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans")
          , ("https://intelligence.org/2013/10/03/proofs/",  "miri","svg")
          , ("https://iopscience.iop.org/article/10.1088/1748-9326/aabf9b", "IOP", "text,tri,sans")
@@ -734,7 +735,7 @@ linkIconTestUnitsText =
          , ("https://oeis.org/A001006", "OEIS", "text,quad,sans")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
          , ("https://onlinelibrary.wiley.com/doi/full/10.1111/brv.12407",  "W","text,sans")
-         , ("https://openai.com/research/better-language-models",  "openai","svg")
+         , ("https://openai.com/index/better-language-models/",  "openai","svg")
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://osf.io/dhx48/",         "ψ", "text")
          , ("https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3774989", "SSRN", "text,quad")
@@ -852,7 +853,9 @@ linkIconTestUnitsText =
          , ("https://www.bloomberg.com/businessweek/ap/financialnews/D9KQL7CG0.htm", "\119809","text")
          , ("https://www.bloomberg.com/news/articles/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger",  "\119809","text")
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans")
-         , ("https://www.bls.gov/cps/duration.htm", "BLS", "text,sans")
+         , ("https://www.bls.gov/cps/duration.htm", "BLS", "text,tri,sans")
+         , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=1&year1=199201&year2=201101", "BLS", "text,tri,sans")
+         , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,tri,sans")
          , ("https://www.brookings.edu/articles/expectations-of-sustained-effects-from-scaled-up-pre-k-challenges-from-the-tennessee-study/", "B", "text")
          , ("https://www.businessinsider.com/this-is-what-happens-when-you-track-your-sleep-obsessively-2012-2", "BI", "text,sans")
          , ("https://www.cambridge.org/core/journals/journal-of-economic-history/article/two-centuries-of-productivity-growth-in-computing/856EC5947A5857296D3328FA154BA3A3", "⛨", "text")
@@ -1068,6 +1071,8 @@ linkIconTestUnitsText =
          , ("https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty", "SCM", "text,tri")
          , ("https://newcriterion.com/issues/2006/10/a-good-list", "NC", "text")
          , ("https://qntm.org/invisibility", "qntm", "text,quad,mono")
+         , ("https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans")
+         , ("https://psycnet.apa.org/fulltext/2024-33486-001.html", "APA", "text,tri,sans")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

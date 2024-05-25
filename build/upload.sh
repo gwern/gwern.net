@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-05-12 12:35:02 gwern"
+# When:  Time-stamp: "2024-05-25 10:22:01 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -97,7 +97,7 @@ _upload() {
       if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)
-      if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=120 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
+      if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=80 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
 
       mv "$TARGET" ~/wiki/doc/www/misc/
       cd ~/wiki/ || exit
@@ -142,7 +142,7 @@ _upload() {
                   chmod a+r "$TARGET"
                   if [[ "$TARGET" =~ .*\.pdf ]]; then
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
-                      compressPdf "$TARGET";
+                      compressPdf "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so ignore errors
                       chmod a+r "$TARGET";
                   fi
                   (git add "$TARGET" &)

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-22 12:35:13 gwern"
+# When:  Time-stamp: "2024-05-25 09:44:51 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -174,7 +174,7 @@ png2JPGQualityCheck () {
         SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
 
         # Calculate PSNR
-        PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1)
+        PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1 | cut --delimiter=' ' --field=1)
 
         # Check both PSNR quality and size reduction
         if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
@@ -432,9 +432,10 @@ is_downloading() {
     modified_time=$(stat -c %Y "$file")
     elapsed_time=$((current_time - modified_time))
 
-    # Sleep if last-modified time is not at least 5 seconds ago
-    if [ $elapsed_time -lt 5 ]; then
-      sleep $((5 - elapsed_time))
+    # Sleep if last-modified time is not at least 3 seconds ago
+    if [ $elapsed_time -lt 3 ]; then
+      sleep $((3 - elapsed_time))
+      is_downloading
     fi
   else
     echo "File not found."

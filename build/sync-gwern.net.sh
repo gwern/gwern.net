@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-22 11:35:32 gwern"
+# When:  Time-stamp: "2024-05-25 14:28:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -193,7 +193,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory $DIRECTORY_TAGS
     fi
   fi
 
@@ -537,7 +537,7 @@ else
             "link-modified-recently" "icon-single-white-star-on-black-circle" "inline" "invert" "invert-auto" "invert-not"
             "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not" "tex-logotype"
             "math" "odd" "page-thumbnail" "pascal" "python" "reader-mode-selector-inline"
-            "smallcaps" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
+            "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
@@ -1106,7 +1106,7 @@ else
           cm "text/x-haskell; charset=utf-8" 'https://gwern.net/static/build/hakyll.hs'
           cm "text/x-opml; charset=utf-8" 'https://gwern.net/doc/personal/rss-subscriptions.opml'
           cm "text/x-patch; charset=utf-8" 'https://gwern.net/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
-          cm "text/x-r; charset=utf-8" 'https://gwern.net/static/build/linkAbstract.R'
+          cm "text/x-r; charset=utf-8" 'https://gwern.net/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
           cm "text/x-gtx; charset=utf-8" 'https://gwern.net/metadata/full.gtx'
           cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
@@ -1228,7 +1228,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm'; }
+    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     λ(){ find . -type f -name "*.txt" | parallel file | gf " CRLF"; }
