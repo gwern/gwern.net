@@ -1823,7 +1823,7 @@ a code {
  */
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle {
-	padding-left: 0.9em;
+	padding-left: 0.85em;
 	position: relative;
 	background-color: var(--link-underline-background-color);
 }
@@ -1835,7 +1835,7 @@ a code {
 	background-repeat: no-repeat;
 	background-position: center left;
 	position: absolute;
-	top: 0;
+	top: 0.05em;
 	left: 0;
 	width: 100%;
 	height: 100%;
