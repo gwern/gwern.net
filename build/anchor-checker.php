@@ -1,19 +1,31 @@
 #! /usr/bin/env php
 <?php
-// Check anchors in HTML files. Only checks anchors local to each document.
-// Anchors prefixed with a filename are ignored even if they refer to the
-// same file. Anchors with no element with the corresponding fragment ID
+// anchor-checker.php: Check anchors in HTML files
+// Authors: D. Bohdan, Gwern Branwen
+// Date: 2024-02-27
+// License: choice of CC-0 or MIT-0
+//
+// This script only checks anchors local to each document. Anchors prefixed
+// with a filename are ignored even if they refer to the same file. Anchors
+// with no element with the corresponding fragment ID
 // are written to stderr prefixed with the filename.
 //
-// Usage: anchor-checker.php FILE1 [FILE2]...
+// Usage:
+// $ anchor-checker.php FILE1 [FILE2]...
+// Output:
+// dir/file1.html<tab>#foo
+// dir/file1.html<tab>#bar
+// dir/file2.html<tab>#baz
+// ...
 //
-// To the extent possible under law, D. Bohdan has waived all copyright and
-// related or neighboring rights to this work.
-//
-// Date: 2021-08-11.
-// Requirements: PHP 7.x with the standard DOM module.
+// Requires: PHP 8.x, HTML5-PHP
+// Installation: $ sudo apt install php-masterminds-html5 php-mbstring
 
 error_reporting(E_ALL);
+
+set_include_path("/usr/share/php");
+require("Masterminds/HTML5/autoload.php");
+use Masterminds\HTML5;
 
 function main($files) {
     $exit_code = 0;
@@ -31,17 +43,16 @@ function main($files) {
     exit($exit_code);
 }
 
-function check_file($file) { // }
+function check_file($file) {
     $html = file_get_contents($file);
     if (!$html) { fwrite(STDERR,"Failed to read file:"); fwrite(STDERR, $file); exit(2); }
 
-    // An ugly hack to get around missing HTML5 support tripping up the parser.
-    $html = preg_replace("/<wbr>/", "", $html);
-
     if (preg_match("/^\s*$/", $html)) return [];
 
-    $dom = new DOMDocument();
-    $dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $html5 = new Masterminds\HTML5([
+        'disable_html_ns' => true,
+    ]);
+    $dom = $html5->loadHTML($html);
 
     return check_document($dom);
 }
@@ -56,6 +67,7 @@ function check_document($dom) {
 
     $bad_anchors = array();
     $hrefs = (new DOMXpath($dom))->query("//a/@href");
+
     foreach ($hrefs as $href) {
         $value = urldecode(trim($href->value));
 
