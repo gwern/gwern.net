@@ -254,9 +254,11 @@ capitalizeAfterApostrophe :: String -> String
 capitalizeAfterApostrophe "" = ""
 capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
     (before, punctuation:"s") -> before ++ [punctuation] ++ "s"
-    (before, punctuation:'s':after@(x:_)) -> if isSpace x || isPunctuation x
-                                              then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)
-                                              else before ++ [punctuation] ++ 'S' : capitalizeFirst (capitalizeAfterApostrophe after)
+    (before, punctuation:'s':after@(x:_)) -> if isSpace (last before)
+                                             then before ++ [punctuation] ++ "S" ++ capitalizeAfterApostrophe after else
+                                               if isSpace x || isPunctuation x
+                                               then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)
+                                               else before ++ [punctuation] ++ 'S' : capitalizeFirst (capitalizeAfterApostrophe after)
     (before, punctuation:after) -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
     (before, [])                -> before
   where
