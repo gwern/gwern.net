@@ -1084,17 +1084,6 @@
 	font-display: swap;
 }
 
-/***********/
-/* DEAREST */
-/***********/
-
-@font-face {
-	font-family: 'Dearest';
-	font-weight: normal;
-	src: url('/static/font/blackletter/Dearest.ttf?v=1711843786') format('truetype');
-	font-display: swap;
-}
-
 /********************/
 /* DEUTSCHE SCHRIFT */
 /********************/
@@ -2491,18 +2480,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5531,7 +5520,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5712,7 +5701,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6160,7 +6149,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7113,7 +7102,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#question');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7323,7 +7312,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
 	content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-	background-image: url('/static/img/icon/icons.svg?v=1711844091#magnifying-glass-plus-light');
+	background-image: url('/static/img/icon/icons.svg?v=1716886367#magnifying-glass-plus-light');
 	background-size: 56px 56px;
 	background-origin: content-box;
 	background-repeat: no-repeat;
@@ -7705,7 +7694,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1711844091#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1716886367#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7783,7 +7772,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1711844091#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1716886367#hand-point-right-regular');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

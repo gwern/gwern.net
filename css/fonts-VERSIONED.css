@@ -1084,17 +1084,6 @@
 	font-display: swap;
 }
 
-/***********/
-/* DEAREST */
-/***********/
-
-@font-face {
-	font-family: 'Dearest';
-	font-weight: normal;
-	src: url('/static/font/blackletter/Dearest.ttf?v=1711843786') format('truetype');
-	font-display: swap;
-}
-
 /********************/
 /* DEUTSCHE SCHRIFT */
 /********************/
