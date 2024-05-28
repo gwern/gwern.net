@@ -142,7 +142,7 @@ imageMagickColor f f' = do let temp = if null f' then f else f'
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
 -- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
 --
--- For an SVG, there is in fact a 'width' and 'height', set in the 'viewbox', like `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 830">`.
+-- For an SVG, there is in fact a 'width' and 'height', set in the 'viewbox', like `<svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 1200 830">`.
 -- This doesn't mean the same thing as in a raster image because that's the point of vector graphics, but this does still tell us useful things like the aspect ratio (in this case, 1200 / 830 = 1.44578).
 imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f =

@@ -239,6 +239,11 @@ canonicals = M.fromList
   , ("hsu_steve", "Steve Hsu")
   , ("Darold Treffert", "Darold A. Treffert")
   , ("ryanqnorth", "Ryan North")
+  , ("Robert Ladd Thorndike", "Robert L. Thorndike")
+  , ("Robert Thorndike", "Robert L. Thorndike")
+  , ("R. Thorndike", "Robert L. Thorndike")
+  , ("R. L. Thorndike", "Robert L. Thorndike")
+  , ("R.L. Thorndike", "Robert L. Thorndike")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -309,6 +314,7 @@ authorLinkDB = M.fromList $
     , ("Kevin Scott", "https://en.wikipedia.org/wiki/Kevin_Scott_(computer_scientist)")
     , ("Samuel J. Gershman", "https://gershmanlab.com/people/sam.html")
     , ("Blake Bordelon", "https://blakebordelon.github.io/")
+    , ("Gretchen Krueger", "https://scholar.google.com/citations?user=astFxkwAAAAJ")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -1284,7 +1290,7 @@ authorWpLinkDB =
     ,"Robert J. LaLonde","Robert J. MacCoun","Robert J. Nemiroff","Robert J. Shiller","Robert J. Sternberg"
     ,"Robert Kaestner","Robert Kanigel","Robert Karlsson","Robert Kleinberg","Robert Kolker"
     ,"Robert Krulwich","Robert Kurzban","Robert L. Forward","Robert L. Linn","Robert L. Paarlberg"
-    ,"Robert L. Sack","Robert L. Spitzer","Robert L. Thorndike","Robert Ladd Thorndike","Robert Langer"
+    ,"Robert L. Sack","Robert L. Spitzer","Robert L. Thorndike","Robert Langer"
     ,"Robert Leeper","Robert Lerner","Robert M. Bond","Robert M. Hauser","Robert M. May"
     ,"Robert M. Solow","Robert M. Thorndike","Robert M. Yerkes","Robert Maier","Robert Mankoff"
     ,"Robert Martinson","Robert Meier","Robert Metcalfe","Robert Mullins","Robert P. Abelson"
@@ -1540,4 +1546,4 @@ authorWpLinkDB =
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
-    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"]
+    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi", "Marvin Minsky", "Helen Keller"]

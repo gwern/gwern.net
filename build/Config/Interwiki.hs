@@ -5931,4 +5931,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Stockfish", "Stockfish_(chess)")
         , ("Imagen", "Imagen_(Google_Brain)")
         , ("SARSA", "State%E2%80%93action%E2%80%93reward%E2%80%93state%E2%80%93action")
+        , ("Bruegel", "Pieter_Bruegel_the_Elder")
+        , ("Mr._Natural", "Mr._Natural_(character)")
         ]

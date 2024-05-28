@@ -21,7 +21,7 @@ import Annotation (tooltipToMetadata)
 import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
-import LinkArchive (readArchiveMetadata, testLinkRewrites)
+import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
 import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
@@ -212,7 +212,7 @@ testAll = do Config.Misc.cd
 
              printGreen ("Testing file-transclusions…" :: String)
              md <- readLinkMetadata
-             am <- readArchiveMetadata
+             am <- readArchiveMetadataAndCheck
              let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
