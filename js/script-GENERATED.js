@@ -85,14 +85,14 @@ function placeholder(replaceFunction, wrapperFunction) {
 }
 
 /*****************************************************************************/
-/*	Generate new UUIDs for any placeholder elements in the given container. 
-	(Necessary when using a DocumentFragment to make a copy of a subtree; 
-	 otherwise - since inject triggers are deleted after triggering once - 
+/*	Generate new UUIDs for any placeholder elements in the given container.
+	(Necessary when using a DocumentFragment to make a copy of a subtree;
+	 otherwise - since inject triggers are deleted after triggering once -
 	 any placeholders in the copied subtree will never get replaced.)
  */
 function regeneratePlaceholderIds(container) {
 	container.querySelectorAll(".placeholder").forEach(placeholder => {
-		placeholder.dataset.uuid = onInject(null, (   GW.elementInjectTriggers[placeholder.dataset.uuid] 
+		placeholder.dataset.uuid = onInject(null, (   GW.elementInjectTriggers[placeholder.dataset.uuid]
 												   ?? GW.defunctElementInjectTriggers[placeholder.dataset.uuid]));
 	});
 }
@@ -201,11 +201,11 @@ function shouldInvertImageInDarkMode(image) {
 	given container ought to be inverted.
  */
 function requestImageInversionDataForImagesInContainer(container) {
-	let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => 
-		(   URLFromString(image.src).pathname.match(/\.(png|jpe?g$)/i) 
+	let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image =>
+		(   URLFromString(image.src).pathname.match(/\.(png|jpe?g$)/i)
 		 && GW.invertOrNot[image.src] == null)
 		? image.src
-		: null 
+		: null
 	).filter(x => x);
 	if (imageURLs.length == 0)
 		return;
@@ -671,28 +671,28 @@ function aggregateMarginNotesInDocument(doc) {
 		clonedNote.innerHTML = clonedNote.innerHTML.trim();
 
 		//	Strip brackets.
-        /*	Reason: we use brackets for editorial insertions & commentary, 
-        	particularly in annotations where the reader assumes the text is 
+        /*	Reason: we use brackets for editorial insertions & commentary,
+        	particularly in annotations where the reader assumes the text is
         	written by the original authors.
-        		Sometimes in long annotations where we wish to add ‘sections’ 
-        	(because the original didn’t have them or they were inappropriate, 
-        	eg. long journalistic essays where the material is scattered rather 
-        	than organized by topic as necessary for a convenient annotation), 
+        		Sometimes in long annotations where we wish to add ‘sections’
+        	(because the original didn’t have them or they were inappropriate,
+        	eg. long journalistic essays where the material is scattered rather
+        	than organized by topic as necessary for a convenient annotation),
         	we use margin-notes as a substitute for original sections.
-        	Such editorializing of course must be marked by brackets to avoid 
-        	misleading the reader; but then, when aggregated at the beginning 
-        	of the annotation like all margin notes, it looks bad: 
+        	Such editorializing of course must be marked by brackets to avoid
+        	misleading the reader; but then, when aggregated at the beginning
+        	of the annotation like all margin notes, it looks bad:
         	‘[Foo] · [Bar] · [Baz] · [Quux]’.
-        		So, although it risks misleading readers who do not read down 
-        	to the actual margin-note usage & see that it’s an editorial 
+        		So, although it risks misleading readers who do not read down
+        	to the actual margin-note usage & see that it’s an editorial
         	insertion, we remove the brackets when aggregated.
-        		(If it is necessary to override this feature & force brackets 
-        	displayed in aggregates - perhaps because the margin-note is some 
-        	exotic chemical name that starts with a bracket - one can use 
-        	alternate Unicode bracket-pairs, or possibly some sort of 
-        	non-printing non-whitespace character to block the match. 
-        	Although, since the match requires the text to both start *and* end 
-        	with a bracket, this should be an extremely rare edge-case not 
+        		(If it is necessary to override this feature & force brackets
+        	displayed in aggregates - perhaps because the margin-note is some
+        	exotic chemical name that starts with a bracket - one can use
+        	alternate Unicode bracket-pairs, or possibly some sort of
+        	non-printing non-whitespace character to block the match.
+        	Although, since the match requires the text to both start *and* end
+        	with a bracket, this should be an extremely rare edge-case not
         	worth thinking about further.)
          */
 		if (   clonedNote.textContent.startsWith("[")
@@ -1197,10 +1197,10 @@ GW.pageToolbar = {
 			slow: false
 		}, options);
 
-		if (   collapse 
+		if (   collapse
 			&& options.delay > 0) {
-			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState, 
-															  options.delay, 
+			GW.pageToolbar.toolbar.collapseTimer = setTimeout(GW.pageToolbar.toggleCollapseState,
+															  options.delay,
 															  collapse, {
 																  temp: options.temp,
 																  slow: options.slow
@@ -1411,17 +1411,17 @@ GW.pageToolbar = {
 				requestAnimationFrame(() => {
 					Array.from(GW.pageToolbar.getToolbar().querySelector(".widgets").children).forEach(widget => {
 						let order = parseInt(getComputedStyle(widget).order);
-						setTimeout(GW.pageToolbar.flashWidget, 
-								   order * GW.pageToolbar.widgetFlashRiseDuration * 4/3, 
-								   widget.id, { 
-									   showSelectedButtonLabel: true 
+						setTimeout(GW.pageToolbar.flashWidget,
+								   order * GW.pageToolbar.widgetFlashRiseDuration * 4/3,
+								   widget.id, {
+									   showSelectedButtonLabel: true
 								   });
 					});
 
 					//	Don’t collapse if hovering.
 					if (GW.pageToolbar.toolbar.matches(":hover") == false)
-						GW.pageToolbar.toggleCollapseState(true, { 
-															  slow: true, 
+						GW.pageToolbar.toggleCollapseState(true, {
+															  slow: true,
 															  delay: GW.pageToolbar.demoCollapseDelay
 														   });
 				});
@@ -1431,13 +1431,13 @@ GW.pageToolbar = {
 
 			//	Update toolbar state on scroll.
 			addScrollListener(GW.pageToolbar.updateState, {
-				name: "updatePageToolbarStateOnScrollListener", 
+				name: "updatePageToolbarStateOnScrollListener",
 				defer: true
 			});
 
 			//	Update toolbar state on window resize.
 			addWindowResizeListener(GW.pageToolbar.updateState, {
-				name: "updatePageToolbarStateOnWindowResizeListener", 
+				name: "updatePageToolbarStateOnWindowResizeListener",
 				defer: true
 			});
 		});
@@ -1492,8 +1492,8 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
 
     //  Show/hide the back-to-top link on scroll up/down.
     addScrollListener(updateBackToTopLinkVisibility, {
-    	name: "updateBackToTopLinkScrollListener", 
-    	defer: true, 
+    	name: "updateBackToTopLinkScrollListener",
+    	defer: true,
     	ifDeferCallWhenAdd: true
     });
 
@@ -1700,7 +1700,7 @@ GW.floatingHeader = {
 		//  Show/hide the back-to-top link on scroll up/down.
 		addScrollListener(GW.floatingHeader.updateState, {
 			name: "updateFloatingHeaderScrollListener",
-			defer: true, 
+			defer: true,
 			ifDeferCallWhenAdd: true
 		});
 
@@ -1744,9 +1744,9 @@ GW.search = {
 	setup: () => {
 		//	Add search widget to page toolbar.
 		GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}">`
-														  + `<a 
+														  + `<a
 														  	   class="search"
-														  	   href="/static/search.html" 
+														  	   href="/static/google-cse.html"
 														  	   data-link-content-type="local-document"
 														  	   >`
 														  + `<span class="icon">`
@@ -5274,7 +5274,7 @@ Content = {
     cachedContent: { },
 
     contentCacheKeyForLink: (link) => {
-    	return (   Content.contentTypeForLink(link)?.contentCacheKeyForLink?.(link) 
+    	return (   Content.contentTypeForLink(link)?.contentCacheKeyForLink?.(link)
     			?? (Content.sourceURLsForLink(link)?.first ?? link).href);
     },
 
@@ -5516,14 +5516,14 @@ Content = {
         if (typeof url == "string")
             url = URLFromString(url);
 
-        /*	PDF optional settings to embed more cleanly: fit width, and disable 
+        /*	PDF optional settings to embed more cleanly: fit width, and disable
         	‘bookmarks’ & ‘thumbnails’ (just not enough space).
 
         	<https://gwern.net/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=6>
-        	<https://github.com/mozilla/pdf.js/wiki/Viewer-options> 
+        	<https://github.com/mozilla/pdf.js/wiki/Viewer-options>
 
-        	WARNING: browsers are unreliable in whether they properly apply 
-        	these options; Firefox appears to, but not Chrome, and there can be 
+        	WARNING: browsers are unreliable in whether they properly apply
+        	these options; Firefox appears to, but not Chrome, and there can be
         	iframe issues as well.
          */
         let src = url.pathname.endsWith(".pdf")
@@ -5585,10 +5585,10 @@ Content = {
 
             .isSliceable: boolean
 
-				This property determines whether content documents returned for 
-				links of this content type may be “sliced”, via element IDs, 
-				selectors, or by other means. If its value is false, then the 
-				returned content documents may only be transcluded in their 
+				This property determines whether content documents returned for
+				links of this content type may be “sliced”, via element IDs,
+				selectors, or by other means. If its value is false, then the
+				returned content documents may only be transcluded in their
 				entirety.
 
         ... plus either these two:
@@ -5611,15 +5611,15 @@ Content = {
 
             .referenceDataFromContent(object, URL|Element) => object
 
-				NOTE: If this member function is not present, we must ensure 
-				that the object returned from .contentFromResponse() or 
+				NOTE: If this member function is not present, we must ensure
+				that the object returned from .contentFromResponse() or
 				.contentFromLink() has a .document member. (This should be a
 				DocumentFragment object which contains the primary content for
 				the link.)
 
 			.referenceDataCacheKeyForLink(URL|Element) => string
 
-				NOTE: If this member function is not present, then reference 
+				NOTE: If this member function is not present, then reference
 				data will not be cached for links of this content type.
      */
 
@@ -5854,7 +5854,7 @@ Content = {
 					} else if (/H[0-9]/.test(targetElement.tagName)) {
 						//	The target is a section heading.
 						let targetHeading = targetElement;
-	
+
 						//	The id is on the heading, so the section is its parent.
 						let targetSection = targetHeading.parentElement.cloneNode(true);
 
@@ -5901,7 +5901,7 @@ Content = {
 
 					//	Build TOC.
 					let sections = Array.from(wikipediaEntryContent.document.querySelectorAll("section")).slice(1);
-					if (   sections 
+					if (   sections
 						&& sections.length > 0) {
 						entryContentHTML += `<div class="TOC columns">`;
 						let headingLevel = 0;
@@ -5912,7 +5912,7 @@ Content = {
 							if (newHeadingLevel > headingLevel)
 								entryContentHTML += `<ul>`;
 
-							if (   i > 0 
+							if (   i > 0
 								&& newHeadingLevel <= headingLevel)
 								entryContentHTML += `</li>`;
 
@@ -6185,7 +6185,7 @@ Content = {
 				contentDocument.querySelectorAll("div.quotebox").forEach(quotebox => {
 					let blockquote = quotebox.querySelector("blockquote");
 					blockquote.classList.add("quotebox");
-			
+
 					let title = quotebox.querySelector(".quotebox-title");
 					if (title) {
 						blockquote.insertBefore(title, blockquote.firstElementChild);
@@ -6344,7 +6344,7 @@ Content = {
         tweet: {
             matches: (link) => {
                 return (   link.classList.contains("content-transform-not") == false
-						&& [ "twitter.com", "x.com" ].includes(link.hostname)
+						&& [ "x.com" ].includes(link.hostname)
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
             },
 
@@ -6419,8 +6419,8 @@ Content = {
                 tweetLinkURL.hash = "m";
 
 				//	Data attribute for archived tweet (if available).
-                let archivedTweetURLDataAttribute = link.dataset.urlArchive 
-                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"` 
+                let archivedTweetURLDataAttribute = link.dataset.urlArchive
+                									? `data-url-archive="${(URLFromString(link.dataset.urlArchive).href)}"`
                 									: "";
 				//	Text of link to tweet.
                 let tweetDate = new Date(Date.parse(tweetContent.document.querySelector(".main-tweet .tweet-date").textContent));
