@@ -391,4 +391,6 @@ linkIDOverrides =
        , ("/doc/cs/algorithm/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
        , ("https://www.inkandswitch.com/local-first.html", "kleppmann-et-al-2019-blog")
        , ("/doc/cat/psychology/2023-mcgrath-supplement.pdf", "mcgrath-et-al-supplement")
+       , ("https://arxiv.org/abs/2305.18565#google", "chen-et-al-2023-palix")
+       , ("https://arxiv.org/abs/2310.09199#google", "chen-et-al-2023-pali3")
       ]

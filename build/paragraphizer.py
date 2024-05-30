@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-05-25 10:19:27 gwern"
+# When:  Time-stamp: "2024-05-29 11:30:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -70,7 +70,7 @@ completion = client.chat.completions.create(
     {"role": "system", "content": "You are a helpful research assistant that adds relevant hyperlinks to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)"},
       {"role": "user", "content": f"""You are a helpful assistant that adds relevant HTML hyperlinks & formatting to text, and adds double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)
 Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/benchmarks/outputs; 4. conclusion/discussion/implications; 5. supplementary information (eg. URLs, code, websites, datasets).
-Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize species names as appropriate. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University" or "psychology"); do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.
+Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize species names as appropriate. If a new term, concept, or system is defined, bold the first appearance using '<strong>NAME</strong>' formatting. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University" or "psychology"); do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.
 
 <abstract>
 {target}

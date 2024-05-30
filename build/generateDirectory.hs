@@ -29,7 +29,7 @@ import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkID (generateID, authorsToCite)
-import LinkMetadata as LM (readLinkMetadata, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
+import LinkMetadata as LM (readLinkMetadataSlow, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
@@ -50,7 +50,7 @@ main = do C.cd
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.md" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
-          meta <- readLinkMetadata
+          meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
           ldb <- readListName
           sortDB <- readListSortedMagic

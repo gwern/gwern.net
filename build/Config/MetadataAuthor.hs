@@ -315,6 +315,7 @@ authorLinkDB = M.fromList $
     , ("Samuel J. Gershman", "https://gershmanlab.com/people/sam.html")
     , ("Blake Bordelon", "https://blakebordelon.github.io/")
     , ("Gretchen Krueger", "https://scholar.google.com/citations?user=astFxkwAAAAJ")
+    , ("Luke Muehlhauser", "https://lukemuehlhauser.com/")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
@@ -1023,7 +1024,7 @@ authorWpLinkDB =
     ,"Lucas Baker","Lucas Chancel","Luciano Floridi","Lucy Blake","Lucy Cooke"
     ,"Lucy Harrison","Lucy Jenkins","Lucy van Dorp","Ludger Woessmann","Ludovic Auger"
     ,"Ludwig Schmidt","Luis Ceze","Luis Guzman","Luis Villa","Luis W. Alvarez"
-    ,"Luke Bates","Luke Hunter","Luke Miller","Luke Muehlhauser","Luke O\8217Connor"
+    ,"Luke Bates","Luke Hunter","Luke Miller","Luke O\8217Connor"
     ,"Lutz J\228ncke","Luyang Liu","Lyle F. Schoenfeldt","Lyle H. Ungar","Lyle Ungar"
     ,"Lyn R. Griffiths","Lynn B. Jorde","Lynn DeLisi","Lynn E. DeLisi","Lynn Etheridge Davis"
     ,"Lynn Hasher","Lynn M. LoPucki","Lynn R. Goldman","Lynn Vavreck","L\233on Bottou"
@@ -1546,4 +1547,4 @@ authorWpLinkDB =
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
-    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi", "Marvin Minsky", "Helen Keller"]
+    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi", "Marvin Minsky", "Helen Keller", "Bret Taylor"]

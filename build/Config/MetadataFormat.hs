@@ -699,6 +699,7 @@ htmlRewriteFixed =
          , (" </sec>", "")
          , ("   <title/>    <p>", "<p>")
          , ("  <p>", "<p>")
+         , ("<em>k</em>^2 ", "<em>k</em><sup>2</sup> ")
          , ("I^2 =", "I<sup>2</sup> =")
          , ("I(2)", "I<sup>2</sup>")
          , (" h2",     " <em>h</em><sup>2</sup>")
