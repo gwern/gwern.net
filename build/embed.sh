@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2024-03-15 13:53:06 gwern"
+# When:  Time-stamp: "2024-05-31 16:00:07 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -45,16 +45,16 @@
 # Requires: curl, jq, valid API key defined in `$OPENAI_API_KEY`
 
 # set -e
-# set -x
+set -x
 
 # Input: X BPEs of text
-# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models (all deprecated: https://platform.openai.com/docs/deprecations)
-# ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288, or 12× ada]
-# Second-generation models:
-# text-embedding-ada-002 |  cl100k_base |   8191 input |    1536 output dimensionality |
+# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models
+# 'text-embedding-3' models can be truncated to smaller dimensions which retain most performance, using a `dimension` argument.
+# <https://openai.com/index/new-embedding-models-and-api-updates/> <https://platform.openai.com/docs/guides/embeddings/use-cases>
 
-ENGINE="text-embedding-ada-002"
-TEXT="$@"
+ENGINE="text-embedding-3-large"
+ENGINE_DIMENSION="256"
+TEXT="$*"
 if [ "${#TEXT}" == 0 ]; then TEXT=$(</dev/stdin); fi
 TEXT_LENGTH="${#TEXT}"
 TRUNCATED=0
@@ -62,7 +62,7 @@ TRUNCATED=0
 while [ $TEXT_LENGTH -gt 0 ]; do
 
     RESULT="$(curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" \
-         -d "{\"input\": \"$TEXT\"}")"
+         -d "{\"input\": \"$TEXT\", \"dimensions\": $ENGINE_DIMENSION}")"
     PARSED="$(echo "$RESULT" | jq --raw-output '.model, .data[0].embedding')"
 
     if [ "$(echo "$PARSED" | grep -F 'exceeded your current quota' | wc --char)" != 0 ]; then
