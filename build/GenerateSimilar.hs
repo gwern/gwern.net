@@ -148,7 +148,7 @@ formatDoc (path,mi@(t,aut,dt,dtM,_,tags,abst)) =
     let dateModified = if dtM == "" then "" else "; updated " ++ dtM
         document = T.pack $ replace "\n" "\n\n" $ unlines [
           (if t=="" then "" else "'"++t++"'" ++
-            if path=="" || head path == '/' then "" else " ("++path++")") ++
+            if path=="" || head path == '/' then " (https://gwern.net"++path++")" else " ("++path++")") ++
           (if aut=="" || aut=="N/A" then "" else ", by "++authorsTruncateString aut) ++
           (if dt==""then "." else" ("++take 4 dt++dateModified++")."),
 
@@ -196,8 +196,9 @@ embed edb mdb bdb i@(p,_) =
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: FilePath -> T.Text -> IO (String,[Double])
-oaAPIEmbed p doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
+oaAPIEmbed p doc = do let args = ["static/build/embed.sh", replace "\"" "\\\"" $ replace "\n" "\\n" $ -- JSON escaping of newlines
                                                                                                    T.unpack doc]
+                      (status,stderr,mb) <- runShellCommand "./" Nothing "bash" args
                       case status of
                         ExitFailure err -> error $ "Exit Failure: " ++ intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr]
                         _ -> do let results = lines $ U.toString mb
