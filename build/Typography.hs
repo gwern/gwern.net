@@ -253,8 +253,8 @@ capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—') s of
 capitalizeAfterApostrophe :: String -> String
 capitalizeAfterApostrophe "" = ""
 capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
-    (before, punctuation:"s") -> before ++ [punctuation] ++ "s"
-    (before, punctuation:'s':after@(x:_)) -> if isSpace (last before)
+    (before, punctuation:"s")             -> before ++ [punctuation] ++ "s"
+    (before, punctuation:'s':after@(x:_)) -> if null before || isSpace (last before)
                                              then before ++ [punctuation] ++ "S" ++ capitalizeAfterApostrophe after else
                                                if isSpace x || isPunctuation x
                                                then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)

@@ -66,6 +66,7 @@ titleCaseTestCases = [
             , ("foo'bar's-baz qux", "Foo'Bar's-Baz Qux")
             , ("Fading Hip-Hop Mogul—who’s Been Buffeted by Charges of Sexual Assault—to Salvage", "Fading Hip-Hop Mogul—Who’s Been Buffeted by Charges of Sexual Assault—To Salvage")
             , ("Scarlett Johansson says she is \"shocked, angered\" over new ChatGPT voice", "Scarlett Johansson Says She Is \"Shocked, Angered\" over New ChatGPT Voice")
+            , ("'something is wrong'", "'Something Is Wrong'")
               ]
 
 -- testing: unique list
