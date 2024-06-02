@@ -1590,6 +1590,7 @@ htmlRewriteFixed =
          , ("GPT 4", "GPT-4")
          , ("GPT 2", "GPT-2")
          , ("GPT 3", "GPT-3")
+         , ("GPT-4V", "GPT-4-V")
          , (" target=\"_blank\"", "")
          , ("</sup><br />", "</sup>")
          , (" < jats:sub>", "<sub>")

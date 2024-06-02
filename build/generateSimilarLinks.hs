@@ -19,7 +19,7 @@ import Utils (printGreen)
 import qualified Config.Misc (cd)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 100
+maxEmbedAtOnce = 200
 
 main :: IO ()
 main = do Config.Misc.cd

@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-05-08 20:21:34 gwern"
+# When:  Time-stamp: "2024-05-31 19:43:15 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -120,12 +120,12 @@ else
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
             # NOTE: we must specify '--network="host"' to Docker, so that the Single-file app running inside Docker (which is its own private network namespace) can 'see' the local Nitter instance (running normally) for making Twitter snapshots; if we forget to do this, we get unhelpful 'connection error' messages like "$ docker run singlefile http://localhost:8081/novelaiofficial/status/1723601550927356343 → net::ERR_CONNECTION_REFUSED at http://localhost:8081/novelaiofficial/status/1723601550927356343"
-            timeout --kill-after=300s 200s \
+            timeout --kill-after=200s 100s \
                     docker run --network="host" singlefile "$URL" --compress-CSS \
                     --block-scripts "$REMOVE_SCRIPTS" --block-videos false --block-audios false \
                     --user-agent "$USER_AGENT" \
-                    --browser-load-max-time "480000" \
-                    --load-deferred-images-max-idle-time "40000" \
+                    --browser-load-max-time "400000" \
+                    --load-deferred-images-max-idle-time "30000" \
                     --max-resource-size 100 \
                     --browser-wait-until "networkIdle" \
                     --browser-height "10000" \

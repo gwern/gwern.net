@@ -316,6 +316,7 @@ authorLinkDB = M.fromList $
     , ("Blake Bordelon", "https://blakebordelon.github.io/")
     , ("Gretchen Krueger", "https://scholar.google.com/citations?user=astFxkwAAAAJ")
     , ("Luke Muehlhauser", "https://lukemuehlhauser.com/")
+    , ("Rachel Metz", "https://x.com/rachelmetz")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 
