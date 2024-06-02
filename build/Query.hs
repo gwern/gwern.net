@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2024-04-07 17:17:59 gwern"
+When:  Time-stamp: "2024-06-01 20:57:48 gwern"
 License: CC-0
 -}
 
@@ -53,7 +53,9 @@ extractLinkIDsWith rule filename pndc = queryWith extractIDs $ convertInterwikiL
         extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []
         extractIDs _ = []
 
-extractURL :: Inline -> [(T.Text,T.Text,T.Text)]
+extractURL :: Inline -> [(T.Text, -- URL
+                           T.Text, -- anchor text/visible content (compiled to text)
+                           T.Text)] -- tooltip/title
 extractURL = extractURLWith (const True)
 
 -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;

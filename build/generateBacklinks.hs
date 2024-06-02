@@ -12,7 +12,7 @@ import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, stripSuffix, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isSuffixOf, sort)
+import Data.List (isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter, filterWithKey)
 import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
@@ -28,13 +28,15 @@ import LinkID (generateID)
 import LinkMetadata (hasAnnotation, hasAnnotationOrIDInline, isPagePath, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
-import Query (extractLinkIDsWith, parseMarkdownOrHTML)
+import Query (extractLinkIDsWith, parseMarkdownOrHTML, extractURL)
 import Typography (typographyTransform)
 import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
 import qualified Config.Misc as C (backlinkBlackList, cd)
 
 import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSortedMagic,
                         Embeddings, ListSortedMagic)
+
+import MetadataAuthor (authorsLinkify)
 
 main :: IO ()
 main = do
@@ -119,8 +121,13 @@ generateCaller md target (caller, callers) =
                                                                       Just ("",_,_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
                                                                       Just (t,_,dt,_,_,_,_) -> (dt,T.pack t,u))
                                                           callers
-                                       -- sort backlinks in descending order (most-recent first) as a simple way to prioritize:
-                                           callerTitles  = map (\(_,b,c) -> (b,c)) $ reverse $ sort callerDatesTitles
+                                           -- a backlink can be triggered by an ordinary link, or it can be triggered by an *author* metadata field which gets turned into a link; if the latter is the case, the backlink means that an annotation was written by the author, and we are creating an author bibliography.
+                                           -- In that case, we want to handle the author links specially, and provide them first, so we check the database for each of the callers, to see if the caller has the
+                                           callerDatesTitlesAuthored    = filterIfAuthored md caller callerDatesTitles
+                                           callerDatesTitlesAuthoredNot = callerDatesTitles \\ callerDatesTitlesAuthored
+                                           -- sort backlinks in descending order (most-recent first) as a simple way to prioritize within author/non-author category:
+                                           sortDescending = map (\(_,b,c) -> (b,c)) . reverse . sort
+                                           callerTitles = (sortDescending callerDatesTitlesAuthored) ++ (sortDescending callerDatesTitlesAuthoredNot)
                                            callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
                                            callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
@@ -144,6 +151,13 @@ generateCaller md target (caller, callers) =
                                                              ]
                                                 ) callers'
                                              in content
+
+-- TODO: This is very clumsy. There ought to be a better way to check for authorship than compiling & extracting URLs. But I'm not confident in matching on title either... We only have the caller URL here, not the original anchor text. Do we want to allow the author DB to be *bi-directional*? That would mean we couldn't procedurally-generate author URLs.
+filterIfAuthored :: Metadata -> T.Text -> [(String,T.Text,T.Text)] -> [(String,T.Text,T.Text)]
+filterIfAuthored md caller titleCallers = filter (\(_,_,url) -> f (T.unpack url)) titleCallers
+   where f u = case M.lookup u md of
+                 Nothing -> False
+                 Just (_,authors,_,_,_,_,_) -> caller `elem` (map (\(a,_,_) -> a) $ concatMap Query.extractURL $ MetadataAuthor.authorsLinkify (T.pack authors))
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,_,_,_,_,_,abstract) =
