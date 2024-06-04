@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Annotation (linkDispatcher, tooltipToMetadata) where
 
 import Data.List (isPrefixOf, isInfixOf)
@@ -12,7 +13,44 @@ import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (trimTitle, cleanAbstractsHTML, pageNumberParse, filterMeta, linkCanonicalize, extractTwitterUsername)
-import Utils (replace, sed, anyInfix, anyPrefix)
+import Utils (replace, sed, anyInfix, anyPrefix, trim)
+
+import Network.HTTP.Conduit (simpleHttp, HttpException)
+import Text.HTML.TagSoup (innerText, sections, parseTags, (~/=), (~==))
+import qualified Data.ByteString.Lazy.Char8 as L8 (unpack)
+import qualified Data.Text as T (pack, strip, Text)
+import Control.Exception (catch)
+
+-- Fetch HTML content from a URL
+fetchHTML :: String -> IO (Either HttpException T.Text)
+fetchHTML url = do
+  result <- (Right <$> simpleHttp url) `catch` (return . Left)
+  return $ case result of
+    Left ex -> Left ex
+    Right response -> Right $ T.pack $ L8.unpack response
+
+-- Extract the title from the HTML content
+extractTitle :: T.Text -> T.Text
+extractTitle html =
+  let tags = parseTags html
+      titleTags = sections (~== ("<title>" :: String)) tags
+  in if null titleTags
+     then ""
+     else T.strip $ innerText $ takeWhile (~/= ("</title>" :: String)) $ drop 1 $ head titleTags
+
+htmlDownloadAndParseTitle :: String -> IO String
+htmlDownloadAndParseTitle url = do
+  htmlResult <- fetchHTML url
+  return $ case htmlResult of
+             Left _ -> ""
+             Right html -> T.unpack $ extractTitle html
+
+htmlDownloadAndParseTitleClean :: String -> IO String
+htmlDownloadAndParseTitleClean u = do title <- htmlDownloadAndParseTitle u
+                                      let title' = trim $ if any (\c -> c `elem` separators) title then reverse $ dropWhile (\c -> notElem c separators) $ reverse title else title
+                                      if title' `elem` badStrings then return "" else return title'
+                     where separators = ("—·|"::String)
+                           badStrings = ["Quanta Magazine"]
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
@@ -39,7 +77,9 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l' else return (Left Permanent)
                  | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l
                  -- And everything else is unhandled:
-                    else return (Left Permanent)
+                    else do title <- htmlDownloadAndParseTitleClean l
+                            if title /= "" then return (Right (l, (title, "", "", "", [], [], "")))
+                              else return (Left Permanent)
 
 
 -- Attempt to parse tooltips back into citation metadata:
