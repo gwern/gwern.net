@@ -369,6 +369,7 @@ linkIconRulesQuad u
  | u'' u "www.scmp.com" = ("SCM", "text,tri") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?); 'SCMP' unfortunately doesn't work as a quad, because the width of 'MP' is far larger than 'SC' and playing around with it, I can't get it to look good, so we settle for just the first three
  | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains.
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono") -- qntm/Sam Hughes: programming & SF
+ | aU'' ["blog.samaltman.com", "samaltman.com"] = ("SamA", "text,quad,sans") -- Sam Altman, username 'sama' (TODO: should this be all lower/uppercase instead of mixed?)
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1073,6 +1074,7 @@ linkIconTestUnitsText =
          , ("https://qntm.org/invisibility", "qntm", "text,quad,mono")
          , ("https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans")
          , ("https://psycnet.apa.org/fulltext/2024-33486-001.html", "APA", "text,tri,sans")
+         , ("https://blog.samaltman.com/value-is-created-by-doing", "SamA", "text,quad,sans")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

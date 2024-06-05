@@ -488,4 +488,4 @@ siteBlackList = [
           "www.crd.york.ac.uk", "www.crunchbase.com", "dx.doi.org", "gawker.com", "cvm.missouri.edu", "gigamonkeys.com", "www.tiktok.com",
           "conversationswithtyler.com", "karger.com","diabetesjournals.org", "benbest.com", "conservancy.umn.edu", "a16z.com",
           "esolangs.org", "www.cognition-labs.com", "www.media.mit.edu","www.axios.com", "www.folger.edu", "ja.wikipedia.org","fr.wikipedia.org", "www.cerebras.net"
-          , "ocw.mit.edu","x.com","zenodo.org","www.robots.ox.ac.uk","www.genecards.org","deepmind.com","blog.samaltman.com", "ai.googleblog.com"]
+          , "ocw.mit.edu","x.com","zenodo.org","www.robots.ox.ac.uk","www.genecards.org","deepmind.com","blog.samaltman.com", "ai.googleblog.com", "www.clinicaltrialsregister.eu"]

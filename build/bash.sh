@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-05-31 14:37:07 gwern"
+# When:  Time-stamp: "2024-06-04 14:27:15 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -238,7 +238,7 @@ gw () {
 
     QUERY="$*";
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
-         ls ~/.emacs;
+         ls ~/.emacs ~/*.md;
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \

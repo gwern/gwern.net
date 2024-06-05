@@ -116,7 +116,7 @@ tagsShort2LongRewrites =
    , ("animal/iq", "iq/animal"), ("cellular-automata", "cellular-automaton"), ("mathematics", "math")
    , ("frank-p-ramsey", "frank-ramsey")
    , ("intrasexual-agression", "intrasexual-aggression")
-   , ("javascript", "js"), ("psych/chess", "psychology/chess"), ("self-experiment", "quantified-self")
+   , ("javascript", "js"), ("psych/chess", "psychology/chess"), ("human-chess", "psychology/chess"), ("human/chess", "psychology/chess"), ("chess/human", "psychology/chess"), ("chess-human", "psychology/chess"), ("self-experiment", "quantified-self")
    , ("energy","psychology/energy"), ("lithium","psychiatry/lithium"), ("sequence", "sequencing"), ("quadratic-vote", "quadratic-voting")
    , ("bipolar/genes", "bipolar/genetics"), ("dynamic-evaliation", "dynamic-evaluation"), ("dog-cloning", "genetics/cloning/dog")
    , ("dog-clone", "genetics/cloning/dog"), ("dog/clone", "genetics/cloning/dog"), ("cat-drug", "cat/psychology/drug")

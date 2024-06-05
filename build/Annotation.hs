@@ -47,10 +47,13 @@ htmlDownloadAndParseTitle url = do
 
 htmlDownloadAndParseTitleClean :: String -> IO String
 htmlDownloadAndParseTitleClean u = do title <- htmlDownloadAndParseTitle u
-                                      let title' = trim $ if any (\c -> c `elem` separators) title then reverse $ dropWhile (\c -> notElem c separators) $ reverse title else title
+                                      -- most websites will append the name/domain, like "$TITLE | Website",
+                                      -- so if any delimiter characters are detected, drop everything after it:
+                                      let title' = trim $ clean $ if any (\c -> c `elem` separators) title then reverse $ tail $ dropWhile (\c -> notElem c separators) $ reverse title else title
                                       if title' `elem` badStrings then return "" else return title'
                      where separators = ("—·|"::String)
                            badStrings = ["Quanta Magazine"]
+                           clean = replace " |" . replace "—YouTube" "" . replace " â\200\224 LessWrong" ""
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))

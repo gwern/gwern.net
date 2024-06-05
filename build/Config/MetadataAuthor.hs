@@ -244,6 +244,7 @@ canonicals = M.fromList
   , ("R. Thorndike", "Robert L. Thorndike")
   , ("R. L. Thorndike", "Robert L. Thorndike")
   , ("R.L. Thorndike", "Robert L. Thorndike")
+  , ("chrlaf", "Christian Laforte")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -317,6 +318,7 @@ authorLinkDB = M.fromList $
     , ("Gretchen Krueger", "https://scholar.google.com/citations?user=astFxkwAAAAJ")
     , ("Luke Muehlhauser", "https://lukemuehlhauser.com/")
     , ("Rachel Metz", "https://x.com/rachelmetz")
+    , ("Christian Laforte", "https://x.com/chrlaf")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
 

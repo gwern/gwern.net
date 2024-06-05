@@ -1102,7 +1102,7 @@ whiteListMatchesFixed = [
       , "http://timbaumann.info/svd-image-compression-demo/" -- interactive
       , "https://killedbyapixel.github.io/TinyCode/games/CrossMyHeart/" -- interactive game
       , "https://samwho.dev/bloom-filters/" -- interactive
-      , "https://suno.com/song/" -- low-quality (audio embeds)
+      , "https://suno.com/" -- low-quality (audio embeds)
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage
