@@ -2,7 +2,6 @@
 module Annotation (linkDispatcher, tooltipToMetadata) where
 
 import Data.List (isPrefixOf, isInfixOf)
-import qualified Data.Text as T (unpack)
 import Text.Pandoc (Inline(Link))
 import Network.HTTP (urlDecode)
 
@@ -13,12 +12,13 @@ import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (trimTitle, cleanAbstractsHTML, pageNumberParse, filterMeta, linkCanonicalize, extractTwitterUsername)
-import Utils (replace, sed, anyInfix, anyPrefix, trim)
+import Utils (replace, replaceMany, sed, anyInfix, anyPrefix, trim)
 
 import Network.HTTP.Conduit (simpleHttp, HttpException)
 import Text.HTML.TagSoup (innerText, sections, parseTags, (~/=), (~==))
-import qualified Data.ByteString.Lazy.Char8 as L8 (unpack)
-import qualified Data.Text as T (pack, strip, Text)
+import qualified Data.Text.Lazy as TL (toStrict)
+import qualified Data.Text.Lazy.Encoding as TLE (decodeUtf8)
+import qualified Data.Text as T (strip, unpack, Text)
 import Control.Exception (catch)
 
 -- Fetch HTML content from a URL
@@ -27,7 +27,7 @@ fetchHTML url = do
   result <- (Right <$> simpleHttp url) `catch` (return . Left)
   return $ case result of
     Left ex -> Left ex
-    Right response -> Right $ T.pack $ L8.unpack response
+    Right response -> Right $ TL.toStrict $ TLE.decodeUtf8 response
 
 -- Extract the title from the HTML content
 extractTitle :: T.Text -> T.Text
@@ -46,14 +46,23 @@ htmlDownloadAndParseTitle url = do
              Right html -> T.unpack $ extractTitle html
 
 htmlDownloadAndParseTitleClean :: String -> IO String
-htmlDownloadAndParseTitleClean u = do title <- htmlDownloadAndParseTitle u
-                                      -- most websites will append the name/domain, like "$TITLE | Website",
-                                      -- so if any delimiter characters are detected, drop everything after it:
-                                      let title' = trim $ clean $ if any (\c -> c `elem` separators) title then reverse $ tail $ dropWhile (\c -> notElem c separators) $ reverse title else title
-                                      if title' `elem` badStrings then return "" else return title'
-                     where separators = ("—·|"::String)
-                           badStrings = ["Quanta Magazine"]
-                           clean = replace " |" . replace "—YouTube" "" . replace " â\200\224 LessWrong" ""
+htmlDownloadAndParseTitleClean u = do
+  title <- htmlDownloadAndParseTitle u
+  let title' = trim $ clean $ if any (`elem` separators) title
+                              then reverse $ tail $ dropWhile (`notElem` separators) $ reverse title
+                              else title
+  if title' `elem` badStrings
+  then return ""
+  else return title'
+  where
+    separators = "—·|" :: String
+    badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog"] :: [String]
+    clean = replaceMany [(" - The Public Domain Review", "")
+            , ("Github - ", "")
+            , (" - The New York Times", "")
+            , (" |", "")
+            , (" - YouTube", "")
+            , (" - LessWrong", "")]
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
@@ -65,7 +74,7 @@ linkDispatcher (Link _ _ (l, tooltip)) = do l' <- linkDispatcherURL (T.unpack l)
                                                                   if title/="" then return (Right (T.unpack l,(reformatTitle title,author,date,"",[],[],""))) else return l'
                                               Left Temporary -> return l'
   where reformatTitle = replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
-linkDispatcher x = error ("linkDispatcher passed a non-Link Inline element: " ++ show x)
+linkDispatcher x = error ("Annotation.linkDispatcher passed a non-Link Inline element: " ++ show x)
 
 linkDispatcherURL :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/"] = return (Left Permanent)
