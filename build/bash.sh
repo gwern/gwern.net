@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-04 14:27:15 gwern"
+# When:  Time-stamp: "2024-06-08 10:24:58 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -290,7 +290,7 @@ gwmv () {
     [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch "$1" 2>/dev/null) ]] && set -- "$1" "${1%.png}.jpg"
 
     if [ $# != 2 ]; then
-        echo "Need two arguments: OLD file and NEW file! Only got: \"$@\""
+        red "Need two arguments: OLD file and NEW file! Only got: \"$@\""
         return 2
     else
 

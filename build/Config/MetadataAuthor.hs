@@ -24,6 +24,12 @@ authorCollapseTestCases =
   , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
          ]
 
+-- Config tests: unique list
+authorLinkBlacklist :: [T.Text]
+authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
+                    ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi",
+                    "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
+
 -- list of rewrites for 'alternative name' → 'canonical name'
 -- Config tests: unique values, no loops
 canonicals :: M.Map String String
@@ -245,6 +251,9 @@ canonicals = M.fromList
   , ("R. L. Thorndike", "Robert L. Thorndike")
   , ("R.L. Thorndike", "Robert L. Thorndike")
   , ("chrlaf", "Christian Laforte")
+  , ("F. Jelinek", "Frederick Jelinek")
+  , ("Christopher Fettweis", "Christopher J. Fettweis")
+  , ("J. P. Gordon", "James P. Gordon")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -319,14 +328,12 @@ authorLinkDB = M.fromList $
     , ("Luke Muehlhauser", "https://lukemuehlhauser.com/")
     , ("Rachel Metz", "https://x.com/rachelmetz")
     , ("Christian Laforte", "https://x.com/chrlaf")
+    , ("Daniel Selsam", "https://scholar.google.com/citations?user=yaSqFaEAAAAJ")
+    , ("Christopher J. Fettweis", "https://en.wikipedia.org/wiki/Christopher_Fettweis")
+    , ("Cade Metz", "https://x.com/cademetz")
+    , ("Craig Cannon", "https://craigc.org/")
     ] ++
     zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
-
--- Config tests: unique list
-authorLinkBlacklist :: [T.Text]
-authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
-                    ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi",
-                    "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
@@ -1550,4 +1557,6 @@ authorWpLinkDB =
     ,"Zhou Ren","Zhou Yu","Zi Wang","Zicheng Liu","Zoe Kourtzi"
     ,"Zoe R. Donaldson","Zong Chen","Zoubin Ghahramani","Zuzana Pavelkov\225","Zvi Galil"
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
-    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert", "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi", "Marvin Minsky", "Helen Keller", "Bret Taylor"]
+    ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"
+    , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
+    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"]

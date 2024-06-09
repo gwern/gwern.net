@@ -16,8 +16,8 @@ import Config.Paragraph as C
 
 import Query (extractURLs)
 
--- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
--- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
+-- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-4o to try to break it up into multiple more-readable paragraphs.
+-- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-4o), but everything else wants HTML
 processParagraphizer :: FilePath -> String -> IO String
 processParagraphizer _ "" = return ""
 processParagraphizer p a = -- the path is necessary to check against the whitelist
@@ -35,10 +35,10 @@ processParagraphizer p a = -- the path is necessary to check against the whiteli
                               Left e -> error $ ppShow e ++ " : " ++ a
                               Right (output,document) ->  checkURLs document >> return (cleanAbstractsHTML output)
 
--- EXPERIMENTAL: the GPT-3/4 paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
+-- EXPERIMENTAL: the GPT-4o paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
 checkURLs :: Pandoc -> IO ()
 checkURLs p = let urls = filter (not . isLocal ) $ extractURLs p in
-                mapM_ (\u -> void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "x-www-browser" [T.unpack u]) urls
+                mapM_ (\u -> void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium" [T.unpack u]) urls
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.

@@ -137,7 +137,7 @@ tagsShort2LongRewrites =
    , ("publication-bias", "statistics/bias/publication"), ("statistics/bias/publication-bias", "statistics/bias/publication"), ("bias/pbulication", "bias/publication"), ("publication/bias", "bias/publication")
    , ("information-theory", "cs/algorithm/information"), ("compressor", "cs/algorithm/information/compression"), ("xz", "compression"), ("gzip", "compression"), ("cs/algorithm/compression", "cs/algorithm/information/compression"), ("cs/information/compression", "cs/algorithm/information/compression"), ("algorithm/compression", "cs/algorithm/information/compression")
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
-   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive"), ("nback", "dual-n-back"), ("savantism", "psychology/neuroscience/memory/savant"), ("idiot-savant", "psychology/neuroscience/memory/savant"), ("savant-syndrome", "psychology/neuroscience/memory/savant"), ("bmr", "blackmarket-reloaded") ]
+   , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive"), ("nback", "dual-n-back"), ("savantism", "psychology/neuroscience/memory/savant"), ("idiot-savant", "psychology/neuroscience/memory/savant"), ("savant-syndrome", "psychology/neuroscience/memory/savant"), ("bmr", "blackmarket-reloaded"), ("grok", "grokking"), ("grokk", "grokking"), ("anaesthesia", "anesthesia"), ("anesthetic", "anesthesia"), ("anesthsia", "anesthesia") ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -177,6 +177,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("reinforcement-learning/armstrong-controlproblem", "Armstrong’s control problem")
           , ("psychology/neuroscience/memory/savant", "savantism")
           , ("psychology/neuroscience/memory", "memory")
+          , ("psychology/neuroscience/pain/anesthesia", "anesthesia")
+          , ("psychology/neuroscience/pain/pain",       "pain")
           , ("psychology/inner-voice", "inner-monologue (psych)")
           , ("psychology/writing", "writing psychology")
           , ("psychology/willpower", "willpower")
@@ -540,11 +542,14 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("iq/high/fullerton", "Fullerton Longitudinal Study")
           , ("iq/high/munich", "Munich Giftedness Study")
           , ("iq/high/smpy", "SMPY")
+          , ("iq/high", "high IQ")
+          , ("iq/low", "low IQ")
           , ("iq/ses", "IQ & SES")
           , ("iq/animal", "animal cognition")
           , ("ai/nn/retrieval", "retrieval AI")
           , ("ai/nn/tokenization", "LM tokenization")
           , ("ai/scaling/emergence", "AI emergence")
+          , ("ai/scaling/emergence/grokking", "grokking (NN)")
           , ("ai/scaling/mixture-of-experts", "MoE NN")
           , ("ai/scaling", "AI scaling")
           , ("ai/nn/vae/mae", "masked auto-encoder")
