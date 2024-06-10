@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-05-10 12:06:35 gwern"
+When: Time-stamp: "2024-06-10 16:23:40 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, replaceMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines) -- sed
+import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines)
 import Test (testAll)
 import Config.Misc (cd)
 
@@ -74,12 +74,12 @@ main =
        else do
                preprocess $ do printGreen ("Writing missing annotations…" :: String)
                                writeAnnotationFragments am meta True
-               if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations complete, and one-shot mode specified, so exiting now." else do
+               if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations, and one-shot mode specified, so exiting now." else do
 
                  when slow $ preprocess testAll
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then "**.md" else fromGlob $ head args'
-                 unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print (show targets))
+                 unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print targets)
                  match targets $ do
                      -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                      -- as people keep screwing them up endlessly: (and in nginx, we auto-replace all EN DASH & EM DASH in URLs with hyphens)
@@ -288,7 +288,7 @@ descField escape d d' = field d' $ \item -> do
                               return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ replaceMany [("<p>",""), ("</p>",""), ("&lt;p&gt;",""), ("&lt;/p&gt;","")] finalDesc -- strip <p></p> wrappers (both forms)
+                         Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc -- strip <p></p> wrappers (both forms)
 
 pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'

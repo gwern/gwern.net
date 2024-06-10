@@ -12,7 +12,7 @@ import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (trimTitle, cleanAbstractsHTML, pageNumberParse, filterMeta, linkCanonicalize, extractTwitterUsername)
-import Utils (replace, replaceMany, sed, anyInfix, anyPrefix, trim)
+import Utils (replace, deleteMany, sed, anyInfix, anyPrefix, trim)
 
 import Network.HTTP.Conduit (simpleHttp, HttpException)
 import Text.HTML.TagSoup (innerText, sections, parseTags, (~/=), (~==))
@@ -112,12 +112,16 @@ htmlDownloadAndParseTitleClean u = do
   where
     separators = "—·|" :: String
     badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog"] :: [String]
-    clean = replaceMany [(" - The Public Domain Review", "")
-            , ("Github - ", "")
-            , (" - The New York Times", "")
-            , (" |", "")
-            , (" - YouTube", "")
-            , ("—Bulletin of the Atomic Scientists", "")
-            , (" MIT News", "")
-            , (" \\\\ Anthropic", "")
-            , (" - LessWrong", "")]
+    clean = deleteMany [" - The Public Domain Review"
+            , "Github - "
+            , " - The New York Times"
+            , " |"
+            , " - YouTube"
+            , "—Bulletin of the Atomic Scientists"
+            , " MIT News"
+            , " \\\\ Anthropic"
+            , " – Brendan Eich"
+            , "—ACM Queue"
+            , " American Political Science Review"
+            , " @ Things Of Interest"
+            , " - LessWrong"]

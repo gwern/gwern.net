@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2024-05-11 17:51:07 gwern"
+-- When:  Time-stamp: "2024-06-10 16:20:18 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -39,7 +39,7 @@ import LinkID (authorsToCite)
 import LinkMetadata (walkAndUpdateLinkMetadata, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (printGreen, replaceMany, writeUpdatedFile, replace)
+import Utils (printGreen, writeUpdatedFile, replace, deleteMany)
 
 main :: IO ()
 main = do md <- readLinkMetadata
@@ -119,5 +119,5 @@ textSimplifier :: T.Text -> T.Text
 textSimplifier = T.pack .
                  map toLower .
                  filter (\c -> not (isPunctuation c || isSpace c))  .
-                 replaceMany [("<em>",""), ("</em>",""), ("<sub>",""), ("</sub>",""), ("<sup>",""), ("</sup>",""), ("<strong>",""), ("</strong>",""), ("&#39;","")] .
+                 deleteMany ["<em>", "</em>", "<sub>", "</sub>", "<sup>", "</sup>", "<strong>", "</strong>", "&#39;"] .
                  T.unpack

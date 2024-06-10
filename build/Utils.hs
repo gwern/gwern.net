@@ -4,6 +4,7 @@ module Utils where
 import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
+import Data.Maybe (fromMaybe)
 import qualified Data.Map as M
 import Data.Containers.ListUtils (nubOrd)
 import Data.Text.IO as TIO (readFile, writeFile)
@@ -173,7 +174,7 @@ flattenLinksInInlines = map flattenLinks
 -- | Convert a list of inlines into a string.
 inlinesToText :: [Inline] -> T.Text
 inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
-  replaceManyT [("<sup>",""), ("</sup>",""), ("<sub>",""),("</sub>","")] .
+  deleteManyT ["<sup>", "</sup>", "<sub>","</sub>"] .
                 T.concat . map go
   where go x = case x of
                -- reached the literal T.Text:
@@ -338,16 +339,6 @@ sed before after s = unsafePerformIO $ do
 sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s regexps
 
--- list of fixed string rewrites
-replaceMany :: [(String,String)] -> (String -> String)
-replaceMany rewrites s = foldr (uncurry replace) s rewrites
-
-replaceT :: T.Text -> T.Text -> T.Text -> T.Text
-replaceT = T.replace
-
--- list of fixed string rewrites
-replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
-replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 
 -- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
 -- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""`), or 'just in case'.
@@ -378,12 +369,39 @@ split delim str =
 hasKeyAL :: Eq a => a -> [(a, b)] -> Bool
 hasKeyAL key list = key `elem` map fst list
 
+-- list of fixed string rewrites
+replaceMany :: [(String,String)] -> (String -> String)
+replaceMany rewrites s = foldr (uncurry replace) s rewrites
+
+replaceT :: T.Text -> T.Text -> T.Text -> T.Text
+replaceT = T.replace
+
+-- list of fixed string rewrites
+replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
+replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
+
+-- specialize the `replace` family to deletion, as is the most common usecase:
+-- Delete a substring from a list
+delete :: String -> String -> String
+delete x = replace x ""
+
+-- Delete a substring from a Text
+deleteT :: T.Text -> T.Text -> T.Text
+deleteT x = replaceT x ""
+
+-- Delete multiple substrings from a list
+deleteMany :: [String] -> (String -> String)
+deleteMany xs s = foldr delete s xs
+
+-- Delete multiple substrings from a Text
+deleteManyT :: [T.Text] -> (T.Text -> T.Text)
+deleteManyT xs s = foldr deleteT s xs
 
 kvLookup :: String -> [(String, String)] -> String
-kvLookup key xs = maybe "" id (lookup key xs)
+kvLookup key xs = fromMaybe "" (lookup key xs)
 
 kvLookupT :: T.Text -> [(T.Text, T.Text)] -> T.Text
-kvLookupT key xs = maybe "" id (lookup key xs)
+kvLookupT key xs = fromMaybe "" (lookup key xs)
 
 kvDOI :: [(String,String)] -> String
 kvDOI = kvLookup "doi"
@@ -392,7 +410,7 @@ kvDOIT :: [(T.Text,T.Text)] -> T.Text
 kvDOIT = kvLookupT "doi"
 
 replaceExact :: Eq a => [(a, a)] -> [a] -> [a]
-replaceExact assoc xs = [maybe x id (lookup x assoc) | x <- xs]
+replaceExact assoc xs = [fromMaybe x (lookup x assoc) | x <- xs]
 
 -- more rigid `replace`, intended for uses where a replacement is not optional but *must* happen.
 -- `replaceChecked` will error out if any of these are violated: all arguments & outputs are non-null, unique, and the replacement happened.

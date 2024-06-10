@@ -9,7 +9,7 @@ import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (pack, unpack, Text)
 
 import LinkMetadataTypes (MetadataItem, Path)
-import Utils (replace, replaceMany, sedMany, split, trim)
+import Utils (replace, replaceMany, deleteMany, sedMany, split, trim)
 import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
 
@@ -60,7 +60,7 @@ authorsToCite url author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
       authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", ""), (" \\[[A-Za-z ]+\\]", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" or /doc/math/humor/1976-barrington.pdf's "John Barrington [Ian Stewart]" (the former is a pseudonym) would break the later string-munging & eventually the HTML
       authorCount = length authors
-      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ replaceMany [(" Senior",""), (" Junior" ,"")] $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
+      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ deleteMany [" Senior", " Junior"] $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
   in
        if authorCount == 0 then "" else
            let
