@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Annotation (linkDispatcher, tooltipToMetadata) where
+module Annotation (linkDispatcher, tooltipToMetadata, htmlDownloadAndParseTitleClean) where
 
-import Data.List (isPrefixOf, isInfixOf)
+import Data.List (isPrefixOf, isInfixOf, intercalate)
 import Text.Pandoc (Inline(Link))
 import Network.HTTP (urlDecode)
 
@@ -12,14 +12,13 @@ import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (trimTitle, cleanAbstractsHTML, pageNumberParse, filterMeta, linkCanonicalize, extractTwitterUsername)
-import Utils (replace, deleteMany, sed, anyInfix, anyPrefix, trim)
+import Utils (delete, replace, deleteMany, sed, anyInfix, anyPrefix, trim, printRed)
+import Config.Misc as C (cd)
 
-import Network.HTTP.Conduit (simpleHttp, HttpException)
-import Text.HTML.TagSoup (innerText, sections, parseTags, (~/=), (~==))
-import qualified Data.Text.Lazy as TL (toStrict)
-import qualified Data.Text.Lazy.Encoding as TLE (decodeUtf8)
-import qualified Data.Text as T (strip, unpack, Text)
-import Control.Exception (catch)
+import Data.FileStore.Utils (runShellCommand)
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import qualified Data.Text as T (unpack)
+import System.Exit (ExitCode(ExitFailure))
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Inline -> IO (Either Failure (Path, MetadataItem))
@@ -70,35 +69,19 @@ tooltipToMetadata path s
                           minLength n x = if length x < n then "" else x
 
 wikipediaURLToTitle :: String -> String
-wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
+wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $ delete "https://en.wikipedia.org/wiki/" u
 
 twitter :: Path -> IO (Either Failure (Path, MetadataItem))
 twitter u = return $ Right (u, ("", extractTwitterUsername u, "", "", [], [], ""))
 
-
--- Fetch HTML content from a URL
-fetchHTML :: String -> IO (Either HttpException T.Text)
-fetchHTML url = do
-  result <- (Right <$> simpleHttp url) `catch` (return . Left)
-  return $ case result of
-    Left ex -> Left ex
-    Right response -> Right $ TL.toStrict $ TLE.decodeUtf8 response
-
--- Extract the title from the HTML content
-extractTitle :: T.Text -> T.Text
-extractTitle html =
-  let tags = parseTags html
-      titleTags = sections (~== ("<title>" :: String)) tags
-  in if null titleTags
-     then ""
-     else T.strip $ innerText $ takeWhile (~/= ("</title>" :: String)) $ drop 1 $ head titleTags
-
 htmlDownloadAndParseTitle :: String -> IO String
 htmlDownloadAndParseTitle url = do
-  htmlResult <- fetchHTML url
-  return $ case htmlResult of
-             Left _ -> ""
-             Right html -> T.unpack $ extractTitle html
+ C.cd
+ let args = ["static/build/download-title.sh", url]
+ (status,stderr,mb) <- runShellCommand "./" Nothing "bash" args
+ case status of
+     ExitFailure err -> printRed ("Exit Failure: " ++ Data.List.intercalate " ::: " [url, show status, show err, show mb, show stderr]) >> return ""
+     _ -> return $ U.toString mb
 
 htmlDownloadAndParseTitleClean :: String -> IO String
 htmlDownloadAndParseTitleClean u = do
@@ -111,7 +94,7 @@ htmlDownloadAndParseTitleClean u = do
   else return title'
   where
     separators = "—·|" :: String
-    badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog"] :: [String]
+    badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error", "Login \187 Qstream", "Kaggle Blog - Medium", "403 Forbidden", "500 Internal Server Error", "BBC NEWS Science &amp; Environment", "Welcome!", "Research", "niplav", "SL4: By Thread", "Moved Temporarily", "Redirecting\8230", "Torch", "crazymeds.us", "Site Not Found - Carnegie Mellon University School of Computer Science", "Documented Moved", "Notion \8211 The all-in-one workspace for your notes, tasks, wikis, and databases."] :: [String]
     clean = deleteMany [" - The Public Domain Review"
             , "Github - "
             , " - The New York Times"
@@ -124,4 +107,4 @@ htmlDownloadAndParseTitleClean u = do
             , "—ACM Queue"
             , " American Political Science Review"
             , " @ Things Of Interest"
-            , " - LessWrong"]
+            , " - LessWrong", "A Neighborhood of Infinity: ", " by Jason Scott", " - <antirez>", " - Nick's Blog", " - &lt;antirez&gt;", " - Dwarf Fortress Wiki", " \8211 Armed and Dangerous", "Details Magazine: ", "(urth) ", " - Wishful Coding", "The Codeless Code:", "The Virtuosi: ", "Tom Waits - ", " \9733 The Scintillating But Ultimately Untrue Thought", " (Aaron Swartz: The Weblog)", " (Aaron Swartz's Raw Thought)", " - Inquiries Journal", "Locus Online: ", "Loper OS \187 ", "Mike On Ads  \187 Blog Archive   \187 ", " // Hayao Miyazaki Web", " - GhibliWiki", "\8212The Intercept", " American Political Science Review", "zlkj.in - ", " : zhanpei fang", "zenpundit.com  \187 Blog Archive   \187 ", "American Express\nApple Pay\nDiners Club\nDiscover\nMeta Pay\nGoogle Pay\nMastercard\nPayPal\nShop Pay\nVenmo\nVisa", " \8211 You Are Not So Smart", " - XTools", "xkcd: ", " \8211 xcorr: AI &amp; neuro"]
