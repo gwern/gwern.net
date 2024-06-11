@@ -245,6 +245,7 @@ canonicals = M.fromList
   , ("hsu_steve", "Steve Hsu")
   , ("Darold Treffert", "Darold A. Treffert")
   , ("ryanqnorth", "Ryan North")
+  , ("ryannorth", "Ryan North")
   , ("Robert Ladd Thorndike", "Robert L. Thorndike")
   , ("Robert Thorndike", "Robert L. Thorndike")
   , ("R. Thorndike", "Robert L. Thorndike")
@@ -254,11 +255,19 @@ canonicals = M.fromList
   , ("F. Jelinek", "Frederick Jelinek")
   , ("Christopher Fettweis", "Christopher J. Fettweis")
   , ("J. P. Gordon", "James P. Gordon")
+  , ("cademetz", "Cade Metz")
+  , ("qntm", "Sam Hughes")
+  , ("Dorret Boomsma", "Dorret I. Boomsma")
+  , ("Sarah Medland", "Sarah E. Medland")
+  , ("Ole Andreassen", "Ole A. Andreassen")
+  , ("Grant Montgomery", "Grant W. Montgomery")
+  , ("Benjamin Neale", "Benjamin M. Neale")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
 authorLinkDB :: M.Map T.Text T.Text
 authorLinkDB = M.fromList $
+  zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
    [ ("George Washington#SS", "https://en.wikipedia.org/wiki/SS_George_Washington")
     , ("Alexey Guzey","https://guzey.com/")
     , ("Carl Shulman","https://timelines.issarice.com/wiki/Timeline_of_Carl_Shulman_publications#Full_timeline")
@@ -332,8 +341,16 @@ authorLinkDB = M.fromList $
     , ("Christopher J. Fettweis", "https://en.wikipedia.org/wiki/Christopher_Fettweis")
     , ("Cade Metz", "https://x.com/cademetz")
     , ("Craig Cannon", "https://craigc.org/")
-    ] ++
-    zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB)
+    , ("Sam Hughes", "https://qntm.org/self")
+    , ("Sergey Levine", "https://scholar.google.com/citations?user=8R35rCwAAAAJ")
+    , ("Dorret I. Boomsma", "https://en.wikipedia.org/wiki/Dorret_Boomsma")
+    , ("Sarah E. Medland", "https://en.wikipedia.org/wiki/Sarah_Medland")
+    , ("Jian Yang", "https://en.wikipedia.org/wiki/Jian_Yang_(geneticist)")
+    , ("Ole A. Andreassen", "https://scholar.google.com/citations?user=dilW0WsAAAAJ&hl=en&oi=ao")
+    , ("Thomas Werge", "https://scholar.google.com/citations?user=mRphVYYAAAAJ&hl=en&oi=ao")
+    , ("Grant W. Montgomery", "https://scholar.google.com/citations?user=4eOEw-IAAAAJ&hl=en&oi=ao")
+    , ("Benjamin M. Neale", "https://en.wikipedia.org/wiki/Benjamin_Neale")
+    ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
@@ -1175,7 +1192,7 @@ authorWpLinkDB =
     ,"Norman R. F. Maier","Norman Sartorius","Norman Thomas di Giovanni","Norwood Russell Hanson","Novo Nordisk"
     ,"No\233mie Elhadad","Nupur Lala","Nuria Oliver","Nutrition Reviews","Ofer Dekel"
     ,"Oh You Pretty Things","Ola Hansson","Olaf Blanke","Olaf Sporns","Olav Dalgard"
-    ,"Olav Sorenson","Ole Andreassen","Ole Henrik Magga","Oleg Sushkov","Olga Russakovsky"
+    ,"Olav Sorenson","Ole Henrik Magga","Oleg Sushkov","Olga Russakovsky"
     ,"Oliver Grimm","Oliver Heaviside","Oliver Martinez","Oliver Zhang","Olivia Johnson"
     ,"Olivier Fran\231ois","Olivier Klein","Olle H\228ggstr\246m","Olof Johansson","Olufunmilayo I. Olopade"
     ,"Omar Agha","Omar Cortes","Omar Wasow","Onur G\252nt\252rk\252n","Open Science Collaboration"
