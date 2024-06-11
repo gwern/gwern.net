@@ -37,7 +37,7 @@ import Query (extractImages)
 import Typography (identUniquefy, titlecase')
 import MetadataFormat (extractTwitterUsername)
 import MetadataAuthor (authorCollapse)
-import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix)
+import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete)
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import Config.GenerateSimilar as CGS (minTagAuto)
@@ -48,7 +48,7 @@ main = do C.cd
 
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = sort $ map (\dir -> sed "/index$" "" $ replace "/index.md" "" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
@@ -71,7 +71,7 @@ generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSort
 generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.
-  let tagSelf = if dir'' == "doc/" then "" else init $ replace "doc/" "" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
+  let tagSelf = if dir'' == "doc/" then "" else init $ delete "doc/" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
 
   -- for the arabesque navbar 'previous'/'next', we want to fill more useful than the default values, but also not be too redundant with the up/sideways/downwards tag-directory links; so we pass in the (lexicographically) sorted list of all tag-directories being created this run, and try to provide previous/next links to the 'previous' and the 'next' directory, which may be a parent, sibling, or nothing at all.
   -- so eg. /doc/cryonics/index will point to `previous: /doc/crime/terrorism/index \n next: /doc/cs/index`
@@ -139,7 +139,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
         concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages $ toPandoc abstract) links
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
-  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
+  let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
@@ -242,7 +242,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
 generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
-             "title: ‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (replace "doc/" "" d)))) ++ "’ tag",
+             "title: ‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
@@ -268,7 +268,7 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (replace ".md" "") . filter ('#' `notElem`)) files
+                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (delete ".md") . filter ('#' `notElem`)) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`. This is also true of PDF page-anchors.
                    linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
@@ -281,7 +281,7 @@ listFiles m direntries' = do
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
 listTagged newestp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
-                   let dirTag = replace "doc/" "" dir in
+                   let dirTag = delete "doc/" dir in
                      let tagged = if newestp then m else M.filterWithKey (\u (_,_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nubOrd $ map truncateAnchors $ M.keys tagged
                           linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck) files
@@ -339,7 +339,7 @@ generateDirectoryItems parent current ds =
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
        generateDirectoryItem d = let downP = directoryPrefixDown current d
-                                     nameShort = T.pack $ replace "/doc/" "" $ takeDirectory d
+                                     nameShort = T.pack $ delete "/doc/" $ takeDirectory d
                                      (nameDisplayed,parenthetical) = if parent == Just "/index" then abbreviateTagLongForm nameShort else (abbreviateTag nameShort, [])
                                  in
                                    [Para ([Link ("",

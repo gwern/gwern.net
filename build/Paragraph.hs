@@ -11,7 +11,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
 import MetadataFormat (cleanAbstractsHTML)
-import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal)
+import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
 import Config.Paragraph as C
 
 import Query (extractURLs)
@@ -22,7 +22,7 @@ processParagraphizer :: FilePath -> String -> IO String
 processParagraphizer _ "" = return ""
 processParagraphizer p a = -- the path is necessary to check against the whitelist
       if length a < 1024 || paragraphized p a then return a
-      else do let a' = replace "<p>" "" $ replace "</p>" "" a
+      else do let a' = delete "<p>" $ delete "</p>" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/paragraphizer.py", a'']
               case status of

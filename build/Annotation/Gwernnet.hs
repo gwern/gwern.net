@@ -16,7 +16,7 @@ import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (MetadataItem, Failure(..), Path)
 import MetadataFormat (checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
-import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim) -- safeHtmlWriterOptions, sedMany
+import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim, delete) -- safeHtmlWriterOptions, sedMany
 import Tags (listTagDirectoriesAll, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
 -- import Query (truncateTOCHTML)
@@ -60,7 +60,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
         | p =~ sectionAnonymousRegex = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
-            do let p' = sed "^/" "" $ replace "https://gwern.net/" "" p
+            do let p' = sed "^/" "" $ delete "https://gwern.net/" p
                -- let indexP = "doc/" `isPrefixOf` p' && "/index" `isInfixOf` p'
                printGreen p'
                checkURL p
@@ -83,7 +83,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
                         let author' = if author == "Gwern Branwen" then "Gwern" else author
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           safeContent $ head $ filter filterThumbnail metas
-                        let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else replace "https://gwern.net/" "" thumbnail
+                        let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else delete "https://gwern.net/" thumbnail
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnail-text, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnail-text set.
                                           safeContent $ head $ filter filterThumbnailText metas
                         when (null thumbnailText) $ printRed ("Warning: no thumbnail-text alt text defined for URL " ++ p)
@@ -151,7 +151,7 @@ gwern p | p == "/" || p == "" = return (Left Permanent)
 -- skip the complex gwernAbstract logic: /doc/index is special because it has only subdirectories, is not tagged, and is the entry point. We just generate the ToC directly from a recursive tree of subdirectories with 'index.md' entries:
 gwerntoplevelDocAbstract :: IO (Either Failure (Path, MetadataItem))
 gwerntoplevelDocAbstract = do allDirs <- listTagDirectoriesAll ["doc/"]
-                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (replace "/doc/" "" $ takeDirectory d))) ++ "</a></li>") allDirs
+                              let allDirLinks = unlines $ map (\d -> "<li><a class='link-page link-tag directory-indexes-downwards link-annotated' data-link-icon='arrow-down' data-link-icon-type='svg' rel='tag' href=\"" ++ d ++ "\">" ++ (T.unpack $ abbreviateTag (T.pack (delete "/doc/" $ takeDirectory d))) ++ "</a></li>") allDirs
                               return $ Right ("/doc/index", ("doc tag","N/A","","",[],[],"<p>Bibliography for tag <em>doc</em>, most recent first: " ++ show (length allDirs) ++ " tags (<a href='/index' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>).</p> <div class=\"columns TOC\"> <ul>" ++ allDirLinks ++ "</ul> </div>"))
 
 gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
@@ -167,7 +167,7 @@ gwernAbstract _ p' description toc f =
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
                          titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         restofpageAbstract = replace "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" "" $
+                         restofpageAbstract = delete "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" $
                                               trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
       abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
@@ -178,7 +178,7 @@ gwernAbstract _ p' description toc f =
                                       else if description == "" && abstrct' /= "" then abstrct'
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
                                                 else ""
-      abstrct''' = replace "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" "" $
+      abstrct''' = delete "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</span></p>" $
                    trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = linkAutoHtml5String $ sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else
@@ -240,10 +240,10 @@ dropToText _ = True
 --         sed "<span>(.*)</span>" "\\1" $
 --         (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then "<div class=\"columns TOC\">" ++ toc ++ "</div>" else "") else replace "<a href=" "<a class=\"id-not\" href=") $
 --         -- NOTE: we strip the `id="TOC"`, and all other link IDs on TOC subentries, deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tags/link-bibliographies/backlinks.
---         sed " id=\"[a-z0-9-]+\">" ">" $ replace " id=\"markdownBody\"" "" $ replace " id=\"TOC\"" "" tc) index
+--         sed " id=\"[a-z0-9-]+\">" ">" $ delete " id=\"markdownBody\"" $ delete " id=\"TOC\"" "") index
 --         where
 --           index = if length indexType1 > length indexType2 then indexType1 else indexType2
---           indexType1 = replace "markdownBody" "" $ replace "directory-indexes" "" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $
+--           indexType1 = delete "markdownBody" $ delete "directory-indexes" $ replace "columns" "columns TOC" $ renderTagsOptions renderOptions $
 --             takeWhile (\e' -> e' /= TagClose "div") $ dropWhile (\e -> e /=  TagOpen "div" [("id","markdownBody"),("class","markdownBody directory-indexes columns")]) f
 --           indexType2 = renderTagsOptions renderOptions $
 --                        [TagOpen "div" [("class","columns")]] ++

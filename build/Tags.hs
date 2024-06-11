@@ -13,7 +13,7 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 
 import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
-import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint)
+import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint, delete)
 import Config.Tags as C
 import Config.Misc (cd)
 
@@ -94,13 +94,13 @@ tagsToLinks ts = let tags = sort ts in
 
 -- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics sociology Japanese' than 'economics sociology japanese')
 tag2TagsWithDefault :: String -> String -> [String]
-tag2TagsWithDefault path tags = let tags' = map (trim . map toLower) $ split " " $ replace "," "" tags
+tag2TagsWithDefault path tags = let tags' = map (trim . map toLower) $ split " " $ delete "," tags
                                     defTag = if ("/doc/" `isPrefixOf` path) && not (C.tagGuessBlacklist path) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/doc" then tags' else defTag:tags'
 
 tag2Default :: String -> String
-tag2Default path = if "/doc/" `isPrefixOf` path && not ("/doc/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then replace "/doc/" "" $ takeDirectory path else ""
+tag2Default path = if "/doc/" `isPrefixOf` path && not ("/doc/" `isPrefixOf` path && ("/index" `isSuffixOf` path || "/index#" `isInfixOf` path)) then delete "/doc/" $ takeDirectory path else ""
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/nn/transformer/gpt", "reinforcement-learning"] → ["ai/nn/transformer/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
@@ -118,11 +118,11 @@ url2Tags p = concatMap (\(match,tag) -> [tag | match p]) C.urlTagDB
 -- For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the tag itself down to just 'rl/', as that is not machine-readable or explicit.
 -- But every problem in CS can be solved by another layer of indirection, so we can abbreviate them just for 'display', while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
-abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsLong2Short . replace "/doc/" "" . T.unpack
+abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsLong2Short . delete "/doc/" . T.unpack
 
 listTagsAll :: IO [String]
 listTagsAll = do Config.Misc.cd
-                 fmap (map (replace "doc/" "") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
+                 fmap (map (delete "doc/") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
 
 -- given a list of ["doc/foo/index.md"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
 -- Bool argument = whether to include all sub-directories recursively.

@@ -159,7 +159,7 @@ safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExten
 inlineMath2Text :: Inline -> IO Inline
 inlineMath2Text x@(Math InlineMath a) =
   do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
-     let mb' = T.pack $ trim $ replace "Converted output: " "" $ U.toString mb
+     let mb' = T.pack $ trim $ delete "Converted output: " $ U.toString mb
      case status of
        ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
        _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
@@ -341,7 +341,7 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 
 
 -- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
--- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""`), or 'just in case'.
+-- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""` or as a shortcut, `delete "foo"`), or 'just in case'.
 -- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
 replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before

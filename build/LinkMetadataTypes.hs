@@ -5,7 +5,7 @@ import qualified Data.Map.Strict as M (Map)
 import qualified Data.Text as T (pack, unpack, Text)
 import System.FilePath (takeExtension)
 
-import Utils (replace, isLocal, anyInfix)
+import Utils (isLocal, anyInfix, delete)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -22,7 +22,7 @@ type Path = String
 data Failure = Temporary | Permanent deriving Show
 
 isPagePath :: T.Text -> Bool
-isPagePath f = let f' = replace "https://gwern.net" "" $ T.unpack f in
+isPagePath f = let f' = delete "https://gwern.net" $ T.unpack f in
                  (not (not ("/" `isPrefixOf` f') || ("/static/" `isPrefixOf` f')) &&
                    (takeExtension f' == ""))
 

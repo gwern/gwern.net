@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEnURL) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
 import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
@@ -12,7 +12,7 @@ import Text.Pandoc (Inline(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
 import Cycle (isCycleLess, findCycles)
-import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText)
+import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText, deleteT)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response) -- http-conduit
@@ -44,6 +44,8 @@ handleException _ = return $ Left "An exception occurred"
 
 toWikipediaEnURL :: T.Text -> T.Text
 toWikipediaEnURL title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
+toWikipediaEnURLSearch :: T.Text -> T.Text
+toWikipediaEnURLSearch title = "https://en.wikipedia.org//w/index.php?fulltext=1&search=" `T.append` escapeWikiArticleTitle title
 
 escapeWikiArticleTitle :: T.Text -> T.Text
 escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
@@ -137,7 +139,7 @@ wpPopupClasses u = ["id-not"] ++ case parseURIReference (T.unpack u) of
                                                 domain = T.pack $ uriRegName authority
                                             in
                                              if not ("wikipedia.org" `T.isSuffixOf` domain) && "http" `T.isPrefixOf` u then [] else
-                                                        let u' = T.takeWhile (/= ':') $ replaceManyT [("/wiki/", "")] article in
+                                                        let u' = T.takeWhile (/= ':') $ deleteT "/wiki/" article in
                                                           (if u' `elem` apiNamespacesNo || "Signpost" `T.isInfixOf` article -- specialcase: Signpost articles apparently break popups with very strange HTML
                                                             then ["content-transform-not"] else []) ++
                                                            (if u' `elem` linkliveNamespacesNo then ["link-live-not"] else ["link-live"])

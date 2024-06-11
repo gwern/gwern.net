@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-06-10 16:23:40 gwern"
+When: Time-stamp: "2024-06-10 17:34:10 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines)
+import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete)
 import Test (testAll)
 import Config.Misc (cd)
 
@@ -220,7 +220,7 @@ postCtx md =
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do
-  let path = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier item)
+  let path = "/" ++ delete ".md" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing               -> return Nothing
     Just (_,_,_,_,_,tags,_) -> return $ Just tags
@@ -251,7 +251,7 @@ notNewsletterOrIndex :: String -> Bool
 notNewsletterOrIndex p = not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 pageIdentifierToPath :: Item a -> String
-pageIdentifierToPath i = "/" ++ replace ".md" "" (toFilePath $ itemIdentifier i)
+pageIdentifierToPath i = "/" ++ delete ".md" (toFilePath $ itemIdentifier i)
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
@@ -262,7 +262,7 @@ imageDimensionWidth d = field d $ \item -> do
                   if d == "thumbnail-width" then return w else return h
 
 escapedTitleField :: String -> Context String
-escapedTitleField = mapContext (map toLower . replace "/" "-" . replace ".md" "") . pathField
+escapedTitleField = mapContext (map toLower . replace "/" "-" . delete ".md") . pathField
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$title-plain$', and use that in default.html when we need a non-display

@@ -38,7 +38,7 @@ import LinkMetadata (readLinkMetadata, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Typography (typographyTransform)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI, deleteMany)
 import MetadataAuthor (authorsTruncateString)
 
 import Config.Misc (todayDay, cd)
@@ -154,7 +154,7 @@ formatDoc (path,mi@(t,aut,dt,dtM,_,tags,abst)) =
 
           if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ ".",
 
-          replace "\n[]\n" "" $ replace "<hr>" "" $ replace "<hr />" "" abst]
+          deleteMany ["\n[]\n", "<hr>", "<hr />"] abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -192,7 +192,7 @@ embed edb mdb bdb i@(p,_) =
  where new = takeBaseName p
        olds = filter (\(pold,_,_,_,_) -> if head pold == '/' then new == takeBaseName pold
                                          else dehttp new == dehttp pold) edb
-       dehttp = replace "http://" "" . replace "https://" ""
+       dehttp = deleteMany ["http://", "https://"]
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: FilePath -> T.Text -> IO (String,[Double])
@@ -502,7 +502,7 @@ processTitles parentTag blacklistTags a =
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""
-           _ -> return $ (last . lines . replace "'" "" . replace "." "" . replace "The suggested tag is " "" . replace "The best tag suggestion is: " "" . replace "Best tag: " "" . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
+           _ -> return $ (last . lines . deleteMany ["'", ".", "The suggested tag is ", "The best tag suggestion is: ", "Best tag: "] . sed "[a-z0-9]\\) " "" -- NOTE: (can't quite seem to prompt away the tendency to leave in the list number like 'c) foo' or descriptions
                            . trim . U.toString) mb
 
 sortSimilarsStartingWithNewest :: Metadata -> ListSortedMagic -> [(FilePath, MetadataItem)] -> IO [[(FilePath, MetadataItem)]]

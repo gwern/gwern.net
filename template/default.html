@@ -118,7 +118,7 @@
       <article> $if(index)$ $else$
         <div class="markdownBody" id="page-metadata">
           $if(tagsHTML)$ $tagsHTML$ $endif$
-          $if(description)$<div class="page-description" title="Short description of page."><p>$description$</p></div>$endif$
+          $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
           <div class="page-metadata-fields">
               $if(author)$ <span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
               <span class="page-date-range"><span class="page-creation" title="Date page contents were begun."><em>$created$</em></span>–<span class="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title-plain$': $url$.md" class="icon-not" href="$url$.md"><span class="page-modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span></span>

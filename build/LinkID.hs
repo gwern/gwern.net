@@ -9,7 +9,7 @@ import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (pack, unpack, Text)
 
 import LinkMetadataTypes (MetadataItem, Path)
-import Utils (replace, replaceMany, deleteMany, sedMany, split, trim)
+import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete)
 import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
 
@@ -46,7 +46,7 @@ generateID url author date
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
-    url' = replace "https://gwern.net" "" url
+    url' = delete "https://gwern.net" url
 
 -- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
 generateURL :: Path -> MetadataItem -> String

@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-05-19 23:04:18 gwern"
+-- When:  Time-stamp: "2024-06-10 17:36:15 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -80,7 +80,7 @@ import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Config.Misc (currentYear)
 import MetadataFormat (dateRegex, printDouble)
-import Utils (inlinesToText, replace, replaceChecked, sed, toHTML)
+import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete)
 import Text.Regex.TDFA ((=~))
 import Config.Inflation as C
 
@@ -138,7 +138,7 @@ dollarAdjuster currentyear l@(Link _ text (oldYears, _)) =
                ("title", T.pack ("CPI inflation-adjusted US dollar: from nominal $"++oldDollarString'++" in "++T.unpack oldYear++" → real $"++adjustedDollarString++" in "++show currentyear)) ])
         -- [Str ("$" ++ oldDollarString), Subscript [Str oldYear, Superscript [Str ("$"++adjustedDollarString)]]]
         [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["subsup"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
-    where text' = replace " " "" $ replace " " "," $ T.unpack $ inlinesToText text
+    where text' = delete " " $ replace " " "," $ T.unpack $ inlinesToText text
           -- oldYear = '$1970' → '1970'
           oldYear = if T.length oldYears /= 5 || T.head oldYears /= '$' then error (show l) else T.tail oldYears
           -- '$50.50' → '50.50'; '$50.50k' → '50500.0'; '$50.50m' → 5.05e7; '$50.50b' → 5.05e10; '$50.50t' → 5.05e13

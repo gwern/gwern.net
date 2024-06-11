@@ -15,7 +15,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path)
 import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI, trimTitle, processDOIArxiv)
-import Utils (printRed, printGreen, replace, safeHtmlWriterOptions, replaceMany, sedMany, inlineMath2Text)
+import Utils (printRed, printGreen, replace, safeHtmlWriterOptions, replaceMany, sedMany, inlineMath2Text, delete, deleteMany)
 import Paragraph (processParagraphizer)
 import Config.Misc as C -- (cd)
 
@@ -29,7 +29,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
                          C.cd -- ensure we are in the right place to enable calling `latex2unicode.py`
-                         let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
+                         let title = delete "<p>" $ delete "</p>" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = cleanAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
@@ -48,8 +48,8 @@ arxivDownload :: String -> IO (ExitCode, U.ByteString, String)
 arxivDownload url = do
                checkURL url
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
-                                 then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
-                                 else replace "https://arxiv.org/abs/" "" url
+                                 then deleteMany ["https://arxiv.org/pdf/", ".pdf"] url
+                                 else delete "https://arxiv.org/abs/" url
                -- <https://info.arxiv.org/help/api/user-manual.html#_query_interface>
                (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?id_list="++arxivid, "--user-agent", "gwern+arxivscraping@gwern.net"]
                return (a,c,arxivid)

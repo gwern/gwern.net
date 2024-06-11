@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-08 10:24:58 gwern"
+# When:  Time-stamp: "2024-06-09 12:22:35 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -286,9 +286,10 @@ export -f gwhttp
 gwmv () {
 
     # shortcut: if there's only 1 PNG argument & it's a known wiki file (ie. version-controlled in git), then that means we are converting it to JPG using `png2JPGQualityCheck`, and can skip manually setting the second argument to the `.jpg` extension.
-# (The converse currently never happens & so is unsupported.)
-    [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch "$1" 2>/dev/null) ]] && set -- "$1" "${1%.png}.jpg"
-
+    # (The converse currently never happens & so is unsupported.)
+if [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch ./"$1" 2>/dev/null) ]];
+   then gwmv "$1" "${1%.png}.jpg"
+else
     if [ $# != 2 ]; then
         red "Need two arguments: OLD file and NEW file! Only got: \"$@\""
         return 2
@@ -331,8 +332,6 @@ gwmv () {
             TMP="$(mktemp /tmp/XXXXX.jpg)"
             convert "$HOME/wiki$OLD" "$TMP"
             compressJPG2 "$TMP"
-            feh "$HOME/wiki$OLD" "$TMP" || return 6
-            wait
             git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
             mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then
@@ -341,8 +340,7 @@ gwmv () {
             echo "File does not exist? $OLD (to be moved to $NEW)" && return 1;
         fi
 
-        ssh gwern@176.9.41.242 "mkdir -p /home/gwern/gwern.net$(dirname $NEW)"  # TODO: replace this ssh line with the `--mkpath` option in rsync when that becomes available:
-        rsync --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
+        rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
         gwsed "$OLD" "$NEW"
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
@@ -351,6 +349,7 @@ gwmv () {
 
     set +x
     fi
+fi
 }
 
 ## Move a directory:

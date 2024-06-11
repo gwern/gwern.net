@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-05-25 19:42:55 gwern"
+When:  Time-stamp: "2024-06-10 17:40:19 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, isDate, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -179,7 +179,7 @@ readLinkMetadataAndCheck = do
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
              -- - annotations must exist and be unique inside full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urlsC = map fst full
-             let normalizedUrlsC = map (replace "https://" "" . replace "http://" "") urlsC
+             let normalizedUrlsC = map (delete "https://" . delete "http://") urlsC
              when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,_,ts,_)) -> ts) full
@@ -272,7 +272,7 @@ readLinkMetadataAndCheck = do
              unless (null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
 
              let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,_,tags,_) -> if not ("/doc/" `isPrefixOf` f) then False else
-                                                        let fileTag = replace "/doc/" "" $ takeDirectory f
+                                                        let fileTag = delete "/doc/" $ takeDirectory f
                                                          in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 

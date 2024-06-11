@@ -26,7 +26,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Text.Pandoc (Inline(Image, Link))
 
 import LinkMetadataTypes (Metadata)
-import Utils (addClass, printRed, replace, anySuffix, isLocal, kvLookup)
+import Utils (addClass, printRed, anySuffix, isLocal, kvLookup, delete)
 
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
 -- excludes ".psd"
@@ -82,7 +82,7 @@ notInvertP :: [T.Text] -> Bool
 notInvertP classes = "invert-not" `elem` classes
 
 invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
-invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.replace "https://gwern.net/" "" f
+invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.delete "https://gwern.net/" f
               | "http" `isPrefixOf` f =
                 do (_,_,mimetype) <- runShellCommand "./" Nothing "curl" ["--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--write-out", "'%{content_type}'"]
                    if not ("image/" `isPrefixOf` unpack mimetype) then return (False, "320", "320") else
