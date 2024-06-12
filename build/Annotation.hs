@@ -90,8 +90,11 @@ htmlDownloadAndParseTitleClean u = do
                               then reverse $ tail $ dropWhile (`notElem` separators) $ reverse title
                               else title
   if title' `elem` badStrings
-  then return ""
-  else return title'
+  then return "" -- no need to shell out to a LLM for cleaning if it is a known-bad title
+  else do (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/title-cleaner.py" [title']
+          case status of
+             ExitFailure err -> printRed ("Exit Failure: " ++ Data.List.intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
+             _ -> return $ trim $ U.toString mb
   where
     separators = "—·|" :: String
     badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in"
