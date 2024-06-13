@@ -393,4 +393,8 @@ linkIDOverrides =
        , ("/doc/cat/psychology/2023-mcgrath-supplement.pdf", "mcgrath-et-al-supplement")
        , ("https://arxiv.org/abs/2305.18565#google", "chen-et-al-2023-palix")
        , ("https://arxiv.org/abs/2310.09199#google", "chen-et-al-2023-pali3")
+       , ("https://www.washingtonpost.com/opinions/2023/09/07/elon-musk-starlink-ukraine-russia-invasion/", "isaacson-2023-starlink")
+       , ("https://www.nytimes.com/2023/09/10/business/dealbook/walter-isaacson-elon-musk-biography.html", "isaacson-2023-mercurial")
+       , ("https://www.axios.com/2023/09/08/walter-isaacson-elon-musk-book-excerpt", "isaacson-2023-adhd")
+       , ("https://x.com/elonmusk/status/891713104786083841", "musk-2017-is-bipolar")
       ]

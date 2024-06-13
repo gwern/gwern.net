@@ -983,6 +983,7 @@ htmlRewriteFixed =
          , ("<strong>METHODS</strong>:", "<strong>Method</strong>:")
          , ("<strong>RESULTS</strong>:", "<strong>Results</strong>:")
          , ("<strong>CONCLUSION</strong>:", "<strong>Conclusion</strong>:")
+         , ("Background and Aims", "Background & Aims")
          , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
          , ("\nBackground: ", "\n<strong>Background</strong>: ")
          , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")

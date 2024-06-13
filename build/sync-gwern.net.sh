@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-10 22:19:07 gwern"
+# When:  Time-stamp: "2024-06-12 17:35:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -79,6 +79,7 @@ else
 
           ## link cruft rewrites:
           s '&hl=en&oi=ao' ''; s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' ''; s '?login=false' '';
+          stringReplace '&hl=en&oi=ao' '' ./static/build/Config/MetadataAuthor.hs;
 
           ## name/entity consistency:
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers';
@@ -606,7 +607,7 @@ else
              `## blacklist of fraudsters or bad papers:` \
              gf \
                   `### authors:` \
-                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' -e 'Changhwan Yoon' -e 'Sam Yoon' -e 'Juan Manuel Corchado' -e 'Adrien Matray' \
+                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' -e 'Changhwan Yoon' -e 'Sam Yoon' -e 'Juan Manuel Corchado' -e 'Adrien Matray' -e 'Ping Dong' \
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
@@ -997,7 +998,7 @@ else
             chromium "$CHECK_RANDOM_PAGE#reminder-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf 2> /dev/null &
         fi
 
-    (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 2; }' > /dev/null &) # continue building author database
+    (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 3; }' > /dev/null &) # continue building author database
 
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the X-of-the-day in a different & cache-free browser instance
 
@@ -1418,7 +1419,6 @@ else
   fi
 
     rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &>/dev/null || true
-    wait
 
     bold "Sync successful: $(date)"
     echo -n -e '\a'; # ring bell because done

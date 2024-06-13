@@ -346,10 +346,14 @@ authorLinkDB = M.fromList $
     , ("Dorret I. Boomsma", "https://en.wikipedia.org/wiki/Dorret_Boomsma")
     , ("Sarah E. Medland", "https://en.wikipedia.org/wiki/Sarah_Medland")
     , ("Jian Yang", "https://en.wikipedia.org/wiki/Jian_Yang_(geneticist)")
-    , ("Ole A. Andreassen", "https://scholar.google.com/citations?user=dilW0WsAAAAJ&hl=en&oi=ao")
-    , ("Thomas Werge", "https://scholar.google.com/citations?user=mRphVYYAAAAJ&hl=en&oi=ao")
-    , ("Grant W. Montgomery", "https://scholar.google.com/citations?user=4eOEw-IAAAAJ&hl=en&oi=ao")
+    , ("Ole A. Andreassen", "https://scholar.google.com/citations?user=dilW0WsAAAAJ")
+    , ("Thomas Werge", "https://scholar.google.com/citations?user=mRphVYYAAAAJ")
+    , ("Grant W. Montgomery", "https://scholar.google.com/citations?user=4eOEw-IAAAAJ")
     , ("Benjamin M. Neale", "https://en.wikipedia.org/wiki/Benjamin_Neale")
+    , ("David Silver", "https://en.wikipedia.org/wiki/David_Silver_(computer_scientist)")
+    , ("Luke Zettlemoyer", "https://scholar.google.com/citations?user=UjpbO6IAAAAJ")
+    , ("Caroline Hayward", "https://www.ed.ac.uk/profile/caroline-hayward")
+    , ("Paul Lichtenstein", "https://ki.se/en/people/paul-lichtenstein")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
