@@ -5,12 +5,12 @@ module LinkIcon (addIcon, linkIcon, linkIconTest, linkIconPrioritize) where
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
 import Utils (host, hasKeyAL, anyPrefixT, inlinesToText, removeKey, addClass)
-import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules)
+import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules, linkIconTypes)
 
 -- Statically, at site 'compile-time', define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -146,10 +146,15 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 -- Here we test that URLs get assigned the appropriate icons; on /lorem, we render them to check for
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
 --
+-- We also check that all of the target styling results like `"text,quad,mono"` parse to only valid
+-- entries of the enumeration `C.linkIconTypes`, to avoid issues like accidentally writing `"text,quad,monospace"`
+-- which would not trigger the unit-test and looks correct (because stringly-typed), but is wrong.
+--
 -- TODO: does not test more complex behavior like suppression of redundant link-icons
 linkIconTest :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                           /=
                                           Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,"")
+                                          || not (all (`elem` C.linkIconTypes) (T.splitOn "," lit))
                                                    )
                C.linkIconTestUnitsText

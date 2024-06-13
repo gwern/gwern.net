@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules) where
+module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules, linkIconTypes) where
 
 import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, Text)
 import Utils (extension, isLocal, hasExtension, isHostOrArchive)
@@ -47,6 +47,14 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                               , "nces.ed.gov", "www.avclub.com"]
 ------------------------------------------------------------------------------------------
 
+-- all legal types of displays
+linkIconTypes :: [T.Text]
+linkIconTypes = ["text", "svg"
+                , "quad", "tri"
+                , "sans", "serif"
+                , "mono", "italic", "bold", "overline"
+                ]
+
 -- Helper functions for URL matches:
 u', u'' :: T.Text -> T.Text -> Bool
 -- Loose check: simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
@@ -85,7 +93,7 @@ linkIconRulesOverrides u
  | u'' u "www.theinformation.com" = ("the-information", "svg") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'? Overrides Microsoft & other tech companies
  | u'' u "www.semafor.com" = ("SMFR", "text,quad") -- Semafor <https://www.semafor.com/> <https://en.wikipedia.org/wiki/Semafor_(website)>; somewhat like _The Information_; official logo is a boring serif wordmark (<https://en.wikipedia.org/wiki/File:Semafor_logo.png>), and the favicon is an interesting 'cut off' 'S'-silhouette-in-square <https://www.semafor.com/safari-pinned-tab-icon.svg> but they've done a bad enough job branding it no one would recognize it, so we use a quad-abbreviation of 'SEMAFOR'
  | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
- | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,monospace") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
+ | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,mono") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
@@ -359,17 +367,17 @@ linkIconRulesQuad u
  | u'' u "stability.ai" || u' u "#stability" || u' u "&org=stability" = ("SD", "text,sans")
  | u'' u "patrickcollison.com" = ("PC", "text,sans")
  | u'' u "oeis.org" = ("OEIS", "text,quad,sans") -- On-Line Encyclopedia of Integer Sequences
- | u'' u "bldgblog.com" = ("BLDG", "text,quad,monospace") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,monospace") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
+ | u'' u "bldgblog.com" = ("BLDG", "text,quad,mono") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
+ | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
- | u'' u "scale.com" = ("SCLE", "text,quad,monospace") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
- | u'' u "nunosempere.com" = ("nuno", "text,quad,monospace") -- Nuño Sempere
- | u'' u "ourworldindata.org" = ("OWID", "text,quad,monospace") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
+ | u'' u "scale.com" = ("SCLE", "text,quad,mono") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
+ | u'' u "nunosempere.com" = ("nuno", "text,quad,mono") -- Nuño Sempere
+ | u'' u "ourworldindata.org" = ("OWID", "text,quad,mono") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon
  | u'' u "www.scmp.com" = ("SCM", "text,tri") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?); 'SCMP' unfortunately doesn't work as a quad, because the width of 'MP' is far larger than 'SC' and playing around with it, I can't get it to look good, so we settle for just the first three
  | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains.
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono") -- qntm/Sam Hughes: programming & SF
- | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,sans") -- Sam Altman, username 'sama' (TODO: should this be all lower/uppercase instead of mixed?)
+ | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono") -- Sam Altman, username 'sama' (TODO: should this be all lower/uppercase instead of mixed?)
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -383,7 +391,7 @@ linkIconRulesSVG u
  | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg")
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' u "paulgraham.com" = ("pg", "text,monospace") -- Paul Graham, known by username 'pg' on HN
+ | u'' u "paulgraham.com" = ("pg", "text,mono") -- Paul Graham, known by username 'pg' on HN
  | u' u "ycombinator.com" = ("hacker-news", "svg") -- HN/YC (shared logo). primary user: news.ycombinator.com
  | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overriden by SICP
  | u'' u "mega.nz" = ("mega", "svg") -- MegaUpload/Mega: filesharing (used for big files).
@@ -525,7 +533,7 @@ linkIconTestUnitsText =
          , ("/doc/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad")
          , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans")
-         , ("http://blog.sigfpe.com/2005/08/absence-of-evidence-is-evidence-of.html", "sgfp", "text,quad,monospace")
+         , ("http://blog.sigfpe.com/2005/08/absence-of-evidence-is-evidence-of.html", "sgfp", "text,quad,mono")
          , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans")
          , ("http://esr.ibiblio.org/?p=7183", "ESR","text,tri,sans")
          , ("https://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
@@ -583,7 +591,7 @@ linkIconTestUnitsText =
          , ("https://betonit.blog/2022/03/02/make-desertion-fast/", "econlib", "svg")
          , ("https://bitcointalk.org/index.php?topic=82952.0;all",  "bitcoin","svg")
          , ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,tri,sans")
-         , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,monospace")
+         , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,mono")
          , ("https://blog.23andme.com/articles/genes-scream-for-ice-cream", "23", "text")
          , ("https://blog.archive.org/2011/08/17/scanning-a-braille-playboy/",  "internet-archive","svg")
          , ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg")
@@ -727,7 +735,7 @@ linkIconTestUnitsText =
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text")
          , ("https://blog.novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://numinous.productions/ttft/", "MN", "text")
-         , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,monospace")
+         , ("https://nunosempere.com/blog/2023/01/30/an-in-progress-experiment-to-test-how-laplace-s-rule-of/", "nuno", "text,quad,mono")
          , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic")
@@ -773,7 +781,7 @@ linkIconTestUnitsText =
          , ("https://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text")
-         , ("https://scale.com/", "SCLE", "text,quad,monospace")
+         , ("https://scale.com/", "SCLE", "text,quad,mono")
          , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google-scholar","svg")
          , ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text")
          , ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic")
@@ -808,7 +816,7 @@ linkIconTestUnitsText =
          , ("https://tl.net/blogs/283221-worker-rush-part-4-rising-up?view=all", "TL", "text,sans")
          , ("https://touhou.fandom.com/wiki/Category:Music", "☯", "text")
          , ("https://towardsdatascience.com/stylegan2-projection-a-reliable-method-for-image-forensics-700922579236", "\119820","text")
-         , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,monospace")
+         , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,mono")
          , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg")
          , ("https://tug.org/FontCatalogue/goudyinitialen/", "tex","svg")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text")
@@ -816,7 +824,7 @@ linkIconTestUnitsText =
          , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg")
          , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg")
          , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg")
-         , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,monospace")
+         , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,mono")
          , ("https://x.com/razibkhan/status/1463204399954776073", "RK", "text,sans")
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg")
          , ("https://unsongbook.com/",  "\8501","text")
@@ -849,7 +857,7 @@ linkIconTestUnitsText =
          , ("https://www.atlasobscura.com/articles/cyoa-choose-your-own-adventure-maps", "atlas-obscura", "svg")
          , ("https://www.bbc.com/news/business-43365710",  "BBC","text,tri,sans")
          , ("https://www.biorxiv.org/content/10.1101/013896.full",  "chi-dna","svg")
-         , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,monospace")
+         , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,mono")
          , ("https://www.blockchain.com/explorer/addresses/btc/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg")
          , ("https://www.bloomberg.com/businessweek/ap/financialnews/D9KQL7CG0.htm", "\119809","text")
          , ("https://www.bloomberg.com/news/articles/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger",  "\119809","text")
@@ -912,7 +920,7 @@ linkIconTestUnitsText =
          , ("https://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri")
          , ("https://www.kaggle.com/datasets/ultrajack/modern-renaissance-poetry", "k", "text,sans")
-         , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,monospace")
+         , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,mono")
          , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE","text,tri")
          , ("https://www.latimes.com/archives/la-xpm-1988-07-17-tm-9636-story.html", "𝔏A", "text")
          , ("https://www.lesswrong.com/",  "LW","text")
@@ -1036,7 +1044,7 @@ linkIconTestUnitsText =
          , ("http://www.gainax.co.jp/wp/",  "NGE","text,tri")
          , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
          , ("https://www.metafor-project.org/doku.php",  "R","text")
-         , ("https://paulgraham.com/hundred.html",  "pg","text,monospace")
+         , ("https://paulgraham.com/hundred.html",  "pg","text,mono")
          , ("http://www.scholarpedia.org/article/Applications_of_algorithmic_information_theory", "scholarpedia", "svg")
          , ("http://www.sequentialtart.com/archive/july00/grant.shtml", "ST", "text,sans")
          , ("http://www.thelancet.com/journals/lancet/article/PIIS0140-6736%2811%2960693-4/abstract", "L", "text")
@@ -1056,7 +1064,7 @@ linkIconTestUnitsText =
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text")
-         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,monospace")
+         , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,mono")
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg")
@@ -1074,7 +1082,7 @@ linkIconTestUnitsText =
          , ("https://qntm.org/invisibility", "qntm", "text,quad,mono")
          , ("https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans")
          , ("https://psycnet.apa.org/fulltext/2024-33486-001.html", "APA", "text,tri,sans")
-         , ("https://blog.samaltman.com/value-is-created-by-doing", "sama", "text,quad,sans")
+         , ("https://blog.samaltman.com/value-is-created-by-doing", "sama", "text,quad,mono")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
