@@ -91,10 +91,18 @@ htmlDownloadAndParseTitleClean u = do
                               else title
   if title' `elem` badStrings
   then return "" -- no need to shell out to a LLM for cleaning if it is a known-bad title
-  else do (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/title-cleaner.py" [title']
-          case status of
-             ExitFailure err -> printRed ("Exit Failure: " ++ Data.List.intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
-             _ -> return $ trim $ U.toString mb
+  else if title' == "" then return "" else
+        do (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/title-cleaner.py" [title']
+           case status of
+               ExitFailure err -> printRed ("Exit Failure: " ++ Data.List.intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
+               -- NOTE: to avoid confabulations or mangled rewrites, we impose a further requirement:
+               -- that any changed title must be a strict substring of the original title,
+               -- to reflect that the title-cleaning script should only be returning " ",
+               -- the original title, or the title with ranges deleted but neither changed nor added to.
+               _ -> let titleCleaned = trim $ U.toString mb in
+                     return $ if titleCleaned == "" then "" else
+                               if titleCleaned /= title' && titleCleaned `isInfixOf` title' then titleCleaned
+                                 else title'
   where
     separators = "—·|" :: String
     badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in"

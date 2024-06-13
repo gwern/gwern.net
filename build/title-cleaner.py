@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-06-11 22:09:10 gwern"
+# When:  Time-stamp: "2024-06-12 16:07:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -43,6 +43,8 @@ Collecting New Socks Efficiently
 5. Input title to clean: "steve yegge · The Amazon Memo"
 The Amazon Memo
 6. Input title to clean: "index"
+""
+7. Input title to clean: ""
 ""
 
 Task:
