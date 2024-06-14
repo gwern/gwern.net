@@ -345,6 +345,7 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 -- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
 replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before
+-- NOTE: a `splitT` is unnecessary because Data.Text defines its own `split`/`splitAt`/`splitOn` functions.
 split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []
 split delim str =

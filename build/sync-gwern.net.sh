@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-12 17:35:21 gwern"
+# When:  Time-stamp: "2024-06-13 17:30:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -62,7 +62,7 @@ else
         bold "Checking metadata…"
         pkill checkMetadata || true
         rm ~/METADATA.txt &> /dev/null || true
-        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >"$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
+        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >> "$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
     fi &
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -180,7 +180,7 @@ else
     # Update the directory listing index pages: there are a number of directories we want to avoid,
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
-    DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ zeo/ -type d \
+    DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ sicp/ zeo/ -type d \
                       | gfv -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
                                         -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \

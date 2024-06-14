@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-06-10 17:40:19 gwern"
+When:  Time-stamp: "2024-06-13 12:28:30 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -81,7 +81,7 @@ addPageLink x = x
 -- Run an arbitrary function on the 3 databases to update individual items.
 -- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like:
 --
--- > walkAndUpdateLinkMetadata True (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+-- > walkAndUpdateLinkMetadata True (\x@(path,(title,author,date,dateModified,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,dateModified,processDOIArxiv path,tags,abstrct)))
 --
 -- To rewrite a tag, eg. 'conscientiousness' → 'psychology/personality/conscientiousness':
 --

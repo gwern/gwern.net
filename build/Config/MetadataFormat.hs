@@ -1481,6 +1481,7 @@ htmlRewriteFixed =
          , ("(Canis familiaris)", "(<em>Canis familiaris</em>)")
          , (" Canis familiaris", " <em>Canis familiaris</em>")
          , (" Escherichia coli", " <em>Escherichia coli</em>")
+         , (" E. coli", " <em>E. coli</em>")
          , (" Saccharomyces cerevisiae", " <em>Saccharomyces cerevisiae</em>")
          , ("(Calcarius lapponicus) ", "(<em>Calcarius lapponicus)</em> ")
          , ("(Corvus brachyrhynchos) ", "(<em>Corvus brachyrhynchos)</em> ")
