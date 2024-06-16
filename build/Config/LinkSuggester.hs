@@ -227,6 +227,7 @@ whiteList = [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://openai.com/index/hello-gpt-4o/", ["GPT-4o"])
   , ("https://en.wikipedia.org/wiki/Diffusion_model", ["diffusion models", "diffusion model"])
   , ("https://en.wikipedia.org/wiki/Suicidal_ideation", ["suicidal ideation"])
   , ("https://en.wikipedia.org/wiki/Stripe,_Inc.", ["Stripe Inc.", "Stripe"])

@@ -246,7 +246,7 @@ testAll = do Config.Misc.cd
              testTags
 
              printGreen ("Testing live-link-popup rules…" :: String)
-             unless (null linkLiveTest) $ printRed ("Live link pop rules have errors in: " ++ show linkLiveTest)
+             unless (null linkLiveTest) $ printRed ("Live link popup rules have errors in: " ++ show linkLiveTest)
              _ <- linkLivePrioritize -- generate testcases for new live-link targets
              -- NOTE: we skip `linkLiveTestHeaders` due to requiring too much time & IO & bandwidth, and instead do it once in a while post-sync
 

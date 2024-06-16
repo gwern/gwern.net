@@ -262,6 +262,10 @@ canonicals = M.fromList
   , ("Ole Andreassen", "Ole A. Andreassen")
   , ("Grant Montgomery", "Grant W. Montgomery")
   , ("Benjamin Neale", "Benjamin M. Neale")
+  , ("Tonu Esko", "Tõnu Esko")
+  , ("Anders Borglum", "Anders Børglum")
+  , ("Yuan YAO", "Yuan Yao")
+  , ("Zhi Zheng (郑值)", "Zhi Zheng")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -354,6 +358,9 @@ authorLinkDB = M.fromList $
     , ("Luke Zettlemoyer", "https://scholar.google.com/citations?user=UjpbO6IAAAAJ")
     , ("Caroline Hayward", "https://www.ed.ac.uk/profile/caroline-hayward")
     , ("Paul Lichtenstein", "https://ki.se/en/people/paul-lichtenstein")
+    , ("Alec Radford", "https://scholar.google.com/citations?user=dOad5HoAAAAJ")
+    , ("Tõnu Esko", "https://scholar.google.com/citations?user=pzykPaMAAAAJ")
+    , ("Anders Børglum", "https://pure.au.dk/portal/en/persons/anders%40biomed.au.dk")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1580,4 +1587,4 @@ authorWpLinkDB =
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
     ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
-    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"]
+    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich", "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"]

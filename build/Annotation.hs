@@ -95,7 +95,7 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.ht
   let title' = trim $ unlines $ take 1 $ lines $ clean $ if any (`elem` separators) title
                               then reverse $ tail $ dropWhile (`notElem` separators) $ reverse title
                               else title
-  if title' `elem` badStrings || length title' < 5 || length title' > 500
+  if title' `elem` badStrings || anyInfix title' badStringPatterns || length title' < 5 || length title' > 500
   then return "" -- no need to shell out to a LLM for cleaning if it is a known-bad title
   else if title' == "" then return "" else
         do (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/title-cleaner.py" [title']
@@ -111,7 +111,8 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.ht
                                  else title'
   where
     separators = "—·|" :: String
-    badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff"
+    badStringPatterns = ["Redirecting to ", "404 "]
+    badStrings = ["Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
      , "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error"
      , "Login \187 Qstream", "Kaggle Blog - Medium", "403 Forbidden", "500 Internal Server Error", "BBC NEWS Science &amp; Environment", "Welcome!", "Flashback Forum", "Best search engine for True crime stories"
      , "Research", "niplav", "SL4: By Thread", "Moved Temporarily", "Redirecting\8230", "Torch"
@@ -205,4 +206,4 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.ht
             , " - Linux Manuals (1)", " - by benedict - bene dictio", "    [hashcat wiki]", " - IndieWeb"
             , " - ArchWiki", "\nFork me on GitHub", "lcamtuf's old blog: ", " - Academia Stack Exchange"
             , "jwz: ", " @ GitHub", "ignore the code: ", " - The Verge\nThe Verge\nThe Verge\nExpand\nThe Verge\nExpand\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nComments\nThe Verge"
-            , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange"]
+            , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange", "Nadia Asparouhova "]

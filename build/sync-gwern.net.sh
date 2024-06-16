@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-13 17:30:34 gwern"
+# When:  Time-stamp: "2024-06-15 09:27:50 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -998,7 +998,7 @@ else
             chromium "$CHECK_RANDOM_PAGE#reminder-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf 2> /dev/null &
         fi
 
-    (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 3; }' > /dev/null &) # continue building author database
+    (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &) # continue building author database
 
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the X-of-the-day in a different & cache-free browser instance
 

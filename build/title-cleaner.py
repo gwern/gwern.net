@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-06-13 16:36:42 gwern"
+# When:  Time-stamp: "2024-06-15 20:30:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -110,6 +110,8 @@ It’s Probably Not Lithium
 Scunthorpe Sans: a profanity-blocking font
 39. Input title to clean: "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
 ""
+40. Input title to clean: "Nadia Asparouhova How to do the jhanas"
+"How to do the jhanas"
 
 Task:
 

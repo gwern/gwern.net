@@ -335,7 +335,7 @@ linkIconRulesQuad u
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad")
  | u'' u "www.nejm.org" = ("NEJM", "text,quad")
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad")
- | u'' u "rjlipton.wordpress.com" = ("P = NP", "text,quad") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
+ | u'' u "rjlipton.com" = ("P = NP", "text,quad") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans") -- overrides IA
  | u' u "mitpress.mit.edu/" = ("MIT", "text,tri,mono") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono")
@@ -777,7 +777,7 @@ linkIconTestUnitsText =
          , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "springerlink", "svg")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
          , ("https://retractionwatch.com/2011/02/28/crystal-myth-11-more-retractions-from-crystallography-journal-after-2010-fakery/", "magnifying-glass", "svg")
-         , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
+         , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
          , ("https://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text")
