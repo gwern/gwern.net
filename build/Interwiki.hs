@@ -45,7 +45,7 @@ handleException _ = return $ Left "An exception occurred"
 toWikipediaEnURL :: T.Text -> T.Text
 toWikipediaEnURL title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
 toWikipediaEnURLSearch :: T.Text -> T.Text
-toWikipediaEnURLSearch title = "https://en.wikipedia.org//w/index.php?fulltext=1&search=" `T.append` escapeWikiArticleTitle title
+toWikipediaEnURLSearch title = "https://en.wikipedia.org/w/index.php?fulltext=1&search=" `T.append` escapeWikiArticleTitle title
 
 escapeWikiArticleTitle :: T.Text -> T.Text
 escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $

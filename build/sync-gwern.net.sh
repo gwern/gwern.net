@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-15 09:27:50 gwern"
+# When:  Time-stamp: "2024-06-18 12:13:31 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -732,7 +732,8 @@ else
             -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
             -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
             `# match both single & double-quotation versions of erroneous inflation-adjusters like "<a href='$2022'>148,749</a>":` \
-            -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]' -e '<ul>[ a-zA-Z][ a-zA-Z]' -- ./metadata/*.gtx; }
+            -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]' -e '<ul>[ a-zA-Z][ a-zA-Z]' \
+            -e '<a href="\$[12][0-9][0-9][0-9]">\$<su[bp]>.*</a>' -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 
     λ(){ gfc -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
@@ -1287,7 +1288,18 @@ else
     λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
     wrap λ "Corrupted JPGs" &
 
-    λ(){ find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data'; }
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
+         if [ -n "$CORRUPT" ]; then
+             echo "Found broken PNGs: $CORRUPT"
+             echo "attempting to convert the JPG ones into PNG…"
+             for FILE in $CORRUPT; do
+                 if file "$FILE" | grep -F --silent 'JPEG image data'; then
+                     echo "Converting $FILE"
+                     TMP=$(mktemp /tmp/XXXX.png)
+                     convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
+                 fi
+             done
+         fi; }
     wrap λ "Corrupted PNGs" &
 
     λ(){ find ./ -name "*.svg" | xargs --max-procs="$N" -I {} sh -c 'xmllint --noout "{}" 2>/dev/null && \
@@ -1351,8 +1363,13 @@ else
           done; }
     wrap λ "Too-wide images (downscale)" &
 
-    λ() { find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' -e 'doc/rotten.com/' -e 'www.mountimprobable.com' | parallel png2JPGQualityCheck; }
-    wrap λ "PNGs that should be JPGs?" &
+    λ() { TARGETS=$(find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' -e 'doc/rotten.com/' -e 'www.mountimprobable.com' | parallel png2JPGQualityCheck);
+          if [[ -n "$TARGETS" ]]; then
+              echo "Converting $TARGETS…"
+              # `gwmv` handles PNG → JPG as a special-case, so we don't need to munge the filename:
+              for PNG in $TARGETS; do gwmv "$PNG"; done
+          fi; }
+    wrap λ "Converting PNGs that should have been JPGs" &
 
     bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:

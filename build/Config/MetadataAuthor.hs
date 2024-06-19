@@ -264,8 +264,10 @@ canonicals = M.fromList
   , ("Benjamin Neale", "Benjamin M. Neale")
   , ("Tonu Esko", "Tõnu Esko")
   , ("Anders Borglum", "Anders Børglum")
+  , ("Anders D. Børglum", "Anders Børglum")
   , ("Yuan YAO", "Yuan Yao")
   , ("Zhi Zheng (郑值)", "Zhi Zheng")
+  , ("Ruth J. F. Loos", "Ruth Loos")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -361,6 +363,14 @@ authorLinkDB = M.fromList $
     , ("Alec Radford", "https://scholar.google.com/citations?user=dOad5HoAAAAJ")
     , ("Tõnu Esko", "https://scholar.google.com/citations?user=pzykPaMAAAAJ")
     , ("Anders Børglum", "https://pure.au.dk/portal/en/persons/anders%40biomed.au.dk")
+    , ("Ruth Loos", "https://profiles.mountsinai.org/ruth-loos")
+    , ("Unnur Thorsteinsdottir", "https://scholar.google.com/citations?user=Dh2gs1gAAAAJ")
+    , ("Koray Kavukcuoglu", "https://scholar.google.com/citations?user=sGFyDIUAAAAJ")
+    , ("Gonneke Willemsen", "https://scholar.google.com/citations?user=fjolqosAAAAJ&hl=en&oi=ao")
+    , ("Gail Davies", "https://scholar.google.com/citations?user=N5VMS4cAAAAJ&hl=en&oi=ao")
+    , ("David Hougaard", "https://scholar.google.com/citations?user=UJ7aJC4AAAAJ&hl=en&oi=ao")
+    , ("Aarno Palotie", "https://researchers.mgh.harvard.edu/profile/14173445/Aarno-Palotie")
+    , ("Colin Jarvis", "https://x.com/colintjarvis")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1587,4 +1597,4 @@ authorWpLinkDB =
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
     ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
-    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich", "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"]
+    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich", "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis", "Dana Gioia"]

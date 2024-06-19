@@ -39,7 +39,7 @@ import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSort
 import MetadataAuthor (authorsLinkify)
 
 main :: IO ()
-main = do
+main = do -- we read arguments from stdin using `getContents` in main'
   C.cd
   createDirectoryIfMissing False "metadata/annotation/backlink/"
   priorBacklinksN <- fmap length $ listDirectory "metadata/annotation/backlink/"
@@ -65,7 +65,7 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md edb sortDB) bldb
-  fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) getContents
+  fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) Prelude.getContents
 
   let markdown = filter (".md" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown

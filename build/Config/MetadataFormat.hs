@@ -170,7 +170,7 @@ htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 25
 
 -- testing: unique keys, valid regex keys
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
-htmlRewriteRegexpAfter = [
+htmlRewriteRegexpAfter = [ -- sedMany
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
          -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to stripe attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
@@ -229,6 +229,10 @@ htmlRewriteRegexpAfter = [
          , ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>") -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
          , ("^en$", "")
          , (" ([0-9]) h ", " \\1h ") -- hour abbreviation
+         , (" ([0-9.]+)-([0-9.]+)", " \\1–\\2") -- CI EN DASH: "CI: 0.10-0.28" → "CI: 0.10–0.28"
+         , (" \\.([0-9])", " 0.\\1") -- restore missing zero: "CI: .91-1.28" → "CI: 0.91-1.28"
+         , (" 0\\.([0-9.]+)-\\.([0-9.]+)", " 0.\\1–0.\\2") -- restore missing zero: "CI: 0.10-.28" → "CI: 0.10-0.28"
+         , (" \\.([0-9.]+)-\\.([0-9.]+)", " 0.\\1–0.\\2") -- restore missing zeros: "CI: .10-.28" → "CI: 0.10-0.28"
          , ("range: ([0-9%.]+) to ([0-9%.]+)", "range: \\1–\\2") -- eg. "range: 0.59 to 43.89"
          , ("between ([0-9%]+) and ([0-9]+)", "\\1–\\2") -- "range between 2 and 10" → "range 2–10"
          , ("([0-9%]) – ([0-9])", "\\1–\\2") -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
