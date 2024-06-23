@@ -8,7 +8,7 @@ import Utils (fixedPoint)
 
 -- simple test for infinite loops in infix string rewrites: we take the list of before→after rewrites, and we try to rewrite the 'before'
 -- using some given function. If it infinite-loops...
-testInfixRewriteLoops :: (Show a, Eq a) => [(a,a)] -> (a -> a) -> [(a,a,a)]
+testInfixRewriteLoops :: (Show a, Eq a, Ord a) => [(a,a)] -> (a -> a) -> [(a,a,a)]
 testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ reverse rewrites
 
 isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]

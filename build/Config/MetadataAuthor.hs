@@ -268,6 +268,12 @@ canonicals = M.fromList
   , ("Yuan YAO", "Yuan Yao")
   , ("Zhi Zheng (郑值)", "Zhi Zheng")
   , ("Ruth J. F. Loos", "Ruth Loos")
+  , ("David M. Hougaard", "David Hougaard")
+  , ("Andy Jones", "Andy L. Jones")
+  , ("David M. Hougaard", "David Hougaard")
+  , ("Nicolas Hees", "Nicolas Heess")
+  , ("Elliot Tucker-Drob", "Elliot M. Tucker-Drob")
+  , ("Jon L. Bentley", "Jon Bentley")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -366,11 +372,17 @@ authorLinkDB = M.fromList $
     , ("Ruth Loos", "https://profiles.mountsinai.org/ruth-loos")
     , ("Unnur Thorsteinsdottir", "https://scholar.google.com/citations?user=Dh2gs1gAAAAJ")
     , ("Koray Kavukcuoglu", "https://scholar.google.com/citations?user=sGFyDIUAAAAJ")
-    , ("Gonneke Willemsen", "https://scholar.google.com/citations?user=fjolqosAAAAJ&hl=en&oi=ao")
-    , ("Gail Davies", "https://scholar.google.com/citations?user=N5VMS4cAAAAJ&hl=en&oi=ao")
-    , ("David Hougaard", "https://scholar.google.com/citations?user=UJ7aJC4AAAAJ&hl=en&oi=ao")
+    , ("Gonneke Willemsen", "https://scholar.google.com/citations?user=fjolqosAAAAJ")
+    , ("Gail Davies", "https://scholar.google.com/citations?user=N5VMS4cAAAAJ")
+    , ("David Hougaard", "https://scholar.google.com/citations?user=UJ7aJC4AAAAJ")
     , ("Aarno Palotie", "https://researchers.mgh.harvard.edu/profile/14173445/Aarno-Palotie")
     , ("Colin Jarvis", "https://x.com/colintjarvis")
+    , ("Veikko Salomaa", "https://thl.fi/en/research-and-development/research-professors/veikko-salomaa")
+    , ("Nicolas Heess", "https://scholar.google.com/citations?user=79k7bGEAAAAJ")
+    , ("Daniel Levy", "https://ai.stanford.edu/~danilevy/")
+    , ("Andy L. Jones", "https://andyljones.com/")
+    , ("Mike Lewis", "https://scholar.google.com/citations?user=SnQnQicAAAAJ&hl=en&oi=ao")
+    , ("Jon Bentley", "https://en.wikipedia.org/wiki/Jon_Bentley_(computer_scientist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -689,7 +701,7 @@ authorWpLinkDB =
     ,"Elizabeth Gibney","Elizabeth J. Perry","Elizabeth K. Cahoon","Elizabeth L. Bjork","Elizabeth Loftus"
     ,"Elizabeth Pennisi","Elizabeth S. Spelke","Elizabeth Selvin","Elizabeth Spelke","Elizabeth Steele"
     ,"Elizabeth Weil","Elizabeth Williamson","Ella Fitzgerald","Ellen Byron","Ellen J. Langer"
-    ,"Ellen Leibenluft","Elliot Richards","Elliot S. Gershon","Elliot S. Vesell","Elliot Tucker-Drob"
+    ,"Ellen Leibenluft","Elliot Richards","Elliot S. Gershon","Elliot S. Vesell","Elliot M. Tucker-Drob"
     ,"Elon Musk","Elsdon Storey","Emad Mostaque","Emanuel Miller","Emanuele Felice"
     ,"Emelia J. Benjamin","Emi Hasegawa","Emi Nakamura","Emil Hagstr\246m","Emil O. W. Kirkegaard"
     ,"Emilie Kaufmann","Emilio Ferrer","Emily Chew","Emily Gerard"
@@ -1597,4 +1609,6 @@ authorWpLinkDB =
     ,"Zvi Griliches","Zvika Brakerski","\193d\225m Mikl\243si","OpenAI","Vladimir Vapnik","Alexey Chervonenkis"
     ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
-    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich", "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis", "Dana Gioia"]
+    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
+    , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
+    , "Dana Gioia", "Patrik K. E. Magnusson"]

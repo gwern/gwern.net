@@ -7,6 +7,7 @@ import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, t
 import Data.Maybe (fromMaybe)
 import qualified Data.Map as M
 import Data.Containers.ListUtils (nubOrd)
+import qualified Data.Set as S (empty, member, insert, Set)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
@@ -308,15 +309,21 @@ printRed' e l = putStrRed e >> printGreen l
 putStrStdErr :: String -> IO ()
 putStrStdErr = hPutStr stderr
 
--- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
--- reporting on the occasional infinite loop.
--- Note: set to 5000 iterations by default. However, if you are using a list of _n_ simple rewrite rules, the limit can be set to _n_+1 rewrites
+-- Repeatedly apply `f` to an input until the input stops changing. 'Show' constraint is required for better error reporting on the occasional infinite loop, and 'Ord' constraint is required for easy duplicate-checking via Sets. (If necessary, this could be removed with the Floyd tortoise-and-hare cycle detector <https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare>, although that is more complicated & probably a bit slower for our uses.)
+-- Note: set to 5000 iterations by default. However, if you are using a list of _n_ simple rewrite rules, the limit can be set a priori to _n_+1 rewrites
 -- as any more than that implies a cycle/infinite-loop.
-fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
-fixedPoint = fixedPoint' 5000
- where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a
-       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 5,000 iterations! Infinite loop? Last result: " ++ show i
-       fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
+fixedPoint :: (Show a, Eq a, Ord a) => (a -> a) -> a -> a
+fixedPoint = fixedPoint' 5000 S.empty
+ where
+  fixedPoint' :: (Show a, Eq a, Ord a) => Int -> S.Set a -> (a -> a) -> a -> a
+  fixedPoint' 0 _ _ i = error $ "Hit recursion limit: still changing after 5,000 iterations! Infinite loop? Last result: " ++ show i
+  fixedPoint' n seen f i
+    | i `S.member` seen = error $ "Cycle detected! Last result: " ++ show i
+    | otherwise =
+        let i' = f i
+        in if i' == i
+           then i
+           else fixedPoint' (n-1) (S.insert i seen) f i'
 
 -- because the regex libraries throw fatal exceptions, which are highly uninformative, we have to do a lot of work to catch exceptions and print out useful debug info for identifying *what* regexp went wrong, rather than unhelpfully reporting "Exception 13" or whatever.
 sed :: String -> String -> String -> String
