@@ -182,12 +182,13 @@
       </div>
     </main>
 
-    <script defer id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
+    <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'UA-18912926-1');
     </script>
+    $if(error404)$<script src="/static/js/404-guesser.js" defer></script>$endif$
   </body>
 </html>
