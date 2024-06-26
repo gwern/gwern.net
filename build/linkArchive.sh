@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2024-06-12 18:59:48 gwern"
+# When:  Time-stamp: "2024-06-23 18:52:24 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -120,12 +120,12 @@ else
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
             # NOTE: we must specify '--network="host"' to Docker, so that the Single-file app running inside Docker (which is its own private network namespace) can 'see' the local Nitter instance (running normally) for making Twitter snapshots; if we forget to do this, we get unhelpful 'connection error' messages like "$ docker run singlefile http://localhost:8081/novelaiofficial/status/1723601550927356343 → net::ERR_CONNECTION_REFUSED at http://localhost:8081/novelaiofficial/status/1723601550927356343"
-            timeout --kill-after=200s 100s \
-                    docker run --network="host" singlefile "$URL" --compress-CSS \
+            timeout --kill-after=30s 300s \
+                    docker run --network="host" --stop-timeout=15 singlefile "$URL" --compress-CSS \
                     --block-scripts "$REMOVE_SCRIPTS" --block-videos false --block-audios false \
                     --user-agent "$USER_AGENT" \
-                    --browser-load-max-time "400000" \
-                    --load-deferred-images-max-idle-time "30000" \
+                    --browser-load-max-time "40000" \
+                    --load-deferred-images-max-idle-time "3000" \
                     --max-resource-size 100 \
                     --browser-wait-until "networkIdle" \
                     --browser-height "10000" \
@@ -145,7 +145,7 @@ else
                         true
                     else
                         ## open original vs archived preview in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted.
-                        ## EXPERIMENTAL: we use `deconstruct_singlefile.php` to explode >5MB .html files from the original monolithic static linearized HTML to a normal HTML file which loads files (put into a subdirectory) including images lazily; this helps avoid the problem where a page may have 100MB+ of images/videos, and so opening the SingleFile snapshot at all entails downloading & rendering *all* of it, because it's all inlined into the .html file as data-uri text (which adds insult to injury by adding a lot of text-encoding overhead, bloating it further). This is good for archiving and ensuring all the assets are there, and so it's good to use the monolith as an intermediate, but then maybe parsing it back out to a normal HTML is the version readers ought to actually see...
+                        ## we use `deconstruct_singlefile.php` to explode >5MB .html files from the original monolithic static linearized HTML to a normal HTML file which loads files (put into a subdirectory) including images lazily; this helps avoid the problem where a page may have 100MB+ of images/videos, and so opening the SingleFile snapshot at all entails downloading & rendering *all* of it, because it's all inlined into the .html file as data-uri text (which adds insult to injury by adding a lot of text-encoding overhead, bloating it further). This is good for archiving and ensuring all the assets are there, and so it's good to use the monolith as an intermediate, but then maybe parsing it back out to a normal HTML is the version readers ought to actually see...
                         if [[ $(stat -c%s "./doc/www/$DOMAIN/$HASH.html") -ge 5000000 ]]; then
                             php ./static/build/deconstruct_singlefile.php "./doc/www/$DOMAIN/$HASH.html"
                             rm "./doc/www/$DOMAIN/$HASH.html.bak"

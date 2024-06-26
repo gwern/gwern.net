@@ -2394,7 +2394,7 @@ goodLinks =
             , "https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext"
             , "https://distill.pub/2017/aia/"
             , "https://dnstats.net/market/Nucleus+Market"
-            , "https://docs.google.com/spreadsheets/d/19D8JUgf95t-f-oUAHqh8Nn2G90KO3gUiua9yAjBSSqI/edit"
+            , "https://docs.google.com/forms/d/17cNf0ohMHKeTwmUM_V_hDVkirjsf8HLMWsJco8gt2Eg/viewform"
             , "https://dominiccummings.com/2019/03/01/on-the-referendum-31-project-maven-procurement-lollapalooza-results-nuclear-agi-safety/"
             , "https://donsbot.com/2007/05/17/roll-your-own-window-manager-tracking-focus-with-a-zipper/"
             , "https://hackage.haskell.org/package/base-4.19.1.0/docs/Prelude.html#v:until"

@@ -205,6 +205,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("personal/2011-gwern-yourmorals.org", "Gwern’s YourMorals surveys")
           , ("nootropic/caffeine", "caffeine")
           , ("nootropic/bacopa", "Bacopa")
+          , ("nootropic/magnesium", "magnesium (nootropic)")
+          , ("nootropic/potassium", "potassium (sleep)")
           , ("math/humor", "STEM humor")
           , ("longevity/fasting", "fasting")
           , ("longevity/epigenetics", "epigenetics (aging)")

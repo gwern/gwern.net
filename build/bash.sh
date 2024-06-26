@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-09 12:22:35 gwern"
+# When:  Time-stamp: "2024-06-23 18:29:51 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -344,7 +344,7 @@ else
         gwsed "$OLD" "$NEW"
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
-        OLD_FILE=$(basename "$OLD"); rm "~/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
+        OLD_FILE=$(basename "$OLD"); rm "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
         wait
 
     set +x
@@ -386,7 +386,7 @@ gwtag () { (
              wait; # just in case another tool might be running (eg. gwtag or gwsed)
              cd ~/wiki/ &&
                      # echo "---" && grep -F -- "$1" ./metadata/*.gtx || true
-                     timeout 20m nice ./static/build/changeTag "$@"; echo "" # &&
+                     timeout 20m nice ./static/build/changeTag +RTS -N2 -RTS "$@"; echo "" # &&
                          # echo "---" && grep -F -- "$1" ./metadata/*.gtx
          ); }
 

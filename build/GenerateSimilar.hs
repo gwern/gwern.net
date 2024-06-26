@@ -455,7 +455,7 @@ readListSortedMagic = do Config.Misc.cd
                          if not exists then return M.empty else
                            do ls <- fmap T.unpack $ TIO.readFile p
                               return $ if ls=="" then M.empty else M.fromList (read ls :: ListSortedMagicList)
-   where -- validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
+   -- where validateListSortedMagic :: ListSortedMagicList -> ListSortedMagicList
          -- validateListSortedMagic l = let errors = filter (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) $ nubOrd l
          --                                 in if errors /= []  then error ("validateListSortedMagic: read file failed sanity check: " ++ show errors) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
@@ -567,7 +567,9 @@ sortSimilars edb sortDB seed paths = do
 
 -- in some lists, like of backlinks, there is no guarantee of an embedding. So we only sort the embedded ones, put them first, and append the leftover un-embedded links
 sortListPossiblyUnembedded :: Embeddings -> ListSortedMagic -> (T.Text, [T.Text]) -> IO (T.Text, [T.Text])
-sortListPossiblyUnembedded [] _ list = error $ "GS.sortListPossiblyUnembedded: passed an empty embedding database, which should never happen; tuple of URLs: " ++ show list
+sortListPossiblyUnembedded []  _ list = error $ "GS.sortListPossiblyUnembedded: passed an empty embedding database, which should never happen; tuple of URLs: " ++ show list
+sortListPossiblyUnembedded _ _ x@(_, [_])   = return x
+sortListPossiblyUnembedded _ _ x@(_, [_,_]) = return x
 -- we do not check for an empty 'ListSortedMagic' database, because that is valid; it's just a cache, so maybe it's been blown away
 sortListPossiblyUnembedded _ _ list@("",_) = error $ "GS.sortListPossiblyUnembedded: passed an empty target URL, which should never happen; tuple of URLs: " ++ show list
 sortListPossiblyUnembedded _ _ list@(_,[]) = error $ "GS.sortListPossiblyUnembedded: passed an empty list of relevant URLs to the target URL, which should never happen; tuple of URLs: " ++ show list
@@ -576,7 +578,7 @@ sortListPossiblyUnembedded edb sortDB x@(url, hits) =
         urlsEmbedded = map (\(u,_,_,_,_) -> u) edb :: [String]
         hitsEmbedded = hits' \\ urlsEmbedded
         hitsEmbeddedNot = hitsEmbedded \\ hits'
-    in if length hitsEmbedded < 4 then return x else
+    in if length hitsEmbedded < 4 || length edb < length hits then return x else
       do sorted <- sortSimilarsT edb sortDB url (map T.pack hitsEmbedded)
          return (url, sorted ++ map T.pack hitsEmbeddedNot)
 

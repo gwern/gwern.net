@@ -5935,4 +5935,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Mr._Natural", "Mr._Natural_(character)")
         , ("Chunking", "Chunking_(psychology)")
         , ("Chunked", "Chunking_(psychology)")
+        , ("SVM", "Support_vector_machine")
         ]

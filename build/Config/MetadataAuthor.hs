@@ -274,6 +274,13 @@ canonicals = M.fromList
   , ("Nicolas Hees", "Nicolas Heess")
   , ("Elliot Tucker-Drob", "Elliot M. Tucker-Drob")
   , ("Jon L. Bentley", "Jon Bentley")
+  , ("William G. Iacono", "William Iacono")
+  , ("Tim Frayling", "Timothy Frayling")
+  , ("Timothy M. Frayling", "Timothy Frayling")
+  , ("nickwalton00", "Nick Walton")
+  , ("matthew_d_green", "Matthew D. Green")
+  , ("Jouke- Jan Hottenga", "Jouke-Jan Hottenga")
+  , ("vgr", "Venkatesh Rao")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -381,8 +388,16 @@ authorLinkDB = M.fromList $
     , ("Nicolas Heess", "https://scholar.google.com/citations?user=79k7bGEAAAAJ")
     , ("Daniel Levy", "https://ai.stanford.edu/~danilevy/")
     , ("Andy L. Jones", "https://andyljones.com/")
-    , ("Mike Lewis", "https://scholar.google.com/citations?user=SnQnQicAAAAJ&hl=en&oi=ao")
+    , ("Mike Lewis", "https://scholar.google.com/citations?user=SnQnQicAAAAJ")
     , ("Jon Bentley", "https://en.wikipedia.org/wiki/Jon_Bentley_(computer_scientist)")
+    , ("Timothy Frayling", "https://scholar.google.com/citations?user=XWqva80AAAAJ")
+    , ("Margaret J. Wright", "https://scholar.google.com/scholar?q=Margaret%20J.%20Wright")
+    , ("Lili Milani", "https://www.etis.ee/CV/Lili_Milani/eng/")
+    , ("Daniel Rock", "https://www.danielianrock.com/")
+    , ("Razvan Pascanu", "https://sites.google.com/view/razp/home")
+    , ("Jouke-Jan Hottenga", "https://scholar.google.com/citations?user=lG4IKN8AAAAJ&hl=en&oi=ao")
+    , ("Yi Tay", "https://www.yitay.net/")
+    , ("Jianfeng Gao", "https://www.microsoft.com/en-us/research/people/jfgao/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -612,7 +627,7 @@ authorWpLinkDB =
     ,"Daniel Kokotajlo","Daniel Kruger","Daniel L. Schacter","Daniel L. Schwartz","Daniel Lehmann"
     ,"Daniel M. Wegner","Daniel Marcus","Daniel Munro","Daniel Nettle","Daniel O\8217Connell"
     ,"Daniel Peek","Daniel Promislow","Daniel R. Weinberger","Daniel Rader","Daniel Ritchie"
-    ,"Daniel Rock","Daniel S. Hamermesh","Daniel S. Weld","Daniel Sawyer","Daniel Schultz"
+    ,"Daniel S. Hamermesh","Daniel S. Weld","Daniel Sawyer","Daniel Schultz"
     ,"Daniel Schwartz","Daniel T. Blumstein","Daniel T. Gilbert","Daniel T. Willingham","Daniel Tranel"
     ,"Daniel Treisman","Daniel Watson","Daniel Zhang","Daniel Ziegler","Daniela Amodei"
     ,"Daniela Rus","Danielle Dick","Danielle M. Dick","Danielle Posthuma","Danielle S. McNamara"
@@ -1611,4 +1626,4 @@ authorWpLinkDB =
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
-    , "Dana Gioia", "Patrik K. E. Magnusson"]
+    , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life"]
