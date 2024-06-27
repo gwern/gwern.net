@@ -586,8 +586,10 @@ lookupNextAndShrink :: [FilePath]
               -> [(FilePath, Integer, String, String, [Double])]
               -> FilePath
               -> IO [FilePath]
-lookupNextAndShrink     []   _ _ = return []
-lookupNextAndShrink     [a]  _ previous = return $ previous:[a]
+lookupNextAndShrink     []  _          _        = return []
+lookupNextAndShrink     [a] _          previous = return $ previous:[a]
+lookupNextAndShrink     a   []         previous = return $ previous:a
+lookupNextAndShrink     a   [_]        previous = return $ previous:a
 lookupNextAndShrink targets embeddings previous = do results <- go targets embeddings
                                                      return $ previous:results
   where go [] _ = return []
