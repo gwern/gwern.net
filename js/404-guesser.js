@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2024-06-25 18:57:24 gwern"
+ * When:  Time-stamp: "2024-06-27 18:02:02 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -36,6 +36,34 @@
  *   </ul>
  * </section>
  * ~~~
+ *
+ * Performance: on Gwern.net, the sitemap.xml has >37k URLs & is >4.7MB.
+ * This is a lot to load, parse, & search (although the bounded search takes maybe ~3s?).
+ * However, I feel this is worthwhile because: most of the formatting/domain prefix is highly redundant
+ * so it compresses well (to ~0.5MB) so it is not that expensive and comparable to an image or two;
+ * few legitimate reader will ever hit a 404 during ordinary browsing & load it because we keep
+ * all internal URLs up-to-date and have an extremely large manually-curated suite of nginx redirect rules
+ * to catch every possible 404 error (I would estimate <10 legitimate 404s per day);
+ * the many ill-behaved bots/attackers/scrapers redirecting to or loading the 404 page usually
+ * won't run the JS to download it (and if they do, downloading the sitemap.xml helps waste their bandwidth
+ * and functions as a self-DoS); and a legitimate user should be willing to spend 0.5MB
+ * and a second or three to get a useful list of URLs to try which will likely be many seconds faster than
+ * any alternative way of fixing their 404, like manually running a search in Google (≫0.5MB).
+ * One issue is that while sitemap.xml is always up to date server-side, as its cache is
+ * specifically flushed on every sync, but a *client* may have cached a stale sitemap.xml.
+ * This seems like an unimportant edge-case: precisely because legitimate 404s are so rare,
+ * it is unlikely a client will have hit 404 #1, cached, then sometime later hit 404 #2,
+ * only where #2 is a brandnew file not in the cached sitemap.xml.
+ * Indeed, >95% of Gwern.net 404s are to 'old' URLs, created years or decades before.
+ * (Which makes some sense: new URLs arrive slowly on Gwern.net, and tend to be harder to typo than
+ * the old URLs were, and there is much more traffic to old URLs than new URLs.)
+ *
+ * Security Note: the sitemap.xml is trusted and assumed to contain clean valid XML with well-behaved
+ * alphanum/punctuation URLs and maybe a bit of Unicode. We do not attempt to sanitize or
+ * validate the XML or the parsed URLs, so if used in settings where attackers may control
+ * the sitemap.xml (eg. user-generated content), the XML part should probably be
+ * rewritten to be ultra-paranoid & do things like ping the final suggested URLs to
+ * make sure they exist.
  *
  * Dependencies: None (vanilla JS)
  *
@@ -105,7 +133,7 @@ function boundedLevenshteinDistance(a, b, maxDistance) {
 
 // Function to find similar URLs
 function findSimilarUrls(urls, targetUrl, n = 10,
-                         maxDistance = 11) { // max distance chosen heuristically
+                         maxDistance = 8) { // max distance chosen heuristically
     const targetPath = new URL(targetUrl, baseDomain).pathname;
 
     // Quick filter based on length difference
