@@ -16,6 +16,8 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
 -- & bug-prone because of CSS properties like cascading & longest-matches, and exceptions like
 -- 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
+-- links.css was replaced by links.js as an intermediate step, to document all of the rules & interactions.
+-- links.js was then replaced by LinkIcon at compile-time.
 -- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
 -- browser. For a more detailed discussion of the problems & solution, and history of prior link-icon
 -- implementations, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.

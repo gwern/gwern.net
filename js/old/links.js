@@ -6,6 +6,21 @@
     this file (either Links.targetLinkTypes, for assigning a linkicon to links
     by domain / URL pattern, or Links.fileLinkTypes, for assigning a linkicon to
     links by file extension).
+
+    NOTE: this implementation is obsolete as of 2022-02-21.
+    It is provided as a historical reference, and inspiration for sites which
+    have lightweight link-icon needs.
+
+    links.js has been superseded by a data-attribute+CSS approach done at compile-time.
+    While more complex, this has several advantages:
+    it is much more scalable, minimizes runtime overhead, rules can be more powerful,
+    and the rules can be tested to detect conflicts or failures to match.
+
+    For the history & design rationale, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.
+    For the current implementation, see </static/build/LinkIcon.hs>, configured by
+    </static/build/Config/LinkIcon.hs>.
+    To see the current suite of link-icons (which doubles as the integration/end-to-end test),
+    see <https://gwern.net/lorem-links#link-icons>.
  */
 Links = {
     /**********************/
