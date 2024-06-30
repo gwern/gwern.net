@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-06-23 10:54:57 gwern"
+# When:  Time-stamp: "2024-06-30 11:53:38 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -114,6 +114,16 @@ Scunthorpe Sans: a profanity-blocking font
 "How to do the jhanas"
 41. Input title to clean: "Best-of-n with misaligned reward models for Math reasoning"
 "Best-of-<em>n</em> with misaligned reward models for Math reasoning"
+42. Input title to clean: "The Universe of Discourse : A potpourri of cool-looking scripts"
+"A potpourri of cool-looking scripts"
+43. Input title to clean: "FineWeb: decanting the web for the finest text data at scale—a Hugging Face Space by HuggingFaceFW"
+"FineWeb: decanting the web for the finest text data at scale"
+44. Input title to clean: "Do life hacks work? The truth is, weâll never know Psychology"
+"Do life hacks work? The truth is, we’ll never know"
+45. Input title to clean: "Operant Conditioning by Software Bugs – Embedded in Academia"
+"Operant Conditioning by Software Bugs"
+46. Input title to clean: "The dream of an alpine waterway - Swiss National Museum—Swiss history blog"
+"The dream of an alpine waterway"
 
 Task:
 

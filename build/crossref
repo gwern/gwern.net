@@ -41,7 +41,7 @@ if [ "${*##*.}" = "pdf" ]; then
     ## (eg in `/doc/psychiatry/alzheimers/2021-huang.pdf`, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
     clean_maker() {
         exiftool -q -q -printFormat \$"$1" -"$1" "$TARGET" | \
-            sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ , /, /g' -e 's/^ *//g' \
+            sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ and /, /g' -e 's/ , /, /g' -e 's/^ *//g' \
                 -e 's/ +$//g' -e 's/ & /, /g' -e 's/,,/,/g' -e 's/\n//g' | \
             tr --squeeze-repeats '[:space:]' | tr -d '\n'
     }
@@ -49,9 +49,10 @@ if [ "${*##*.}" = "pdf" ]; then
     CREATOR="$(clean_maker Creator)"
     if [[ "$CREATOR" =~ $AUTHOR.* ]]; then echo "$CREATOR"; else echo "$AUTHOR"; fi
 
-    echo "$(exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET | \
-         sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")"
-    echo "$(date '+%F')" # date-created—which is today/now
+    # print out original published & date annotation created:
+    exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET | \
+         sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//"
+    date '+%F' # date-created—which is today/now
 
     DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
               sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
@@ -67,7 +68,7 @@ if [ "${*##*.}" = "pdf" ]; then
           fi; ) &
 
     echo "---"
-    exiftool -q -q -Subject "$TARGET"  | tr '\n' ' '; echo ""
+    exiftool -q -q -Subject  "$TARGET" | tr '\n' ' '; echo ""
     exiftool -q -q -Keywords "$TARGET" | tr '\n' ' '; echo ""
     exiftool -q -q -Encryption -printFormat 'Encrypted: $Encryption' "$TARGET"
     wait

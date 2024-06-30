@@ -1823,6 +1823,7 @@ htmlRewriteFixed =
          , ("</strong></strong>", "</strong")
          , ("<bold>Summary:\8195</bold>", "")
          , ("<bold>Summary:</bold>", "")
+         , ("â\128", "’")
          , ("ﬀ", "ff")
          , ("ﬄ", "ffl")
          , ("ﬁ", "fi")

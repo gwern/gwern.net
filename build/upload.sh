@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-05-25 10:22:01 gwern"
+# When:  Time-stamp: "2024-06-29 20:34:33 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -34,6 +34,16 @@ _upload() {
   if [[ $FILENAME == *.jpeg ]]; then
     FILENAME="${FILENAME%.jpeg}.jpg"
     mv "$1" "$FILENAME"
+    # we avoid WebP as still too exotic; a WebP could be converted to PNG or JPG, depending on what it encoded, but since we check elsewhere for PNGs that should be JPG, we can just default to converting it to PNG to be safe:
+  elif [[ $FILENAME == *.webp ]]; then
+    PNG_FILENAME="${FILENAME%.webp}.png"
+    if convert "$FILENAME" "$PNG_FILENAME"; then
+      FILENAME="$PNG_FILENAME"
+      rm "$1"  # successful, so remove the original WebP file
+      bold "Converted WebP to PNG: $PNG_FILENAME"
+    else
+      red "Failed to convert WebP to PNG. Proceeding with original WebP file."
+    fi
   fi
 
   # Attempt to make filename globally unique, due to repetition of surnames.

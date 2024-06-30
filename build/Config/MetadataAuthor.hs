@@ -281,6 +281,12 @@ canonicals = M.fromList
   , ("matthew_d_green", "Matthew D. Green")
   , ("Jouke- Jan Hottenga", "Jouke-Jan Hottenga")
   , ("vgr", "Venkatesh Rao")
+  , ("André Uitterlinden", "André G. Uitterlinden")
+  , ("Andre Uitterlinden", "André G. Uitterlinden")
+  , ("Andre G. Uitterlinden", "André G. Uitterlinden")
+  , ("elonmusk", "Elon Musk")
+  , ("DimitrisPapail", "Dimitris Papail")
+  , ("JonBaronforMD", "Jon Baronfor")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -395,9 +401,20 @@ authorLinkDB = M.fromList $
     , ("Lili Milani", "https://www.etis.ee/CV/Lili_Milani/eng/")
     , ("Daniel Rock", "https://www.danielianrock.com/")
     , ("Razvan Pascanu", "https://sites.google.com/view/razp/home")
-    , ("Jouke-Jan Hottenga", "https://scholar.google.com/citations?user=lG4IKN8AAAAJ&hl=en&oi=ao")
+    , ("Jouke-Jan Hottenga", "https://scholar.google.com/citations?user=lG4IKN8AAAAJ")
     , ("Yi Tay", "https://www.yitay.net/")
     , ("Jianfeng Gao", "https://www.microsoft.com/en-us/research/people/jfgao/")
+    , ("Stefano Ermon", "https://scholar.google.com/citations?user=ogXTOZ4AAAAJ")
+    , ("André G. Uitterlinden", "https://scholar.google.com/scholar?q=author%3A%22AG+Uitterlinden%22")
+    , ("Jakob Grove", "https://scholar.google.com/citations?user=bM9AJ-EAAAAJ")
+    , ("Jared Kaplan", "https://sites.krieger.jhu.edu/jared-kaplan/")
+    , ("David Warde-Farley", "https://dwf.name/")
+    , ("Sherjil Ozair", "https://sherjil.ozair.ai/")
+    , ("Srdjan Djurovic", "https://scholar.google.com/citations?user=NcCt9VwAAAAJ&hl=en&oi=ao")
+    , ("Omer Levy", "https://scholar.google.com/citations?user=PZVd2h8AAAAJ&hl=en&oi=ao")
+    , ("Ole Mors", "https://research.com/u/ole-mors")
+    , ("Manuel Mattheisen", "https://scholar.google.com/citations?user=uhlDFm4AAAAJ&hl=en&oi=ao")
+    , ("Claire Jordan", "http://www.imaginarymongoose.co.uk/blog/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-06-24 11:39:48 gwern"
+;;; When:  Time-stamp: "2024-06-27 22:56:52 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1506,7 +1506,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        (query-replace-regexp "[aA]ppendix.? ?\\([a-zA-Z]?\\)\\([0-9\\.]+[a-hA-H]*\\)"  "**Appendix \\1\\2**" nil begin end) ; 'Appendix A2'
        (query-replace-regexp "[aA]ppendix.? \\([a-zA-Z]?\\)"  "**Appendix \\1**" nil begin end) ; 'Appendix A'
-       (query-replace-regexp "Equation \\([a-zA-Z0-9]+?\\)"  "**Equation \\1**" nil begin end) ; 'Equation 9', 'Equation C'
+       (query-replace-regexp "Equation \\([a-zA-Z0-9]+\\)"  "**Equation \\1**" nil begin end) ; 'Equation 9', 'Equation C'
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point…)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9', 'section 9' → '§9'

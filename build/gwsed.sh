@@ -50,7 +50,7 @@ else
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
                             grep -F -v "${EXCLUDE_SEARCH[@]}" | \
-                            sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut -c 1-2548; }
+                            sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut --characters=1-2548; } # NOTE: case-insensitive so we can see any variants we might've missed
                 gw "$1";
 
                 # special-case cleanup: if adding an affiliation, we need to clean up inconsistent doubled

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-23 18:29:51 gwern"
+# When:  Time-stamp: "2024-06-27 18:57:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -469,6 +469,7 @@ mvuri () {
   fi
 
   local DESTINATION="$DECODED_PATH"
+  if [ ! -f "$DESTINATION" ]; then red "WARNING: destination target $DESTINATION does not exist!"; fi
 
   local SOURCE
   # the browser may not have yet begun writing the file, so make sure we wait until it does:

@@ -206,4 +206,4 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.ht
             , " - Linux Manuals (1)", " - by benedict - bene dictio", "    [hashcat wiki]", " - IndieWeb"
             , " - ArchWiki", "\nFork me on GitHub", "lcamtuf's old blog: ", " - Academia Stack Exchange"
             , "jwz: ", " @ GitHub", "ignore the code: ", " - The Verge\nThe Verge\nThe Verge\nExpand\nThe Verge\nExpand\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nComments\nThe Verge"
-            , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange", "Nadia Asparouhova "]
+            , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange", "Nadia Asparouhova ", "The Universe of Discourse :", "—a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia", "Swiss National Museum—Swiss history blog"]
