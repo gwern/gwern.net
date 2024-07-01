@@ -7,9 +7,9 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 
 import MetadataFormat (filterMeta, pageNumberParse, trimTitle, cleanAbstractsHTML)
-import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL)
+import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL, replaceMany, deleteMany)
 import Config.Misc as CM (cd)
-import Config.MetadataTitle as C (separators, badStrings, badStringPatterns, clean)
+import Config.MetadataTitle as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
 
 -- Attempt to parse tooltips back into citation metadata:
 tooltipToMetadata :: String -> String -> (String,String,String)
@@ -66,3 +66,5 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.ht
                      return $ if titleCleaned == "" then "" else
                                if titleCleaned /= title' && titleCleaned `isInfixOf` title' then titleCleaned
                                  else title'
+     where clean :: String -> String
+           clean = replaceMany C.stringReplace . deleteMany C.stringDelete

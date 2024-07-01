@@ -48,6 +48,7 @@ import qualified Config.MetadataFormat (cleanAuthorsFixedRewrites, cleanAuthorsR
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
 import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist)
+import qualified Config.MetadataTitle (badStrings, stringReplace, stringDelete)
 
 import Text.Regex.Base.RegexLike (makeRegexM)
 import Text.Regex (Regex)
@@ -184,6 +185,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
               , length $ ensure "Test.authorLinkDB" "isURLT (URL of second)" (all isURLT) (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub

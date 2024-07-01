@@ -1,12 +1,12 @@
 module Config.MetadataTitle where
 
-import Utils (replaceMany, deleteMany)
-
 separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
 badStringPatterns = ["Redirecting to ", "404 "]
+
+-- testing: unique list
 badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
      , "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error"
      , "Login \187 Qstream", "Kaggle Blog - Medium", "403 Forbidden", "500 Internal Server Error", "BBC NEWS Science &amp; Environment", "Welcome!", "Flashback Forum", "Best search engine for True crime stories"
@@ -46,13 +46,17 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki"]
 
-clean :: String -> String
-clean = replaceMany [("  ", " ")
-                    , ("Â°", "°")
-                    , ("Â ", " ")
-                    , (" â\200\224 ", "—")
-                    , ("\128\200\231", "’")]
-  . deleteMany [" - The Public Domain Review"
+-- testing: unique keys
+stringReplace :: [(String,String)]
+stringReplace = [("  ", " ")
+                , ("Â°", "°")
+                , ("Â ", " ")
+                , (" â\200\224 ", "—")
+                , ("\128\200\231", "’")]
+
+-- testing: unique list
+stringDelete :: [String]
+stringDelete = [" - The Public Domain Review"
             , "â\200\224dConstruct Conference Talk"
             , " - Long Bets"
             , "Sequential Tart: Article - "
