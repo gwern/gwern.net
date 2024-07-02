@@ -117,6 +117,11 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwern.net/" "/" l
+                   -- so we can more carelessly tag PDFs,
+                     -- like `gwtag adversarial https://arxiv.org/pdf/2406.20053`, and create the annotation for the abstract page instead:
+                   -- eg. "https://arxiv.org/pdf/2406.20053#org=foo"
+                   -- → "https://arxiv.org/abs/2406.20053#org=foo"
+                   | "https://arxiv.org/" `isPrefixOf` l = sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
                    | otherwise = l
 

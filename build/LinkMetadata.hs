@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-06-15 09:42:43 gwern"
+When:  Time-stamp: "2024-07-02 11:08:12 gwern"
 License: CC-0
 -}
 
@@ -410,7 +410,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                        Right y@(f,m@(_,_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
-                                       appendLinkMetadata target'' m >> return (Right y)
+                                       appendLinkMetadata f m >> return (Right y)
 annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
