@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-04-26 18:52:32 gwern"
+When:  Time-stamp: "2024-07-02 16:56:48 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -31,7 +31,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (isPagePath)
 import Utils (writeUpdatedFile)
-import Config.Misc as C (sectionizeWhiteList, sectionizeMinN)
+import Config.Misc as C (sectionizeWhiteList, sectionizeMinN, cd)
 
 -- base URL, then fragment+links. eg. "/improvement" has links from "/note/note" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
 -- eg. ("/Improvements",
@@ -41,7 +41,8 @@ import Config.Misc as C (sectionizeWhiteList, sectionizeMinN)
 type Backlinks = M.Map T.Text [(T.Text, [T.Text])]
 
 readBacklinksDB :: IO Backlinks
-readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
+readBacklinksDB = do C.cd
+                     exists <- doesFileExist "metadata/backlinks.hs"
                      bll <- if exists then TIO.readFile "metadata/backlinks.hs" else return ""
                      if bll=="" then return M.empty else
                        let bllM = readMaybe (T.unpack bll) :: Maybe [(T.Text,[(T.Text,[T.Text])])]
@@ -84,7 +85,7 @@ getBackLinkCheck       = getXLinkExists "backlink"
 getLinkBibLinkCheck    = getXLinkExists "link-bibliography"
 getSimilarLinkCheck    = getXLinkExists "similar"
 
--- avoid use of backlinks/similar-links database for convenience and just quickly grep the on-disk snippet:
+-- avoid use of backlinks/similar-links database for one-off convenience (use the database for global searches, of course) and just quickly grep the on-disk snippet:
 getBackLinkCount :: FilePath -> IO Int
 getBackLinkCount "" = return 0
 getBackLinkCount p = do (file,_) <- getBackLinkCheck p

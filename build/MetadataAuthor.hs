@@ -3,7 +3,7 @@
 {- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-06-10 22:16:31 gwern"
+When:  Time-stamp: "2024-07-02 17:07:11 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -37,7 +37,7 @@ module MetadataAuthor where
 
 import Control.Monad (void)
 import Data.List (intersperse, intercalate)
-import qualified Data.Map.Strict as M (lookup, toList)
+import qualified Data.Map.Strict as M (lookup, map, toList)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
 import Data.Maybe (isJust, isNothing, fromMaybe)
 import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
@@ -47,6 +47,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Interwiki (toWikipediaEnURL, toWikipediaEnURLSearch)
 import LinkMetadataTypes (Metadata)
 import Utils (split, frequency)
+import qualified LinkBacklink as BL
 
 import qualified Config.MetadataAuthor as C
 
@@ -98,11 +99,23 @@ authorPrioritize auts = reverse $ frequency $ map fst $
   filter (\(_,b) -> isNothing b) $ map (\a -> (a, M.lookup a C.authorLinkDB)) $
   filter (`notElem` C.authorLinkBlacklist) auts
 
+-- Compile a list of all authors, and calculate a weighted frequency list for them.
+-- We weight authors by: # of annotations × # of backlinks (of each annotation).
+-- This avoids the problem where some industrious geneticist or physicist winds up
+-- in dozens of papers which have 100+ authors and gets prioritized at the top,
+-- while some highly-influential author writes 2 URLs I link everywhere but
+-- would languish forever at the bottom (despite a bio being highly useful
+-- so it exposes the full set of backlinks).
+-- Then open a set of search queries in a web browser to help define
+-- the bio link of the ones without bio links.
 authorBrowseTopN :: Metadata -> Int -> IO ()
 authorBrowseTopN md n = do let mdl = M.toList md
-                           let authorList = map T.pack $ concatMap (split ", ") $
-                                 map (\(_,(_,aut,_,_,_,_,_)) -> aut) mdl
-                           let authorsTop = take n $ map snd $ authorPrioritize authorList
+                           bldb <- BL.readBacklinksDB
+                           let bldbN = M.map (length . concatMap snd) bldb
+                           let urlAuthorList = concatMap (\(u,(_,aut,_,_,_,_,_)) -> zip (repeat u) (split ", " aut)) mdl
+                           let weightedList = map (\(u,a) -> (u, a, 1 + fromMaybe 0 (M.lookup (T.pack u) bldbN))) urlAuthorList
+                           let unweightedList = map T.pack $ concatMap (\(_,a,n') -> replicate n' a) weightedList
+                           let authorsTop = take n $ map snd $ authorPrioritize unweightedList
                            authorBrowseSearchEngines authorsTop
 
 -- search for an author in various search engines to conveniently define a URL for an author:
