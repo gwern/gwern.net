@@ -489,4 +489,5 @@ siteBlackList = [
           "conversationswithtyler.com", "karger.com","diabetesjournals.org", "benbest.com", "conservancy.umn.edu", "a16z.com",
           "esolangs.org", "www.cognition-labs.com", "www.media.mit.edu","www.axios.com", "www.folger.edu", "ja.wikipedia.org","fr.wikipedia.org", "www.cerebras.net"
           , "ocw.mit.edu","x.com","zenodo.org","www.robots.ox.ac.uk","www.genecards.org","deepmind.com","blog.samaltman.com", "ai.googleblog.com", "www.clinicaltrialsregister.eu"
-          , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"]
+          , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"
+          , "members.madasafish.com","isfdb.org","cwe.mitre.org","ai.meta.com"]

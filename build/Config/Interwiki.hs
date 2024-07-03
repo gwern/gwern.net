@@ -5937,4 +5937,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Chunked", "Chunking_(psychology)")
         , ("SVM", "Support_vector_machine")
         , ("PCA", "Principal_component_analysis")
+        , ("SMIC", "Semiconductor_Manufacturing_International_Corporation")
         ]

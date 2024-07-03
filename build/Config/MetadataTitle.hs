@@ -6,7 +6,8 @@ separators = "—·|"
 badStringPatterns, badStrings :: [String]
 badStringPatterns = ["Redirecting to ", "404 "]
 
--- testing: unique list
+-- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
+-- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
 badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
      , "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error"
      , "Login \187 Qstream", "Kaggle Blog - Medium", "403 Forbidden", "500 Internal Server Error", "BBC NEWS Science &amp; Environment", "Welcome!", "Flashback Forum", "Best search engine for True crime stories"

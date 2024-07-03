@@ -287,6 +287,7 @@ canonicals = M.fromList
   , ("elonmusk", "Elon Musk")
   , ("DimitrisPapail", "Dimitris Papail")
   , ("JonBaronforMD", "Jon Baronfor")
+  , ("Andrew Wood", "Andrew R. Wood")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -410,11 +411,15 @@ authorLinkDB = M.fromList $
     , ("Jared Kaplan", "https://sites.krieger.jhu.edu/jared-kaplan/")
     , ("David Warde-Farley", "https://dwf.name/")
     , ("Sherjil Ozair", "https://sherjil.ozair.ai/")
-    , ("Srdjan Djurovic", "https://scholar.google.com/citations?user=NcCt9VwAAAAJ&hl=en&oi=ao")
-    , ("Omer Levy", "https://scholar.google.com/citations?user=PZVd2h8AAAAJ&hl=en&oi=ao")
+    , ("Srdjan Djurovic", "https://scholar.google.com/citations?user=NcCt9VwAAAAJ")
+    , ("Omer Levy", "https://scholar.google.com/citations?user=PZVd2h8AAAAJ")
     , ("Ole Mors", "https://research.com/u/ole-mors")
-    , ("Manuel Mattheisen", "https://scholar.google.com/citations?user=uhlDFm4AAAAJ&hl=en&oi=ao")
-    , ("Claire Jordan", "http://www.imaginarymongoose.co.uk/blog/")
+    , ("Manuel Mattheisen", "https://scholar.google.com/citations?user=uhlDFm4AAAAJ")
+    , ("Claire Jordan", "http://members.madasafish.com/~cj_whitehound/")
+    , ("Andrew R. Wood", "https://medicine.exeter.ac.uk/people/profile/index.php?web_id=Andrew_Wood")
+    , ("Albert Hofman", "https://en.wikipedia.org/wiki/Albert_Hofman_(epidemiologist)")
+    , ("Eric Boerwinkle", "https://www.hgsc.bcm.edu/people/boerwinkle-e")
+    , ("Jascha Sohl-Dickstein", "https://scholar.google.com/citations?user=-3zYIjQAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1643,4 +1648,4 @@ authorWpLinkDB =
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
-    , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life"]
+    , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman"]
