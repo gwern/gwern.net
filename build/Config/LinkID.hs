@@ -80,7 +80,7 @@ linkIDOverrides =
        , ("/doc/japan/poetry/shotetsu/1999-keene-seedsintheheart-shotetsu.pdf", "keene-1999-shotetsu")
        , ("/doc/japanese/poetry/teika/1999-keene-seedsintheheart-teika.pdf",    "keene-1999-teika")
        , ("/doc/longevity/2021-zhang.pdf", "zhang-et-al-2021-hair")
-       , ("/doc/music/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
+       , ("/doc/psychology/music/distraction//2012-perham.pdf", "perham-sykora-2012-2")
        , ("/doc/psychiatry/depression/2018-gordon-supplement.pdf", "gordon-et-al-2018-supplement")
        , ("/doc/psychology/1904-spearman.pdf", "spearman-1904-measurementerror")
        , ("/doc/psychology/2014-shen.pdf", "shen-et-al-2014-link")

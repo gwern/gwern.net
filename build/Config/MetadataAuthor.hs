@@ -419,7 +419,7 @@ authorLinkDB = M.fromList $
     , ("Andrew R. Wood", "https://medicine.exeter.ac.uk/people/profile/index.php?web_id=Andrew_Wood")
     , ("Albert Hofman", "https://en.wikipedia.org/wiki/Albert_Hofman_(epidemiologist)")
     , ("Eric Boerwinkle", "https://www.hgsc.bcm.edu/people/boerwinkle-e")
-    , ("Jascha Sohl-Dickstein", "https://scholar.google.com/citations?user=-3zYIjQAAAAJ&hl=en&oi=ao")
+    , ("Jascha Sohl-Dickstein", "https://scholar.google.com/citations?user=-3zYIjQAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

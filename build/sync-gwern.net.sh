@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-01 19:31:38 gwern"
+# When:  Time-stamp: "2024-07-03 10:46:06 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1017,7 +1017,7 @@ else
     c () { curl --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archive'
-         cr 'https://gwern.net/doc/dnb/1978-zimmer.pdf' 'https://gwern.net/doc/music/music-distraction/1978-zimmer.pdf'
+         cr 'https://gwern.net/doc/dnb/1978-zimmer.pdf' 'https://gwern.net/doc/psychology/music/distraction/1978-zimmer.pdf'
          cr 'https://gwern.net/AB%20testing' 'https://gwern.net/ab-test'
          cr 'https://gwern.net/Archiving%20URLs.html' 'https://gwern.net/archiving'
          cr 'https://gwern.net/Book-reviews' 'https://gwern.net/review/book'
