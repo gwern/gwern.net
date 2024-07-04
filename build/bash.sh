@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-06-27 18:57:17 gwern"
+# When:  Time-stamp: "2024-07-04 13:09:31 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -174,7 +174,7 @@ png2JPGQualityCheck () {
         SIZE_REDUCTION=$(echo "scale=2; (1 - $JPG_SIZE / $PNG_SIZE) * 100" | bc)
 
         # Calculate PSNR
-        PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1 | cut --delimiter=' ' --field=1)
+        PSNR=$(compare -metric PSNR "$ARG" "$JPG" null: 2>&1 | cut --delimiter=' ' --fields=1)
 
         # Check both PSNR quality and size reduction
         if (( $(echo "$PSNR > $QUALITY_THRESHOLD" | bc -l) )) && (( $(echo "$SIZE_REDUCTION >= $SIZE_REDUCTION_THRESHOLD" | bc -l) )); then
@@ -500,4 +500,36 @@ mvuri () {
 # The optional second whole-number argument is an 'offset' to avoid clumping of multiple calls with the same _N_; they can be offset by relatively-prime numbers or just plain incremented.
 everyNDays() {
     (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset to stagger or space out multiple calls of _N_ relative to each other
+}
+
+# sort a list of directories from stdin by their most recently modified file.
+# (We ignore any file not tracked by git, because it may be auto-generated or modified spuriously.
+# We treating sub-directories as separate directories, so a directory with a modified file doesn't trigger all its parents as well).
+#
+# This is useful for prioritizing commands, particularly if they may crash on an error:
+# errors (eg. broken links or malformed syntax) will usually be in the most-recently-modified files,
+# so processing them first reduces latency to fix.
+sort_by_lastmodified() {
+    local git_files latest_file timestamp
+    while read -r dir; do
+        # Change to the directory
+        pushd "$dir" >/dev/null || continue
+
+        # Get list of files not ignored by git
+        git_files=$(git ls-files --exclude-standard)
+
+        if [ -n "$git_files" ]; then
+            # Find the most recently modified file among git-tracked files
+            latest_file=$(find $git_files -type f -printf '%T@ %p\n' 2>/dev/null \
+                              | sort --numeric | tail -1)
+            if [ -n "$latest_file" ]; then
+                # Extract the timestamp and print it with the directory
+                timestamp=$(echo "$latest_file" | cut --delimiter=' ' --fields=1)
+                echo "$timestamp $dir"
+            fi
+        fi
+
+        # Return to the original directory
+        popd >/dev/null
+    done | sort --reverse --numeric | cut --delimiter=' ' --fields=2-
 }
