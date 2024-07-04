@@ -30,4 +30,4 @@ isPagePath f = let f' = delete "https://gwern.net" $ T.unpack f in
 -- This is to be distinguished from syntax-highlighted versions of files.
 -- If True, then `$FILE.html` must exist and be of high-quality for the reader, and an acceptable replacement for the original.
 hasHTMLSubstitute :: FilePath -> Bool
-hasHTMLSubstitute f = isLocal (T.pack f) && anyInfix f [".csv", ".doc", ".docx", ".ods", ".xls", ".xlsx"] -- converted by LibreOffice to HTML, see sync-gwern.net.sh
+hasHTMLSubstitute f = isLocal (T.pack f) && anyInfix f [".csv", ".doc", ".docx", ".ods", ".xls", ".xlsx"] -- converted by LibreOffice to HTML, see `/static/build/sync.sh`
