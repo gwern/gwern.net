@@ -5040,6 +5040,7 @@ Annotations = { ...Annotations,
 		let titleLinkDataAttributes = [ 
 			"urlHtml", 
 			"urlArchive",
+			"urlOriginal",
 			"imageWidth",
 			"imageHeight",
 			"aspectRatio"
@@ -6307,8 +6308,11 @@ Content = {
 					//	Rectify class.
 					inlineButReallyBlockMathElement.swapClasses([ "mwe-math-fallback-image-inline", "mwe-math-fallback-image-display" ], 1);
 				});
-				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-block-wrapper", { root: contentDocument });
-				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-inline-wrapper", { root: contentDocument });
+				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-wrapper.wikipedia-math-block-wrapper", { root: contentDocument });
+				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-wrapper.wikipedia-math-inline-wrapper", { root: contentDocument });
+				contentDocument.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
+					mathImage.classList.add("drop-filter-on-hover-not");
+				});
 
 				//	Move infoboxes out of the way.
 				let childElements = Array.from(contentDocument.children);
