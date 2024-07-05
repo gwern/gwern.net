@@ -5040,6 +5040,7 @@ Annotations = { ...Annotations,
 		let titleLinkDataAttributes = [ 
 			"urlHtml", 
 			"urlArchive",
+			"urlOriginal",
 			"imageWidth",
 			"imageHeight",
 			"aspectRatio"
