@@ -32,11 +32,12 @@ import Config.Typography as C
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
+                        parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk (imageCaptionLinebreak . citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
-                        parseRawAllClean
+                        parseRawAllClean -- clean up all anonymous or empty spans/divs so we have a clean AST to rewrite
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
