@@ -2994,9 +2994,13 @@ blockquote .TOC,
 /*  Special case for inline math in Wikipedia pop-frames.
  */
 .wikipedia-entry .wikipedia-math-inline-wrapper {
+	display: inline-block;
     vertical-align: baseline;
     position: relative;
-    bottom: -0.15em;
+    bottom: -0.35em;
+}
+.wikipedia-entry .wikipedia-math-inline-wrapper img {
+	display: block;
 }
 /*  Ditto, but block math.
  */

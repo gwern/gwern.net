@@ -280,14 +280,14 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 
 /*	Math in Wikipedia pop-frames.
  */
-.annotation.wikipedia-entry .wikipedia-math-block-wrapper img,
-.annotation.wikipedia-entry .wikipedia-math-inline-wrapper img {
+.wikipedia-entry .wikipedia-math-block-wrapper img,
+.wikipedia-entry .wikipedia-math-inline-wrapper img {
 	filter: invert(1);
 	background-color: var(--GW-wikipedia-math-image-background-color);
 }
 
 /*	Images in figures in Wikipedia pop-frames.
  */
-.annotation.wikipedia-entry figure img {
+.wikipedia-entry figure img {
 	background-color: var(--GW-wikipedia-image-background-color);
 }
