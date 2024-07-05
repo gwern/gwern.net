@@ -853,10 +853,10 @@ img.invert,
 img.invert-auto {
     transition: filter 0.25s ease;
 }
-img:hover,
-img.invert:hover,
-img.invert-auto:hover,
-img:not(.invert):not(.invert-auto):hover {
+img:not(.drop-filter-on-hover-not):hover,
+img:not(.drop-filter-on-hover-not).invert:hover,
+img:not(.drop-filter-on-hover-not).invert-auto:hover,
+img:not(.drop-filter-on-hover-not):not(.invert):not(.invert-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
@@ -958,5 +958,5 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 }
 </style>
 <link rel="stylesheet" href="/static/css/head.css?v=1720213570">
-<script src="/static/js/head.js?v=1720213568"></script>
+<script src="/static/js/head.js?v=1720218032"></script>
 <link rel="preload" href="/static/img/icon/icons.svg?v=1720175510" as="image">
