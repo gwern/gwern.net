@@ -8196,11 +8196,10 @@ function includeContent(includeLink, content) {
 function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 	let containingDocument = includeLink.eventInfo.document;
 
-	let prefix = `gwern-${(loadLocationForIncludeLink(includeLink).pathname.slice(1))}-`;
-
 	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
-		let id = backlinkContextLink.dataset.targetId.slice(prefix.length);
-		if (id == "")
+		let id = backlinkContextLink.dataset.targetId.split("--")[1];
+		if (   id == "" 
+			|| id == undefined)
 			return;
 
 		let targetElement = containingDocument.querySelector(`#${(CSS.escape(id))}`);
