@@ -7770,19 +7770,20 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     box-shadow: 0 0 0 0.1em var(--background-color);
 }
 
+.markdownBody div.block-context-highlighted > :first-child::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
     display: inline-block;
-    width: 1em;
-    height: 1em;
+    width: 1.75em;
+    height: 1.125em;
     position: relative;
-    top: 0.1em;
+    top: 0.2em;
     margin-right: 0.5em;
-    opacity: 0.75;
+    opacity: 0.9;
 }
 
 

@@ -987,6 +987,17 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 /* MARGIN NOTES */
 /****************/
 
+addContentLoadHandler(GW.contentLoadHandlers.prettifyManiculeMarginNotes = (eventInfo) => {
+    GWLog("prettifyManiculeMarginNotes", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
+		if (marginnote.innerHTML == "☞") { // U+261E WHITE RIGHT POINTING INDEX
+			marginnote.innerHTML = GW.svg("manicule-right");
+			marginnote.classList.add("manicule");
+		}
+	});
+}, "rewrite");
+
 /*************************************************************/
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
