@@ -6635,9 +6635,9 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     width: 1.75em;
     height: 1.125em;
     position: relative;
-    top: 0.2em;
+    top: 0.25em;
     margin-right: 0.5em;
-    opacity: 0.9;
+    opacity: 0.85;
 }
 
 

@@ -1817,6 +1817,21 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
 /* LINKS */
 /*********/
 
+/****************************************************************************/
+/*	For links with a `data-url-original` attribute, save the `href` attribute
+	value in `data-url-archive`, set the `href` to the value of 
+	`data-url-original`, and delete `data-url-original`.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.reverseArchivedLinkPolarity = (eventInfo) => {
+    GWLog("reverseArchivedLinkPolarity", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a[data-url-original]").forEach(archivedLink => {
+		archivedLink.dataset.urlArchive = archivedLink.href;
+		archivedLink.href = archivedLink.dataset.urlOriginal;
+		delete archivedLink.dataset.urlOriginal;
+	});
+}, "rewrite");
+
 /**********************************************************************/
 /*  Qualify anchorlinks in loaded content by rewriting their `pathname`
     attributes.
