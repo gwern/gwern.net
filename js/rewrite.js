@@ -973,7 +973,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 				speaker.classList.add("speaker");
 
 				//	Move colon.
-				(speaker.querySelector("strong") ?? speaker).innerHTML += ":";
+				(speaker.querySelector("strong") ?? speaker).innerHTML += ": ";
 				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 			}
 		}
