@@ -10169,6 +10169,20 @@ Extracts = {
 			});
 			popFrame.document.insertBefore(styleBlock, popFrame.body);
 		});
+		//	Add handler to update styles when mode switches.
+		GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", popFrame.darkModeDidSetModeHandler = (info) => {
+			let currentMode = DarkMode.currentMode();
+			popFrame.document.querySelectorAll(DarkMode.switchedElementsSelector).forEach(element => {
+				element.media = DarkMode.mediaAttributeValues[currentMode];
+			});
+		});
+		//	Add handler to remove the above handler when pop-frame despawns.
+		GW.notificationCenter.addHandlerForEvent(`Pop${suffix}s.pop${suffix}WillDespawn`, (info) => {
+			GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.darkModeDidSetModeHandler);
+		}, {
+			once: true,
+			condition: (info) => (info[`pop${suffix}`] == popFrame)
+		});
 
 		//	Activate dynamic layout for the pop-frame.
 		startDynamicLayoutInContainer(popFrame.body);
