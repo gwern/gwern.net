@@ -1833,6 +1833,8 @@ htmlRewriteFixed =
          , (",”", "”,")
          , (",’", "’,")
          , (" (”", " (“")
+         , ("\8236", "") -- POP DIRECTIONAL FORMATTING
+         , ("\8234", "") -- LEFT-TO-RIGHT EMBEDDING
          , ("\160", " ") -- NO BREAK SPACE
          ]
 

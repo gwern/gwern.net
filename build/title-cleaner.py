@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-06-30 11:53:38 gwern"
+# When:  Time-stamp: "2024-07-04 09:38:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -124,6 +124,8 @@ Scunthorpe Sans: a profanity-blocking font
 "Operant Conditioning by Software Bugs"
 46. Input title to clean: "The dream of an alpine waterway - Swiss National Museum—Swiss history blog"
 "The dream of an alpine waterway"
+47. Input title to clean: "Andrew Wood The Medical School"
+"Andrew Wood"
 
 Task:
 

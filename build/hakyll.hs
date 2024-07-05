@@ -12,7 +12,7 @@ Debian dependencies:
 $ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev imagemagick rsync git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
 
 (GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and rsync for the server/git upload to hosting/Github respectively.)
-Demo command (for the full script, with all static checks & generation & optimizations, see `sync-gwern.net.sh`):
+Demo command (for the full script, with all static checks & generation & optimizations, see `sync.sh`):
 -}
 
 import Control.Monad (when, unless, (<=<))

@@ -157,16 +157,16 @@ guessTagFromShort l s = fixedPoint (f l) (replace "=" "-" s)
                                    let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
                                      if not (null longFallbacks) then head longFallbacks else t
 
-testTags :: IO ()
-testTags = do
-              tags <- listTagsAll
-              let results = shortTagTest tags
-              unless (null results) $ error ("Tags.hs: test suite errored out with some rewrites going awry; results: " ++ show results)
-              let results' = isCycleLess tagsShort2LongRewrites
-              unless (null results) $ error ("Tags.hs: test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')
-
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $
   map (\(input,output) -> (input, guessTagFromShort alltags input, output)) (C.shortTagTestSuite ++ selfTagTestSuite)
   where selfTagTestSuite :: [(String,String)] -- every long tag should rewrite to itself, of course
         selfTagTestSuite = zip alltags alltags
+
+testTags :: IO ()
+testTags = do
+              tags <- listTagsAll
+              let results = shortTagTest tags
+              unless (null results) $ error ("Tags.testTags: shortTagTest test suite errored out with some rewrites going awry; results `[(input, current output, intended output)]`: " ++ show results)
+              let results' = isCycleLess tagsShort2LongRewrites
+              unless (null results) $ error ("Tags.tesTags: isCycleless test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')

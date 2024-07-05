@@ -420,6 +420,11 @@ authorLinkDB = M.fromList $
     , ("Albert Hofman", "https://en.wikipedia.org/wiki/Albert_Hofman_(epidemiologist)")
     , ("Eric Boerwinkle", "https://www.hgsc.bcm.edu/people/boerwinkle-e")
     , ("Jascha Sohl-Dickstein", "https://scholar.google.com/citations?user=-3zYIjQAAAAJ")
+    , ("Jia Deng", "https://scholar.google.com/citations?user=U3Eub-EAAAAJ&hl=en&oi=ao")
+    , ("Sanjeev Satheesh", "https://scholar.google.com/citations?user=VUi7eM8AAAAJ&hl=en&oi=ao")
+    , ("Jonathan Krause", "https://scholar.google.com/citations?user=7DwDYzkAAAAJ&hl=en&oi=ao")
+    , ("Michael J. Bernstein", "https://scholar.google.com/citations?user=9CDiC-gAAAAJ&hl=en&oi=ao")
+    , ("Michael S. Bernstein", "https://hci.stanford.edu/msb/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1648,4 +1653,5 @@ authorWpLinkDB =
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
-    , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman"]
+    , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
+    , "Jeffrey Snover"]
