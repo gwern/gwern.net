@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-05-07 11:00:04 gwern"
+When:  Time-stamp: "2024-07-04 20:37:25 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -78,6 +78,15 @@ Details:
   inflation-adjustments or link popups, the original `href` is stored as a span (eg. `<a
   href="https://foo.com">foo</a>` → `<a rel="archive nofollow" data-url-original="https://foo.com"
   href="/doc/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
+
+  WARNING: the details here are in flux, as we try to eliminate linkrot/external links by linking
+  local archives where they exist, but we also want to avoid users copy-pasting those URLs rather
+  than the original, canonical URLs. (The local archive URLs are fragile and cause other problems;
+  for example, they make my writing a lot harder as I can no longer search using a URL I right-click
+  because all of the references in Markdown or annotations will be to the original URL, not the current
+  local archive in `/doc/www/`.) Our current attempt as of July 2024 is to link in the HTML source to the
+  local archive, `href=archive`, but then on page load, the links will be rewritten by JS to `href=original`.
+  This should in theory give the best of both worlds.
 - the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]'
   hyperlink (using the JS templating, something like `<p>…"Title" [<a
   href="${target.dataset.urlOriginal}" title="Original (live) Internet version of
@@ -96,7 +105,7 @@ module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiv
 import Control.Monad (filterM, unless)
 import Data.Either (isLeft)
 import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter, size)
-import Data.List (isInfixOf, isPrefixOf, sortOn)
+import Data.List (isInfixOf, isPrefixOf, sortOn, sort)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (isNothing, fromMaybe)
 import Text.Read (readMaybe)
@@ -128,11 +137,16 @@ localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescript
   let mobileURL = T.pack $ C.transformURLsForMobile  $ T.unpack targetURL
       cleanURL  = T.pack $ C.transformURLsForLinking $ T.unpack targetURL
        -- NOTE: because the archive database is checked before the whitelist or `.archive-not` class, the archive database now overrides the whitelist or transforms
-      archiveAttributes = (if C.whiteList (T.unpack targetURL) || "archive-not" `elem` classes || targetURL == targetURL' then []
-                              else [("data-url-archive", "/" `T.append` targetURL')]) ++
+      archiveAttributes = if C.whiteList (T.unpack targetURL) || "archive-not" `elem` classes || targetURL == targetURL' then []
+                              else [("data-url-archive", "/" `T.append` targetURL'),
+                                    ("data-url-original", targetURL)]
+      allAttributes = archiveAttributes ++
                           (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
                           (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
-  let archiveAnnotatedLink = Link (identifier, nubOrd classes, nubOrd (pairs++archiveAttributes)) b (targetURL, targetDescription)
+  let archiveAnnotatedLink = Link (identifier, nubOrd classes, nubOrd (sort (pairs++allAttributes)))
+                                  b
+                                  (if null archiveAttributes then targetURL else ("/"`T.append`targetURL'),
+                                    targetDescription)
   return archiveAnnotatedLink
 localizeLink _ x = return x
 
@@ -154,9 +168,12 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
         l :: T.Text -> Inline
         l url = Link nullAttr [] (url, "")
         l' :: T.Text -> (T.Text, T.Text, T.Text, [T.Text]) -> Inline
-        l' url (archive, mobile, html, classes) = Link ("", classes,
-                                                        filter (\(_,b) -> b/="") [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html)])
+        l' url ("", mobile, html, classes) = Link ("", classes,
+                                                        filter (\(_,b) -> b/="") (sort [("data-href-mobile", mobile), ("data-url-html", html)]))
                                                   [] (url, "")
+        l' url (archive, mobile, html, classes) = Link ("", classes,
+                                                        filter (\(_,b) -> b/="") (sort [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html), ("data-url-original", url)]))
+                                                  [] (archive, "")
 
 -- archive the first _n_ links which are due, and all pending 'cheap' archives.
 -- Can be scripted like `$ cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkArchive.hs -e 'manualArchive 10'`
