@@ -36,7 +36,7 @@ generateID url author date
   -- NOTE: we have hitherto not set IDs on *section* or *anchor* links like '/improvement#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvement-microsoft'. (Tacking on the hash to the baseline ID of '/improvement' → 'gwern-improvement'.)
   | ("Gwern Branwen" == author || "gwern" == author || "Gwern" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
-  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
+  = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
   -- skip tag links:
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""

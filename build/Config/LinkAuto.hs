@@ -704,7 +704,7 @@ custom = [
         , ("[Bb]atch-?[Nn]orm(alization)?", "https://en.wikipedia.org/wiki/Batch_normalization")
         , ("[Bb]eam[ -]search", "https://en.wikipedia.org/wiki/Beam_search")
         , ("[Bb]eta distribution", "https://en.wikipedia.org/wiki/Beta_distribution")
-        , ("[Bb]ias-variance tradeoff", "https://en.wikipedia.org/wiki/Bias-variance_tradeoff")
+        , ("[Bb]ias-variance tradeoff", "https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff")
         , ("[Bb]inary tree", "https://en.wikipedia.org/wiki/Binary_tree")
         , ("[Bb]iobank(ed|s|ing)?", "https://en.wikipedia.org/wiki/Biobank")
         , ("[Bb]irthday paradoxe?s?", "https://en.wikipedia.org/wiki/Birthday_problem")

@@ -288,6 +288,8 @@ canonicals = M.fromList
   , ("DimitrisPapail", "Dimitris Papail")
   , ("JonBaronforMD", "Jon Baronfor")
   , ("Andrew Wood", "Andrew R. Wood")
+  , ("xkcd", "Randall Munroe")
+  , ("Randall Monroe", "Randall Munroe")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -420,11 +422,12 @@ authorLinkDB = M.fromList $
     , ("Albert Hofman", "https://en.wikipedia.org/wiki/Albert_Hofman_(epidemiologist)")
     , ("Eric Boerwinkle", "https://www.hgsc.bcm.edu/people/boerwinkle-e")
     , ("Jascha Sohl-Dickstein", "https://scholar.google.com/citations?user=-3zYIjQAAAAJ")
-    , ("Jia Deng", "https://scholar.google.com/citations?user=U3Eub-EAAAAJ&hl=en&oi=ao")
-    , ("Sanjeev Satheesh", "https://scholar.google.com/citations?user=VUi7eM8AAAAJ&hl=en&oi=ao")
-    , ("Jonathan Krause", "https://scholar.google.com/citations?user=7DwDYzkAAAAJ&hl=en&oi=ao")
-    , ("Michael J. Bernstein", "https://scholar.google.com/citations?user=9CDiC-gAAAAJ&hl=en&oi=ao")
+    , ("Jia Deng", "https://scholar.google.com/citations?user=U3Eub-EAAAAJ")
+    , ("Sanjeev Satheesh", "https://scholar.google.com/citations?user=VUi7eM8AAAAJ")
+    , ("Jonathan Krause", "https://scholar.google.com/citations?user=7DwDYzkAAAAJ")
+    , ("Michael J. Bernstein", "https://scholar.google.com/citations?user=9CDiC-gAAAAJ")
     , ("Michael S. Bernstein", "https://hci.stanford.edu/msb/")
+    , ("Leopold Aschenbrenner", "https://situational-awareness.ai/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
