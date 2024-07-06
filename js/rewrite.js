@@ -2067,9 +2067,27 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListI
     GWLog("enableRecentlyModifiedLinkListIcons", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("li a.link-modified-recently").forEach(link => {
+		let inList = false;
 		let containingGraf = link.closest("p");
 		if (containingGraf?.matches("li > p:only-of-type")) {
-			containingGraf.parentElement.classList.add("link-modified-recently-list-item");
+			inList = true;
+		} else if (containingGraf?.matches(".data-field")) {
+			/*	This handles cases such as those where we’re transcluding an 
+				annotation into a list, and each annotation has its own list 
+				item (thus the .link-modified-recently class would be on the
+				title-link of the annotation).
+			 */
+			let ancestor = containingGraf.parentElement;
+			while (   ancestor.matches("li") == false
+				   && (   ancestor.parentElement.children.length == 1
+				       || (   ancestor.parentElement.children.length == 2
+				           && ancestor.matches(".include-wrapper"))))
+				   ancestor = ancestor.parentElement;
+			if (ancestor.matches("li"))
+				inList = true;
+		}
+		if (inList) {
+			link.closest("li").classList.add("link-modified-recently-list-item");
 			link.classList.add("in-list");
 		}
 	});
