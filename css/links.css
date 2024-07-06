@@ -477,6 +477,7 @@ a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
 
 a[data-link-icon='𝓡𝐒'] .link-icon-hook::after { /* Rolling Stone */
     opacity: 0.75;
+    --link-icon-size: 0.6em;
 }
 
 /****************************/
@@ -1090,7 +1091,6 @@ a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
 a[data-link-icon='tiktok'] .link-icon-hook::after {
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.15em;
-  /* opacity: 0.7; */
   --link-icon-size: 0.75em;
 }
 
@@ -1109,18 +1109,3 @@ a[data-link-icon='wikipedia'] .link-icon-hook::after {
 a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
-
-/*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs.
-    Talk pages/History/etc is baked into the links by the link-annotated +
-    has-annotation classes, see LinkMetadata.hs’s `wikipediaArticleNamespace`
-    function); the dotted-underlining is enough.
- */
-/*  Experimentally un-suppressing, in tandem with styling changes to the WP
-    link icon that make it less obtrusive.
-        —SA 2023-11-19
- */
-/*
-a[data-link-icon='wikipedia'].has-annotation .link-icon-hook {
-    display: none;
-}
- */
