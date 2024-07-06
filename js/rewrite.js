@@ -1847,22 +1847,25 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
+	let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
+
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (   eventInfo.localize == true
+        if (   (   eventInfo.localize == true
+                // if initial base page load
+        		|| eventInfo.container == document.body)
             && (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
-                // if initial base page load
-			&& (   eventInfo.container == document.body
-                // if the link refers to an element also in the loaded content
-                || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-                // if the link refers to the loaded content container itself
+            	   // if the link refers to an element also in the loaded content
+			&& (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+            	   //  if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container.matches(selectorFromHash(link.hash)))
-                || (   eventInfo.document.querySelector("#page-metadata") != null
-                            // if we’re transcluding a citation (because we merge footnotes)
+            	   //  if we’re injecting into a full page (base page or pop-frame)
+                || (   injectingIntoFullPage
+                           //  if we’re transcluding a citation (because we merge footnotes)
                     && (   (   eventInfo.source == "transclude"
                             && link.classList.contains("footnote-ref"))
-                            // if we’re merging a footnote for transcluded content
+                           //  if we’re merging a footnote for transcluded content
                         || (   eventInfo.source == "transclude.footnotes"
                             && link.classList.contains("footnote-back")))))) {
             link.pathname = baseLocation.pathname;

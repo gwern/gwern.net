@@ -704,7 +704,8 @@ Sidenotes = { ...Sidenotes,
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
 			loadLocation: location,
-			flags: GW.contentDidInjectEventFlags.fullWidthPossible.localize
+			flags: (  GW.contentDidInjectEventFlags.fullWidthPossible
+					| GW.contentDidInjectEventFlags.localize)
 		});
 	},
 
