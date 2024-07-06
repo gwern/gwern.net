@@ -13314,6 +13314,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) 
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
+		if (media == null)
+			return;
 
         //  Tag the figure with the first (or only) media element’s classes.
         [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
@@ -13348,7 +13350,7 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 
     let fullWidthClass = "width-full";
 
-    let allFullWidthMedia = eventInfo.container.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+    let allFullWidthMedia = eventInfo.container.querySelectorAll(`figure img.${fullWidthClass}, figure video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
