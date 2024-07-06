@@ -8043,9 +8043,13 @@ function includeContent(includeLink, content) {
     //  Inject wrapper.
     insertWhere.parentNode.insertBefore(wrapper, insertWhere);
 
+	//	Determine whether to “localize” content.
+	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
+
     /*  When transcluding into a full page, delete various “metadata” sections
     	such as page-metadata, footnotes, etc. (Save references to some.)
      */
+    let shouldMergeFootnotes = false;
 	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
     if (transcludingIntoFullPage) {
     	let metadataSectionsSelector = [
@@ -8058,6 +8062,9 @@ function includeContent(includeLink, content) {
     	wrapper.querySelectorAll(metadataSectionsSelector).forEach(section => {
     		section.remove();
     	});
+
+		shouldMergeFootnotes = (   shouldLocalize 
+								&& newContentFootnotesSection != null);
     }
 
     //  ID transplantation.
@@ -8072,15 +8079,14 @@ function includeContent(includeLink, content) {
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
-	//	Determine whether to “localize” content.
-	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
-
     //  Fire GW.contentDidInject event.
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	if (shouldLocalize)
 		flags |= GW.contentDidInjectEventFlags.localize;
+	if (shouldMergeFootnotes)
+		flags |= GW.contentDidInjectEventFlags.mergeFootnotes;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		contentType: contentTypeIdentifierForIncludeLink(includeLink),
@@ -8152,8 +8158,7 @@ function includeContent(includeLink, content) {
 		distributeSectionBacklinks(includeLink, wrapper);
 
     //  Update footnotes, if need be, when transcluding into a full page.
-    if (   transcludingIntoFullPage
-		&& shouldLocalize)
+    if (shouldMergeFootnotes)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
 	//  Update TOC, if need be, when transcluding into the base page.
@@ -13314,6 +13319,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) 
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
+		if (media == null)
+			return;
 
         //  Tag the figure with the first (or only) media element’s classes.
         [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
@@ -13348,7 +13355,7 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
 
     let fullWidthClass = "width-full";
 
-    let allFullWidthMedia = eventInfo.container.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+    let allFullWidthMedia = eventInfo.container.querySelectorAll(`figure img.${fullWidthClass}, figure video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
@@ -14505,22 +14512,25 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
+	let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
+
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (   eventInfo.localize == true
+        if (   (   eventInfo.localize == true
+                // if initial base page load
+        		|| eventInfo.container == document.body)
             && (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
-                // if initial base page load
-			&& (   eventInfo.container == document.body
-                // if the link refers to an element also in the loaded content
-                || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-                // if the link refers to the loaded content container itself
+            	   // if the link refers to an element also in the loaded content
+			&& (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+            	   //  if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container.matches(selectorFromHash(link.hash)))
-                || (   eventInfo.document.querySelector("#page-metadata") != null
-                            // if we’re transcluding a citation (because we merge footnotes)
+            	   //  if we’re injecting into a full page (base page or pop-frame)
+                || (   injectingIntoFullPage
+                           //  if we’re transcluding a citation (because we merge footnotes)
                     && (   (   eventInfo.source == "transclude"
                             && link.classList.contains("footnote-ref"))
-                            // if we’re merging a footnote for transcluded content
+                           //  if we’re merging a footnote for transcluded content
                         || (   eventInfo.source == "transclude.footnotes"
                             && link.classList.contains("footnote-back")))))) {
             link.pathname = baseLocation.pathname;
@@ -16986,7 +16996,8 @@ Sidenotes = { ...Sidenotes,
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
 			loadLocation: location,
-			flags: GW.contentDidInjectEventFlags.fullWidthPossible.localize
+			flags: (  GW.contentDidInjectEventFlags.fullWidthPossible
+					| GW.contentDidInjectEventFlags.localize)
 		});
 	},
 

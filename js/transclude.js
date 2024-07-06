@@ -898,9 +898,13 @@ function includeContent(includeLink, content) {
     //  Inject wrapper.
     insertWhere.parentNode.insertBefore(wrapper, insertWhere);
 
+	//	Determine whether to “localize” content.
+	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
+
     /*  When transcluding into a full page, delete various “metadata” sections
     	such as page-metadata, footnotes, etc. (Save references to some.)
      */
+    let shouldMergeFootnotes = false;
 	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
     if (transcludingIntoFullPage) {
     	let metadataSectionsSelector = [
@@ -913,6 +917,9 @@ function includeContent(includeLink, content) {
     	wrapper.querySelectorAll(metadataSectionsSelector).forEach(section => {
     		section.remove();
     	});
+
+		shouldMergeFootnotes = (   shouldLocalize 
+								&& newContentFootnotesSection != null);
     }
 
     //  ID transplantation.
@@ -927,15 +934,14 @@ function includeContent(includeLink, content) {
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
-	//	Determine whether to “localize” content.
-	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
-
     //  Fire GW.contentDidInject event.
 	let flags = GW.contentDidInjectEventFlags.clickable;
 	if (containingDocument == document)
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	if (shouldLocalize)
 		flags |= GW.contentDidInjectEventFlags.localize;
+	if (shouldMergeFootnotes)
+		flags |= GW.contentDidInjectEventFlags.mergeFootnotes;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		contentType: contentTypeIdentifierForIncludeLink(includeLink),
@@ -1007,8 +1013,7 @@ function includeContent(includeLink, content) {
 		distributeSectionBacklinks(includeLink, wrapper);
 
     //  Update footnotes, if need be, when transcluding into a full page.
-    if (   transcludingIntoFullPage
-		&& shouldLocalize)
+    if (shouldMergeFootnotes)
         updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
 
 	//  Update TOC, if need be, when transcluding into the base page.
