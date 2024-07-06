@@ -151,7 +151,7 @@ Extracts = {
 		Extracts.setUpContentLoadEventsWithin(container);
     },
 
-    //  Called by: extracts.js (doSetup)
+    //  Called by: extracts-load.js
     //  Called by: extracts-options.js
     setup: () => {
         GWLog("Extracts.setup", "extracts.js", 1);

@@ -945,8 +945,10 @@ body[class*='-index'] #TOC.TOC-links-only li {
     position: absolute;
     right: calc(100% - 1em);
     left: unset;
+    top: 0;
     width: 111px;
     height: initial;
+    line-height: inherit;
     padding: 0;
     text-align: right;
 	font-weight: normal;
@@ -1349,10 +1351,10 @@ ul > li::before {
     z-index: 1;
     display: block;
 	left: calc(var(--list-left-padding) - 1.375em);
-	top: 0;
+	top: 0.35em;
     width: 0.75em;
-    height: 1.25em;
-    padding: 1px 0 0 0;
+    height: 1em;
+    line-height: 1;
     opacity: var(--list-bullet-opacity);
 }
 
