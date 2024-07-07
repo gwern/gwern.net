@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-04 13:40:20 gwern"
+# When:  Time-stamp: "2024-07-06 20:49:48 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -19,7 +19,7 @@ cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh
 
-DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync runghc sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
+DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
 DEPENDENCIES_MISSING=()
 for DEP in "${DEPENDENCIES[@]}"; do
     if ! command -v "$DEP" &> /dev/null; then
@@ -114,7 +114,7 @@ else
           s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
           s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
           s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
-          s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/';
+          s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
@@ -445,10 +445,6 @@ else
     # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
     # find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --max-args=500 nonbreakSpace || true
 
-    bold "Adding #footnotes section ID…" # Pandoc bug; see <https://github.com/jgm/pandoc/issues/8043>; fixed in <https://github.com/jgm/pandoc/commit/50c9848c34d220a2c834750c3d28f7c94e8b94a0>, presumably will be fixed in Pandoc >2.18
-    footnotesIDAdd () { sed -i -e 's/<section class="footnotes footnotes-end-of-document" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }; export -f footnotesIDAdd
-    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 footnotesIDAdd || true
-
     bold "Stripping compile-time-only classes unnecessary at runtime…"
     cleanClasses () {
         sed -i -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
@@ -519,7 +515,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' | \
+    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -535,11 +531,11 @@ else
             "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
             "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
-            "epigraph" "even" "float-right" "float-left" "footnote-ref" "full-width"
+            "epigraph" "even" "figures" "float-right" "float-left" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "inline" "invert" "invert-auto" "invert-not"
             "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not" "tex-logotype"
-            "math" "odd" "page-thumbnail" "pascal" "python" "reader-mode-selector-inline"
+            "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"
             "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
@@ -567,6 +563,12 @@ else
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
+            "^page-[a-z0-9-]+" "sidebar-links" "test-april-fools" "test-christmas" "test-easter"
+            "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
+            "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
+            "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
+            "dropcaps-yinit" "dropcap-yinit" "level1" "level2" "level3" "level4" "level5" "level6" "level7"
+            "footnotes-end-of-document" "note"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -584,7 +586,7 @@ else
 
     λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';
-         echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -E --with-filename --color=always -e '<a .*href=".*">\?';
+         echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -E --with-filename --color=always -e '<a .*href=".*">\?' -e '<span id="cb';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
@@ -635,17 +637,43 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --max-args=500 "gf --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
+    # NOTE: we avoid `gec` use to force no highlighting, because terminal escape codes trigger bracket-matching:"
+    λ(){ ge --only-matching '^\[\^.*\]: ' -- $PAGES | sort | uniq --count | sort --numeric-sort | egrep -v -e '^ + 1 ./'; }
+    wrap λ "Check for duplicate footnote IDs in Markdown."
+
     λ(){ ge -e '<div class="admonition .*\?">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' -e '<span><div>' $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
+
+    λ(){  gf -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' -e '**Warn' -e '**Note' -e '**Error' -- $PAGES \
+              | fgrep -v -e 1996-animerica-conscience.md; }
+    wrap λ "Remember to use formal admonitions instead of just bolding."
 
     λ(){ ge -e '^   - '  -e '~~~[[:alnum:]]' $PAGES; }
     wrap λ "Markdown formatting problem: use of 3-space indented sub-list items instead of 4-space?"
 
-    λ(){ gec -e ' a [aei]' $PAGES | gfv -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/' -e 'a eulogy' -e 'a eureka moment'; }
+    λ() { ge -e '^[0-9]\. \*[^\*]' -e '^- \*[^\*][a-Z]' -e '^- \[.*\]\{\.smallcaps\}' -- $PAGES | gfv -e '/newsletter/20' -e '/lorem-inline'; }
+    wrap λ "Remember to use bold as the top level of emphasis in lists rather than italics (second-level) or smallcaps (third-level)."
+
+    λ(){ ge -e ' a [aei]' $PAGES | gfv -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/' -e 'a eulogy' -e 'a eureka moment'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
      λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' -- $PAGES | gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
+
+     λ(){ gec -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- $PAGES; }
+     wrap λ "Markdown Unicode: Add spaces to arrows: more legible"
+
+     λ(){ gf -e '= ~' -- $PAGES; }
+     wrap λ "Markdown: Unicodify: instead of writing 'x = ~y', unicode as '≈'."
+
+      λ(){ gec -e '[[:alnum:]]≠[[:alnum:]]' -- $PAGES | gfv 'lorem-inline.md'; }
+     wrap λ "Markdown: Unicodify: != renders better with spaces around it"
+
+     λ(){ fgp -e '?!' -e '!?' -e '<->' -e '~>' -- $PAGES; }
+     wrap λ "Unicodify: misc"
+
+     # λ(){ gf -e '' -- $PAGES; }
+     # wrap λ "Markdown: miscellaneous fixed string errors."
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | gfv -e '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
     wrap λ "Empty files somewhere."
@@ -669,7 +697,7 @@ else
     wrap λ "Broken tables in HTML."
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' --; }
-    wrap λ "Miscellaneous fixed-string errors in compiled HTML."
+    wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
     λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
          find ./metadata/annotation -maxdepth 1 -type f | xargs --max-args=500 ./static/build/collapse-checker.py; }
@@ -723,7 +751,7 @@ else
     wrap λ "Unicode/HTML entity encoding error?" &
 
     λ(){ gfc -e 'en.m.wikipedia.org' -- ./metadata/full.gtx; }
-    wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed string matches)." &
+    wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed string-matches)." &
 
     λ(){ gec -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
@@ -769,7 +797,7 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -- ./metadata/*.gtx | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -827,7 +855,10 @@ else
           }
     wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?" &
 
-    λ(){ grep --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES; }
+    λ(){ grep --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES;
+         grep --with-filename --perl-regexp '[^[:print:]]' $PAGES;
+         # Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide
+         grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com'; }
     wrap λ "Markdown files: garbage or control characters detected?" &
 
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
@@ -851,6 +882,9 @@ else
 
     λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database" &
+
+    λ(){ grep --perl-regexp --null --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
+    wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)"
 
     λ(){ gf -e ' significant'  ./metadata/full.gtx; }
     wrap λ "Misleading language in full.gtx" &
@@ -1237,8 +1271,8 @@ else
     λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
-    λ(){ find . -type f -name "*.txt" | parallel file | gf " CRLF"; }
-    wrap λ "Corrupted text file? use 'dos2unix' on it."
+    λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
+    wrap λ "Corrupted text file (either CRLF or not a text file at all eg a misnamed PDF)? use 'file' or 'dos2unix' on it."
 
     bold "Checking for PDF anomalies…"
     λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel --max-args=500 file | \
@@ -1392,6 +1426,9 @@ else
 
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -O0 $WARNINGS -fno-code {} \; ) >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
+
+    λ() { find . -type f -name "*.hs" | gfv -e 'static/' -e 'metadata/' | xargs hlint | gv 'No hints'; }
+    wrap λ "Check hosted Haskell files for Hlint style suggestions."
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
     wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' for safety instead)."
