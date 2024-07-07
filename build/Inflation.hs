@@ -38,7 +38,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 Markdown → HTML:
 
 '[$50.50]($1970)'
-→
+ → 
 '<span class="inflation-adjusted" data-year-original="1970" data-amount-original="50.50" data-year-current="2019" data-amount-current="343.83">$50.50<sub>1970</sub><sup>$343.83</sup></span>'
 
 Testbed:

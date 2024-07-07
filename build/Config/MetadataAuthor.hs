@@ -290,6 +290,7 @@ canonicals = M.fromList
   , ("Andrew Wood", "Andrew R. Wood")
   , ("xkcd", "Randall Munroe")
   , ("Randall Monroe", "Randall Munroe")
+  , ("Alexander Berg", "Alexander C. Berg")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -428,6 +429,10 @@ authorLinkDB = M.fromList $
     , ("Michael J. Bernstein", "https://scholar.google.com/citations?user=9CDiC-gAAAAJ")
     , ("Michael S. Bernstein", "https://hci.stanford.edu/msb/")
     , ("Leopold Aschenbrenner", "https://situational-awareness.ai/")
+    , ("Hao Su", "https://cseweb.ucsd.edu/~haosu/")
+    , ("Alexander C. Berg", "https://en.wikipedia.org/wiki/Alexander_Berg")
+    , ("Zhiheng Huang", "https://scholar.google.com/citations?user=uW8JaBsAAAAJ")
+    , ("Sean Ma", "https://scholar.google.com/citations?user=WLj6zycAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1657,4 +1662,4 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover"]
+    , "Jeffrey Snover", "Bennett Foddy"]

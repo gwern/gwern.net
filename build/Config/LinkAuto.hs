@@ -679,7 +679,7 @@ custom = [
         , ("Western Union", "https://en.wikipedia.org/wiki/Western_Union")
         , ("William Gibson", "https://en.wikipedia.org/wiki/William_Gibson")
         , ("Wired", "https://en.wikipedia.org/wiki/Wired_%28magazine%29")
-        , ("Wisconsin Longitudinal Study", "https://researchers.wls.wisc.edu/about/history/")
+        , ("(Wisconsin Longitudinal Study|WLS)", "https://researchers.wls.wisc.edu/about/history/")
         , ("Wittgenstein", "https://en.wikipedia.org/wiki/Ludwig_Wittgenstein")
         , ("XLM-R", "https://arxiv.org/abs/1911.02116#facebook")
         , ("XL[Nn]et", "https://arxiv.org/abs/1906.08237")

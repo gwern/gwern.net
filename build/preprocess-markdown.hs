@@ -32,6 +32,6 @@ main = do originalMarkdown <- TIO.getContents
 
           matchList <- GS.singleShotRecommendations html
           unless (matchList == "") $ putStrLn $ "<div class=\"aux-links-append see-also-append collapse\">\n\n<p><strong>See Also</strong>:</p>\n\n" ++
-            (replace " class=\"id-not link-live\"" "" $ replace "'" "’" $ sed "'(.*)'" "‘\\1’" $ sed "<span>(.*)</span>" "\\1" $
+            (replace "'" "’" $ sed "'(.*)'" "‘\\1’" $ sed "<span>(.*)</span>" "\\1" $
               T.unpack matchList) ++
             "\n</div>"

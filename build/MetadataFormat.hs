@@ -23,7 +23,7 @@ import Config.MetadataFormat as C
 --
 -- Examples:
 --  > balanced "(abc[de]{fg})" → "" (balanced)
---  > balanced "(abc]de)"      → "c]de)" (unbalanced)
+--  > balanced "(abc]de)"     → "c]de)" (unbalanced)
 --  > balanced  "foo bar bar \" test test" → "\" test test"
 --
 -- Returns: Empty string if balanced, substring from first unbalanced bracket otherwise.

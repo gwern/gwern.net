@@ -22,7 +22,7 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- browser. For a more detailed discussion of the problems & solution, and history of prior link-icon
 -- implementations, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.
 
--- Rules for URL→icon. All supported examples: <https://gwern.net/lorem-link>
+-- Rules for URL → icon. All supported examples: <https://gwern.net/lorem-link>
 -- Supported icon types:
 -- - "svg" (+$NAME of the SVG filename in </static/img/icons/$NAME>; must be dark-mode compatible);
 -- - "text"+(1-4 Unicode characters) + comma-separated modifiers; text supports additional control:

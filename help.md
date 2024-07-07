@@ -30,7 +30,7 @@ backlink: False
 
 - `?`: pop up [this help page](/static/help)
 - `Esc`: close current popup
-- *Zoom*:
+- to *Zoom*:
 
   - `a`: zoom popup to fill left half of screen
   - `s`: ... bottom half
@@ -48,7 +48,7 @@ backlink: False
 **Slideshow Keys**:
 
 - `Accesskey-L`: start image slideshow
-- `←`/`→` or `↑`/`↓`: previous/next image
+- `←`/` → ` or `↑`/`↓`: previous/next image
 - `Esc` or `click`: Hide zoomed image
 - `Space bar:` Reset image size & position
 - `Scroll` to zoom in/out

@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-06-10 17:34:10 gwern"
+When: Time-stamp: "2024-07-06 10:33:23 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -230,6 +230,8 @@ fieldsTagHTML m = field "tagsHTML" $ \item -> do
   maybeTags <- lookupTags m item
   case maybeTags of
     Nothing -> return "" -- noResult "no tag field"
+    Just []   -> return ""
+    Just [""] -> return ""
     Just tags -> case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags]) of
                    Left e -> error ("Failed to compile tags to HTML fragment: " ++ show item ++ show tags ++ show e)
                    Right html -> return (T.unpack html)

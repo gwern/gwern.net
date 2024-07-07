@@ -1086,5 +1086,5 @@ linkIconTestUnitsText =
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
--- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "") →
+-- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "") → 
 -- Link ("",["icon-not"],[]) [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905","")
