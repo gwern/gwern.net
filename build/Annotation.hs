@@ -39,7 +39,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | "https://x.com" `isPrefixOf` l = twitter l
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
-                 | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l' else return (Left Permanent)
+                 | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf l' else return (Left Permanent)
                  | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l
                  -- And everything else is unhandled:
                     else do title <- htmlDownloadAndParseTitleClean l

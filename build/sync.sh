@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-06 20:49:48 gwern"
+# When:  Time-stamp: "2024-07-08 10:42:06 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -531,10 +531,10 @@ else
             "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
             "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
-            "epigraph" "even" "figures" "float-right" "float-left" "footer-logo" "footnote-ref" "full-width"
-            "haskell" "header" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
+            "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
+            "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "inline" "invert" "invert-auto" "invert-not"
-            "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not" "tex-logotype"
+            "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not"
             "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"
             "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
             "TOC" "uri" "at" "bu" "c1" "c2"
@@ -584,16 +584,16 @@ else
     }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
-    λ(){ echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
+    λ(){ echo "$PAGES_ALL" | gfv 'hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';
-         echo "$PAGES_ALL" | gfv 'Hafu' | xargs grep -E --with-filename --color=always -e '<a .*href=".*">\?' -e '<span id="cb';
+         echo "$PAGES_ALL" | gfv 'hafu' | xargs grep -E --with-filename --color=always -v -e '<a .*href=".*">\?' | gfv -e '<span id="cb';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
     # λ(){ echo "$PAGES_ALL" | xargs --max-args=100 elinks -dump |
 
-    λ(){ find . -name "*.md" -type f -exec grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$' {} \; ; }
+    λ(){ echo "$PAGES_ALL" | xargs grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
     λ(){ ge 'http.*http' metadata/archive.hs  | gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/'; }
@@ -614,7 +614,7 @@ else
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
-             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf';
+             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf' -e '/doc/psychology/cognitive-bias/2020-ruggeri.pdf';
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
@@ -645,7 +645,7 @@ else
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
     λ(){  gf -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' -e '**Warn' -e '**Note' -e '**Error' -- $PAGES \
-              | fgrep -v -e 1996-animerica-conscience.md; }
+              | gf -v -e 1996-animerica-conscience.md; }
     wrap λ "Remember to use formal admonitions instead of just bolding."
 
     λ(){ ge -e '^   - '  -e '~~~[[:alnum:]]' $PAGES; }
@@ -654,7 +654,7 @@ else
     λ() { ge -e '^[0-9]\. \*[^\*]' -e '^- \*[^\*][a-Z]' -e '^- \[.*\]\{\.smallcaps\}' -- $PAGES | gfv -e '/newsletter/20' -e '/lorem-inline'; }
     wrap λ "Remember to use bold as the top level of emphasis in lists rather than italics (second-level) or smallcaps (third-level)."
 
-    λ(){ ge -e ' a [aei]' $PAGES | gfv -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/' -e 'a eulogy' -e 'a eureka moment'; }
+    λ(){ ge -e ' a [aei]' $PAGES | gfv -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/' -e 'a eulogy' -e 'a eureka moment' | gec -e ' a [aei]'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
      λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' -- $PAGES | gfv '/utext'; }
@@ -663,13 +663,13 @@ else
      λ(){ gec -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- $PAGES; }
      wrap λ "Markdown Unicode: Add spaces to arrows: more legible"
 
-     λ(){ gf -e '= ~' -- $PAGES; }
-     wrap λ "Markdown: Unicodify: instead of writing 'x = ~y', unicode as '≈'."
+     λ(){ gf -e '= ~' -- $PAGES | gfv ' mods = ~ '; }
+     wrap λ "Markdown: Unicodify: instead of writing 'x = ~y', Unicode as '≈'."
 
       λ(){ gec -e '[[:alnum:]]≠[[:alnum:]]' -- $PAGES | gfv 'lorem-inline.md'; }
      wrap λ "Markdown: Unicodify: != renders better with spaces around it"
 
-     λ(){ fgp -e '?!' -e '!?' -e '<->' -e '~>' -- $PAGES; }
+     λ(){ gfc -e '?!' -e '!?' -e '<->' -e '~>' -- $PAGES | gfv '/subscript.md'; }
      wrap λ "Unicodify: misc"
 
      # λ(){ gf -e '' -- $PAGES; }
@@ -707,7 +707,7 @@ else
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
-    wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
+    wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeGTX "metadata/full.gtx"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs." &
@@ -1427,7 +1427,7 @@ else
     λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -O0 $WARNINGS -fno-code {} \; ) >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: failure." &
 
-    λ() { find . -type f -name "*.hs" | gfv -e 'static/' -e 'metadata/' | xargs hlint | gv 'No hints'; }
+    λ() { find . -type f -name "*.hs" | gfv -e 'static/' -e 'metadata/' | xargs hlint | gfv 'No hints'; }
     wrap λ "Check hosted Haskell files for Hlint style suggestions."
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }

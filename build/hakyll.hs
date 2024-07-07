@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-07-06 10:33:23 gwern"
+When: Time-stamp: "2024-07-08 09:27:46 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -253,7 +253,7 @@ notNewsletterOrIndex :: String -> Bool
 notNewsletterOrIndex p = not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 pageIdentifierToPath :: Item a -> String
-pageIdentifierToPath i = "/" ++ delete ".md" (toFilePath $ itemIdentifier i)
+pageIdentifierToPath i = "/" ++ (delete "." (delete ".md" (toFilePath $ itemIdentifier i)))
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
@@ -264,7 +264,7 @@ imageDimensionWidth d = field d $ \item -> do
                   if d == "thumbnail-width" then return w else return h
 
 escapedTitleField :: String -> Context String
-escapedTitleField = mapContext (map toLower . replace "/" "-" . delete ".md") . pathField
+escapedTitleField = mapContext (map toLower . replace "." "" . replace "/" "-" . delete ".md") . pathField
 
 -- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
 -- So we render a simplified ASCII version of every 'title' field, '$title-plain$', and use that in default.html when we need a non-display

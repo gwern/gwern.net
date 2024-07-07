@@ -222,11 +222,15 @@ titlecase' t = let t' = titlecase $ titlecase'' t
   -- TODO: `titlecase` strips whitespace <https://github.com/peti/titlecase/issues/7> so have to restore it
                    t'' = if head t == ' ' then " " ++ t' else t'
                    t''' = if last t == ' ' then t'' ++ " " else t''
-             in t'''
-   where titlecase'' :: String -> String
+             in cleanTitlecase t'''
+   where titlecase'', cleanTitlecase :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' =  replaceMany [("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner"), ("Class=","class=")] $ -- HACK
-          capitalizeAfterApostrophe $ capitalizeAfterHyphen t t'
+         titlecase'' t' = capitalizeAfterApostrophe $ capitalizeAfterHyphen t t'
+          -- HACK
+         cleanTitlecase = replaceMany [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
+                                       , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
+                                       , ("Cite-author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-joiner", "cite-joiner")
+                                       , ("Class=","class=")]
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""

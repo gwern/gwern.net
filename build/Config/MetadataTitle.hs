@@ -122,4 +122,4 @@ stringDelete = [" - The Public Domain Review"
             , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange"
             , "Nadia Asparouhova ", "The Universe of Discourse :"
             , "—a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
-            , "Swiss National Museum—Swiss history blog"]
+            , "Swiss National Museum—Swiss history blog", "Matt Blaze: "]

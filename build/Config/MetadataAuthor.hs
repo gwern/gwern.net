@@ -291,6 +291,7 @@ canonicals = M.fromList
   , ("xkcd", "Randall Munroe")
   , ("Randall Monroe", "Randall Munroe")
   , ("Alexander Berg", "Alexander C. Berg")
+  , ("Phúc H. Lê Khắc", "Phuc H. Le Khac")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -433,6 +434,11 @@ authorLinkDB = M.fromList $
     , ("Alexander C. Berg", "https://en.wikipedia.org/wiki/Alexander_Berg")
     , ("Zhiheng Huang", "https://scholar.google.com/citations?user=uW8JaBsAAAAJ")
     , ("Sean Ma", "https://scholar.google.com/citations?user=WLj6zycAAAAJ")
+    , ("Aditya Khosla", "https://people.csail.mit.edu/khosla/")
+    , ("Jong Wook Kim", "https://jongwook.kim/")
+    , ("Sandhini Agarwal", "https://scholar.google.com/citations?user=8UZIqcoAAAAJ")
+    , ("Phuc H. Le Khac", "https://lkhphuc.com/")
+    , ("George Berzsenyi", "https://www.npr.org/2019/04/07/707326070/a-math-teachers-life-summed-up-by-the-gifted-students-he-mentored")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1662,4 +1668,4 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover", "Bennett Foddy"]
+    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock"]
