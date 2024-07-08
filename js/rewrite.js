@@ -1160,6 +1160,15 @@ addCopyProcessor((event, selection) => {
     return true;
 });
 
+/****************************************************************************/
+/*	Normalize symbols (e.g. U+2731 HEAVY ASTERISK ‘✱’ => normal asterisk ‘*’)
+ */
+addCopyProcessor((event, selection) => {
+    Typography.processElement(selection, Typography.replacementTypes.SYMBOLS);
+
+	return true;
+});
+
 
 /*********************/
 /* FULL-WIDTH BLOCKS */

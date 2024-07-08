@@ -27,7 +27,8 @@ Typography = {
 			[ Typography.replacementTypes.MISC,			Typography.replacementDefinitionGroups.misc			],
 			[ Typography.replacementTypes.SOFTHYPHENS,	Typography.replacementDefinitionGroups.softHyphens	],
 			[ Typography.replacementTypes.JOINERS,		Typography.replacementDefinitionGroups.joiners		],
-			[ Typography.replacementTypes.SEPARATORS,	Typography.replacementDefinitionGroups.separators	]
+			[ Typography.replacementTypes.SEPARATORS,	Typography.replacementDefinitionGroups.separators	],
+			[ Typography.replacementTypes.SYMBOLS,		Typography.replacementDefinitionGroups.symbols		]
 		];
 		for (let [ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
@@ -47,6 +48,7 @@ Typography = {
 		SOFTHYPHENS:	0x0040,
 		JOINERS:		0x0080,
 		SEPARATORS:		0x0100,
+		SYMBOLS:        0x0200,
 		CLEAN: 			(0x0040 + 0x0080 + 0x0100)
 	},
 	replacementDefinitionGroups: {
@@ -92,14 +94,14 @@ Typography = {
 		ellipses: [
 			// Ellipsis rectification.
 			[ /(?<=^|\s)\.\.\./, '…' ],
-			[ /\.\.\.(?=\s|$)/, '…' ]
+			[ /\.\.\.(?=\s|$)/,  '…' ]
 		],
 		arrows: [
 			// Arrows
-			[ /(?<=\s)->(?=\s)/, '\u2192' ],
-			[ /(?<=\s)<-(?=\s)/, '\u2190' ],
-			[ /(?<=\s)=>(?=\s)/, '\u21d2' ],
-			[ /(?<=\s)<=(?=\s)/, '\u21d0' ],
+			[ /(?<=\s)->(?=\s)/,  '\u2192' ],
+			[ /(?<=\s)<-(?=\s)/,  '\u2190' ],
+			[ /(?<=\s)=>(?=\s)/,  '\u21d2' ],
+			[ /(?<=\s)<=(?=\s)/,  '\u21d0' ],
 			[ /(?<=\s)<=>(?=\s)/, '\u21d4' ]
 		],
 		wordbreaks: [
@@ -127,6 +129,10 @@ Typography = {
 			[ /\u200b|&ZeroWidthSpace;/, '' ],
 			// Strip hair spaces.
 			[ /\u200a|&hairsp;/, '' ],
+		],
+		symbols: [
+			// Rectify U+2731 HEAVY ASTERISK.
+			[ /\u2731/, '*' ]
 		]
 	},
 	processString: (str, replacementTypes = Typography.replacementTypes.NONE, segments = null) => {
