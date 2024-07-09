@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-04 10:15:35 gwern"
+;;; When:  Time-stamp: "2024-07-08 20:57:55 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -14,6 +14,9 @@
 (setq initial-scratch-message "")
 
 (push '("\\.gtx$" . html-mode) auto-mode-alist)
+
+; add repo tool directory to path to avoid hardwiring script paths:
+(add-to-list 'exec-path "~/wiki/static/build/")
 
 ; I do much of my editing in gwern.net files, so save myself some tab-completion hassle:
 (setq default-directory "~/wiki/")
@@ -282,6 +285,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (de-unicode)
        (flyspell-buffer)
        (delete-trailing-whitespace)
+       (clean-pdf-text)
        (check-parens)
 
        (let ; Blind unconditional rewrites:
@@ -833,7 +837,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("X, formerly known as Twitter," . "Twitter")
                         ("x-axis" . "_x_-axis")
                         ("x axis" . "_x_-axis")
-                        ("z axis" . "_x_-axis")
+                        ("z axis" . "_z_-axis")
                         ("y-axis" . "_y_-axis")
                         (" y-value" . " _y_-value")
                         (" x-value" . " _x_-value")
@@ -1717,6 +1721,51 @@ Mostly string search-and-replace to enforce house style in terms of format."
      nil
      )))
 
+(defun clean-pdf-text ()
+  "Clean PDF text in the current buffer using `/static/build/clean-pdf.py` script.
+
+This function processes the buffer paragraph by paragraph, where paragraphs
+are defined as text blocks separated by triple newlines (\\n\\n\\n). Each
+paragraph is sent to the external `clean-pdf.py` script, which uses AI to
+correct common PDF extraction issues such as:
+- Removing spurious hyphens at line breaks
+- Joining words split across lines
+- Fixing ligature and character encoding problems
+
+The cleaned text replaces the original text in the buffer. All changes are
+grouped as a single, atomic operation for undo purposes.
+
+Note: This function assumes that `clean-pdf.py` is in Emacs’s executable path."
+  (interactive)
+  (unless (executable-find "clean-pdf.py")
+    (error "Error: Python `clean-pdf.py` script not found in path"))
+  (atomic-change-group
+    (save-excursion
+      (let ((case-fold-search nil))  ; Make search case-sensitive
+        (goto-char (point-min))
+        (while (< (point) (point-max))
+          (let* ((paragraph-end (or (search-forward "\n\n\n" nil t)
+                                    (point-max)))
+                 (paragraph (buffer-substring-no-properties (point) paragraph-end))
+                 (cleaned-paragraph
+                  (with-temp-buffer
+                    (insert paragraph)
+                    ;; Call the clean-pdf.py script
+                    (condition-case err
+                        (call-process-region (point-min) (point-max)
+                                             "clean-pdf.py"
+                                             t t nil)
+                      (error
+                       (message "Error in clean-pdf.py: %s" (error-message-string err))
+                       (buffer-string)))  ; Return original text if there’s an error
+                    (buffer-string))))
+            ;; Replace the original paragraph with the cleaned version
+            (delete-region (point) paragraph-end)
+            (insert cleaned-paragraph)
+            ;; Move to the end of the inserted text
+            (goto-char (+ (point) (length cleaned-paragraph))))))))
+  (message "PDF text cleaning completed"))
+
 (defun query-inflation-adjust ()
   "Interactively inflation-adjust all dollar amounts in the buffer.
 This replaces all dollar amounts in the buffer with a Pandoc Markdown
@@ -1726,9 +1775,9 @@ The function checks first if there are any dollar amounts in the buffer.
 If there are, it prompts the user for a year, defaulting to the current year,
 and then replaces all dollar amounts with the dollar amount wrapped in a
 Pandoc Markdown Span element tagged with the year, following the format
-'[$Y]($YEAR)'.
+`[$Y]($YEAR)`.
 
-For example, '$20' would be replaced with '[$20]($2023)' if the year 2023
+For example, `$20` would be replaced with `[$20]($2023)` if the year 2023
 was input. If there are no dollar amounts in the buffer, the function exits
 without prompting the user.
 
@@ -1947,7 +1996,7 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
     (message "Preprocessing and compiling into HTML…")
     ; Pandoc converts the Markdown to HTML. Then the HTML goes through `preprocess-markdown` which runs additional typographic/formatting rewrites, runs LinkAuto to automatically linkify text, and then runs through GenerateSimilar to provide a list of relevant annotations to curate as the 'see-also' section at the bottom of annotations (if they are approved).
     ; NOTE: because `preprocess-markdown` is calling the OA API via the embedder, $OPENAI_API_KEY must be defined in the Emacs environment, either via `(setenv "OPENAI_API_KEY" "sk-xyz123456789")` or by putting it in `~/.bash_profile`. (Putting it in `.env` or `.bashrc` is not enough, because they won't apply to GUI/X Emacs)
-    (let ((markdown-command "~/wiki/static/build/preprocess-annotation.sh") (visible-bell nil))
+    (let ((markdown-command "preprocess-annotation.sh") (visible-bell nil))
       (markdown-kill-ring-save)
 
       (setq $pos (point-max))
@@ -2011,7 +2060,7 @@ may malfunction if run on other formats like HTML
         (goto-char (point-min))
         (unless (search-forward-regexp "\n\n" nil t)
           (message "Paragraphizing abstract…")
-          (shell-command-on-region (point-min) (point-max) "~/wiki/static/build/paragraphizer.py" nil t)
+          (shell-command-on-region (point-min) (point-max) "paragraphizer.py" nil t)
           (setq double-newline-found t)))
     (when double-newline-found
       (goto-char (point-max))
