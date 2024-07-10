@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-08 20:57:55 gwern"
+;;; When:  Time-stamp: "2024-07-10 11:17:41 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1723,19 +1723,16 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
 (defun clean-pdf-text ()
   "Clean PDF text in the current buffer using `/static/build/clean-pdf.py` script.
-
 This function processes the buffer paragraph by paragraph, where paragraphs
 are defined as text blocks separated by triple newlines (\\n\\n\\n). Each
-paragraph is sent to the external `clean-pdf.py` script, which uses AI to
-correct common PDF extraction issues such as:
+paragraph that contains lines ending with '-' is sent to the external
+`clean-pdf.py` script, which uses AI to correct common PDF extraction issues such as:
 - Removing spurious hyphens at line breaks
 - Joining words split across lines
 - Fixing ligature and character encoding problems
-
 The cleaned text replaces the original text in the buffer. All changes are
 grouped as a single, atomic operation for undo purposes.
-
-Note: This function assumes that `clean-pdf.py` is in Emacs’s executable path."
+Note: This function assumes that `clean-pdf.py` is in Emacs's executable path."
   (interactive)
   (unless (executable-find "clean-pdf.py")
     (error "Error: Python `clean-pdf.py` script not found in path"))
@@ -1747,23 +1744,25 @@ Note: This function assumes that `clean-pdf.py` is in Emacs’s executable path.
           (let* ((paragraph-end (or (search-forward "\n\n\n" nil t)
                                     (point-max)))
                  (paragraph (buffer-substring-no-properties (point) paragraph-end))
-                 (cleaned-paragraph
-                  (with-temp-buffer
-                    (insert paragraph)
-                    ;; Call the clean-pdf.py script
-                    (condition-case err
-                        (call-process-region (point-min) (point-max)
-                                             "clean-pdf.py"
-                                             t t nil)
-                      (error
-                       (message "Error in clean-pdf.py: %s" (error-message-string err))
-                       (buffer-string)))  ; Return original text if there’s an error
-                    (buffer-string))))
-            ;; Replace the original paragraph with the cleaned version
-            (delete-region (point) paragraph-end)
-            (insert cleaned-paragraph)
-            ;; Move to the end of the inserted text
-            (goto-char (+ (point) (length cleaned-paragraph))))))))
+                 (needs-cleaning (string-match-p "-\n" paragraph)))
+            (when needs-cleaning
+              (let ((cleaned-paragraph
+                     (with-temp-buffer
+                       (insert paragraph)
+                       ;; Call the clean-pdf.py script
+                       (condition-case err
+                           (call-process-region (point-min) (point-max)
+                                                "clean-pdf.py"
+                                                t t nil)
+                         (error
+                          (message "Error in clean-pdf.py: %s" (error-message-string err))
+                          (buffer-string)))  ; Return original text if there's an error
+                       (buffer-string))))
+                ;; Replace the original paragraph with the cleaned version
+                (delete-region (point) paragraph-end)
+                (insert cleaned-paragraph)))
+            ;; Move to the end of the paragraph
+            (goto-char paragraph-end))))))
   (message "PDF text cleaning completed"))
 
 (defun query-inflation-adjust ()
@@ -2052,7 +2051,7 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
   "Automatically paragraphize single-paragraph abstracts.
 Intended for Markdown mode with double-newlines for newlines;
 may malfunction if run on other formats like HTML
-(where `</p><p>` pairs can come in many forms, not to mention other block elements like blockquotes)."
+\(where `</p><p>` pairs can come in many forms, not to mention other block elements like blockquotes\)."
   (interactive)
   (delete-trailing-whitespace)
   (let ((double-newline-found nil))
@@ -2060,7 +2059,10 @@ may malfunction if run on other formats like HTML
         (goto-char (point-min))
         (unless (search-forward-regexp "\n\n" nil t)
           (message "Paragraphizing abstract…")
-          (shell-command-on-region (point-min) (point-max) "paragraphizer.py" nil t)
+          (let ((paragraphizer-path (executable-find "paragraphizer.py")))
+            (if paragraphizer-path
+                (call-process-region (point-min) (point-max) paragraphizer-path t t nil)
+              (error "Error: Python `paragraphizer.py` script not found in path")))
           (setq double-newline-found t)))
     (when double-newline-found
       (goto-char (point-max))

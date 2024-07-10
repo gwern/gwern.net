@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-07-07 19:45:25 gwern"
+# When:  Time-stamp: "2024-07-10 11:17:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -75,16 +75,20 @@ Summary: Add relevant HTML hyperlinks & formatting to text, and adds double-newl
 
 Task description: Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/benchmarks/outputs; 4. conclusion/discussion/implications; 5. supplementary information (eg. URLs, code, websites, datasets).
 
-Example:
-<abstract><p>Previous theoretical results pertaining to meta-learning on sequences build on contrived assumptions and are somewhat convoluted. We introduce new information-theoretic tools that lead to an elegant and very general decomposition of error into 3 components: irreducible error, meta-learning error, and intra-task error. These tools unify analyses across many meta-learning challenges. To illustrate, we apply them to establish new results about in-context learning with transformers. Our theoretical results characterizes how error decays in both the number of training sequences and sequence lengths. Our results are very general; for example, they avoid contrived mixing time assumptions made by all prior results that establish decay of error with sequence length.</p></abstract>
-→
-<abstract><p>Previous theoretical results pertaining to meta-learning on sequences build on contrived assumptions and are somewhat convoluted.</p> <p>We introduce new information-theoretic tools that lead to an elegant and very general decomposition of error into 3 components: irreducible error, meta-learning error, and intra-task error. These tools unify analyses across many meta-learning challenges.</p> <p> To illustrate, we apply them to establish new results about in-context learning with transformers. Our theoretical results characterizes how error decays in both the number of training sequences and sequence lengths.</p> <p> Our results are very general; for example, they avoid contrived mixing time assumptions made by all prior results that establish decay of error with sequence length.</p></abstract>
-
 Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize species names as appropriate. If a new term, concept, or system is introduced by this research paper, bold the first appearance using '<strong>NAME</strong>' formatting (and ONLY the first use), and bold only the most important new term. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University" or "psychology"); do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.
 
-<abstract>
-{target}
-</abstract>"""}
+Example:
+
+Input: <abstract><p>Previous theoretical results pertaining to meta-learning on sequences build on contrived assumptions and are somewhat convoluted. We introduce new information-theoretic tools that lead to an elegant and very general decomposition of error into 3 components: irreducible error, meta-learning error, and intra-task error. These tools unify analyses across many meta-learning challenges. To illustrate, we apply them to establish new results about in-context learning with transformers. Our theoretical results characterizes how error decays in both the number of training sequences and sequence lengths. Our results are very general; for example, they avoid contrived mixing time assumptions made by all prior results that establish decay of error with sequence length.</p></abstract> →
+Previous theoretical results pertaining to meta-learning on sequences build on contrived assumptions and are somewhat convoluted.
+
+We introduce new information-theoretic tools that lead to an elegant and very general decomposition of error into 3 components: irreducible error, meta-learning error, and intra-task error. These tools unify analyses across many meta-learning challenges.
+
+To illustrate, we apply them to establish new results about in-context learning with transformers. Our theoretical results characterizes how error decays in both the number of training sequences and sequence lengths.
+
+Our results are very general; for example, they avoid contrived mixing time assumptions made by all prior results that establish decay of error with sequence length.
+
+Input: <abstract>{target}</abstract>"""}
   ]
 )
 

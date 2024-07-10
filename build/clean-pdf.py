@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-07-08 21:03:21 gwern"
+# When:  Time-stamp: "2024-07-10 11:08:32 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -58,8 +58,8 @@ Collective memories are sustained by communities, which could be as large as all
 <text>MANY OB‐SERVERS OF CONTEM‐PORARY ECONOMIC TRENDS HAVE
 been perplexed by the contemporary conjuncture of rapid
 technological innovation with disappointingly slow gains in
-measured productivity.</text> →
-Many observers of contemporary economic trends have been perplexed by the contemporary conjuncture of rapid technological innovation with disappointingly slow gains in measured productivity.
+measured productivity---such as [$10,000]($2023)/year.</text> →
+Many observers of contemporary economic trends have been perplexed by the contemporary conjuncture of rapid technological innovation with disappointingly slow gains in measured productivity---such as [$10,000]($2023)/year.
 
 <text>Whichbitshouldtravelfirst?Thebitfromthebigendorthebitfromthelittleend?·CanawarbetweenBigEndiansandLittleEndiansbeavoided?</text> →
 Which bit should travel first? The bit from the big end or the bit from the little end? Can a war between Big Endians and Little Endians be avoided?
