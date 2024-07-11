@@ -73,13 +73,6 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
-	"pop-frame-title-annotation": `<a
-    class="popframe-title-link"
-    href="<{popFrameTitleLinkHref}>"
-    title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    target="<{linkTarget}>"
-        ><{popFrameTitleText}></a>
-`,
 	"pop-frame-title-standard": `<a
 	class="popframe-title-link"
 	href="<{popFrameTitleLinkHref}>"

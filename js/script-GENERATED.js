@@ -9393,13 +9393,6 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
-	"pop-frame-title-annotation": `<a
-    class="popframe-title-link"
-    href="<{popFrameTitleLinkHref}>"
-    title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    target="<{linkTarget}>"
-        ><{popFrameTitleText}></a>
-`,
 	"pop-frame-title-standard": `<a
 	class="popframe-title-link"
 	href="<{popFrameTitleLinkHref}>"
@@ -10444,19 +10437,11 @@ Extracts = { ...Extracts,
     titleForPopFrame_ANNOTATION: (popFrame) => {
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
-        let target = popFrame.spawningTarget;
+		let target = popFrame.spawningTarget;
 		let referenceData = Annotations.referenceDataForLink(target);
-		if (referenceData == null) {
-			referenceData = {
-				popFrameTitleLinkHref:          target.href,
-				popFrameTitleText:              (target.hostname == location.hostname
-												 ? target.pathname + target.hash
-												 : target.href)
-			};
-			referenceData.popFrameTitleText = `<code>${referenceData.popFrameTitleText}</code>`;
-		}
-
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		return (referenceData
+				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext())
+				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
