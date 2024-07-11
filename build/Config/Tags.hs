@@ -139,7 +139,7 @@ tagsShort2LongRewrites =
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
    , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive"), ("nback", "dual-n-back"), ("savantism", "psychology/neuroscience/memory/savant"), ("idiot-savant", "psychology/neuroscience/memory/savant"), ("savant-syndrome", "psychology/neuroscience/memory/savant"), ("bmr", "blackmarket-reloaded"), ("grok", "grokking"), ("grokk", "grokking")
    , ("anaesthesia", "anesthesia"), ("anesthetic", "anesthesia"), ("anesthsia", "anesthesia")
-   , ("music-distraction", "psychology/music/distraction")]
+   , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -375,6 +375,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychiatry/anxiety", "anxiety")
           , ("psychiatry/traumatic-brain-injury", "TBI")
           , ("psychiatry/alzheimers", "Alzheimer’s")
+          , ("statistics/stylometry/truesight", "truesight (stylometrics)")
           , ("statistics/stylometry", "stylometry")
           , ("statistics/decision/mail-delivery", "mail-delivery optimization")
           , ("statistics/decision", "decision theory")
@@ -419,6 +420,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("reinforcement-learning/safe", "AI safety")
           , ("reinforcement-learning/robot", "robotics")
           , ("reinforcement-learning/multi-agent", "MARL")
+          , ("reinforcement-learning/preference-learning/mode-collapse", "AI mode collapse")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("reinforcement-learning/meta-learning/continual-learning", "continual learning")
           , ("reinforcement-learning/meta-learning", "meta-learning")

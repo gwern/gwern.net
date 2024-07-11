@@ -40,7 +40,7 @@ linkDispatcherURL l | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/
                  | null l = return (Left Permanent)
                  -- locally-hosted PDF?
                  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf l' else return (Left Permanent)
-                 | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l
+                 | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern l
                  -- And everything else is unhandled:
                     else do title <- htmlDownloadAndParseTitleClean l
                             if title /= "" then return (Right (l, (title, "", "", "", [], [], "")))

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-10 11:17:41 gwern"
+;;; When:  Time-stamp: "2024-07-10 16:18:24 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1722,11 +1722,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
      )))
 
 (defun clean-pdf-text ()
-  "Clean PDF text in the current buffer using `/static/build/clean-pdf.py` script.
+  "Clean PDF text in the current buffer using `/static/build/clean-pdf.py`.
 This function processes the buffer paragraph by paragraph, where paragraphs
 are defined as text blocks separated by triple newlines (\\n\\n\\n). Each
 paragraph that contains lines ending with '-' is sent to the external
-`clean-pdf.py` script, which uses AI to correct common PDF extraction issues such as:
+`clean-pdf.py` script, which uses AI to correct common PDF extraction issues:
 - Removing spurious hyphens at line breaks
 - Joining words split across lines
 - Fixing ligature and character encoding problems
@@ -1744,7 +1744,11 @@ Note: This function assumes that `clean-pdf.py` is in Emacs's executable path."
           (let* ((paragraph-end (or (search-forward "\n\n\n" nil t)
                                     (point-max)))
                  (paragraph (buffer-substring-no-properties (point) paragraph-end))
-                 (needs-cleaning (string-match-p "-\n" paragraph)))
+                 (needs-cleaning (and (string-match-p "-\n" paragraph)
+                                      ; but skip uses of em-dash at the end of lines (eg. dialogue), and Pandoc Markdown YAML headers:
+                                      (not (string-match-p "—\n" paragraph))
+                                      (not (string-match-p "---\n" paragraph)))))
+
             (when needs-cleaning
               (let ((cleaned-paragraph
                      (with-temp-buffer

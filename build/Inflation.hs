@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-06-10 17:36:15 gwern"
+-- When:  Time-stamp: "2024-07-08 21:28:25 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -38,7 +38,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 Markdown → HTML:
 
 '[$50.50]($1970)'
- → 
+ →
 '<span class="inflation-adjusted" data-year-original="1970" data-amount-original="50.50" data-year-current="2019" data-amount-current="343.83">$50.50<sub>1970</sub><sup>$343.83</sup></span>'
 
 Testbed:

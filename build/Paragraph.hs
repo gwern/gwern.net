@@ -14,6 +14,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import MetadataFormat (cleanAbstractsHTML)
 import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
 import Config.Paragraph as C
+import Config.Misc as CD (cd)
 
 import Query (extractURLs)
 
@@ -22,9 +23,10 @@ import Query (extractURLs)
 processParagraphizer :: FilePath -> String -> IO String
 processParagraphizer _ "" = return ""
 processParagraphizer p a = -- the path is necessary to check against the whitelist
-      if length a < 1024 || paragraphized p a then return a
+      if length a < 512 || paragraphized p a then return a
       else do let a' = delete "<p>" $ delete "</p>" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
+              CD.cd
               (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/paragraphizer.py", a'']
               case status of
                 ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> printRed "Paragraphizer failed!" >> return a

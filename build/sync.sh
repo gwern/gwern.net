@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-08 10:42:06 gwern"
+# When:  Time-stamp: "2024-07-09 20:43:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -30,6 +30,11 @@ if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
     red "Error: missing dependencies!"
     echo "$DEPENDENCIES_MISSING"
     exit 1
+fi
+
+if [ $(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//') -lt 3 ]; then
+    echo "Error: Less than 3GB of free space in home directory" >&2
+    exit 2
 fi
 
 if  [ -n "$(pgrep hakyll)" ]
@@ -117,6 +122,7 @@ else
           s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
+          s '_n_th' '<em>n</em>th';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -165,10 +171,10 @@ else
           if [ -e "$path" ] && [ ! -L "$path" ]; then
             if [ -d "$path" ]; then
               printf "Fatal error: Directory exists with the same name as file %s\n" "$file" >&2
-              exit 1
+              exit 3
             else
               printf "Fatal error: File exists with the same name as file %s\n" "$file" >&2
-              exit 1
+              exit 4
             fi
           fi
         done' sh {} +
@@ -232,7 +238,7 @@ else
                                     fi;
     done &
 
-    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
+    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 5)
 
     if [ "$SLOW" ]; then
 
@@ -477,13 +483,13 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 36000 ] && echo "$VISIBLE_N" && exit 1; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 36000 ] && echo "$VISIBLE_N" && exit 6; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
-         [ "$COMPILED_N" -le 115000 ] && echo "File count: $COMPILED_N" && exit 1;
+         [ "$COMPILED_N" -le 115000 ] && echo "File count: $COMPILED_N" && exit 7;
          COMPILED_BYTES="$(du --summarize --total --dereference --bytes ./_site/ | tail --lines=1 | cut --field=1)"
-         [ "$COMPILED_BYTES" -le 100000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
+         [ "$COMPILED_BYTES" -le 100000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 8; }
     wrap λ "Sanity-check: number of files & file-size too small?"
 
     λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 22000 ] && echo "$SUGGESTIONS_N"; }
@@ -586,7 +592,6 @@ else
 
     λ(){ echo "$PAGES_ALL" | gfv 'hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';
-         echo "$PAGES_ALL" | gfv 'hafu' | xargs grep -E --with-filename --color=always -v -e '<a .*href=".*">\?' | gfv -e '<span id="cb';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.

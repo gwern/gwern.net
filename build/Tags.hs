@@ -58,17 +58,17 @@ tagPairsCount md = reverse $ frequency $ concatMap pairs $ M.elems $ M.map (\(_,
 --
 -- Simple version:
 -- > tagsToLinksSpan "economics genetics/heritable psychology/writing"
--- → 
+-- →
 -- Span ("",["link-tags"],[])
 --   [Link ("",["link-tag"],[]) [Str "economics"] ("/doc/economics/index",""),Str ", ",
 --     Link ("",["link-tag"],[]) [Str "genetics/heritable"] ("/doc/genetics/heritable/index",""),Str ", ",
 --     Link ("",["link-tag"],[]) [Str "psychology/writing"] ("/doc/psychology/writing/index","")
 --   ]
 -- Markdown:
--- → 
+-- →
 -- [[economics](/doc/economics/index){.link-tag}, [genetics/heritable](/doc/genetics/heritable/index){.link-tag}, [psychology/writing](/doc/psychology/writing/index){.link-tag}]{.link-tags}
 -- HTML:
--- → 
+-- →
 -- <span class="link-tags">
 --   <a href="/doc/economics/index" class="link-tag">economics</a>,
 --   <a href="/doc/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
