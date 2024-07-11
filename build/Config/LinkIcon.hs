@@ -251,7 +251,7 @@ linkIconRulesDouble u
  | u'' u "apnews.com" = ("AP", "text,sans")
  | aU' u ["www.unz.com/gnxp/", "razib.substack.com", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "x.com/razibkhan"] = ("RK", "text,sans") -- Razib Khan
  | u'' u "jaymans.wordpress.com" = ("J👨🏾", "text,sans") -- JayMan
- | u'' u "www.rollingstone.com" = ("𝓡 𝐒", "text") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
+ | u'' u "www.rollingstone.com" = ("𝓡 𝐒", "text") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
  | u'' u "www.popsci.com" = ("PS", "text,sans") -- Popular Science magazine (no usable or recognizable logos)
  | u'' u "www.crunchbase.com" = ("cb", "text,sans") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>
  | u'' u "newcriterion.com" = ("NC", "text") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>
@@ -1063,7 +1063,7 @@ linkIconTestUnitsText =
          , ("/static/nginx/twdne.conf",  "code","svg")
          , ("/static/template/default.html",  "code","svg")
          , ("https://solar.lowtechmagazine.com/2015/12/fruit-walls-urban-farming-in-the-1600s/", "☀", "text")
-         , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡 𝐒", "text")
+         , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡 𝐒", "text")
          , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,mono")
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans")

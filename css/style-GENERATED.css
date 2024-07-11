@@ -8450,7 +8450,7 @@ a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
     --link-icon-size: 0.8em;
 }
 
-a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
+a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
     opacity: 0.75;
     --link-icon-size: 0.55em;
 }
