@@ -277,20 +277,6 @@ Annotations = { ...Annotations,
 			tagsHTML = `<span class="${tagsListClass}">${tagsElement.innerHTML}</span>`;
 		}
 
-		//	Archive URL (if exists).
-		let archiveLinkHref = titleLink.dataset.urlArchive ?? null;
-		let linkTarget = (GW.isMobile() ? "_self" : "_blank");
-		let archiveLinkHTML = archiveLinkHref
-							  ? `<span 
-								  class="data-field archiveURL"
-								  ><a
-									title="Link to local archive for ${titleText}"
-									href="${archiveLinkHref}"
-									target="${linkTarget}"
-									alt="Locally archived version of this URL"
-									>archive</a></span>`
-							  : null;
-
 		//	The backlinks link (if exists).
 		let backlinksElement = response.querySelector(".backlinks");
 		let backlinksHTML = backlinksElement
@@ -315,8 +301,8 @@ Annotations = { ...Annotations,
 							  >${linkbibElement.innerHTML}</span>`
 						  : null;
 
-		//	All the aux-links (tags, archive, backlinks, similars, link link-bib).
-		let auxLinksHTML = ([ archiveLinkHTML, backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
+		//	All the aux-links (tags, backlinks, similars, link link-bib).
+		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
 		if (auxLinksHTML || tagsHTML)
 			auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
 
@@ -414,8 +400,7 @@ Annotations = { ...Annotations,
 			tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 			popFrameTemplate:               "annotation-blockquote-not",
 			popFrameTitleText:              popFrameTitleText,
-			popFrameTitleLinkHref:          titleLinkHref,
-			popFrameTitleArchiveLinkHref:   archiveLinkHref
+			popFrameTitleLinkHref:          titleLinkHref
 		};
 	},
 

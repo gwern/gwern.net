@@ -51,7 +51,6 @@ Extracts = { ...Extracts,
 		if (referenceData == null) {
 			referenceData = {
 				popFrameTitleLinkHref:          target.href,
-				popFrameTitleArchiveLinkHref:   (target.dataset.urlArchive ?? null),
 				popFrameTitleText:              (target.hostname == location.hostname
 												 ? target.pathname + target.hash
 												 : target.href)
