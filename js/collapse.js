@@ -252,6 +252,26 @@ function newDisclosureButton(options) {
 	return elementFromHTML(disclosureButtonHTML);
 }
 
+/****************************************************************************/
+/*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
+	namely cases where a div.abstract has a span.abstract-collapse; also 
+	fix erroneous HTML structure caused by well-meaning but misguided Pandoc 
+	HTML structure rectification applied to such cases.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = (eventInfo) => {
+	GWLog("preprocessMismatchedCollapseHTML", "collapse.js", 1);
+
+	eventInfo.container.querySelectorAll("div.collapse span.abstract-collapse").forEach(possiblyMismatchedAbstract => {
+		let containingCollapse = possiblyMismatchedAbstract.closest(".collapse");
+		if (containingCollapse.tagName == "DIV") {
+			possiblyMismatchedAbstract.parentElement.parentElement.insertBefore(possiblyMismatchedAbstract, possiblyMismatchedAbstract.parentElement);
+			rewrapContents(possiblyMismatchedAbstract, "div", {
+				moveClasses: true
+			});
+		}
+	});
+}, "rewrite");
+
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */

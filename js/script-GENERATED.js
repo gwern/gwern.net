@@ -5091,20 +5091,6 @@ Annotations = { ...Annotations,
 			tagsHTML = `<span class="${tagsListClass}">${tagsElement.innerHTML}</span>`;
 		}
 
-		//	Archive URL (if exists).
-		let archiveLinkHref = titleLink.dataset.urlArchive ?? null;
-		let linkTarget = (GW.isMobile() ? "_self" : "_blank");
-		let archiveLinkHTML = archiveLinkHref
-							  ? `<span 
-								  class="data-field archiveURL"
-								  ><a
-									title="Link to local archive for ${titleText}"
-									href="${archiveLinkHref}"
-									target="${linkTarget}"
-									alt="Locally archived version of this URL"
-									>archive</a></span>`
-							  : null;
-
 		//	The backlinks link (if exists).
 		let backlinksElement = response.querySelector(".backlinks");
 		let backlinksHTML = backlinksElement
@@ -5129,8 +5115,8 @@ Annotations = { ...Annotations,
 							  >${linkbibElement.innerHTML}</span>`
 						  : null;
 
-		//	All the aux-links (tags, archive, backlinks, similars, link link-bib).
-		let auxLinksHTML = ([ archiveLinkHTML, backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
+		//	All the aux-links (tags, backlinks, similars, link link-bib).
+		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
 		if (auxLinksHTML || tagsHTML)
 			auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
 
@@ -5228,8 +5214,7 @@ Annotations = { ...Annotations,
 			tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 			popFrameTemplate:               "annotation-blockquote-not",
 			popFrameTitleText:              popFrameTitleText,
-			popFrameTitleLinkHref:          titleLinkHref,
-			popFrameTitleArchiveLinkHref:   archiveLinkHref
+			popFrameTitleLinkHref:          titleLinkHref
 		};
 	},
 
@@ -9408,22 +9393,6 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
-	"pop-frame-title-annotation": `<[IF popFrameTitleArchiveLinkHref]>
-<a
-    class="popframe-title-link"
-    title="Open <{popFrameTitleArchiveLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    href="<{popFrameTitleArchiveLinkHref}>"
-    target="<{linkTarget}>"
-        ><{popFrameTitleText}></a>
-<[ELSE]>
-<a
-    class="popframe-title-link"
-    href="<{popFrameTitleLinkHref}>"
-    title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
-    target="<{linkTarget}>"
-        ><{popFrameTitleText}></a>
-<[IFEND]>
-`,
 	"pop-frame-title-standard": `<a
 	class="popframe-title-link"
 	href="<{popFrameTitleLinkHref}>"
@@ -10468,20 +10437,11 @@ Extracts = { ...Extracts,
     titleForPopFrame_ANNOTATION: (popFrame) => {
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
-        let target = popFrame.spawningTarget;
+		let target = popFrame.spawningTarget;
 		let referenceData = Annotations.referenceDataForLink(target);
-		if (referenceData == null) {
-			referenceData = {
-				popFrameTitleLinkHref:          target.href,
-				popFrameTitleArchiveLinkHref:   (target.dataset.urlArchive ?? null),
-				popFrameTitleText:              (target.hostname == location.hostname
-												 ? target.pathname + target.hash
-												 : target.href)
-			};
-			referenceData.popFrameTitleText = `<code>${referenceData.popFrameTitleText}</code>`;
-		}
-
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		return (referenceData
+				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext())
+				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -15700,6 +15660,26 @@ function newDisclosureButton(options) {
 
 	return elementFromHTML(disclosureButtonHTML);
 }
+
+/****************************************************************************/
+/*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
+	namely cases where a div.abstract has a span.abstract-collapse; also 
+	fix erroneous HTML structure caused by well-meaning but misguided Pandoc 
+	HTML structure rectification applied to such cases.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = (eventInfo) => {
+	GWLog("preprocessMismatchedCollapseHTML", "collapse.js", 1);
+
+	eventInfo.container.querySelectorAll("div.collapse span.abstract-collapse").forEach(possiblyMismatchedAbstract => {
+		let containingCollapse = possiblyMismatchedAbstract.closest(".collapse");
+		if (containingCollapse.tagName == "DIV") {
+			possiblyMismatchedAbstract.parentElement.parentElement.insertBefore(possiblyMismatchedAbstract, possiblyMismatchedAbstract.parentElement);
+			rewrapContents(possiblyMismatchedAbstract, "div", {
+				moveClasses: true
+			});
+		}
+	});
+}, "rewrite");
 
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.

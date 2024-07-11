@@ -46,20 +46,11 @@ Extracts = { ...Extracts,
     titleForPopFrame_ANNOTATION: (popFrame) => {
         GWLog("Extracts.titleForPopFrame_ANNOTATION", "extracts-annotations.js", 2);
 
-        let target = popFrame.spawningTarget;
+		let target = popFrame.spawningTarget;
 		let referenceData = Annotations.referenceDataForLink(target);
-		if (referenceData == null) {
-			referenceData = {
-				popFrameTitleLinkHref:          target.href,
-				popFrameTitleArchiveLinkHref:   (target.dataset.urlArchive ?? null),
-				popFrameTitleText:              (target.hostname == location.hostname
-												 ? target.pathname + target.hash
-												 : target.href)
-			};
-			referenceData.popFrameTitleText = `<code>${referenceData.popFrameTitleText}</code>`;
-		}
-
-		return Transclude.fillTemplateNamed("pop-frame-title-annotation", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		return (referenceData
+				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext())
+				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
