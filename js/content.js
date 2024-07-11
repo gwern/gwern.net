@@ -833,6 +833,14 @@ Content = {
 					editLink.remove();
 				});
 
+				//	Remove GPS coordinates.
+				contentDocument.querySelectorAll(".geo-inline-hidden").forEach(gpsCoords => {
+					let containingGraf = gpsCoords.closest("p");
+					gpsCoords.remove();
+					if (containingGraf.textContent.trim() == "")
+						containingGraf.remove();
+				});
+
 				//  Process links.
 				contentDocument.querySelectorAll("a").forEach(link => {
 					//	De-linkify non-anchor self-links.
