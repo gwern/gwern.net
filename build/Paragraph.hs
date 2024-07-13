@@ -4,6 +4,7 @@ module Paragraph where
 import Control.Concurrent (forkIO)
 import Control.Monad (void)
 import Data.List (isInfixOf, intercalate)
+import qualified Data.Map as M (member)
 import qualified Data.Text as T (breakOnAll, pack, unpack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import Text.Show.Pretty (ppShow)
@@ -12,6 +13,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
 import MetadataFormat (cleanAbstractsHTML)
+import LinkMetadataTypes (Metadata)
 import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
 import Config.Paragraph as C
 import Config.Misc as CD (cd)
@@ -20,9 +22,9 @@ import Query (extractURLs)
 
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-4o to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-4o), but everything else wants HTML
-processParagraphizer :: FilePath -> String -> IO String
-processParagraphizer _ "" = return ""
-processParagraphizer p a = -- the path is necessary to check against the whitelist
+processParagraphizer :: Metadata -> FilePath -> String -> IO String
+processParagraphizer _ _ "" = return ""
+processParagraphizer md p a = -- the path is necessary to check against the whitelist
       if length a < 512 || paragraphized p a then return a
       else do let a' = delete "<p>" $ delete "</p>" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
@@ -36,12 +38,12 @@ processParagraphizer p a = -- the path is necessary to check against the whiteli
                               return (T.unpack html, pandoc)
                         case clean of
                               Left e -> error $ ppShow e ++ " : " ++ a
-                              Right (output,document) ->  checkURLs document >> return (cleanAbstractsHTML output)
+                              Right (output,document) ->  checkURLs md document >> return (cleanAbstractsHTML output)
 
 -- EXPERIMENTAL: the GPT-4o paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
-checkURLs :: Pandoc -> IO ()
-checkURLs p = let urls = filter (not . isLocal ) $ extractURLs p in
-                mapM_ (\u -> forkIO $ void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium" [T.unpack u]) urls
+checkURLs :: Metadata -> Pandoc -> IO ()
+checkURLs md p = let urls = filter (\u -> not (isLocal u || M.member (T.unpack u) md)) $ extractURLs p in
+                   mapM_ (\u -> forkIO $ void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium" [T.unpack u]) urls
 
 -- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
 -- and we will skip trying to break it up further.

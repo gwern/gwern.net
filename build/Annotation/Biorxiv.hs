@@ -8,14 +8,15 @@ import Text.Show.Pretty (ppShow)
 import System.Exit (ExitCode(ExitFailure))
 
 import LinkAuto (linkAutoHtml5String)
-import LinkMetadataTypes (Failure(..), MetadataItem, Path)
+import LinkMetadataTypes (Failure(..), MetadataItem, Path, Metadata)
 import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI)
 import Utils (printRed, replace)
 import Paragraph (processParagraphizer)
 
 -- handles medRxiv too (same codebase)
-biorxiv  :: Path -> IO (Either Failure (Path, MetadataItem))
-biorxiv p = do checkURL p
+biorxiv  :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
+biorxiv md p =
+            do checkURL p
                if ".pdf" `isInfixOf` p then return (Right (p, ("", "", "", "", [], [], ""))) else
                 do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                    case status of
@@ -33,7 +34,7 @@ biorxiv p = do checkURL p
                                      let author  = cleanAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                      let abstractRaw = concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                      let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
-                                     abstrct <- processParagraphizer p $
+                                     abstrct <- processParagraphizer md p $
                                                 replace "9s" "s" $ -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
                                                 linkAutoHtml5String $ cleanAbstractsHTML abstractRaw'
                                      let ts = [] -- TODO: replace with ML call to infer tags

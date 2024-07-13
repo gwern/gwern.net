@@ -13,14 +13,14 @@ import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagText)
 import System.IO.Unsafe (unsafePerformIO)
 
 import LinkAuto (linkAutoHtml5String)
-import LinkMetadataTypes (Failure(..), MetadataItem, Path)
+import LinkMetadataTypes (Failure(..), Metadata, MetadataItem, Path)
 import MetadataFormat (checkURL, cleanAuthors, cleanAbstractsHTML, processDOI, trimTitle, processDOIArxiv)
 import Utils (printRed, printGreen, replace, safeHtmlWriterOptions, replaceMany, sedMany, inlineMath2Text, delete, deleteMany)
 import Paragraph (processParagraphizer)
 import Config.Misc as C -- (cd)
 
-arxiv :: Path -> IO (Either Failure (Path, MetadataItem))
-arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
+arxiv :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
+arxiv md url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
                let url' = replace "https://browse.arxiv.org/html/" "https://arxiv.org/abs/" $ replace "http://" "https://" url
                (status,bs, arxivid) <- arxivDownload url'
                case status of
@@ -35,7 +35,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let doi = [("doi", if null doiTmp then processDOIArxiv url' else doiTmp)]
-                         abst <- processParagraphizer url' $ linkAutoHtml5String $ cleanAbstractsHTML $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
+                         abst <- processParagraphizer md url' $ linkAutoHtml5String $ cleanAbstractsHTML $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] :: [String] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" || authors=="arXiv api core" || title=="Error" then

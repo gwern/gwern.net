@@ -6,14 +6,16 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
-import LinkMetadataTypes (MetadataItem, Failure(..), Path)
+import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
 import MetadataFormat (cleanAbstractsHTML, trimTitle, checkURL, cleanAuthors)
 import Utils (replace, trim, printRed)
+import Paragraph (processParagraphizer)
 
 import Annotation.Arxiv (processArxivAbstract)
 
-openreview :: Path -> IO (Either Failure (Path, MetadataItem))
-openreview p = do checkURL p
+openreview :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
+openreview md p =
+               do checkURL p
                   let p' = replace "/pdf?id=" "/forum?id=" p
                   (status,_,bs) <- runShellCommand "./" Nothing "openReviewAbstract.sh" [p']
                   case status of
@@ -29,7 +31,8 @@ openreview p = do checkURL p
                                            | otherwise = "[Keywords: " ++ concat keywords ++ "]"
                                     let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                                     let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                                    let abstractCombined = trim $ intercalate "\n" [tldr', desc', linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords']
+                                    abstract <- processParagraphizer md p' $ linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords'
+                                    let abstractCombined = trim $ intercalate "\n" [tldr', desc', abstract]
                                     return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [], [],
                                                         -- due to pseudo-LaTeX
                                                           abstractCombined))

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-07-02 11:08:12 gwern"
+When:  Time-stamp: "2024-07-13 19:29:37 gwern"
 License: CC-0
 -}
 
@@ -137,7 +137,7 @@ rescrapeItem gtx dblist path =
 updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
 updateGwernEntry x@(path,(title,author,date,dc,kvs,tags,_)) = if False then return x -- || not ("index"`isInfixOf` path)
     else do printGreen path
-            newEntry <- gwern path
+            newEntry <- gwern M.empty path
             case newEntry of
               Left Temporary -> return x
               Left Permanent -> return (path,(title,author,date,dc,kvs,tags,"")) -- zero out the abstract but preserve the other metadata; if we mistakenly scraped a page before and generated a pseudo-abstract, and have fixed that mistake so now it returns an error rather than pseudo-abstract, we want to erase that pseudo-abstract until such time as it returns a 'Right' (a successful real-abstract)
@@ -401,7 +401,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just i  -> return (Right (target'', i))
-       Nothing -> do new <- linkDispatcher x
+       Nothing -> do new <- linkDispatcher md x
                      case new of
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return (Left Temporary)

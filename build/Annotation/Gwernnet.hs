@@ -14,7 +14,7 @@ import Text.Regex.TDFA ((=~))
 
 import Annotation.PDF (pdf)
 import Image (invertImage)
-import LinkMetadataTypes (MetadataItem, Failure(..), Path)
+import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
 import MetadataFormat (checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
 import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim, delete) -- safeHtmlWriterOptions, sedMany
 import Tags (listTagDirectoriesAll, abbreviateTag)
@@ -46,11 +46,12 @@ findDivContent html = renderTags <$> extractDivContents 0 (parseTags html)
       | otherwise = tag : takeContent level tags  -- Continue with the next tag.
     takeContent x y = error $ "Gwernnet.hs: findDivContent: takeContent: pattern-amtch failed, which should be impossible: " ++ show x ++ " : " ++ show y
 
-gwern :: Path -> IO (Either Failure (Path, MetadataItem))
-gwern "/doc/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
-gwern "doc/index"  = gwerntoplevelDocAbstract
-gwern p | p == "/" || p == "" = return (Left Permanent)
-        | ".pdf" `isInfixOf` p = pdf p
+gwern :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
+gwern _ "/doc/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
+gwern _ "doc/index"  = gwerntoplevelDocAbstract
+gwern md p
+        | p == "/" || p == "" = return (Left Permanent)
+        | ".pdf" `isInfixOf` p = pdf md p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".md", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | anyPrefix p ["metadata", "/metadata"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
