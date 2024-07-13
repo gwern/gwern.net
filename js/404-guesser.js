@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2024-06-27 18:02:02 gwern"
+ * When:  Time-stamp: "2024-07-13 11:53:01 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -20,7 +20,7 @@
  *
  * Example:
  * a reader goes to `/rubiiks-cube`, intending to go to `/rubiks-cube`; this will return
- * as suggestions: `/rubiks-cube, /subculture, /rubiks-cube-claude, /sunk-cost, ...`
+ * as suggestions: `/rubiks-cube, /subculture, /rubiks-cube-claude, /sunk-cost, …`
  * of which #1 & #3 are useful to the reader.
  *
  * Usage:
@@ -30,6 +30,7 @@
  * ~~~{.HTML}
  * <section class="level1 block first-block">
  *   <h1 id="guessed-urls">Guessed URLs</h1>
+ *   …
  *   <ul class="list-level-1">
  *     <li><a href="[suggested-url]"><code>[suggested-url]</code></a></li>
  *     ...
@@ -161,12 +162,13 @@ function findSimilarUrls(urls, targetUrl, n = 10,
 }
 
 // Function to inject suggestions into the page
-function injectSuggestions(suggestions) {
+function injectSuggestions(current, suggestions) {
     const suggestionsHtml = suggestions.map(url => `<li><a class="link-live" href="${url}"><code>${url}</code></a></li>`).join('');
     const suggestionsElement = document.createElement('section');
     suggestionsElement.className = 'level1 block first-block';
     suggestionsElement.innerHTML = `
         <h1 id="guessed-urls">Guessed URLs</h1>
+        <p>Nearest URLs to your current one (<code>${current}</code>):</p>
         <ul class="list-level-1">${suggestionsHtml}</ul>
     `;
 
@@ -187,7 +189,7 @@ async function suggest404Alternatives() {
     if (sitemapText) {
         const urls = parseUrls(sitemapText);
         const similarUrls = findSimilarUrls(urls, currentPath);
-        injectSuggestions(similarUrls);
+        injectSuggestions(currentPath, similarUrls);
     }
 }
 
