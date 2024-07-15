@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-07-13 19:29:37 gwern"
+When:  Time-stamp: "2024-07-14 18:54:32 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, warnParagraphizeGTX, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -52,7 +52,6 @@ import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount,
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
-import Paragraph (paragraphized)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import MetadataFormat (processDOI, cleanAbstractsHTML, isDate, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
@@ -94,8 +93,9 @@ addPageLink x = x
 --
 -- To do IO (eg. calling an API):
 --
+-- > md <- LinkMetadata.readLinkMetadata :: IO LinkMetadataTypes.Metadata
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,dateModified,kvs,tags,abst)) ->
--- >  do { abst' <- Paragraph.processParagraphizer path abst;
+-- >  do { abst' <- Paragraph.processParagraphizer md path abst;
 -- >       return (path,(title,author,date,dateModified,kvs,tags, abst')) } )
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
@@ -295,12 +295,6 @@ readLinkMetadataAndCheck = do
              unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
 
              return final
-
--- read a GTX database and look for annotations that need to be paragraphized.
-warnParagraphizeGTX :: FilePath -> IO ()
-warnParagraphizeGTX path = do gtx <- readGTXFast path
-                              let unparagraphized = filter (\(f,(_,_,_,_,_,_,abst)) -> not (paragraphized f abst)) gtx
-                              unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md

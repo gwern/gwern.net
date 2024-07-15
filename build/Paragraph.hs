@@ -2,7 +2,7 @@
 module Paragraph where
 
 import Control.Concurrent (forkIO)
-import Control.Monad (void)
+import Control.Monad (unless, void)
 import Data.List (isInfixOf, intercalate)
 import qualified Data.Map as M (member)
 import qualified Data.Text as T (breakOnAll, pack, unpack, Text)
@@ -12,6 +12,7 @@ import Text.Pandoc (def, pandocExtensions, readerExtensions, readMarkdown, runPu
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
+import GTX (readGTXFast)
 import MetadataFormat (cleanAbstractsHTML)
 import LinkMetadataTypes (Metadata)
 import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
@@ -25,7 +26,7 @@ import Query (extractURLs)
 processParagraphizer :: Metadata -> FilePath -> String -> IO String
 processParagraphizer _ _ "" = return ""
 processParagraphizer md p a = -- the path is necessary to check against the whitelist
-      if length a < 512 || paragraphized p a then return a
+      if length a < C.minLength || paragraphized p a then return a
       else do let a' = delete "<p>" $ delete "</p>" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               CD.cd
@@ -56,7 +57,15 @@ paragraphized f a = f `elem` C.whitelist ||
    paragraphsMarkdown b = "\n\n" `isInfixOf` b
    blockElements :: String -> Bool
    -- full-blown lists or blockquotes also imply it's fully-formatted
-   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>", "<table>"]
+   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>", "<table>", "<div class="]
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
+
+
+-- read a GTX database and look for annotations that need to be paragraphized.
+warnParagraphizeGTX :: FilePath -> IO ()
+warnParagraphizeGTX path = do CD.cd
+                              gtx <- readGTXFast path
+                              let unparagraphized = filter (\(f,(_,_,_,_,_,_,abst)) -> abst /= "" && not (paragraphized f abst)) gtx
+                              unless (null unparagraphized) $ printGreen $ ppShow (map fst unparagraphized)
