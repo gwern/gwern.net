@@ -292,6 +292,14 @@ canonicals = M.fromList
   , ("Randall Monroe", "Randall Munroe")
   , ("Alexander Berg", "Alexander C. Berg")
   , ("Phúc H. Lê Khắc", "Phuc H. Le Khac")
+  , ("Phuc H. Le-Khac", "Phuc H. Le Khac")
+  , ("Alan Smeaton", "Alan F. Smeaton")
+  , ("Sam Bowman", "Samuel R. Bowman")
+  , ("Sam R. Bowman", "Samuel R. Bowman")
+  , ("Johan Gunnar Eriksson", "Johan G. Eriksson")
+  , ("Steven Piantadosi", "Steven T. Piantadosi")
+  , ("Daniel Benjamin", "Daniel J. Benjamin")
+  , ("aidangomez", "Aidan Gomez")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -439,6 +447,22 @@ authorLinkDB = M.fromList $
     , ("Sandhini Agarwal", "https://scholar.google.com/citations?user=8UZIqcoAAAAJ")
     , ("Phuc H. Le Khac", "https://lkhphuc.com/")
     , ("George Berzsenyi", "https://www.npr.org/2019/04/07/707326070/a-math-teachers-life-summed-up-by-the-gifted-students-he-mentored")
+    , ("Alan F. Smeaton", "https://en.wikipedia.org/wiki/Alan_Smeaton")
+    , ("Samuel R. Bowman", "https://cims.nyu.edu/~sbowman/")
+    , ("Felix Hill", "https://fh295.github.io/")
+    , ("Alex Wang", "https://w4ngatang.github.io/")
+    , ("Julian Michael", "https://julianmichael.org/")
+    , ("Amanpreet Singh", "https://apsdehal.in/")
+    , ("Robert Geirhos", "https://scholar.google.com/citations?user=w3kGtMIAAAAJ")
+    , ("Percy Liang", "https://cs.stanford.edu/~pliang/")
+    , ("Johan G. Eriksson", "https://medicine.nus.edu.sg/researcher/johan-gunnar-eriksson/")
+    , ("Matthias Bethge", "https://scholar.google.com/citations?user=0z0fNxUAAAAJ")
+    , ("Jacob Steinhardt", "https://jsteinhardt.stat.berkeley.edu/")
+    , ("Steven T. Piantadosi", "https://colala.berkeley.edu/people/piantadosi/")
+    , ("Christian Gieger", "https://orcid.org/0000-0001-6986-9554")
+    , ("Zhilin Yang", "https://scholar.google.com/citations?user=7qXxyJkAAAAJ&hl=en&oi=ao")
+    , ("Daniel J. Benjamin", "https://scholar.google.com/citations?user=wIEUEuYAAAAJ&hl=en&oi=ao")
+    , ("Harry Campbell", "https://scholar.google.com/citations?user=ihShJe0AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1668,4 +1692,4 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock"]
+    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama"]

@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-07-10 11:08:32 gwern"
+# When:  Time-stamp: "2024-07-12 22:00:22 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -43,7 +43,7 @@ Summary: Fix formatting and spelling errors caused by PDFs or OCR.
 
 Task description: Fix ONLY the PDF OCR errors. Otherwise, copy exactly and do not rewrite or change anything like pronouns.
 
-In particular, fix hyphens at the end of lines which are not in the original words and are from the PDF hard-wrapping lines. Replace ligatures or control codes with the original letters, like 'ﬄ' → 'ffl'.
+In particular, fix hyphens at the end of lines which are not in the original words and are from the PDF hard-wrapping lines. Replace ligatures or control codes with the original letters, like 'ﬄ' → 'ffl'. Strip spurious footnotes, like in author lists.
 
 Examples:
 text>Numer-
@@ -79,6 +79,9 @@ order cognitive processes contributing to goal-
 directed behavior (Diamond, 2013)·</text> →
 A central role has been attributed to cognitive control processes---also referred to as <strong>executive
 attention</strong>, <strong>attentional control</strong>, <strong>executive control</strong>, <strong>inhibitory control</strong>, or <strong>executive functions</strong>---that act as an umbrella term for self-regulatory higher-order cognitive processes contributing to goal-directed behavior (Diamond, 2013).
+
+<text>Sagar Gaikwad 1,2, Nicha Puangmalai 1,2, Minal Sonawane 1,2, Mauro Montalbano 1,2, Rachel Price 3, Malini S. Iyer 4, Anamika Ray 4, Sandra Moreno 3, Rakez Kayed</text> →
+Sagar Gaikwad, Nicha Puangmalai, Minal Sonawane, Mauro Montalbano, Rachel Price, Malini S. Iyer, Anamika Ray, Sandra Moreno, Rakez Kayed
 
 Input:
 <text>{target}</text> →

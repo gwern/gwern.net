@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-04 13:09:31 gwern"
+# When:  Time-stamp: "2024-07-14 11:02:22 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -148,7 +148,7 @@ pad-black () {
 crop-pad () { crop "$@" && pad "$@"; }
 crop-pad-black () { crop "$@" && pad-black "$@"; }
 
-# function split_image() {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
@@ -188,7 +188,7 @@ png2JPGQualityCheck () {
 export -f png2JPGQualityCheck
 
 # crossref: defined in ~/wiki/static/build/crossref
-cr() { crossref "$@" & }
+cr () { crossref "$@" & }
 
 # PDF cleanup: strip encryption, run through `pdftk` to render them standard & strip out weirdness, reformat titles.
 e () { FILE=""
@@ -227,7 +227,6 @@ e () { FILE=""
        else echo "File does not exist? $FILE"
        fi;
      }
-alias E="e" # typo
 alias ea="exiftool -All"
 alias exiftool="exiftool -overwrite_original"
 
@@ -407,7 +406,7 @@ complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u
 alias u="upload"
 # 'upload' moved to ~/wiki/static/build/upload for easier calling from XMonad
 ## tab-complete the first argument as the local file, and the second argument as the remote directory:
-_upload() {
+_upload () {
     local cur cword
     _init_completion || return ## assumes `bash-completion` package is installed & sourced previously
 
@@ -422,7 +421,7 @@ _upload() {
 complete -F _upload upload
 
 # wait for a file to become quiescent because eg. the web browser is still downloading it:
-is_downloading() {
+is_downloading () {
   file="$1"
   current_time=$(date +%s)
 
@@ -498,7 +497,7 @@ mvuri () {
 # everyNDays: returns a boolean true every _N_ whole-number days in a systematic way based on date modulus; can be used in place of `$RANDOM` calls to do an operation 'randomly' every once in a while, by calling `everyNDays N && ...` or `if everyNDays N; then ...; else; ... fi`.
 # (Better than actual randomness because it avoids clumping/starvation, or potentially doing all of the operations on the same run by chance; and far simpler than any explicit tracking of state/date.)
 # The optional second whole-number argument is an 'offset' to avoid clumping of multiple calls with the same _N_; they can be offset by relatively-prime numbers or just plain incremented.
-everyNDays() {
+everyNDays () {
     (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset to stagger or space out multiple calls of _N_ relative to each other
 }
 
@@ -509,7 +508,7 @@ everyNDays() {
 # This is useful for prioritizing commands, particularly if they may crash on an error:
 # errors (eg. broken links or malformed syntax) will usually be in the most-recently-modified files,
 # so processing them first reduces latency to fix.
-sort_by_lastmodified() {
+sort_by_lastmodified () {
     local git_files latest_file timestamp
     while read -r dir; do
         # Change to the directory

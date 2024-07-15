@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-09 20:43:53 gwern"
+# When:  Time-stamp: "2024-07-14 19:09:57 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -87,7 +87,7 @@ else
           stringReplace '&hl=en&oi=ao' '' ./static/build/Config/MetadataAuthor.hs;
 
           ## name/entity consistency:
-          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'State of the art' 'State-of-the-art'; s 'State Of The Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers';
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'State of the art' 'State-of-the-art'; s 'State Of The Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'enwiki8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers'; s ' auto-encoder' ' autoencoder'; s 'Auto-Encoder' 'Autoencoder'; s ' GPT3' ' GPT-3' ; s ' GPT4' ' GPT-4';
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
@@ -122,7 +122,7 @@ else
           s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
-          s '_n_th' '<em>n</em>th';
+          s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -662,7 +662,10 @@ else
     λ(){ ge -e ' a [aei]' $PAGES | gfv -e 'static/build/' -e '/gpt-3' -e '/gpt-2-preference-learning' -e 'sicp/' -e 'a eulogy' -e 'a eureka moment' | gec -e ' a [aei]'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
-     λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' -- $PAGES | gfv '/utext'; }
+     λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' \
+              -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
+              -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' -- $PAGES | \
+              gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
 
      λ(){ gec -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- $PAGES; }
@@ -767,7 +770,10 @@ else
             -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
             `# match both single & double-quotation versions of erroneous inflation-adjusters like "<a href='$2022'>148,749</a>":` \
             -e '<a href=.\$[12][0-9][0-9][0-9].>[0-9a-zA-Z,.-]' -e '<ul>[ a-zA-Z][ a-zA-Z]' \
-            -e '<a href="\$[12][0-9][0-9][0-9]">\$<su[bp]>.*</a>' -- ./metadata/*.gtx; }
+            -e '<a href="\$[12][0-9][0-9][0-9]">\$<su[bp]>.*</a>' \
+            -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
+            -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
+            -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 
     λ(){ gfc -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
@@ -776,7 +782,7 @@ else
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
-            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -- ./metadata/*.gtx; }
+            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx; }
     wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gfc -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
@@ -802,7 +808,7 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -- ./metadata/*.gtx | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -860,10 +866,10 @@ else
           }
     wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?" &
 
-    λ(){ grep --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES;
-         grep --with-filename --perl-regexp '[^[:print:]]' $PAGES;
+    λ(){ grep --color --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES;
+         grep --color --with-filename --perl-regexp '[^[:print:]]' $PAGES;
          # Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide
-         grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com'; }
+         grep --color -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com'; }
     wrap λ "Markdown files: garbage or control characters detected?" &
 
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
@@ -1392,7 +1398,7 @@ else
     export -f optimize_gif
     find ./doc/www/ -type f -name "*.gif" -mtime -3 | parallel optimize_gif
 
-    ## Find JPGS which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
+    ## Find JPGs/PNGs which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing.
     ## We should probably return to a regular image thumbnail system, so we never downscale the originals, and serve appropriate thumbnails instead.
     λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | gfv -e 'doc/www/' -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' -e '1999-marklombardi-olivernorthlakeresourcespanamairancontra198486-v4-detail.jpg' -e '2022-09-24-aella-fetishtaboonessvspopularity-chart-large.jpg' -e '2024-perkovic-figure1-kidneydiseasesurvivalcurvesonsemaglutidevsplacebo.jpg' ); do
@@ -1402,7 +1408,7 @@ else
                   mogrify -resize 1700x10000 "$IMAGE";
               fi;
           done; }
-    wrap λ "Too-wide images (downscale)" &
+    wrap λ "Too-wide images (downscale)" # run this before 'png2JPGQualityCheck' to avoid that deleting images
 
     λ() { TARGETS=$(find doc/ -type f -mtime -31 -name "*.png" | gfv -e 'static/' -e 'doc/www/' -e 'doc/rotten.com/' -e 'www.mountimprobable.com' | parallel png2JPGQualityCheck);
           if [[ -n "$TARGETS" ]]; then
@@ -1410,7 +1416,7 @@ else
               # `gwmv` handles PNG → JPG as a special-case, so we don't need to munge the filename:
               for PNG in $TARGETS; do gwmv "$PNG"; done
           fi; }
-    wrap λ "Converting PNGs that should have been JPGs" &
+    wrap λ "png2JPGQualityCheck: Converting PNGs that should have been JPGs" &
 
     bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:
@@ -1419,7 +1425,7 @@ else
     λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link live whitelist/blacklisting?" &
 
-    λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
+    λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }
     wrap λ "Refactor out pages?" &
 
     λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-args=1000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | ge '^ +[4-9][0-9][0-9][0-9]+ +'; }
