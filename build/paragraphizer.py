@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-07-14 21:17:59 gwern"
+# When:  Time-stamp: "2024-07-15 10:23:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -380,8 +380,14 @@ We also discuss how Stigler's diet problem formulation and its extensions have, 
 A sequence of athletic records forms by definition a monotonic sequence.
 Since it is reasonable to assume this to be bounded, it follows that a limit must exist to future performance.
 It has been proposed [1, 2] that this can be estimated by use of a curve-fitting procedure on existing data, such as may be found in many compendia of athletic records (eg. [3]).
+88. <abstract>Most targeted anticancer therapies fail due to drug resistance evolution. Here we show that tumor evolution can be reproducibly redirected to engineer therapeutic opportunity, regardless of the exact ensemble of pre-existing genetic heterogeneity. We develop a selection gene drive system that is stably introduced into cancer cells and is composed of two genes, or switches, that couple an inducible fitness advantage with a shared fitness cost. Using stochastic models of evolutionary dynamics, we identify the design criteria for selection gene drives. We then build prototypes that harness the selective pressure of multiple approved tyrosine kinase inhibitors and employ therapeutic mechanisms as diverse as prodrug catalysis and immune activity induction. We show that selection gene drives can eradicate diverse forms of genetic resistance in vitro. Finally, we demonstrate that model-informed switch engagement effectively targets pre-existing resistance in mouse models of solid tumors. These results establish selection gene drives as a powerful framework for evolution-guided anticancer therapy.</abstract> →
+Most targeted anticancer therapies fail due to drug resistance evolution. Here we show that tumor evolution can be reproducibly redirected to engineer therapeutic opportunity, regardless of the exact ensemble of pre-existing genetic heterogeneity.
+We develop a selection gene drive system that is stably introduced into cancer cells and is composed of two genes, or switches, that couple an inducible fitness advantage with a shared fitness cost. Using stochastic models of evolutionary dynamics, we identify the design criteria for selection gene drives. We then build prototypes that harness the selective pressure of multiple approved tyrosine kinase inhibitors and employ therapeutic mechanisms as diverse as prodrug catalysis and immune activity induction.
+We show that selection gene drives can eradicate diverse forms of genetic resistance in vitro.
+Finally, we demonstrate that model-informed switch engagement effectively targets pre-existing resistance in mouse models of solid tumors.
+These results establish selection gene drives as a powerful framework for evolution-guided anticancer therapy.
 
-Reminder: your task is to split into multiple logical paragraphs by topic.
+(Reminder: your task is to split into multiple logical paragraphs by topic.)
 
 Input: <abstract>{target}</abstract> →
 """}

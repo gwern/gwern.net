@@ -21,7 +21,7 @@ URL="$(file2Path "$1")"
 if [[ ! -f "$TARGET_ORIGINAL" ]]; then
     TARGET="/home/gwern/wiki/$TARGET_ORIGINAL"
     if [[ ! -f "$TARGET" ]]; then
-        echo "Error: arg ('$TARGET') does not exist?" && exit 1
+        echo "Error: arg ($TARGET) does not exist?" && exit 1
     fi
 else TARGET="$TARGET_ORIGINAL"; fi
 
@@ -29,7 +29,7 @@ if [ "${*##*.}" = "pdf" ]; then
     if [[ -a "$TARGET" ]]; then
 
         # WARNING: unbelievably, 'tr' (still) doesn't support Unicode and does bizarre things with it
-        TITLE=$(exiftool -q -q -printFormat '$Title' -Title "$TARGET" | \
+        TITLE=$(exiftool -q -q -printFormat \$Title -Title "$TARGET" | \
                     sed -e 's/()//' -e 's/­//g' -e 's/[–—]/-/g' -e "s/\(.\+\)'\(.\+\)'\(.\+\)/\1‘\2’\3/g" -e "s/'/\&\#39\;/g"  -e 's/\([0-9]+\)-\([0-9]+\)/\1–\2/g' -e 's/\(.*\) - \(.*\)/\1—\2/g' -e 's/\([a-z]\)_ /\1: /g' -e 's/^ *//g' -e 's/ *$//g' -e 's/\.$//' -e 's/\&#39\;/’/g' -e 's/â\&#x80\;\&#x99\;/’/g' -e 's/.*PII\: .*//g' | \
                     tr -d '\n')
     echo ""
@@ -50,11 +50,12 @@ if [ "${*##*.}" = "pdf" ]; then
     if [[ "$CREATOR" =~ $AUTHOR.* ]]; then echo "$CREATOR"; else echo "$AUTHOR"; fi
 
     # print out original published & date annotation created:
-    exiftool -q -q -dateFormat '%F' -printFormat '$Date' $TARGET | \
-         sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//"
+    DATE="$(exiftool -q -q -dateFormat '%F' -printFormat \$Date "$TARGET" | \
+                     sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")"
+    echo "$DATE"
     date '+%F' # date-created—which is today/now
 
-    DOI=$(exiftool -q -q -printFormat '$DOI' -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
+    DOI=$(exiftool -q -q -printFormat \$DOI -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
               sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
     if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\",\"$DOI\")]"; fi
 

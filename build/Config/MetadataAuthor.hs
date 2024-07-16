@@ -460,9 +460,9 @@ authorLinkDB = M.fromList $
     , ("Jacob Steinhardt", "https://jsteinhardt.stat.berkeley.edu/")
     , ("Steven T. Piantadosi", "https://colala.berkeley.edu/people/piantadosi/")
     , ("Christian Gieger", "https://orcid.org/0000-0001-6986-9554")
-    , ("Zhilin Yang", "https://scholar.google.com/citations?user=7qXxyJkAAAAJ&hl=en&oi=ao")
-    , ("Daniel J. Benjamin", "https://scholar.google.com/citations?user=wIEUEuYAAAAJ&hl=en&oi=ao")
-    , ("Harry Campbell", "https://scholar.google.com/citations?user=ihShJe0AAAAJ&hl=en&oi=ao")
+    , ("Zhilin Yang", "https://scholar.google.com/citations?user=7qXxyJkAAAAJ")
+    , ("Daniel J. Benjamin", "https://scholar.google.com/citations?user=wIEUEuYAAAAJ")
+    , ("Harry Campbell", "https://scholar.google.com/citations?user=ihShJe0AAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-14 11:02:22 gwern"
+# When:  Time-stamp: "2024-07-15 16:57:28 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -90,7 +90,7 @@ pdf () {
     done; }
 
 # delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdfcut` repeatedly quickly with <Up> arrow in bash, of course.)
-pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
+pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
@@ -100,7 +100,7 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" && return 1; fi
           (crossref "$ORIGINAL" &);
           }
 # sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
-pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." && return 1; fi
+pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&
@@ -112,7 +112,7 @@ pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments argumen
 
 # concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
 pdf-append () {
-    if [ $# -lt 2 ]; then echo "Not enough arguments" && return 1; fi
+    if [ $# -lt 2 ]; then echo "Not enough arguments" >&2 && return 1; fi
     ORIGINAL=$(path2File "$1")
     TARGET=$(mktemp /tmp/XXXXXX.pdf)
     pdftk "$@" cat output "$TARGET" && exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"
@@ -233,7 +233,7 @@ alias exiftool="exiftool -overwrite_original"
 # Gwern.net searches:
 ## fixed-grep gwern.net specifically:
 gw () {
-    if [ $# == 0 ]; then echo "Missing search query."; return 2; fi
+    if [ $# == 0 ]; then echo "Missing search query." >&2 && return 2; fi
 
     QUERY="$*";
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
@@ -269,7 +269,7 @@ gwl () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
 ## gwsed shortcut for the common use case of updating a domain HTTP → HTTPS; typically the URLs are otherwise unchanged, and don't need to be individually updated.
 gwhttp () {
     if [ $# != 1 ]; then
-        echo "HTTP migration only works for 1 domain, did you try a regular search-and-replace?"
+        echo "HTTP migration only works for 1 domain, did you try a regular search-and-replace?" >&2
         return 2
     else
         # extract top-level domain to do the search-and-replace on that:
@@ -290,7 +290,7 @@ if [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch .
    then gwmv "$1" "${1%.png}.jpg"
 else
     if [ $# != 2 ]; then
-        red "Need two arguments: OLD file and NEW file! Only got: \"$@\""
+        red "Need two arguments: OLD file and NEW file! Only got: $@" >&2
         return 2
     else
 
@@ -298,19 +298,19 @@ else
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
         OLD=$(echo "$1" | tr -d '  ⁠' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | tr -d ' ⁠ ' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
-        if [[ "$NEW" == "" ]]; then echo "Processing arguments failed, exiting immediately!" ; echo "$OLD" "$NEW" ; return 8; fi
+        if [[ "$NEW" == "" ]]; then echo "Processing arguments failed, exiting immediately!" >&2 ; echo "$OLD" "$NEW" >&2 ; return 8; fi
         # Check if the parent directory of the NEW path exists
         NEW_DIR=$(dirname "$HOME/wiki$NEW")
         if [ ! -d "$NEW_DIR" ]; then
-            echo "Target directory $NEW_DIR does not exist. Operation aborted."
+            echo "Target directory $NEW_DIR does not exist. Operation aborted." >&2
             return 7
         fi
 
         if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
-            echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories."
+            echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories." >&2
             return 3
         elif [ ! -f "$HOME/wiki$OLD" ] && [ ! -f "${OLD:1}" ]; then
-            echo "File $OLD not found in current directory or ~/wiki"
+            echo "File $OLD not found in current directory or ~/wiki" >&2
             return 4
         fi
 
@@ -321,7 +321,7 @@ else
 
         cd ~/wiki/
         if [[ -a ~/wiki$NEW ]]; then
-            echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first."
+            echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first." >&2
             return 5
         fi
 
@@ -336,7 +336,7 @@ else
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
         else
-            echo "File does not exist? $OLD (to be moved to $NEW)" && return 1;
+            echo "File does not exist? $OLD (to be moved to $NEW)" >&2 && return 1;
         fi
 
         rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
