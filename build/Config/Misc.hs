@@ -152,7 +152,9 @@ fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMappi
                            , ("xz", "XZ archive"), ("zip", "ZIP")
                            ]
 
--- What is a 'dangerous' file size? At what megabyte size should we warn readers about a file before they download it, eg. by uncollapsing & loading it? We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB. We'll try >15MB for now.
+-- What is a 'dangerous' file size? At what megabyte size should we warn readers about a file before they download it, eg. by uncollapsing & loading it?
+-- We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB.
+-- We'll try >15MB for now. [NOTE: bump by 10%/year given <https://www.statista.com/statistics/995096/average-cellular-network-speed-in-the-us/> + <https://www.nngroup.com/articles/law-of-bandwidth/>]
 minFileSizeWarning :: Int
 minFileSizeWarning = 15
 
