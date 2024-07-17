@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-14 19:09:57 gwern"
+# When:  Time-stamp: "2024-07-16 17:51:11 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -365,6 +365,7 @@ else
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/metadata/ -maxdepth 1 -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight
     find _site/ -type f,l \
          -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.gtx" -or -name "*.xml" | \
         gfv \

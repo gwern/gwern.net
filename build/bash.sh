@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-15 16:57:28 gwern"
+# When:  Time-stamp: "2024-07-16 20:16:06 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -420,24 +420,37 @@ _upload () {
 }
 complete -F _upload upload
 
-# wait for a file to become quiescent because eg. the web browser is still downloading it:
+# wait for a file (first argument) to become quiescent because eg. the web browser is still downloading it; optional second argument is the minimum size in kilobytes (eg. archived webpages are almost always >10kb these days, even if it's an old-school all-text HTML page):
 is_downloading () {
   file="$1"
+  min_size_kb="${2:-0}"  # Default to 0 if not provided
+  min_size_bytes=$((min_size_kb * 1024))
   current_time=$(date +%s)
 
-  # Check if the file exists yet:
-  if [ -f "$file" ]; then
+  # Check if the file exists and is non-zero in size
+  if [ -s "$file" ]; then
+    file_size=$(stat -c %s "$file")
     modified_time=$(stat -c %Y "$file")
     elapsed_time=$((current_time - modified_time))
+
+    # Check if file size meets the minimum requirement
+    if [ "$file_size" -lt "$min_size_bytes" ]; then
+      sleep 3
+      is_downloading "$file" "$min_size_kb"
+      return
+    fi
 
     # Sleep if last-modified time is not at least 3 seconds ago
     if [ $elapsed_time -lt 3 ]; then
       sleep $((3 - elapsed_time))
-      is_downloading
+      is_downloading "$file" "$min_size_kb"
     fi
+  else
+    # File doesn't exist or is zero-sized, wait and check again
+    sleep 3
+    is_downloading "$file" "$min_size_kb"
   fi
 }
-
 # shortcut for handling link-archiving review:
 # `mvuri`: takes a filename with a URI encoding
 # like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
@@ -482,7 +495,7 @@ mvuri () {
     fi
   done
   # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
-  is_downloading "$SOURCE"
+  is_downloading "$SOURCE" 10 # most web pages <10kb are broken or error pages
   echo "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
       mv "$SOURCE" "$DESTINATION"
@@ -498,7 +511,7 @@ mvuri () {
 # (Better than actual randomness because it avoids clumping/starvation, or potentially doing all of the operations on the same run by chance; and far simpler than any explicit tracking of state/date.)
 # The optional second whole-number argument is an 'offset' to avoid clumping of multiple calls with the same _N_; they can be offset by relatively-prime numbers or just plain incremented.
 everyNDays () {
-    (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset to stagger or space out multiple calls of _N_ relative to each other
+    (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset second argument to stagger or space out multiple calls of _N_ relative to each other
 }
 
 # sort a list of directories from stdin by their most recently modified file.

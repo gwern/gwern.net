@@ -139,7 +139,9 @@ tagsShort2LongRewrites =
    , ("artificial-selection", "genetics/selection/artificial"), ("bacopa-monnieri", "bacopa"), ("anime/stylegan", "stylegan/anime"), ("video-analysis", "video/analysis")
    , ("search", "google"), ("tbi", "psychiatry/traumatic-brain-injury"), ("osciology", "sociology"), ("microdosing", "nootropic/lsd"), ("micro-dosing", "nootropic/lsd"), ("lsd", "psychedelic/lsd"), ("alcohol", "alcoholism"), ("transfomer", "transformer"), ("transfromer", "transformer"), ("recurrency", "recurrent"), ("ann", "ai/nn"), ("darknet-market/archives", "darknet-market/dnm-archive"), ("nback", "dual-n-back"), ("savantism", "psychology/neuroscience/memory/savant"), ("idiot-savant", "psychology/neuroscience/memory/savant"), ("savant-syndrome", "psychology/neuroscience/memory/savant"), ("bmr", "blackmarket-reloaded"), ("grok", "grokking"), ("grokk", "grokking")
    , ("anaesthesia", "anesthesia"), ("anesthetic", "anesthesia"), ("anesthsia", "anesthesia")
-   , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")]
+   , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
+   , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
+   , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -153,11 +155,13 @@ tagsShort2Long = tagsShort2LongRewrites ++
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
-                      "the", "to", "tr", "up", "we"]
+                      "the", "to", "tr", "up", "we", "ls"]
 
 -- testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing") -- NOTE: TLAs cannot be put into smallcaps because we italicize tags but Source Serif Pro does not have italic smallcaps <https://github.com/adobe-fonts/source-serif/issues/46>.
+          , ("science/chemistry/disappearing-polymorph", "disappearing polymorphs (chemistry)")
+          , ("science/chemistry", "chemistry")
           , ("technology/northpaw", "Northpaw compass")
           , ("technology/self-sinking", "self-sinking waste disposal")
           , ("technology/google/alerts", "Google Alerts")
@@ -377,6 +381,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("psychiatry/alzheimers", "Alzheimer’s")
           , ("statistics/stylometry/truesight", "truesight (stylometrics)")
           , ("statistics/stylometry", "stylometry")
+          , ("statistics/decision/stigler-diet", "Stigler’s diet problem")
           , ("statistics/decision/mail-delivery", "mail-delivery optimization")
           , ("statistics/decision", "decision theory")
           , ("statistics/order/capture", "mark-and-recapture")

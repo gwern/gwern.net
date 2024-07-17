@@ -25,4 +25,4 @@ whitelist = ["/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pd
             , "/doc/genetics/selection/natural/2022-walsh.pdf", "/doc/psychiatry/autism/2024-schindel.pdf"
             , "/doc/psychology/neuroscience/2023-dunn.pdf", "/doc/reinforcement-learning/robot/2020-won.pdf"
             , "/doc/sociology/2022-ullman.pdf", "/doc/sociology/technology/2022-wang-8.pdf"
-            , "/doc/statistics/decision/1990-dantzig.pdf"]
+            , "/doc/statistics/decision/stigler-diet/1990-dantzig.pdf"]

@@ -300,6 +300,9 @@ canonicals = M.fromList
   , ("Steven Piantadosi", "Steven T. Piantadosi")
   , ("Daniel Benjamin", "Daniel J. Benjamin")
   , ("aidangomez", "Aidan Gomez")
+  , ("Terho Lehtimaki", "Terho Lehtimäki")
+  , ("T. Lehtimaki", "Terho Lehtimäki")
+  , ("T. Lehtimäki", "Terho Lehtimäki")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -463,6 +466,10 @@ authorLinkDB = M.fromList $
     , ("Zhilin Yang", "https://scholar.google.com/citations?user=7qXxyJkAAAAJ")
     , ("Daniel J. Benjamin", "https://scholar.google.com/citations?user=wIEUEuYAAAAJ")
     , ("Harry Campbell", "https://scholar.google.com/citations?user=ihShJe0AAAAJ")
+    , ("Steven Basart", "https://stevenbas.art/")
+    , ("Najaf Amin", "https://scholar.google.com/citations?user=m1eR5vkAAAAJ&hl=en&oi=ao")
+    , ("Terho Lehtimäki", "https://www.tuni.fi/en/terho-lehtimaki")
+    , ("Richard Socher", "https://www.socher.org/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
