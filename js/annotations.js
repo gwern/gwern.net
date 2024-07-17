@@ -152,10 +152,10 @@ Annotations = { ...Annotations,
 			onSuccess: (event) => {
 				let responseDocument = newDocument(event.target.responseText);
 
-				//	Request the page thumbnail image, to cache it.
-				let thumbnail = responseDocument.querySelector(".page-thumbnail");
-				if (thumbnail)
-					doAjax({ location: URLFromString(thumbnail.src) });
+				//	Request the page image thumbnail, to cache it.
+				let pageImage = responseDocument.querySelector(".page-thumbnail");
+				if (pageImage)
+					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
 				/*	Construct and cache a reference data object, then fire the 
 					appropriate event.
@@ -320,18 +320,21 @@ Annotations = { ...Annotations,
 			//	Request image inversion judgments from invertornot.
 			requestImageInversionDataForImagesInContainer(abstractDocument);
 
-			//	Thumbnail figure.
-			let pageThumbnailImage = abstractDocument.querySelector("img.page-thumbnail");
-			if (pageThumbnailImage) {
-				//	Make thumbnail image load eagerly instead of lazily.
-				pageThumbnailImage.loading = "eager";
-				pageThumbnailImage.decoding = "sync";
+			//	Page thumbnail.
+			let pageThumbnail = abstractDocument.querySelector("img.page-thumbnail");
+			if (pageThumbnail) {
+				//	Replace full-size page image with thumbnail.
+				Images.thumbnailifyImage(pageThumbnail);
 
-				/*	On sufficiently wide viewports, pull out thumbnail for 
-					proper floating.
+				//	Make page image thumbnail load eagerly instead of lazily.
+				pageThumbnail.loading = "eager";
+				pageThumbnail.decoding = "sync";
+
+				/*	On sufficiently wide viewports, pull out thumbnail figure
+					for proper floating.
 				 */
 				if (GW.mediaQueries.mobileWidth.matches == false) {
-					let pageThumbnailFigure = pageThumbnailImage.closest("figure");
+					let pageThumbnailFigure = pageThumbnail.closest("figure");
 					thumbnailFigureHTML = pageThumbnailFigure.outerHTML;
 					pageThumbnailFigure.remove();
 				}
