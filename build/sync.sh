@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-16 17:51:11 gwern"
+# When:  Time-stamp: "2024-07-17 18:28:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -237,6 +237,28 @@ else
                                         mogrify -quality 15 "$POSTER"
                                     fi;
     done &
+
+    # for use in popups, as an optimization, we provide 256px-width thumbnails of all Gwern.net locally-hosted essay/annotation JPGs/PNGs.
+    # (More exotic image formats like AVIF/WebP/JPEG XL/etc are banned, and we exclude mirrors like Rotten.com or the WWW local archives as they are not browsed via popups; and we do not attempt to generate thumbnails for hotlinked images, because hotlinked images are banned and supposed to be localized.)
+    # They live at /metadata/thumbnail/256px/urlencoded($IMAGE_URL):
+    # eg '/doc/ai/nn/gan/stylegan/anime/2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' → '/metadata/thumbnail/256px/%2Fdoc%2Fai%2Fnn%2Fgan%2Fstylegan%2Fanime%2F2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' (and must be requested double-URL-encoded).
+    # Because we guarantee they will exist, we do not bother with inlining the thumbnail path into <img>/<figure> (whether by rewriting the href, adding a data-attribute, using a poster/responsive attribute, etc); the frontend JS can simply assume that one exists and try to fetch it when it needs a small version of an image, and fall back.
+    generate_thumbnail() {
+        local image="$1"
+        local relative_path="${image#./}"
+        local encoded_path
+        encoded_path="$(urlencode "/$relative_path")"
+        local thumbnail_path="metadata/thumbnail/256px/${encoded_path}"
+        if [ ! -f "$thumbnail_path" ]; then
+            mkdir -p "$(dirname "$thumbnail_path")"
+            convert "$image" -resize 256x "$thumbnail_path" # set width to 256px but height may vary
+            echo "Generated 256px-wide thumbnail: $thumbnail_path for: $relative_path"
+        fi
+    }
+    export -f generate_thumbnail
+    find ./doc/ -type f \( -iname "*.jpg" -o -iname "*.png" \) | \
+        gfv -e '/doc/www/' -e '/doc/rotten.com/' -e '/static/' | \
+        parallel --jobs "$N" generate_thumbnail &
 
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 5)
 
