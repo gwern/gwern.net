@@ -11420,7 +11420,7 @@ Extracts.targetTypeDefinitions.insertBefore([
 		will be removed from the line below.
 			—SA 2024-04-15
 	 */
-    "has-content content-transform",  // Target classes to add
+    "has-annotation content-transform",  // Target classes to add
     "contentTransformForTarget",      // Pop-frame fill function
     "content-transform"               // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
