@@ -1174,7 +1174,8 @@ p.intro-graf::first-line {
     font-variant-caps: small-caps;
 }
 
-.smallcaps-not > p.intro-graf::first-line {
+.smallcaps-not > p.intro-graf::first-line,
+.annotation > p.data-field.title.intro-graf::first-line {
 	font-variant-caps: normal;
 }
 
