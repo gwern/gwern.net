@@ -11378,16 +11378,16 @@ Extracts = { ...Extracts,
 /*=--------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "CONTENT_TRANSFORM",                 // Type name
-    "isContentTransformLink",            // Type predicate function
+    "CONTENT_TRANSFORM",              // Type name
+    "isContentTransformLink",         // Type predicate function
 	/*	NOTE: At some point, `content-transform` (or some analogous class) will
 		be added by the back-end code (or content.js for links in popups), so
 		will be removed from the line below.
 			—SA 2024-04-15
 	 */
-    "has-annotation content-transform",  // Target classes to add
-    "contentTransformForTarget",         // Pop-frame fill function
-    "content-transform"                  // Pop-frame classes
+    "has-content content-transform",  // Target classes to add
+    "contentTransformForTarget",      // Pop-frame fill function
+    "content-transform"               // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts,
