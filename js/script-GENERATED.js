@@ -230,6 +230,38 @@ function requestImageInversionDataForImagesInContainer(container) {
 }
 
 
+/**********/
+/* IMAGES */
+/**********/
+
+Images = {
+	thumbnailBasePath: "/metadata/thumbnail/",
+
+	thumbnailDefaultSize: "256",
+
+	thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
+		if (imageSrcURL.hostname != location.hostname)
+			return null;
+
+		return URLFromString(  Images.thumbnailBasePath
+							 + size + "px/"
+							 + fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
+	},
+
+	thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
+		return Images.thumbnailURLForImageURL(URLFromString(image.src));
+	},
+
+	thumbnailifyImage: (image) => {
+		let thumbnailURL = Images.thumbnailURLForImage(image);
+		if (thumbnailURL) {
+			image.dataset.srcSizeFull = image.src;
+			image.src = thumbnailURL.href;
+		}
+	}
+};
+
+
 /*********/
 /* LINKS */
 /*********/
@@ -4966,10 +4998,10 @@ Annotations = { ...Annotations,
 			onSuccess: (event) => {
 				let responseDocument = newDocument(event.target.responseText);
 
-				//	Request the page thumbnail image, to cache it.
-				let thumbnail = responseDocument.querySelector(".page-thumbnail");
-				if (thumbnail)
-					doAjax({ location: URLFromString(thumbnail.src) });
+				//	Request the page image thumbnail, to cache it.
+				let pageImage = responseDocument.querySelector(".page-thumbnail");
+				if (pageImage)
+					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
 				/*	Construct and cache a reference data object, then fire the 
 					appropriate event.
@@ -5134,18 +5166,21 @@ Annotations = { ...Annotations,
 			//	Request image inversion judgments from invertornot.
 			requestImageInversionDataForImagesInContainer(abstractDocument);
 
-			//	Thumbnail figure.
-			let pageThumbnailImage = abstractDocument.querySelector("img.page-thumbnail");
-			if (pageThumbnailImage) {
-				//	Make thumbnail image load eagerly instead of lazily.
-				pageThumbnailImage.loading = "eager";
-				pageThumbnailImage.decoding = "sync";
+			//	Page thumbnail.
+			let pageThumbnail = abstractDocument.querySelector("img.page-thumbnail");
+			if (pageThumbnail) {
+				//	Replace full-size page image with thumbnail.
+				Images.thumbnailifyImage(pageThumbnail);
 
-				/*	On sufficiently wide viewports, pull out thumbnail for 
-					proper floating.
+				//	Make page image thumbnail load eagerly instead of lazily.
+				pageThumbnail.loading = "eager";
+				pageThumbnail.decoding = "sync";
+
+				/*	On sufficiently wide viewports, pull out thumbnail figure
+					for proper floating.
 				 */
 				if (GW.mediaQueries.mobileWidth.matches == false) {
-					let pageThumbnailFigure = pageThumbnailImage.closest("figure");
+					let pageThumbnailFigure = pageThumbnail.closest("figure");
 					thumbnailFigureHTML = pageThumbnailFigure.outerHTML;
 					pageThumbnailFigure.remove();
 				}
@@ -17500,6 +17535,8 @@ ImageFocus = {
 	hoverCaptionWidth: 175,
 	hoverCaptionHeight: 75,
 
+	fullSizeImageLoadHoverDelay: 25,
+
 	/*****************/
 	/* Infrastructure.
 	 *****************/
@@ -17669,6 +17706,16 @@ ImageFocus = {
 			image.addEventListener("click", ImageFocus.imageClickedToFocus);
 		});
 
+		//	Add listeners to preload full-sized images.
+		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
+			image.removeAnnotationLoadEvents = onEventAfterDelayDo(image, "mouseenter", ImageFocus.fullSizeImageLoadHoverDelay, (event) => {
+				ImageFocus.preloadImage(image);
+				image.removeAnnotationLoadEvents();
+			}, {
+				cancelOnEvents: [ "mouseleave" ]
+			});
+		});
+
 		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
 			wrapElement(image, "span.image-wrapper.focusable", { moveClasses: [ "small-image" ] });
@@ -17690,6 +17737,8 @@ ImageFocus = {
 					return 1;
 				return 0;
 			}).last[1];
+		} else if (image.dataset.srcSizeFull > "") {
+			return image.dataset.srcSizeFull;
 		} else {
 			return image.src;
 		}
@@ -17704,15 +17753,7 @@ ImageFocus = {
 	},
 
 	preloadImage: (image) => {
-		let originalSrc = image.src;
-
-		image.loading = "eager";
-		image.decoding = "sync";
-		image.src = ImageFocus.focusedImgSrcForImage(image);
-
-		requestAnimationFrame(() => {
-			image.src = originalSrc;
-		});
+		doAjax({ location: ImageFocus.focusedImgSrcForImage(image) });
 	},
 
 	focusImage: (imageToFocus, scrollToImage = true) => {

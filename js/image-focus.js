@@ -33,6 +33,8 @@ ImageFocus = {
 	hoverCaptionWidth: 175,
 	hoverCaptionHeight: 75,
 
+	fullSizeImageLoadHoverDelay: 25,
+
 	/*****************/
 	/* Infrastructure.
 	 *****************/
@@ -202,6 +204,16 @@ ImageFocus = {
 			image.addEventListener("click", ImageFocus.imageClickedToFocus);
 		});
 
+		//	Add listeners to preload full-sized images.
+		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
+			image.removeAnnotationLoadEvents = onEventAfterDelayDo(image, "mouseenter", ImageFocus.fullSizeImageLoadHoverDelay, (event) => {
+				ImageFocus.preloadImage(image);
+				image.removeAnnotationLoadEvents();
+			}, {
+				cancelOnEvents: [ "mouseleave" ]
+			});
+		});
+
 		//  Wrap all focusable images in a span.
 		container.querySelectorAll(ImageFocus.focusableImagesSelector).forEach(image => {
 			wrapElement(image, "span.image-wrapper.focusable", { moveClasses: [ "small-image" ] });
@@ -223,6 +235,8 @@ ImageFocus = {
 					return 1;
 				return 0;
 			}).last[1];
+		} else if (image.dataset.srcSizeFull > "") {
+			return image.dataset.srcSizeFull;
 		} else {
 			return image.src;
 		}
@@ -237,15 +251,7 @@ ImageFocus = {
 	},
 
 	preloadImage: (image) => {
-		let originalSrc = image.src;
-
-		image.loading = "eager";
-		image.decoding = "sync";
-		image.src = ImageFocus.focusedImgSrcForImage(image);
-
-		requestAnimationFrame(() => {
-			image.src = originalSrc;
-		});
+		doAjax({ location: ImageFocus.focusedImgSrcForImage(image) });
 	},
 
 	focusImage: (imageToFocus, scrollToImage = true) => {

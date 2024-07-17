@@ -230,6 +230,38 @@ function requestImageInversionDataForImagesInContainer(container) {
 }
 
 
+/**********/
+/* IMAGES */
+/**********/
+
+Images = {
+	thumbnailBasePath: "/metadata/thumbnail/",
+
+	thumbnailDefaultSize: "256",
+
+	thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
+		if (imageSrcURL.hostname != location.hostname)
+			return null;
+
+		return URLFromString(  Images.thumbnailBasePath
+							 + size + "px/"
+							 + fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
+	},
+
+	thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
+		return Images.thumbnailURLForImageURL(URLFromString(image.src));
+	},
+
+	thumbnailifyImage: (image) => {
+		let thumbnailURL = Images.thumbnailURLForImage(image);
+		if (thumbnailURL) {
+			image.dataset.srcSizeFull = image.src;
+			image.src = thumbnailURL.href;
+		}
+	}
+};
+
+
 /*********/
 /* LINKS */
 /*********/
