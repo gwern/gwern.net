@@ -2034,6 +2034,7 @@ sub {
 .subsup sub {
     position: relative;
     line-height: 1;
+    font-size: 0.6em;
 }
 
 /*  Inflation adjustments.
@@ -2047,13 +2048,15 @@ span.inflation-adjusted {
 }
 span.inflation-adjusted .subsup {
     align-items: flex-end;
-}
-span.inflation-adjusted .subsup sup,
-span.inflation-adjusted .subsup sub {
-    font-size: 0.6em;
-}
-span.inflation-adjusted .subsup {
     bottom: 0;
+}
+
+span.date-range {
+	white-space: nowrap;
+}
+span.date-range .subsup {
+	align-items: center;
+	bottom: 0;
 }
 
 
