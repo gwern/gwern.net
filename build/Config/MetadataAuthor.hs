@@ -303,6 +303,9 @@ canonicals = M.fromList
   , ("Terho Lehtimaki", "Terho Lehtimäki")
   , ("T. Lehtimaki", "Terho Lehtimäki")
   , ("T. Lehtimäki", "Terho Lehtimäki")
+  , ("Philipp D. Koellinger", "Philipp Koellinger")
+  , ("P. D. Koellinger", "Philipp Koellinger")
+  , ("NoaNabeshima", "Noa Nabeshima")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -467,9 +470,15 @@ authorLinkDB = M.fromList $
     , ("Daniel J. Benjamin", "https://scholar.google.com/citations?user=wIEUEuYAAAAJ")
     , ("Harry Campbell", "https://scholar.google.com/citations?user=ihShJe0AAAAJ")
     , ("Steven Basart", "https://stevenbas.art/")
-    , ("Najaf Amin", "https://scholar.google.com/citations?user=m1eR5vkAAAAJ&hl=en&oi=ao")
+    , ("Najaf Amin", "https://scholar.google.com/citations?user=m1eR5vkAAAAJ")
     , ("Terho Lehtimäki", "https://www.tuni.fi/en/terho-lehtimaki")
     , ("Richard Socher", "https://www.socher.org/")
+    , ("Jonathan Ho", "http://www.jonathanho.me/")
+    , ("Colin Raffel", "https://colinraffel.com/")
+    , ("Philipp Koellinger", "http://www.philipp-koellinger.com/")
+    , ("Erik Ingelsson", "https://wavelifesciences.com/company/leadership/executives/erik-ingelsson-md-phd/")
+    , ("Noa Nabeshima", "https://x.com/NoaNabeshima")
+    , ("Ethan Mollick", "https://x.com/emollick")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

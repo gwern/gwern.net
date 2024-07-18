@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-07-11 15:14:39 gwern"
+# When:  Time-stamp: "2024-07-17 12:12:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -33,15 +33,15 @@ If you are unsure how to fix it, then simply print out the original title.
 Task examples:
 
 1. Input title to clean: "If I Sleep for an Hour, 30 People Will Die - The New York Times"
-If I Sleep for an Hour, 30 People Will Die
+"If I Sleep for an Hour, 30 People Will Die"
 2. Input title to clean: "404"
 ""
 3. Input title to clean: "Gwern.net | Collecting New Socks Efficiently"
-Collecting New Socks Efficiently
+"Collecting New Socks Efficiently"
 4. Input title to clean: "worlds of DAVID BRIN"
 ""
 5. Input title to clean: "steve yegge · The Amazon Memo"
-The Amazon Memo
+"The Amazon Memo"
 6. Input title to clean: "index"
 ""
 7. Input title to clean: ""
@@ -51,17 +51,17 @@ After 92 years, millionaire miser’s heirs finally split $100M
 9. Input title to clean: "502 Bad Gateway"
 ""
 10. Input title to clean: "Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks. Masters Thesis 2021 @ NTUST."
-Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks
+"Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks"
 11. Input title to clean: "articles"
 ""
 12. Input title to clean: "Vercel Security Checkpoint"
 ""
 13. Input title to clean: "Fan Is A Tool-Using AnimalâdConstruct Conference Talk"
-Fan Is A Tool-Using Animal
+"Fan Is A Tool-Using Animal"
 14. Input title to clean: "CONTENTdm"
 ""
 15. Input title to clean: "The Illustrated Retrieval Transformer â Jay Alammar â Visualizing machine learning one concept at a time."
-The Illustrated Retrieval Transformer
+"The Illustrated Retrieval Transformer"
 16. Input title to clean: "Redirecting to https://now.tufts.edu/2016/07/14/moderately-reducing-calories-non-obese-people-reduces-inflammation"
 ""
 17. Input title to clean: "Not Found - Albion - Webflow HTML website template"
@@ -77,17 +77,17 @@ Stripe’s first carbon removal purchases
 22. Input title to clean: "Page not found - PsyPost - Psychology News"
 ""
 23. Input title to clean: "Japanese north\226\128\147south gradient in IQ predicts differences in stature, skin color, income, and homicide rate - ScienceDirect\nScienceDirect"
-Japanese north-south gradient in IQ predicts differences in stature, skin color, income, and homicide rate
+"Japanese north-south gradient in IQ predicts differences in stature, skin color, income, and homicide rate"
 24. Input title to clean: "Notion – The all-in-one workspace for your notes, tasks, wikis, and databases."
 ""
 25. Input title to clean: "It’s (Still) Really Hard for Robots to Autonomously Do Household Chores - IEEE Spectrum"
-It’s (Still) Really Hard for Robots to Autonomously Do Household Chores
+"It’s (Still) Really Hard for Robots to Autonomously Do Household Chores"
 26. Input title to clean: "504 Gateway Time-out"
 ""
 27. Input title to clean: "æ°æ°æ®é"
 ""
 28. Input title to clean: "dnmarchives directory listing\nInternet Archive logo\nDonate icon\nSearch icon\nSearch icon\nUpload icon\nUser icon\nWeb icon\nTexts icon\nVideo icon\nAudio icon\nSoftware icon\nImages icon\nDonate icon\nEllipses icon\nHamburger icon\nSearch icon\nDonate icon"
-dnmarchives directory listing
+"dnmarchives directory listing"
 29. Input title to clean: "Page not found : Stanford University"
 ""
 30. Input title to clean: "07"
@@ -101,13 +101,13 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 34. Input title to clean: "GoLocalPDX"
 ""
 35. Input title to clean: "Aurora’s Approach to Development. Self-driving cars are an appliedâ¦ by The Aurora Team Aurora Blog"
-Aurora’s Approach to Development. Self-driving cars are an applied
+"Aurora’s Approach to Development. Self-driving cars are an applied"
 36. Input title to clean: "An open letter to Netflix from the authors of the de-anonymization paper « 33 Bits of Entropy"
-An open letter to Netflix from the authors of the de-anonymization paper
+"An open letter to Netflix from the authors of the de-anonymization paper"
 37. Input title to clean: "It\226\128\153s Probably Not Lithium\nspotify-podcast-badge-wht-blk-165x40"
-It’s Probably Not Lithium
+"It’s Probably Not Lithium"
 38. Input title to clean: "Scunthorpe Sans \240\159\151\175\240\159\154\171 profanity-blocking font"
-Scunthorpe Sans: a profanity-blocking font
+"Scunthorpe Sans: a profanity-blocking font"
 39. Input title to clean: "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
 ""
 40. Input title to clean: "Nadia Asparouhova How to do the jhanas"
@@ -126,8 +126,14 @@ Scunthorpe Sans: a profanity-blocking font
 "The dream of an alpine waterway"
 47. Input title to clean: "Andrew Wood The Medical School"
 "Andrew Wood"
-48. "Input title to clean: "Reddit"
+48. Input title to clean: "Reddit"
 ""
+49. Input title to clean: "The Stigler Diet Problem �|� OR-Tools �"
+"The Stigler Diet Problem"
+50. Input title to clean: "why why why why why why why"
+""
+51. Input title to clean: "Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures—Justin Skycak"
+"Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures"
 
 Task:
 

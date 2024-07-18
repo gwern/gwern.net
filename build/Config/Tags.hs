@@ -141,7 +141,8 @@ tagsShort2LongRewrites =
    , ("anaesthesia", "anesthesia"), ("anesthetic", "anesthesia"), ("anesthsia", "anesthesia")
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
-   , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")]
+   , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
+   , ("miscite", "miscitation")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -168,6 +169,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("statistics/probability", "probability theory")
           , ("statistics/peer-review", "peer review")
           , ("statistics/causality", "causality")
+          , ("statistics/bias/publication/miscitation", "miscite bias")
           , ("statistics/bias/publication", "publication bias")
           , ("statistics/bias/animal", "animal study methodology")
           , ("statistics/bias", "scientific bias")
