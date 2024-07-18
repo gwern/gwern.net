@@ -15286,6 +15286,25 @@ addCopyProcessor((event, selection) => {
     return true;
 });
 
+/*****************************************************************************/
+/*	Make copying text from Wikipedia articles with math elements properly copy
+	the LaTeX source of the math fallback images, rather than omitting them.
+ */
+addCopyProcessor((event, selection) => {
+	selection.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
+		let mathText = mathImage.alt.slice(1, -1).replace("\\displaystyle", "");
+
+		let mathWrapper = mathImage.closest(".wikipedia-math-wrapper");
+		if (   mathWrapper.previousSibling
+			&& mathWrapper.previousSibling.textContent.endsWith(" "))
+			mathText = mathText.trim();
+
+		mathWrapper.replaceChildren(document.createTextNode(mathText));
+	});
+
+	return true;
+});
+
 /******************************************************************************/
 /*  Makes double-clicking on a math element select the entire math element.
     (This actually makes no difference to the behavior of the copy listener
