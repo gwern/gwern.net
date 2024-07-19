@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-17 18:28:40 gwern"
+# When:  Time-stamp: "2024-07-19 12:45:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1064,8 +1064,8 @@ else
             bold "Checking print-mode CSS as well…"
             ## WARNING: we cannot simply use `--headless` & `--print-to-pdf` because Chrome does not, in fact, save the same PDF
             ## as it would if you print-to-PDF in-browser! It *mostly* does use the print CSS, but it skips things like transcludes
-            ## that would correctly fire when you print in-browser, so is not useful for the purpose of checking for regressions.
-            chromium "$CHECK_RANDOM_PAGE#reminder-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf 2> /dev/null &
+            ## that would correctly fire when you print in-browser, so is not useful for the purpose of checking Gwern.net for regressions.
+            chromium "$CHECK_RANDOM_PAGE#reminder-to-manually-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf >/dev/null 2>&1 &
         fi
 
     (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &) # continue building author database
@@ -1259,6 +1259,10 @@ else
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | gfv -e metadata/annotation/; }
     wrap λ "No files should have double hyphens or tildes in their names."
+
+    λ(){ find ./ -printf "%P\n" | gfv 'metadata/annotation/' | \
+             awk 'length($0) > 240 {print "WARNING: Long path (" length($0) " chars):", $0}'; }
+    wrap λ "Dangerously long full filepaths; shorten them."
 
     λ(){ gf --before-context=1 -e 'Right Nothing' -e 'Just ""' -e '//"' ./metadata/archive.hs; }
     wrap λ "Links failed to archive (broken)."
