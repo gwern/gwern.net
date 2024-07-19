@@ -338,6 +338,11 @@ section.collapse > .heading {
     box-shadow:
         var(--collapse-toggle-left-width) 0 0 0 var(--collapse-button-background-color) inset;
 }
+@media all and (max-width: 649px) {
+	.collapse-block > .disclosure-button {
+		font-size: 1em;
+	}
+}
 
 /*  Top and bottom parts of disclosure button.
  */
