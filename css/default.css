@@ -4784,7 +4784,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popin .popframe-title {
     display: flex;
-    justify-content: center;
+    align-items: baseline;
+    justify-content: flex-end;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875rem;
     flex: 1 1 100%;
@@ -4798,8 +4799,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: none;
 }
 
-.popin .popframe-title-link,
-.popin .popframe-title span {
+.popin .popframe-title-link {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
