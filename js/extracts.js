@@ -793,12 +793,19 @@ Extracts = {
 
 	//	Called by: Extracts.preparePopFrame (as Extracts[`pop${suffix}TitleBarContents`])
 	popinTitleBarContents: (popin) => {
+        let titleBarContents = [ ];
+
+		/*	Show “disable popovers” button only for a top-level popover, not for
+			nested popovers.
+		 */
+        if (Popins.containingPopFrame(popin.spawningTarget) == null)
+        	titleBarContents.push(Extracts.disableExtractPopFramesPopFrameTitleBarButton());
+
         let popinTitle = Extracts.titleForPopFrame(popin) ?? { };
-		return [
-			Extracts.disableExtractPopFramesPopFrameTitleBarButton(),
-			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
-			Popins.titleBarComponents.closeButton()
-		];
+        titleBarContents.push(newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
+							  Popins.titleBarComponents.closeButton());
+
+		return titleBarContents;
 	},
 
     /*  Called by popins.js just before injecting the popin. This is our chance
