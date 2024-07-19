@@ -1476,7 +1476,7 @@ Transclude = {
 		".annotation .data-field"
 	].join(", "),
 
-	generalBlockContextMinimumLength: 200,
+	blockContextMaximumLength: 200,
 
 	//	Called by: Transclude.sliceContentFromDocument
 	blockContext: (element, includeLink) => {
@@ -1501,12 +1501,9 @@ Transclude = {
 
 		for (let selector of selectors)
 			if (   (block = element.closest(selector) ?? block)
+				&& block.textContent.length < Transclude.blockContextMaximumLength
 				&& block.matches(Transclude.notBlockElementSelector) == false)
-// 				if (   Transclude.specificBlockElementSelectors.includes(selector)
-// 					|| block.textContent.length > Transclude.generalBlockContextMinimumLength
-// 					|| (   block.parentNode == null
-// 						|| block.parentNode instanceof Element == false))
-					break;
+				break;
 
 		let blockContext = newDocument([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
 									   ? block.childNodes

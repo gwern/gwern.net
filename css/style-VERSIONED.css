@@ -3278,9 +3278,16 @@ del {
 }
 
 @media all and (max-width: 649px) {
-	.backlinks-list .backlink-context {
+	.backlinks-list .backlink-context,
+	.link-bibliography-list .annotation-abstract {
 		margin-left: calc(-1 * var(--list-left-padding));
 	}
+}
+
+/*	Do not hyphenate “context” in backlinks lists; it looks bad.
+ */
+.backlink-source a:nth-of-type(2) {
+	hyphens: none;
 }
 
 
