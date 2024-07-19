@@ -3284,6 +3284,12 @@ del {
 	}
 }
 
+/*	Do not hyphenate “context” in backlinks lists; it looks bad.
+ */
+.backlink-source a:nth-of-type(2) {
+	hyphens: none;
+}
+
 
 /*************/
 /* DROPCAPS */
