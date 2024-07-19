@@ -4,7 +4,6 @@ module Test where
 import Control.Monad (unless)
 import Data.List (foldl')
 import qualified Data.Map.Strict as M (toList)
-import Network.URI (isURIReference)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack)
@@ -14,7 +13,7 @@ import Text.Pandoc (Inline(Link))
 import Cycle (isCycleLess)
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced, isDate, cleanAbstractsHTML,
                       dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex, extractTwitterUsername)
-import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURIReferenceT, ensure)
+import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata)
@@ -132,16 +131,17 @@ isUniqueAll xs = isUniqueValues $ isUniqueKeys $ isUnique xs
 testXOTD :: IO Int
 testXOTD = do s <- XOTD.readTTDB Config.XOfTheDay.siteDBPath
               q <- XOTD.readTTDB Config.XOfTheDay.quoteDBPath
-              return $ sum [length $ ensure "Test.testXOTD.sites" "isURIReference/not-isURIReference" (\(u,title,_) -> isURIReference u && not (isURL title)) s
+              -- check that the non-URL fields are *not* valid URLs, which implies a copy-paste error, duplication, or something.
+              return $ sum [length $ ensure "Test.testXOTD.sites" "isURLAny/not-isURLAny" (\(u,title,_) -> isURLAny u && not (null title || isURL title)) s
                           , length $ isUniqueKeys3 s
-                          , length $ ensure "Test.testXOTD.quotes" "not-isURL" (\(qt,a,_) -> not (isURL qt || isURL a)) q
+                          , length $ ensure "Test.testXOTD.quotes" "not-isURLAny" (\(qt,a,_) -> not (null qt || isURLAny qt) && (null a || not (isURLAny a))) q
                           , length $ isUniqueKeys3 q
                           ]
 
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
 testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBadSubstrings, isUniqueList Config.MetadataFormat.filterMetaBadWholes
-                               , ensure "Test.GenerateSimilar.blackListURLs" "isURIReference (URL & file)" isURIReference $
+                               , ensure "Test.GenerateSimilar.blackListURLs" "isURLAny (URL & file)" isURLAny $
                                  isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
                                , isUniqueList Config.LinkID.affiliationAnchors
@@ -154,13 +154,13 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                            , isUniqueList Config.XOfTheDay.siteBlackList
                                            , ensure "Test.XOfTheDay.siteBlackList" "isDomainT" isDomainT Config.XOfTheDay.siteBlackList] ++ -- T.Text
               [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
-               length $ ensure "Test.linkIconTestUnitsText" "isURIReferenceT" (\(u,_,_) -> isURIReferenceT u) Config.LinkIcon.linkIconTestUnitsText] ++
+               length $ ensure "Test.linkIconTestUnitsText" "isURLAnyT" (\(u,_,_) -> isURLAnyT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" safeLink Config.Interwiki.testCases)
               , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)
               , length (ensure "Test.testConfigs.extracTwitterUsernameTestSuite" "isURL (URL of first)" (\(u1,_) -> isURL u1) Config.MetadataFormat.extractTwitterUsernameTestSuite)
               , length $ isUniqueAll Config.LinkSuggester.whiteList
-              , length $ ensure "Test.LinkSuggester.whiteList" "isURIReferenceT" (isURIReferenceT . fst) Config.LinkSuggester.whiteList
+              , length $ ensure "Test.LinkSuggester.whiteList" "isURLAnyT" (isURLAnyT . fst) Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ ensure "Test.Config.Tags.tagsLong2Short" "isLower" (all Data.Char.isLower . filter Data.Char.isAlpha . fst) Config.Tags.tagsLong2Short
@@ -172,28 +172,28 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ ensure "Test.Inflation.dates" "isDate" (isDate . fst) $ Config.Inflation.bitcoinUSDExchangeRateHistory
               , length $ isUniqueAll Config.LinkAuto.custom
-              , length $ ensure "Test.LinkAuto.custom" "isURiReferenceT" (isURIReferenceT . snd) Config.LinkAuto.custom
+              , length $ ensure "Test.LinkAuto.custom" "isURLAnyT" (isURLAnyT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
               , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
-               , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURIReference u && not (isURLT ident)) Config.LinkID.linkIDOverrides
+               , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURLAny u && not (isURLT ident)) Config.LinkID.linkIDOverrides
               , length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataFormat.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed, length $ isUniqueKeys Config.MetadataFormat.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
               , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
               , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
-              , length $ ensure "Test.authorLinkDB" "isURLT (URL of second)" (all isURLT) (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace
-              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURIReference" isURIReference Config.Paragraph.whitelist] ++
+              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
                                 , ensure "badDomainsSimple"  "isDomainT" isDomainT Config.LinkLive.badDomainsSimple
                                 , ensure "badDomainsSub"     "isDomainT" isDomainT Config.LinkLive.badDomainsSub
                                 , ensure "Test.prioritizeLinkIconBlackList" "isDomainT" isDomainT Config.LinkIcon.prioritizeLinkIconBlackList]
               ] ++
-              [length (ensure "Test.localizeLinktestCases" "URL/URI" (\(u, (af, mv, html, _)) -> isURLT u && isURIReferenceT af && (mv=="" || isURLT mv) && (html=="" || isURLT html)) Config.LinkArchive.localizeLinktestCases)]
+              [length (ensure "Test.localizeLinktestCases" "URL/URI" (\(u, (af, mobileversion, html, _)) -> isURLT u && (af=="" || isURLAnyT af) && (mobileversion=="" || isURLT mobileversion) && (html=="" || isURLT html)) Config.LinkArchive.localizeLinktestCases)]
   where safeLink :: (Show a) => (a,Inline) -> Bool
         safeLink (_, (Link _ _ (u,_))) = isURLT u
         safeLink x = error $ "Test.isURLT (URL of second).safeLink: passed an Inline which was not a 'Link' (with a valid URL)? erroring out. Original: " ++ show x

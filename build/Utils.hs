@@ -271,14 +271,27 @@ isDomain domain = case parseURI ("http://" ++ domain) of
 isDomainT :: T.Text -> Bool
 isDomainT = isDomain . T.unpack
 
--- Check if a string is a valid HTTP or HTTPS URL. To check local paths as well, use `isURIReference`/`isURIReferenceT`.
+-- Check if a string is a valid remote/external HTTP or HTTPS URL only. To check local paths, use `isURIReference`/`isURIReferenceT`. To check both, use `isURLAny`
 isURL :: String -> Bool
+isURL "" = error "Utils.isURL: passed an empty string as a URL. This should never happen!"
 isURL url = case parseURI url of
-    Just uri -> scheme == "http:" || scheme == "https:"
-        where scheme = uriScheme uri
-    Nothing -> False
+              Just uri -> let scheme = uriScheme uri in
+                            scheme == "http:" || scheme == "https:"
+              Nothing -> False
 isURLT :: T.Text -> Bool
 isURLT = isURL . T.unpack
+
+isURLAny :: String -> Bool
+isURLAny "" = error "Utils.isURLAny: passed an empty string as a URL. This should never happen!"
+isURLAny url = if head url == '/' then isURILocalT (T.pack url) else isURL url
+isURLAnyT :: T.Text -> Bool
+isURLAnyT = isURLAny . T.unpack
+
+-- check that a local URL like `/doc/foo.pdf` or `/essay` is a valid URI;
+-- this is equivalent to checking for the mandatory root slash, and then `isURIReferenceT`.
+isURILocalT :: T.Text -> Bool
+isURILocalT "" = error "Utils.isURILocalT: passed an empty string as a URL. This should never happen!"
+isURILocalT url = T.head url == '/' && isURIReferenceT url
 
 isURIReferenceT :: T.Text -> Bool
 isURIReferenceT = isURIReference . T.unpack
