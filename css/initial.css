@@ -2101,9 +2101,6 @@ body.page-index #markdownBody section ul ul {
         line-height: 1.65;
         overflow-wrap: break-word;
     }
-	body.page-index #markdownBody section ul li::before {
-		top: 0.1em;
-	}
 }
 
 /**********************************/
