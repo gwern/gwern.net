@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-07-08 09:27:46 gwern"
+When: Time-stamp: "2024-07-19 11:34:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -319,7 +319,7 @@ headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSe
 headerSelflinkAndSanitize x@(Header a (href,b,c) d) =
   let href' = T.filter (`notElem` ['.', '#', ':']) href in
     unsafePerformIO $ do
-      when (href' /= href) $ printRed $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
+      when (href' /= href) $ error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
       if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
         return $ Header a (href',b,c) [Link nullAttr (walk titlecaseInline $ flattenLinksInInlines d)
                                        ("#"`T.append`href', "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]
