@@ -2131,6 +2131,12 @@ del {
 	--text-alignment: left;
 }
 
+@media all and (max-width: 649px) {
+	.backlinks-list .backlink-context {
+		margin-left: calc(-1 * var(--list-left-padding));
+	}
+}
+
 
 /*************/
 /* DROPCAPS */
