@@ -2056,11 +2056,28 @@ span.inflation-adjusted .subsup {
     bottom: 0;
 }
 
+/*	Date ranges.
+
+	These should also move as a block, just like inflation adjustments. Also, 
+	the en-dash should be v-positioned as one normally would be, for clarity.
+ */
 span.date-range {
 	white-space: nowrap;
 }
 span.date-range .subsup {
 	align-items: center;
+	bottom: 0;
+	margin: 0 0.05em 0 0.1em;
+}
+span.date-range .subsup sup {
+	font-size: 1em;
+	top: 0.45em;
+}
+span.date-range .subsup sub {
+	bottom: -0.25em;
+}
+span.date-range > sub {
+	margin: 0 0.1em;
 	bottom: 0;
 }
 
