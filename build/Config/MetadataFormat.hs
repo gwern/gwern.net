@@ -293,7 +293,8 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\">", "")
          , ("<sec id=\"[a-zA-Z0-9_-]+\">", "")
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
-         , (" © [0-9]+ European Association of Personality Psychology", "")
+         , (" © [0-9]+ European Association of Personality Psychology.*$", "")
+         , ("☆$", "")
          ]
 
 -- simple string substitutions:

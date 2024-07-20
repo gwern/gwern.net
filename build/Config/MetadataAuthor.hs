@@ -304,8 +304,14 @@ canonicals = M.fromList
   , ("T. Lehtimaki", "Terho Lehtimäki")
   , ("T. Lehtimäki", "Terho Lehtimäki")
   , ("Philipp D. Koellinger", "Philipp Koellinger")
+  , ("Philipp D Koellinger", "Philipp Koellinger")
+  , ("P D Koellinger", "Philipp Koellinger")
   , ("P. D. Koellinger", "Philipp Koellinger")
   , ("NoaNabeshima", "Noa Nabeshima")
+  , ("Tamara Harris", "Tamara B. Harris")
+  , ("Reedik Magi", "Reedik Mägi")
+  , ("R. Magi", "Reedik Mägi")
+  , ("R. Mägi", "Reedik Mägi")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -322,7 +328,7 @@ authorLinkDB = M.fromList $
     , ("Nick Bostrom","https://nickbostrom.com/")
     , ("Said Achmiz","https://wiki.obormot.net/")
     , ("Shawn Presser","https://x.com/theshawwn")
-    , ("Gwern", "https://gwern.net/index#abstract")
+    , ("Gwern", "/index#abstract")
     , ("Scott Alexander", "https://www.astralcodexten.com/")
     , ("Lucas Beyer", "https://scholar.google.com/citations?user=p2gwhK4AAAAJ")
     , ("Tanner Greer", "https://scholars-stage.org/")
@@ -479,6 +485,14 @@ authorLinkDB = M.fromList $
     , ("Erik Ingelsson", "https://wavelifesciences.com/company/leadership/executives/erik-ingelsson-md-phd/")
     , ("Noa Nabeshima", "https://x.com/NoaNabeshima")
     , ("Ethan Mollick", "https://x.com/emollick")
+    , ("Tamara B. Harris", "https://www.healthandagingpolicy.org/fellows/tamara-harris-md-ms/")
+    , ("Reedik Mägi", "https://scholar.google.com/citations?user=mKbe4v0AAAAJ")
+    , ("Caiming Xiong", "http://cmxiong.com/")
+    , ("Andrew Snyder-Beattie", "https://www.openphilanthropy.org/about/team/andrew-snyder-beattie/")
+    , ("Michael Page", "https://arxiv.org/search/cs?searchtype=author&query=Page,+M")
+    , ("Ben Garfinkel", "https://www.benmgarfinkel.com/")
+    , ("Miles Brundage", "https://www.milesbrundage.com/")
+    , ("Jelena Luketina", "https://scholar.google.com/citations?user=zpil5xkAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

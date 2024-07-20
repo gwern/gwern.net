@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-10 16:18:24 gwern"
+;;; When:  Time-stamp: "2024-07-19 17:17:00 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -200,6 +200,33 @@ BOUND, NOERROR, and COUNT have the same meaning as in `re-search-forward'."
   (let ((word-regexp (concat "\\b" regexp "\\b")))
     (re-search-forward word-regexp bound noerror count)))
 
+(defun replace-regexp-auto (regexp replacement &optional delimited start end)
+  "Replace REGEXP with REPLACEMENT in buffer or region.
+If DELIMITED is non-nil, only replace matches surrounded by word boundaries.
+START and END specify the region to operate on."
+  (interactive
+   (let* ((from (read-regexp "Replace regexp: "))
+          (to (read-string (format "Replace regexp %s with: " from))))
+     (list from to
+           (y-or-n-p "Respect word boundaries? ")
+           (if (use-region-p) (region-beginning))
+           (if (use-region-p) (region-end)))))
+  (let ((case-fold-search nil))
+    (save-excursion
+      (goto-char (or start (point-min)))
+      (while (re-search-forward regexp (or end (point-max)) t)
+        (unless (and delimited
+                     (or (and (> (match-beginning 0) (point-min))
+                              (save-excursion
+                                (goto-char (match-beginning 0))
+                                (not (looking-at-p "\\<"))))
+                         (and (< (match-end 0) (point-max))
+                              (save-excursion
+                                (goto-char (match-end 0))
+                                (not (looking-at-p "\\>"))))))
+          (replace-match replacement t nil))))))
+
+
 ; Easy Unicode insertion mnemonics; uses the unusual X modifier key 'Super'.
 ; This is not bound by default to a key usually, but on my 102-key US layout, I rebind the useless 'Menu' key to it: `$ modmap -e 'keysym Menu = Super_R'`.
 ; Then 's-' in `kbd` notation is 'Super-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
@@ -285,7 +312,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (de-unicode)
        (flyspell-buffer)
        (delete-trailing-whitespace)
-       (clean-pdf-text)
+       (clean-pdf-text begin end)
        (check-parens)
 
        (let ; Blind unconditional rewrites:
@@ -1116,6 +1143,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
            (query-replace-regexp (car pair) (cdr pair) nil begin end))
          )
 
+       (replace-regexp-auto "\\([0-9]\\) \\([0-9][0-9][0-9]\\)" "\\1,\\2" nil begin end) ; primarily for JAMA-formatted abstracts where they use a space separator instead of a comma: eg. "18 386"
+
        ; format abstract sub-headings with bold if we are writing an abstract and not a Markdown file:
        (unless (buffer-file-name)
          (query-replace " -\n    " "" nil begin end)
@@ -1721,9 +1750,12 @@ Mostly string search-and-replace to enforce house style in terms of format."
      nil
      )))
 
-(defun clean-pdf-text ()
-  "Clean PDF text in the current buffer using `/static/build/clean-pdf.py`.
-This function processes the buffer paragraph by paragraph, where paragraphs
+(defun clean-pdf-text (&optional start end)
+  "Clean PDF-ish text in buffer/region using `/static/build/clean-pdf.py`.
+If START and END are provided or a region is active, only region processed.
+Otherwise, the entire buffer will be processed.
+
+This function processes the text paragraph by paragraph, where paragraphs
 are defined as text blocks separated by triple newlines (\\n\\n\\n). Each
 paragraph that contains lines ending with '-' is sent to the external
 `clean-pdf.py` script, which uses AI to correct common PDF extraction issues:
@@ -1732,42 +1764,46 @@ paragraph that contains lines ending with '-' is sent to the external
 - Fixing ligature and character encoding problems
 The cleaned text replaces the original text in the buffer. All changes are
 grouped as a single, atomic operation for undo purposes.
+
 Note: This function assumes that `clean-pdf.py` is in Emacs's executable path."
   (interactive)
   (unless (executable-find "clean-pdf.py")
     (error "Error: Python `clean-pdf.py` script not found in path"))
-  (atomic-change-group
-    (save-excursion
-      (let ((case-fold-search nil))  ; Make search case-sensitive
-        (goto-char (point-min))
-        (while (< (point) (point-max))
-          (let* ((paragraph-end (or (search-forward "\n\n\n" nil t)
-                                    (point-max)))
-                 (paragraph (buffer-substring-no-properties (point) paragraph-end))
-                 (needs-cleaning (and (string-match-p "-\n" paragraph)
-                                      ; but skip uses of em-dash at the end of lines (eg. dialogue), and Pandoc Markdown YAML headers:
-                                      (not (string-match-p "—\n" paragraph))
-                                      (not (string-match-p "---\n" paragraph)))))
-
-            (when needs-cleaning
-              (let ((cleaned-paragraph
-                     (with-temp-buffer
-                       (insert paragraph)
-                       ;; Call the clean-pdf.py script
-                       (condition-case err
-                           (call-process-region (point-min) (point-max)
-                                                "clean-pdf.py"
-                                                t t nil)
-                         (error
-                          (message "Error in clean-pdf.py: %s" (error-message-string err))
-                          (buffer-string)))  ; Return original text if there's an error
-                       (buffer-string))))
-                ;; Replace the original paragraph with the cleaned version
-                (delete-region (point) paragraph-end)
-                (insert cleaned-paragraph)))
-            ;; Move to the end of the paragraph
-            (goto-char paragraph-end))))))
-  (message "PDF text cleaning completed"))
+  (let* ((region-active (or (region-active-p) (and start end)))
+         (process-start (or start (and region-active (region-beginning)) (point-min)))
+         (process-end (or end (and region-active (region-end)) (point-max))))
+    (atomic-change-group
+      (save-excursion
+        (let ((case-fold-search nil))  ; Make search case-sensitive
+          (goto-char process-start)
+          (while (< (point) process-end)
+            (let* ((paragraph-end (or (search-forward "\n\n\n" process-end t)
+                                      process-end))
+                   (paragraph (buffer-substring-no-properties (point) paragraph-end))
+                   (needs-cleaning (and (string-match-p "-\n" paragraph)
+                                        ; but skip uses of em-dash at the end of lines (eg. dialogue), and Pandoc Markdown YAML headers:
+                                        (not (string-match-p "—\n" paragraph))
+                                        (not (string-match-p "---\n" paragraph)))))
+              (when needs-cleaning
+                (let ((cleaned-paragraph
+                       (with-temp-buffer
+                         (insert paragraph)
+                         ;; Call the clean-pdf.py script
+                         (condition-case err
+                             (call-process-region (point-min) (point-max)
+                                                  "clean-pdf.py"
+                                                  t t nil)
+                           (error
+                            (message "Error in clean-pdf.py: %s" (error-message-string err))
+                            (buffer-string)))  ; Return original text if there's an error
+                         (buffer-string))))
+                  ;; Replace the original paragraph with the cleaned version
+                  (delete-region (point) paragraph-end)
+                  (insert cleaned-paragraph)))
+              ;; Move to the end of the paragraph
+              (goto-char paragraph-end))))))
+    (message "PDF text cleaning completed for %s"
+             (if region-active "selected region" "entire buffer"))))
 
 (defun query-inflation-adjust ()
   "Interactively inflation-adjust all dollar amounts in the buffer.

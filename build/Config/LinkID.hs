@@ -295,7 +295,7 @@ linkIDOverrides =
        , ("https://openai.com/research/image-gpt", "chen-et-al-2020-blog")
        , ("https://openai.com/research/jukebox", "jukebox-blog")
        , ("https://openai.com/research/musenet", "musenet-blog")
-       , ("https://openai.com/research/openai-five-defeats-dota-2-world-champions", "oa5-blog")
+       , ("https://openai.com/index/openai-five-defeats-dota-2-world-champions/", "oa5-blog")
        , ("https://openreview.net/forum?id=G89-1yZLFHk", "wu-et-al-2021-otter")
        , ("https://openreview.net/forum?id=St1giarCHLP", "song-et-al-2021-ddim")
        , ("https://openreview.net/forum?id=TrjbxzRcnf-#google", "wu-et-al-2021-memorizingtransformer")
@@ -397,4 +397,8 @@ linkIDOverrides =
        , ("https://www.nytimes.com/2023/09/10/business/dealbook/walter-isaacson-elon-musk-biography.html", "isaacson-2023-mercurial")
        , ("https://www.axios.com/2023/09/08/walter-isaacson-elon-musk-book-excerpt", "isaacson-2023-adhd")
        , ("https://x.com/elonmusk/status/891713104786083841", "musk-2017-is-bipolar")
+       , ("https://statmodeling.stat.columbia.edu/2019/11/18/is-matthew-walkers-why-we-sleep-riddled-with-scientific-and-factual-errors/", "gelman-2019-sleep-1")
+       , ("https://statmodeling.stat.columbia.edu/2019/11/24/why-we-sleep-update-some-thoughts-while-we-wait-for-matthew-walker-to-respond-to-alexey-guzeys-criticisms/", "gelman-2019-sleep-2")
+       , ("https://statmodeling.stat.columbia.edu/2019/12/26/whassup-with-why-we-sleep/", "gelman-2019-sleep-3")
+       , ("https://statmodeling.stat.columbia.edu/2019/12/27/why-we-sleep-data-manipulation-a-smoking-gun/", "gelman-2019-sleep-4")
       ]

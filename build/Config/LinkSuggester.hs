@@ -410,7 +410,7 @@ whiteList = [ ( "/crop#hands"
       ]
     )
   , ( "https://arxiv.org/abs/2204.02311#google" , [ "PaLM" ] )
-  , ( "https://blog.research.google/2020/01/reformer-efficient-transformer.html"
+  , ( "https://research.google/blog/reformer-the-efficient-transformer/"
     , [ "Reformer: The Efficient Transformer" ]
     )
   , ( "https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions"
@@ -1120,7 +1120,7 @@ whiteList = [ ( "/crop#hands"
   , ( "https://michaelnielsen.org/" , [ "Michael Nielsen" ] )
   , ( "https://mlp.fandom.com/wiki/Maud_Pie" , [ "Maud Pie" ] )
   , ( "https://openai.com/blog/chatgpt/" , [ "ChatGPT" ] )
-  , ( "https://openai.com/research/openai-five-defeats-dota-2-world-champions"
+  , ( "https://openai.com/index/openai-five-defeats-dota-2-world-champions/"
     , [ "OA5" ]
     )
   , ( "https://pactwebserial.wordpress.com/" , [ "Pact" ] )

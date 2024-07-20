@@ -51,8 +51,10 @@ toSingleLine (f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
     "\x1b[32m "++f++" \x1b[0m",
     show tags,
     "\x1b[35m\""++b++"\"\x1b[0m",
-    " (" ++ authorsTruncateString c ++ ")",
+    " (" ++ authors ++ ")",
     d,
     sed " +" " " $ replace "\n" " " abst] ++
     (let url = generateURL f mi in if null url then [] else ["\x1b[32m "++url++"\x1b[0m"])
   )
+  where authorsShort = authorsTruncateString c
+        authors = if authorsShort == c then authorsShort else authorsShort ++ "…"

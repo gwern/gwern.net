@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-07-12 22:00:22 gwern"
+# When:  Time-stamp: "2024-07-19 16:52:55 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -82,6 +82,9 @@ attention</strong>, <strong>attentional control</strong>, <strong>executive cont
 
 <text>Sagar Gaikwad 1,2, Nicha Puangmalai 1,2, Minal Sonawane 1,2, Mauro Montalbano 1,2, Rachel Price 3, Malini S. Iyer 4, Anamika Ray 4, Sandra Moreno 3, Rakez Kayed</text> →
 Sagar Gaikwad, Nicha Puangmalai, Minal Sonawane, Mauro Montalbano, Rachel Price, Malini S. Iyer, Anamika Ray, Sandra Moreno, Rakez Kayed
+
+<text>Patricia J. Rodriguez, PhD1; Brianna M. Goodwin Cartwright, MS1; Samuel Gratzl, PhD1; Rajdeep Brar, MD1; Charlotte Baker, DrPH1; Ty J. Gluckman, MD2; Nicholas L. Stucky,</text> →
+Patricia J. Rodriguez, Brianna M. Goodwin Cartwright, Samuel Gratzl, Rajdeep Brar, Charlotte Baker, Ty J. Gluckman, Nicholas L. Stucky
 
 Input:
 <text>{target}</text> →

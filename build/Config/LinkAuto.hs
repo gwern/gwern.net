@@ -91,7 +91,7 @@ custom = [
         , ("(Neon Genesis Evangelion|NGE|NGE TV|Evangelion)", "https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion")
         , ("(Nico Nico Douga|NND)", "https://en.wikipedia.org/wiki/Nico_Nico_Douga")
         , ("(Niels Bohr|Bohr)", "https://en.wikipedia.org/wiki/Niels_Bohr")
-        , ("(OpenAI 5|OA ?5)", "https://openai.com/research/openai-five-defeats-dota-2-world-champions")
+        , ("(OpenAI 5|OA ?5)", "https://openai.com/index/openai-five-defeats-dota-2-world-champions/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
         , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "/doc/reinforcement-learning/exploration/2019-jaderberg.pdf#deepmind")
         , ("(POMDPs?|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess?e?s)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
