@@ -2559,6 +2559,7 @@ body.reader-mode-active #sidenote-column-right,
 body.reader-mode-active #navigation,
 body.reader-mode-active #footer,
 body.reader-mode-active .inflation-adjusted .subsup,
+body.reader-mode-active .date-range sub,
 body.reader-mode-active .footnote-ref,
 body.reader-mode-active .footnote-back {
 	display: none;
@@ -2694,6 +2695,10 @@ body.reader-mode-active .markdownBody p code {
 	--background-color: inherit;
 
 	border-color: transparent;
+}
+
+body.reader-mode-active .date-range .subsup {
+	margin: 0;
 }
 
 /*  Mobile layout adjustments.
