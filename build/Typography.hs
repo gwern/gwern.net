@@ -13,27 +13,27 @@ module Typography (linebreakingTransform, typographyTransform, titlecase', title
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
-import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text) -- any
+import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
 
 import Data.Text.Titlecase (titlecase)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc, nullAttr) -- topDown
+import Text.Pandoc (Inline(..), Block(..), Pandoc, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
-import Utils (sed, replaceMany, parseRawAllClean) -- addClass
-import Config.Typography as C
+import Utils (sed, replaceMany, parseRawAllClean)
+import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
-                        walk (imageCaptionLinebreak . citefyInline year . linkLive . linkIcon) .
+                        walk (imageCaptionLinebreak . dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
@@ -81,7 +81,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                         [Str a]
                       else
                         (case T.splitOn fullMatch a of
-                              (before:after) -> [Str before] ++
+                              (before:after) -> [citefyInline year $ Str before] ++
                                     [Span ("", ["cite"], []) ((if T.strip second == "" then
                                                                  -- the easy single/double author case (we only mess with the date, nothing else)
                                                                  [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
@@ -306,3 +306,40 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       (Strong a : Str b : Emph c : LineBreak : d)
                                                                                       z
 imageCaptionLinebreak x = x
+
+dateRangeDuration :: Int -> Inline -> Inline
+dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]] of
+                                [] -> x
+                                [[_, before,dateFirst,separator,dateSecond,after]] ->
+
+                                  let dateFirstInt  = (read $ T.unpack dateFirst)  :: Int
+                                      dateSecondInt = (read $ T.unpack dateSecond) :: Int
+                                      dateRangeInt  = dateSecondInt - dateFirstInt
+                                      dateRangeT    = T.pack $ show dateRangeInt
+                                      dateDuration  = todayYear - dateSecondInt
+                                      dateDurationT = T.pack $ show dateDuration
+                                      description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted ", dateRangeT, if dateRangeInt < 2 then " year" else " years",
+                                                                ", ending ", dateDurationT, " years ago."]
+                                      rangeP    = dateFirst == dateSecond || dateRangeInt < minRange
+                                      durationP = dateDuration < minDuration || dateSecondInt > maxDateSecond
+                                  in if rangeP && durationP then x
+                                     else Span nullAttr [
+                                           dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
+                                             Span ("", ["date-range"], [("title", description)]) -- overall wrapper
+                                             ([Str dateFirst,
+                                              if rangeP then Str separator else
+                                                Span ("", ["subsup"], []) [Superscript [Str "–"],
+                                                                           Subscript   [Str dateRangeT]],
+                                              Str dateSecond] ++
+                                              if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]]),
+                                             Str after]
+                                z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
+  where minRange, minDuration, maxDateSecond :: Int
+        minRange = 5
+        minDuration = 11
+        maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
+dateRangeDuration _ x = x
+
+-- match hyphen/EN-DASH-separated comma-less years from 1000--2999:
+dateRangeRegex :: Regex
+dateRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
