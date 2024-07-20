@@ -9,11 +9,11 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest) where
+module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, dateRangeDurationTestCasesTestsuite) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
-import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text)
+import qualified Data.Text as T (append, concat, null, pack, unpack, replace, splitOn, strip, Text)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
@@ -28,7 +28,7 @@ import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
 import Utils (sed, replaceMany, parseRawAllClean)
-import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
+import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateRangeDurationTestCases)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
@@ -307,6 +307,8 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       z
 imageCaptionLinebreak x = x
 
+-- see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
+-- TODO: handle single years as just duration subscripts; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
 dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]] of
                                 [] -> x
@@ -322,7 +324,7 @@ dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]
                                                                 ", ending ", dateDurationT, " years ago."]
                                       rangeP    = dateFirst == dateSecond || dateRangeInt < minRange
                                       durationP = dateDuration < minDuration || dateSecondInt > maxDateSecond
-                                  in if rangeP && durationP then x
+                                  in if rangeP && durationP || dateFirstInt > dateSecondInt || dateSecondInt > maxDateSecond then x
                                      else Span nullAttr [
                                            dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
                                              Span ("", ["date-range"], [("title", description)]) -- overall wrapper
@@ -331,8 +333,8 @@ dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]
                                                 Span ("", ["subsup"], []) [Superscript [Str "–"],
                                                                            Subscript   [Str dateRangeT]],
                                               Str dateSecond] ++
-                                              if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]]),
-                                             Str after]
+                                              if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]] ++
+                                             if T.null after then [] else [Str after])]
                                 z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
   where minRange, minDuration, maxDateSecond :: Int
         minRange = 5
@@ -343,3 +345,8 @@ dateRangeDuration _ x = x
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999:
 dateRangeRegex :: Regex
 dateRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
+
+
+dateRangeDurationTestCasesTestsuite :: [(Int, T.Text, Inline, Inline)]
+dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
+                                      map (\(y,s,expected) -> (y, s, expected, dateRangeDuration y (Str s))) C.dateRangeDurationTestCases

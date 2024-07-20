@@ -25,7 +25,7 @@ import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
-import Typography (titleCaseTest)
+import Typography (titleCaseTest, dateRangeDurationTestCasesTestsuite)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 import MetadataAuthor (authorCollapseTest)
 
@@ -37,7 +37,7 @@ import qualified Config.LinkIcon (prioritizeLinkIconBlackList, linkIconTestUnits
 import qualified Config.LinkLive (goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks)
 import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
 import qualified Config.Tags (shortTagBlacklist, tagsLong2Short, wholeTagRewritesRegexes, tagsShort2LongRewrites, shortTagTestSuite)
-import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases)
+import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases, dateRangeDurationTestCases)
 import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
 import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
@@ -183,6 +183,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
               , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
+              , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace
@@ -241,6 +242,8 @@ testAll = do Config.Misc.cd
              unless (null Cycle.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Cycle.testCycleDetection)
 
              unless (null titleCaseTest) $ printRed ("Title-case typography test suite has errors in: " ++ show titleCaseTest)
+
+             unless (null dateRangeDurationTestCasesTestsuite) $ printRed ("Date-range-duration subscript typography test suite has errors in: " ++ show dateRangeDurationTestCasesTestsuite)
 
              printGreen ("Tested HTML/author cleanup rules for infinite loops, verified: " ++ show (length (cleanAbstractsHTMLTest ++ cleanAuthorsTest)))
 
