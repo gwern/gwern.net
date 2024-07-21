@@ -239,6 +239,13 @@ Images = {
 
     thumbnailDefaultSize: "256",
 
+	thumbnailSizeFromURL: (url) => {
+		if (typeof url == "string")
+			url = URLFromString(url);
+
+		return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
+	},
+
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
         if (imageSrcURL.hostname != location.hostname)
             return null;
@@ -258,7 +265,14 @@ Images = {
             image.dataset.srcSizeFull = image.src;
             image.src = thumbnailURL.href;
         }
-    }
+    },
+
+	unthumbnailifyImage: (image) => {
+		if (image.dataset.srcSizeFull > "") {
+			image.src = image.dataset.srcSizeFull;
+			delete image.dataset.srcSizeFull;
+		}
+	}
 };
 
 

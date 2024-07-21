@@ -778,6 +778,9 @@ function stripStyles(element, options) {
 /**************************************************************************/
 /*  Call the given function when the given element intersects the viewport.
 
+	The `entries` parameter of the IntersectionObserver callback is passed
+	to the called function (unless called immediately).
+
     Available option fields:
 
 	root
@@ -807,9 +810,32 @@ function lazyLoadObserver(f, target, options) {
 			if (entries.first.isIntersecting == false)
 				return;
 
-			f();
+			f(entries);
 			observer.disconnect();
 		}, options);
+
+		observer.observe(target);
+	});
+}
+
+/***********************************************************************/
+/*  Call the given function when the given element is resized.
+
+	The `entries` parameter of the ResizeObserver callback is passed
+	to the called function.
+
+	If `false` is returned from the function call, disconnects observer.
+	Otherwise, continues observation.
+ */
+function resizeObserver(f, target) {
+	if (target == null)
+		return;
+
+	requestAnimationFrame(() => {
+		let observer = new ResizeObserver((entries) => {
+			if (f(entries) == false)
+				observer.disconnect();
+		});
 
 		observer.observe(target);
 	});
