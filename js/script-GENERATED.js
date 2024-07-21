@@ -267,8 +267,12 @@ Images = {
         }
     },
 
+	isThumbnail: (image) => {
+		return (image.dataset.srcSizeFull > "");
+	},
+
 	unthumbnailifyImage: (image) => {
-		if (image.dataset.srcSizeFull > "") {
+		if (Images.isThumbnail(image)) {
 			image.src = image.dataset.srcSizeFull;
 			delete image.dataset.srcSizeFull;
 		}
@@ -13073,6 +13077,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 			resizeObserver(() => {
 				if (thumbnailSize < image.clientWidth * window.devicePixelRatio) {
 					Images.unthumbnailifyImage(image);
+					return false;
+				} else if (Images.isThumbnail(image) == false) {
 					return false;
 				}
 			}, image);
