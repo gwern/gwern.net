@@ -381,6 +381,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 				if (thumbnailSize < image.clientWidth * window.devicePixelRatio) {
 					Images.unthumbnailifyImage(image);
 					return false;
+				} else if (Images.isThumbnail(image) == false) {
+					return false;
 				}
 			}, image);
 		}, image, {

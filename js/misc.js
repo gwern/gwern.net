@@ -267,8 +267,12 @@ Images = {
         }
     },
 
+	isThumbnail: (image) => {
+		return (image.dataset.srcSizeFull > "");
+	},
+
 	unthumbnailifyImage: (image) => {
-		if (image.dataset.srcSizeFull > "") {
+		if (Images.isThumbnail(image)) {
 			image.src = image.dataset.srcSizeFull;
 			delete image.dataset.srcSizeFull;
 		}
