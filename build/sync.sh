@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-20 19:42:53 gwern"
+# When:  Time-stamp: "2024-07-21 14:28:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -256,8 +256,8 @@ else
         fi
     }
     export -f generate_thumbnail
-    find ./doc/ -type f \( -iname "*.jpg" -o -iname "*.png" \) | \
-        gfv -e '/doc/www/' -e '/doc/rotten.com/' -e '/static/' | \
+    find ./doc/ ./static/ -type f \( -iname "*.jpg" -o -iname "*.png" \) | \
+        gfv -e '/doc/www/' -e '/doc/rotten.com/' | \
         parallel --jobs "$N" generate_thumbnail &
 
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 5)
