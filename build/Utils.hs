@@ -517,3 +517,15 @@ formatIntWithCommas = reverse . intercalate "," . chunksOf 3 . reverse . show
    chunksOf _ [] = []
    chunksOf n xs = take n xs : chunksOf n (drop n xs)
 
+-- Format an Int number of days by days/months/years.
+-- unit-tests: `[(d,e,formatDaysInLargestUnit d) | (d,e) <- [(0, "0d"),(1, "1d"),(29, "29d"),(30, "30d"),(31, "1m"),(45, "1m"),(46, "1m"),(47, "2m"),(59, "2m"),(60, "2m"),(61, "2m"),(89, "3m"),(90, "3m"),(91, "3m"),(180, "6m"),(364, "12m"),(365, "1y"),(366, "1y"),(400, "1y"),(730, "2y"),(1095, "3y"),(3652, "10y")], formatDaysInLargestUnit d /= e]`
+formatDaysInLargestUnit :: Int -> String
+formatDaysInLargestUnit days
+    | days < 0   = error $ "Utils.formatDaysInLargestUnit: passed a negative number of days, which is nonsensical? Was: " ++ show days
+    | days < 31  = show days ++ "d"
+    | days < 365 = let
+                     monthsFloat = (fromIntegral days * 12 :: Double) / 365.25
+                     months      = max 1 (floor (monthsFloat + 0.48)) :: Int
+                   in  show months ++ "m"
+    | otherwise  = let years = days `div` 365
+                   in  show years ++ "y"

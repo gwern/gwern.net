@@ -127,7 +127,14 @@ dateRangeDurationTestCases = [
   , (2000,  "405 patients tested 1984-01-01--1987-01-01"
     , Span ("",[],[]) [Str "405 patients tested ",Span ("",["date-range"],[("title","The date range 1984-01-01\8211\&1987-01-01 lasted 3 years for 1,097 days, ending 13 years ago.")]) [Str "1984-01-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3y"]],Str "1987-01-01",Subscript [Str "13ya"]]]
     )
-  , (2024, "WII was 1939--1945, or more specifically, 1939-09-01--1945-09-02."
-    , Span ("",[],[]) [Str "WII was ",Span ("",["date-range"],[("title","The date range 1939\8211\&1945 lasted 6 years, ending 79 years ago.")]) [Str "1939",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "6"]],Str "1945",Subscript [Str "79ya"],Span ("",[],[]) [Str ", or more specifically, ",Span ("",["date-range"],[("title","The date range 1939-09-01\8211\&1945-09-02 lasted 6 years for 2,194 days, ending 79 years ago.")]) [Str "1939-09-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "6y"]],Str "1945-09-02",Subscript [Str "79ya"],Str "."]]]]
+  , (2024, "1. WII was 1939--1945, or more specifically, 1939-09-01--1945-09-02."
+    , Span ("",[],[]) [Str "1. WII was ",Span ("",["date-range"],[("title","The date range 1939\8211\&1945 lasted 6 years, ending 79 years ago.")]) [Str "1939",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "6"]],Str "1945",Subscript [Str "79ya"],Span ("",[],[]) [Str ", or more specifically, ",Span ("",["date-range"],[("title","The date range 1939-09-01\8211\&1945-09-02 lasted 6 years for 2,194 days, ending 79 years ago.")]) [Str "1939-09-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "6y"]],Str "1945-09-02",Subscript [Str "79ya"],Str "."]]]]
     )
+  , (2024, "2. WII was 1939-01-01--1939-06-06"
+    , Span ("",[],[]) [Str "2. WII was ",Span ("",["date-range"],[("title","The date range 1939-01-01\8211\&1939-06-06 lasted for 157 days, ending 85 years ago.")]) [Str "1939-01-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "5m"]],Str "1939-06-06",Subscript [Str "85ya"]]]
+    )
+  , (2024, "3. WII was 1939-01-01--1946-06-06"
+    , Span ("",[],[]) [Str "3. WII was ",Span ("",["date-range"],[("title","The date range 1939-01-01\8211\&1946-06-06 lasted 7 years for 2,714 days, ending 78 years ago.")]) [Str "1939-01-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "7y"]],Str "1946-06-06",Subscript [Str "78ya"]]]
+    )
+
   ]

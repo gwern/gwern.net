@@ -27,7 +27,7 @@ import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
-import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan, formatIntWithCommas)
+import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan, formatIntWithCommas, formatDaysInLargestUnit)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateRangeDurationTestCases)
 
 typographyTransform :: Pandoc -> Pandoc
@@ -321,28 +321,30 @@ dateRangeDuration todayYear x@(Str s) =
 
                                   let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                                       dateSecondS = take 4 $ T.unpack dateSecond
-                                      dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10
-                                      dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond)
+                                      dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10 -- is full date-pair?
+                                      dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '170' days
+                                      dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '9' → "9d" '170' -> "6m" (6 months)
                                       dateFirstInt  = read dateFirstS :: Int
                                       dateSecondInt = read dateSecondS :: Int
                                       dateRangeInt  = dateSecondInt - dateFirstInt
                                       dateRangeT    = T.pack $ formatIntWithCommas dateRangeInt
                                       dateDuration  = todayYear - dateSecondInt
                                       dateDurationT = T.pack $ show dateDuration
-                                      description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted ", dateRangeT, if dateRangeInt < 2 then " year" else " years",
+                                      description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted",
+                                                                 if dateRangeInt == 0 then "" else " "`T.append`dateRangeT `T.append` if dateRangeInt == 1 then " year" else " years",
                                                                  T.pack (if not dateLongP then "" else " for " ++ dateRangeDays ++ " days"),
                                                                 if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
                                                                ]
-                                      rangeP    = dateFirst == dateSecond || dateRangeInt < minRange
+                                      rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
                                       durationP = todayYear < dateSecondInt || dateDuration < minDuration || dateSecondInt > maxDateSecond
                                   in if rangeP && durationP || dateFirstInt > dateSecondInt || dateSecondInt > maxDateSecond then x
-                                     else Span nullAttr [
+                                     else Span nullAttr [ -- usual anonymous Span trick for Inline type-safety; the redundant Spans are cleaned up in later passes
                                            dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
                                              Span ("", ["date-range"], [("title", description)]) -- overall wrapper
                                              ([Str dateFirst,
                                               if rangeP then Str separator else
                                                 Span ("", ["subsup"], []) [Superscript [Str "–"],
-                                                                           Subscript   [Str $ if dateLongP then dateRangeT`T.append`"y" else dateRangeT]],
+                                                                           Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
                                               Str dateSecond] ++
                                               if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]] ++
                                              if T.null after then [] else [dateRangeDuration todayYear $ Str after])]
