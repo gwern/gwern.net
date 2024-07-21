@@ -239,6 +239,13 @@ Images = {
 
     thumbnailDefaultSize: "256",
 
+	thumbnailSizeFromURL: (url) => {
+		if (typeof url == "string")
+			url = URLFromString(url);
+
+		return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
+	},
+
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
         if (imageSrcURL.hostname != location.hostname)
             return null;
@@ -258,7 +265,14 @@ Images = {
             image.dataset.srcSizeFull = image.src;
             image.src = thumbnailURL.href;
         }
-    }
+    },
+
+	unthumbnailifyImage: (image) => {
+		if (image.dataset.srcSizeFull > "") {
+			image.src = image.dataset.srcSizeFull;
+			delete image.dataset.srcSizeFull;
+		}
+	}
 };
 
 
@@ -13045,10 +13059,34 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 /* FIGURES */
 /***********/
 
+/******************************************************************************/
+/*	Add observers to transform thumbnails into full-sized images if page layout 
+	demands it.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (eventInfo) => {
+    GWLog("addSwapOutThumbnailEvents", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("img[data-src-size-full]").forEach(image => {
+		let thumbnailSize = Images.thumbnailSizeFromURL(image.src);
+
+		lazyLoadObserver(() => {
+			resizeObserver(() => {
+				if (thumbnailSize < image.clientWidth * window.devicePixelRatio) {
+					Images.unthumbnailifyImage(image);
+					return false;
+				}
+			}, image);
+		}, image, {
+			root: scrollContainerOf(image),
+			rootMargin: "100%"
+		});
+	});
+}, "eventListeners");
+
 /****************************************************************************/
 /*	Request image inversion data for images in the loaded content. (We omit
 	from this load handler those GW.contentDidLoad events which are fired when 
-	we construct templated content from already extract reference data, as by 
+	we construct templated content from already extracted reference data, as by 
 	then it is already too late; there is no time to send an invertOrNot API 
 	request and receive a response. Instead, requesting inversion data for 
 	images in templated content is handled by the data source object for that
