@@ -307,17 +307,23 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       z
 imageCaptionLinebreak x = x
 
--- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
--- TODO: handle single years as just duration subscripts; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
+-- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are tected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
+-- See </lorem-inline#date-subscripts>, </subscript#date-ranges>:
+-- TODO: handle single years as just duration subscripts; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
-dateRangeDuration todayYear x@(Str s) =
+dateRangeDuration todayYear x@(Str s)                                 = dateRangeDurationRaw todayYear x s
+dateRangeDuration todayYear x@(Span ("", ["date-range"], []) [Str s]) = dateRangeDurationRaw todayYear x s
+dateRangeDuration _ x = x
+
+dateRangeDurationRaw :: Int -> Inline -> T.Text -> Inline
+dateRangeDurationRaw todayYear x s =
   let yearMatch     = match dateRangeRegex     s :: [[T.Text]]
       fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
       dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
   in
       case dateMatch of
                                 [] -> x
-                                [[_, before,dateFirst,separator,dateSecond,after]] ->
+                                [[_, before,dateFirst,_separator,dateSecond,after]] ->
 
                                   let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                                       dateSecondS = take 4 $ T.unpack dateSecond
@@ -342,7 +348,7 @@ dateRangeDuration todayYear x@(Str s) =
                                            dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
                                              Span ("", ["date-range"], [("title", description)]) -- overall wrapper
                                              ([Str dateFirst,
-                                              if rangeP then Str separator else
+                                              if rangeP then Str "–" else
                                                 Span ("", ["subsup"], []) [Superscript [Str "–"],
                                                                            Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
                                               Str dateSecond] ++
@@ -353,13 +359,12 @@ dateRangeDuration todayYear x@(Str s) =
         minRange = 2
         minDuration = 11
         maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
-dateRangeDuration _ x = x
 
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
 dateRangeRegex, dateFullRangeRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
 dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
 
-dateRangeDurationTestCasesTestsuite :: [(Int, T.Text, Inline, Inline)]
+dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
-                                      map (\(y,s,expected) -> (y, s, expected, dateRangeDuration y (Str s))) C.dateRangeDurationTestCases
+                                      map (\(y,s,expected) -> (y, s, expected, dateRangeDuration y s)) C.dateRangeDurationTestCases
