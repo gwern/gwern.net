@@ -22,6 +22,9 @@ import Data.FileStore.Utils (runShellCommand)
 import Control.DeepSeq (deepseq, NFData)
 import System.Posix.Files (touchFile)
 
+import Data.Time.Format (parseTimeM, defaultTimeLocale)
+import Data.Time.Calendar (Day, diffDays)
+
 import Text.Regex (subRegex, mkRegex) -- WARNING: for Unicode support, this needs to be 'regex-compat-tdfa' package, otherwise, the search-and-replaces will go badly awry!
 import Control.Exception (catch, evaluate, SomeException)
 import System.IO.Unsafe (unsafePerformIO)
@@ -490,3 +493,19 @@ takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
 -- > repeated  "foo bar" == "o"
 repeated :: Ord a => [a] -> [a]
 repeated xs = M.keys $ M.filter (> (1::Int)) $ M.fromListWith (+) [(x,1) | x <- xs]
+
+-- eg 'calculateDateSpan "1939-09-01" "1945-05-08"' → 2077
+calculateDateSpan :: String -> String -> Int
+calculateDateSpan start end =
+    let startDate = parseDate start
+        endDate = parseDate end
+    in calculateDays startDate endDate
+
+parseDate :: String -> Day
+parseDate dateStr =
+    case parseTimeM True defaultTimeLocale "%Y-%m-%d" dateStr of
+        Just date -> date
+        Nothing -> error $ "Utils.parseDate: Invalid date format: " ++ dateStr
+
+calculateDays :: Day -> Day -> Int
+calculateDays start end = fromInteger $ succ $ diffDays end start  -- succ to make it inclusive

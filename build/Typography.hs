@@ -13,7 +13,7 @@ module Typography (linebreakingTransform, typographyTransform, titlecase', title
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
-import qualified Data.Text as T (append, concat, null, pack, unpack, replace, splitOn, strip, Text)
+import qualified Data.Text as T (append, concat, null, pack, unpack, replace, splitOn, strip, length, Text)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
@@ -27,7 +27,7 @@ import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
-import Utils (sed, replaceMany, parseRawAllClean)
+import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateRangeDurationTestCases)
 
 typographyTransform :: Pandoc -> Pandoc
@@ -307,20 +307,30 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       z
 imageCaptionLinebreak x = x
 
--- annotate 'YYYY--YYYY' date ranges with their range & duration since then; see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
--- TODO: handle single years as just duration subscripts; handle full date ranges like 'YYYY-MM-DD--YYYY-MM-DD'; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
+-- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
+-- TODO: handle single years as just duration subscripts; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
-dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]] of
+dateRangeDuration todayYear x@(Str s) =
+  let yearMatch     = match dateRangeRegex     s :: [[T.Text]]
+      fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
+      dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
+  in
+      case dateMatch of
                                 [] -> x
                                 [[_, before,dateFirst,separator,dateSecond,after]] ->
 
-                                  let dateFirstInt  = (read $ T.unpack dateFirst)  :: Int
-                                      dateSecondInt = (read $ T.unpack dateSecond) :: Int
+                                  let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
+                                      dateSecondS = take 4 $ T.unpack dateSecond
+                                      dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10
+                                      dateRangeDays = calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) :: Int
+                                      dateFirstInt  = read dateFirstS :: Int
+                                      dateSecondInt = read dateSecondS :: Int
                                       dateRangeInt  = dateSecondInt - dateFirstInt
                                       dateRangeT    = T.pack $ show dateRangeInt
                                       dateDuration  = todayYear - dateSecondInt
                                       dateDurationT = T.pack $ show dateDuration
                                       description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted ", dateRangeT, if dateRangeInt < 2 then " year" else " years",
+                                                                 T.pack (if not dateLongP then "" else " for " ++ show dateRangeDays ++ " days"),
                                                                 ", ending ", dateDurationT, " years ago."]
                                       rangeP    = dateFirst == dateSecond || dateRangeInt < minRange
                                       durationP = dateDuration < minDuration || dateSecondInt > maxDateSecond
@@ -334,7 +344,7 @@ dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]
                                                                            Subscript   [Str dateRangeT]],
                                               Str dateSecond] ++
                                               if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]] ++
-                                             if T.null after then [] else [Str after])]
+                                             if T.null after then [] else [dateRangeDuration todayYear $ Str after])]
                                 z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
   where minRange, minDuration, maxDateSecond :: Int
         minRange = 2
@@ -342,10 +352,10 @@ dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]
         maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
 dateRangeDuration _ x = x
 
--- match hyphen/EN-DASH-separated comma-less years from 1000--2999:
-dateRangeRegex :: Regex
-dateRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
-
+-- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
+dateRangeRegex, dateFullRangeRegex :: Regex
+dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, T.Text, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
