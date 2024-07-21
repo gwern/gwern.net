@@ -312,6 +312,7 @@ canonicals = M.fromList
   , ("Reedik Magi", "Reedik Mägi")
   , ("R. Magi", "Reedik Mägi")
   , ("R. Mägi", "Reedik Mägi")
+  , ("tszzl", "Roon")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs

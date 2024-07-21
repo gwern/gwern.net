@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-07-17 12:12:56 gwern"
+# When:  Time-stamp: "2024-07-20 21:54:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -134,6 +134,10 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 ""
 51. Input title to clean: "Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures—Justin Skycak"
 "Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures"
+52. Input title to clean: "Exclusive"
+""
+53. Input title to clean: "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones) – The Scholar's Stage"
+"Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones)"
 
 Task:
 

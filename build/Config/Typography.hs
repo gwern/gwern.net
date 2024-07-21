@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Config.Typography where
 
 import qualified Data.Text as T (Text)

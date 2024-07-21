@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-07-08 21:28:25 gwern"
+-- When:  Time-stamp: "2024-07-20 19:16:32 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -14,7 +14,9 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real
 -- price! (Misunderstanding of inflation may be getting worse over time:
 -- <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008> )
--- This may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.
+-- Prior art: minimal. Most nominal amounts are never inflation-adjusted, and where they are, the author
+-- usually settles for either replacing the number, using an ad hoc currency unit like '$2012', or
+-- verbosely putting it in parentheses, like '$10 ($100 in 2019)'. My approach may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.
 --
 -- Years/dates are specified in a variant of my interwiki link syntax (see Interwiki.hs); for example: '[$50]($2000)'
 -- or '[₿0.5](₿2017-01-01)'. As a backup syntax (eg. for use inside link anchor texts), one can write it as a span

@@ -1037,4 +1037,5 @@ custom = [
         , ("BM25", "https://en.wikipedia.org/wiki/Okapi_BM25")
         , ("([Ss]oftmax function|[Ss]oftmax|[Ss]oft ?argmax|[Nn]ormalized exponential function)", "https://en.wikipedia.org/wiki/Softmax_function")
         , ("[Ll]ayer [Nn]ormalization", "https://arxiv.org/abs/1607.06450")
+        , ("GPT-4o", "https://openai.com/index/hello-gpt-4o/")
         ]

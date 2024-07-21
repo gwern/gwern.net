@@ -56,9 +56,7 @@ singleShotRecommendations html =
      let (_,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
      hitsSorted <- sortSimilars edb sortDB (head hits) hits
-
-     let matchListHtml = generateMatches md bdb True True "" html hitsSorted :: T.Text
-     return matchListHtml
+     if null hitsSorted then return "" else return (generateMatches md bdb True True "" html hitsSorted :: T.Text)
 
 type Embedding  = (String, -- URL/path
                     Integer, -- Age: date created -- ModifiedJulianDay, eg. 2019-11-22 = 58810. Enables expiring
@@ -313,6 +311,7 @@ writeOutMatch md bdb (p,matches) =
           putStrLn $ "Wrote: " ++ p ++ " (" ++ f ++ ")"
 
 generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
+generateMatches _  _   _         _          _ _    []      = ""
 generateMatches md bdb linkTagsP singleShot p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let p' = T.pack p

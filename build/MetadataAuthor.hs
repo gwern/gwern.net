@@ -3,7 +3,7 @@
 {- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-07-19 14:01:30 gwern"
+When:  Time-stamp: "2024-07-20 10:45:50 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -51,9 +51,12 @@ import qualified LinkBacklink as BL
 
 import qualified Config.MetadataAuthor as C
 
--- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
+-- For link bibliographies / tag pages, better truncate author lists at a reasonable length.
+--
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
--- simple string-based author-list truncation, with no attempt to do inline-collapse: take the first 100 characters + whatever is necessary to finish the next author (as defined by the space-comma separation)
+-- This is a simple string-based author-list truncation, with no attempt to do inline-collapse:
+-- take the first 100 characters + whatever is necessary to finish the next author
+-- (as defined by the space-comma separation).
 authorsTruncateString :: String -> String
 authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else head $ split ", " after)
 
@@ -68,7 +71,13 @@ authorCollapse aut
       authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors
                                                else if length authors < 8 then
                                                       Span ("", ["author"], []) authors
-                                                    else let authorsInitial = take 5 authors  -- at >4, we give up trying to display them all & show just the first 3 by default (so we 'snap back' to default 3 authors max, after allowing a bit of elasticity of up to 4, to avoid the situation where we have an inline-collapse with just 1 author tucked away in it - which is annoying because it means cognitive / visual overhead & effort which is then disappointed to see just 1 author hidden - make it worth the reader's while to bother to uncollapse it!)
+        -- at >4, we give up trying to display them all & show just the first 3 by default
+        -- (so we 'snap back' to default 3 authors max, after allowing a bit of elasticity
+        -- of up to 4, to avoid the situation where we have an inline-collapse with
+        -- just 1 author tucked away in it—which is annoying because
+        -- it means cognitive / visual overhead & effort, who is then disappointed to see
+        -- just 1 author hidden—make it worth the reader's while to bother to uncollapse it!)
+                                                    else let authorsInitial = take 5 authors
                                                              authorsRest = drop 5 authors
                                                          in Span ("", ["author", "collapse"], [])
                                                             [Span ("", ["abstract-collapse"], []) authorsInitial

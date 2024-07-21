@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-19 12:45:21 gwern"
+# When:  Time-stamp: "2024-07-20 19:42:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -687,7 +687,8 @@ else
 
      λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' \
               -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
-              -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' -- $PAGES | \
+              -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
+              -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' -- $PAGES | \
               gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
 
@@ -796,6 +797,7 @@ else
             -e '<a href="\$[12][0-9][0-9][0-9]">\$<su[bp]>.*</a>' \
             -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
             -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
+            -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 

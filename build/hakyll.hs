@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-07-19 11:34:52 gwern"
+When: Time-stamp: "2024-07-20 09:32:21 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete)
+import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete)
 import Test (testAll)
 import Config.Misc (cd)
 
