@@ -342,7 +342,7 @@ dateRangeDuration todayYear x@(Str s) =
                                              ([Str dateFirst,
                                               if rangeP then Str separator else
                                                 Span ("", ["subsup"], []) [Superscript [Str "–"],
-                                                                           Subscript   [Str dateRangeT]],
+                                                                           Subscript   [Str $ if dateLongP then dateRangeT`T.append`"y" else dateRangeT]],
                                               Str dateSecond] ++
                                               if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]] ++
                                              if T.null after then [] else [dateRangeDuration todayYear $ Str after])]
