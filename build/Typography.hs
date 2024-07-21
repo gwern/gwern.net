@@ -81,7 +81,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                         [Str a]
                       else
                         (case T.splitOn fullMatch a of
-                              (before:after) -> [citefyInline year $ Str before] ++
+                              (before:after) -> [citefyInline year $ Str before] ++ -- NOTE: work around greedy regex
                                     [Span ("", ["cite"], []) ((if T.strip second == "" then
                                                                  -- the easy single/double author case (we only mess with the date, nothing else)
                                                                  [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
@@ -307,8 +307,8 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       z
 imageCaptionLinebreak x = x
 
--- see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
--- TODO: handle single years as just duration subscripts; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
+-- annotate 'YYYY--YYYY' date ranges with their range & duration since then; see </lorem-inline#date-subscripts>, </subscript#date-ranges>:
+-- TODO: handle single years as just duration subscripts; handle full date ranges like 'YYYY-MM-DD--YYYY-MM-DD'; allow manual date-range-durations like `<span class="date-range">1939–1945</span>` which get compiled appropriately; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
 dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]] of
                                 [] -> x
@@ -337,7 +337,7 @@ dateRangeDuration todayYear x@(Str s) = case match dateRangeRegex s :: [[T.Text]
                                              if T.null after then [] else [Str after])]
                                 z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
   where minRange, minDuration, maxDateSecond :: Int
-        minRange = 5
+        minRange = 2
         minDuration = 11
         maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
 dateRangeDuration _ x = x

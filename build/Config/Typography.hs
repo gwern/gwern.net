@@ -97,16 +97,21 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
 dateRangeDurationTestCases :: [(Int, T.Text, Inline)]
 dateRangeDurationTestCases = [
   (2024, "400 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987"
-    , Span ("",[],[]) [Span ("",[],[]) [Str "400 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Str "37ya"],Str ", expanded to 500, also tested "]],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Str "37ya"]]])
+    , Span ("",[],[]) [Span ("",[],[]) [Str "400 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Str "37ya"],Str ", expanded to 500, also tested "]],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Str "37ya"]]]
+    )
   , (1987, "401 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987"
-    , Str "401 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987")
+    , Span ("",[],[]) [Span ("",[],[]) [Str "401 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 0 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987"]],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 0 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987"]]
+    )
   , (2000, "402 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987"
-    , Span ("",[],[]) [Span ("",[],[]) [Str "402 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 13 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Str "13ya"],Str ", expanded to 500, also tested "]],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 13 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Str "13ya"]]]
+    , Span ("",[],[]) [Span ("",[],[]) [Str "402 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 13 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Str "13ya"],Str ", expanded to 500, also tested "]],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 13 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Str "13ya"]]]
     )
   , (2010, "403 1984\8211\&1987"
-    , Span ("",[],[]) [Str "403 ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 23 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Str "23ya"]]])
-  , (1980, "404 1984\8211\&1987"
-    , Str "404 1984\8211\&1987")
+    , Span ("",[],[]) [Str "403 ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 23 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Str "23ya"]]]
+    )
+  , (1980, "404 1984\8211\&1986"
+    , Span ("",[],[]) [Str "404 ",Span ("",["date-range"],[("title","The date range 1984\8211\&1986 lasted 2 years, ending -6 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "2"]],Str "1986"]]
+
+    )
   , (2025, "foo 2019-2024"
     , Span ("",[],[]) [Str "foo ",Span ("",["date-range"],[("title","The date range 2019\8211\&2024 lasted 5 years, ending 1 years ago.")]) [Str "2019",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "5"]],Str "2024"]])
   , (2025, "foo 2019-2019"
