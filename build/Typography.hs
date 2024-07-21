@@ -27,7 +27,7 @@ import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
-import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan)
+import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan, formatIntWithCommas)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateRangeDurationTestCases)
 
 typographyTransform :: Pandoc -> Pandoc
@@ -322,18 +322,19 @@ dateRangeDuration todayYear x@(Str s) =
                                   let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                                       dateSecondS = take 4 $ T.unpack dateSecond
                                       dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10
-                                      dateRangeDays = calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) :: Int
+                                      dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond)
                                       dateFirstInt  = read dateFirstS :: Int
                                       dateSecondInt = read dateSecondS :: Int
                                       dateRangeInt  = dateSecondInt - dateFirstInt
-                                      dateRangeT    = T.pack $ show dateRangeInt
+                                      dateRangeT    = T.pack $ formatIntWithCommas dateRangeInt
                                       dateDuration  = todayYear - dateSecondInt
                                       dateDurationT = T.pack $ show dateDuration
                                       description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted ", dateRangeT, if dateRangeInt < 2 then " year" else " years",
-                                                                 T.pack (if not dateLongP then "" else " for " ++ show dateRangeDays ++ " days"),
-                                                                ", ending ", dateDurationT, " years ago."]
+                                                                 T.pack (if not dateLongP then "" else " for " ++ dateRangeDays ++ " days"),
+                                                                if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
+                                                               ]
                                       rangeP    = dateFirst == dateSecond || dateRangeInt < minRange
-                                      durationP = dateDuration < minDuration || dateSecondInt > maxDateSecond
+                                      durationP = todayYear < dateSecondInt || dateDuration < minDuration || dateSecondInt > maxDateSecond
                                   in if rangeP && durationP || dateFirstInt > dateSecondInt || dateSecondInt > maxDateSecond then x
                                      else Span nullAttr [
                                            dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range

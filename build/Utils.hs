@@ -509,3 +509,11 @@ parseDate dateStr =
 
 calculateDays :: Day -> Day -> Int
 calculateDays start end = fromInteger $ succ $ diffDays end start  -- succ to make it inclusive
+
+formatIntWithCommas :: Int -> String
+formatIntWithCommas = reverse . intercalate "," . chunksOf 3 . reverse . show
+ where
+   chunksOf :: Int -> [a] -> [[a]]
+   chunksOf _ [] = []
+   chunksOf n xs = take n xs : chunksOf n (drop n xs)
+
