@@ -84,7 +84,7 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Memoirs", "Monday", "Monthly", "Ms", "Nov", "November", "Oct", "October", "Original", "Otakon", "Our",
                                   "Ours", "Over", "Predicting", "Reviews", "Sample", "Saturday", "Sci", "Security", "Sep", "September",
                                   "Since", "Spring", "Standard", "Statistics", "Suisse", "Summer", "Sunday", "Surface", "Survey",
-                                  "Syntheses", "Than", "The", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly",
+                                  "Syntheses", "Than", "The", "Then", "Things", "Throughout", "Thursday", "Tuesday", "Until", "Wednesday", "Weekly",
                                   "Winter", "Writing", "Year", "Yearly", "Zilch", "In", "Judging", "From", "Experiment",
                                   "Between", "Caseness", "Goodbye", "By", "Around", "Christmas", "One", "Wars", "Michigan", "Act", "Circa",
                                   "Horizon", "Study", "Alamos", "Dover", "War", "London", "York", "Paris", "Berlin", "Francisco", "As", "Why",
@@ -151,5 +151,11 @@ dateRangeDurationTestCases = [
     )
   , (2024, Str "Test 3,850. Bar 1900-2,000"
     , Str "Test 3,850. Bar 1900-2,000"
+    )
+  , (2024, Str "Hirohito reigned 1926–1989."
+    , Span ("",[],[]) [Str "Hirohito reigned ",Span ("",["date-range"],[("title","The date range 1926\8211\&1989 lasted 63 years, ending 35 years ago.")]) [Str "1926",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "63"]],Str "1989",Subscript [Str "35ya"]],Str "."]
+    )
+  , (2025, Str "The first atomic bombing to surrender speech interval was 1945-08-06–1945-08-15."
+    , Span ("",[],[]) [Str "The first atomic bombing to surrender speech interval was ",Span ("",["date-range"],[("title","The date range 1945-08-06\8211\&1945-08-15 lasted (10 days), ending 80 years ago.")]) [Str "1945-08-06",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "10d"]],Str "1945-08-15",Subscript [Str "80ya"]],Str "."]
     )
   ]

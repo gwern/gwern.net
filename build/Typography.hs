@@ -33,7 +33,7 @@ import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePosit
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
-                        walk (imageCaptionLinebreak . dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
+                        walk (imageCaptionLinebreak . citefyInline year . dateRangeDuration year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
