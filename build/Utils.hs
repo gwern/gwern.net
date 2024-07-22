@@ -494,7 +494,10 @@ takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
 repeated :: Ord a => [a] -> [a]
 repeated xs = M.keys $ M.filter (> (1::Int)) $ M.fromListWith (+) [(x,1) | x <- xs]
 
+
 -- eg 'calculateDateSpan "1939-09-01" "1945-05-08"' → 2077
+-- or 'calculateDateSpan "1939-09" "1945-05"' → 2070 (where the day is assumed to be the first of the month)
+-- or mixed, 'calculateDateSpan "1939-09" "1945-05-02"' → 2071
 calculateDateSpan :: String -> String -> Int
 calculateDateSpan start end =
     let startDate = parseDate start
@@ -502,10 +505,15 @@ calculateDateSpan start end =
     in calculateDays startDate endDate
 
 parseDate :: String -> Day
-parseDate dateStr =
-    case parseTimeM True defaultTimeLocale "%Y-%m-%d" dateStr of
+parseDate dateStr
+  | length dateStr < 7 = error $ "Utils.parseDate: passed invalid date which is not YYYY-MM(-DD)? Was " ++ dateStr
+  | otherwise =
+    case parseTimeM True defaultTimeLocale "%Y-%m-%d" dateStr of -- 'YYYY-MM-DD'
         Just date -> date
-        Nothing -> error $ "Utils.parseDate: Invalid date format: " ++ dateStr
+        Nothing -> case parseTimeM True defaultTimeLocale "%Y-%m" (take 7 dateStr) of -- retry as 'YYYY-MM-?'
+            Just date -> date
+            Nothing -> error $ "Utils.parseDate: Invalid date format: " ++ dateStr
+
 
 calculateDays :: Day -> Day -> Int
 calculateDays start end = fromInteger $ succ $ diffDays end start  -- succ to make it inclusive

@@ -331,7 +331,7 @@ dateRangeDurationRaw todayYear x s =
          [[_original, before,dateFirst,_separator,dateSecond,after]] ->
            let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                dateSecondS = take 4 $ T.unpack dateSecond
-               dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10 -- is full date-pair?
+               dateLongP     = T.length dateFirst > 4 && T.length dateSecond > 4 -- is full date-pair?
                dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '170' days
                dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '9' → "9d" '170' -> "6m" (6 months)
                dateFirstInt  = read dateFirstS :: Int
@@ -377,7 +377,11 @@ dateDurationSingle todayYear oldYear
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
-dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
+-- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
+-- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-?[0-9]?[0-9]?)(.*)" :: T.Text)
+-- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9](?:-[0-9][0-9])?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9](?:-[0-9][0-9])?)(.*)" :: T.Text)
+-- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9](-[0-9][0-9])?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9](-[0-9][0-9])?)(.*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(.*)" :: T.Text)
 singleYearRegex    = makeRegex ("(.*[^0-9-–])([12][0-9][0-9][0-9])([^0-9-–].*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]

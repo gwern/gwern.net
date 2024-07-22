@@ -158,4 +158,11 @@ dateRangeDurationTestCases = [
   , (2025, Str "The first atomic bombing to surrender speech interval was 1945-08-06–1945-08-15."
     , Span ("",[],[]) [Str "The first atomic bombing to surrender speech interval was ",Span ("",["date-range"],[("title","The date range 1945-08-06\8211\&1945-08-15 lasted (10 days), ending 80 years ago.")]) [Str "1945-08-06",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "10d"]],Str "1945-08-15",Subscript [Str "80ya"]],Str "."]
     )
+  , (2024, Str "Hirohito reigned 1926-01–1989-05."
+    , Span ("",[],[]) [Str "Hirohito reigned ",Span ("",["date-range"],[("title","The date range 1926-01\8211\&1989-05 lasted 63 years (23,132 days), ending 35 years ago.")]) [Str "1926-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "63y"]],Str "1989-05",Subscript [Str "35ya"]],Str "."]
+    )
+  , (2024, Str "William Shakespeare lived 1564-04--1616-04, dying in the Jacobean era."
+    , Span ("",[],[]) [Str "William Shakespeare lived ",Span ("",["date-range"],[("title","The date range 1564-04-\8211\&1616-04 lasted 52 years (18,994 days), ending 408 years ago.")]) [Str "1564-04-",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "52y"]],Str "1616-04",Subscript [Str "408ya"]],Str ", dying in the Jacobean era."]
+    )
+
   ]
