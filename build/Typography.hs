@@ -307,8 +307,8 @@ imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Imag
                                                                                       z
 imageCaptionLinebreak x = x
 
--- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are tected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
--- See </lorem-inline#date-subscripts>, </subscript#date-ranges>:
+-- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
+-- See </lorem-inline#date-subscripts>, </subscript#date-ranges>.
 -- TODO: handle single years as just duration subscripts; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
 dateRangeDuration todayYear x@(Str s)                                 = dateRangeDurationRaw todayYear x s
@@ -317,53 +317,68 @@ dateRangeDuration _ x = x
 
 dateRangeDurationRaw :: Int -> Inline -> T.Text -> Inline
 dateRangeDurationRaw todayYear x s =
-  let yearMatch     = match dateRangeRegex     s :: [[T.Text]]
-      fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
-      dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
-  in
-      case dateMatch of
-                                [] -> x
-                                [[_, before,dateFirst,_separator,dateSecond,after]] ->
+ let yearMatch     = match dateRangeRegex     s :: [[T.Text]]
+     fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
+     singleYearMatch = match singleYearRegex s :: [[T.Text]]
+     dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
+ in
+  case singleYearMatch of
+   [[_original,before,year,after]] -> Span nullAttr [dateRangeDurationRaw todayYear (Str before) before,
+                                                     dateDurationSingle todayYear year,
+                                                     dateRangeDurationRaw todayYear (Str after) after]
+   _ -> case dateMatch of
+         [] -> x
+         [[_original, before,dateFirst,_separator,dateSecond,after]] ->
+           let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
+               dateSecondS = take 4 $ T.unpack dateSecond
+               dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10 -- is full date-pair?
+               dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '170' days
+               dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '9' → "9d" '170' -> "6m" (6 months)
+               dateFirstInt  = read dateFirstS :: Int
+               dateSecondInt = read dateSecondS :: Int
+               dateRangeInt  = dateSecondInt - dateFirstInt
+               dateRangeT    = T.pack $ formatIntWithCommas dateRangeInt
+               dateDuration  = todayYear - dateSecondInt
+               dateDurationT = T.pack $ show dateDuration
+               description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted",
+                                          if dateRangeInt == 0 then "" else " "`T.append`dateRangeT `T.append` if dateRangeInt == 1 then " year" else " years",
+                                          T.pack (if not dateLongP then "" else " for " ++ dateRangeDays ++ " days"),
+                                         if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
+                                        ]
+               rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
+               durationP = todayYear < dateSecondInt || dateDuration < minDuration || dateSecondInt > maxDateSecond
+           in if rangeP && durationP || dateFirstInt > dateSecondInt || dateSecondInt > maxDateSecond then x
+              else Span nullAttr $ [ -- usual anonymous Span trick for Inline type-safety; the redundant Spans are cleaned up in later passes
+                    dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
+                      Span ("", ["date-range"], [("title", description)]) -- overall wrapper
+                      ([Str dateFirst,
+                       if rangeP then Str "–" else
+                         Span ("", ["subsup"], []) [Superscript [Str "–"],
+                                                    Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
+                       Str dateSecond] ++
+                       if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]])] ++
+                   if T.null after then [] else [dateRangeDuration todayYear $ Str after]
+         z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
 
-                                  let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
-                                      dateSecondS = take 4 $ T.unpack dateSecond
-                                      dateLongP     = T.length dateFirst == 10 && T.length dateSecond == 10 -- is full date-pair?
-                                      dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '170' days
-                                      dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '9' → "9d" '170' -> "6m" (6 months)
-                                      dateFirstInt  = read dateFirstS :: Int
-                                      dateSecondInt = read dateSecondS :: Int
-                                      dateRangeInt  = dateSecondInt - dateFirstInt
-                                      dateRangeT    = T.pack $ formatIntWithCommas dateRangeInt
-                                      dateDuration  = todayYear - dateSecondInt
-                                      dateDurationT = T.pack $ show dateDuration
-                                      description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted",
-                                                                 if dateRangeInt == 0 then "" else " "`T.append`dateRangeT `T.append` if dateRangeInt == 1 then " year" else " years",
-                                                                 T.pack (if not dateLongP then "" else " for " ++ dateRangeDays ++ " days"),
-                                                                if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
-                                                               ]
-                                      rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
-                                      durationP = todayYear < dateSecondInt || dateDuration < minDuration || dateSecondInt > maxDateSecond
-                                  in if rangeP && durationP || dateFirstInt > dateSecondInt || dateSecondInt > maxDateSecond then x
-                                     else Span nullAttr [ -- usual anonymous Span trick for Inline type-safety; the redundant Spans are cleaned up in later passes
-                                           dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
-                                             Span ("", ["date-range"], [("title", description)]) -- overall wrapper
-                                             ([Str dateFirst,
-                                              if rangeP then Str "–" else
-                                                Span ("", ["subsup"], []) [Superscript [Str "–"],
-                                                                           Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
-                                              Str dateSecond] ++
-                                              if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]] ++
-                                             if T.null after then [] else [dateRangeDuration todayYear $ Str after])]
-                                z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
-  where minRange, minDuration, maxDateSecond :: Int
-        minRange = 2
-        minDuration = 11
-        maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
+minRange, minDuration, maxDateSecond :: Int
+minRange = 2
+minDuration = 11
+maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk.
+
+dateDurationSingle :: Int -> T.Text -> Inline
+dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed an empty string year to update, with current year " ++ show todayYear
+dateDurationSingle todayYear oldYear
+  | todayYear < 1000            = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
+  | otherwise = let oldYearInt = read (T.unpack oldYear) :: Int
+                    yearsSince = todayYear - oldYearInt in
+                  if yearsSince < minDuration then Str oldYear else
+                    Span ("", ["date-range"], []) [Str oldYear, Subscript [Str $ T.pack (formatIntWithCommas yearsSince)`T.append`"ya"]]
 
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
-dateRangeRegex, dateFullRangeRegex :: Regex
+dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
 dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^0-9-–])([12][0-9][0-9][0-9])([^0-9-–].*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
