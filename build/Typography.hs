@@ -342,7 +342,7 @@ dateRangeDurationRaw todayYear x s =
                dateDurationT = T.pack $ show dateDuration
                description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted",
                                           if dateRangeInt == 0 then "" else " "`T.append`dateRangeT `T.append` if dateRangeInt == 1 then " year" else " years",
-                                          T.pack (if not dateLongP then "" else " for " ++ dateRangeDays ++ " days"),
+                                          T.pack (if not dateLongP then "" else " (" ++ dateRangeDays ++ " days)"),
                                          if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
                                         ]
                rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
