@@ -3209,6 +3209,7 @@ span.inflation-adjusted .subsup {
  */
 span.date-range {
 	white-space: nowrap;
+	font-variant-numeric: oldstyle-nums;
 }
 span.date-range .subsup {
 	align-items: center;
@@ -3243,13 +3244,13 @@ span.date-range > sub {
 
 /*	Hide date range metadata on /index.
  */
-body.index span.date-range sub {
+body.page-index span.date-range sub {
 	display: none;
 }
-body.index span.date-range .subsup {
+body.page-index span.date-range .subsup {
 	margin: 0;
 }
-body.index span.date-range .subsup sup {
+body.page-index span.date-range .subsup sup {
 	top: -0.15em;
 }
 
@@ -7520,7 +7521,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
     /*  No floating header on /index.
      */
-    body.index #floating-header {
+    body.page-index #floating-header {
         display: none;
     }
 }

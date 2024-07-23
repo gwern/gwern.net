@@ -33,7 +33,7 @@ Extracts.config = {
 	/*	Don’t display indicator hooks on links in these containers.
 	 */
 	hooklessLinksContainersSelector: [
-		"body.index #markdownBody",
+		"body.page-index #markdownBody",
 		"#sidebar",
 		".TOC",
 		"#floating-header"

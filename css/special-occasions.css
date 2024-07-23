@@ -129,7 +129,7 @@ body.special-halloween-dark #sidebar span.logo-image img {
 
 /*	Styles for /index
  */
-body.index.special-halloween-dark #sidebar a:hover {
+body.page-index.special-halloween-dark #sidebar a:hover {
 	color: var(--GW-blood-red);
 }
 
@@ -304,6 +304,6 @@ body[class*='special-christmas'] #sidebar span.logo-image img {
 
 /*	Styles for /index
  */
-body.index[class*='special-christmas'] #sidebar a:hover {
+body.page-index[class*='special-christmas'] #sidebar a:hover {
 	color: var(--GW-holly-leaf-green);
 }

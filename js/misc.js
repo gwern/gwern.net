@@ -1013,17 +1013,23 @@ function resetDropcapInBlock(block) {
 /* TYPOGRAPHY */
 /**************/
 
-/*******************************************************/
-/*	Strips all date range formatting in the given block.
+/****************************************************************************/
+/*	Strips all special HTML structure within date range elements in the given
+	block.
  */
 function stripDateRangesInBlock(block) {
 	block.querySelectorAll(".date-range").forEach(dateRange => {
+		//	Remove subscripts.
 		dateRange.querySelectorAll("sub").forEach(sub => {
 			sub.remove();
 		});
+
+		//	Unwrap superscript and sub+sup span wrapper.
 		unwrap(dateRange.querySelector(".subsup"));
 		unwrap(dateRange.querySelector("sup"));
-		unwrap(dateRange);
+
+		//	Remove ‘title’ attribute.
+		dateRange.removeAttribute("title");
 	});
 }
 
