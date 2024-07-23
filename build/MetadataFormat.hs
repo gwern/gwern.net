@@ -3,7 +3,7 @@
 
 module MetadataFormat where
 
-import Data.List (intersperse, isSuffixOf, isPrefixOf)
+import Data.List (intersperse, isSuffixOf, isPrefixOf, intercalate, unfoldr)
 import Numeric (showFFloat)
 import System.FilePath (takeBaseName)
 import qualified Data.Text as T (pack)
@@ -57,18 +57,34 @@ extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.
+
 printDouble :: Int -> Double -> String
-printDouble precision x = if x > 1.7976931348623157e308 || x < -1.7976931348623157e308
-               then error $ "printDouble: Extreme unsupported value past what showFFloat supports; you'll have to handle this differently: " ++ show x
-               else removeTrailingZeros $ showFFloat (Just precision) x ""
-    where removeTrailingZeros, drop1IfDot :: String -> String
-          removeTrailingZeros "-0"   = "0"
-          removeTrailingZeros "-0."  = "0"
-          removeTrailingZeros "-0.0" = "0"
-          removeTrailingZeros "0.0"  = "0"
-          removeTrailingZeros "0"  = "0"
-          removeTrailingZeros y = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
-          drop1IfDot xs = if last xs == '.' then init xs else xs
+printDouble precision x
+    | x > 1.7976931348623157e308 || x < -1.7976931348623157e308 =
+        error $ "printDouble: Extreme unsupported value past what showFFloat supports; you'll have to handle this differently: " ++ show x
+    | otherwise = addCommas $ removeTrailingZeros $ showFFloat (Just precision) x ""
+  where
+    removeTrailingZeros, drop1IfDot :: String -> String
+    removeTrailingZeros "-0"   = "0"
+    removeTrailingZeros "-0."  = "0"
+    removeTrailingZeros "-0.0" = "0"
+    removeTrailingZeros "0.0"  = "0"
+    removeTrailingZeros "0"    = "0"
+    removeTrailingZeros y = drop1IfDot $ reverse $ dropWhile (== '0') $ reverse y
+    drop1IfDot xs = if last xs == '.' then init xs else xs
+
+    addCommas :: String -> String
+    addCommas str
+        | '-' `elem` str = '-' : addCommas (tail str)
+        | '.' `elem` str = let (intPart, fracPart) = break (== '.') str
+                           in addCommasToIntPart intPart ++ fracPart
+        | otherwise = addCommasToIntPart str
+
+    addCommasToIntPart :: String -> String
+    addCommasToIntPart = reverse . intercalate "," . chunksOf 3 . reverse
+
+    chunksOf :: Int -> [a] -> [[a]]
+    chunksOf n = takeWhile (not . null) . unfoldr (Just . splitAt n)
 
 printDoubleTestSuite :: [(Double, Int, String, String)]
 printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ map (\(n,prec,s) -> (n,prec,s, printDouble prec n )) C.printDoubleTests
