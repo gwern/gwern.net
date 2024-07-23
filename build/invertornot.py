@@ -68,7 +68,7 @@ headers = {
 }
 
 payload = {
-    "model": "gpt-4o",
+    "model": "gpt-4o-mini",
     "messages": [
       {
         "role": "user",

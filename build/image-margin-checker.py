@@ -48,7 +48,7 @@ def check_image_margin(api_key, image_path):
         "Authorization": f"Bearer {api_key}"
     }
     payload = {
-        "model": "gpt-4o",
+        "model": "gpt-4o-mini",
         "messages": [
             {
                 "role": "user",

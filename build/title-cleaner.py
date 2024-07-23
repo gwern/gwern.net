@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-07-20 21:54:17 gwern"
+# When:  Time-stamp: "2024-07-23 10:30:38 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -138,13 +138,15 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 ""
 53. Input title to clean: "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones) – The Scholar's Stage"
 "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones)"
+54. Input title to clean: "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth JAMA Network Open"
+"Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth"
 
 Task:
 
 Input title to clean: """ + target + "\n"
 
 completion = client.chat.completions.create(
-  model="gpt-4o", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
+  model="gpt-4o-mini", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
   messages=[
     {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
     {"role": "user", "content": prompt }
