@@ -2188,16 +2188,14 @@ addContentLoadHandler(GW.contentLoadHandlers.cleanInflationAdjusters = (eventInf
 	});
 }, "rewrite");
 
-/******************************************************************************/
-/*	Hide date range tooltips if date ranges occur inside links (since links
-	already have popups, and we don’t want two different kinds of “tooltips” to 
-	display at once).
+/***************************************************************/
+/*	Strip date range metadata if date ranges occur inside links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyDateRangeTooltips = (eventInfo) => {
-    GWLog("rectifyDateRangeTooltips", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.stripDateRangeMetadataInLinks = (eventInfo) => {
+    GWLog("stripDateRangeMetadataInLinks", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a .date-range").forEach(dateRange => {
-		dateRange.removeAttribute("title");
+	eventInfo.container.querySelectorAll("a").forEach(link => {
+		stripDateRangeMetadataInBlock(link);
 	});
 }, "rewrite");
 

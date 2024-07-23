@@ -199,8 +199,8 @@ Annotations = { ...Annotations,
 												 Annotations.annotatedLinkPartialClass 
 												 ].map(className => `a.${className}`).join(", "));
 
-		let titleHTML = titleLink.innerHTML;
-		let titleText = titleLink.textContent;
+		//	Strip date ranges (if any).
+		stripDateRangeMetadataInBlock(titleLink);
 
 		//	On mobile, use mobile-specific link href, if provided.
 		let titleLinkHref = (   titleLink.dataset.hrefMobile 
@@ -373,8 +373,6 @@ Annotations = { ...Annotations,
 
 		//	Pop-frame title text.
 		let popFrameTitleLink = titleLink.cloneNode(true);
-		//	Strip date ranges (if any).
-		stripDateRangeMetadataInBlock(popFrameTitleLink);
 		//	Trim quotes.
 		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true
@@ -387,7 +385,7 @@ Annotations = { ...Annotations,
 		return {
 			document: response,
 			content: {
-				title:                    titleHTML,
+				title:                    titleLink.innerHTML,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           titleLinkClasses.join(" "),
 				titleLinkDataAttributes:  titleLinkDataAttributes,

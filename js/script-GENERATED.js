@@ -5089,8 +5089,8 @@ Annotations = { ...Annotations,
 												 Annotations.annotatedLinkPartialClass 
 												 ].map(className => `a.${className}`).join(", "));
 
-		let titleHTML = titleLink.innerHTML;
-		let titleText = titleLink.textContent;
+		//	Strip date ranges (if any).
+		stripDateRangeMetadataInBlock(titleLink);
 
 		//	On mobile, use mobile-specific link href, if provided.
 		let titleLinkHref = (   titleLink.dataset.hrefMobile 
@@ -5263,8 +5263,6 @@ Annotations = { ...Annotations,
 
 		//	Pop-frame title text.
 		let popFrameTitleLink = titleLink.cloneNode(true);
-		//	Strip date ranges (if any).
-		stripDateRangeMetadataInBlock(popFrameTitleLink);
 		//	Trim quotes.
 		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true
@@ -5277,7 +5275,7 @@ Annotations = { ...Annotations,
 		return {
 			document: response,
 			content: {
-				title:                    titleHTML,
+				title:                    titleLink.innerHTML,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           titleLinkClasses.join(" "),
 				titleLinkDataAttributes:  titleLinkDataAttributes,
@@ -14912,16 +14910,14 @@ addContentLoadHandler(GW.contentLoadHandlers.cleanInflationAdjusters = (eventInf
 	});
 }, "rewrite");
 
-/******************************************************************************/
-/*	Hide date range tooltips if date ranges occur inside links (since links
-	already have popups, and we don’t want two different kinds of “tooltips” to 
-	display at once).
+/***************************************************************/
+/*	Strip date range metadata if date ranges occur inside links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyDateRangeTooltips = (eventInfo) => {
-    GWLog("rectifyDateRangeTooltips", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.stripDateRangeMetadataInLinks = (eventInfo) => {
+    GWLog("stripDateRangeMetadataInLinks", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a .date-range").forEach(dateRange => {
-		dateRange.removeAttribute("title");
+	eventInfo.container.querySelectorAll("a").forEach(link => {
+		stripDateRangeMetadataInBlock(link);
 	});
 }, "rewrite");
 
