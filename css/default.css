@@ -2095,6 +2095,18 @@ span.date-range > sub {
 	}
 }
 
+/*	Hide date range metadata on /index.
+ */
+body.index span.date-range sub {
+	display: none;
+}
+body.index span.date-range .subsup {
+	margin: 0;
+}
+body.index span.date-range .subsup sup {
+	top: -0.15em;
+}
+
 
 /********/
 /* MISC */

@@ -373,6 +373,8 @@ Annotations = { ...Annotations,
 
 		//	Pop-frame title text.
 		let popFrameTitleLink = titleLink.cloneNode(true);
+		//	Strip date ranges (if any).
+		stripDateRangesInBlock(popFrameTitleLink);
 		//	Trim quotes.
 		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true

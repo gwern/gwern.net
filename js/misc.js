@@ -1009,6 +1009,25 @@ function resetDropcapInBlock(block) {
 }
 
 
+/**************/
+/* TYPOGRAPHY */
+/**************/
+
+/*******************************************************/
+/*	Strips all date range formatting in the given block.
+ */
+function stripDateRangesInBlock(block) {
+	block.querySelectorAll(".date-range").forEach(dateRange => {
+		dateRange.querySelectorAll("sub").forEach(sub => {
+			sub.remove();
+		});
+		unwrap(dateRange.querySelector(".subsup"));
+		unwrap(dateRange.querySelector("sup"));
+		unwrap(dateRange);
+	});
+}
+
+
 /******************************/
 /* GENERAL ACTIVITY INDICATOR */
 /******************************/

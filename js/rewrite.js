@@ -2158,9 +2158,53 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons
 }, "rewrite");
 
 
-/*********/
-/* MISC. */
-/*********/
+/***************/
+/* DATE RANGES */
+/***************/
+
+/*****************************************************************************/
+/*	NOTE: TEMPORARY!
+		—SA 2024-07-23
+
+	Due to inconsistent source formatting, sometimes the back-end code which
+	detects and marks up inflation adjuster elements and date range elements 
+	will mistakenly identify a dollar amount inside an inflation adjuster as a
+	year, and apply date range formatting to it. This is always wrong, and so
+	we can easily detect and correct it. (If left un-corrected, it causes 
+	problems for the subsequent rewrite functions.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.cleanInflationAdjusters = (eventInfo) => {
+    GWLog("cleanInflationAdjusters", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".inflation-adjusted .date-range").forEach(dateRange => {
+		let infAdj = dateRange.closest(".inflation-adjusted");
+		dateRange.querySelector("sub").remove();
+		infAdj.firstTextNode.textContent += dateRange.textContent;
+		if (dateRange.nextSibling.nodeType == Node.TEXT_NODE) {
+			infAdj.firstTextNode.textContent += dateRange.nextSibling.textContent;
+			dateRange.nextSibling.remove();
+		}
+		dateRange.remove();
+	});
+}, "rewrite");
+
+/******************************************************************************/
+/*	Hide date range tooltips if date ranges occur inside links (since links
+	already have popups, and we don’t want two different kinds of “tooltips” to 
+	display at once).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyDateRangeTooltips = (eventInfo) => {
+    GWLog("rectifyDateRangeTooltips", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a .date-range").forEach(dateRange => {
+		dateRange.removeAttribute("title");
+	});
+}, "rewrite");
+
+
+/************************/
+/* INFLATION ADJUSTMENT */
+/************************/
 
 GW.currencyFormatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
@@ -2196,32 +2240,6 @@ function prettifyCurrencyString(amount, compact = false, forceRound = false) {
 
 	return amount;
 }
-
-/*****************************************************************************/
-/*	NOTE: TEMPORARY!
-		—SA 2024-07-23
-
-	Due to inconsistent source formatting, sometimes the back-end code which
-	detects and marks up inflation adjuster elements and date range elements 
-	will mistakenly identify a dollar amount inside an inflation adjuster as a
-	year, and apply date range formatting to it. This is always wrong, and so
-	we can easily detect and correct it. (If left un-corrected, it causes 
-	problems for the subsequent rewrite functions.)
- */
-addContentLoadHandler(GW.contentLoadHandlers.cleanInflationAdjusters = (eventInfo) => {
-    GWLog("cleanInflationAdjusters", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll(".inflation-adjusted .date-range").forEach(dateRange => {
-		let infAdj = dateRange.closest(".inflation-adjusted");
-		dateRange.querySelector("sub").remove();
-		infAdj.firstTextNode.textContent += dateRange.textContent;
-		if (dateRange.nextSibling.nodeType == Node.TEXT_NODE) {
-			infAdj.firstTextNode.textContent += dateRange.nextSibling.textContent;
-			dateRange.nextSibling.remove();
-		}
-		dateRange.remove();
-	});
-}, "rewrite");
 
 /**************************************************************************/
 /*	Rewrite inflation-adjustment elements to make the currency amounts more
@@ -2282,6 +2300,11 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
         });
     });
 }, "eventListeners");
+
+
+/*********/
+/* MISC. */
+/*********/
 
 GW.defaultImageAuxText = "[Image]";
 
