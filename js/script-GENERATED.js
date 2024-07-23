@@ -1017,7 +1017,7 @@ function resetDropcapInBlock(block) {
 /*	Strips all special HTML structure within date range elements in the given
 	block.
  */
-function stripDateRangesInBlock(block) {
+function stripDateRangeMetadataInBlock(block) {
 	block.querySelectorAll(".date-range").forEach(dateRange => {
 		//	Remove subscripts.
 		dateRange.querySelectorAll("sub").forEach(sub => {
@@ -5264,7 +5264,7 @@ Annotations = { ...Annotations,
 		//	Pop-frame title text.
 		let popFrameTitleLink = titleLink.cloneNode(true);
 		//	Strip date ranges (if any).
-		stripDateRangesInBlock(popFrameTitleLink);
+		stripDateRangeMetadataInBlock(popFrameTitleLink);
 		//	Trim quotes.
 		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true
@@ -14924,6 +14924,15 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyDateRangeTooltips = (eventIn
 		dateRange.removeAttribute("title");
 	});
 }, "rewrite");
+
+/****************************************************************************/
+/*  Makes it so that copying a date range interacts properly with copy-paste.
+ */
+addCopyProcessor((event, selection) => {
+	stripDateRangeMetadataInBlock(selection);
+
+    return true;
+});
 
 
 /************************/

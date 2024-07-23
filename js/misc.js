@@ -1017,7 +1017,7 @@ function resetDropcapInBlock(block) {
 /*	Strips all special HTML structure within date range elements in the given
 	block.
  */
-function stripDateRangesInBlock(block) {
+function stripDateRangeMetadataInBlock(block) {
 	block.querySelectorAll(".date-range").forEach(dateRange => {
 		//	Remove subscripts.
 		dateRange.querySelectorAll("sub").forEach(sub => {

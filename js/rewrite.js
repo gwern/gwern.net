@@ -2201,6 +2201,15 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyDateRangeTooltips = (eventIn
 	});
 }, "rewrite");
 
+/****************************************************************************/
+/*  Makes it so that copying a date range interacts properly with copy-paste.
+ */
+addCopyProcessor((event, selection) => {
+	stripDateRangeMetadataInBlock(selection);
+
+    return true;
+});
+
 
 /************************/
 /* INFLATION ADJUSTMENT */
