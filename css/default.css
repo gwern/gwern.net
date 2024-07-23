@@ -4130,7 +4130,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     text-overflow: ellipsis;
 }
 .popup .popframe-title,
-.popup .popframe-title span,
+.popup .popframe-title > span,
 .popup .popframe-title a {
     color: var(--GW-popups-popup-title-color);
 }
