@@ -2081,6 +2081,20 @@ span.date-range > sub {
 	bottom: 0;
 }
 
+/*	Hide date range metadata on mobile (just display like normal).
+ */
+@media all and (max-width: 649px) {
+	span.date-range sub {
+		display: none;
+	}
+	span.date-range .subsup {
+		margin: 0;
+	}
+	span.date-range .subsup sup {
+		top: -0.15em;
+	}
+}
+
 
 /********/
 /* MISC */
