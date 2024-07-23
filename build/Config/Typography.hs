@@ -164,5 +164,13 @@ dateRangeDurationTestCases = [
   , (2024, Str "William Shakespeare lived 1564-04--1616-04, dying in the Jacobean era."
     , Span ("",[],[]) [Str "William Shakespeare lived ",Span ("",["date-range"],[("title","The date range 1564-04-\8211\&1616-04 lasted 52 years (18,994 days), ending 408 years ago.")]) [Str "1564-04-",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "52y"]],Str "1616-04",Subscript [Str "408ya"]],Str ", dying in the Jacobean era."]
     )
-
+  ,(2024, Str "a good book costs $1541 to print in the medieval era"
+        , Str "a good book costs $1541 to print in the medieval era"
+        )
+  , (2020, Str "a good book costs $1543--$1601 to print in the medieval era"
+    , Str "a good book costs $1543--$1601 to print in the medieval era"
+    )
+  , ( 2019, Str "a good book costs $1542--1600 to print in the medieval era"
+    , Str "a good book costs $1542--1600 to print in the medieval era"
+    )
   ]

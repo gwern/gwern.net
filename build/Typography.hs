@@ -13,7 +13,7 @@ module Typography (linebreakingTransform, typographyTransform, titlecase', title
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
-import qualified Data.Text as T (append, concat, null, pack, unpack, replace, splitOn, strip, length, Text)
+import qualified Data.Text as T (append, concat, null, pack, unpack, replace, splitOn, strip, length, Text, elem)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
@@ -321,7 +321,7 @@ dateRangeDurationRaw todayYear x s =
      fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
      singleYearMatch = match singleYearRegex s :: [[T.Text]]
      dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
- in
+ in if '$' `T.elem` s then x else -- HACK: patch over the regexps not doing a full job of excluding comma-less currencies
   case singleYearMatch of
    [[_original,before,year,after]] -> Span nullAttr [dateRangeDurationRaw todayYear (Str before) before,
                                                      dateDurationSingle todayYear year,
@@ -375,14 +375,11 @@ dateDurationSingle todayYear oldYear
                     Span ("", ["date-range"], []) [Str oldYear, Subscript [Str $ T.pack (formatIntWithCommas yearsSince)`T.append`"ya"]]
 
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
+-- attempt to exclude any currency amounts (not guaranteed to work)
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
--- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])(.*)" :: T.Text)
--- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9]-?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9]-?[0-9]?[0-9]?)(.*)" :: T.Text)
--- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9](?:-[0-9][0-9])?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9](?:-[0-9][0-9])?)(.*)" :: T.Text)
--- dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9](-[0-9][0-9])?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9](-[0-9][0-9])?)(.*)" :: T.Text)
-dateFullRangeRegex = makeRegex ("(.*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(.*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^0-9-–])([12][0-9][0-9][0-9])([^0-9-–].*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("([^€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^0-9-–€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-–][^€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
