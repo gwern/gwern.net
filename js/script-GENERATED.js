@@ -14894,6 +14894,32 @@ function prettifyCurrencyString(amount, compact = false, forceRound = false) {
 	return amount;
 }
 
+/*****************************************************************************/
+/*	NOTE: TEMPORARY!
+		—SA 2024-07-23
+
+	Due to inconsistent source formatting, sometimes the back-end code which
+	detects and marks up inflation adjuster elements and date range elements 
+	will mistakenly identify a dollar amount inside an inflation adjuster as a
+	year, and apply date range formatting to it. This is always wrong, and so
+	we can easily detect and correct it. (If left un-corrected, it causes 
+	problems for the subsequent rewrite functions.)
+ */
+addContentLoadHandler(GW.contentLoadHandlers.cleanInflationAdjusters = (eventInfo) => {
+    GWLog("cleanInflationAdjusters", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".inflation-adjusted .date-range").forEach(dateRange => {
+		let infAdj = dateRange.closest(".inflation-adjusted");
+		dateRange.querySelector("sub").remove();
+		infAdj.firstTextNode.textContent += dateRange.textContent;
+		if (dateRange.nextSibling.nodeType == Node.TEXT_NODE) {
+			infAdj.firstTextNode.textContent += dateRange.nextSibling.textContent;
+			dateRange.nextSibling.remove();
+		}
+		dateRange.remove();
+	});
+}, "rewrite");
+
 /**************************************************************************/
 /*	Rewrite inflation-adjustment elements to make the currency amounts more
 	useful and readable.
