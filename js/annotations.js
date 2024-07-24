@@ -315,30 +315,15 @@ Annotations = { ...Annotations,
 		let thumbnailFigureHTML = null;
 		if (abstractElement) {
 			let abstractDocument = newDocument(abstractElement.childNodes);
-			Annotations.postProcessAnnotationAbstract(abstractDocument, link);
 
 			//	Request image inversion judgments from invertornot.
 			requestImageInversionDataForImagesInContainer(abstractDocument);
 
-			//	Page thumbnail.
-			let pageThumbnail = abstractDocument.querySelector("img.page-thumbnail");
-			if (pageThumbnail) {
-				//	Replace full-size page image with thumbnail.
-				Images.thumbnailifyImage(pageThumbnail);
+			//	Post-process abstract.
+			Annotations.postProcessAnnotationAbstract(abstractDocument, link);
 
-				//	Make page image thumbnail load eagerly instead of lazily.
-				pageThumbnail.loading = "eager";
-				pageThumbnail.decoding = "sync";
-
-				/*	On sufficiently wide viewports, pull out thumbnail figure
-					for proper floating.
-				 */
-				if (GW.mediaQueries.mobileWidth.matches == false) {
-					let pageThumbnailFigure = pageThumbnail.closest("figure");
-					thumbnailFigureHTML = pageThumbnailFigure.outerHTML;
-					pageThumbnailFigure.remove();
-				}
-			}
+			//	Retrieve thumbnail HTML (if set).
+			thumbnailFigureHTML = abstractDocument.thumbnailFigureHTML;
 
 			abstractHTML = abstractDocument.innerHTML;
 		}
@@ -435,7 +420,29 @@ Annotations = { ...Annotations,
 		let pageDescriptionClass = "page-description-annotation";
 		let pageDescription = abstractDocument.querySelector(`div.${pageDescriptionClass}`);
 		if (pageDescription)
-			unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
+			pageDescription = unwrap(pageDescription, { moveClasses: [ pageDescriptionClass ] });
+
+		//	Page thumbnail.
+		let pageThumbnail = abstractDocument.querySelector("img.page-thumbnail");
+		if (pageThumbnail) {
+			//	Replace full-size page image with thumbnail.
+			Images.thumbnailifyImage(pageThumbnail);
+
+			//	Make page image thumbnail load eagerly instead of lazily.
+			pageThumbnail.loading = "eager";
+			pageThumbnail.decoding = "sync";
+
+			/*	On sufficiently wide viewports, pull out thumbnail figure
+				for proper floating.
+			 */
+			let pageThumbnailFigure = pageThumbnail.closest("figure");
+			if (GW.mediaQueries.mobileWidth.matches == false) {
+				abstractDocument.thumbnailFigureHTML = pageThumbnailFigure.outerHTML;
+				pageThumbnailFigure.remove();
+			} else if (pageDescription) {
+				abstractDocument.insertBefore(pageThumbnailFigure, pageDescription.last.nextElementSibling);
+			}
+		}
 	},
 };
 
