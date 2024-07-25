@@ -33,7 +33,7 @@ import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePosit
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
-                        walk (imageCaptionLinebreak . citefyInline year . dateRangeDuration year . linkLive . linkIcon) .
+                        walk (imageCaptionLinebreak . dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
@@ -379,7 +379,7 @@ dateDurationSingle todayYear oldYear
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
 dateFullRangeRegex = makeRegex ("([^€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^€¢¥£\\$]*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^0-9-–€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-–][^€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^0-9-–€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–][^€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $
