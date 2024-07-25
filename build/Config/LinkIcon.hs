@@ -44,7 +44,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
                      "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
-                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com"]
+                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org"]
 ------------------------------------------------------------------------------------------
 
 -- all legal types of displays

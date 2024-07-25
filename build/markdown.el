@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-19 17:17:00 gwern"
+;;; When:  Time-stamp: "2024-07-24 09:21:56 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1514,7 +1514,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\n\\.\\.\\([A-Za-z]\\)" "\n...\\1" nil begin end) ; replace malformed '...' ellipsis excerpts
        (query-replace-regexp "^\\.\\.\\. " "..." nil begin end)
        (query-replace " = ." " = 0." nil begin end)
-       (query-replace "Ss" "Subjects" nil begin end) ; PsycNET APA abbreviations
+       (query-replace " Ss" " Subjects" nil begin end) ; PsycNET APA abbreviations
        (query-replace-regexp "\\([Ee]\\)xp\\(s?\\) " "\\1xperiment\\2 " nil begin end)
        (query-replace-regexp " (PsycInfo Database Record (c) [12][0-9]+ APA, all rights reserved)" "" nil begin end) ; PsycNET copyright junk
        (query-replace " • " ", " nil begin end) ; some 'Keywords' sections are always MIDDLE DOT formatted

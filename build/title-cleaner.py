@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-07-23 10:30:38 gwern"
+# When:  Time-stamp: "2024-07-24 09:25:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -140,6 +140,8 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones)"
 54. Input title to clean: "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth JAMA Network Open"
 "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth"
+55. Input title to clean: "Joaquin Qui�onero Candela"
+"Joaquin Quiñonero Candela"
 
 Task:
 

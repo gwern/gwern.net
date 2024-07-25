@@ -313,6 +313,12 @@ canonicals = M.fromList
   , ("R. Magi", "Reedik Mägi")
   , ("R. Mägi", "Reedik Mägi")
   , ("tszzl", "Roon")
+  , ("Cornelia M. van Duijn", "Cornelia van Duijn")
+  , ("arfafax", "Arfafax")
+  , ("Aleksander Mądry", "Aleksander Madry")
+  , ("wallacetim", "Tim Wallace")
+  , ("Loic Yengo", "Loïc Yengo")
+  , ("Kari North", "Kari E. North")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -494,6 +500,20 @@ authorLinkDB = M.fromList $
     , ("Ben Garfinkel", "https://www.benmgarfinkel.com/")
     , ("Miles Brundage", "https://www.milesbrundage.com/")
     , ("Jelena Luketina", "https://scholar.google.com/citations?user=zpil5xkAAAAJ")
+    , ("Igor Mordatch", "https://scholar.google.com/citations?user=Vzr1RukAAAAJ")
+    , ("Fernando Rivadeneira", "https://scholar.google.com/scholar?as_sdt=0%2C21&q=author%3A%22F+Rivadeneira%22")
+    , ("Gudmar Thorleifsson", "https://research.com/u/gudmar-thorleifsson-1")
+    , ("Arfafax", "https://x.com/arfafax")
+    , ("Zihang Dai", "https://scholar.google.com/citations?user=uZqsVXkAAAAJ&hl=en")
+    , ("Hannaneh Hajishirzi", "https://homes.cs.washington.edu/~hannaneh/")
+    , ("Alexander Teumer", "https://www2.medizin.uni-greifswald.de/psych/ueber-uns/leitungmitarbeiter/alexander-teumer/")
+    , ("Aleksander Madry", "http://madry.mit.edu/")
+    , ("Joaquin Quiñonero Candela", "https://quinonero.net/")
+    , ("Lilian Weng", "https://lilianweng.github.io/")
+    , ("Abdel Abdellaoui", "https://scholar.google.com/citations?user=hsyseKEAAAAJ&hl=en&oi=ao")
+    , ("Stella Biderman", "https://www.stellabiderman.com/")
+    , ("Loïc Yengo", "https://researchers.uq.edu.au/researcher/14187")
+    , ("Kari E. North", "https://scholar.google.com/citations?user=gelzK1EAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

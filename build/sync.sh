@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-21 14:28:03 gwern"
+# When:  Time-stamp: "2024-07-24 10:27:27 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -19,7 +19,7 @@ cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh
 
-DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage
+DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 DEPENDENCIES_MISSING=()
 for DEP in "${DEPENDENCIES[@]}"; do
     if ! command -v "$DEP" &> /dev/null; then
@@ -31,6 +31,7 @@ if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
     echo "$DEPENDENCIES_MISSING"
     exit 1
 fi
+# conda activate pytorch # set up virtual environment to get 'beautifulsoup-4' for Python utilities
 
 if [ $(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//') -lt 3 ]; then
     echo "Error: Less than 3GB of free space in home directory" >&2
@@ -91,7 +92,7 @@ else
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
-          s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>';
+          s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>'; s ' 1st ' ' 1<sup>st</sup> '; s ' 2nd' ' 2<sup>nd</sup>'; s ' 3rd' ' 3<sup>rd</sup>'; s ' 4th' ' 4<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,";
 
           ## spelling errors:
@@ -597,7 +598,9 @@ else
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
             "dropcaps-yinit" "dropcap-yinit" "level1" "level2" "level3" "level4" "level5" "level6" "level7"
-            "footnotes-end-of-document" "note"
+            "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
+            "css" "CSS" "d" "D" "diff" "Diff" "Haskell" "html" "HTML" "Javascript" "JavaScript"
+            "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -688,7 +691,9 @@ else
      λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' \
               -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
               -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
-              -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' -- $PAGES | \
+              -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
+              -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]'\
+              -- $PAGES | \
               gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
 
@@ -728,11 +733,15 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | xargs --max-args=500 grep -F --with-filename --color=always -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' --; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
+             xargs --max-args=500 grep -F --with-filename --color=always \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' \
+                   gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=10 ./static/build/collapse-checker.py;
-         find ./metadata/annotation -maxdepth 1 -type f | xargs --max-args=500 ./static/build/collapse-checker.py; }
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
+         find ./metadata/annotation/ -maxdepth 1 -name "*.html"  -type f | xargs --max-procs=0 --max-args=500 ./static/build/collapse-checker.py | \
+             gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava'; }
     wrap λ "Overuse of '.collapse' class in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' | gfv -e 'tabindex="-1"></a>'; }
@@ -798,6 +807,7 @@ else
             -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
             -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
+            -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 
@@ -815,7 +825,7 @@ else
             -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="W"' -e 'href="(' -e '>/em>' -e '<figure>[' \
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
-            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx; }
+            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx | gfv 'jamais vu'; }
     wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gfc -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age ' -e '….' -e '((' -e ' %' \
@@ -833,7 +843,7 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' -- ./metadata/*.gtx | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -892,7 +902,6 @@ else
     wrap λ "Markdown files: incorrect list nesting using italics for second-level list instead of smallcaps?" &
 
     λ(){ grep --color --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES;
-         grep --color --with-filename --perl-regexp '[^[:print:]]' $PAGES;
          # Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide
          grep --color -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com'; }
     wrap λ "Markdown files: garbage or control characters detected?" &

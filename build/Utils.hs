@@ -495,7 +495,7 @@ repeated :: Ord a => [a] -> [a]
 repeated xs = M.keys $ M.filter (> (1::Int)) $ M.fromListWith (+) [(x,1) | x <- xs]
 
 
--- eg 'calculateDateSpan "1939-09-01" "1945-05-08"' → 2077
+-- eg. 'calculateDateSpan "1939-09-01" "1945-05-08"' → 2077
 -- or 'calculateDateSpan "1939-09" "1945-05"' → 2070 (where the day is assumed to be the first of the month)
 -- or mixed, 'calculateDateSpan "1939-09" "1945-05-02"' → 2071
 calculateDateSpan :: String -> String -> Int

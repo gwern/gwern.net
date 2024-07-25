@@ -124,4 +124,4 @@ stringDelete = [" - The Public Domain Review"
             , "Nadia Asparouhova ", "The Universe of Discourse :"
             , "—a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
             , "Swiss National Museum—Swiss history blog", "Matt Blaze: ", " �|� OR-Tools �", "—Justin Skycak"
-            , " – The Scholar's Stage"]
+            , " – The Scholar's Stage", " JAMA Network Open"]
