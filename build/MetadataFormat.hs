@@ -104,7 +104,7 @@ isDate d = d =~ dateRegex
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
 checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concatenating Arxiv URLs when tagging.
-                if not doubleURL then return () else error u
+                if not doubleURL then return () else error ("MetadataFormat.checkURL: double URL check failed, was the URL mangled or accidentally duplicated or 2 URLs concatenated? Retry with fixed URL. Input: " ++ u)
 
 processDOI, processDOIArxiv :: String -> String
 processDOI = replaceMany [("–", "-"), ("—", "-"), ("https://doi.org/", "")] . sed "^doi:" ""

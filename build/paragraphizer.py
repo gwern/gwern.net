@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-07-15 10:23:08 gwern"
+# When:  Time-stamp: "2024-08-01 15:35:11 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -386,6 +386,14 @@ We develop a selection gene drive system that is stably introduced into cancer c
 We show that selection gene drives can eradicate diverse forms of genetic resistance in vitro.
 Finally, we demonstrate that model-informed switch engagement effectively targets pre-existing resistance in mouse models of solid tumors.
 These results establish selection gene drives as a powerful framework for evolution-guided anticancer therapy.
+89. <abstract>The success of AI models relies on the availability of large, diverse, and high-quality datasets, which can be challenging to obtain due to data scarcity, privacy concerns, and high costs. Synthetic data has emerged as a promising solution by generating artificial data that mimics real-world patterns. This paper provides an overview of synthetic data research, discussing its applications, challenges, and future directions. We present empirical evidence from prior art to demonstrate its effectiveness and highlight the importance of ensuring its factuality, fidelity, and unbiasedness. We emphasize the need for responsible use of synthetic data to build more powerful, inclusive, and trustworthy language models.</abstract> →
+The success of AI models relies on the availability of large, diverse, and high-quality datasets, which can be challenging to obtain due to data scarcity, privacy concerns, and high costs. Synthetic data has emerged as a promising solution by generating artificial data that mimics real-world patterns.
+This paper provides an overview of synthetic data research, discussing its applications, challenges, and future directions.
+We present empirical evidence from prior art to demonstrate its effectiveness and highlight the importance of ensuring its factuality, fidelity, and unbiasedness.
+We emphasize the need for responsible use of synthetic data to build more powerful, inclusive, and trustworthy language models.
+90. <abstract>Generative models, such as diffusion models (DMs), variational autoencoders (VAEs), and generative adversarial networks (GANs), produce images with a level of authenticity that makes them nearly indistinguishable from real photos and artwork. While this capability is beneficial for many industries, the difficulty of identifying synthetic images leaves online media platforms vulnerable to impersonation and misinformation attempts. To support the development of defensive methods, we introduce ImagiNet, a high-resolution and balanced dataset for synthetic image detection, designed to mitigate potential biases in existing resources. It contains 200K examples, spanning four content categories: photos, paintings, faces, and uncategorized.</abstract> →
+Generative models, such as diffusion models (DMs), variational autoencoders (VAEs), and generative adversarial networks (GANs), produce images with a level of authenticity that makes them nearly indistinguishable from real photos and artwork. While this capability is beneficial for many industries, the difficulty of identifying synthetic images leaves online media platforms vulnerable to impersonation and misinformation attempts.
+To support the development of defensive methods, we introduce <strong>ImagiNet</strong>, a high-resolution and balanced dataset for synthetic image detection, designed to mitigate potential biases in existing resources. It contains 200K examples, spanning 4 content categories: photos, paintings, faces, and uncategorized. Synthetic images are produced with open-source and proprietary generators, whereas real counterparts of the same content type are collected from public datasets.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 

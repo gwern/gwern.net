@@ -244,6 +244,7 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>") -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
          , ("^en$", "")
          , (" ([0-9]) h ", " \\1h ") -- hour abbreviation
+         , ("aged ([0-9.]+) to ([0-9.]+)", "aged \\1–\\2") -- eg "aged 39 to 73" → "aged 39–73"
          , (" ([0-9.]+)-([0-9.]+)", " \\1–\\2") -- CI EN DASH: "CI: 0.10-0.28" → "CI: 0.10–0.28"
          , (" \\.([0-9])", " 0.\\1") -- restore missing zero: "CI: .91-1.28" → "CI: 0.91-1.28"
          , (" 0\\.([0-9.]+)-\\.([0-9.]+)", " 0.\\1–0.\\2") -- restore missing zero: "CI: 0.10-.28" → "CI: 0.10-0.28"

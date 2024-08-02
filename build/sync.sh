@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-24 10:27:27 gwern"
+# When:  Time-stamp: "2024-08-01 20:28:15 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -92,8 +92,12 @@ else
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
-          s '<sup>Th</sup>' '<sup>th</sup>'; s '<sup>St</sup>' '<sup>st</sup>'; s '<sup>Nd</sup>' '<sup>nd</sup>'; s '<sup>Rd</sup>' '<sup>rd</sup>'; s ' 1st ' ' 1<sup>st</sup> '; s ' 2nd' ' 2<sup>nd</sup>'; s ' 3rd' ' 3<sup>rd</sup>'; s ' 4th' ' 4<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
+          s '<sup>Th</sup>' '<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,";
+
+          ### NOTE: Not safe to do site-wide with `gwsed` because it stomps all over R transcripts where quartiles
+          ### are often reported in summaries like '1st'; we can do it safely for GTX because no R sessions there (for now):
+          stringReplace '<sup>St</sup>' '<sup>st</sup>' ./metadata/*.gtx; stringReplace '<sup>Nd</sup>' '<sup>nd</sup>' ./metadata/*.gtx; stringReplace '<sup>Rd</sup>' '<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 1st ' ' 1<sup>st</sup> ' ./metadata/*.gtx; stringReplace ' 2nd' ' 2<sup>nd</sup>' ./metadata/*.gtx; stringReplace ' 3rd' ' 3<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 4th' ' 4<sup>th</sup>' ./metadata/*.gtx;
 
           ## spelling errors:
           s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia';
@@ -627,8 +631,10 @@ else
     λ(){ echo "$PAGES_ALL" | xargs grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
-    λ(){ ge 'http.*http' metadata/archive.hs  | gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/'; }
-    wrap λ "Bad URL links in archive database (and perhaps site-wide)."
+    λ(){ ge 'http.*http' ./metadata/archive.hs | \
+             gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/';
+         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs; }
+    wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
     λ(){ echo "$PAGES_ALL" | xargs grep -F --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
@@ -808,6 +814,7 @@ else
             -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
+            -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' \
             -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
 

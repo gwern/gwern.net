@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-07-24 09:25:39 gwern"
+# When:  Time-stamp: "2024-08-01 22:59:59 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -142,6 +142,24 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth"
 55. Input title to clean: "Joaquin Qui�onero Candela"
 "Joaquin Quiñonero Candela"
+56. "A Visual Guide to Quantization—by Maarten Grootendorst"
+"A Visual Guide to Quantization"
+57. "Time Use—Our World in Data"
+"Time Use"
+58. "The secret of Minecraft. And its challenge to the rest of us by Robin Sloan The Message"
+"The secret of Minecraft. And its challenge to the rest of us"
+59. "Attribution is Dying. Clicks are Dying. Marketing is Going Back to the 20th Century.—SparkToro"
+"Attribution is Dying. Clicks are Dying. Marketing is Going Back to the 20th Century"
+50. "Your Book Review: Real Raw News—Astral Codex Ten"
+"Your Book Review: <em>Real Raw News</em>"
+51. "Probably Overthinking It: There is still only one test"
+"There is still only one test"
+52. "Randomly updated"
+""
+53. "The Crystal Star Wookieepedia"
+"<em>The Crystal Star</em>"
+45. "Abstract Heresies: Not Lisp again...."
+"Not Lisp again..."
 
 Task:
 

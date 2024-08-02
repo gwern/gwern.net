@@ -1105,6 +1105,7 @@ whiteListMatchesFixed = [
       , "https://suno.com/" -- low-quality (audio embeds)
       , "https://www.udio.com/songs/" -- low-quality (audio embeds)
       , "https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html" -- interactive
+      , "https://www.hoodwinked.ai/" -- interactive (game)
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage

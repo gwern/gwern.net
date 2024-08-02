@@ -176,5 +176,8 @@ dateRangeDurationTestCases = [
   , (2024, Str "It is now the 2000s. But as a date range, does that mean 2000, 2009, or maybe a mean date like 2004? And if that means any of those, what does 1900s mean?"
     , Span ("",[],[]) [Span ("",[],[]) [Span ("",[],[]) [Str "It is now the 2000s. But as a date range, does that mean ",Span ("",["date-range"],[]) [Str "2000",Subscript [Str "24ya"]],Str ", "],Span ("",["date-range"],[]) [Str "2009",Subscript [Str "15ya"]],Str ", or maybe a mean date like "],Span ("",["date-range"],[]) [Str "2004",Subscript [Str "20ya"]],Str "? And if that means any of those, what does 1900s mean?"]
     )
+  , (2024, Str "So, in 2020, the Leela team raced to train larger networks. She sourced compute from corporate donors and friends’ GTX 1070s."
+    , Span ("",[],[]) [Str "So, in ",Str "2020",Str ", the Leela team raced to train larger networks. She sourced compute from corporate donors and friends\8217 GTX 1070s."]
+    )
 
   ]

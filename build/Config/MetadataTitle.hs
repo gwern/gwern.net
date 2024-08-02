@@ -46,7 +46,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -124,4 +124,5 @@ stringDelete = [" - The Public Domain Review"
             , "Nadia Asparouhova ", "The Universe of Discourse :"
             , "—a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
             , "Swiss National Museum—Swiss history blog", "Matt Blaze: ", " �|� OR-Tools �", "—Justin Skycak"
-            , " – The Scholar's Stage", " JAMA Network Open"]
+            , " – The Scholar's Stage", " JAMA Network Open", "—Astral Codex Ten", "Probably Overthinking It: "
+            , "Abstract Heresies: "]

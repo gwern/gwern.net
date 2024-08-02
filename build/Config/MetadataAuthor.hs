@@ -510,10 +510,15 @@ authorLinkDB = M.fromList $
     , ("Aleksander Madry", "http://madry.mit.edu/")
     , ("Joaquin Quiñonero Candela", "https://quinonero.net/")
     , ("Lilian Weng", "https://lilianweng.github.io/")
-    , ("Abdel Abdellaoui", "https://scholar.google.com/citations?user=hsyseKEAAAAJ&hl=en&oi=ao")
+    , ("Abdel Abdellaoui", "https://scholar.google.com/citations?user=hsyseKEAAAAJ")
     , ("Stella Biderman", "https://www.stellabiderman.com/")
     , ("Loïc Yengo", "https://researchers.uq.edu.au/researcher/14187")
-    , ("Kari E. North", "https://scholar.google.com/citations?user=gelzK1EAAAAJ&hl=en&oi=ao")
+    , ("Kari E. North", "https://scholar.google.com/citations?user=gelzK1EAAAAJ")
+    , ("Emily Mullin", "https://www.emilymullin.com/")
+    , ("Frank Hutter", "https://ml.informatik.uni-freiburg.de/profile/hutter/")
+    , ("Yiming Yang", "https://www.cs.cmu.edu/~./yiming/")
+    , ("Po-Ru Loh", "https://dms.hms.harvard.edu/people/po-ru-loh")
+    , ("Daniel I. Chasman", "https://prevmed.bwh.harvard.edu/daniel-i-chasman-phd/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

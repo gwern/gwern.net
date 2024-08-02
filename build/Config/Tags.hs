@@ -142,14 +142,14 @@ tagsShort2LongRewrites =
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
    , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
-   , ("miscite", "miscitation"), ("openia", "openai")]
+   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
   -- hopelessly ambiguous ones which should be error (for now)
   map (\s -> (s, error s)) shortTagBlacklist ++
-  -- attempt to infer short->long rewrites from the displayed tag names, which are long->short; but note that many of them are inherently invalid and the mapping only goes one way.
+  -- attempt to infer short→long rewrites from the displayed tag names, which are long→short; but note that many of them are inherently invalid and the mapping only goes one way.
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
 -- testing: unique list
