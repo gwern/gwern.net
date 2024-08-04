@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-07-17 14:18:51 gwern"
+When:  Time-stamp: "2024-08-04 11:14:46 gwern"
 License: CC-0
 -}
 
@@ -48,7 +48,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
-import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
+import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLinkCheck)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
@@ -304,14 +304,12 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
-              let (filepath',_) = getAnnotationLink u'
-              annotationExisted <- doesFileExist filepath'
+              (filepath',_) <- getAnnotationLinkCheck u'
+              let annotationExisted = filepath' /= ""
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
                   (_,bl) <- getBackLinkCheck u'
-                  blN    <- getBackLinkCount u'
                   (_,sl) <- getSimilarLinkCheck u'
-                  slN    <- getSimilarLinkCount u'
                   (_,lb) <- getLinkBibLinkCheck u'
                   -- we prefer annotations which have a fully-written abstract, but we will settle for 'partial' annotations,
                   -- which serve as a sort of souped-up tooltip: partials don't get the dotted-underline indicating a full annotation, but it will still pop-up on hover.
@@ -320,6 +318,8 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
 
                   -- if we do not have a 'full' abstract, we have a miscellaneous set of metadata, none of which are all *that* important on their own, but which together can be worth showing to the reader as a 'partial' annotation.
                   -- How do we decide how much miscellaneous metadata is enough? it is currently rather ad hoc. Currently, we treat each one as a kind of binary threshold, and if any are True, the partial status is true
+                  blN    <- getBackLinkCount u'
+                  slN    <- getSimilarLinkCount u'
                   let partialScoring = 0 < sum [length (drop 2 ts),
                                                  length abst,
                                                  if blN > 1 then 1 else 0,
@@ -330,7 +330,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       let authorHtml   = typesetHtmlField b
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
-                      -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
+                      -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies…
                       let pandoc = Pandoc nullMeta $ generateAnnotationBlock am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
@@ -458,8 +458,11 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
   | wasAnnotated x = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
   | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
-   -- may be a partial...
-  | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic
+   -- may be a partial…?
+  | unsafePerformIO $ do
+                          (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
+                          return $ filepath' == ""
+      = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return...
   | otherwise = addClass "link-annotated-partial" x'
   where
     g'
@@ -517,7 +520,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                                                                    [Link ("",["aux-links", "link-page", "link-bibliography", "icon-not"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
-           link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there... which might disable walks?
+           link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there… which might disable walks?
              Link (lid, [if null abst then "link-annotated-partial" else "link-annotated"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
@@ -684,7 +687,7 @@ fileTranscludesTest md am =
           fromMaybe (error $ "fromJust: Key not found: " ++ show key) maybeVal
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
--- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
+-- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link…
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 

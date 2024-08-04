@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-07-02 16:56:48 gwern"
+When:  Time-stamp: "2024-08-04 11:02:14 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -78,7 +78,7 @@ getBackLink       = getXLink "backlink"
 getLinkBibLink    = getXLink "link-bibliography"
 getSimilarLink    = getXLink "similar"
 
--- IO versions which check for existence on-disk:
+-- IO versions which check for existence on-disk: `("","")` means False/non-existence
 getAnnotationLinkCheck, getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck :: FilePath -> IO (FilePath,FilePath)
 getAnnotationLinkCheck = getXLinkExists ""
 getBackLinkCheck       = getXLinkExists "backlink"
