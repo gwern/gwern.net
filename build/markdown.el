@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-07-24 09:21:56 gwern"
+;;; When:  Time-stamp: "2024-08-03 15:23:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1660,7 +1660,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\) \\* \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
        (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number begin end) ; 5+ digit numbers
-       (my-markdown-or-html-query-replace-regexp "\\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 1/2, which might be a year like '2023' etc
+       (my-markdown-or-html-query-replace-regexp "\\([1-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 0, which might be a year or number; we need to enforce comma-separation even on numbers like '1000', for the date-range adjuster
        (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
@@ -2035,7 +2035,7 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
     (message "Preprocessing and compiling into HTML…")
     ; Pandoc converts the Markdown to HTML. Then the HTML goes through `preprocess-markdown` which runs additional typographic/formatting rewrites, runs LinkAuto to automatically linkify text, and then runs through GenerateSimilar to provide a list of relevant annotations to curate as the 'see-also' section at the bottom of annotations (if they are approved).
     ; NOTE: because `preprocess-markdown` is calling the OA API via the embedder, $OPENAI_API_KEY must be defined in the Emacs environment, either via `(setenv "OPENAI_API_KEY" "sk-xyz123456789")` or by putting it in `~/.bash_profile`. (Putting it in `.env` or `.bashrc` is not enough, because they won't apply to GUI/X Emacs)
-    (let ((markdown-command "preprocess-annotation.sh") (visible-bell nil))
+    (let ((markdown-command "preprocess-annotation.sh")) ;  (visible-bell nil)
       (markdown-kill-ring-save)
 
       (setq $pos (point-max))
@@ -2071,6 +2071,7 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
       (delete-trailing-whitespace)
       (forward-line)
       (html-mode)
+      (my-frame-urgent-hint-set) ; XMonad is set to use XMonad.Hooks.UrgencyHook.withUrgencyHook’s FocusHook to yank focus to X11 frames with urgent hint set
       (ding)
       (message "Done.")
       )
@@ -2115,6 +2116,41 @@ may malfunction if run on other formats like HTML
              (>= (buffer-size) 500)) ; ensure that there is enough in the buffer to plausibly be a full copy-pasted abstract, as opposed to a random snippet or line.
     (markdown-paragraphize)))
 (add-hook 'post-command-hook #'markdown-paragraphize-hook)
+
+; https://emacs.stackexchange.com/a/56037
+(defun my-frame-urgent-hint-set--for-x11 (frame arg &optional window-id)
+  "Set the x11-urgency hint for the FRAME to ARG (on WINDOW-ID) :
+
+- If ARG is nil, unset the urgency.
+- If ARG is any other value, set the urgency.
+
+If you unset the urgency, you still have to visit the frame to reset it."
+  (let* ((wm-prop "WM_HINTS")  ;; Constants.
+         (wm-flag-urgent #x100)
+
+         (wm-hints (append (x-window-property wm-prop frame wm-prop window-id nil t) nil))
+         (flags (car wm-hints)))
+    (setcar wm-hints
+            (if arg
+                (logior flags wm-flag-urgent)
+              (logand flags (lognot wm-flag-urgent))))
+    (x-change-window-property wm-prop wm-hints frame wm-prop 32 t)))
+(defun my-frame-urgent-hint-set (&optional arg)
+  "Mark the current Emacs frame as requiring urgent attention.
+
+With prefix argument ARG which is not boolean value nil, remove urgency
+\(which might or might not change display, depending on the window manager\)."
+  (interactive "P")
+  (let*
+      (
+       (frame (selected-frame))
+       (win-system (window-system frame)))
+    (cond
+     ((eq win-system 'x)
+      (my-frame-urgent-hint-set--for-x11 frame (not arg)))
+     ;; only Linux X11 is supported:
+     (t
+      (message "Urgent hint for window system %S unsupported" win-system)))))
 
 ; add new-line / paragraph snippet
 (add-hook 'html-mode-hook
