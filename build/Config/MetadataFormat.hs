@@ -311,6 +311,10 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("<jats:sec id=\"[a-zA-Z0-9_]+\" sec-type=\"[a-z]+\">", "")
          , (" © [0-9]+ European Association of Personality Psychology.*$", "")
          , ("☆$", "")
+         , ("  *", " ") -- squeeze whitespace
+         , ("<br /> *</p>", "</p>")
+         , ("<p> *", "<p>")
+         , (" *</p>", "</p>")
          ]
 
 -- simple string substitutions:
@@ -331,14 +335,10 @@ htmlRewriteFixed =
          , ("</ul> <p>", "</ul>\n<p>")
          , ("</blockquote> <p>", "</blockquote>\n<p>")
          , ("</p>\n \n<p>", "</p>\n<p>")
-         , ("  *", " ") -- squeeze whitespace
          , (" \\( ", " (")
          , (" \\) ", " )")
          , (" </p>", "</p>")
          , ("</a></p>", "</a>.</p>")
-         , ("<br /> *</p>", "</p>")
-         , ("<p> *", "<p>")
-         , (" *</p>", "</p>")
          , ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>")
          , ("<span style=\"font-weight:normal\"> </span>", "")
          , ("href=\"github.com", "href=\"https://github.com")
@@ -694,6 +694,7 @@ htmlRewriteFixed =
          , ("<span class=\"texhtml \"><strong>C</strong></span>", "<strong>C</strong>")
          , ("<span><span class=\"texhtml mvar\" style=\"font-style:italic\">π</span></span>", "<em>π</em>")
          , ("<span></span>-greedy", "ε-greedy")
+         , (" A* ", " A<sup>✱</sup> ") -- rewrite A-star to a form which avoids lints & any Markdown interpretation
          , ("<sup>*</sup>", "<sup>✱</sup>")
          , (" TD()", " TD(λ)")
 

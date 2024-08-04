@@ -142,7 +142,7 @@ tagsShort2LongRewrites =
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
    , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
-   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution")]
+   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -516,6 +516,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("ai/nn/transformer/gpt/4/poetry",           "GPT-4 poetry")
           , ("ai/nn/transformer/gpt/4/nonfiction",       "GPT-4 nonfiction")
           , ("ai/nn/transformer/gpt/4/fiction",          "GPT-4 fiction")
+          , ("ai/nn/transformer/gpt/4/sydney",           "Sydney (AI)")
           , ("ai/nn/transformer/gpt/4",                  "GPT-4")
           , ("ai/nn/transformer/gpt/3/fiction",          "GPT-3 fiction")
           , ("ai/nn/transformer/gpt/3/nonfiction",       "GPT-3 nonfiction")

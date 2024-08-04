@@ -4,7 +4,7 @@ separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 "]
+badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable"]
 
 -- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
 -- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
@@ -46,7 +46,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -122,7 +122,7 @@ stringDelete = [" - The Public Domain Review"
             , "jwz: ", " @ GitHub", "ignore the code: ", " - The Verge\nThe Verge\nThe Verge\nExpand\nThe Verge\nExpand\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nPrevious\nNext\nComments\nThe Verge"
             , " - TeX - LaTeX Stack Exchange", "floatingsheep: ", " - Code Golf Stack Exchange"
             , "Nadia Asparouhova ", "The Universe of Discourse :"
-            , "—a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
-            , "Swiss National Museum—Swiss history blog", "Matt Blaze: ", " �|� OR-Tools �", "—Justin Skycak"
-            , " – The Scholar's Stage", " JAMA Network Open", "—Astral Codex Ten", "Probably Overthinking It: "
-            , "Abstract Heresies: "]
+            , " - a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
+            , "Swiss National Museum - Swiss history blog", "Matt Blaze: ", " �|� OR-Tools �", " - Justin Skycak"
+            , " – The Scholar's Stage", " JAMA Network Open", " - Astral Codex Ten", "Probably Overthinking It: "
+            , "Abstract Heresies: ", " - ScienceDirect", " - Bulbapedia, the community-driven PokÃ©mon encyclopedia", " - Bulbapedia, the community-driven Pokémon encyclopedia", " 2.0 viewer", " – Stratechery by Ben Thompson", " – Thread Reader App", " - by RJ Andrews - Chartography", "dys2p › "]

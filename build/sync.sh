@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-01 20:28:15 gwern"
+# When:  Time-stamp: "2024-08-02 10:20:22 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1041,8 +1041,12 @@ else
     done
     echo
 
- # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
  if [ "$SLOW" ]; then
+
+   # continue building author database
+   (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &)
+
+   # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
    CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
    # Filter URLs: Exclude URLs present in the checked list:
    FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
@@ -1085,8 +1089,6 @@ else
             ## that would correctly fire when you print in-browser, so is not useful for the purpose of checking Gwern.net for regressions.
             chromium "$CHECK_RANDOM_PAGE#reminder-to-manually-print-out-and-check-the-page" && evince ~/"$TODAY"-gwernnet-printmode.pdf >/dev/null 2>&1 &
         fi
-
-    (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &) # continue building author database
 
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the X-of-the-day in a different & cache-free browser instance
 
@@ -1361,11 +1363,11 @@ else
         export -f checkSpamHeader
         find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | parallel checkSpamHeader
     }
-    wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy initial pages to the end.)" &
+    wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy first pages to the end.)" &
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then
-                              echo "Stripping encryption from $@…"
+                              echo "Stripping encryption from $*…"
                               TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
                               pdftk "$@" input_pw output "$TEMP" && mv "$TEMP" "$@";
                           fi; }
@@ -1393,21 +1395,25 @@ else
          fi; }
     wrap λ "Corrupted PNGs" &
 
-    λ(){ find ./ -name "*.svg" -mtime -31 | xargs --max-procs="$N" -I {} sh -c 'xmllint --noout "{}" 2>/dev/null && \
-                                          identify "{}" >/dev/null 2>&1 || echo "{}"'; }
+    λ(){ find ./ -name "*.svg" -mtime -31 | xargs --max-procs="$N" -I {} sh -c \
+        'xmllint --noout "{}" 2>/dev/null && identify "{}" >/dev/null 2>&1 || echo "{}"'; }
     wrap λ "Corrupted SVGs" &
 
     λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | \
               xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off |
               gfv -e ': ICC profile tag start not a multiple of 4'; }
-    wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
+    wrap λ "Partially transparent PNGs (may break in dark mode, converting with \
+            'mogrify -background white -alpha remove -alpha off'…)" &
 
-    λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
+    λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' \
+             -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
              parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
-    λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
+    λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | \
+                          parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | \
+                          ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
          compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
@@ -1416,32 +1422,38 @@ else
     png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/') &> /dev/null &
 
     # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
-    bold "Compressing new GIFs…"
-    optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` always changes the file metadata even if no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).
-      local gif="$1"
+    λ(){ optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` *always* changes the file metadata by clobbering the original, even when no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).
+         local gif="$1"
 
-      if [ ! -f "$gif" ]; then
-        return
-      fi
+         if [ ! -f "$gif" ]; then
+           return
+         fi
 
-      local temp_gif=$(mktemp)
+         local temp_gif
+         temp_gif="$(mktemp)"
 
-      gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null
+         gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null
 
-      local original_size=$(stat --printf="%s" "$gif")
-      local optimized_size=$(stat --printf="%s" "$temp_gif")
+         local original_size
+         original_size="$(stat --printf="%s" "$gif")"
+         local optimized_size=
+         optimized_size="$(stat --printf="%s" "$temp_gif")"
 
-      local size_diff=$((original_size - optimized_size))
-      local min_reduction=$(echo "scale=0; $original_size * 0.1 / 1" | bc)
+         local size_diff
+         size_diff="$((original_size - optimized_size))"
+         local min_reduction
+         min_reduction="$(echo "scale=0; $original_size * 0.1 / 1" | bc)"
 
-      if [ "$size_diff" -ge "$min_reduction" ]; then
-        mv "$temp_gif" "$gif" && echo "Optimized $gif"
-      else
-        rm "$temp_gif"
-      fi
+         if [ "$size_diff" -ge "$min_reduction" ]; then
+           mv "$temp_gif" "$gif" && echo "Optimized $gif"
+         else
+           rm "$temp_gif"
+         fi
+       }
+       export -f optimize_gif
+       find ./doc/www/ -type f -name "*.gif" -mtime -3 | parallel optimize_gif
     }
-    export -f optimize_gif
-    find ./doc/www/ -type f -name "*.gif" -mtime -3 | parallel optimize_gif
+    wrap λ "Optimized WWW archive GIFs."
 
     ## Find JPGs/PNGs which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
     ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing.

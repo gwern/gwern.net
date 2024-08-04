@@ -319,6 +319,9 @@ canonicals = M.fromList
   , ("wallacetim", "Tim Wallace")
   , ("Loic Yengo", "Loïc Yengo")
   , ("Kari North", "Kari E. North")
+  , ("Markus Nöthen", "Markus M. Nöthen")
+  , ("Dale Nyholt", "Dale R. Nyholt")
+  , ("MParakhin", "Mikhail Parakhin")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs
@@ -519,6 +522,11 @@ authorLinkDB = M.fromList $
     , ("Yiming Yang", "https://www.cs.cmu.edu/~./yiming/")
     , ("Po-Ru Loh", "https://dms.hms.harvard.edu/people/po-ru-loh")
     , ("Daniel I. Chasman", "https://prevmed.bwh.harvard.edu/daniel-i-chasman-phd/")
+    , ("Markus Perola", "https://scholar.google.com/citations?user=0m3tqBEAAAAJ&hl=en&oi=ao")
+    , ("Markus Nöthen", "https://scholar.google.com/citations?user=owiOkEkAAAAJ&hl=en&oi=ao")
+    , ("Henning Tiemeier", "https://www.hsph.harvard.edu/profile/henning-tiemeier/")
+    , ("Dale R. Nyholt", "https://en.wikipedia.org/wiki/Dale_R._Nyholt")
+    , ("Mikhail Parakhin", "https://x.com/MParakhin")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

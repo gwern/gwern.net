@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-07-16 20:16:06 gwern"
+# When:  Time-stamp: "2024-08-03 12:20:32 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -111,13 +111,50 @@ pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments argumen
           }
 
 # concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
-pdf-append () {
+# This accepts Docx files as well due to their frequency in supplemental files, so `pdf-append foo.pdf supplement-1.doc supplement-2.pdf` is allowed (Docx is converted to PDF by `doc2pdf`).
+pdf-append() {
     if [ $# -lt 2 ]; then echo "Not enough arguments" >&2 && return 1; fi
+
     ORIGINAL=$(path2File "$1")
     TARGET=$(mktemp /tmp/XXXXXX.pdf)
-    pdftk "$@" cat output "$TARGET" && exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"
-    rm "$TARGET"
+    TEMP_DIR=$(mktemp -d)
+
+    # Convert non-PDF files to PDF using doc2pdf
+    PDF_FILES=()
+    for file in "$@"; do
+        if [[ "$file" =~ \.(pdf|PDF)$ ]]; then
+            PDF_FILES+=("$file")
+        elif [[ "$file" =~ \.(doc|docx|odt)$ ]]; then
+            output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
+            doc2pdf "$file" "$output_pdf"
+            PDF_FILES+=("$output_pdf")
+        else
+            echo "Skipping unsupported file: $file" >&2
+        fi
+    done
+
+    # Concatenate PDFs
+    pdftk "${PDF_FILES[@]}" cat output "$TARGET"
+
+    # Preserve metadata from the first PDF
+    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"
+
+    # Cleanup
+    rm -f "$TARGET"
+    rm -rf "$TEMP_DIR"
 }
+
+doc2pdf() {
+    [ $# -eq 0 ] && { echo "Usage: doc2pdf <input_file> [output_file]"; return 1; }
+    input="$1"
+    output="${2:-${input%.*}.pdf}"
+
+    [[ ! -s "$input" || ! "$input" =~ \.(doc|docx|odt)$ ]] && { echo "Error: Invalid or empty file: $input"; return 1; }
+
+    soffice --convert-to pdf "$input" --headless --outdir "$(dirname "$output")"
+    [ "$#" -eq 2 ] && mv "${input%.*}.pdf" "$output"
+}
+
 
 # trim whitespace from around JPG/PNG images
 crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then
