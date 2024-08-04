@@ -37,7 +37,9 @@ import Text.Pandoc.Walk (walk)
 -- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final
 -- file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
-writeUpdatedFile template target contentsNew =
+writeUpdatedFile template target contentsNew
+ | "" == template || "" == target || "" == contentsNew = error $ "Utils.writeUpdatedFiles: empty argument passed; this should never happen! Arguments were: " ++ show [template, target, T.unpack contentsNew]
+ | otherwise =
   do existsOld <- doesFileExist target
      if not existsOld then do
        createDirectoryIfMissing True (takeDirectory target)

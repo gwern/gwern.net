@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-08-04 11:02:14 gwern"
+When:  Time-stamp: "2024-08-04 11:42:16 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -57,6 +57,7 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text
 -- return the raw FilePath of an x-link, and also the URL-encoded version safe to substitute into HTML:
 getXLink :: String -> FilePath -> (FilePath, -- raw on-disk relative link like 'metatata/.../foo.html'
                                    FilePath) -- URL-encoded absolute like '/metadata'.../%...foo.html'
+getXLink linkType "" = error $ "LinkBacklink.getXLink: called on empty URL/path; this should never happen; `linkType` was: " ++ show linkType
 getXLink linkType p = let linkType' = "/metadata/annotation/" ++ linkType
                           linkBase = if linkType=="" then linkType' else linkType'++"/"
                           linkRaw = linkBase ++ take 246 (urlEncode p) ++ ".html"
@@ -65,10 +66,11 @@ getXLink linkType p = let linkType' = "/metadata/annotation/" ++ linkType
                           link' = linkBase ++ urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))
                       in (tail linkRaw,link')
 getXLinkExists :: String -> FilePath -> IO (FilePath,FilePath)
-getXLinkExists linkType p = do let x@(linkRaw,_) = getXLink linkType p
-                               linkExists <- doesFileExist linkRaw
-                               if not linkExists then return ("","")
-                                 else return x
+getXLinkExists linkType "" = error $ "LinkBacklink.getXLinkExists: called on empty URL/path; this should never happen; `linkType` was: " ++ show linkType
+getXLinkExists linkType p  = do let x@(linkRaw,_) = getXLink linkType p
+                                linkExists <- doesFileExist linkRaw
+                                if not linkExists then return ("","")
+                                  else return x
 
 -- convert a URL to the local path of its annotation (which may not exist because it hasn't been written yet so no need to do IO to check disk), eg. 'https://www.biology.ualberta.ca/locke.hp/dougandbill.htm' → 'metadata/annotation/https%3A%2F%2Fwww2.biology.ualberta.ca%2Flocke.hp%2Fdougandbill.htm.html'
 getAnnotationLink, getBackLink, getLinkBibLink, getSimilarLink :: FilePath -> (FilePath, -- on-disk
@@ -101,6 +103,7 @@ getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p
 
 -- a backlinks database implicitly defines all the forward links as well. It's not efficient compared to converting it to a 'forwardlinks database', but we can support one-off searches easily:
 getForwardLinks :: Backlinks -> T.Text -> [T.Text]
+getForwardLinks _  "" = error $ "LinkBacklink.getForwardLinks: queried for an empty URL, that should never happen."
 getForwardLinks bdb p = M.keys $  M.filter (p `elem`) $ M.map (concatMap snd) bdb
 
 -- look for candidates to refactor into standalone pages, by reading the backlinks database to get internal frequency use, and ranking.

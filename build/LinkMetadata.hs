@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-08-04 11:14:46 gwern"
+When:  Time-stamp: "2024-08-04 16:52:59 gwern"
 License: CC-0
 -}
 
@@ -48,7 +48,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
-import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLinkCheck)
+import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID)
 import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
@@ -297,15 +297,20 @@ readLinkMetadataAndCheck = do
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
-writeAnnotationFragments am md writeOnlyMissing = mapM_ (\(p, mi) -> writeAnnotationFragment am md writeOnlyMissing p mi) $ M.toList md
+writeAnnotationFragments am md writeOnlyMissing =
+  do let ml = M.toList md
+     -- first pass: process all possible partials, so they are written out & on-disk for the` getAnnotationLinkCheck` in `addHasAnnotation`
+     mapM_ (uncurry $ writeAnnotationFragment am md writeOnlyMissing) $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <= C.minimumAnnotationLength) ml
+     -- second pass: process all possible annotations. (This is awkward but without building in a whole dependency system or a global database or keeping the per-annotation processing, it's hard to see how to ensure no race condition with the annotation checking.)
+     mapM_ (uncurry $ writeAnnotationFragment am md writeOnlyMissing) ml
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment _ _ _ _ ("","","",_,[],[],"") = return ()
 writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
       if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
-              (filepath',_) <- getAnnotationLinkCheck u'
-              let annotationExisted = filepath' /= ""
+              let (filepath',_) = getAnnotationLink u'
+              annotationExisted <- doesFileExist filepath'
               when (not onlyMissing || (onlyMissing && not annotationExisted)) $ do
 
                   (_,bl) <- getBackLinkCheck u'
@@ -459,10 +464,11 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
   | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial…?
-  | unsafePerformIO $ do
-                          (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
-                          return $ filepath' == ""
-      = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return...
+  | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
+  -- | unsafePerformIO $ do
+  --                         (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
+  --                         return $ filepath' == ""
+  --     = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return... The current compromise is to try to process all URLs with short/empty annotations first (which might be partials) and then when the fragments should all be written out, rerun with the regular batch
   | otherwise = addClass "link-annotated-partial" x'
   where
     g'

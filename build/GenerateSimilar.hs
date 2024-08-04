@@ -316,7 +316,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let p' = T.pack p
              alreadyLinkedAbstract  = extractLinks False $ T.pack abst
-             alreadyLinkedBody      = getForwardLinks bdb p'
+             alreadyLinkedBody      = if p=="" then [] else getForwardLinks bdb p' -- if this is an annotation being processed by preprocess-markdown, then we don't know the URL and it can't be in the backlinks database already anyway, so skip
              alreadyLinkedBacklinks = maybe [] (concatMap snd) (M.lookup p' bdb)
              alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
