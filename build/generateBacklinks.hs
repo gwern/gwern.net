@@ -161,7 +161,7 @@ filterIfAuthored md caller titleCallers = filter (\(_,_,url) -> f (T.unpack url)
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,aut,_,_,_,_,abstract) =
-                            let authorURLs = zip (repeat caller) $ authorsLinkifyAndExtractURLs (T.pack aut)
+                            let authorURLs = zip (authorsLinkifyAndExtractURLs $ T.pack aut) $ repeat caller
                                 doc = parseMarkdownOrHTML False (T.pack abstract)
                                 linkPairs = authorURLs ++ (map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc)
                                 linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
