@@ -2,8 +2,9 @@
 module Test where
 
 import Control.Monad (unless)
-import Data.List (foldl')
-import qualified Data.Map.Strict as M (toList)
+import Data.Either (lefts)
+import Data.List (intersect, foldl')
+import qualified Data.Map.Strict as M (keys, toList)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack)
@@ -57,14 +58,14 @@ import Control.Exception (try, SomeException)
 testRegexPatterns :: [String] -> IO ()
 testRegexPatterns patterns = do
     results <- mapM validateRegex patterns
-    let failures = [msg | Left msg <- results]
+    let failures = lefts results
     unless (null failures) $ mapM_ putStrLn failures
  where -- Function to validate a regex pattern
   validateRegex :: String -> IO (Either String ())
-  validateRegex pattern = do
-      result <- try (makeRegexM pattern :: IO Regex)
+  validateRegex pttrn = do
+      result <- try (makeRegexM pttrn :: IO Regex)
       case result of
-          Left e -> return . Left $ "Regex compilation failed for pattern '" ++ pattern ++
+          Left e -> return . Left $ "Regex compilation failed for pattern '" ++ pttrn ++
                                     "': " ++ show (e :: SomeException)
           Right _ -> return $ Right ()
 
@@ -186,6 +187,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ (map T.unpack $ M.keys Config.MetadataAuthor.authorLinkDB) `intersect` (M.keys Config.MetadataAuthor.canonicals)
               , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple

@@ -203,6 +203,7 @@ canonicals = M.fromList
   , ("Hans Jürgen Eysenck", "Hans Eysenck")
   , ("Eysenck", "Hans Eysenck")
   , ("Frank P. Ramsey", "Frank Ramsey")
+  , ("F. P. Ramsey", "Frank Ramsey")
   , ("Polu", "Stanislas Polu")
   , ("spolu", "Stanislas Polu")
   , ("Okada", "Toshio Okada")
@@ -322,9 +323,13 @@ canonicals = M.fromList
   , ("Markus Nöthen", "Markus M. Nöthen")
   , ("Dale Nyholt", "Dale R. Nyholt")
   , ("MParakhin", "Mikhail Parakhin")
+  , ("Henry Greely", "Hank Greely")
+  , ("Henry T. Greely", "Hank Greely")
+  , ("Lude H. Frank", "Lude Frank")
+  , ("L. H. Frank", "Lude Frank")
   ]
 
--- Config tests: unique all, no loops, all values are URLs
+-- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals
 authorLinkDB :: M.Map T.Text T.Text
 authorLinkDB = M.fromList $
   zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
@@ -373,7 +378,7 @@ authorLinkDB = M.fromList $
     , ("Mark S. Miller", "https://en.wikipedia.org/wiki/Mark_S._Miller")
     , ("David Décary-Hétu", "https://www.cicc-iccc.org/en/people/regular_researchers/david_decary_hetu")
     , ("Mikel Olazaran", "https://scholar.google.com/citations?user=XoUNbRoAAAAJ")
-    , ("Daniel Hendrycks", "https://people.eecs.berkeley.edu/~hendrycks/")
+    , ("Dan Hendrycks", "https://people.eecs.berkeley.edu/~hendrycks/")
     , ("Matt Shumer", "https://x.com/mattshumer_")
     , ("Richard Ngo", "https://www.richardcngo.com/")
     , ("M. M. Lehman", "https://en.wikipedia.org/wiki/Manny_Lehman_(computer_scientist)")
@@ -522,18 +527,22 @@ authorLinkDB = M.fromList $
     , ("Yiming Yang", "https://www.cs.cmu.edu/~./yiming/")
     , ("Po-Ru Loh", "https://dms.hms.harvard.edu/people/po-ru-loh")
     , ("Daniel I. Chasman", "https://prevmed.bwh.harvard.edu/daniel-i-chasman-phd/")
-    , ("Markus Perola", "https://scholar.google.com/citations?user=0m3tqBEAAAAJ&hl=en&oi=ao")
-    , ("Markus Nöthen", "https://scholar.google.com/citations?user=owiOkEkAAAAJ&hl=en&oi=ao")
+    , ("Markus Perola", "https://scholar.google.com/citations?user=0m3tqBEAAAAJ")
+    , ("Markus M. Nöthen", "https://scholar.google.com/citations?user=owiOkEkAAAAJ")
     , ("Henning Tiemeier", "https://www.hsph.harvard.edu/profile/henning-tiemeier/")
     , ("Dale R. Nyholt", "https://en.wikipedia.org/wiki/Dale_R._Nyholt")
     , ("Mikhail Parakhin", "https://x.com/MParakhin")
+    , ("Adam Mastroianni", "https://www.adammastroianni.com/")
+    , ("Wei Zhao", "https://en.wikipedia.org/wiki/Wei_Zhao_(computer_scientist)")
+    , ("Vilmundur Gudnason", "https://scholar.google.com/citations?user=eDkARCwAAAAJ&hl=en&oi=ao")
+    , ("Lude Frank", "https://www.rug.nl/staff/l.h.franke/cv")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
 authorWpLinkDB =
     ["A. A. Brill","A. Bradford Hill","A. C. Littleton","A. G. W. Cameron","Russell Impagliazzo"
-    ,"A. K. Bera","A. L. Barker","A. L. Sadler","A. Murat Eren","A. Narayanan"
+    ,"A. K. Bera","A. L. Barker","A. L. Sadler","A. Murat Eren"
     ,"A. Tversky","Aanund Hylland","Aaron Clauset","Aaron Cochrane"
     ,"Aaron D. Ames","Aaron E. Carroll","Aaron Gordon","Aaron Isaacs","Aaron Klein"
     ,"Aaron Reeves","Aaron Roth","Aaron Streets","Abdoulaye Diabate","Abdul Basit"
@@ -643,7 +652,7 @@ authorWpLinkDB =
     ,"Beng Chin Ooi","Bengt Holmstrom","Bengt Holmstr\246m","Benjamin A. Garcia","Benjamin A. Olken"
     ,"Benjamin B","Benjamin B. Lahey","Benjamin Black","Benjamin Breen","Benjamin Djulbegovic"
     ,"Benjamin F. Jones","Benjamin Goldstein","Benjamin Graham","Benjamin Hayden","Benjamin Mako Hill"
-    ,"Benjamin McMahon","Benjamin Neale","Benjamin S. Bloom","Benjamin Tang","Benjamin Williams"
+    ,"Benjamin McMahon","Benjamin M. Neale","Benjamin S. Bloom","Benjamin Tang","Benjamin Williams"
     ,"Benjamin van Niekerk","Bent Flyvbjerg","Bent Petersen","Bernard Zinman","Bernd Kraemer"
     ,"Bernd Kr\228mer","Bernd Weber","Bernd W\252rsig","Bernhard Ludvik","Bernhard Nebel"
     ,"Bernhard Sch\246lkopf","Bernie Devlin","Bernt Schiele","Bert H\246lldobler","Bertram Gilfoyle"
@@ -739,7 +748,7 @@ authorWpLinkDB =
     ,"Curtis Huttenhower","Curtis J. Milhaupt","Curtis LeMay","Cynthia Dwork","Cynthia Fisher"
     ,"Cynthia Kenyon","Cynthia M. Beall","Cynthia M. Bulik","Cynthia Mulrow","Cynthia Rudin"
     ,"Cyril Burt","Cyril Ponnamperuma","Cyril Thomas","Czes\322aw Mi\322osz","D. C. Rao"
-    ,"D. H. Mellor","D. I. Boomsma","D. Johnson","D. N. Jackson","D. S. Falconer"
+    ,"D. H. Mellor","D. Johnson","D. N. Jackson","D. S. Falconer"
     ,"D. S. Hirschberg","D. Taylor","D. W. Fulker","Dabeeru C. Rao","Dacheng Tao"
     ,"Dacher Keltner","Dagomar Degroot","Daisy Zamora","Dale Allison","Dale Webster"
     ,"Dalton Conley","Damien Broderick","Damion Searls","Dan Boneh","Dan Brown"
@@ -747,7 +756,7 @@ authorWpLinkDB =
     ,"Dan Klein","Dan Liu","Dan M. Roden","Dan Mazur","Dan Roden"
     ,"Dan Roth","Dan Schmidt","Dan Schwartz","Dan Zhang","Dana Angluin"
     ,"Dana H. Ballard","Dana H. Born","Dana Klisanin","Dana Scott","Daniel A. Geller"
-    ,"Daniel A. Spielman","Daniel Acuna","Daniel B. Wright","Daniel Bates","Daniel C. Dennett"
+    ,"Daniel A. Spielman","Daniel Acuna","Daniel B. Wright","Daniel Bates","Daniel Dennett"
     ,"Daniel Campos","Daniel D. Johnson","Daniel Daneshvar","Daniel Dennett","Daniel E. Ho"
     ,"Daniel Eriksson","Daniel Franklin","Daniel Freeman","Daniel Fried","Daniel G. Goldstein"
     ,"Daniel Geschwind","Daniel Gianola","Daniel H. Geschwind","Daniel Hoffman","Daniel Hsu"
@@ -817,9 +826,9 @@ authorWpLinkDB =
     ,"Donald Michie","Donald P. Green","Donald R. Miller","Donald T. Campbell","Donald W. Black"
     ,"Donald W. Pfaff","Dong Chen","Dongju Zhang","Dongmei Wang","Donna K. Arnett"
     ,"Dora Akunyili","Dora L. Costa","Dorin Comaniciu","Doris Tsao","Doris Y. Tsao"
-    ,"Dorothy Burlingham","Dorothy Nevill","Dorret Boomsma","Doug Downey","Doug Lenat"
+    ,"Dorothy Burlingham","Dorothy Nevill","Doug Downey","Doug Lenat"
     ,"Douglas Blackwood","Douglas C. Schmidt","Douglas F. Easton","Douglas Fraser","Douglas G. Altman"
-    ,"Douglas H. Fisher","Douglas Hofstadter","Douglas K. Detterman","Douglas R. Hofstadter","Douglas T. Kenrick"
+    ,"Douglas H. Fisher","Douglas Hofstadter","Douglas K. Detterman","Douglas T. Kenrick"
     ,"Douglas W. Allen","Dov Cohen","Dragana Rogulja","Dragomir Radev","Drazen Prelec"
     ,"Drew McDermott","Drew Weissman","Duncan J. Watts","Duncan Lawrence","Duncan Ryuken Williams"
     ,"Dustin Wright","Dwight Dickinson","E. B. Titchener","E. E. Salpeter","E. L. Lehmann"
@@ -874,7 +883,7 @@ authorWpLinkDB =
     ,"Evan Mast","Evan Maxwell","Evangelos Eleftheriou","Evdokia Anagnostou","Evelina Fedorenko"
     ,"Evelynn Hammonds","Everett Mendelsohn","Evgenii Nikishin","Ewa Deelman","Ewa Grabowska"
     ,"Ewald Ammende","Ewan Birney","Ewout W. Steyerberg","Ezra Klein","E\246rs Szathm\225ry"
-    ,"F. P. Ramsey","Fabio Petroni","Fahu Chen","Faisal Mushtaq","Fan Bao"
+    ,"Fabio Petroni","Fahu Chen","Faisal Mushtaq","Fan Bao"
     ,"Fan Hui","Fan Jiang","Fan Li","Fan Wu","Fan Yi"
     ,"Fang Fang","Fang Liu","Farah Naz Talpur","Farhad Moshiri","Farinaz Koushanfar"
     ,"Faruk Ahmed","Fatih Porikli","Fei Peng","Fei Xia","Felix A. Gers"
@@ -890,7 +899,7 @@ authorWpLinkDB =
     ,"Frank B. Hu","Frank C. J. McGurk","Frank C. Worrell","Frank Drake","Frank Dudbridge"
     ,"Frank E. Speizer","Frank Falkner","Frank Hu","Frank Keller","Frank Key"
     ,"Frank L. Schmidt","Frank Levy","Frank M. Spinath","Frank McCown","Frank McSherry"
-    ,"Frank N. Freeman","Frank P. Ramsey","Frank Rosenblatt","Frank Ruskey","Frank Wang"
+    ,"Frank N. Freeman","Frank Ramsey","Frank Rosenblatt","Frank Ruskey","Frank Wang"
     ,"Frank Zhang","Frantisek Svantner","Franz K\246nig","Fran\231ois Balloux","Fran\231ois Chollet"
     ,"Frazer Anderson","Fred Brooks","Fred H. Gage","Fred W. Johnson","Frederick Mosteller"
     ,"Frederico Finan","Fredrik Ull\233n","Freeman Dyson","Freeman J. Dyson","Fritz Cremer"
@@ -943,7 +952,7 @@ authorWpLinkDB =
     ,"Han Li","Han Zhang","Hana El-Samad","Hang Zhou","Hannah Devlin"
     ,"Hannah Kim","Hannah Lee","Hannah Miller","Hannah Robinson","Hannele Ruohola-Baker"
     ,"Hannes Baumann","Hannes Petursson","Hannu Lahtinen","Hannu Rajaniemi","Hans Clevers"
-    ,"Hans Eiberg","Hans Eriksson","Hans Gruber","Hans J. Eysenck","Hans M. Kristensen"
+    ,"Hans Eiberg","Hans Eriksson","Hans Gruber","Hans Eysenck","Hans M. Kristensen"
     ,"Hans Moravec","Hans Robert Sch\246ler","Hans-Peter Kohler","Hans-Ulrich Wittchen","Hanspeter Pfister"
     ,"Hany Farid","Hao Li","Hao Ying","Hao Zhou","Harjeet Singh"
     ,"Harold Hotelling","Harold M. Williams","Harold Morowitz","Harold Pashler","Harold S. Stone"
@@ -984,7 +993,7 @@ authorWpLinkDB =
     ,"Inflection AI","Ingo Potrykus","Ingo Rechenberg","Ingvar Andersson","Ingvild Alm\229s"
     ,"Insoo Hyun","Intikhab Alam","Ioanna Tzoulaki","Ion Stoica","Ionica Smeets"
     ,"Irenaus Eibl-Eibesfeldt","Iren\228us Eibl-Eibesfeldt","Irfan Essa","Iroise Dumontheil","Irving I. Gottesman"
-    ,"Irving John Good","Irving Kirsch","Irving L. Janis","Irving Lorge","Irwin D. Waldman"
+    ,"Irving Kirsch","Irving L. Janis","Irving Lorge","Irwin D. Waldman"
     ,"Irwin Silverman","Irwin Waldman","Iryna Gurevych","Isaac Asimov","Isabelle Augenstein"
     ,"Isabelle Boutron","Isabelle Gallagher","Isabelle Guyon","Ishan Pandey","Israel Ramirez"
     ,"Itai Yanai","Italo Calvino","Itamar Simonson","Itsik Pe\8217er","Itzhak Brook"
@@ -1137,7 +1146,7 @@ authorWpLinkDB =
     ,"Justin Wagner","Justin Yifu Lin","Justine Moore","Justine Musk","Jyoti Mishra"
     ,"J\225nos Kert\233sz","J\225nos Koll\225r","J\225nos Kram\225r","J\243n Steinsson","J\248rgen M\248ller"
     ,"J\248rn Ratts\248","J\252rgen Glas","J\252rgen Maier","J\252rgen Schmidhuber","J\252ri Allik"
-    ,"J\252ri Parik","K. Anders Ericsson","K. C. Paul","K. Christopher Garcia","K. Eric Drexler"
+    ,"J\252ri Parik","K. Anders Ericsson","K. C. Paul","K. Christopher Garcia"
     ,"K. Paige Harden","K. Patricia Cross","K. T. Compton","K. V. Mardia","Kaare Christensen"
     ,"Kah Kay Sung","Kai Chen","Kai Zen","Kai-Fu Lee","Kai-Uwe Hinrichs"
     ,"Kaiming He","Kaiping Zheng","Kamal Gupta","Kameshwar Prasad","Kang Zhang"
@@ -1543,7 +1552,7 @@ authorWpLinkDB =
     ,"Sapna Maheshwari","Sara A. Solla","Sara Garcia","Sara M. Lewis","Sara Moreira"
     ,"Sara Seager","Sarah A. Tishkoff","Sarah Byford","Sarah Chen","Sarah E. Anderson"
     ,"Sarah Ennis","Sarah Haider","Sarah Henderson","Sarah Jeong","Sarah Kreps"
-    ,"Sarah Lindsay","Sarah Mathew","Sarah Medland","Sarah Otto","Sarah Wild"
+    ,"Sarah Lindsay","Sarah Mathew","Sarah Otto","Sarah Wild"
     ,"Sarah York","Sarah-Jayne Blakemore","Sarit Kraus","Sarnoff A. Mednick","Satinder Singh"
     ,"Satoshi Iizuka","Satoshi Matsuoka","Satoshi Nakamoto","Satya Nadella","Saul Perlmutter"
     ,"Saul Rosenzweig","Saurabh Sinha","Saurabh Tiwary","Sayan Ghosh","Sayantan Das"
@@ -1756,4 +1765,4 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama"]
+    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"]
