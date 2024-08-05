@@ -36,7 +36,7 @@ import qualified Config.Misc as C (backlinkBlackList, cd)
 import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSortedMagic,
                         Embeddings, ListSortedMagic)
 
-import MetadataAuthor (authorsLinkify)
+import MetadataAuthor (authorsLinkify, authorsLinkifyAndExtractURLs)
 
 main :: IO ()
 main = do -- we read arguments from stdin using `getContents` in main'
@@ -160,9 +160,10 @@ filterIfAuthored md caller titleCallers = filter (\(_,_,url) -> f (T.unpack url)
                  Just (_,authors,_,_,_,_,_) -> caller `elem` (map (\(a,_,_) -> a) $ concatMap Query.extractURL $ MetadataAuthor.authorsLinkify (T.pack authors))
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
-parseAnnotationForLinks caller (_,_,_,_,_,_,abstract) =
-                            let doc = parseMarkdownOrHTML False (T.pack abstract)
-                                linkPairs = map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc
+parseAnnotationForLinks caller (_,aut,_,_,_,_,abstract) =
+                            let authorURLs = zip (repeat caller) $ authorsLinkifyAndExtractURLs (T.pack aut)
+                                doc = parseMarkdownOrHTML False (T.pack abstract)
+                                linkPairs = authorURLs ++ (map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc)
                                 linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
                             in
                             linkPairs'

@@ -3,7 +3,7 @@
 {- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-07-20 10:45:50 gwern"
+When:  Time-stamp: "2024-08-04 19:28:46 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -40,7 +40,7 @@ import Data.List (intersperse, intercalate)
 import qualified Data.Map.Strict as M (lookup, map, toList)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
 import Data.Maybe (isJust, isNothing, fromMaybe)
-import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr)
+import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr, Pandoc(Pandoc), Block(Para), nullMeta)
 import Network.HTTP (urlEncode)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -48,6 +48,7 @@ import Interwiki (toWikipediaEnURL, toWikipediaEnURLSearch)
 import LinkMetadataTypes (Metadata)
 import Utils (split, frequency)
 import qualified LinkBacklink as BL
+import Query (extractURLs)
 
 import qualified Config.MetadataAuthor as C
 
@@ -90,8 +91,15 @@ authorCollapse aut
 authorsCanonicalize :: String -> String
 authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a (M.lookup a C.canonicals)) . split ", "
 
+-- we allow empty strings for convenience in processing annotations
 authorsLinkify :: T.Text -> [Inline]
-authorsLinkify = intersperse (Str ", ") . map linkify . T.splitOn ", "
+authorsLinkify "" = []
+authorsLinkify a = intersperse (Str ", ") $ map linkify $ T.splitOn ", " a
+
+-- process an author text field and just extract the generated URLs:
+authorsLinkifyAndExtractURLs :: T.Text -> [T.Text]
+authorsLinkifyAndExtractURLs "" = []
+authorsLinkifyAndExtractURLs aut =  extractURLs $ Pandoc nullMeta [Para $ authorsLinkify aut]
 
 linkify :: T.Text -> Inline
 linkify ""  = Space
