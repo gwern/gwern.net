@@ -182,7 +182,6 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 
 $output_file = preg_replace('/<img/', '<img loading="lazy" decoding="async"', $output_file);
 
-`mv "{$input_file_path}" "{$input_file_path}.bak"`;
 file_put_contents($input_file_path, $output_file);
 
 ## FUNCTIONS
