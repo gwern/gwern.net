@@ -3,7 +3,7 @@
 {- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-08-04 19:28:46 gwern"
+When:  Time-stamp: "2024-08-05 09:53:09 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -146,8 +146,8 @@ authorBrowseSearchEngines authors = let urls = concatMap authorURLs authors
  where authorURLs :: T.Text -> [T.Text]
        authorURLs "" = error "MetadataAuthor.authorURLs: passed an empty string for an author; this should never happen!"
        authorURLs author = let escapedAuthor = T.pack $ urlEncode $ T.unpack author
-                               wpURL       = toWikipediaEnURL       author
                                wpSearchURL = toWikipediaEnURLSearch author
+                               wpURL       = toWikipediaEnURL       author
                                gsURL = "https://scholar.google.com/scholar?q=" `T.append` escapedAuthor
                                gURL  = "https://www.google.com/search?q="      `T.append` escapedAuthor
-                            in [wpURL, wpSearchURL, gsURL, gURL]
+                            in [wpSearchURL, wpURL, gsURL, gURL]

@@ -299,12 +299,14 @@ imageCaptionLinebreak x@(Image _ (_ : _ : LineBreak : _) _) = x
 imageCaptionLinebreak x@(Image _ (_ : _ : _ : LineBreak : _) _) = x
 imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : LineBreak : _) _) = x
 imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : _ : LineBreak : _) _) = x
-imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) = Image y
-                                                                                      (Strong a : Str b : Emph c : LineBreak : d)
-                                                                                      z
-imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) = Image y
-                                                                                      (Strong a : Str b : Emph c : LineBreak : d)
-                                                                                      z
+imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) =
+  Image y
+  (Strong a : Str b : Emph c : LineBreak : d)
+  z
+imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) =
+  Image y
+  (Strong a : Str b : Emph c : LineBreak : d)
+  z
 imageCaptionLinebreak x = x
 
 -- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
@@ -379,7 +381,7 @@ dateDurationSingle todayYear oldYear
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
 dateFullRangeRegex = makeRegex ("([^×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^×€¢¥£\\$]*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–][^×€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’][^×€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $

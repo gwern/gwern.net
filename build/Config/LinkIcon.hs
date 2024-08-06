@@ -44,7 +44,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
                      "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
-                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org"]
+                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com", "www.cs.cmu.edu", "minimaxir.com"]
 ------------------------------------------------------------------------------------------
 
 -- all legal types of displays
@@ -392,7 +392,7 @@ linkIconRulesSVG u
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' u "paulgraham.com" = ("pg", "text,mono") -- Paul Graham, known by username 'pg' on HN
- | u' u "ycombinator.com" = ("hacker-news", "svg") -- HN/YC (shared logo). primary user: news.ycombinator.com
+ | u' u "ycombinator.com" || u' u "hn.algolia.com" = ("hacker-news", "svg") -- HN/YC (shared logo). primary user: news.ycombinator.com
  | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overriden by SICP
  | u'' u "mega.nz" = ("mega", "svg") -- MegaUpload/Mega: filesharing (used for big files).
  | u'' u "intelligence.org" = ("miri", "svg") -- MIRI/intelligence.org.
@@ -732,6 +732,7 @@ linkIconTestUnitsText =
          , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri")
          , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg")
          , ("https://news.ycombinator.com/item?id=10012625",  "hacker-news","svg")
+         , ("https://hn.algolia.com/#!/story/forever/prefix/0/gameprogrammingpatterns.com", "hacker-news","svg")
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text")
          , ("https://blog.novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text")
          , ("https://numinous.productions/ttft/", "MN", "text")

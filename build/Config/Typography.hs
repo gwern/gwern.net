@@ -179,5 +179,11 @@ dateRangeDurationTestCases = [
   , (2024, Str "So, in 2020, the Leela team raced to train larger networks. She sourced compute from corporate donors and friends’ GTX 1070s."
     , Span ("",[],[]) [Str "So, in ",Str "2020",Str ", the Leela team raced to train larger networks. She sourced compute from corporate donors and friends\8217 GTX 1070s."]
     )
+  , (1996, Str "he wrote a history of the 1920’s called"
+    , Str "he wrote a history of the 1920’s called"
+    )
+  , (1997, Str "he wrote a history of the 1920s called"
+    , Str "he wrote a history of the 1920s called"
+    )
 
   ]

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-03 17:30:34 gwern"
+# When:  Time-stamp: "2024-08-05 10:55:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -176,6 +176,10 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "Seeing Centuries"
 63. "dys2p › Random Mosaic – Detecting unauthorized physical access with beans, lentils and colored rice"
 "Random Mosaic – Detecting unauthorized physical access with beans, lentils and colored rice"
+64. "Surely you can be serious - by Adam Mastroianni"
+"Surely you can be serious"
+65. "Hormonal doping and androgenization of athletes: a secret program of the German Democratic Republic government Clinical Chemistry"
+"Hormonal doping and androgenization of athletes: a secret program of the German Democratic Republic government"
 
 Task:
 

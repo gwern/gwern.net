@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-02 10:20:22 gwern"
+# When:  Time-stamp: "2024-08-05 09:53:55 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -127,7 +127,7 @@ else
           s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
-          s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '
+          s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -549,7 +549,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" | \
+    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
