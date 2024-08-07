@@ -253,8 +253,9 @@ capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—') s of
 -- as it is likely denoting possession.
 -- 2. When an apostrophe is followed by "s" and then another character, it checks if the next character is a space or punctuation.
 -- If it is, it leaves the "s" lowercase; otherwise, it capitalizes it.
--- 3. When an apostrophe is followed by any character, it capitalizes the character after the apostrophe.
--- 4. When there is no apostrophe in the string, it simply returns the original string.
+-- 3. When an apostrophe is followed by "t" (for "n't" contractions), it leaves the "t" lowercase.
+-- 5. When an apostrophe is followed by any character, it capitalizes the character after the apostrophe.
+-- 5. When there is no apostrophe in the string, it simply returns the original string.
 capitalizeAfterApostrophe :: String -> String
 capitalizeAfterApostrophe "" = ""
 capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
@@ -264,8 +265,9 @@ capitalizeAfterApostrophe s = case break (`elem` ("'‘\"“"::String)) s of
                                                if isSpace x || isPunctuation x
                                                then before ++ [punctuation] ++ 's' : capitalizeFirst (capitalizeAfterApostrophe after)
                                                else before ++ [punctuation] ++ 'S' : capitalizeFirst (capitalizeAfterApostrophe after)
-    (before, punctuation:after) -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
-    (before, [])                -> before
+    (before, punctuation:'t':after)       -> before ++ [punctuation] ++ 't' : capitalizeAfterApostrophe after  -- New case for "n't" contractions
+    (before, punctuation:after)           -> before ++ [punctuation] ++ capitalizeFirst (capitalizeAfterApostrophe after)
+    (before, [])                          -> before
   where
     -- Capitalizes the first character of a string.
     capitalizeFirst []     = []

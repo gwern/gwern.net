@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-05 10:55:25 gwern"
+# When:  Time-stamp: "2024-08-06 18:33:00 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -180,6 +180,26 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "Surely you can be serious"
 65. "Hormonal doping and androgenization of athletes: a secret program of the German Democratic Republic government Clinical Chemistry"
 "Hormonal doping and androgenization of athletes: a secret program of the German Democratic Republic government"
+66. "Replacing my Right Hand with AI - Erik Schluntz"
+"Replacing my Right Hand with AI"
+67. "Surprising Hacker News Data Analysis — The Data Point"
+"Surprising Hacker News Data Analysis"
+68. "What's The Front Page of HackerNews Worth? – Terence Edenâs Blog"
+"What’s The Front Page of Hacker News Worth?"
+69. "Words growing or shrinking in Hacker News titles: a tidy analysis – Variance Explained"
+"Words growing or shrinking in Hacker News titles: a tidy analysis"
+70. "Web Page Under Construction"
+""
+71. "Matvoz.com – Interesting facts about when you get hit by Hacker News tsunami"
+"Interesting facts about when you get hit by Hacker News tsunami"
+72. "Mike Dellanoce's Blog: My first 'Hacker News Effect' experience"
+"My first 'Hacker News Effect' experience"
+73. "Cognitive ability and tattoos and piercings – Clear Language, Clear Mind⁠:"
+"Cognitive ability and tattoos and piercings"
+74. "Organization not found"
+""
+75. "There’s a running theme in here of programming problems LLMs solve where it’s ack..."
+"There’s a running theme in here of programming problems LLMs solve where it’s..."
 
 Task:
 

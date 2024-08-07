@@ -107,50 +107,50 @@ writeOutCallers md edb sortDB target callerPairs
 
 generateCaller :: Metadata -> T.Text -> (T.Text, [T.Text]) -> [[Block]]
 generateCaller md target (caller, callers) =
-                                       let selfIdent = case M.lookup (T.unpack target) md of
-                                                             Nothing -> ""
-                                                             -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
-                                                             -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
-                                                             -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
-                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
-                                                             Just (_,aut,dt,_,_,_,_) -> generateID (T.unpack caller) aut dt
-                                           callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url in
-                                                                     case M.lookup (T.unpack u) md of
-                                                                      Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just ("",_,"",_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just ("",_,_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                                                      Just (t,_,dt,_,_,_,_) -> (dt,T.pack t,u))
-                                                          callers
-                                           -- a backlink can be triggered by an ordinary link, or it can be triggered by an *author* metadata field which gets turned into a link; if the latter is the case, the backlink means that an annotation was written by the author, and we are creating an author bibliography.
-                                           -- In that case, we want to handle the author links specially, and provide them first, so we check the database for each of the callers, to see if the caller has the
-                                           callerDatesTitlesAuthored    = filterIfAuthored md caller callerDatesTitles
-                                           callerDatesTitlesAuthoredNot = callerDatesTitles \\ callerDatesTitlesAuthored
-                                           -- sort backlinks in descending order (most-recent first) as a simple way to prioritize within author/non-author category:
-                                           sortDescending = map (\(_,b,c) -> (b,c)) . reverse . sort
-                                           callerTitles = (sortDescending callerDatesTitlesAuthored) ++ (sortDescending callerDatesTitlesAuthoredNot)
-                                           callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
-                                           callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
+ let selfIdent = case M.lookup (T.unpack target) md of
+                       Nothing -> ""
+                       -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
+                       -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
+                       -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
+                       -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
+                       Just (_,aut,dt,_,_,_,_) -> generateID (T.unpack caller) aut dt
+     callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url in
+                               case M.lookup (T.unpack u) md of
+                                Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                Just ("",_,"",_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                Just ("",_,_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
+                                Just (t,_,dt,_,_,_,_) -> (dt,T.pack t,u))
+                    callers
+     -- a backlink can be triggered by an ordinary link, or it can be triggered by an *author* metadata field which gets turned into a link; if the latter is the case, the backlink means that an annotation was written by the author, and we are creating an author bibliography.
+     -- In that case, we want to handle the author links specially, and provide them first, so we check the database for each of the callers, to see if the caller has the
+     callerDatesTitlesAuthored    = filterIfAuthored md caller callerDatesTitles
+     callerDatesTitlesAuthoredNot = callerDatesTitles \\ callerDatesTitlesAuthored
+     -- sort backlinks in descending order (most-recent first) as a simple way to prioritize within author/non-author category:
+     sortDescending = map (\(_,b,c) -> (b,c)) . reverse . sort
+     callerTitles = (sortDescending callerDatesTitlesAuthored) ++ (sortDescending callerDatesTitlesAuthoredNot)
+     callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
+     callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
-                                           content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
-                                             map (\(u,c,t) -> [Para ([hasAnnotationOrIDInline md $ Link ("", "backlink-not":"id-not":c, [])
-                                                                     [RawInline (Format "html") t]
-                                                                     (u, "")] ++
-                                                                     -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
-                                                                     -- (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
-                                                                     (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++ -- TODO: do we actually need .link-annotated-not on either of these links?
-                                                                     [Str ":"]),
-                                                               -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                                                               BlockQuote [Para [Link ("",
-                                                                                        ["backlink-not", "include-block-context-expanded"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
-                                                                                        if selfIdent=="" then [] else [("target-id",selfIdent)]
-                                                                                      )
-                                                                                      [Str "[backlink context]"] -- NOTE: matched on by `LinkBacklink.getBackLinkCount`; if this is modified or rendered not 1-per-backlink, update that too.
-                                                                                      (u, "")
-                                                                                ]
-                                                                          ]
-                                                             ]
-                                                ) callers'
-                                             in content
+     content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
+       map (\(u,c,t) -> [Para ([hasAnnotationOrIDInline md $ Link ("", "backlink-not":"id-not":c, [])
+                               [RawInline (Format "html") t]
+                               (u, "")] ++
+                               -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
+                               -- (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
+                               (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++ -- TODO: do we actually need .link-annotated-not on either of these links?
+                               [Str ":"]),
+                         -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
+                         BlockQuote [Para [Link ("",
+                                                  ["backlink-not", "include-block-context-expanded"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
+                                                  if selfIdent=="" then [] else [("target-id",selfIdent)]
+                                                )
+                                                [Str "[backlink context]"] -- NOTE: matched on by `LinkBacklink.getBackLinkCount`; if this is modified or rendered not 1-per-backlink, update that too.
+                                                (u, "")
+                                          ]
+                                    ]
+                       ]
+          ) callers'
+       in content
 
 -- TODO: This is very clumsy. There ought to be a better way to check for authorship than compiling & extracting URLs. But I'm not confident in matching on title either... We only have the caller URL here, not the original anchor text. Do we want to allow the author DB to be *bi-directional*? That would mean we couldn't procedurally-generate author URLs.
 filterIfAuthored :: Metadata -> T.Text -> [(String,T.Text,T.Text)] -> [(String,T.Text,T.Text)]

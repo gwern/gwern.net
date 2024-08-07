@@ -229,7 +229,7 @@ embeddings2ForestConfigurable ls nt pvd es =
   let minLeafSize = ls -- ???
       cfg = rpTreeCfg minLeafSize
               (length es) -- data N
-              (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
+              (length $ (\(_,_,_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1,024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
   in

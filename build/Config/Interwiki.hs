@@ -1917,6 +1917,8 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("GAO", "Government_Accountability_Office")
           , ("GCTA", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
           , ("GCTAs", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
+          , ("SNP heritable", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
+          , ("SNP heritability", "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308")
           , ("GDB_debugger", "GNU_Debugger")
           , ("GFDL", "GNU_Free_Documentation_License")
           , ("GLP-1", "Glucagon-like_peptide-1")
@@ -5941,4 +5943,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Admixture", "Genetic_admixture")
         , ("LLM",  "Large_language_model")
         , ("LLMs", "Large_language_model")
+        , ("Genetic_correlate", "Genetic_correlation")
+        , ("Genetic_correlates", "Genetic_correlation")
         ]

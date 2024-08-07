@@ -46,7 +46,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", " - by Adam Mastroianni", " Clinical Chemistry"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -125,4 +125,9 @@ stringDelete = [" - The Public Domain Review"
             , " - a Hugging Face Space by HuggingFaceFW", " – Embedded in Academia"
             , "Swiss National Museum - Swiss history blog", "Matt Blaze: ", " �|� OR-Tools �", " - Justin Skycak"
             , " – The Scholar's Stage", " JAMA Network Open", " - Astral Codex Ten", "Probably Overthinking It: "
-            , "Abstract Heresies: ", " - ScienceDirect", " - Bulbapedia, the community-driven PokÃ©mon encyclopedia", " - Bulbapedia, the community-driven Pokémon encyclopedia", " 2.0 viewer", " – Stratechery by Ben Thompson", " – Thread Reader App", " - by RJ Andrews - Chartography", "dys2p › "]
+            , "Abstract Heresies: ", " - ScienceDirect", " - Bulbapedia, the community-driven PokÃ©mon encyclopedia"
+            , " - Bulbapedia, the community-driven Pokémon encyclopedia", " 2.0 viewer"
+            , " – Stratechery by Ben Thompson", " – Thread Reader App", " - by RJ Andrews - Chartography"
+            , "dys2p › ", " - by Adam Mastroianni", " Clinical Chemistry", " - Erik Schluntz"
+            , " - The Data Point", "– Terence Edenâ\\200\\231s Blog", " – Variance Explained"
+            , "Matvoz.com – ", "Mike Dellanoce's Blog: ", " – Clear Language, Clear Mind\8288:"]
