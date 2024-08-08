@@ -186,5 +186,7 @@ dateRangeDurationTestCases = [
   , (1997, Str "he wrote a history of the 1920s called"
     , Str "he wrote a history of the 1920s called"
     )
-
+  , (2025, Str "Honors, #1029."
+    , Str "Honors, #1029."
+    )
   ]

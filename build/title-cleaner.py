@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-06 18:33:00 gwern"
+# When:  Time-stamp: "2024-08-07 17:50:19 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -200,6 +200,8 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 ""
 75. "There’s a running theme in here of programming problems LLMs solve where it’s ack..."
 "There’s a running theme in here of programming problems LLMs solve where it’s..."
+76. "Early evolution of small body size in Homo floresiensis"
+"Early evolution of small body size in <em>Homo floresiensis</em>"
 
 Task:
 

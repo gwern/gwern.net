@@ -329,6 +329,7 @@ canonicals = M.fromList
   , ("L. H. Franke", "Lude Franke")
   , ("Leon Gatys", "Leon A. Gatys")
   , ("Jerome Rotter", "Jerome I. Rotter")
+  , ("Peter Joshi", "Peter K. Joshi")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals
@@ -538,9 +539,13 @@ authorLinkDB = M.fromList $
     , ("Wei Zhao", "https://en.wikipedia.org/wiki/Wei_Zhao_(computer_scientist)")
     , ("Vilmundur Gudnason", "https://scholar.google.com/citations?user=eDkARCwAAAAJ")
     , ("Lude Franke", "https://www.rug.nl/staff/l.h.franke/cv")
-    , ("Leon A. Gatys", "https://scholar.google.com/citations?user=ADMVEmsAAAAJ&hl=en&oi=ao")
+    , ("Leon A. Gatys", "https://scholar.google.com/citations?user=ADMVEmsAAAAJ")
     , ("Jerome I. Rotter", "https://lundquist.org/jerome-i-rotter-md")
     , ("Alexander S. Ecker", "https://openreview.net/profile?id=~Alexander_S_Ecker1")
+    , ("Samuli Ripatti", "https://scholar.google.com/citations?user=BkWwC18AAAAJ&hl=en&oi=ao")
+    , ("Peter K. Joshi", "https://scholar.google.co.uk/citations?user=HRgG478AAAAJ&hl=en")
+    , ("Julio Rosenstock", "https://www.cardiometabolichealth.org/faculty/julio-rosenstock/")
+    , ("John R. B. Perry", "https://www.johnomics.co.uk/about")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -382,8 +382,8 @@ dateDurationSingle todayYear oldYear
 -- attempt to exclude any currency amounts (not guaranteed to work)
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
-dateFullRangeRegex = makeRegex ("([^×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^×€¢¥£\\$]*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’][^×€¢¥£\\$]*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("([^#×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^×€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^#0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’][^#×€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $

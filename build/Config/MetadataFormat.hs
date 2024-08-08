@@ -1494,6 +1494,7 @@ htmlRewriteFixed =
          , ("minimis", "minimiz")
          , ("maximis", "maximiz")
          , ("heterogenous", "heterogeneous")
+         , (" Homo floresiensis", " <em>Homo floresiensis</em>")
          , (" Bacopa monnieri", " <em>Bacopa monnieri</em>")
          , ("(Bacopa monnieri)", "(<em>Bacopa monnieri</em>)")
          , (" Bacopa Monnieri", " Bacopa monnieri")
