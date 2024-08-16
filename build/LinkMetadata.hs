@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-08-04 16:52:59 gwern"
+When:  Time-stamp: "2024-08-16 14:06:50 gwern"
 License: CC-0
 -}
 
@@ -551,7 +551,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                                    else
                                                         ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a></p>\n</div>")) `T.append`
                                                          (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\"><strong>Similar Links</strong>:</a></p>\n</div>")) `T.append`
-                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Link Bibliography</strong>:</a></p>\n</div>")))
+                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Bibliography</strong>:</a></p>\n</div>")))
                                                               )]
                        ]) ++
                 generateFileTransclusionBlock am True (f, x)

@@ -180,7 +180,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
                  [untitledLinksSection]) ++
 
                (if null linkBibList then [] else
-                 Para [] : Header 1 ("link-bibliography-section", [], []) [Str "Link Bibliography"] :
+                 Para [] : Header 1 ("link-bibliography-section", [], []) [Str "Bibliography"] :
                  linkBibList)
 
   let document = Pandoc nullMeta body

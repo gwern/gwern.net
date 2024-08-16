@@ -231,8 +231,8 @@ dropToText _ = True
 --                  ("<li>\n            <a class=\"id-not\" href=\"#links\">Links</a>\n            <ul>", ""),
 --                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\"><span>See Also</span></a>\n          </li>", ""),
 --                  ("<li>\n            <a class=\"id-not\" href=\"#see-also\">See Also</a>\n          </li>", ""),
---                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\"><span>Link Bibliography</span></a>\n          </li>", ""),
---                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Link Bibliography</a>\n          </li>", ""),
+--                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\"><span>Bibliography</span></a>\n          </li>", ""),
+--                  ("<li>\n            <a class=\"id-not\" href=\"#link-bibliography\">Bibliography</a>\n          </li>", ""),
 --                  ("class=\"footnote-ref\" role=\"doc-noteref\"", "")
 --                 ] tc') $
 --  (\tc -> -- add columns class to condense it in popups/tags

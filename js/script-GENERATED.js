@@ -10784,7 +10784,7 @@ Extracts = { ...Extracts,
 	is called by fillPopFrame() (chosen on the basis of the return values
 	of the testing functions, and the specified order in which they’re
 	called). The filling function takes a target element and returns a
-	DocumentFragment whose contents should be injected into the pop-frame 
+	DocumentFragment whose contents should be injected into the pop-frame
 	spawned by the given target.
  */
 
@@ -10859,8 +10859,8 @@ Extracts = { ...Extracts,
     localPageForTarget: (target) => {
         GWLog("Extracts.localPageForTarget", "extracts-content.js", 2);
 
-		/*  If the target is an anchor-link, check to see if the target location 
-			matches an already-displayed page (which can be the root page of the 
+		/*  If the target is an anchor-link, check to see if the target location
+			matches an already-displayed page (which can be the root page of the
 			window).
 
 			If the entire linked page is already displayed, and if the
@@ -10893,7 +10893,7 @@ Extracts = { ...Extracts,
 			stripAnchorsFromLink(includeLink);
 		} else if (   Extracts.isFullBacklinkContextLink(target)
 				   && target.pathname == location.pathname) {
-			/*	Since “full” context is just the base page, which we don’t want 
+			/*	Since “full” context is just the base page, which we don’t want
 				to pop up/in, we instead show the containing section or
 				footnote.
 			 */
@@ -10960,7 +10960,7 @@ Extracts = { ...Extracts,
 				});
 			}, { condition: (info) => (   info.source == "transclude"
 									   && info.document == popFrame.document) });
-			//	Add handler to remove the above handler when pop-frame despawns.			
+			//	Add handler to remove the above handler when pop-frame despawns.
 			let suffix = Extracts.popFrameTypeSuffix();
 			GW.notificationCenter.addHandlerForEvent(`Pop${suffix}s.pop${suffix}WillDespawn`, (info) => {
 				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", popFrame.updateSourceContentOnTranscludeTriggerHandler);
@@ -11147,7 +11147,7 @@ Extracts = { ...Extracts,
 		case "similars":
 			return newDocument(`<code>${targetPage}</code><span> (Similar links)</span>`);
 		case "link-bibliography":
-			return newDocument(`<code>${targetPage}</code><span> (Link bibliography)</span>`);
+			return newDocument(`<code>${targetPage}</code><span> (Bibliography)</span>`);
 		default:
 			return newDocument(`<code>${targetPage}</code>`);
         }
@@ -11302,7 +11302,7 @@ Extracts = { ...Extracts,
         GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts-content.js", 2);
 
 		/*	Unwrap sidenote. (Corrects for edge case where a popup for a section
-			of the current page which is currently within a collapsed section, 
+			of the current page which is currently within a collapsed section,
 			contains a footnote reference. Hovering over the citation will spawn
 			a popup instead of sliding up the sidenote, as the latter is hidden.
 			The sidenote, once transcluded, must then be unwrapped specially.)
