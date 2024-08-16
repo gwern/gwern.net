@@ -72,6 +72,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- NOTE: 'gwern': the Fraktur '𝔊' SVG logo (used to be the Unicode icon but looks a bit fuzzy & squashed as a link-icon so has been replaced by an edit of the Gwern.net logo) for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically client-side by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
+ | u == "#similars" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
  | anyPrefixT u ["/metadata/annotation/"] = x
 
  | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg")

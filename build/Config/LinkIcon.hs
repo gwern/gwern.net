@@ -4,7 +4,11 @@ module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, over
 import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, Text)
 import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
--- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`), in cases where we can't or won't edit the link directly to set link-icons (eg. in /fiction/clippy, I do a manual override of link-icons to rickroll the reader: `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`)
+-- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`).
+-- Useful in cases where we can't or won't edit the link directly to set link-icons
+-- (eg. like in /fiction/clippy, where I do a manual override of link-icons to rickroll the reader:
+-- `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`.
+-- If we couldn't for some reason, we can hardwire that exact URL here.)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text))]
 overrideLinkIcons = [("/index#abstract", ("",""))]
 
@@ -58,11 +62,13 @@ linkIconTypes = ["text", "svg"
 -- Helper functions for URL matches:
 u', u'' :: T.Text -> T.Text -> Bool
 -- Loose check: simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
-u' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u'): " ++ show url ++ ":" ++ show v) else
-  v `T.isInfixOf` url
+u' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v
+           then error ("LinkIcon.hs: Overly strict prefix in infix matching (u'): " ++ show url ++ ":" ++ show v)
+           else v `T.isInfixOf` url
 -- Stricter check: more stringent check, matching exactly the domain name:
-u'' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("LinkIcon.hs: Overly strict prefix in infix matching (u''): " ++ show url ++ ":" ++ show v) else
-          isHostOrArchive v url
+u'' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v
+            then error ("LinkIcon.hs: Overly strict prefix in infix matching (u''): " ++ show url ++ ":" ++ show v)
+            else isHostOrArchive v url
 
 iE :: T.Text -> [T.Text] -> Bool
 iE url = elem (T.drop 1 $ extension url)
@@ -1084,6 +1090,8 @@ linkIconTestUnitsText =
          , ("https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans")
          , ("https://psycnet.apa.org/fulltext/2024-33486-001.html", "APA", "text,tri,sans")
          , ("https://blog.samaltman.com/value-is-created-by-doing", "sama", "text,quad,mono")
+         , ("/metadata/annotation/similar/https%3A%2F%2Fgithub.com%2Fnyu-mll%2Fpretraining-learning-curves%2Fblob%2Fmain%2FWhen%2520Do%2520You%2520Need%2520Billions%2520of%2520Words%2520of%2520Pretraining%2520Data.pdf.html", "≈", "text")
+         , ("#similars", "≈", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

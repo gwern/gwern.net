@@ -126,7 +126,7 @@
               <span class="page-confidence"><a href="/about#confidence-tags" class="icon-not" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
               <span class="page-importance"><a href="/about#importance-tags" class="icon-not" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
               $if(backlinks-yes)$<span class="backlinks"><a class="backlinks icon-not" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page).">backlinks</a></span>$endif$
-              $if(similars-yes)$<span class="similars"><a class="similars icon-not" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
+              $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
               $if(linkbib-yes)$<span class="link-bibliography"><a href="#link-bibliography" class="icon-not" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
           </div>
         </div>
@@ -142,7 +142,7 @@
         </section>$endif$
         $if(similars-yes)$<section id="similars-section" class="level1">
           <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
-          <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict">[Similar links by topic]</a>
+          <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict" data-link-icon="≈" data-link-icon-type="text">[Similar links by topic]</a>
           </section>$endif$
         $if(linkbib-yes)$<section id="link-bibliography-section" class="level1 collapse">
           <h1 class="collapse"><a href="#link-bibliography-section" title="Link to section: § 'Bibliography'">Bibliography</a></h1> <!-- NOTE: In theory, '.collapse' on a '<h1>' is redundant with the '<section>'; but added to parallel Pandoc-generated headers which set all attributes/classes on both. -->
