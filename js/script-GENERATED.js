@@ -15893,6 +15893,15 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			//	No additional wrapper needed for these tag types.
 			collapseWrapper = collapseBlock;
 
+			//	Check for empty collapses; if empty, log error and do nothing.
+			if (collapseWrapper.children.length == 0) {
+				let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
+				GWServerLogError(eventInfo.loadLocation.href + `--empty-collapse-${collapseWrapperTagName}`, 
+								 `empty collapse element (${collapseWrapperTagName})`);
+
+				return;
+			}
+
 			/*	Rewrap spans that are NOT inline collapses (i.e., those that
 				are, for some reason, wrapping block-level content).
 			 */
