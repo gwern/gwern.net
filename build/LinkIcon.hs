@@ -72,6 +72,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- NOTE: 'gwern': the Fraktur '𝔊' SVG logo (used to be the Unicode icon but looks a bit fuzzy & squashed as a link-icon so has been replaced by an edit of the Gwern.net logo) for local essay links (where 'local' is defined as '/' but with no '.' in it) is set dynamically client-side by rewrite.js:l1075 (`designateSpecialLinkIcons`) and so we do not handle it here. (It is also overridden by 'icon-not'; WARNING: 'icon-not' is used at runtime and should not be erased!)
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
+ -- lb/bl/sl:
+ | u == "#link-bibliography" || "/metadata/annotation/link-bibliography/" `T.isPrefixOf` u = addIcon x ("bibliography", "svg") -- original SVG: "Table of Contents" <https://thenounproject.com/icon/table-of-contents-121187/>, Alex Bickov (CC-BY-SA)
  | u == "#similars" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
  | u == "#backlinks" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
  | anyPrefixT u ["/metadata/annotation/"] = x

@@ -7,7 +7,7 @@ import Data.List (intersect, foldl')
 import qualified Data.Map.Strict as M (keys, toList)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
-import qualified Data.Text as T (unpack)
+import qualified Data.Text as T (unpack, elem, head)
 
 import Text.Pandoc (Inline(Link))
 
@@ -155,7 +155,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                            , isUniqueList Config.XOfTheDay.siteBlackList
                                            , ensure "Test.XOfTheDay.siteBlackList" "isDomainT" isDomainT Config.XOfTheDay.siteBlackList] ++ -- T.Text
               [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
-               length $ ensure "Test.linkIconTestUnitsText" "isURLAnyT" (\(u,_,_) -> isURLAnyT u) Config.LinkIcon.linkIconTestUnitsText] ++
+               length $ ensure "Test.linkIconTestUnitsText" "isURLAnyT" (\(u,_,_) -> T.head u == '#' || isURLAnyT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" safeLink Config.Interwiki.testCases)
               , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)
@@ -186,6 +186,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.MetadataAuthor.authorLinkDB)
+              , length $ ensure "Test.authorLinkDB" "no broken HTML entities indicated by a '&'" (\name -> not ('&' `T.elem` name)) (M.keys Config.MetadataAuthor.authorLinkDB)
               , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
               , length $ (map T.unpack $ M.keys Config.MetadataAuthor.authorLinkDB) `intersect` (M.keys Config.MetadataAuthor.canonicals)
               , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace

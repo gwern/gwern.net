@@ -1094,6 +1094,8 @@ linkIconTestUnitsText =
          , ("#similars", "≈", "text")
          , ("/metadata/annotation/backlink/https%3A%2F%2Fmathstodon.xyz%2F%40tao%2F110172426733603359.html", "arrows-pointing-inwards-to-dot", "svg")
          , ("#backlinks", "arrows-pointing-inwards-to-dot", "svg")
+         , ("/metadata/annotation/link-bibliography/%252Freview%252Fmovie.html", "bibliography", "svg")
+         , ("#link-bibliography", "bibliography", "svg")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
