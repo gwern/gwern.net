@@ -1092,6 +1092,8 @@ linkIconTestUnitsText =
          , ("https://blog.samaltman.com/value-is-created-by-doing", "sama", "text,quad,mono")
          , ("/metadata/annotation/similar/https%3A%2F%2Fgithub.com%2Fnyu-mll%2Fpretraining-learning-curves%2Fblob%2Fmain%2FWhen%2520Do%2520You%2520Need%2520Billions%2520of%2520Words%2520of%2520Pretraining%2520Data.pdf.html", "≈", "text")
          , ("#similars", "≈", "text")
+         , ("/metadata/annotation/backlink/https%3A%2F%2Fmathstodon.xyz%2F%40tao%2F110172426733603359.html", "arrows-pointing-inwards-to-dot", "svg")
+         , ("#backlinks", "arrows-pointing-inwards-to-dot", "svg")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

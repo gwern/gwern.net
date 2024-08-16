@@ -73,6 +73,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
  | u == "#similars" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
+ | u == "#backlinks" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
  | anyPrefixT u ["/metadata/annotation/"] = x
 
  | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg")
