@@ -73,63 +73,63 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 /*********/
 
 GW.layout.orderedListTypes = [
-	"decimal",
-	"lower-alpha",
-	"upper-alpha",
-	"lower-roman",
-	"upper-roman"
+    "decimal",
+    "lower-alpha",
+    "upper-alpha",
+    "lower-roman",
+    "upper-roman"
 ];
 
 /*****************************************************************************/
-/*	Returns the type (CSS `list-item` counter value type) of an <ol> element.
+/*  Returns the type (CSS `list-item` counter value type) of an <ol> element.
  */
 function orderedListType(list) {
-	if (list?.tagName != "OL")
-		return null;
+    if (list?.tagName != "OL")
+        return null;
 
-	for (let type of GW.layout.orderedListTypes)
-		if (list.classList.contains(`list-type-${type}`))
-			return type;
+    for (let type of GW.layout.orderedListTypes)
+        if (list.classList.contains(`list-type-${type}`))
+            return type;
 
-	return null;
+    return null;
 }
 
 /************************************************************************/
-/*	Sets the type (CSS `list-item` counter value type) of an <ol> element.
+/*  Sets the type (CSS `list-item` counter value type) of an <ol> element.
  */
 function setOrderedListType(list, type) {
-	if (list?.tagName != "OL")
-		return;
+    if (list?.tagName != "OL")
+        return;
 
-	for (let type of GW.layout.orderedListTypes)
-		list.classList.remove(`list-type-${type}`);
+    for (let type of GW.layout.orderedListTypes)
+        list.classList.remove(`list-type-${type}`);
 
-	list.classList.add(`list-type-${type}`);
+    list.classList.add(`list-type-${type}`);
 }
 
 /*******************************************************************/
-/*	Returns the nesting level (an integer in [1,listCyclePeriod]) of 
-	a <ul> element.
+/*  Returns the nesting level (an integer in [1,listCyclePeriod]) of
+    a <ul> element.
  */
 function unorderedListLevel(list) {
-	if (list?.tagName != "UL")
-		return 0;
+    if (list?.tagName != "UL")
+        return 0;
 
-	let prefix = "list-level-";
+    let prefix = "list-level-";
 
-	return (parseInt(Array.from(list.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
+    return (parseInt(Array.from(list.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
 }
 
 /***********************************************************/
-/*	Sets CSS class matching nesting level of a <ul> element.
+/*  Sets CSS class matching nesting level of a <ul> element.
  */
 function setUnorderedListLevel(list, level) {
-	if (list?.tagName != "UL")
-		return;
+    if (list?.tagName != "UL")
+        return;
 
-	let prefix = "list-level-";
+    let prefix = "list-level-";
 
-	list.swapClasses([ Array.from(list.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
+    list.swapClasses([ Array.from(list.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
 }
 
 /***********************************/
@@ -138,7 +138,7 @@ function setUnorderedListLevel(list, level) {
 addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo) => {
     GWLog("designateListTypes", "rewrite.js", 1);
 
-    //	Workaround for case-insensitivity of CSS selectors.
+    //  Workaround for case-insensitivity of CSS selectors.
     eventInfo.container.querySelectorAll("ol[type]").forEach(list => {
         switch (list.type) {
         case '1':
@@ -161,46 +161,46 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
         }
     });
 
-	//	If not explicitly specified, cycle between these three list types.
+    //  If not explicitly specified, cycle between these three list types.
     eventInfo.container.querySelectorAll("ol:not([type])").forEach(list => {
-		let enclosingList = list.parentElement?.closest("ol");
-		let enclosingListType = enclosingList?.parentElement?.matches("section#footnotes")
-								? null
-								: orderedListType(enclosingList);
+        let enclosingList = list.parentElement?.closest("ol");
+        let enclosingListType = enclosingList?.parentElement?.matches("section#footnotes")
+                                ? null
+                                : orderedListType(enclosingList);
 
-    	switch (enclosingListType) {
-		case "decimal":
-			setOrderedListType(list, "upper-roman");
-			break;
-		case "upper-roman":
-			setOrderedListType(list, "lower-alpha");
-			break;
-		case "lower-alpha":
-		default:
-			setOrderedListType(list, "decimal");
-			break;
-    	}
+        switch (enclosingListType) {
+        case "decimal":
+            setOrderedListType(list, "upper-roman");
+            break;
+        case "upper-roman":
+            setOrderedListType(list, "lower-alpha");
+            break;
+        case "lower-alpha":
+        default:
+            setOrderedListType(list, "decimal");
+            break;
+        }
     });
 
-	//	Set list levels.
-	let listCyclePeriod = 3;
-	eventInfo.container.querySelectorAll("ul").forEach(list => {
-		setUnorderedListLevel(list, (unorderedListLevel(list.parentElement?.closest("ul")) % listCyclePeriod) + 1);
-	});
+    //  Set list levels.
+    let listCyclePeriod = 3;
+    eventInfo.container.querySelectorAll("ul").forEach(list => {
+        setUnorderedListLevel(list, (unorderedListLevel(list.parentElement?.closest("ul")) % listCyclePeriod) + 1);
+    });
 }, ">rewrite");
 
 /*****************************************************************/
-/*	Wrap text nodes and inline elements in list items in <p> tags.
+/*  Wrap text nodes and inline elements in list items in <p> tags.
  */
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventInfo) => {
     GWLog("paragraphizeListTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("li").forEach(listItem => {
-		if (listItem.closest(".TOC"))
-			return;
+    eventInfo.container.querySelectorAll("li").forEach(listItem => {
+        if (listItem.closest(".TOC"))
+            return;
 
-		paragraphizeTextNodesOfElement(listItem);
-	});
+        paragraphizeTextNodesOfElement(listItem);
+    });
 }, "rewrite");
 
 /**********************************************/
@@ -226,28 +226,28 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyListHeadings = (eventInfo) =
 /***************/
 
 /*************************************************************************/
-/*	Returns the nesting level (an integer in [1,blockquoteCyclePeriod]) of 
-	a <blockquote> element.
+/*  Returns the nesting level (an integer in [1,blockquoteCyclePeriod]) of
+    a <blockquote> element.
  */
 function blockquoteLevel(blockquote) {
-	if (blockquote?.tagName != "BLOCKQUOTE")
-		return 0;
+    if (blockquote?.tagName != "BLOCKQUOTE")
+        return 0;
 
-	let prefix = "blockquote-level-";
+    let prefix = "blockquote-level-";
 
-	return (parseInt(Array.from(blockquote.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
+    return (parseInt(Array.from(blockquote.classList).find(c => c.startsWith(prefix))?.slice(prefix.length)) || 1);
 }
 
 /*******************************************************************/
-/*	Sets CSS class matching nesting level of a <blockquote> element.
+/*  Sets CSS class matching nesting level of a <blockquote> element.
  */
 function setBlockquoteLevel(blockquote, level) {
-	if (blockquote?.tagName != "BLOCKQUOTE")
-		return;
+    if (blockquote?.tagName != "BLOCKQUOTE")
+        return;
 
-	let prefix = "blockquote-level-";
+    let prefix = "blockquote-level-";
 
-	blockquote.swapClasses([ Array.from(blockquote.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
+    blockquote.swapClasses([ Array.from(blockquote.classList).find(c => c.startsWith(prefix)), `${prefix}${level}` ], 1);
 }
 
 /******************************************/
@@ -256,10 +256,10 @@ function setBlockquoteLevel(blockquote, level) {
 addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (eventInfo) => {
     GWLog("designateBlockquoteLevels", "rewrite.js", 1);
 
-	let blockquoteCyclePeriod = 6;
-	eventInfo.container.querySelectorAll("blockquote").forEach(blockquote => {
-		setBlockquoteLevel(blockquote, (blockquoteLevel(blockquote.parentElement?.closest("blockquote")) % blockquoteCyclePeriod) + 1);
-	});
+    let blockquoteCyclePeriod = 6;
+    eventInfo.container.querySelectorAll("blockquote").forEach(blockquote => {
+        setBlockquoteLevel(blockquote, (blockquoteLevel(blockquote.parentElement?.closest("blockquote")) % blockquoteCyclePeriod) + 1);
+    });
 }, ">rewrite");
 
 
@@ -268,14 +268,14 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 /**********/
 
 /**********************************************/
-/*	Remove Pandoc-inserted <colgroup> elements.
+/*  Remove Pandoc-inserted <colgroup> elements.
  */
 addContentLoadHandler(GW.contentLoadHandlers.deleteColgroups = (eventInfo) => {
     GWLog("deleteColgroups", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("colgroup").forEach(colgroup => {
-		colgroup.remove();
-	});
+    eventInfo.container.querySelectorAll("colgroup").forEach(colgroup => {
+        colgroup.remove();
+    });
 }, "rewrite");
 
 /**************************************************************************/
@@ -319,20 +319,20 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
     GWLog("wrapTables", "rewrite.js", 1);
 
     wrapAll("table", ".table-wrapper", {
-    	useExistingWrapper: true,
-    	root: eventInfo.container
+        useExistingWrapper: true,
+        root: eventInfo.container
     });
-    wrapAll("table", ".table-scroll-wrapper", { 
-    	useExistingWrapper: false,
-    	root: eventInfo.container
+    wrapAll("table", ".table-scroll-wrapper", {
+        useExistingWrapper: false,
+        root: eventInfo.container
     });
 
-	/*	Move .width-full class from the outer .table-wrapper down to the inner
-		.table-scroll-wrapper. (This is done so that the `wrapFullWidthTables`
-		content inject handler may work properly.)
-	 */
+    /*  Move .width-full class from the outer .table-wrapper down to the inner
+        .table-scroll-wrapper. (This is done so that the `wrapFullWidthTables`
+        content inject handler may work properly.)
+     */
     eventInfo.container.querySelectorAll(".table-scroll-wrapper").forEach(tableScrollWrapper => {
-    	let tableWrapper = tableScrollWrapper.closest(".table-wrapper");
+        let tableWrapper = tableScrollWrapper.closest(".table-wrapper");
         transferClasses(tableWrapper, tableScrollWrapper, [ "width-full" ]);
     });
 }, "rewrite");
@@ -354,11 +354,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapTables = (eventInfo) => {
 addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStructure = (eventInfo) => {
     GWLog("rectifyFullWidthTableWrapperStructure", "rewrite.js", 1);
 
-	wrapAll(".table-scroll-wrapper.width-full", ".table", {
-		useExistingWrapper: true,
-		moveClasses: [ "width-full" ],
-		root: eventInfo.container
-	});
+    wrapAll(".table-scroll-wrapper.width-full", ".table", {
+        useExistingWrapper: true,
+        moveClasses: [ "width-full" ],
+        root: eventInfo.container
+    });
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -367,67 +367,67 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFullWidthTableWrapperStr
 /***********/
 
 /******************************************************************************/
-/*	Add observers to transform thumbnails into full-sized images if page layout 
-	demands it.
+/*  Add observers to transform thumbnails into full-sized images if page layout
+    demands it.
  */
 addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (eventInfo) => {
     GWLog("addSwapOutThumbnailEvents", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("img[data-src-size-full]").forEach(image => {
-		let thumbnailSize = Images.thumbnailSizeFromURL(image.src);
+    eventInfo.container.querySelectorAll("img[data-src-size-full]").forEach(image => {
+        let thumbnailSize = Images.thumbnailSizeFromURL(image.src);
 
-		lazyLoadObserver(() => {
-			resizeObserver(() => {
-				if (thumbnailSize < image.clientWidth * window.devicePixelRatio) {
-					Images.unthumbnailifyImage(image);
-					return false;
-				} else if (Images.isThumbnail(image) == false) {
-					return false;
-				}
-			}, image);
-		}, image, {
-			root: scrollContainerOf(image),
-			rootMargin: "100%"
-		});
-	});
+        lazyLoadObserver(() => {
+            resizeObserver(() => {
+                if (thumbnailSize < image.clientWidth * window.devicePixelRatio) {
+                    Images.unthumbnailifyImage(image);
+                    return false;
+                } else if (Images.isThumbnail(image) == false) {
+                    return false;
+                }
+            }, image);
+        }, image, {
+            root: scrollContainerOf(image),
+            rootMargin: "100%"
+        });
+    });
 }, "eventListeners");
 
 /****************************************************************************/
-/*	Request image inversion data for images in the loaded content. (We omit
-	from this load handler those GW.contentDidLoad events which are fired when 
-	we construct templated content from already extracted reference data, as by 
-	then it is already too late; there is no time to send an invertOrNot API 
-	request and receive a response. Instead, requesting inversion data for 
-	images in templated content is handled by the data source object for that
-	content (either Content, in content.js, or Annotations, in annotations.js).
+/*  Request image inversion data for images in the loaded content. (We omit
+    from this load handler those GW.contentDidLoad events which are fired when
+    we construct templated content from already extracted reference data, as by
+    then it is already too late; there is no time to send an invertOrNot API
+    request and receive a response. Instead, requesting inversion data for
+    images in templated content is handled by the data source object for that
+    content (either Content, in content.js, or Annotations, in annotations.js).
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
     GWLog("requestImageInversionData", "rewrite.js", 1);
 
-	//	Request image inversion judgments from invertornot.
-	requestImageInversionDataForImagesInContainer(eventInfo.container);
+    //  Request image inversion judgments from invertornot.
+    requestImageInversionDataForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
 /****************************************************************************/
-/*	Apply image inversion data to images in the loaded content, if available.
+/*  Apply image inversion data to images in the loaded content, if available.
  */
 addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (eventInfo) => {
     GWLog("requestImageInversionData", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("figure img").forEach(image => {
-		if (   image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == false
-			&& GW.invertOrNot[image.src] != null)
-			image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
-	});
+    eventInfo.container.querySelectorAll("figure img").forEach(image => {
+        if (   image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == false
+            && GW.invertOrNot[image.src] != null)
+            image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
+    });
 }, "rewrite");
 
 /******************************************************************/
-/*	Wrap text nodes and inline elements in figcaptions in <p> tags.
+/*  Wrap text nodes and inline elements in figcaptions in <p> tags.
  */
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
     GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /***************************************************************************/
@@ -454,20 +454,20 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyImageAuxText = (eventInfo) =
             return element.textContent.trim();
         });
 
-		/*	If the ‘title’ attribute merely duplicates the caption, but the 
-			‘alt’ attribute has something different (and nonempty), then copy
-			the ‘alt’ to the ‘title’.
-		 */
+        /*  If the ‘title’ attribute merely duplicates the caption, but the
+            ‘alt’ attribute has something different (and nonempty), then copy
+            the ‘alt’ to the ‘title’.
+         */
         if (   titleText == captionText
-        	&& altText != captionText
-        	&& altText > "")
+            && altText != captionText
+            && altText > "")
             image.title = altText;
 
-		/*	As above, but vice-versa (copy ‘title’ to ‘alt’, if appropriate).
-		 */
+        /*  As above, but vice-versa (copy ‘title’ to ‘alt’, if appropriate).
+         */
         if (   altText == captionText
-        	&& titleText != captionText
-        	&& titleText > "")
+            && titleText != captionText
+            && titleText > "")
             image.alt = titleText;
     });
 }, "rewrite");
@@ -483,9 +483,9 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     });
 
     let exclusionSelector = [
-    	"td",
-    	"th",
-    	".footnote-back"
+        "td",
+        "th",
+        ".footnote-back"
     ].join(", ");
     wrapAll("img", (image) => {
         if (   image.classList.contains("figure-not")
@@ -495,7 +495,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
 
         wrapElement(image, "figure");
     }, {
-    	root: eventInfo.container
+        root: eventInfo.container
     });
 }, "rewrite");
 
@@ -508,15 +508,15 @@ function setMediaElementDimensions(mediaElement, fixWidth = false, fixHeight = f
 
     mediaElement.style.aspectRatio = mediaElement.dataset.aspectRatio ?? `${width} / ${height}`;
 
-	if (mediaElement.maxHeight == null) {
-		//	This should match `1rem`.
-		let baseFontSize = GW.isMobile() ? "18" : "20";
+    if (mediaElement.maxHeight == null) {
+        //  This should match `1rem`.
+        let baseFontSize = GW.isMobile() ? "18" : "20";
 
-		/*	This should match the `max-height` property value for all images in
-			figures (the `figure img` selector; see initial.css).
-		 */
-		mediaElement.maxHeight = window.innerHeight - (8 * baseFontSize);
-	}
+        /*  This should match the `max-height` property value for all images in
+            figures (the `figure img` selector; see initial.css).
+         */
+        mediaElement.maxHeight = window.innerHeight - (8 * baseFontSize);
+    }
 
     if (mediaElement.maxHeight)
         width = Math.round(Math.min(width, mediaElement.maxHeight * (width/height)));
@@ -530,8 +530,8 @@ function setMediaElementDimensions(mediaElement, fixWidth = false, fixHeight = f
 }
 
 GW.dimensionSpecifiedMediaElementSelector = [
-	"img[width][height]:not([src$='.svg'])",
-	"video[width][height]"
+    "img[width][height]:not([src$='.svg'])",
+    "video[width][height]"
 ].map(x => `figure ${x}`).join(", ");
 
 /**************************************************************/
@@ -540,11 +540,11 @@ GW.dimensionSpecifiedMediaElementSelector = [
 addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
     GWLog("setMediaElementDimensions", "rewrite.js", 1);
 
-	//	Do not set image dimensions in sidenotes.
-	if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
-		return;
+    //  Do not set image dimensions in sidenotes.
+    if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
+        return;
 
-	//	Set specified dimensions in CSS.
+    //  Set specified dimensions in CSS.
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         let fixWidth = (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
                         || mediaElement.closest("figure")?.classList.containsAnyOf([ "float-left", "float-right" ]));
@@ -570,32 +570,32 @@ addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = 
 }, "rewrite");
 
 /************************************************************************/
-/*	Set image dimensions from inline-specified image data (e.g., base64).
+/*  Set image dimensions from inline-specified image data (e.g., base64).
  */
 addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData = (eventInfo) => {
     GWLog("setImageDimensionsFromImageData", "rewrite.js", 1);
 
-	/*	If an image doesn’t have dimensions set, but image data is already 
-		available (because the source is a data: URI), we can determine 
-		dimensions once the image “loads” (i.e., ‘load’ event fires, when 
-		browser parses the data: attribute).
-	 */
-	eventInfo.container.querySelectorAll("figure img:not([width])").forEach(image => {
-		if (image.loadHandler)
-			return;
+    /*  If an image doesn’t have dimensions set, but image data is already
+        available (because the source is a data: URI), we can determine
+        dimensions once the image “loads” (i.e., ‘load’ event fires, when
+        browser parses the data: attribute).
+     */
+    eventInfo.container.querySelectorAll("figure img:not([width])").forEach(image => {
+        if (image.loadHandler)
+            return;
 
-		image.addEventListener("load", image.loadHandler = (event) => {
-			image.setAttribute("width", image.naturalWidth);
-			image.setAttribute("height", image.naturalHeight);
-			image.setAttribute("data-aspect-ratio", `${image.naturalWidth} / ${image.naturalHeight}`);
+        image.addEventListener("load", image.loadHandler = (event) => {
+            image.setAttribute("width", image.naturalWidth);
+            image.setAttribute("height", image.naturalHeight);
+            image.setAttribute("data-aspect-ratio", `${image.naturalWidth} / ${image.naturalHeight}`);
 
-			setMediaElementDimensions(image);
+            setMediaElementDimensions(image);
 
-			//	Ensure proper interaction with image-focus.
-			if (image.classList.contains("focusable"))
-				ImageFocus.designateSmallImageIfNeeded(image);
-		});
-	});
+            //  Ensure proper interaction with image-focus.
+            if (image.classList.contains("focusable"))
+                ImageFocus.designateSmallImageIfNeeded(image);
+        });
+    });
 }, "eventListeners");
 
 /************************************************************************/
@@ -604,19 +604,19 @@ addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData
 addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElementDimensionUpdateEvents = (eventInfo) => {
     GWLog("addOrientationChangeMediaElementDimensionUpdateEvents", "rewrite.js", 1);
 
-	let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
+    let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
 
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
-		mediaElements.forEach(mediaElement => {
-			mediaElement.maxHeight = null;
-		});
-		requestAnimationFrame(() => {
-			mediaElements.forEach(mediaElement => {
-				mediaElement.style.width = "";
-				setMediaElementDimensions(mediaElement, true);
-			});
-		});
-	});
+    doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
+        mediaElements.forEach(mediaElement => {
+            mediaElement.maxHeight = null;
+        });
+        requestAnimationFrame(() => {
+            mediaElements.forEach(mediaElement => {
+                mediaElement.style.width = "";
+                setMediaElementDimensions(mediaElement, true);
+            });
+        });
+    });
 }, "eventListeners");
 
 /********************************/
@@ -632,7 +632,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         let caption = figure.querySelector("figcaption");
 
         if (   media   == null
-        	|| caption == null)
+            || caption == null)
             return;
 
         //  Create an inner wrapper for the figure contents.
@@ -641,9 +641,9 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
-            let mediaBlock = (   mediaElement.closest(".image-row-wrapper") 
-            				  ?? mediaElement.closest(".image-wrapper") 
-            				  ?? mediaElement);
+            let mediaBlock = (   mediaElement.closest(".image-row-wrapper")
+                              ?? mediaElement.closest(".image-wrapper")
+                              ?? mediaElement);
             innerWrapper.appendChild(mediaBlock);
         });
 
@@ -657,21 +657,21 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 }, "rewrite");
 
 /******************************************************************************/
-/*	Figure captions might be empty if they are generated by including the 
-	annotation abstract of an annotated media include link, but the abstract is
-	actually empty (because it’s a partial annotation).
+/*  Figure captions might be empty if they are generated by including the
+    annotation abstract of an annotated media include link, but the abstract is
+    actually empty (because it’s a partial annotation).
  */
 addContentLoadHandler(GW.contentLoadHandlers.removeEmptyFigureCaptions = (eventInfo) => {
     GWLog("removeEmptyFigureCaptions", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("figcaption").forEach(figcaption => {
-		if (isNodeEmpty(figcaption, { alsoExcludeSelector: "a" }))
-			figcaption.remove();
-	});
+    eventInfo.container.querySelectorAll("figcaption").forEach(figcaption => {
+        if (isNodeEmpty(figcaption, { alsoExcludeSelector: "a" }))
+            figcaption.remove();
+    });
 }, "rewrite");
 
 /*****************************************************************************/
-/*	Allow for specifying figure classes by setting classes on a media element.
+/*  Allow for specifying figure classes by setting classes on a media element.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) => {
     GWLog("rectifyFigureClasses", "rewrite.js", 1);
@@ -680,18 +680,18 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) 
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
-		if (media == null)
-			return;
+        if (media == null)
+            return;
 
         //  Tag the figure with the first (or only) media element’s classes.
         [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
             if (media.classList.contains(imgClass)) {
                 figure.classList.add(imgClass);
-				media.classList.remove(imgClass);
-			}
+                media.classList.remove(imgClass);
+            }
         });
 
-		media.classList.remove("float");
+        media.classList.remove("float");
     });
 }, "rewrite");
 
@@ -739,11 +739,11 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
     });
 
     doWhenPageLayoutComplete(() => {
-		/*  Update ‘load’ listener for any lazy-loaded media which has not 
-			already loaded (as it might cause re-layout of e.g. sidenotes). Do 
-			this only after page layout is complete, to avoid spurious re-layout
-			at initial page load.
-		 */
+        /*  Update ‘load’ listener for any lazy-loaded media which has not
+            already loaded (as it might cause re-layout of e.g. sidenotes). Do
+            this only after page layout is complete, to avoid spurious re-layout
+            at initial page load.
+         */
         allFullWidthMedia.forEach(fullWidthMedia => {
             constrainCaptionWidth(fullWidthMedia);
             if (fullWidthMedia.loadListener) {
@@ -761,67 +761,67 @@ addContentInjectHandler(GW.contentInjectHandlers.prepareFullWidthFigures = (even
         addWindowResizeListener(event => {
             allFullWidthMedia.forEach(constrainCaptionWidth);
         }, {
-        	name: "constrainFullWidthMediaCaptionWidthOnWindowResizeListener"
+            name: "constrainFullWidthMediaCaptionWidthOnWindowResizeListener"
         });
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
 /******************************************************************************/
-/*	There is no browser native lazy loading for <video> tag `poster` attribute,
-	so we implement it ourselves.
+/*  There is no browser native lazy loading for <video> tag `poster` attribute,
+    so we implement it ourselves.
  */
 addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventInfo) => {
     GWLog("lazyLoadVideoPosters", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("video:not([poster])").forEach(video => {
-		lazyLoadObserver(() => {
-			video.poster = video.dataset.videoPoster;
-		}, video, {
-			root: scrollContainerOf(video),
-			rootMargin: "100%"
-		});
-	});
+    eventInfo.container.querySelectorAll("video:not([poster])").forEach(video => {
+        lazyLoadObserver(() => {
+            video.poster = video.dataset.videoPoster;
+        }, video, {
+            root: scrollContainerOf(video),
+            rootMargin: "100%"
+        });
+    });
 }, "eventListeners");
 
 /******************************************************************************/
-/*	Enable clicking anywhere on a video (that has not yet loaded and started to
-	play) to load it and start playing it. (Otherwise, only clicking the ‘play’
-	button causes the video to load and play.)
+/*  Enable clicking anywhere on a video (that has not yet loaded and started to
+    play) to load it and start playing it. (Otherwise, only clicking the ‘play’
+    button causes the video to load and play.)
  */
 addContentInjectHandler(GW.contentInjectHandlers.enableVideoClickToPlay = (eventInfo) => {
     GWLog("enableVideoClickToPlay", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("video").forEach(video => {
-		video.addEventListener("click", video.clickToPlayEvent = (event) => {
-			video.play();
-			video.removeEventListener("click", video.clickToPlayEvent);
-			video.clickToPlayEvent = null;
-		});
-	});
+    eventInfo.container.querySelectorAll("video").forEach(video => {
+        video.addEventListener("click", video.clickToPlayEvent = (event) => {
+            video.play();
+            video.removeEventListener("click", video.clickToPlayEvent);
+            video.clickToPlayEvent = null;
+        });
+    });
 }, "eventListeners");
 
 /****************************************************************/
 /*  Account for interaction between image-focus.js and popups.js.
  */
 if (Extracts.popFrameProvider == Popups) {
-	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
-		Popups.hidePopupContainer();
-	});
-	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
-		Popups.unhidePopupContainer();
-	});
-	GW.notificationCenter.addHandlerForEvent("ImageFocus.imageDidFocus", (info) => {
-		/*	Pin a popup when clicking to image-focus an image within it
-			(unless it’s a popup that contains *only* the image, and nothing 
-			 else - no metadata, no other content, nothing - in which case,
-			 pinning is unnecessary).
-		 */
-		let popup = Popups.containingPopFrame(info.image);
-		if (   popup
-			&& (   popup.classList.contains("object")
-				&& Annotations.isAnnotatedLink(popup.spawningTarget) == false) == false)
-			Popups.pinPopup(popup);
-	});
+    GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidAppear", (info) => {
+        Popups.hidePopupContainer();
+    });
+    GW.notificationCenter.addHandlerForEvent("ImageFocus.imageOverlayDidDisappear", (info) => {
+        Popups.unhidePopupContainer();
+    });
+    GW.notificationCenter.addHandlerForEvent("ImageFocus.imageDidFocus", (info) => {
+        /*  Pin a popup when clicking to image-focus an image within it
+            (unless it’s a popup that contains *only* the image, and nothing
+             else - no metadata, no other content, nothing - in which case,
+             pinning is unnecessary).
+         */
+        let popup = Popups.containingPopFrame(info.image);
+        if (   popup
+            && (   popup.classList.contains("object")
+                && Annotations.isAnnotatedLink(popup.spawningTarget) == false) == false)
+            Popups.pinPopup(popup);
+    });
 }
 
 
@@ -830,40 +830,40 @@ if (Extracts.popFrameProvider == Popups) {
 /***************/
 
 /*************************************************************/
-/*	Wrap each <pre> in a div.sourceCode (for layout purposes).
+/*  Wrap each <pre> in a div.sourceCode (for layout purposes).
  */
 addContentLoadHandler(GW.contentLoadHandlers.wrapPreBlocks = (eventInfo) => {
     GWLog("wrapPreBlocks", "rewrite.js", 1);
 
-	wrapAll("pre", ".sourceCode", {
-		useExistingWrapper: true,
-		root: eventInfo.container
-	});
+    wrapAll("pre", ".sourceCode", {
+        useExistingWrapper: true,
+        root: eventInfo.container
+    });
 }, "rewrite");
 
 /********************************************************/
-/*	EXPERIMENTAL: Highlight-on-hover for all code blocks.
+/*  EXPERIMENTAL: Highlight-on-hover for all code blocks.
  */
 addContentLoadHandler(GW.contentLoadHandlers.addCodeBlockLineClasses = (eventInfo) => {
     GWLog("addCodeBlockLineClasses", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("code.sourceCode > span:not(.line)").forEach(lineSpan => {
-		lineSpan.classList.add("line");
-		if (lineSpan.innerHTML.length == 0)
-			lineSpan.innerHTML = "&nbsp;";
-	});
+    eventInfo.container.querySelectorAll("code.sourceCode > span:not(.line)").forEach(lineSpan => {
+        lineSpan.classList.add("line");
+        if (lineSpan.innerHTML.length == 0)
+            lineSpan.innerHTML = "&nbsp;";
+    });
 
-	eventInfo.container.querySelectorAll("pre code:not(.sourceCode)").forEach(codeBlock => {
-		codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
-			line => `<span class="line">${(line || "&nbsp;")}</span>`
-		).join("\n");
-	});
+    eventInfo.container.querySelectorAll("pre code:not(.sourceCode)").forEach(codeBlock => {
+        codeBlock.innerHTML = codeBlock.innerHTML.split("\n").map(
+            line => `<span class="line">${(line || "&nbsp;")}</span>`
+        ).join("\n");
+    });
 }, "rewrite");
 
 /*****************************************************************************/
-/*	Allow for specifying code block classes by setting classes on the <pre>.
-	(Workaround for a Pandoc peculiarity where classes set on a code block
-	 are applied to the <pre> element and not on the div.sourceCode wrapper.)
+/*  Allow for specifying code block classes by setting classes on the <pre>.
+    (Workaround for a Pandoc peculiarity where classes set on a code block
+     are applied to the <pre> element and not on the div.sourceCode wrapper.)
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyCodeBlockClasses = (eventInfo) => {
     GWLog("rectifyCodeBlockClasses", "rewrite.js", 1);
@@ -875,11 +875,11 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyCodeBlockClasses = (eventInf
         [ "float-left", "float-right" ].forEach(preClass => {
             if (preBlock.classList.contains(preClass)) {
                 wrapper.classList.add(preClass);
-				preBlock.classList.remove(preClass);
-			}
+                preBlock.classList.remove(preClass);
+            }
         });
 
-		preBlock.classList.remove("float");
+        preBlock.classList.remove("float");
     });
 }, "rewrite");
 
@@ -890,9 +890,9 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
     wrapAll("pre.width-full", ".width-full", {
-    	useExistingWrapper: true,
-		root: eventInfo.container
-	});
+        useExistingWrapper: true,
+        root: eventInfo.container
+    });
 }, "rewrite", (info) => info.fullWidthPossible);
 
 
@@ -901,46 +901,46 @@ addContentInjectHandler(GW.contentInjectHandlers.wrapFullWidthPreBlocks = (event
 /**********/
 
 /******************************************************************************/
-/*	There’s no way to tell whether an <iframe> has loaded, except to listen for 
-	the `load` event. So, we implement our own checkable load flag, with a 
-	class.
+/*  There’s no way to tell whether an <iframe> has loaded, except to listen for
+    the `load` event. So, we implement our own checkable load flag, with a
+    class.
  */
 addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) => {
     GWLog("markLoadedEmbeds", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
-		embed.addEventListener("load", (event) => {
-			embed.classList.remove("loaded-not");
-		});
-	});
+    eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
+        embed.addEventListener("load", (event) => {
+            embed.classList.remove("loaded-not");
+        });
+    });
 }, "eventListeners");
 
 /**************************************************************************/
-/*	Workaround for a Chrome bug that scrolls the parent page when an iframe 
-	popup has a `src` attribute with a hash and that hash points to an 
-	old-style anchor (`<a name="foo">`).
+/*  Workaround for a Chrome bug that scrolls the parent page when an iframe
+    popup has a `src` attribute with a hash and that hash points to an
+    old-style anchor (`<a name="foo">`).
  */
 addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventInfo) => {
     GWLog("applyIframeScrollFix", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(iframe => {
-		let srcURL = URLFromString(iframe.src);
-		if (   srcURL.pathname.endsWith(".html")
-			&& srcURL.hash > "") {
-			srcURL.savedHash = srcURL.hash;
-			srcURL.hash = "";
-			iframe.src = srcURL.href;
-		}
+    eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(iframe => {
+        let srcURL = URLFromString(iframe.src);
+        if (   srcURL.pathname.endsWith(".html")
+            && srcURL.hash > "") {
+            srcURL.savedHash = srcURL.hash;
+            srcURL.hash = "";
+            iframe.src = srcURL.href;
+        }
 
-		iframe.addEventListener("load", (event) => {
-			if (srcURL.savedHash) {
-				let selector = selectorFromHash(srcURL.savedHash);
-				let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
-				if (element)
-					iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
-			}
-		}, { once: true });
-	});
+        iframe.addEventListener("load", (event) => {
+            if (srcURL.savedHash) {
+                let selector = selectorFromHash(srcURL.savedHash);
+                let element = iframe.contentDocument.querySelector(`${selector}, [name='${(selector.slice(1))}']`);
+                if (element)
+                    iframe.contentWindow.scrollTo(0, element.getBoundingClientRect().y);
+            }
+        }, { once: true });
+    });
 }, "eventListeners");
 
 
@@ -958,9 +958,9 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (ev
         if (columnList.children.length == 1) {
             columnList.parentElement.classList.remove("columns");
 
-	        if (columnList.parentElement.className == "")
-	        	unwrap(columnList.parentElement);
-		}
+            if (columnList.parentElement.className == "")
+                unwrap(columnList.parentElement);
+        }
     });
 }, "rewrite");
 
@@ -970,44 +970,44 @@ addContentLoadHandler(GW.contentLoadHandlers.disableSingleItemColumnBlocks = (ev
 /**************/
 
 /****************************************/
-/*	Rectify HTML structure of interviews.
+/*  Rectify HTML structure of interviews.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => {
     GWLog("rewriteInterviews", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".interview, .interview > .collapse").forEach(interviewWrapper => {
-		if (interviewWrapper.firstElementChild.tagName != "UL")
-			return;
+    eventInfo.container.querySelectorAll(".interview, .interview > .collapse").forEach(interviewWrapper => {
+        if (interviewWrapper.firstElementChild.tagName != "UL")
+            return;
 
-		let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
+        let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
 
-		for (let child of Array.from(interviewWrapper.children)) {
-			if (child.tagName != "UL")
-				continue;
+        for (let child of Array.from(interviewWrapper.children)) {
+            if (child.tagName != "UL")
+                continue;
 
-			let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
-			exchange.append(child.cloneNode(true));
+            let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
+            exchange.append(child.cloneNode(true));
 
-			for (let utterance of exchange.firstElementChild.children) {
-				utterance.classList.add("utterance");
+            for (let utterance of exchange.firstElementChild.children) {
+                utterance.classList.add("utterance");
 
-				let speaker = utterance.querySelector("strong");
+                let speaker = utterance.querySelector("strong");
 
-				//	If the speaker is wrapped, find the outermost wrapper.
-				while (   speaker.parentElement
-					   && speaker.parentElement.tagName != "P"
-					   && speaker.nextSibling?.textContent.startsWith(":") != true)
-					speaker = speaker.parentElement;
-				speaker.classList.add("speaker");
+                //  If the speaker is wrapped, find the outermost wrapper.
+                while (   speaker.parentElement
+                       && speaker.parentElement.tagName != "P"
+                       && speaker.nextSibling?.textContent.startsWith(":") != true)
+                    speaker = speaker.parentElement;
+                speaker.classList.add("speaker");
 
-				//	Move colon.
-				(speaker.querySelector("strong") ?? speaker).innerHTML += ": ";
-				speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
-			}
-		}
+                //  Move colon.
+                (speaker.querySelector("strong") ?? speaker).innerHTML += ": ";
+                speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
+            }
+        }
 
-		interviewWrapper.replaceWith(interview);
-	});
+        interviewWrapper.replaceWith(interview);
+    });
 }, "rewrite");
 
 
@@ -1018,12 +1018,12 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.prettifyManiculeMarginNotes = (eventInfo) => {
     GWLog("prettifyManiculeMarginNotes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
-		if (marginnote.innerHTML == "☞") { // U+261E WHITE RIGHT POINTING INDEX
-			marginnote.innerHTML = GW.svg("manicule-right");
-			marginnote.classList.add("manicule");
-		}
-	});
+    eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
+        if (marginnote.innerHTML == "☞") { // U+261E WHITE RIGHT POINTING INDEX
+            marginnote.innerHTML = GW.svg("manicule-right");
+            marginnote.classList.add("manicule");
+        }
+    });
 }, "rewrite");
 
 /*************************************************************/
@@ -1040,12 +1040,12 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 }, "rewrite");
 
 /**************************/
-/*	Aggregate margin notes.
+/*  Aggregate margin notes.
  */
 addContentLoadHandler(GW.contentLoadHandlers.aggregateMarginNotes = (eventInfo) => {
     GWLog("aggregateMarginNotes", "rewrite.js", 1);
 
-	aggregateMarginNotesInDocument(eventInfo.document);
+    aggregateMarginNotesInDocument(eventInfo.document);
 }, "rewrite");
 
 
@@ -1072,22 +1072,22 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInContentTransform
         image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
     });
 }, "rewrite", (info) => (   info.contentType == "wikipediaEntry"
-						 || info.contentType == "tweet"));
+                         || info.contentType == "tweet"));
 
 /***********************************/
-/*	Rectify typography in body text.
+/*  Rectify typography in body text.
 
-	NOTE: This should be temporary. Word breaks after slashes should be added
-	in body text on the back end, at content build time. But that is currently
-	not working, hence this temporary client-side solution.
-	—SA 2023-09-13
+    NOTE: This should be temporary. Word breaks after slashes should be added
+    in body text on the back end, at content build time. But that is currently
+    not working, hence this temporary client-side solution.
+    —SA 2023-09-13
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifyTypographyInBodyText = (eventInfo) => {
     GWLog("rectifyTypographyInBodyText", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("p").forEach(graf => {
-		Typography.processElement(graf, Typography.replacementTypes.WORDBREAKS);
-	});
+    eventInfo.container.querySelectorAll("p").forEach(graf => {
+        Typography.processElement(graf, Typography.replacementTypes.WORDBREAKS);
+    });
 }, "rewrite");
 
 /******************************************************************************/
@@ -1175,24 +1175,24 @@ addCopyProcessor((event, selection) => {
         citeJoiner.innerHTML = ` ${citeJoiner.innerHTML} `;
     });
 
-	/*	Inject preceding space when a span.cite-date follows immediately after
-		a span.cite-author (i.e., there is no span.cite-joiner, because there
-		are no more than two authors).
-	 */
+    /*  Inject preceding space when a span.cite-date follows immediately after
+        a span.cite-author (i.e., there is no span.cite-joiner, because there
+        are no more than two authors).
+     */
     selection.querySelectorAll(".cite-author + .cite-date").forEach(citeDateAfterAuthor => {
-    	citeDateAfterAuthor.innerHTML = ` ${citeDateAfterAuthor.innerHTML}`;
+        citeDateAfterAuthor.innerHTML = ` ${citeDateAfterAuthor.innerHTML}`;
     });
 
     return true;
 });
 
 /****************************************************************************/
-/*	Normalize symbols (e.g. U+2731 HEAVY ASTERISK ‘✱’ => normal asterisk ‘*’)
+/*  Normalize symbols (e.g. U+2731 HEAVY ASTERISK ‘✱’ => normal asterisk ‘*’)
  */
 addCopyProcessor((event, selection) => {
     Typography.processElement(selection, Typography.replacementTypes.SYMBOLS);
 
-	return true;
+    return true;
 });
 
 
@@ -1246,7 +1246,7 @@ function createFullWidthBlockLayoutStyles() {
 
     //  Add listener to update layout variables on window resize.
     addWindowResizeListener(updateFullWidthBlockLayoutStyles, {
-    	name: "updateFullWidthBlockLayoutStylesOnWindowResizeListener"
+        name: "updateFullWidthBlockLayoutStylesOnWindowResizeListener"
     });
 }
 
@@ -1280,14 +1280,14 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
         removeFullWidthBlockMargins();
     }, () => {
         allFullWidthBlocks.forEach(fullWidthBlock => {
-			//	Compensate for block indentation due to nesting (e.g., lists).
-        	let additionalLeftAdjustmentPx = "0px";
-        	let enclosingListItem = fullWidthBlock.closest("li");
-        	if (enclosingListItem) {
-				let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
-				let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
-				additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
-        	}
+            //  Compensate for block indentation due to nesting (e.g., lists).
+            let additionalLeftAdjustmentPx = "0px";
+            let enclosingListItem = fullWidthBlock.closest("li");
+            if (enclosingListItem) {
+                let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
+                let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
+                additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
+            }
 
             fullWidthBlock.style.marginLeft = `calc(
                                                     (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
@@ -1329,65 +1329,65 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
                           && info.contentType == "annotation"));
 
 /***************************************************************************/
-/*	Apply proper classes to inline file-include collapses, both on directory 
-	index pages and in annotations.
+/*  Apply proper classes to inline file-include collapses, both on directory
+    index pages and in annotations.
  */
 addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eventInfo) => {
     GWLog("rectifyFileAppendClasses", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".aux-links-transclude-file, .file-includes").forEach(fileIncludesBlock => {
-		//	The file-include block itself may be a collapse! If so, wrap it.
-		if (fileIncludesBlock.matches(".collapse"))
-			fileIncludesBlock = wrapElement(fileIncludesBlock, "div.file-includes", { moveClasses: [ "data-field", "file-includes" ] });
-		//	Rectify class.
-		fileIncludesBlock.swapClasses([ "aux-links-transclude-file", "file-includes" ], 1);
-		//	Apply standard class to all collapses within the includes block.
-		fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
-			fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
-			fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
-		});
-	});
+    eventInfo.container.querySelectorAll(".aux-links-transclude-file, .file-includes").forEach(fileIncludesBlock => {
+        //  The file-include block itself may be a collapse! If so, wrap it.
+        if (fileIncludesBlock.matches(".collapse"))
+            fileIncludesBlock = wrapElement(fileIncludesBlock, "div.file-includes", { moveClasses: [ "data-field", "file-includes" ] });
+        //  Rectify class.
+        fileIncludesBlock.swapClasses([ "aux-links-transclude-file", "file-includes" ], 1);
+        //  Apply standard class to all collapses within the includes block.
+        fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
+            fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
+            fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
+        });
+    });
 }, "rewrite");
 
 /******************************************************************************/
-/*	Properly handle file includes in annotations when their include-link fires.
+/*  Properly handle file includes in annotations when their include-link fires.
  */
 addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAnnotations = (eventInfo) => {
     GWLog("handleFileIncludeUncollapseInAnnotations", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".file-include-collapse").forEach(fileIncludeCollapse => {
-		let includeLink = fileIncludeCollapse.querySelector("a");
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (embedInjectEventInfo) => {
-			/*	Don’t scroll to an embed in the main document if there are 
-				popups on screen.
-			 */
-			if (   embedInjectEventInfo.document == document
-				&& Extracts.popFrameProvider == Popups
-				&& Popups.allSpawnedPopups().length > 0)
-				return;
+    eventInfo.container.querySelectorAll(".file-include-collapse").forEach(fileIncludeCollapse => {
+        let includeLink = fileIncludeCollapse.querySelector("a");
+        GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (embedInjectEventInfo) => {
+            /*  Don’t scroll to an embed in the main document if there are
+                popups on screen.
+             */
+            if (   embedInjectEventInfo.document == document
+                && Extracts.popFrameProvider == Popups
+                && Popups.allSpawnedPopups().length > 0)
+                return;
 
-			let embed = embedInjectEventInfo.container.firstElementChild;
+            let embed = embedInjectEventInfo.container.firstElementChild;
 
-			//	Scroll into view (but not if it’s off-screen).
-			if (isOnScreen(embed))
-				scrollElementIntoView(embed);
-			if (   embed.tagName == "IFRAME"
-				&& Extracts.popFrameProvider.containingPopFrame(embed) != null)
-				embed.addEventListener("load", (event) => {
-					if (isOnScreen(embed))
-						scrollElementIntoView(embed);
-				});
+            //  Scroll into view (but not if it’s off-screen).
+            if (isOnScreen(embed))
+                scrollElementIntoView(embed);
+            if (   embed.tagName == "IFRAME"
+                && Extracts.popFrameProvider.containingPopFrame(embed) != null)
+                embed.addEventListener("load", (event) => {
+                    if (isOnScreen(embed))
+                        scrollElementIntoView(embed);
+                });
 
-			//	Designate now-last collapse for styling.
-			let previousBlock = previousBlockOf(embed);
-			if (   embed.closest(".collapse") == null
-				&& previousBlock.classList.contains("collapse-block"))
-				previousBlock.classList.add("last-collapse");
-		}, {
-			once: true,
-			condition: (info) => (info.includeLink == includeLink)
-		});
-	});
+            //  Designate now-last collapse for styling.
+            let previousBlock = previousBlockOf(embed);
+            if (   embed.closest(".collapse") == null
+                && previousBlock.classList.contains("collapse-block"))
+                previousBlock.classList.add("last-collapse");
+        }, {
+            once: true,
+            condition: (info) => (info.includeLink == includeLink)
+        });
+    });
 }, "eventListeners", (info) => (info.contentType == "annotation"));
 
 /***************************************************************************/
@@ -1468,30 +1468,30 @@ addContentInjectHandler(GW.contentInjectHandlers.bindSectionHighlightEventsToAnn
 /*********************/
 
 /******************************************************************************/
-/*	On directory index pages, remove invalid include-links in file-append 
-	sections; if no valid includes remain, delete the entire file-append block.
+/*  On directory index pages, remove invalid include-links in file-append
+    sections; if no valid includes remain, delete the entire file-append block.
  */
 addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInfo) => {
     GWLog("stripInvalidFileAppends", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
-		/*	Remove any file embed links that lack a valid content type (e.g., 
-			foreign-site links that have not been whitelisted for embedding).
-		 */
-		Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
-			if (Content.contentTypeForLink(includeLink) == null)
-				includeLink.remove();
-		});
+    eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
+        /*  Remove any file embed links that lack a valid content type (e.g.,
+            foreign-site links that have not been whitelisted for embedding).
+         */
+        Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
+            if (Content.contentTypeForLink(includeLink) == null)
+                includeLink.remove();
+        });
 
-		//	If no valid include-links remain, delete the whole block.
-		if (isNodeEmpty(fileAppendBlock)) {
-			//	Delete colon.
-			if (fileAppendBlock.previousElementSibling.lastTextNode.nodeValue == ":")
-				fileAppendBlock.previousElementSibling.lastTextNode.remove();
+        //  If no valid include-links remain, delete the whole block.
+        if (isNodeEmpty(fileAppendBlock)) {
+            //  Delete colon.
+            if (fileAppendBlock.previousElementSibling.lastTextNode.nodeValue == ":")
+                fileAppendBlock.previousElementSibling.lastTextNode.remove();
 
-			fileAppendBlock.remove();
-		}
-	});
+            fileAppendBlock.remove();
+        }
+    });
 }, "rewrite", (info) => (   info.container == document.body
                          && /\/(index)?$/.test(location.pathname)));
 
@@ -1578,13 +1578,13 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInf
 
 /***************************************************************************/
 /*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links
-	(only in the page-level TOC).
+    (only in the page-level TOC).
  */
 addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
     unwrapAll(".TOC li a > span:not([class])", {
-    	root: eventInfo.container
+        root: eventInfo.container
     });
 }, "rewrite", (info) => (info.container == document.body));
 
@@ -1658,14 +1658,14 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
         TOC.classList.add("TOC-links-only");
     }
 
-	//	Update visibility.
-	updateTOCVisibility(TOC);
+    //  Update visibility.
+    updateTOCVisibility(TOC);
 }, "rewrite", (info) => (   info.container == document.body
                          && /\/(index)?$/.test(location.pathname)));
 
 /*******************************************************************************/
-/*	Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
-	if one entry.)
+/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
+    if one entry.)
  */
 function updateTOCVisibility(TOC) {
     let numEntries = TOC.querySelectorAll("li").length;
@@ -1688,7 +1688,7 @@ addContentLoadHandler(GW.contentLoadHandlers.updateTOCVisibility = (eventInfo) =
     if (TOC == null)
         return;
 
-	updateTOCVisibility(TOC);
+    updateTOCVisibility(TOC);
 }, "rewrite");
 
 
@@ -1762,11 +1762,11 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInf
 
         let footnoteNumber = Notes.noteNumber(footnote);
         footnote.insertBefore(newElement("A", {
-        	href: `#fn${footnoteNumber}`,
-        	title: `Link to footnote ${footnoteNumber}`,
-        	class: "footnote-self-link"
+            href: `#fn${footnoteNumber}`,
+            title: `Link to footnote ${footnoteNumber}`,
+            class: "footnote-self-link"
         }, {
-        	innerHTML: "&nbsp;"
+            innerHTML: "&nbsp;"
         }), footnote.firstChild);
     });
 }, "rewrite");
@@ -1780,8 +1780,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
 
-		if (isOnlyChild(backlink))
-			backlink.parentElement.classList.add("footnote-back-block");
+        if (isOnlyChild(backlink))
+            backlink.parentElement.classList.add("footnote-back-block");
 
         if (backlink.querySelector("svg, .placeholder"))
             return;
@@ -1828,7 +1828,7 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
         addContentInjectHandler(GW.contentInjectHandlers.rebindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
             allCitations.forEach(bindEventsToCitation);
         }, "eventListeners", (info) => (   info.document == document
-        								|| info.document == eventInfo.document));
+                                        || info.document == eventInfo.document));
     }
 }, "eventListeners");
 
@@ -1855,18 +1855,18 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
 /*********/
 
 /****************************************************************************/
-/*	For links with a `data-url-original` attribute, save the `href` attribute
-	value in `data-url-archive`, set the `href` to the value of 
-	`data-url-original`, and delete `data-url-original`.
+/*  For links with a `data-url-original` attribute, save the `href` attribute
+    value in `data-url-archive`, set the `href` to the value of
+    `data-url-original`, and delete `data-url-original`.
  */
 addContentLoadHandler(GW.contentLoadHandlers.reverseArchivedLinkPolarity = (eventInfo) => {
     GWLog("reverseArchivedLinkPolarity", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a[data-url-original]").forEach(archivedLink => {
-		archivedLink.dataset.urlArchive = archivedLink.href;
-		archivedLink.href = archivedLink.dataset.urlOriginal;
-		delete archivedLink.dataset.urlOriginal;
-	});
+    eventInfo.container.querySelectorAll("a[data-url-original]").forEach(archivedLink => {
+        archivedLink.dataset.urlArchive = archivedLink.href;
+        archivedLink.href = archivedLink.dataset.urlOriginal;
+        delete archivedLink.dataset.urlOriginal;
+    });
 }, "rewrite");
 
 /**********************************************************************/
@@ -1882,20 +1882,20 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 
     let loadLocation = (eventInfo.loadLocation ?? baseLocation);
 
-	let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
+    let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
         if (   (   eventInfo.localize == true
                 // if initial base page load
-        		|| eventInfo.container == document.body)
+                || eventInfo.container == document.body)
             && (   link.getAttribute("href").startsWith("#")
                 || link.pathname == loadLocation.pathname)
-            	   // if the link refers to an element also in the loaded content
-			&& (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-            	   //  if the link refers to the loaded content container itself
+                   // if the link refers to an element also in the loaded content
+            && (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
+                   //  if the link refers to the loaded content container itself
                 || (   eventInfo.container instanceof Element
                     && eventInfo.container.matches(selectorFromHash(link.hash)))
-            	   //  if we’re injecting into a full page (base page or pop-frame)
+                   //  if we’re injecting into a full page (base page or pop-frame)
                 || (   injectingIntoFullPage
                            //  if we’re transcluding a citation (because we merge footnotes)
                     && (   (   eventInfo.source == "transclude"
@@ -1954,26 +1954,48 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 
 /************************************************************************/
 /*  Assign proper link icons to self-links (directional or otherwise) and
-    local links.
+    local links, ignoring links with existing icon attributes.
+    See `LinkIcon`+`Config.LinkIcon` & <https://gwern.net/design-graveyard#link-icon-css-regexps>.
  */
 addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (eventInfo) => {
     GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
 
+    // Do not override existing link-icons; a normal self-link or anchor link should have no
+    // link-icon. (Also make sure the data-attributes are not empty string values, as might be the
+    // case if the backend or processing goes wrong.)
+    // An example here would be in essays: the special-case of the sl/lb/bl anchor links
+    // which jump to the respective section at the end of the page where those are
+    // actually transcluded. We want the 3 special link-icons for those, and those are
+    // hardwired in the `default.html` template, but the runtime JS will overwrite those
+    // with the arrows if it doesn't check for the link-icon data-attributes being set already.
+    const shouldProcessLink = (link) => {
+        return !(link.dataset.linkIcon?.trim() || link.dataset.linkIconType?.trim());
+    };
+
     //  Self-links (anchorlinks to the current page).
     eventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
+        if (!shouldProcessLink(link)) return;
+
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = "\u{00B6}"; // ¶
+        link.dataset.linkIcon = "\u{00B6}"; // '¶' PILCROW SIGN
 
         /*  Directional navigation links on self-links: for each self-link like
-            “see [later](#later-identifier)”, find the linked identifier,
-            whether it’s before or after, and if it is before/previously,
-            annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps
-            the reader know if it’s a backwards link to an identifier already
-            read, or an unread identifier.
+            "see [later](#later-identifier)", find the linked identifier,
+            whether it's before or after, and if it is before/previously,
+            annotate the self-link with '↑' (UPWARDS ARROW) and if after/later, '
+            ↓' (DOWNWARDS ARROW).
+
+            This helps the reader know if it's a backwards link to an identifier already
+            read, or an unread identifier, enabling a mental map and reducing the
+            cognitive overhead of constantly choosing whether to follow a reference.
+
+            This was implemented statically pre-transclusion as an optimization,
+            but given that dynamism forces runtime checking of relative status
+            for all new fragments (popups or transclude), that has been removed
+            in favor of this JS hook, to simplify code & ensure a single source of truth.
          */
         let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
-        if (target == null)
-            return;
+        if (target == null) return;
 
         link.dataset.linkIconType = "svg";
         link.dataset.linkIcon =
@@ -1984,14 +2006,12 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
 
     //  Local links (to other pages on the site).
     eventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
-        if (   link.dataset.linkIcon
-        	&& [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon) == false)
-            return;
+        if (!shouldProcessLink(link)) return;
 
         link.dataset.linkIconType = "text";
         link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
-        						? "\u{00B6}" // ¶
-        						: "\u{1D50A}"; // 𝔊
+                                ? "\u{00B6}"   // '¶'
+                                : "\u{1D50A}"; // '𝔊' MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
     });
 }, "rewrite");
 
@@ -2017,8 +2037,8 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
         //  TOC links should never have link icons under any circumstances.
         ".TOC",
 
-		//	No link icons in table headers.
-		"thead"
+        //  No link icons in table headers.
+        "thead"
     ].map(x => x + " a[data-link-icon]").join(", ");
 
     eventInfo.container.querySelectorAll(excludedLinkSelector).forEach(link => {
@@ -2041,7 +2061,7 @@ function enableLinkIcon(link) {
     if (link.dataset.linkIconType.includes("text")) {
         link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
-		let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
+        let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
         link.style.setProperty("--link-icon-url",
             `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
     }
@@ -2095,66 +2115,66 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
 }, "rewrite");
 
 /**************************************************************************/
-/*	Enable special list icons for list items that contain recently modified 
-	links.
+/*  Enable special list icons for list items that contain recently modified
+    links.
  */
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkListIcons = (eventInfo) => {
     GWLog("enableRecentlyModifiedLinkListIcons", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("li a.link-modified-recently").forEach(link => {
-		let inList = false;
-		let containingGraf = link.closest("p");
-		if (containingGraf?.matches("li > p:only-of-type")) {
-			inList = true;
-		} else if (containingGraf?.matches(".data-field")) {
-			/*	This handles cases such as those where we’re transcluding an 
-				annotation into a list, and each annotation has its own list 
-				item (thus the .link-modified-recently class would be on the
-				title-link of the annotation).
-			 */
-			let ancestor = containingGraf.parentElement;
-			while (   ancestor.matches("li") == false
-				   && (   ancestor.parentElement.children.length == 1
-				       || (   ancestor.parentElement.children.length == 2
-				           && ancestor.matches(".include-wrapper"))))
-				   ancestor = ancestor.parentElement;
-			if (ancestor.matches("li"))
-				inList = true;
-		}
-		if (inList) {
-			link.closest("li").classList.add("link-modified-recently-list-item");
-			link.classList.add("in-list");
-		}
-	});
+    eventInfo.container.querySelectorAll("li a.link-modified-recently").forEach(link => {
+        let inList = false;
+        let containingGraf = link.closest("p");
+        if (containingGraf?.matches("li > p:only-of-type")) {
+            inList = true;
+        } else if (containingGraf?.matches(".data-field")) {
+            /*  This handles cases such as those where we’re transcluding an
+                annotation into a list, and each annotation has its own list
+                item (thus the .link-modified-recently class would be on the
+                title-link of the annotation).
+             */
+            let ancestor = containingGraf.parentElement;
+            while (   ancestor.matches("li") == false
+                   && (   ancestor.parentElement.children.length == 1
+                       || (   ancestor.parentElement.children.length == 2
+                           && ancestor.matches(".include-wrapper"))))
+                   ancestor = ancestor.parentElement;
+            if (ancestor.matches("li"))
+                inList = true;
+        }
+        if (inList) {
+            link.closest("li").classList.add("link-modified-recently-list-item");
+            link.classList.add("in-list");
+        }
+    });
 }, "rewrite");
 
 /****************************************************************************/
-/*	Enable special icons for recently modified links (that are not in lists).
+/*  Enable special icons for recently modified links (that are not in lists).
  */
 addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons = (eventInfo) => {
     GWLog("enableRecentlyModifiedLinkIcons", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(link => {
-		if (link.querySelector(".recently-modified-icon-hook") != null)
-			return;
+    eventInfo.container.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(link => {
+        if (link.querySelector(".recently-modified-icon-hook") != null)
+            return;
 
-		//	Inject indicator hook span.
-		link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
+        //  Inject indicator hook span.
+        link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
 
-		/*	Inject U+2060 WORD JOINER at start of first text node of the
-			link. (It _must_ be injected as a Unicode character into the
-			existing text node; injecting it within the .indicator-hook
-			span, or as an HTML escape code into the text node, or in
-			any other fashion, creates a separate text node, which
-			causes all sorts of problems - text shadow artifacts, etc.)
-		 */
-		let linkFirstTextNode = link.firstTextNode;
-		if (   linkFirstTextNode
-			&& linkFirstTextNode.textContent.startsWith("\u{2060}") == false)
-			linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+        /*  Inject U+2060 WORD JOINER at start of first text node of the
+            link. (It _must_ be injected as a Unicode character into the
+            existing text node; injecting it within the .indicator-hook
+            span, or as an HTML escape code into the text node, or in
+            any other fashion, creates a separate text node, which
+            causes all sorts of problems - text shadow artifacts, etc.)
+         */
+        let linkFirstTextNode = link.firstTextNode;
+        if (   linkFirstTextNode
+            && linkFirstTextNode.textContent.startsWith("\u{2060}") == false)
+            linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
 
-		link.classList.add("has-recently-modified-icon");
-	});
+        link.classList.add("has-recently-modified-icon");
+    });
 }, "rewrite");
 
 
@@ -2163,21 +2183,21 @@ addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons
 /***************/
 
 /***************************************************************/
-/*	Strip date range metadata if date ranges occur inside links.
+/*  Strip date range metadata if date ranges occur inside links.
  */
 addContentLoadHandler(GW.contentLoadHandlers.stripDateRangeMetadataInLinks = (eventInfo) => {
     GWLog("stripDateRangeMetadataInLinks", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("a").forEach(link => {
-		stripDateRangeMetadataInBlock(link);
-	});
+    eventInfo.container.querySelectorAll("a").forEach(link => {
+        stripDateRangeMetadataInBlock(link);
+    });
 }, "rewrite");
 
 /****************************************************************************/
 /*  Makes it so that copying a date range interacts properly with copy-paste.
  */
 addCopyProcessor((event, selection) => {
-	stripDateRangeMetadataInBlock(selection);
+    stripDateRangeMetadataInBlock(selection);
 
     return true;
 });
@@ -2188,79 +2208,79 @@ addCopyProcessor((event, selection) => {
 /************************/
 
 GW.currencyFormatter = new Intl.NumberFormat('en-US', {
-	style: 'currency',
-	currency: 'USD',
-	minimumFractionDigits: 2
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
 });
 GW.currentYear = new Date().getFullYear();
 
 /*************************************************************************/
-/*	Return prettified version of a string representing an amount of money.
+/*  Return prettified version of a string representing an amount of money.
  */
 function prettifyCurrencyString(amount, compact = false, forceRound = false) {
-	let currency = amount[0];
+    let currency = amount[0];
 
-	let number = Number(amount.replace(/[^0-9.−-]+/g, ""));
-	if (   number >= 100
-		|| forceRound)
-		number = Math.round(number);
+    let number = Number(amount.replace(/[^0-9.−-]+/g, ""));
+    if (   number >= 100
+        || forceRound)
+        number = Math.round(number);
 
-	amount = GW.currencyFormatter.format(number);
+    amount = GW.currencyFormatter.format(number);
 
-	//	Remove trailing zeroes.
-	amount = amount.replace(/\.00?$/, '');
+    //  Remove trailing zeroes.
+    amount = amount.replace(/\.00?$/, '');
 
-	//	Reset currency unit.
-	amount = currency + amount.slice(1);
+    //  Reset currency unit.
+    amount = currency + amount.slice(1);
 
-	if (compact) {
-		amount = amount.replace(/,000,000,000$/, 'b');
-		amount = amount.replace(/,000,000$/, 'm');
-		amount = amount.replace(/,000$/, 'k');
-	}
+    if (compact) {
+        amount = amount.replace(/,000,000,000$/, 'b');
+        amount = amount.replace(/,000,000$/, 'm');
+        amount = amount.replace(/,000$/, 'k');
+    }
 
-	return amount;
+    return amount;
 }
 
 /**************************************************************************/
-/*	Rewrite inflation-adjustment elements to make the currency amounts more
-	useful and readable.
+/*  Rewrite inflation-adjustment elements to make the currency amounts more
+    useful and readable.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteInflationAdjusters = (eventInfo) => {
     GWLog("rewriteInflationAdjusters", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
-		let unadjusted = infAdj.querySelector("sup");
-		let adjusted = infAdj.firstChild;
+    eventInfo.container.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
+        let unadjusted = infAdj.querySelector("sup");
+        let adjusted = infAdj.firstChild;
 
-		unadjusted.textContent = prettifyCurrencyString(unadjusted.textContent, true);
+        unadjusted.textContent = prettifyCurrencyString(unadjusted.textContent, true);
 
-		/*	Always round adjusted amount if unadjusted amount has no fractional
-			component and adjusted amount has more than one whole digit.
-		 */
-		let forceRound = (   unadjusted.textContent.includes(".") == false
-						  && adjusted.textContent.match(/([0-9]+)(\.|$)/)[1].length > 1);
-		adjusted.textContent = prettifyCurrencyString(adjusted.textContent, false, forceRound);
-	});
+        /*  Always round adjusted amount if unadjusted amount has no fractional
+            component and adjusted amount has more than one whole digit.
+         */
+        let forceRound = (   unadjusted.textContent.includes(".") == false
+                          && adjusted.textContent.match(/([0-9]+)(\.|$)/)[1].length > 1);
+        adjusted.textContent = prettifyCurrencyString(adjusted.textContent, false, forceRound);
+    });
 }, "rewrite");
 
 /***************************************************************************/
-/*  Makes it so that copying an inflation-adjusted currency amount interacts 
-	properly with copy-paste.
+/*  Makes it so that copying an inflation-adjusted currency amount interacts
+    properly with copy-paste.
  */
 addCopyProcessor((event, selection) => {
-    /*  Rewrite inflation-adjuster elements into a simple inline typographical 
-    	format, e.g. “$0.10 (1990; $1.30 in 2023)”.
+    /*  Rewrite inflation-adjuster elements into a simple inline typographical
+        format, e.g. “$0.10 (1990; $1.30 in 2023)”.
      */
     selection.querySelectorAll(".inflation-adjusted").forEach(infAdj => {
-		let adjustedText = infAdj.firstChild.textContent;
-		let unadjustedText = infAdj.querySelector("sup").textContent;
-		let yearText = infAdj.querySelector("sub").textContent;
+        let adjustedText = infAdj.firstChild.textContent;
+        let unadjustedText = infAdj.querySelector("sup").textContent;
+        let yearText = infAdj.querySelector("sub").textContent;
 
-		//	Un-abbreviate powers of 1,000 in unadjusted amount.
-		unadjustedText = unadjustedText.replace("k", ",000");
-		unadjustedText = unadjustedText.replace("m", ",000,000");
-		unadjustedText = unadjustedText.replace("b", ",000,000,000");
+        //  Un-abbreviate powers of 1,000 in unadjusted amount.
+        unadjustedText = unadjustedText.replace("k", ",000");
+        unadjustedText = unadjustedText.replace("m", ",000,000");
+        unadjustedText = unadjustedText.replace("b", ",000,000,000");
 
         infAdj.innerHTML = `${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`;
     });
@@ -2270,7 +2290,7 @@ addCopyProcessor((event, selection) => {
 
 /******************************************************************************/
 /*  Makes double-clicking on an inflation adjuster select the entire element.
-	(This is so that the copy processor, above, can reliably work as intended.)
+    (This is so that the copy processor, above, can reliably work as intended.)
  */
 addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflationAdjusters = (eventInfo) => {
     GWLog("addDoubleClickListenersToInflationAdjusters", "rewrite.js", 1);
@@ -2319,61 +2339,61 @@ addContentLoadHandler(GW.contentLoadHandlers.noBreakForCitations = (eventInfo) =
     GWLog("noBreakForCitations", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
-    	citation.parentElement.insertBefore(document.createTextNode("\u{2060}"), citation);
+        citation.parentElement.insertBefore(document.createTextNode("\u{2060}"), citation);
         let textNode = citation.querySelector("sup").firstTextNode;
         textNode.textContent = "\u{2060}" + textNode.textContent + "\u{2060}";
     });
 }, "rewrite");
 
 /****************************************************************************/
-/*	Designate containers wherein colors (e.g. link colors) should be inverted
-	(because the container has a dark background).
+/*  Designate containers wherein colors (e.g. link colors) should be inverted
+    (because the container has a dark background).
  */
 addContentLoadHandler(GW.contentLoadHandlers.designateColorInvertedContainers = (eventInfo) => {
     GWLog("designateColorInvertedContainers", "rewrite.js", 1);
 
-	let selector = [
-		".admonition.warning",
-		".admonition.error"
-	].join(", ");
+    let selector = [
+        ".admonition.warning",
+        ".admonition.error"
+    ].join(", ");
 
-	eventInfo.container.querySelectorAll(selector).forEach(container => {
-		container.classList.add("colors-invert");
-	});
+    eventInfo.container.querySelectorAll(selector).forEach(container => {
+        container.classList.add("colors-invert");
+    });
 }, "rewrite");
 
 /******************************************************************/
-/*	Wrap text nodes and inline elements in admonitions in <p> tags.
+/*  Wrap text nodes and inline elements in admonitions in <p> tags.
  */
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (eventInfo) => {
     GWLog("paragraphizeAdmonitionTextNodes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElement);
 }, "rewrite");
 
 /*********************************************/
-/*	Fix incorrect text block tag types.
+/*  Fix incorrect text block tag types.
 
-	- .text-center are <div> but should be <p>
+    - .text-center are <div> but should be <p>
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (eventInfo) => {
     GWLog("rectifySpecialTextBlockTagTypes", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".text-center").forEach(centerDiv => {
-		unwrap(centerDiv, { moveClasses: true });
-	});
+    eventInfo.container.querySelectorAll(".text-center").forEach(centerDiv => {
+        unwrap(centerDiv, { moveClasses: true });
+    });
 }, "rewrite");
 
 /*******************************************************/
-/*	Designate ordinal superscripts (1st, 2nd, 3rd, nth).
+/*  Designate ordinal superscripts (1st, 2nd, 3rd, nth).
  */
 addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => {
     GWLog("designateOrdinals", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll("sup").forEach(sup => {
-		if ([ "st", "nd", "rd", "th" ].includes(sup.textContent.toLowerCase()))
-			sup.classList.add("ordinal");
-	});
+    eventInfo.container.querySelectorAll("sup").forEach(sup => {
+        if ([ "st", "nd", "rd", "th" ].includes(sup.textContent.toLowerCase()))
+            sup.classList.add("ordinal");
+    });
 }, "rewrite");
 
 
@@ -2382,251 +2402,251 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 /************/
 
 /***************************************************/
-/*	Dropcaps (only on sufficiently wide viewports).
+/*  Dropcaps (only on sufficiently wide viewports).
  */
 addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) => {
     GWLog("rewriteDropcaps", "rewrite.js", 1);
 
-	//	Reset dropcaps when margin note mode changes.
-	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges", (mediaQuery) => {
-		eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
-	});
+    //  Reset dropcaps when margin note mode changes.
+    doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges", (mediaQuery) => {
+        eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
+    });
 
-	//	A letter (capital or lowercase), optionally preceded by an opening quotation mark.
-	let initialRegexp = new RegExp(/^(\s*[“‘]?)?([a-zA-Z])/);
+    //  A letter (capital or lowercase), optionally preceded by an opening quotation mark.
+    let initialRegexp = new RegExp(/^(\s*[“‘]?)?([a-zA-Z])/);
 
-	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
-			//	If this dropcap has already been processed, do nothing.
-			if (dropcapBlock.querySelector(".dropcap"))
-				return;
+    processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
+        container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
+            //  If this dropcap has already been processed, do nothing.
+            if (dropcapBlock.querySelector(".dropcap"))
+                return;
 
-			//	Make sure the graf begins properly and determine initial letter.
-			let initial = initialRegexp.exec(textContentOfGraf(dropcapBlock));
-			if (initial == null) {
-				addDropcapClassTo(dropcapBlock, "not");
-				return;
-			}
-			let [ fullInitial, precedingPunctuation, initialLetter ] = initial;
+            //  Make sure the graf begins properly and determine initial letter.
+            let initial = initialRegexp.exec(textContentOfGraf(dropcapBlock));
+            if (initial == null) {
+                addDropcapClassTo(dropcapBlock, "not");
+                return;
+            }
+            let [ fullInitial, precedingPunctuation, initialLetter ] = initial;
 
-			//	Locate insertion point.
-			let firstNode = firstTextNodeOfGraf(dropcapBlock);
-			let firstNodeParent = firstNode.parentElement;
+            //  Locate insertion point.
+            let firstNode = firstTextNodeOfGraf(dropcapBlock);
+            let firstNodeParent = firstNode.parentElement;
 
-			//	Separate first letter from rest of text content.
-			firstNode.textContent = firstNode.textContent.slice(fullInitial.length);
+            //  Separate first letter from rest of text content.
+            firstNode.textContent = firstNode.textContent.slice(fullInitial.length);
 
-			//	Determine dropcap type.
-			let dropcapType = dropcapTypeOf(dropcapBlock);
+            //  Determine dropcap type.
+            let dropcapType = dropcapTypeOf(dropcapBlock);
 
-			//	Is this is a graphical dropcap?
-			if (GW.dropcaps.graphicalDropcapTypes.includes(dropcapType)) {
-				//	Designate as graphical dropcap block.
-				dropcapBlock.classList.add("graphical-dropcap");
+            //  Is this is a graphical dropcap?
+            if (GW.dropcaps.graphicalDropcapTypes.includes(dropcapType)) {
+                //  Designate as graphical dropcap block.
+                dropcapBlock.classList.add("graphical-dropcap");
 
-				//	Inject a hidden span to hold the first letter as text.
-				firstNodeParent.insertBefore(newElement("SPAN", {
-					class: "hidden-initial-letter",
-				}, {
-					innerHTML: initialLetter
-				}), firstNode);
+                //  Inject a hidden span to hold the first letter as text.
+                firstNodeParent.insertBefore(newElement("SPAN", {
+                    class: "hidden-initial-letter",
+                }, {
+                    innerHTML: initialLetter
+                }), firstNode);
 
-				//	Construct the dropcap image element.
-				let dropcapImage = newElement("IMG", {
-					class: "dropcap figure-not",
-					loading: "lazy"
-				});
+                //  Construct the dropcap image element.
+                let dropcapImage = newElement("IMG", {
+                    class: "dropcap figure-not",
+                    loading: "lazy"
+                });
 
-				//	Select a dropcap.
-				let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
-				if (dropcapURL == null) {
-					//	If no available dropcap image, set disabled flag.
-					dropcapBlock.classList.add("disable-dropcap");
-				} else {
-					//	Specify image URL.
-					dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
+                //  Select a dropcap.
+                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                if (dropcapURL == null) {
+                    //  If no available dropcap image, set disabled flag.
+                    dropcapBlock.classList.add("disable-dropcap");
+                } else {
+                    //  Specify image URL.
+                    dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
 
-					//	Add image file format class.
-					dropcapImage.classList.add(dropcapURL?.pathname.slice(-3));
+                    //  Add image file format class.
+                    dropcapImage.classList.add(dropcapURL?.pathname.slice(-3));
 
-					/*	Dropcap should be inverted if it’s designed for a mode 
-						opposite to the current mode (rather than being designed 
-						either for the current mode or for either mode); in such a
-						case it will have the opposite mode in the file name.
-					 */
-					let shouldInvert = dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light"));
-					if (shouldInvert)
-						dropcapImage.classList.add("invert");
-				}
+                    /*  Dropcap should be inverted if it’s designed for a mode
+                        opposite to the current mode (rather than being designed
+                        either for the current mode or for either mode); in such a
+                        case it will have the opposite mode in the file name.
+                     */
+                    let shouldInvert = dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light"));
+                    if (shouldInvert)
+                        dropcapImage.classList.add("invert");
+                }
 
-				//	Inject the dropcap image element.
-				firstNodeParent.insertBefore(dropcapImage, firstNode.previousSibling);
-			} else {
-				//	Inject the dropcap.
-				firstNodeParent.insertBefore(newElement("SPAN", {
-					class: "dropcap"
-				}, {
-					innerHTML: initialLetter.toUpperCase()
-				}), firstNode);
-			}
+                //  Inject the dropcap image element.
+                firstNodeParent.insertBefore(dropcapImage, firstNode.previousSibling);
+            } else {
+                //  Inject the dropcap.
+                firstNodeParent.insertBefore(newElement("SPAN", {
+                    class: "dropcap"
+                }, {
+                    innerHTML: initialLetter.toUpperCase()
+                }), firstNode);
+            }
 
-			//	If there’s punctuation before the initial letter, inject it.
-			if (precedingPunctuation) {
-				firstNodeParent.insertBefore(newElement("SPAN", {
-					class: "initial-preceding-punctuation"
-				}, {
-					innerHTML: precedingPunctuation
-				}), firstNodeParent.querySelector(".dropcap"));
-			}
-		});
-	});
+            //  If there’s punctuation before the initial letter, inject it.
+            if (precedingPunctuation) {
+                firstNodeParent.insertBefore(newElement("SPAN", {
+                    class: "initial-preceding-punctuation"
+                }, {
+                    innerHTML: precedingPunctuation
+                }), firstNodeParent.querySelector(".dropcap"));
+            }
+        });
+    });
 }, "rewrite", (info) => (   info.document == document
-						 && GW.mediaQueries.mobileWidth.matches == false
-						 && GW.isMobile() == false));
+                         && GW.mediaQueries.mobileWidth.matches == false
+                         && GW.isMobile() == false));
 
 /***********************************************************/
-/*	Activate mode-based dynamic graphical dropcap swapping.
+/*  Activate mode-based dynamic graphical dropcap swapping.
  */
 addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropcaps = (eventInfo) => {
     GWLog("activateDynamicGraphicalDropcaps", "rewrite.js", 1);
 
-	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
-			//	Determine dropcap type.
-			let dropcapType = dropcapTypeOf(dropcapBlock);
+    processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
+        container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
+            //  Determine dropcap type.
+            let dropcapType = dropcapTypeOf(dropcapBlock);
 
-			//	Is this a recognized graphical dropcap type?
-			if (GW.dropcaps.graphicalDropcapTypes.includes(dropcapType) == false)
-				return;
+            //  Is this a recognized graphical dropcap type?
+            if (GW.dropcaps.graphicalDropcapTypes.includes(dropcapType) == false)
+                return;
 
-			//	Get the dropcap image element.
-			let dropcapImage = dropcapBlock.querySelector("img.dropcap");
-			if (dropcapImage == null)
-				return;
+            //  Get the dropcap image element.
+            let dropcapImage = dropcapBlock.querySelector("img.dropcap");
+            if (dropcapImage == null)
+                return;
 
-			//	Get the initial letter.
-			let initialLetter = dropcapBlock.querySelector(".hidden-initial-letter")?.textContent;
-			if (initialLetter == null)
-				return;
+            //  Get the initial letter.
+            let initialLetter = dropcapBlock.querySelector(".hidden-initial-letter")?.textContent;
+            if (initialLetter == null)
+                return;
 
-			//	If the handler already exists, do nothing.
-			if (dropcapImage.modeChangeHandler)
-				return;
+            //  If the handler already exists, do nothing.
+            if (dropcapImage.modeChangeHandler)
+                return;
 
-			//	Add event handler to switch image when mode changes.
-			GW.notificationCenter.addHandlerForEvent(dropcapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
-				//	Clear disabled flag, if any.
-				dropcapBlock.classList.remove("disable-dropcap");
+            //  Add event handler to switch image when mode changes.
+            GW.notificationCenter.addHandlerForEvent(dropcapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
+                //  Clear disabled flag, if any.
+                dropcapBlock.classList.remove("disable-dropcap");
 
-				//	Get new dropcap URL.
-				let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
-				if (dropcapURL == null) {
-					//	If no available dropcap image, set disabled flag.
-					dropcapBlock.classList.add("disable-dropcap");
-					return;
-				}
+                //  Get new dropcap URL.
+                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                if (dropcapURL == null) {
+                    //  If no available dropcap image, set disabled flag.
+                    dropcapBlock.classList.add("disable-dropcap");
+                    return;
+                }
 
-				//	Update image URL.
-				dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
+                //  Update image URL.
+                dropcapImage.src = dropcapURL.pathname + dropcapURL.search;
 
-				//	Update inversion.
-				dropcapImage.classList.toggle("invert", dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light")));
+                //  Update inversion.
+                dropcapImage.classList.toggle("invert", dropcapURL.pathname.includes("-" + (DarkMode.computedMode() == "light" ? "dark" : "light")));
 
-				//	Update image file format class.
-				dropcapImage.classList.remove("png", "svg");
-				dropcapImage.classList.add(dropcapURL.pathname.slice(-3));
-			});
-		});
-	});
+                //  Update image file format class.
+                dropcapImage.classList.remove("png", "svg");
+                dropcapImage.classList.add(dropcapURL.pathname.slice(-3));
+            });
+        });
+    });
 }, "eventListeners", (info) => (   info.document == document
-								&& GW.mediaQueries.mobileWidth.matches == false
-								&& GW.isMobile() == false));
+                                && GW.mediaQueries.mobileWidth.matches == false
+                                && GW.isMobile() == false));
 
 /*********************/
-/*	Linkify dropcaps.
+/*  Linkify dropcaps.
  */
 addContentInjectHandler(GW.contentInjectHandlers.linkifyDropcaps = (eventInfo) => {
     GWLog("linkifyDropcaps", "rewrite.js", 1);
 
-	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
-			//	If this dropcap has already been linkified, do nothing.
-			if (dropcapBlock.querySelector(".link-dropcap"))
-				return;
+    processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
+        container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(dropcapBlock => {
+            //  If this dropcap has already been linkified, do nothing.
+            if (dropcapBlock.querySelector(".link-dropcap"))
+                return;
 
-			//	Determine dropcap type.
-			let dropcapType = dropcapTypeOf(dropcapBlock);
+            //  Determine dropcap type.
+            let dropcapType = dropcapTypeOf(dropcapBlock);
 
-			//	Determine initial letter.
-			let initialLetter = (   dropcapBlock.querySelector("span.dropcap")
-								 ?? dropcapBlock.querySelector(".hidden-initial-letter")).textContent;
+            //  Determine initial letter.
+            let initialLetter = (   dropcapBlock.querySelector("span.dropcap")
+                                 ?? dropcapBlock.querySelector(".hidden-initial-letter")).textContent;
 
-			//	Get the dropcap (textual or graphical).
-			let dropcap = dropcapBlock.querySelector(".dropcap");
+            //  Get the dropcap (textual or graphical).
+            let dropcap = dropcapBlock.querySelector(".dropcap");
 
-			//	Wrap the dropcap (textual or graphical) in a link.
-			let dropcapLink = newElement("A", {
-				class: "link-page link-dropcap",
-				href: "/dropcap#" + dropcapType,
-				"data-letter": initialLetter,
-				"data-dropcap-type": dropcapType
-			});
-			let dropcapLinkWrapper = newElement("SPAN");
-			dropcapLinkWrapper.append(dropcapLink);
-			dropcapLink.append(dropcap);
+            //  Wrap the dropcap (textual or graphical) in a link.
+            let dropcapLink = newElement("A", {
+                class: "link-page link-dropcap",
+                href: "/dropcap#" + dropcapType,
+                "data-letter": initialLetter,
+                "data-dropcap-type": dropcapType
+            });
+            let dropcapLinkWrapper = newElement("SPAN");
+            dropcapLinkWrapper.append(dropcapLink);
+            dropcapLink.append(dropcap);
 
-			//	Locate insertion point.
-			let firstNode = firstTextNodeOfGraf(dropcapBlock);
-			let firstNodeParent = firstNode.parentElement;
-			if (firstNodeParent.matches(".initial-preceding-punctuation")) {
-				firstNode = firstNodeParent.nextSibling;
-				firstNodeParent = firstNodeParent.parentElement;
-			} else if (firstNodeParent.matches(".hidden-initial-letter")) {
-				firstNode = firstNodeParent;
-				firstNodeParent = firstNodeParent.parentElement;
-			}
+            //  Locate insertion point.
+            let firstNode = firstTextNodeOfGraf(dropcapBlock);
+            let firstNodeParent = firstNode.parentElement;
+            if (firstNodeParent.matches(".initial-preceding-punctuation")) {
+                firstNode = firstNodeParent.nextSibling;
+                firstNodeParent = firstNodeParent.parentElement;
+            } else if (firstNodeParent.matches(".hidden-initial-letter")) {
+                firstNode = firstNodeParent;
+                firstNodeParent = firstNodeParent.parentElement;
+            }
 
-			//	Inject the link-wrapped dropcap back into the block.
-			firstNodeParent.insertBefore(dropcapLinkWrapper, firstNode);
+            //  Inject the link-wrapped dropcap back into the block.
+            firstNodeParent.insertBefore(dropcapLinkWrapper, firstNode);
 
-			//	Process the link to enable extract pop-frames.
-			Extracts.addTargetsWithin(dropcapLinkWrapper);
+            //  Process the link to enable extract pop-frames.
+            Extracts.addTargetsWithin(dropcapLinkWrapper);
 
-			//	Unwrap temporary wrapper.
-			unwrap(dropcapLinkWrapper);
-		});
-	});
+            //  Unwrap temporary wrapper.
+            unwrap(dropcapLinkWrapper);
+        });
+    });
 }, "rewrite", (info) => (   info.document == document
-						 && GW.mediaQueries.mobileWidth.matches == false
-						 && GW.isMobile() == false));
+                         && GW.mediaQueries.mobileWidth.matches == false
+                         && GW.isMobile() == false));
 
 /***********************************************************************/
-/*	Prevent blocks with dropcaps from overlapping the block below them.
+/*  Prevent blocks with dropcaps from overlapping the block below them.
  */
 addContentInjectHandler(GW.contentInjectHandlers.preventDropcapsOverlap = (eventInfo) => {
     GWLog("preventDropcapsOverlap", "rewrite.js", 1);
 
-	let blocksNotToBeOverlappedSelector = [
-		"p[class*='dropcap-']",
-		"section",
-		"blockquote",
-		".collapse",
-		".list-heading",
-		".in-list",
-		"div.sourceCode"
-	].join(", ");
+    let blocksNotToBeOverlappedSelector = [
+        "p[class*='dropcap-']",
+        "section",
+        "blockquote",
+        ".collapse",
+        ".list-heading",
+        ".in-list",
+        "div.sourceCode"
+    ].join(", ");
 
-	processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-		container.querySelectorAll("p[class*='dropcap-']").forEach(dropcapBlock => {
-			let nextBlock = nextBlockOf(dropcapBlock);
-			if (   nextBlock == null
-				|| nextBlock.matches(blocksNotToBeOverlappedSelector))
-				dropcapBlock.classList.add("overlap-not");
-		});
-	});
+    processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
+        container.querySelectorAll("p[class*='dropcap-']").forEach(dropcapBlock => {
+            let nextBlock = nextBlockOf(dropcapBlock);
+            if (   nextBlock == null
+                || nextBlock.matches(blocksNotToBeOverlappedSelector))
+                dropcapBlock.classList.add("overlap-not");
+        });
+    });
 }, ">rewrite", (info) => (   info.document == document
-						  && GW.mediaQueries.mobileWidth.matches == false
-						  && GW.isMobile() == false));
+                          && GW.mediaQueries.mobileWidth.matches == false
+                          && GW.isMobile() == false));
 
 
 /********/
@@ -2634,7 +2654,7 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropcapsOverlap = (event
 /********/
 
 /**************************************/
-/*	Unwrap <p> wrappers of math blocks.
+/*  Unwrap <p> wrappers of math blocks.
  */
 addContentLoadHandler(GW.contentLoadHandlers.unwrapMathBlocks = (eventInfo) => {
     GWLog("unwrapMathBlocks", "rewrite.js", 1);
@@ -2643,10 +2663,10 @@ addContentLoadHandler(GW.contentLoadHandlers.unwrapMathBlocks = (eventInfo) => {
         mathBlock = mathBlock.closest(".math");
         mathBlock.classList.add("block");
 
-		if (   mathBlock.parentElement?.matches("p")
-			&& isOnlyChild(mathBlock))
-			unwrap(mathBlock.parentElement);
-	});
+        if (   mathBlock.parentElement?.matches("p")
+            && isOnlyChild(mathBlock))
+            unwrap(mathBlock.parentElement);
+    });
 }, "rewrite");
 
 /*****************************************************************************/
@@ -2669,22 +2689,22 @@ addCopyProcessor((event, selection) => {
 });
 
 /*****************************************************************************/
-/*	Make copying text from Wikipedia articles with math elements properly copy
-	the LaTeX source of the math fallback images, rather than omitting them.
+/*  Make copying text from Wikipedia articles with math elements properly copy
+    the LaTeX source of the math fallback images, rather than omitting them.
  */
 addCopyProcessor((event, selection) => {
-	selection.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
-		let mathText = mathImage.alt.slice(1, -1).replace("\\displaystyle", "");
+    selection.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
+        let mathText = mathImage.alt.slice(1, -1).replace("\\displaystyle", "");
 
-		let mathWrapper = mathImage.closest(".wikipedia-math-wrapper");
-		if (   mathWrapper.previousSibling
-			&& mathWrapper.previousSibling.textContent.endsWith(" "))
-			mathText = mathText.trim();
+        let mathWrapper = mathImage.closest(".wikipedia-math-wrapper");
+        if (   mathWrapper.previousSibling
+            && mathWrapper.previousSibling.textContent.endsWith(" "))
+            mathText = mathText.trim();
 
-		mathWrapper.replaceChildren(document.createTextNode(mathText));
-	});
+        mathWrapper.replaceChildren(document.createTextNode(mathText));
+    });
 
-	return true;
+    return true;
 });
 
 /******************************************************************************/
@@ -2703,8 +2723,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToMathBl
             document.getSelection().selectAllChildren(mathElement.querySelector(".mjx-chtml"));
         });
         mathElement.title = mathElement.classList.contains("mjpage__block")
-        					? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
-        					: "Double-click to select equation; copy to get LaTeX source";
+                            ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
+                            : "Double-click to select equation; copy to get LaTeX source";
     });
 }, "eventListeners");
 
@@ -2717,18 +2737,18 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
     eventInfo.container.querySelectorAll(".math.block").forEach(mathBlock => {
         //  Inject button bar.
         mathBlock.appendChild(newElement("SPAN", { class: "block-button-bar" })).append(
-        	newElement("BUTTON", {
-				type: "button",
-				class: "copy",
-				tabindex: "-1",
-				title: "Copy LaTeX source of this equation to clipboard"
-			}, {
-				innerHTML: GW.svg("copy-regular")
-			}), 
-			newElement("SPAN", {
-				class: "scratchpad"
-			})
-		);
+            newElement("BUTTON", {
+                type: "button",
+                class: "copy",
+                tabindex: "-1",
+                title: "Copy LaTeX source of this equation to clipboard"
+            }, {
+                innerHTML: GW.svg("copy-regular")
+            }),
+            newElement("SPAN", {
+                class: "scratchpad"
+            })
+        );
     });
 }, "rewrite");
 
@@ -2823,8 +2843,8 @@ window.addEventListener("beforeprint", GW.beforePrintHandler = (event) => {
 
     function expand(container) {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-			if (includeLink.closest("#link-bibliography, .link-bibliography-append"))
-				return;
+            if (includeLink.closest("#link-bibliography, .link-bibliography-append"))
+                return;
 
             Transclude.transclude(includeLink, true);
         });
@@ -2835,7 +2855,7 @@ window.addEventListener("beforeprint", GW.beforePrintHandler = (event) => {
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView = (eventInfo) => {
         expand(eventInfo.container);
     }, {
-    	condition: (info) => (info.document == document)
+        condition: (info) => (info.document == document)
     });
 
     expand(document);
