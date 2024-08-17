@@ -8524,7 +8524,7 @@ a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
 a[data-link-icon='≈'] .link-icon-hook::after { /* similar-links (ALMOST EQUAL TO) */
         --link-icon-offset-y: 0em;
         --link-icon-size: 0.90em;
-        opacity: 0.9;
+        opacity: 0.95;
 }
 
 /****************************/
@@ -9142,16 +9142,15 @@ a[data-link-icon='tiktok'] .link-icon-hook::after {
 }
 
 a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
-    opacity: 0.70;
+    opacity: 0.60;
     --link-icon-size: 0.75em;
 }
 
 a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
-    opacity: 0.60;
+    opacity: 0.65;
     --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.20em;
 }
-
 
 /*=------------------=*/
 /*= Wikipedia links. =*/
