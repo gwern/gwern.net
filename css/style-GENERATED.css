@@ -9140,16 +9140,15 @@ a[data-link-icon='tiktok'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
 }
 
-/* lb link-bibliography 'table of contents'
-a[data-link-icon='bibliography'] .link-icon-hook::after {
-    opacity: 1;
-    --link-icon-size: 0.8em;
+a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
+    opacity: 0.70;
+    --link-icon-size: 0.75em;
 }
- */
 
 a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
     opacity: 0.60;
     --link-icon-size: 0.85em;
+    --link-icon-offset-y: 0.20em;
 }
 
 
