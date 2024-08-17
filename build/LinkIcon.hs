@@ -99,12 +99,15 @@ removeIconDuplicate x@(Link (_,_,kvs) text _) = let iconType = filter (\(k,v) ->
                                                      in if iconText /= text' then x else removeIcon x
 removeIconDuplicate x = x
 
+-- whether a Link has a link-icon set already; errors out if the attribute keys are set but have empty values (to help guard against that possible error)
 hasIcon :: Inline -> Bool
 hasIcon (Link (_,_,ks) _ (_,_)) =
   case lookup "link-icon" ks of
-    Just _ -> True
+    Just "" -> error "LinkIcon.hasIcon: Empty `link-icon` attribute; this should never happen!"
+    Just _  -> True
     Nothing -> case lookup "link-icon-type" ks of
-                 Just _ -> True
+                 Just "" -> error "LinkIcon.hasIcon: Empty `link-icon-type` attribute; this should never happen!"
+                 Just _  -> True
                  Nothing -> False
 hasIcon _ = True
 
