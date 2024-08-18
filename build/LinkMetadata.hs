@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-08-16 15:42:33 gwern"
+When:  Time-stamp: "2024-08-18 11:21:53 gwern"
 License: CC-0
 -}
 
@@ -338,7 +338,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies…
                       let pandoc = Pandoc nullMeta $ generateAnnotationBlock am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
-                      pandoc' <- do let p = walk (linkLive . nominalToRealInflationAdjuster) $
+                      pandoc' <- do let p = walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
