@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-07-20 09:32:21 gwern"
+When: Time-stamp: "2024-08-19 09:37:27 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -26,7 +26,7 @@ import Hakyll (compile, composeRoutes, constField, fromGlob,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying, escapeHtml)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying, escapeHtml, (.&&.), complement)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
@@ -78,7 +78,8 @@ main =
 
                  when slow $ preprocess testAll
                  preprocess $ printGreen ("Begin site compilation…" :: String)
-                 let targets = if null args' then "**.md" else fromGlob $ head args'
+                 let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else
+                                else fromGlob $ head args'
                  unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print targets)
                  match targets $ do
                      -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
