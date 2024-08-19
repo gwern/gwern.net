@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-05 09:53:55 gwern"
+# When:  Time-stamp: "2024-08-18 11:59:02 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -695,10 +695,11 @@ else
     wrap λ "Grammar: 'a' → 'an'?"
 
      λ(){ gec -e '<div class="text-center">$' -e '[A-Za-z]\.\. ' -e '– ' -e  ' –' -e '^> <div class="abstract">$' -e ' is is ' \
-              -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9]' \
+              -e '[12][0-9][0-9][0-9]–[01][0-9]–[0-3][0-9]' -e '[12][0-9][0-9][0-9]–[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]–[0-3][0-9][^0-9]' \
               -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
               -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
-              -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]'\
+              -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
+              -e '<div class="epigraph"$' \
               -- $PAGES | \
               gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
@@ -741,7 +742,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep -F --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -850,7 +851,9 @@ else
             -e '</p> </figcaption>' -e '</p></figcaption>' -e '<figcaption aria-hidden="true"><p>' -e '<figcaption aria-hidden="true"> <p>' \
             -e '<figcaption><p>' -e '<figcaption> <p>' -e 'Your input seems to be incomplete.' -e 'tercile' -e 'tertile' -e '\\x01' -e '&#' \
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
-            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -- ./metadata/*.gtx | \
+            -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
+            -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
+            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &

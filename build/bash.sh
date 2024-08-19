@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-03 12:20:32 gwern"
+# When:  Time-stamp: "2024-08-18 20:18:36 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -99,6 +99,33 @@ pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" >&2 && return 1; fi
             mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
           (crossref "$ORIGINAL" &);
           }
+# delete the last page of the PDF, similar to `pdfcut`:
+pdfcut-last () {
+    if [ $# -ne 1 ]; then
+        echo "Usage: pdfcut-last <pdf-file>" >&2
+        return 1
+    fi
+
+    ORIGINAL=$(path2File "$1")
+    TARGET=$(mktemp /tmp/XXXXXX.pdf)
+
+    # Get the total number of pages
+    PAGES=$(pdftk "$ORIGINAL" dump_data | grep NumberOfPages | awk '{print $2}')
+
+    # If the PDF has only one page, we can't remove the last page
+    if [ "$PAGES" -eq 1 ]; then
+        echo "Error: The PDF has only one page. Cannot remove the last page." >&2
+        return 1
+    fi
+
+    # Remove the last page
+    pdftk "$ORIGINAL" cat 1-r2 output "$TARGET" &&
+    # Copy metadata to the new PDF
+    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
+    mv "$TARGET" "$ORIGINAL" || rm "$TARGET"
+
+    (crossref "$ORIGINAL" &)
+}
 # sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
 pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")

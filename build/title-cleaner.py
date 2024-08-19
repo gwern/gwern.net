@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-07 17:50:19 gwern"
+# When:  Time-stamp: "2024-08-18 21:22:50 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -202,6 +202,44 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "There’s a running theme in here of programming problems LLMs solve where it’s..."
 76. "Early evolution of small body size in Homo floresiensis"
 "Early evolution of small body size in <em>Homo floresiensis</em>"
+77. ""Page not found - Rybka Forum""
+""
+78. "Cinzel Decorative—Google Fonts"
+"Cinzel Decorative"
+79. "Elsie Swash Caps - Google Fonts"
+"Elsie Swash Caps"
+80. "Bodoni Classic Deco Caps Medium : Download For Free, View Sample Text, Rating And More On Fontsgeek.Com"
+"Bodoni Classic Deco Caps Medium"
+81. "Run Deep: I Put a Toaster in the Dishwasher"
+"I Put a Toaster in the Dishwasher"
+82. "æå­¦ããªãï¼ã¨ã´ã¡ã³ã²ãªãªã³RETAKE"
+"文学フリマ＆エヴァンゲリオンRETAKE"
+83. "NicolÃ¡s GÃ³mez Davila: An Anthology : Various"
+"Nicolás Gómez Davila: <em>An Anthology</em>"
+84. "Magyar H. P. Lovecraft PortÃ¡l"
+""
+85. "DE102007030495A1—Verwendung einer eine Kreatin-Komponente enthaltende Zusammensetzung zur Verbesserung der GedÃ¤chtnisleistung, der MerkfÃ¤higkeit, des LangzeitgedÃ¤chtnisses und zur Vorbeugung geistiger ErmÃ¼dungszustÃ¤nde"
+"Verwendung einer eine Kreatin-Komponente enthaltende Zusammensetzung zur Verbesserung der Gedächtnisleistung, der Merkfähigkeit, des Langzeitgedächtnisses und zur Vorbeugung geistiger Ermüdungszustände"i
+86. "Interview with China MiÃ©ville"
+"Interview with China Miéville"
+87. "Interview with Junot DÃ­az"
+"Interview with Junot Díaz"
+88. "Ce gÃ©nÃ©rateur de WAIFU "ThisWaifuDoesNotExist" sur le forum Blabla 18-25 ans - 20-02-2019 11:52:46 - jeuxvideo.com"
+"Ce générateur de WAIFU "ThisWaifuDoesNotExist" sur le forum Blabla 18-25 ans - 20-02-2019 11:52:46 - jeuxvideo.com"
+89. "Steamed Hams But It's The Confrontation From Les MisÃ©rables"
+"Steamed Hams But It’s The Confrontation From <em>Les Misérables</em>"
+90. "[Touhou Vocal] Raven's Jig—Une Semaine chez les Ãcarlates (Embodiment of Scarlet Devil)"
+"[東方 Touhou Vocal] Raven's Jig - Une Semaine chez les Écarlates (Embodiment of Scarlet Devil)"
+91. "ãæ±æ¹ Post-Metalã denshÅ«to—LÃ¦vateinn"
+"【東方 Post-Metal】 denshūto - Lævateinn"
+92. "2017 CODE Plenary Session 2: Susan Athey, RenÃ©e Richardson Gosline, and Ron Kohavi"
+"2017 CODE Plenary Session 2: Susan Athey, Renée Richardson Gosline, and Ron Kohavi"
+93. "NGE: A version of the song "Komm, sÃ¼sser Tod" will be used in _Rebuild_"
+"NGE: A version of the song “Komm, süsser Tod” will be used in <em>Rebuild</em>"
+94. "ramsey nasser / Yesterday's Pixels, Today"
+"Yesterday’s Pixels, Today"
+95. "3�Backstory"
+"3. Backstory"
 
 Task:
 

@@ -50,7 +50,7 @@ linkIDOverrides =
        , ("/doc/cs/2019-kleppmann.pdf", "kleppmann-et-al-2019-paper")
        , ("/doc/culture/1983-wolfe-thecitadeloftheautarch-thejustman", "just-man-2")
        , ("/doc/culture/2007-wolfe", "wolfe-2007")
-       , ("/doc/darknet-market/2019-du.pdf", "du-et-al-2019-2")
+       , ("/doc/darknet-market/alphabay/2019-du.pdf", "du-et-al-2019-2")
        , ("/doc/darknet-market/silk-road/1/2020-ladegaard.pdf", "ladegaard-2020-2")
        , ("/doc/darknet-market/dnm-archive/2020-norbutas.pdf", "norbutas-et-al-2020-1")
        , ("/doc/darknet-market/2020-yang-3.pdf", "yang-et-al-2020-b")

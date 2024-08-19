@@ -330,9 +330,24 @@ canonicals = M.fromList
   , ("Leon Gatys", "Leon A. Gatys")
   , ("Jerome Rotter", "Jerome I. Rotter")
   , ("Peter Joshi", "Peter K. Joshi")
+  , ("aidan_mclau", "Aidan McLau")
+  , ("Zoltan Kutalik", "Zoltán Kutalik")
+  , ("smerity", "Stephen Merity")
+  , ("S merity", "Stephen Merity")
+  , ("S Merity", "Stephen Merity")
+  , ("Michel Nivard", "Michel G. Nivard")
+  , ("Michel Nivar", "Michel G. Nivard")
+  , ("Michel G. Nivar", "Michel G. Nivard")
+  , ("jek", "James Bradbury")
+  , ("jekbradbury", "James Bradbury")
+  , ("David Porteous", "David J. Porteous")
+  , ("Andrew Morris", "Andrew P. Morris")
+  , ("MR Jabalameli", "M. Reza Jabalameli")
+  , ("Howard Phillips Lovecraft", "H. P. Lovecraft")
+  , ("ramsey nasser", "Ramsey Nasser")
   ]
 
--- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals
+-- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
 authorLinkDB = M.fromList $
   zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
@@ -542,10 +557,24 @@ authorLinkDB = M.fromList $
     , ("Leon A. Gatys", "https://scholar.google.com/citations?user=ADMVEmsAAAAJ")
     , ("Jerome I. Rotter", "https://lundquist.org/jerome-i-rotter-md")
     , ("Alexander S. Ecker", "https://openreview.net/profile?id=~Alexander_S_Ecker1")
-    , ("Samuli Ripatti", "https://scholar.google.com/citations?user=BkWwC18AAAAJ&hl=en&oi=ao")
+    , ("Samuli Ripatti", "https://scholar.google.com/citations?user=BkWwC18AAAAJ")
     , ("Peter K. Joshi", "https://scholar.google.co.uk/citations?user=HRgG478AAAAJ&hl=en")
     , ("Julio Rosenstock", "https://www.cardiometabolichealth.org/faculty/julio-rosenstock/")
     , ("John R. B. Perry", "https://www.johnomics.co.uk/about")
+    , ("Aidan McLau", "https://x.com/aidan_mclau")
+    , ("Zoltán Kutalik", "https://wp.unil.ch/sgg/zoltan/")
+    , ("Stephen Merity", "https://state.smerity.com/")
+    , ("Michel G. Nivard", "https://scholar.google.com/citations?user=omRGPjUAAAAJ")
+    , ("Guy Lever", "https://scholar.google.com/citations?user=1XgR518AAAAJ&hl=en")
+    , ("Thomas Moynihan", "https://thomasmoynihan.xyz/")
+    , ("James Bradbury", "https://x.com/jekbradbury")
+    , ("David J. Porteous", "https://www.ed.ac.uk/profile/professor-david-porteous")
+    , ("Andrew P. Morris", "https://www.liverpool.ac.uk/health-and-life-sciences/staff/andrew-morris/")
+    , ("Stavroula Kanoni", "https://www.qmul.ac.uk/whri/people/academic-staff/items/kanonistavroula.html")
+    , ("Luigi Ferrucci", "https://irp.nih.gov/pi/luigi-ferrucci")
+    , ("John Schulman", "http://joschu.net/")
+    , ("Jing Hua Zhao", "https://jinghuazhao.github.io/")
+    , ("Jacob Hilton", "https://www.jacobh.co.uk/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -599,7 +628,7 @@ authorWpLinkDB =
     ,"Amnon Shashua","Amos H. Hawley","Amos Storkey","Amos Tversky","Amy Barrett"
     ,"Amy Dawes","Amy Hauck Newman","Amy J. Wagers","Amy Mitchell","Amy Moore"
     ,"Amy Orben","Amy Peters","Amy Price","Amy Yang","An Yang"
-    ,"Ana Maria Cuervo","Ana Miranda","Anat Brunstein Klomek","Anders D. B&oslash;rglum","Anders Dale"
+    ,"Ana Maria Cuervo","Ana Miranda","Anat Brunstein Klomek","Anders D. Børglum","Anders Dale"
     ,"Anders Fjell","Anders Jonsson","Anders Krogh","Anders Lundmark","Anders Sandberg"
     ,"Andre Barreto","Andre Franke","Andrea B. Troxel","Andrea Basso","Andrea Burns"
     ,"Andrea Crisanti","Andrea Huber","Andrea J. Liu","Andrea L. Thomaz","Andrea Levy"
@@ -954,7 +983,7 @@ authorWpLinkDB =
     ,"Gregory Francis","Gregory M. Fahy","Gregory S. Berns","Gretchen Chapman","Gudrun Wagner"
     ,"Guido Barbujani","Guido Kroemer","Guillaume Leclerc","Guillermo Sapiro","Gunther Eysenbach"
     ,"Guo Li","Guoyao Wu","Gustav Larsson","Gustavo Turecki","Guy Fournier"
-    ,"Guy Katz","Guy Lever","Guy Montrose Whipple","G\225bor Scheiring","G\225bor Vajta"
+    ,"Guy Katz","Guy Montrose Whipple","G\225bor Scheiring","G\225bor Vajta"
     ,"G\233rard Ben Arous","H. Andrew Schwartz","H. B. Barlow","H. M. Collins","H. P\233tard"
     ,"H. V. Jagadish","H. W. B. Joseph","H. Wilkins","Hagop S. Akiskal","Haidar Khan"
     ,"Haifeng Fu","Haim Sompolinsky","Haim Weizman","Haitao Zheng","Haiyan Zhang"
@@ -1654,7 +1683,7 @@ authorWpLinkDB =
     ,"Thomas Hills","Thomas Hoffman","Thomas Hofmann","Thomas Huang","Thomas I. Miller"
     ,"Thomas J. Bouchard","Thomas J. Carew","Thomas Jefferson","Thomas J\248rgensen","Thomas K. Landauer"
     ,"Thomas L. Griffiths","Thomas Lancaster","Thomas Leopold","Thomas M. Cover","Thomas M. Klap\246tke"
-    ,"Thomas Moynihan","Thomas Mueller","Thomas Nagel","Thomas Neumann","Thomas O\8217Rourke"
+    ,"Thomas Mueller","Thomas Nagel","Thomas Neumann","Thomas O\8217Rourke"
     ,"Thomas Paine","Thomas R. Gingeras","Thomas S. Dee","Thomas S. Huang","Thomas S. Ray"
     ,"Thomas Sch\228fer","Thomas Warren","Thomas Wisniewski","Tian Li","Tian Wu"
     ,"Tian Xia","Tianyi Zhang","Tie-Yan Liu","Tiffany Stewart","Tim Byrne"
@@ -1775,4 +1804,5 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"]
+    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
+    , "Claudia Langenberg", "Patricia Briggs", "Julia Galef"]

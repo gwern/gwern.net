@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-08-03 12:11:24 gwern"
+# When:  Time-stamp: "2024-08-18 20:47:29 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -90,6 +90,12 @@ Vasily Giannakeas, David W. Lim, Steven A. Narod
 
 <text>Judgment accuracyDecision-makingCombining estimatesWisdom of crowdsGenetic diversityIndependence of opinionTwin studies</text> →
 Judgment accuracy, Decision-making, Combining estimates, Wisdom of crowds, Genetic diversity, Independence of opinion, Twin studies
+
+<text>Prof Philippe Autier MD, Prof Mathieu Boniol PhD, CÃ©cile Pizot MSc, Prof Patrick Mullie PhD</text> →
+Philippe Autier, Mathieu Boniol, Cécile Pizot, Patrick Mullie
+
+<text>MIND WANDERING DURING IMPLICIT LEARNING IS ASSOCIATED WITH INCREASED PERIODIC EEG ACTIVITY AND IMPROVED EXTRACTION OF HIDDEN PROBABILISTIC PATTERNS</text> →
+Mind Wandering During Implicit Learning Is Associated With Increased Periodic EEG Activity And Improved Extraction Of Hidden Probabilistic Patterns
 
 Input:
 <text>{target}</text> →

@@ -4,7 +4,7 @@ separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable"]
+badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found"]
 
 -- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
 -- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
@@ -46,7 +46,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -130,4 +130,4 @@ stringDelete = [" - The Public Domain Review"
             , " – Stratechery by Ben Thompson", " – Thread Reader App", " - by RJ Andrews - Chartography"
             , "dys2p › ", " - by Adam Mastroianni", " Clinical Chemistry", " - Erik Schluntz"
             , " - The Data Point", "– Terence Edenâ\\200\\231s Blog", " – Variance Explained"
-            , "Matvoz.com – ", "Mike Dellanoce's Blog: ", " – Clear Language, Clear Mind\8288:"]
+            , "Matvoz.com – ", "Mike Dellanoce's Blog: ", " – Clear Language, Clear Mind\8288:", " - Google Fonts", " : Download For Free, View Sample Text, Rating And More On Fontsgeek.Com", "Run Deep: "]
