@@ -30,7 +30,7 @@ import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nul
 import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
 import LinkMetadataTypes (Metadata)
-import LinkMetadata (typesetHtmlField)
+import Typography (typesetHtmlField)
 import LinkBacklink (readBacklinksDB)
 import Utils (host, anyInfixT, safeHtmlWriterOptions)
 import LinkArchive (readArchiveMetadata, localizeLink, ArchiveMetadata)

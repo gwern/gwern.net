@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, dateRangeDurationTestCasesTestsuite) where
+module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, dateRangeDurationTestCasesTestsuite, typesetHtmlField) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -20,15 +20,26 @@ import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
 
 import Data.Text.Titlecase (titlecase)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc, nullAttr)
+import Text.Pandoc (Inline(..), Block(..), Pandoc(Pandoc), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta)
 import Text.Pandoc.Walk (walk, walkM)
 
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
 import Config.Misc (currentYear)
-import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan, formatIntWithCommas, formatDaysInLargestUnit)
+import Utils (sed, replaceMany, parseRawAllClean, calculateDateSpan, formatIntWithCommas, formatDaysInLargestUnit, safeHtmlWriterOptions)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateRangeDurationTestCases)
+
+typesetHtmlField :: String -> String
+typesetHtmlField "" = ""
+typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
+                        case fieldPandocMaybe of
+                          Left errr -> error $ " : " ++ t ++ show errr
+                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                                               let compiledHTML = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
+                                                 case compiledHTML of
+                                                   Right fieldHtml -> T.unpack fieldHtml
+                                                   Left errors     -> error "LinkMetadata.typesetHtmlField: string failed to compile through Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-08-18 11:21:53 gwern"
+When:  Time-stamp: "2024-08-20 09:50:08 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, dateTruncateBad, typesetHtmlField, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, dateTruncateBad, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -30,9 +30,9 @@ import Network.HTTP (urlEncode)
 import Network.URI (isURIReference)
 import System.Directory (doesFileExist, doesDirectoryExist, getFileSize)
 import System.FilePath (takeDirectory, takeFileName, takeExtension)
-import Text.Pandoc (readerExtensions, Inline(Link, Span),
-                    def, writeHtml5String, runPure, pandocExtensions,
-                    readHtml, nullAttr, nullMeta,
+import Text.Pandoc (Inline(Link, Span),
+                    writeHtml5String, runPure,
+                    nullAttr, nullMeta,
                     Inline(Code, Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Show.Pretty (ppShow)
@@ -45,7 +45,7 @@ import Config.LinkID (affiliationAnchors)
 import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform, titlecase')
+import Typography (titlecase', typesetHtmlField)
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
@@ -357,18 +357,6 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
              -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
              -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
                                               unless annotationExisted $ writeUpdatedFile "annotation" ("./_site/"++filepath') finalHTML
-
-typesetHtmlField :: String -> String
-typesetHtmlField "" = ""
-typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
-                        case fieldPandocMaybe of
-                          Left errr -> error $ " : " ++ t ++ show errr
-                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                                               let compiledHTML = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
-                                                 case compiledHTML of
-                                                   Right fieldHtml -> T.unpack fieldHtml
-                                                   Left errors     -> error "LinkMetadata.typesetHtmlField: string failed to compile through Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
-
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
