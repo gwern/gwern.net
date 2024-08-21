@@ -10,7 +10,7 @@ import Annotation.PDF (pdf)
 import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path, Metadata)
-import MetadataFormat (linkCanonicalize, extractTwitterUsername)
+import MetadataFormat (linkCanonicalize, extractTwitterUsername, guessDateFromString)
 import MetadataTitle (tooltipToMetadata, wikipediaURLToTitle, htmlDownloadAndParseTitleClean)
 import Typography (typesetHtmlField)
 import Utils (replace, anyPrefix)
@@ -24,10 +24,11 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
     mi <- linkDispatcherURL md l'
     case mi of
       -- apply global per-field rewrites here
-      Right (l'',(title,author,date,dc,kvs,tags,abstract)) ->
-        return $ Right (l'',(reformatTitle title,author,date,dc,kvs,tags,abstract))
-      Left Permanent -> let (title,author,date) = tooltipToMetadata l' (T.unpack tooltip) in
-                          if title/="" then return (Right (l',(reformatTitle title,author,date,"",[],[],""))) else return mi
+      Right (l'',(title,author,dateRaw,dc,kvs,tags,abstract)) ->
+        do date <- if dateRaw /= "" then return dateRaw else guessDateFromString (title ++ " : " ++ l'')
+           return $ Right (l'',(reformatTitle title,author,date,dc,kvs,tags,abstract))
+      Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
+                           if title/="" then return (Right (l',(reformatTitle title,author,date',"",[],[],""))) else return mi
       Left Temporary -> return mi
   where reformatTitle = typesetHtmlField . replace " – " "—" . replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 linkDispatcher _ x = error ("Annotation.linkDispatcher passed a non-Link Inline element: " ++ show x)

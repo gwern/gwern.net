@@ -7,13 +7,17 @@ import Data.List (intersperse, isSuffixOf, isPrefixOf, intercalate, unfoldr)
 import Numeric (showFFloat)
 import System.FilePath (takeBaseName)
 import qualified Data.Text as T (pack)
+import Data.FileStore.Utils (runShellCommand)
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import System.Exit (ExitCode(ExitFailure))
 
 import Text.Regex.TDFA ((=~))
 import Text.Pandoc (Inline(Span, Str))
 
 import Cycle (testInfixRewriteLoops)
-import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, split, trim)
+import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, split, trim, printRed, delete)
 import Config.MetadataFormat as C
+import Config.Misc as CD (cd)
 
 -- | Check if brackets & quotes in a string are balanced.
 --
@@ -51,9 +55,10 @@ balanced str = helper str "" 0 0
 
 -- A Twitter username is a 1–15 character alphanumeric/underscore string:
 -- must handle both "https://x.com/grantslatton/status/1703913578036904431" and "https://x.com/grantslatton":
+-- Unit-tests in `Config.MetadataFormat.extractTwitterUsernameTestSuite`.
 extractTwitterUsername :: String -> String
 extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
-   sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?$", "\\1")] url
+   sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?(\\?lang=[a-z]+)?$", "\\1")] url
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.
@@ -208,3 +213,14 @@ dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
 -- dates of the form 'YYYY-01-01' (or 'YYYY-01') are invariably lies, and mean just 'YYYY'.
 dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuffixOf` d) then take 4 d else d
+
+-- TODO: in a few months, after more counter-examples have been added, run this on all outstanding date-less metadata items. But first check it against all known dates.
+-- LinkMetadata.walkAndUpdateLinkMetadata True (\x@(a,(_,_,d,_,_,_,_)) -> if d == "" && (not (null (intersect "0123456789" a))) then let date = System.IO.Unsafe.unsafePerformIO (guessDateFromString a) in if null date then return x else putStrLn (a ++ " : " ++ System.IO.Unsafe.unsafePerformIO (guessDateFromString a)) >> return x else return x)
+guessDateFromString :: String -> IO String
+guessDateFromString "" = error "MetadataFormat.guessDateFromString: passed an empty string argument, which should never happen!"
+guessDateFromString u  =
+        do CD.cd
+           (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/date-guesser.py" [u]
+           case status of
+               ExitFailure err -> printRed ("Exit Failure: " ++ intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
+               _ -> return $ delete "\"\"" $ trim $ U.toString mb
