@@ -16,6 +16,7 @@ module XOfTheDay where
 -- `<div class="qotd"><a class="include" href="/metadata/today-quote.html">Quote Of The Day</a></div>`
 --
 -- † The probability that a daily visitor would see a duplicate quote under simple random sampling grows rapidly with time; see <https://en.wikipedia.org/wiki/Birthday_problem>. If eg. there were 366 quotes, then after only 23 visits, the reader would have a 50-50 chance of seeing ≥1 duplicate!
+-- Alternately, one could frame this as a <https://en.wikipedia.org/wiki/Coupon_collector%27s_problem> (which is relevant to various lints like checking each annotation/page for broken links): how long does it take to see all 𝑛 entries? Tracking it allows the most efficient possible length of exactly 𝑛 checks (guaranteed); but if one used simple random sampling-with-replacement, you only get E[𝒪(𝑛 × log 𝑛)]! So for 1,495 quotes, that'd be ~10,929 checks instead (wasting 9,433 checks); for 20,000+ annotations+essays, that'd be >178,069 wasted checks…
 --
 -- This module supports 2 more 'X of the day' features, with analogous functionality: 'annotation of the day', which goes through the annotated links by length; and 'site of the day', which is similar to a 'quote' but just is a single hyperlink to a website.
 
