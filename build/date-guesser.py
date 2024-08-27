@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-21 13:03:04 gwern"
+# When:  Time-stamp: "2024-08-27 11:45:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -24,10 +24,10 @@ else:
 
 prompt = """
 Task: Guess the date mentioned in the input.
-The date should be formatted like 'YYYY[[-MM]-DD]' format, with the most available precision; if only the year is available, print the year like '2023'; if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
+The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023'; if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
 Dates are valid only between 1000AD and 2100AD; any dates outside that date range are probably mistakes, and do not print those.
 If there is more than one valid date, print only the first one.
-Do not make up dates; if you are unsure, print only the empty string.
+Do not make up dates; if you are unsure, print only the empty string "".
 
 Task examples:
 
@@ -62,7 +62,7 @@ Task examples:
 - "https://x.com/jconorgrogan/status/1820212444016345146"
 ""
 - "https://www.nature.com/articles/s41586-021-03819-2#deepmind"
-2021-07-15
+""
 - " Jeffrey Arlo Brown, July 31, 2024"
 2024-07-31
 - "https://publicdomainreview.org/collection/alexander-graham-bell-s-tetrahedral-kites-1903-9/"
@@ -70,13 +70,13 @@ Task examples:
 - "https://publicdomainreview.org/collection/the-model-book-of-calligraphy-1561-1596/"
 ""
 - "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020100Z"
-2005-03-14
+""
 - "https://www.explainxkcd.com/wiki/index.php/1393:_Timeghost"
-2014-07-11
+""
 - "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040028"
-2007-02-27
+""
 - "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1001747"
-2014-10-21
+""
 - "/newsletter/2022/index"
 2022
 - "https://academic.oup.com/aje/article/156/11/985/80696"
@@ -88,107 +88,107 @@ Task examples:
 - "http://www.synthesis.cc/synthesis/2016/15/on_dna_and_transistors"
 2016
 - "http://mbio.asm.org/content/7/4/e01018-16.full"
-2016-08-23
+""
 - "https://rstb.royalsocietypublishing.org/content/363/1503/2519"
-2008-04-23
+""
 - "https://web.archive.org/web/20110530014638/https://today.msnbc.msn.com/id/43098220/ns/today-today_people/t/after-years-millionaire-misers-heirs-finally-split-m/"
 2011-05-27
 - "https://web.archive.org/web/20110801232705/http://www.lifepact.com/history.htm"
 2004-06
 - "https://www.nejm.org/doi/full/10.1056/NEJMoa1715474"
-2018-04-25
+""
 - "https://academic.oup.com/molehr/article/24/3/135/4829657"
 ""
 - "https://distill.pub/2020/01/32/circuits/branch-specialization/"
 2020-01
 - "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
-2016-12
+""
 - "https://jasbsci.biomedcentral.com/articles/10.1186/s40104-018-0304-7"
-2018-12-14
+""
 - "https://journals.biologists.com/jeb/article/218/1/123/13627/The-developmental-origins-of-chronic-physical"
-2015-01-01
+""
 - "https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1003864"
-2022-01-27
+""
 - "https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-017-0321-3"
-2017-08-25
+""
 - "https://web.archive.org/web/20141018022010/https://news.nationalgeographic.com/news/2014/10/141015-better-beef-genetics-science-agriculture-environment-ngfood/"
 2014-10-15
 - "https://if50.substack.com/p/1985-a-mind-forever-voyaging"
-2021-04-15
+""
 - "https://if50.substack.com/p/2005-shades-of-doom"
-2021-09-16
+""
 - "https://if50.substack.com/p/2013-a-family-supper"
-2021-11-11
+""
 - "https://if50.substack.com/p/2015-lifeline"
-2021-11-25
+""
 - "https://if50.substack.com/p/2017-universal-paperclips"
-2021-12-09
+""
 - "https://if50.substack.com/p/2020-scents-and-semiosis"
-2021-12-30
+""
 - "https://github.com/martinarjovsky/WassersteinGAN/issues/2#issuecomment-278710552"
-2017-02-09
+""
 - "https://gizmodo.com/generation-cryo-fighting-death-in-the-frozen-unknown-1786446378"
-2016-09-22
+""
 - "https://x.com/michelangemoji/status/1485356685896347648"
 ""
 - "https://x.com/danielrussruss/status/1489947340026769412"
 ""
 - "https://nutritionj.biomedcentral.com/articles/10.1186/s12937-017-0269-y"
-2017-04-22
+""
 - "https://nymag.com/news/features/synthetic-drugs-2013-4/"
 2013-04-05
 - "https://www.reddit.com/r/thisisthewayitwillbe/comments/e02gtg/ai_and_neuroscience_main2019_patrick_mineaults/"
 2019-11-22
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13294"
-2020-12-30
+""
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13296"
-2021-01-20
+""
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13344"
-2021-05-03
+""
 - "https://onlinelibrary.wiley.com/doi/10.1111/rati.12233"
-2019-02-27
+""
 - "https://onlinelibrary.wiley.com/doi/abs/10.1111/rda.13358"
-2018-11-25
+""
 - "https://onlinelibrary.wiley.com/doi/abs/10.1111/rda.13358"
-2015-06-18
+""
 - "https://onlinelibrary.wiley.com/doi/pdf/10.1002/ajmg.b.32363"
-2015-08-19
+""
 - "https://onlinelibrary.wiley.com/doi/pdf/10.1002/ajmg.b.32388"
-2015-10-22
+""
 - "https://onlinelibrary.wiley.com/doi/pdf/10.1002/ajmg.b.32419"
-2016-01-15
+""
 - "https://openai.com/index/the-international-2018-results/"
 2018-08-23
 - "https://phys.org/news/2016-02-animals-tb-cancer-landmines.html"
 2016-02-16
 - "https://proceedings.mlr.press/v80/guez18a.html"
-2018-07-10
+""
 - "https://osf.io/preprints/psyarxiv/4q9gv/"
-2017-06-23
+""
 - "https://psychiatryonline.org/doi/10.1176/appi.ajp-rj.2021.170105"
-2021-09-21
+""
 - "https://publicdomainreview.org/blog/2021/12/all-sound-recordings-prior-to-1923-will-enter-the-us-public-domain-in-2022/"
 2021-12-07
 - "https://publicdomainreview.org/collection/chladni-figures-1787/"
-2017-08-19
+""
 - "https://publicdomainreview.org/collection/examples-of-chinese-ornament-1867/"
-2012-11-21
+""
 - "https://pubs.acs.org/doi/full/10.1021/acsptsci.0c00099"
-2019-07-04
+""
 - "https://publicdomainreview.org/collection/glossary-of-censored-words-from-a-1919-book-on-love/"
-2020-02-13
+""
 - "https://publicdomainreview.org/collection/japanese-designs-1902/"
-2012-06-01
+""
 - "https://publicdomainreview.org/collection/john-lockes-method-for-common-place-books-1685/"
-2019-05-08
+""
 - "https://publicdomainreview.org/collection/sarah-goodridges-beauty-revealed-1828/"
-2020-02-05
+""
 - "https://publicdomainreview.org/collection/on-the-writing-of-the-insane-1870/"
-2013-03-12
+""
 - "https://publicdomainreview.org/collection/the-unicorn-tapestries-1495-1505/"
-2019-07-23
+""
 - "https://pubs.acs.org/doi/full/10.1021/acsptsci.0c00099"
-2020-08-31
+""
 - "https://elifesciences.org/articles/57849"
 ""
 - "https://en.wikipedia.org/wiki/Deadline_(1982_video_game)"
@@ -219,6 +219,16 @@ Task examples:
 ""
 - "https://medium.com/ml-everything/using-gpt-3-to-explain-jokes-2001a5aefb68"
 ""
+- "The summer solstice 4 years before 2024."
+2020-06-20
+- "Can AI Scaling Continue Through 2030?"
+""
+- "https://epochai.org/blog/prospects-for-search-scaling-laws"
+""
+- "Christmas 2024"
+2024-12-25
+- "https://arxiv.org/abs/2404.11018#google"
+2024-04-17
 
 Task:
 
