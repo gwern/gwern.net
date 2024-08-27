@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-07-23 17:20:30 gwern"
+-- When:  Time-stamp: "2024-08-27 14:46:29 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -81,9 +81,8 @@ import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, looku
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Config.Misc (currentYear)
-import MetadataFormat (dateRegex, printDouble)
+import MetadataFormat (isDate, printDouble)
 import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete)
-import Text.Regex.TDFA ((=~))
 import Config.Inflation as C
 
 -- ad hoc dollar-only string-munging version of `nominalToRealInflationAdjuster`, which attempts to parse out an amount and adjust it to a specified date.
@@ -95,8 +94,8 @@ nominalToRealInflationAdjusterHTML "" s = s
 nominalToRealInflationAdjusterHTML date s
   | '$' `notElem` s = s -- no possible amount to adjust
   | "<span data-inflation=\"" `isInfixOf` s || "<span class=\"inflation-adjusted\"" `isInfixOf` s = s -- already adjusted
-  -- invalid date to adjust to; NOTE: in theory, this is only called in LinkMetadata.hs & every date read from GTX should have passed `dateRegex` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
-  | not (date =~ dateRegex) = error ("nominalToRealInflationAdjusterHTML: passed a malformed date? " ++ date ++ "; s: " ++ s)
+  -- invalid date to adjust to; NOTE: in theory, this is only called in LinkMetadata.hs & every date read from GTX should have passed `isDate` validation already, and the date is always valid; but we double-check anyway (might be interactive input or something)
+  | not (isDate date) = error ("nominalToRealInflationAdjusterHTML: passed a malformed date? " ++ date ++ "; s: " ++ s)
   -- All OK; start adjusting:
   | otherwise =
                let year = "$" ++ take 4 date

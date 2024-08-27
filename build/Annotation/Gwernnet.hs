@@ -15,7 +15,7 @@ import Text.Regex.TDFA ((=~))
 import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
-import MetadataFormat (checkURL, cleanAbstractsHTML, dateRegex, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
+import MetadataFormat (checkURL, cleanAbstractsHTML, isDate, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
 import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim, delete) -- safeHtmlWriterOptions, sedMany
 import Tags (listTagDirectoriesAll, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
@@ -74,9 +74,9 @@ gwern md p
                         let metas = filter (isTagOpenName "meta") f
                         let title = cleanAbstractsHTML $ concatMap safeTitle metas
                         let date = let dateTmp = concatMap safeDateIssued metas
-                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then "" else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (isDate dateTmp) then "" else dateTmp
                         let dateModified = let dateTmp = concatMap safeDateModified metas
-                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (dateTmp =~ dateRegex) then date else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || not (isDate dateTmp) then date else dateTmp
                         let description = concatMap safeDescription metas
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap safeKeywords metas

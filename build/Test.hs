@@ -13,7 +13,7 @@ import Text.Pandoc (Inline(Link))
 
 import Cycle (isCycleLess)
 import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, cleanAuthorsTest, balanced, isDate, cleanAbstractsHTML,
-                      dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex, extractTwitterUsername)
+                      footnoteRegex, sectionAnonymousRegex, badUrlRegex, extractTwitterUsername)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 
 -- module self-tests:
@@ -209,7 +209,7 @@ testAll = do Config.Misc.cd
 
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
-               [dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
+               [footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
                (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.MetadataFormat.cleanAuthorsRegexps ++ Config.MetadataFormat.htmlRewriteRegexpBefore ++ Config.MetadataFormat.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
              let regexUnitTests = filter (\(before,after) -> MetadataFormat.cleanAbstractsHTML before /= after) Config.MetadataFormat.htmlRewriteTestCases
              unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)

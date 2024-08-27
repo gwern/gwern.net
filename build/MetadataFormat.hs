@@ -11,6 +11,8 @@ import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 
+import Data.Time (parseTimeM, defaultTimeLocale, Day)
+
 import Text.Regex.TDFA ((=~))
 import Text.Pandoc (Inline(Span, Str))
 
@@ -94,9 +96,8 @@ printDouble precision x
 printDoubleTestSuite :: [(Double, Int, String, String)]
 printDoubleTestSuite = filter (\(_,_,expected,actual) -> expected /= actual) $ map (\(n,prec,s) -> (n,prec,s, printDouble prec n )) C.printDoubleTests
 
-dateRegex, footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
+footnoteRegex, sectionAnonymousRegex, badUrlRegex :: String
 -- 'YYYY[-MM[-DD]?]?': '2020', '2020-01', '2020-01-01' etc
-dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
 -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
 footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$"
 -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
@@ -104,7 +105,16 @@ sectionAnonymousRegex = "^#section-[0-9]+$"
 badUrlRegex           = "http.*http|doc/.*doc/"::String
 
 isDate :: String -> Bool
-isDate d = d =~ dateRegex
+isDate d = case length (split "-" d) of
+    1 -> isValidDate "%Y" d
+    2 -> isValidDate "%Y-%m" d
+    3 -> isValidDate "%Y-%m-%d" d
+    _ -> False
+
+isValidDate :: String -> String -> Bool
+isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
+    Just _ -> True
+    Nothing -> False
 
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
