@@ -8,7 +8,7 @@ module Main where
 
 import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
                     runPure, writeHtml5String,
-                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
+                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, stripSuffix, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -90,7 +90,7 @@ writeOutCallers md edb sortDB target callerPairs
 
                                        callerPairsSorted <- mapM (sortListPossiblyUnembedded edb sortDB) callerPairs -- a little tricky since many backlinks will have no embedding
 
-                                       let preface = [Para [Strong [Str (if length (concatMap snd callerPairs) > 1 then "Backlinks" else "Backlink")], Str ":"]]
+                                       let preface = [Para [Link nullAttr [Strong [Str (if length (concatMap snd callerPairs) > 1 then "Backlinks" else "Backlink")], Str ":"] ("/design#backlink", "")]]
                                        let content = BulletList $ concatMap (generateCaller md target) callerPairsSorted
 
                                        -- NOTE: auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP auto-links.

@@ -4,7 +4,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Span, Str, Strong), Format(..), runPure, Pandoc(..))
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Span, Str, Strong), Format(..), runPure, Pandoc(..), nullAttr)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -366,7 +366,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                      ]
                    ]]
 
-             preface = if singleShot then [] else [Para [Strong [Str "Similar Links"], Str ":"]]
+             preface = if singleShot then [] else [Para [Link nullAttr [Strong [Str "Similar Links"], Str ":"] ("/design#similar-links", "")]]
              linkList = BulletList $ similarItems ++ googleScholar
 
              pandoc = walk typographyTransform $ Pandoc nullMeta $ preface ++ [linkList]
