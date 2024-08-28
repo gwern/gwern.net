@@ -268,7 +268,7 @@ section.collapse > .heading {
 /*  Inline (collapsed).
  */
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper {
-	display: inline-block;
+    display: inline-block;
 }
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper > .collapse-content-wrapper {
     display: inline-block;
@@ -339,9 +339,9 @@ section.collapse > .heading {
         var(--collapse-toggle-left-width) 0 0 0 var(--collapse-button-background-color) inset;
 }
 @media all and (max-width: 649px) {
-	.collapse-block > .disclosure-button {
-		font-size: 1em;
-	}
+    .collapse-block > .disclosure-button {
+        font-size: 1em;
+    }
 }
 
 /*  Top and bottom parts of disclosure button.
@@ -491,7 +491,7 @@ section.collapse > .heading {
         color 0.1s ease;
 }
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start {
-	display: none;
+    display: none;
 }
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start .icon,
 .collapse-inline.has-abstract.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon {
@@ -509,7 +509,7 @@ section.collapse > .heading {
     margin: 0 -0.5em 0 0;
 }
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.5em 0 -0.3em;
+    margin: 0 -0.5em 0 -0.3em;
 }
 
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
@@ -526,11 +526,11 @@ section.collapse > .heading {
 }
 
 /*****************************/
-/*	Shown only when collapsed.
+/*  Shown only when collapsed.
  */
 
 .collapse.expanded > .abstract-collapse-only {
-	display: none;
+    display: none;
 }
 
 /********************/
@@ -743,7 +743,7 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 }
 
 .collapse.bare-content.has-abstract.expanded > .collapse-content-wrapper {
-	padding: 0 0 0.5em 0;
+    padding: 0 0 0.5em 0;
 }
 
 .collapse.bare-content.no-abstract.expanded-not > .collapse-content-wrapper {
@@ -754,14 +754,14 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 }
 
 /**********************/
-/*	Collapses in lists.
+/*  Collapses in lists.
  */
 
-/*	Fix problem of partial overlap of list marker, when collapse block is the
-	first block within a list item.
+/*  Fix problem of partial overlap of list marker, when collapse block is the
+    first block within a list item.
  */
 .collapse-block.in-list:first-child {
-	--collapse-left-offset:calc(var(--list-left-padding) + 0.25em);
+    --collapse-left-offset:calc(var(--list-left-padding) + 0.25em);
 }
 
 /****************************/
@@ -801,7 +801,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 /****************************************/
-/*	Aux-links and file include collapses.
+/*  Aux-links and file include collapses.
  */
 .collapse.aux-links-append,
 .collapse.file-include-collapse {
@@ -810,7 +810,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 /**************************/
-/*	File include collapses.
+/*  File include collapses.
  */
 
 .collapse.file-include-collapse {
@@ -843,7 +843,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 /*********************************************************************/
-/*	File includes in link bibliographies, directory indexes, and other
+/*  File includes in link bibliographies, directory indexes, and other
     transcluded (rather than pop-framed) annotations.
  */
 
@@ -852,7 +852,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 }
 
 .annotation > .data-field.title + .data-field.file-includes .collapse.file-include-collapse {
-	border-top: none;
+    border-top: none;
 }
 
 /****************************************************/
@@ -1045,11 +1045,11 @@ ol.has-floats > li {
 /*************/
 
 @media all and (min-width: 650px) {
-	.triptych {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		grid-column-gap: var(--float-side-margin);
-	}
+    .triptych {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-column-gap: var(--float-side-margin);
+    }
 }
 
 
@@ -1086,34 +1086,34 @@ img::before {
 /**********/
 
 video {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 iframe {
-	display: block;
-	width: calc(100% - 2px);
-	max-height: calc(100vh - 8rem);
-	border: 1px solid var(--GW-embed-border-color);
-	background-color: var(--GW-iframe-background-color);
+    display: block;
+    width: calc(100% - 2px);
+    max-height: calc(100vh - 8rem);
+    border: 1px solid var(--GW-embed-border-color);
+    background-color: var(--GW-iframe-background-color);
 }
 
 iframe {
-	aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1;
 }
 @media all and (max-width: 649px) {
-	iframe {
-		aspect-ratio: 3 / 5;
-	}
+    iframe {
+        aspect-ratio: 3 / 5;
+    }
 }
 
 iframe.youtube {
-	aspect-ratio: 495 / 310;
+    aspect-ratio: 495 / 310;
 }
 iframe.vimeo {
-	aspect-ratio: 495 / 278;
+    aspect-ratio: 495 / 278;
 }
 iframe.pdf {
-	aspect-ratio: 8.5 / 11;
+    aspect-ratio: 8.5 / 11;
 }
 
 
@@ -1181,7 +1181,7 @@ p.intro-graf::first-line {
 
 .smallcaps-not > p.intro-graf::first-line,
 .annotation > p.data-field.title.intro-graf::first-line {
-	font-variant-caps: normal;
+    font-variant-caps: normal;
 }
 
 
@@ -1395,7 +1395,7 @@ table {
     overflow-x: auto;
     overflow-y: auto;
     max-height: calc(100vh - 8rem);
-	overscroll-behavior: none;
+    overscroll-behavior: none;
 }
 
 /*=-------------------=*/
@@ -1458,15 +1458,15 @@ Since they are confined to the inner container and don't need to interact with a
 Then other issues are dealt with by a bunch of small CSS tweaks.
 */
 table thead {
-	position: sticky;
-	top: -1px;
-	z-index: 1;
-	background-color: var(--background-color);
-	box-shadow: 0 -1px 0 0 var(--GW-table-row-horizontal-border-color) inset;
+    position: sticky;
+    top: -1px;
+    z-index: 1;
+    background-color: var(--background-color);
+    box-shadow: 0 -1px 0 0 var(--GW-table-row-horizontal-border-color) inset;
 }
 
 table tbody {
-	--text-alignment: left;
+    --text-alignment: left;
 }
 
 table th,
@@ -1518,8 +1518,8 @@ table td > code {
 }
 .table-scroll-wrapper::-webkit-scrollbar-thumb:vertical {
     box-shadow:
-		 0   -1px 0 0 var(--GW-table-scrollbar-border-color),
-		 0    1px 0 0 var(--GW-table-scrollbar-border-color),
+         0   -1px 0 0 var(--GW-table-scrollbar-border-color),
+         0    1px 0 0 var(--GW-table-scrollbar-border-color),
          1px  0   0 0 var(--GW-table-scrollbar-border-color) inset,
         -1px  0   0 0 var(--GW-table-scrollbar-border-color) inset;
 }
@@ -1528,7 +1528,7 @@ table td > code {
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-track:vertical {
-	border-left: 1px dotted var(--GW-table-scrollbar-border-color)
+    border-left: 1px dotted var(--GW-table-scrollbar-border-color)
 }
 
 /*  Scroll bar styles (for Firefox).
@@ -1605,12 +1605,12 @@ blockquote table table {
     font-size: 1em;
 }
 
-/*	Fix for z-index bug due to link styles.
+/*  Fix for z-index bug due to link styles.
  */
 table .has-content.has-indicator-hook {
-	z-index: 0;
-	-webkit-box-decoration-break: clone;
-	box-decoration-break: clone;
+    z-index: 0;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 }
 
 /*  Hover row outline.
@@ -1708,7 +1708,7 @@ pre code {
     background-color: transparent;
 }
 
-/*	Truncated code blocks.
+/*  Truncated code blocks.
  */
 div.sourceCode.truncated .truncation-notice {
     font-family: var(--GW-sans-serif-font-stack);
@@ -1790,7 +1790,7 @@ code span.er { color: var(--GW-syntax-highlight-color-error); } /* Error */
 code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold; font-style: italic } /* Import */
 
 /********************************************************/
-/*	EXPERIMENTAL: Highlight-on-hover for all code blocks.
+/*  EXPERIMENTAL: Highlight-on-hover for all code blocks.
  */
 pre code {
     padding: 0.4rem 0;
@@ -2056,56 +2056,56 @@ span.inflation-adjusted .subsup {
     bottom: 0;
 }
 
-/*	Date ranges.
+/*  Date ranges.
 
-	These should also move as a block, just like inflation adjustments. Also, 
-	the en-dash should be v-positioned as one normally would be, for clarity.
+    These should also move as a block, just like inflation adjustments. Also,
+    the en-dash should be v-positioned as one normally would be, for clarity.
  */
 span.date-range {
-	white-space: nowrap;
-	font-variant-numeric: oldstyle-nums;
+    white-space: nowrap;
+    font-variant-numeric: oldstyle-nums;
 }
 span.date-range .subsup {
-	align-items: center;
-	bottom: 0;
-	margin: -0.5em 0.05em 0 0.1em;
+    align-items: center;
+    bottom: 0;
+    margin: -0.5em 0.05em 0 0.1em;
 }
 span.date-range .subsup sup {
-	font-size: 1em;
-	top: 0.45em;
+    font-size: 1em;
+    top: 0.45em;
 }
 span.date-range .subsup sub {
-	bottom: -0.25em;
+    bottom: -0.25em;
 }
 span.date-range > sub {
-	margin: 0 0.1em;
-	bottom: 0;
+    margin: 0 0.1em;
+    bottom: 0;
 }
 
-/*	Hide date range metadata on mobile (just display like normal).
+/*  Hide date range metadata on mobile (just display like normal).
  */
 @media all and (max-width: 649px) {
-	span.date-range sub {
-		display: none;
-	}
-	span.date-range .subsup {
-		margin: 0;
-	}
-	span.date-range .subsup sup {
-		top: -0.15em;
-	}
+    span.date-range sub {
+        display: none;
+    }
+    span.date-range .subsup {
+        margin: 0;
+    }
+    span.date-range .subsup sup {
+        top: -0.15em;
+    }
 }
 
-/*	Hide date range metadata on /index.
+/*  Hide date range metadata on /index.
  */
 body.page-index span.date-range sub {
-	display: none;
+    display: none;
 }
 body.page-index span.date-range .subsup {
-	margin: 0;
+    margin: 0;
 }
 body.page-index span.date-range .subsup sup {
-	top: -0.15em;
+    top: -0.15em;
 }
 
 
@@ -2132,10 +2132,11 @@ del {
     */
 .logotype-latex .logotype-latex-a {
     text-transform: uppercase;
-    font-size: 0.80em;
-    vertical-align: 0.25em;
-    margin-left: -0.30em;
-    margin-right: -0.03em;
+    font-size: 0.79em;
+    vertical-align: 0.24em;
+    margin-left: -0.32em;
+    margin-right: -0.02em;
+    padding-left: 0.02em;
     line-height: 1ex;
 }
 .logotype-latex .logotype-latex-e {
@@ -2172,20 +2173,20 @@ del {
 /*************/
 
 #link-bibliography-section > .list > li > p {
-	--text-alignment: left;
+    --text-alignment: left;
 }
 
 @media all and (max-width: 649px) {
-	.backlinks-list .backlink-context,
-	.link-bibliography-list .annotation-abstract {
-		margin-left: calc(-1 * var(--list-left-padding));
-	}
+    .backlinks-list .backlink-context,
+    .link-bibliography-list .annotation-abstract {
+        margin-left: calc(-1 * var(--list-left-padding));
+    }
 }
 
-/*	Do not hyphenate “context” in backlinks lists; it looks bad.
+/*  Do not hyphenate “context” in backlinks lists; it looks bad.
  */
 .backlink-source a:nth-of-type(2) {
-	hyphens: none;
+    hyphens: none;
 }
 
 
@@ -2231,7 +2232,7 @@ del {
 
     p[class*='dropcap-'] a.link-dropcap,
     p[class*='dropcap-'] a.link-dropcap * {
-    	text-shadow: none;
+        text-shadow: none;
     }
     p[class*='dropcap-'] span.dropcap {
         font-style: normal;
@@ -2239,11 +2240,11 @@ del {
         float: left;
     }
 
-	.initial-preceding-punctuation {
-		float: left;
-		margin-left: -1ch;
-		font-size: 1.5em;
-	}
+    .initial-preceding-punctuation {
+        float: left;
+        margin-left: -1ch;
+        font-size: 1.5em;
+    }
 
     /*  All of these numbers are magic.
      */
@@ -2321,41 +2322,41 @@ del {
         }
     }
 
-	/**********************/
-	/*	Graphical dropcaps.
-	 */
+    /**********************/
+    /*  Graphical dropcaps.
+     */
 
-	p.graphical-dropcap img.dropcap {
-		float: left;
-		display: block;
-		height: 9.4em;
-		margin: -0.5em -0.10em -0.95em -0.75em;
-		filter: none;
-	}
-	@media all and (max-width: 1199px) {
-		p.graphical-dropcap img.dropcap {
-			margin-top: -0.25em;
-		}
-	}
+    p.graphical-dropcap img.dropcap {
+        float: left;
+        display: block;
+        height: 9.4em;
+        margin: -0.5em -0.10em -0.95em -0.75em;
+        filter: none;
+    }
+    @media all and (max-width: 1199px) {
+        p.graphical-dropcap img.dropcap {
+            margin-top: -0.25em;
+        }
+    }
 
-	p.graphical-dropcap img.dropcap.svg {
-		height: 8em;
-		margin: 0 0.25em 0 0;
-	}
-	p.graphical-dropcap img.dropcap.svg.invert {
-		filter: invert(1);
-	}
+    p.graphical-dropcap img.dropcap.svg {
+        height: 8em;
+        margin: 0 0.25em 0 0;
+    }
+    p.graphical-dropcap img.dropcap.svg.invert {
+        filter: invert(1);
+    }
 
-	p.graphical-dropcap.disable-dropcap img.dropcap {
-		display: none;
-	}
+    p.graphical-dropcap.disable-dropcap img.dropcap {
+        display: none;
+    }
 
-	p.graphical-dropcap:not(.disable-dropcap) .hidden-initial-letter {
-		display: inline-block;
-		width: 0;
-		height: 0;
-		overflow: hidden;
-	}
+    p.graphical-dropcap:not(.disable-dropcap) .hidden-initial-letter {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+    }
 }
 
 
@@ -2578,7 +2579,7 @@ section.footnotes > ol > li.highlighted::after {
 /*  Footnote self-links.
  */
 section.footnotes .footnote-self-link {
-	display: initial;
+    display: initial;
     position: absolute;
     top: 2px;
     right: calc(100% + 0.75em);
@@ -2588,10 +2589,10 @@ section.footnotes .footnote-self-link {
     z-index: 1;
     opacity: 0;
 }
-/*	Hide outside of a footnotes section.
+/*  Hide outside of a footnotes section.
  */
 .footnote-self-link {
-	display: none;
+    display: none;
 }
 
 /*=------------------------=*/
@@ -2599,7 +2600,7 @@ section.footnotes .footnote-self-link {
 /*=------------------------=*/
 
 .footnotes a.footnote-back {
-	display: initial;
+    display: initial;
     margin: 0 0 0 0.5em;
     position: relative;
     display: inline-block;
@@ -2611,10 +2612,10 @@ section.footnotes .footnote-self-link {
     width: 1em;
     z-index: 1;
 }
-/*	Hide outside of a footnotes section.
+/*  Hide outside of a footnotes section.
  */
 a.footnote-back {
-	display: none;
+    display: none;
 }
 
 .markdownBody .footnotes a.footnote-back {
@@ -2960,7 +2961,7 @@ blockquote .TOC,
 }
 
 .wikipedia-entry .data-field.title .title-link {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .wikipedia-entry figure {
@@ -3060,13 +3061,13 @@ blockquote .TOC,
 /*  Special case for inline math in Wikipedia pop-frames.
  */
 .wikipedia-entry .wikipedia-math-inline-wrapper {
-	display: inline-block;
+    display: inline-block;
     vertical-align: baseline;
     position: relative;
     bottom: -0.35em;
 }
 .wikipedia-entry .wikipedia-math-inline-wrapper img {
-	display: block;
+    display: block;
 }
 /*  Ditto, but block math.
  */
@@ -3078,12 +3079,12 @@ blockquote .TOC,
     margin: auto;
 }
 
-/*	WP wraps references entirely in <cite> elements; <cite> is styled by
-	browsers (Chrome/FF) by default in italics. No one wants their entire
-	reference in italics, so WP resets the font to the default style (whatever
-	that is), and styles italics bits (like book titles) manually. We need to
-	replicate that, or else references sections in our WP popups will be
-	entirely italics!
+/*  WP wraps references entirely in <cite> elements; <cite> is styled by
+    browsers (Chrome/FF) by default in italics. No one wants their entire
+    reference in italics, so WP resets the font to the default style (whatever
+    that is), and styles italics bits (like book titles) manually. We need to
+    replicate that, or else references sections in our WP popups will be
+    entirely italics!
  */
 .wikipedia-entry cite,
 .wikipedia-entry dfn {
@@ -3091,8 +3092,8 @@ blockquote .TOC,
 }
 
 .wikipedia-entry .wp-footnote-back {
-	padding: 0 0.25em;
-	margin: 0 0.5em 0 0;
+    padding: 0 0.25em;
+    margin: 0 0.5em 0 0;
 }
 
 /*=--------=*/
@@ -3110,7 +3111,7 @@ blockquote .TOC,
 }
 
 .tweet .data-field.tweet-links a {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .tweet img.avatar {
@@ -3129,9 +3130,9 @@ blockquote .TOC,
 }
 
 .tweet figure {
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 0.1em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.1em;
     max-width: unset;
 }
 
@@ -3424,7 +3425,7 @@ ol.link-bibliography-list-compact > li::before {
 #navigation a {
     line-height: 1;
     display: flex;
-	color: var(--GW-nav-header-link-color);
+    color: var(--GW-nav-header-link-color);
 }
 #navigation a:hover {
     color: var(--GW-body-link-color);
@@ -3543,11 +3544,11 @@ ol.link-bibliography-list-compact > li::before {
 /*=-------------=*/
 
 body.page-static-404 figure .figure-inner-wrapper {
-	padding: 0 1em;
+    padding: 0 1em;
 }
 
 body.page-static-404 figure figcaption {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 /*=----------------=*/
@@ -3676,7 +3677,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body figure:not(.float) {
-	max-width: calc(100% - 2px);
+    max-width: calc(100% - 2px);
 }
 
 .popframe-body > figure:only-child {
@@ -3689,7 +3690,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body .table-scroll-wrapper {
-	max-height: unset;
+    max-height: unset;
 }
 
 .popframe-body .marginnote {
@@ -3709,7 +3710,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popframe-body:not(.object) iframe {
-	max-height: calc(var(--popframe-scroll-view-height) - 2em);
+    max-height: calc(var(--popframe-scroll-view-height) - 2em);
 }
 
 /*=-----------------=*/
@@ -3943,9 +3944,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*└───────────────────┘*/
 
 .popframe.tweet .popframe-title img.avatar {
-	height: 1.125em;
-	width: auto;
-	margin: 0 0.5em 0 0;
+    height: 1.125em;
+    width: auto;
+    margin: 0 0.5em 0 0;
 }
 
 /*┌──────────────────────────────┐*/
@@ -4192,7 +4193,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popup button.extracts-disable-button {
-	padding: 3px;
+    padding: 3px;
 }
 
 .popup.mini-title-bar button.zoom-button,
@@ -4365,7 +4366,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup.zoomed .popframe-scroll-view,
 .popup.resized .popframe-scroll-view {
-	max-height: calc(100% - var(--popup-title-bar-height));
+    max-height: calc(100% - var(--popup-title-bar-height));
 }
 
 .popup.zoomed .popframe-content-view,
@@ -4436,10 +4437,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner.
  */
 .popup .popframe-loading-spinner-view {
-	display: none;
+    display: none;
 }
 .popup.loading .popframe-loading-spinner-view {
-	display: initial;
+    display: initial;
 }
 
 .popup .popframe-loading-spinner-view::before {
@@ -4467,10 +4468,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  “Loading failed” messages.
     */
 .popup .popframe-loading-failed-message-view {
-	display: none;
+    display: none;
 }
 .popup.loading-failed .popframe-loading-failed-message-view {
-	display: initial;
+    display: initial;
 }
 
 .popup .popframe-loading-failed-message-view::before {
@@ -4527,7 +4528,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*└──────────────────────┘*/
 
 .popup-body.dropcap-info p {
-	text-align: left;
+    text-align: left;
 }
 
 /*┌──────────────────┐*/
@@ -4952,7 +4953,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popin .popin-footer-bar .popframe-title-link .bracket {
-	font-size: 1.125em;
+    font-size: 1.125em;
 }
 
 /*┌─────────────────────────────┐*/
@@ -5065,10 +5066,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Loading spinner.
  */
 .popin .popframe-loading-spinner-view {
-	display: none;
+    display: none;
 }
 .popin.loading .popframe-loading-spinner-view {
-	display: initial;
+    display: initial;
 }
 
 .popin .popframe-loading-spinner-view::before {
@@ -5096,10 +5097,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  “Loading failed” messages.
  */
 .popin .popframe-loading-failed-message-view {
-	display: none;
+    display: none;
 }
 .popin.loading-failed .popframe-loading-failed-message-view {
-	display: initial;
+    display: initial;
 }
 
 .popin .popframe-loading-failed-message-view::before {
@@ -5363,7 +5364,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #page-toolbar .widget a {
-	font-family: var(--GW-sans-serif-font-stack);
+    font-family: var(--GW-sans-serif-font-stack);
 }
 
 #page-toolbar .widget button .label,
@@ -5487,11 +5488,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         opacity: 1;
     }
     #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label {
-    	color: var(--GW-page-toolbar-button-highlighted-text-color);
+        color: var(--GW-page-toolbar-button-highlighted-text-color);
     }
-	#page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label::after {
-		content: "!";
-	}
+    #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label::after {
+        content: "!";
+    }
 }
 
 /*  Mobile toolbar layout (reverse vertical).
@@ -5859,9 +5860,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 @media (max-width:  649px) and (orientation: portrait),
        (max-height: 649px) and (orientation: landscape) {
-	#image-focus-overlay .caption p + p {
-	   display: none;
-	}
+    #image-focus-overlay .caption p + p {
+       display: none;
+    }
 }
 
 #image-focus-overlay .caption code {
@@ -5898,12 +5899,12 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         background-color 0.15s ease-out;
 }
 #image-focus-overlay .caption .caption-text-wrapper:not(:empty) + .image-url::before {
-	content: "";
-	position: absolute;
-	top: -1px;
-	left: 1.25em;
-	right: 1.25em;
-	border-top: 1px dotted var(--SA-image-focus-overlay-image-caption-separator-color);
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 1.25em;
+    right: 1.25em;
+    border-top: 1px dotted var(--SA-image-focus-overlay-image-caption-separator-color);
 }
 @media (max-width:  649px) and (orientation: portrait),
        (max-height: 649px) and (orientation: landscape) {
@@ -6234,20 +6235,20 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     pointer-events: none;
 }
 .image-wrapper.focusable.small-image::after {
-	content: "";
+    content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-	background-image: url('/static/img/icon/icons.svg#magnifying-glass-plus-light');
-	background-size: 56px 56px;
-	background-origin: content-box;
-	background-repeat: no-repeat;
-	background-position: center;
-	filter: invert(1);
-	bottom: 0;
-	height: 100%;
-	width: 100%;
-	padding: 0.5em;
-	box-sizing: border-box;
-	border-radius: 0;
+    background-image: url('/static/img/icon/icons.svg#magnifying-glass-plus-light');
+    background-size: 56px 56px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: invert(1);
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+    border-radius: 0;
 }
 .image-wrapper,
 .image-wrapper::after {
@@ -6454,7 +6455,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     order: 3;
 }
 #page-toolbar #gcse-search {
-	order: 4;
+    order: 4;
 }
 
 #page-toolbar .mode-selector button .label {
@@ -6562,11 +6563,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*****************/
 
 #gcse-search a {
-	display: block;
-	color: var(--GW-page-toolbar-button-selected-icon-color);
+    display: block;
+    color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 #gcse-search a svg {
-	display: block;
+    display: block;
 }
 
 
@@ -6727,15 +6728,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         --GW-blockquote-background-color: transparent !important;
     }
 
-	/*	Fix for figure top border spanning page breaks.
-	 */
-	figure {
-		position: relative;
-		top: 2px;
-	}
-	.figure-inner-wrapper {
-		margin: -2px auto 2px auto;
-	}
+    /*  Fix for figure top border spanning page breaks.
+     */
+    figure {
+        position: relative;
+        top: 2px;
+    }
+    .figure-inner-wrapper {
+        margin: -2px auto 2px auto;
+    }
 
     #skip-to-content-link,
     #ui-elements-container,
@@ -6753,50 +6754,50 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     }
     #link-bibliography-section,
     .link-bibliography-append {
-    	display: none;
+        display: none;
     }
     .TOC li:has(#toc-link-bibliography-section) {
-    	display: none;
+        display: none;
     }
     .similars-list li:has(.similar-links-search) {
         display: none;
     }
 
-	/*	Links.
-	 */
+    /*  Links.
+     */
     .markdownBody a:link .indicator-hook,
     .markdownBody a:link .link-icon-hook {
-    	display: none;
+        display: none;
     }
     .markdownBody a:link.has-indicator-hook {
-    	padding: 0;
-    	margin: 0;
+        padding: 0;
+        margin: 0;
     }
     .markdownBody a:link,
     .markdownBody a:link * {
-    	text-shadow: none;
+        text-shadow: none;
     }
     .markdownBody a:link,
     .markdownBody a:link.has-annotation {
-    	background-image: none;
+        background-image: none;
     }
-	.markdownBody a:link,
-	.markdownBody a:visited {
-    	color: inherit;
-	}
+    .markdownBody a:link,
+    .markdownBody a:visited {
+        color: inherit;
+    }
     .markdownBody p a:link {
-    	text-decoration: underline;
-    	text-decoration-thickness: from-font;
-    	text-underline-position: from-font;
-    	text-underline-offset: -0.05em;
+        text-decoration: underline;
+        text-decoration-thickness: from-font;
+        text-underline-position: from-font;
+        text-underline-offset: -0.05em;
     }
 
-    /*	Label the page tags, as offline/in-print, they will look quite
-    	mysterious.
+    /*  Label the page tags, as offline/in-print, they will look quite
+        mysterious.
      */
     #page-metadata .link-tags p::before {
-    	content: "tags: ";
-    	font-style: normal;
+        content: "tags: ";
+        font-style: normal;
     }
     body {
         margin: 0;
