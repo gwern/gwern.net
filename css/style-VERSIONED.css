@@ -1652,10 +1652,10 @@ section.collapse > .heading {
 
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     height: 90%;
-    margin: 0 -0.5em 0 0;
+    margin: 0 -0.45em 0 0;
 }
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.5em 0 -0.3em;
+	margin: 0 -0.45em 0 -0.45em;
 }
 
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
@@ -2486,18 +2486,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5590,7 +5590,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5771,7 +5771,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6219,7 +6219,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7172,7 +7172,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#question');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7382,7 +7382,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
 	content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-	background-image: url('/static/img/icon/icons.svg?v=1723908320#magnifying-glass-plus-light');
+	background-image: url('/static/img/icon/icons.svg?v=1724872453#magnifying-glass-plus-light');
 	background-size: 56px 56px;
 	background-origin: content-box;
 	background-repeat: no-repeat;
@@ -7764,7 +7764,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1723908320#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1724872453#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7843,7 +7843,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted > :first-child::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1723908320#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

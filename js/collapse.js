@@ -312,7 +312,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			collapseWrapper = collapseBlock;
 
 			//	Check for empty collapses; if empty, log error and do nothing.
-			if (collapseWrapper.children.length == 0) {
+			if (isNodeEmpty(collapseWrapper)) {
 				let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
 				GWServerLogError(eventInfo.loadLocation.href + `--empty-collapse-${collapseWrapperTagName}`, 
 								 `empty collapse element (${collapseWrapperTagName})`);

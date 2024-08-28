@@ -1652,10 +1652,10 @@ section.collapse > .heading {
 
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     height: 90%;
-    margin: 0 -0.5em 0 0;
+    margin: 0 -0.45em 0 0;
 }
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.5em 0 -0.3em;
+	margin: 0 -0.45em 0 -0.45em;
 }
 
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
