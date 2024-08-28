@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-06-29 20:34:33 gwern"
+# When:  Time-stamp: "2024-08-24 17:49:52 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -31,6 +31,12 @@ _upload() {
   (locate "$1" &)
 
   FILENAME="$1"
+  # we don't want to try to compile random Markdown snippets, so rename to `.txt` which will be treated as a static asset:
+  if [[ $FILENAME == *.md ]]; then
+    NEW_FILENAME="${FILENAME%.md}.txt"
+    mv "$1" "$NEW_FILENAME"
+    echo "Renamed: $FILENAME to $NEW_FILENAME"
+  fi
   if [[ $FILENAME == *.jpeg ]]; then
     FILENAME="${FILENAME%.jpeg}.jpg"
     mv "$1" "$FILENAME"

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-18 20:18:36 gwern"
+# When:  Time-stamp: "2024-08-26 15:32:25 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -90,14 +90,15 @@ pdf () {
     done; }
 
 # delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdfcut` repeatedly quickly with <Up> arrow in bash, of course.)
-pdfcut () { if [ $# -ne 1 ]; then echo "Too many arguments" >&2 && return 1; fi
-            ORIGINAL=$(path2File "$@")
-            TARGET=$(mktemp /tmp/XXXXXX.pdf);
-            pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
-            # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
-                exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
-            mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
-          (crossref "$ORIGINAL" &);
+pdfcut () { for PDF in "$@"; do
+                ORIGINAL=$(path2File "$PDF")
+                TARGET=$(mktemp /tmp/XXXXXX.pdf);
+                pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
+                    # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
+                    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
+                    mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
+                (crossref "$ORIGINAL" &);
+          done
           }
 # delete the last page of the PDF, similar to `pdfcut`:
 pdfcut-last () {
@@ -188,7 +189,7 @@ crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then
         nice convert $(path2File "$@") -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
 crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
 # WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
-export -f crop
+export -f crop crop_one
 
 alias invert="mogrify -negate"
 

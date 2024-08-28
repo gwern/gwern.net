@@ -526,7 +526,7 @@ linkIconTestUnitsText =
          , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg")
          , ("/doc/personal/google-cse.xml",  "alphabet","svg")
          , ("/doc/personal/rss-subscriptions.opml",  "txt","svg")
-         , ("/doc/psychology/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg")
+         , ("/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg")
          , ("/doc/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg")
          , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg")
          , ("/doc/rotten.com/library/bio/hackers/robert-morris/morris.bmp",  "image","svg")

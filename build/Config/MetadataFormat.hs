@@ -1107,6 +1107,7 @@ htmlRewriteFixed =
          , ("&lt;b&gt;&lt;i&gt;", "<em>")
          , ("acc.:", "accuracy:")
          , (" m/s", " m⁄s")
+         , ("1/3-approximation", "1⁄3-approximation")
          , (" 1/100 ", " 1⁄100 ")
          , ("~1/250", "~1⁄250")
          , (" 2/3 ", " 2⁄3 ")
@@ -1870,4 +1871,5 @@ extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/170391357
                                   , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
                                   , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
                                   , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
+                                  , ("https://x.com/dseetharaman?lang=en", "dseetharaman")
                                   ]

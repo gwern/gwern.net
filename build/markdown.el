@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-08-03 15:23:59 gwern"
+;;; When:  Time-stamp: "2024-08-27 11:48:18 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -52,7 +52,27 @@
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
-; warn on dangerous use of statistical-significance testing language:
+;"Set up highlighting of special words for selected modes."
+; <http://www.metasyntax.net/unix/dot-emacs.html>
+(make-face 'taylor-special-words-warning)
+(set-face-attribute 'taylor-special-words-warning nil :foreground "White" :background "Firebrick")
+(let ((pattern "\\<\\(FIXME\\|TODO\\|NOTE\\|WARNING\\|BUGS\\|BUG\\|FIXME\\|FIX_ME\\|FIX ME\\|HACK\\)\\>"))
+  (mapc
+   (lambda (mode)
+     (font-lock-add-keywords mode `((,pattern 1 'taylor-special-words-warning prepend))))
+   '(ada-mode c-mode css-mode emacs-lisp-mode java-mode haskell-mode
+              literate-haskell-mode html-mode lisp-mode php-mode python-mode ruby-mode
+              scheme-mode sgml-mode sh-mode sml-mode markdown-mode ledger-mode)))
+(make-face 'taylor-special-words-safe)
+(set-face-attribute 'taylor-special-words-safe nil :foreground "White" :background "Green")
+(let ((pattern "\\<\\(DONE\\|OK\\|DELAYED\\|SKIPPED\\)\\>"))
+  (mapc
+   (lambda (mode)
+     (font-lock-add-keywords mode `((,pattern 1 'taylor-special-words-safe prepend))))
+   '(emacs-lisp-mode java-mode haskell-mode
+     literate-haskell-mode html-mode lisp-mode php-mode python-mode
+     scheme-mode sgml-mode sh-mode markdown-mode ledger-mode)))
+; additionally warn on dangerous use of statistical-significance testing language:
 (add-hook 'markdown-mode-hook
             (lambda ()
               (font-lock-add-keywords nil '(
@@ -303,10 +323,16 @@ START and END specify the region to operate on."
   "Update gwern.net Markdown files & annotations with latest conventions.
 Mostly string search-and-replace to enforce house style in terms of format."
   (interactive
+       (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
+         (goto-char (point-max))
+         (insert "\n\n")
    (let ((begin (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
          )
      (save-excursion
+       (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
+         (goto-char (point-max))
+         (insert "\n\n"))
        (goto-char (point-min))
        (de-unicode)
        (de-unicode)
@@ -1748,7 +1774,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
      (check-parens)
      (message "Remember to collapse appendices, annotate links, add inflation-adjustments to all '$'/'₿'s, add margin notes, 'invert' images, and run `markdown-lint`")
      nil
-     )))
+     ))))
 
 (defun clean-pdf-text (&optional start end)
   "Clean PDF-ish text in buffer/region using `/static/build/clean-pdf.py`.

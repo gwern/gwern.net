@@ -245,11 +245,13 @@ titlecase' t = let t' = titlecase $ titlecase'' t
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""
-capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—') s of
+capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—' || c == '[') s of
      (before, '-':after) ->
          before ++ "-" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, '—':after) ->
          before ++ "—" ++ capitalizeFirst (capitalizeAfterHyphen t after)
+     (before, '[':after) ->
+         before ++ "[" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, [])        -> before
      _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
    where

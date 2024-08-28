@@ -491,4 +491,4 @@ siteBlackList = [
           , "ocw.mit.edu","x.com","zenodo.org","www.robots.ox.ac.uk","www.genecards.org","deepmind.com","blog.samaltman.com", "ai.googleblog.com", "www.clinicaltrialsregister.eu"
           , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"
           , "members.madasafish.com","isfdb.org","cwe.mitre.org","ai.meta.com"
-          , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu", "linkinghub.elsevier.com", "www.cs.cmu.edu", "fonts.google.com"]
+          , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu", "linkinghub.elsevier.com", "www.cs.cmu.edu", "fonts.google.com", "www.ed.ac.uk","3quarksdaily.com"]

@@ -130,4 +130,8 @@ stringDelete = [" - The Public Domain Review"
             , " – Stratechery by Ben Thompson", " – Thread Reader App", " - by RJ Andrews - Chartography"
             , "dys2p › ", " - by Adam Mastroianni", " Clinical Chemistry", " - Erik Schluntz"
             , " - The Data Point", "– Terence Edenâ\\200\\231s Blog", " – Variance Explained"
-            , "Matvoz.com – ", "Mike Dellanoce's Blog: ", " – Clear Language, Clear Mind\8288:", " - Google Fonts", " : Download For Free, View Sample Text, Rating And More On Fontsgeek.Com", "Run Deep: "]
+            , "Matvoz.com – ", "Mike Dellanoce's Blog: ", " – Clear Language, Clear Mind\8288:"
+            , " - Google Fonts", " : Download For Free, View Sample Text, Rating And More On Fontsgeek.Com"
+            , "Run Deep: ", " – Daniel Frank", " - by Dwarkesh Patel", " � Erik Bernhardsson"
+            , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
+            , " - Casey Handmer's blog", " - Casey Handmer’s blog"]

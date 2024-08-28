@@ -20,7 +20,7 @@ module XOfTheDay where
 --
 -- This module supports 2 more 'X of the day' features, with analogous functionality: 'annotation of the day', which goes through the annotated links by length; and 'site of the day', which is similar to a 'quote' but just is a single hyperlink to a website.
 
-import Control.Monad (unless, when)
+import Control.Monad (when)
 import qualified Data.Set as S (delete, empty, filter, fromList, toList, insert, map)
 import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
@@ -63,7 +63,7 @@ generateSnippetAndWriteTTDB :: FilePath -> FilePath -> (Snippet -> String) -> IO
 generateSnippetAndWriteTTDB dbpath path formatter =
   do dblist <- readTTDB dbpath
      when (null dblist) $ error $ "Fatal error: tuple database " ++ path ++ " is empty?"
-     unless (not $ any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: tuple database has empty first-fields? " ++ show dblist
+     when (any (\(q,_,_) -> null q) dblist) $ error $ "Fatal error: tuple database has empty first-fields? " ++ show dblist
      let db = S.fromList dblist
 
      -- get set of usable items, and if there are none, reset the entire set and use that:

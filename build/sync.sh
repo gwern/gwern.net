@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-18 11:59:02 gwern"
+# When:  Time-stamp: "2024-08-24 18:26:02 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -271,7 +271,8 @@ else
 
         bold "Updating X-of-the-day…"
         bold "Updating annotation-of-the-day…"
-        ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; }' | \
+        ghci -istatic/build/ ./static/build/XOfTheDay.hs ./static/build/LinkMetadata.hs \
+             -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; }' | \
             gfv -e ' secs,' -e 'it :: [T.Text]' -e '[]' &
 
         bold "Updating quote-of-the-day…"
@@ -1329,7 +1330,7 @@ else
     λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
-    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a'; }
+    λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a' -e '.mov'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
 
     λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
@@ -1348,7 +1349,7 @@ else
         export LL # some academic publishers inject spam, but not in an easy-to-grep way; I've noticed they sometimes insert the download IP, however, so we add that dynamically as a search string.
         checkSpamHeader () {
             # extract text from first page, where the junk usually is (some insert at the end, but those are less of an issue & harder to check):
-            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
+            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | head -100 | \
                          gf -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
@@ -1366,7 +1367,7 @@ else
         export -f checkSpamHeader
         find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' | parallel checkSpamHeader
     }
-    wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy first pages to the end.)" &
+    wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy first pages to the end, and 'pdfcut-last' to remove the last page.)" &
 
     removeEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                           if [ "$ENCRYPTION" != "" ]; then

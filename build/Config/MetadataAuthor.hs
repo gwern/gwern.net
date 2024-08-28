@@ -345,6 +345,35 @@ canonicals = M.fromList
   , ("MR Jabalameli", "M. Reza Jabalameli")
   , ("Howard Phillips Lovecraft", "H. P. Lovecraft")
   , ("ramsey nasser", "Ramsey Nasser")
+  , ("Cornelius Rietveld", "Cornelius A. Rietveld")
+  , ("Michael A. Woodley of Menie", "Michael A. Woodley")
+  , ("hsfzxjy", "Xie Jingyi")
+  , ("Altimor", "Flo Crivello")
+  , ("Cecilia Lindgren", "Cecilia M. Lindgren")
+  , ("Okada Toshio", "Toshio Okada")
+  , ("Michael Owen", "Michael J. Owen")
+  , ("Jonathan RI Coleman", "Jonathan R. I. Coleman")
+  , ("Jonathan R.I. Coleman", "Jonathan R. I. Coleman")
+  , ("srush_nlp", "Alexander M. Rush")
+  , ("Sasha Rush", "Alexander M. Rush")
+  , ("Alexander Rush", "Alexander M. Rush")
+  , ("W David Hill", "W. David Hill")
+  , ("W D Hill", "W. David Hill")
+  , ("W. D. Hill", "W. David Hill")
+  , ("W.D. Hill", "W. David Hill")
+  , ("SD Gordon", "Scott D. Gordon")
+  , ("Scott D Gordon", "Scott D. Gordon")
+  , ("S. D. Gordon", "Scott D. Gordon")
+  , ("S D Gordon", "Scott D. Gordon")
+  , ("Anlatan", "NovelAI")
+  , ("CFGeek", "Charles Foster")
+  , ("RokoMijic", "Roko Mijic")
+  , ("JohnLaTwC", "John Lambert")
+  , ("Nicholas John Timpson", "Nicholas J. Timpson")
+  , ("Nicholas Timpson", "Nicholas J. Timpson")
+  , ("Lester Hiatt", "Les Hiatt")
+  , ("Lester Richard Hiatt", "Les Hiatt")
+  , ("Lester R. Hiatt", "Les Hiatt")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -530,7 +559,7 @@ authorLinkDB = M.fromList $
     , ("Fernando Rivadeneira", "https://scholar.google.com/scholar?as_sdt=0%2C21&q=author%3A%22F+Rivadeneira%22")
     , ("Gudmar Thorleifsson", "https://research.com/u/gudmar-thorleifsson-1")
     , ("Arfafax", "https://x.com/arfafax")
-    , ("Zihang Dai", "https://scholar.google.com/citations?user=uZqsVXkAAAAJ&hl=en")
+    , ("Zihang Dai", "https://scholar.google.com/citations?user=uZqsVXkAAAAJ")
     , ("Hannaneh Hajishirzi", "https://homes.cs.washington.edu/~hannaneh/")
     , ("Alexander Teumer", "https://www2.medizin.uni-greifswald.de/psych/ueber-uns/leitungmitarbeiter/alexander-teumer/")
     , ("Aleksander Madry", "http://madry.mit.edu/")
@@ -558,14 +587,14 @@ authorLinkDB = M.fromList $
     , ("Jerome I. Rotter", "https://lundquist.org/jerome-i-rotter-md")
     , ("Alexander S. Ecker", "https://openreview.net/profile?id=~Alexander_S_Ecker1")
     , ("Samuli Ripatti", "https://scholar.google.com/citations?user=BkWwC18AAAAJ")
-    , ("Peter K. Joshi", "https://scholar.google.co.uk/citations?user=HRgG478AAAAJ&hl=en")
+    , ("Peter K. Joshi", "https://scholar.google.co.uk/citations?user=HRgG478AAAAJ")
     , ("Julio Rosenstock", "https://www.cardiometabolichealth.org/faculty/julio-rosenstock/")
     , ("John R. B. Perry", "https://www.johnomics.co.uk/about")
     , ("Aidan McLau", "https://x.com/aidan_mclau")
     , ("Zoltán Kutalik", "https://wp.unil.ch/sgg/zoltan/")
     , ("Stephen Merity", "https://state.smerity.com/")
     , ("Michel G. Nivard", "https://scholar.google.com/citations?user=omRGPjUAAAAJ")
-    , ("Guy Lever", "https://scholar.google.com/citations?user=1XgR518AAAAJ&hl=en")
+    , ("Guy Lever", "https://scholar.google.com/citations?user=1XgR518AAAAJ")
     , ("Thomas Moynihan", "https://thomasmoynihan.xyz/")
     , ("James Bradbury", "https://x.com/jekbradbury")
     , ("David J. Porteous", "https://www.ed.ac.uk/profile/professor-david-porteous")
@@ -575,6 +604,30 @@ authorLinkDB = M.fromList $
     , ("John Schulman", "http://joschu.net/")
     , ("Jing Hua Zhao", "https://jinghuazhao.github.io/")
     , ("Jacob Hilton", "https://www.jacobh.co.uk/")
+    , ("Hreinn Stefansson", "https://scholar.google.is/citations?user=BsBsqS0AAAAJ")
+    , ("Deepa Seetharaman", "https://x.com/dseetharaman")
+    , ("Yongmei Liu", "https://medicine.duke.edu/profile/yongmei-liu")
+    , ("Cornelius A. Rietveld", "https://scholar.google.com/citations?user=EEqPJRYAAAAJ")
+    , ("Sheng Shen", "https://sincerass.github.io/")
+    , ("Steve Hsu", "https://stevehsu.substack.com/")
+    , ("Spencer Greenberg", "https://www.spencergreenberg.com")
+    , ("Xie Jingyi", "https://github.com/hsfzxjy")
+    , ("Flo Crivello", "https://flocrivello.com/")
+    , ("Cecilia M. Lindgren", "https://en.wikipedia.org/wiki/Cecilia_Lindgren")
+    , ("Toshio Okada", "https://en.wikipedia.org/wiki/Toshio_Okada")
+    , ("Michael J. Owen", "https://en.wikipedia.org/wiki/Michael_Owen_(psychiatrist)")
+    , ("Mantas Mazeika", "https://scholar.google.com/citations?user=fGeEmLQAAAAJ")
+    , ("Jonathan R. I. Coleman", "https://www.kcl.ac.uk/people/jonathan-coleman")
+    , ("Alexander M. Rush", "https://rush-nlp.com/")
+    , ("W. David Hill", "https://scholar.google.com/citations?user=evn79GkAAAAJ")
+    , ("Scott D. Gordon", "https://research.com/u/scott-d-gordon")
+    , ("John Lambert", "https://x.com/JohnLaTwC")
+    , ("Owain Evans", "https://owainevans.github.io/")
+    , ("Ross Girshick", "https://scholar.google.com/citations?user=W8VIEZgAAAAJ&hl=en&oi=ao")
+    , ("Nicholas J. Timpson", "https://scholar.google.com/citations?user=jRYUWdUAAAAJ&hl=en&oi=ao")
+    , ("Kristian Hveem", "https://scholar.google.com/citations?user=epz0IZIAAAAJ&hl=en")
+    , ("Sasha Chapin", "https://www.sashachapin.com/")
+    , ("Les Hiatt", "https://en.wikipedia.org/wiki/Lester_Hiatt")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1610,7 +1663,7 @@ authorWpLinkDB =
     ,"Shane Legg","Shane McCarthy","Shang Yang","Shang-Hua Teng","Shanshan Huang"
     ,"Shaomeng Wang","Sharon Begley","Sharon N. DeWitte","Shaun Purcell","Shawn Bayern"
     ,"Sheila McIlraith","Sheldon C. Reed","Shelley L. Berger","Shelly Flagel","Shen Li"
-    ,"Sheng Liu","Sheng Shen","Sheng Wang","Sheri Fink","Sherry Glied"
+    ,"Sheng Liu","Sheng Wang","Sheri Fink","Sherry Glied"
     ,"Sherry Shi","Sherwin Rosen","Shi Feng","Shih-Chii Liu","Shih-Fu Chang"
     ,"Shih-Jen Hwang","Shinji Higuchi","Shinya Hasegawa","Shirley Ho","Shirley Wu"
     ,"Shirly Pinto","Shivendra Singh","Shlomo Benartzi","Shlomo Moran","Sholto Douglas"
@@ -1805,4 +1858,4 @@ authorWpLinkDB =
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
-    , "Claudia Langenberg", "Patricia Briggs", "Julia Galef"]
+    , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen", "Central Committee of the Communist Party of China"]

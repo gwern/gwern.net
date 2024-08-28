@@ -72,6 +72,7 @@ titleCaseTestCases = [
             , ("Scarlett Johansson says she is \"shocked, angered\" over new ChatGPT voice", "Scarlett Johansson Says She Is \"Shocked, Angered\" over New ChatGPT Voice")
             , ("'something is wrong'", "'Something Is Wrong'")
             , ("Simpler doesn't mean what Tesla thinks it means", "Simpler Doesn't Mean What Tesla Thinks It Means")
+            , ("Yes, But Can the Steam Engine Do This? [invention of sandwiches]", "Yes, But Can the Steam Engine Do This? [Invention of Sandwiches]")
               ]
 
 -- testing: unique list
