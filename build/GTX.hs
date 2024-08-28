@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-05-07 11:26:47 gwern"
+When:  Time-stamp: "2024-08-27 18:55:53 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -18,6 +18,9 @@ A GTX is a newline-delimited format of records delimited by '---\n' separators. 
 2. a title (UTF-8 HTML string)
 3. comma-separated list of authors (UTF-8 HTML string)
 4. date (YYYY[-MM[-DD]] digit-hyphen ASCII)
+
+    - OPTIONAL: a GTX implementation must guarantee that date values are either valid ISO 8601 dates or the empty string; it may however attempt to heuristically parse invalid dates into valid ones, for user convenience (eg. accepting 'September 1st, 1981' and rewriting it to '1981-09-01').
+      If a GTX implementation does this, and a pseudo-date field cannot be successfully parsed, it should error out rather than return an empty string, as that indicates a serious error in the GTX metadata which needs to be fixed by hand.
 5. a 'naked DOI' or a Haskell key-value dictionary
 
     A line for key-value dictionaries (association-lists), for storing miscellaneous information. The most common case is a DOI global identifier. This line must parse by GHC Haskell as a `[(String, String)]` list. It is written out as a blank line for empty lists `[]`, and as a sorted, unique, key-value association list otherwise.
@@ -83,27 +86,28 @@ import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
 import MetadataAuthor (authorsCanonicalize)
-import MetadataFormat (cleanAuthors, guessDateFromLocalSchema)
+import MetadataFormat (cleanAuthors, guessDateFromLocalSchema, guessDateFromString, isDate)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
-readGTX :: ((FilePath, MetadataItem) -> (FilePath, MetadataItem)) -> FilePath -> IO MetadataList
-readGTX hook f = do f' <- do filep <- doesFileExist f
+readGTX :: FilePath -> IO MetadataList
+readGTX      f = do f' <- do filep <- doesFileExist f
                              if filep then return f
                                else do fileAbsoluteP <- doesFileExist (C.root ++ f)
                                        if not fileAbsoluteP then printRed ("GTX path does not exist: " ++ f ++ "; refusing to continue. Create an empty or otherwise initialize the file to retry.") >> return f
                                          else return (C.root ++ f)
                     content <- TIO.readFile f'
-                    return $ map hook $ parseGTX content
+                    return $ parseGTX content
 
 readGTXFast :: FilePath -> IO MetadataList
-readGTXFast = readGTX id
+readGTXFast = readGTX
 
 readGTXSlow :: FilePath -> IO MetadataList
 readGTXSlow path = do C.cd
                       allTags <- listTagsAll
-                      results <- readGTX (postprocessing allTags) path
-                      let badEntries = filter (\(p,_) -> p `elem` ["---", "---.md", ""]) results
-                      if null badEntries then return results else error ("readGTXSlow: invalid entries found in " ++ path ++ ": " ++ show badEntries)
+                      results <- fmap (map (postprocessing allTags)) $ readGTX path
+                      results' <- mapM fixDate results
+                      let badEntries = filter (\(p,_) -> p `elem` ["---", "---.md", ""]) results'
+                      if null badEntries then return results' else error ("GTX.readGTXSlow: invalid entries found in " ++ path ++ ": " ++ show badEntries)
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
                                                      (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, kvs,
@@ -111,6 +115,16 @@ readGTXSlow path = do C.cd
            stripUnicodeWhitespace, reformatTitle :: String -> String
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
            reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
+
+fixDate :: (Path, MetadataItem) -> IO (Path, MetadataItem)
+fixDate x@(_,(_,_,"",_,_,_,_))             = return x
+fixDate x@(p,(t,a,d,dd,doi,tags,abstract)) = if isDate d then return x else
+              do print $ "Guessing... " ++ (d ++ ", " ++ p ++ ", " ++ t)
+                 d' <- guessDateFromString (d ++ ", " ++ p ++ ", " ++ t)
+                 print $ "Guessed: " ++ d'
+                 if d' == "" then return x else
+                   if isDate d' then return (p,(t,a,d',dd,doi,tags,abstract))
+                   else error $ "GTX.readGTXSlow.fixDate: attempted to parse a malformed date but the result was also malformed; original 'date': " ++ d ++ "; parsed 'date': " ++ d' ++ "; original metadata item: " ++ show x
 
 parseGTX :: T.Text -> MetadataList
 parseGTX content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- delete the first 4 characters, which are the mandatory '---\n' header, then split at the '---' separators into sublists of "title\nauthor\ndate\ndoi\ntags\nabstract..."
@@ -121,8 +135,8 @@ parseGTX content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
 tupleize :: [T.Text] -> (Path, MetadataItem)
 tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
                                         (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
-tupleize [] = error   "tuplize: empty list"
-tupleize x  = error $ "tuplize: missing mandatory list entries: " ++ show x
+tupleize [] = error   "GTX.tuplize: empty list"
+tupleize x  = error $ "GTX.tuplize: missing mandatory list entries: " ++ show x
 
 writeGTX :: FilePath -> MetadataList -> IO ()
 writeGTX f ml = do today <- todayDayString -- 'writeGTX' is usually used interactively, so missing-dates are going to be 'today'
@@ -147,7 +161,7 @@ doiOrKV mi s | s == ""       = []
              | s == "[]"     = []
              | head s == '[' = read s
              | '/' `elem` s  = [("doi",s)]
-             | otherwise     = error $ "doiOrKV parsing: " ++ s ++ " : " ++ show mi
+             | otherwise     = error $ "GTX.doiOrKV parsing fell through: " ++ s ++ " : " ++ show mi
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()

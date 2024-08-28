@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-27 11:45:08 gwern"
+# When:  Time-stamp: "2024-08-27 22:16:05 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -57,7 +57,7 @@ Task examples:
 2011-06
 - "This page was published on 10 February 1991."
 1991-02-10
-- "We published this on the first of May after Obama's re-election."
+- "We published this on the first of May after Obama’s re-election."
 2013-05-01
 - "https://x.com/jconorgrogan/status/1820212444016345146"
 ""
@@ -229,6 +229,42 @@ Task examples:
 2024-12-25
 - "https://arxiv.org/abs/2404.11018#google"
 2024-04-17
+- "The 3rd Thursday of the month after next year after 2024’s vernal equinox"
+2025-03
+- https://www.nature.com/articles/s41586-023-06185-3
+""
+- "Pi Day five years from the last leap year"
+2029-03-14
+- "The 100th day of the Chinese Year of the Dragon in the 2020s"
+2024-04-09
+- "Election Day 2028 in the United States"
+2028-11-07
+- "The day Halley’s Comet is next expected to be visible from Earth"
+2061-06
+- "https://en.wikipedia.org/wiki/Year_2038_problem"
+2038-01-19
+- "The 250th anniversary of the signing of the Declaration of Independence"
+2026-07-04
+- "Last business day of Q3 2025"
+2025-09-30
+- "Ramadan start date in 2030"
+2030-01-05
+- "The day after tomorrow, three years ago"
+""
+- "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s"
+""
+- "2012-21-01, https://www.sciencedirect.com/science/article/pii/S0032579119394003, 25 years of selection for improved leg health in purebred broiler lines and underlying genetic parameters"
+2012-12-01
+- "2020-05-1, https://www.sciencedirect.com/science/article/pii/S1053811920301786, Educational attainment polygenic scores are associated with cortical total surface area and regions important for language and memory"
+2020-05-15
+- "2023-009-04, https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2023.1246149/full, Modafinil's effects on cognition and sleep quality in affectively-stable patients with bipolar disorder: a pilot study"
+2023-09-03
+- "2023-112-08, https://www.reuters.com/world/uk/uk-antitrust-regulator-considering-microsoft-openai-partnership-2023-12-08/, Microsoft, OpenAI tie-up comes under antitrust scrutiny"
+2023-12-08
+- "2022-010-17, https://osf.io/preprints/psyarxiv/tnyda/, Does the mere presence of a smartphone impact cognitive performance? A meta-analysis of the brain drain effect"
+2022-10-17
+- "2024-06-7, https://www.newyorker.com/culture/the-front-row/flipside-is-a-treasure-trove-of-music-and-memory, <em>Flipside</em> Is a Treasure Trove of Music and Memory: Chris Wilcha's documentary explores life, love, and art through his connection to a venerable record store"
+2024-06-07
 
 Task:
 

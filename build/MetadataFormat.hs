@@ -41,7 +41,7 @@ balanced str = helper str "" 0 0
       | s == '"' =
           if not (null stack) && head stack == '"'
             then helper ss (tail stack) (n+1) (if null stack then n else idx)
-            else helper ss ('"':stack) (n+1) (if null stack then n else idx)
+            else helper ss ('"':stack)  (n+1) (if null stack then n else idx)
       | s `elem` openBrackets = helper ss (s:stack) (n+1) (if null stack then n else idx)
       | s `elem` closeBrackets =
           if not (null stack) && head stack == matchingBracket s
@@ -105,6 +105,7 @@ sectionAnonymousRegex = "^#section-[0-9]+$"
 badUrlRegex           = "http.*http|doc/.*doc/"::String
 
 isDate :: String -> Bool
+isDate "" = True -- this makes checks/lints easier
 isDate d = case length (split "-" d) of
     1 -> isValidDate "%Y" d
     2 -> isValidDate "%Y-%m" d
@@ -217,7 +218,8 @@ guessDateFromLocalSchema :: String -> String -> String
 guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
                                     else let f = takeBaseName url in
                                            if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...
-                                           then date else sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
+                                           then date else let datePossible = sed "^([12][0-9][0-9][0-9])(-[0-9][0-9])?(-[0-9][0-9])?-.*" "\\1\\2\\3" f
+                                                              in if datePossible == f then "" else datePossible
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
