@@ -7383,18 +7383,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-	background-image: url('/static/img/icon/icons.svg?v=1724872453#magnifying-glass-plus-light');
-	background-size: 56px 56px;
-	background-origin: content-box;
-	background-repeat: no-repeat;
-	background-position: center;
-	filter: invert(1);
-	bottom: 0;
-	height: 100%;
-	width: 100%;
-	padding: 0.5em;
-	box-sizing: border-box;
-	border-radius: 0;
+    background-image: url('/static/img/icon/icons.svg?v=1724872453#magnifying-glass-plus-light');
+    background-size: 56px 56px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: invert(1);
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    padding: 0.5em;
+    box-sizing: border-box;
+    border-radius: 0;
 }
 .image-wrapper,
 .image-wrapper::after {
@@ -7841,7 +7841,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     box-shadow: 0 0 0 0.1em var(--background-color);
 }
 
-.markdownBody div.block-context-highlighted > :first-child::before,
+.markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
     background-image: url('/static/img/icon/icons.svg?v=1724872453#manicule-right');

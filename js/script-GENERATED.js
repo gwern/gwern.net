@@ -8051,6 +8051,28 @@ function shouldLocalizeContentFromLink(includeLink) {
 	return true;
 }
 
+/*******************************************************************************/
+/*	Adds `block-context-highlighted` class to element targeted by the given link
+	in the given document, if the targeted element exists, and if it is NOT the
+	only immediately child of the document itself.
+ */
+function highlightTargetElementInDocument(link, doc) {
+	let targetElement = targetElementInDocument(link, doc);
+	if (targetElement
+		&& (   targetElement.parentNode == doc
+			&& isOnlyChild(targetElement)
+			) == false) {
+		targetElement.classList.add("block-context-highlighted");
+
+		/*	When highlighting <div> elements, place the manicule appropriately 
+			(and only if appropriate).
+		 */
+		if (   targetElement.tagName == "DIV"
+			&& previousBlockOf(targetElement)?.matches(".heading") == false)
+			targetElement.querySelector("p")?.classList.add("block-context-highlight-here");
+	}
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -8320,12 +8342,11 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
 
 			//	Label.
-			backlinksBlock.append(mainBacklinksBlockWrapper.querySelector("#backlinks").firstElementChild.cloneNode(true));
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
 			let sectionLabelHTML = targetBlock.tagName == "SECTION"
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
 								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
-			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:`;
+			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
 
 			//	List.
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
@@ -8945,9 +8966,7 @@ Transclude = {
 					content = Transclude.blockContext(targetElement, includeLink);
 					if (content) {
 						//	Mark targeted element, for styling purposes.
-						targetElement = targetElementInDocument(includeLink, content);
-						if (targetElement)
-							targetElement.classList.add("block-context-highlighted");
+						highlightTargetElementInDocument(includeLink, content);
 					} else {
 						content = newDocument(targetElement);
 					}
@@ -11059,7 +11078,7 @@ Extracts = { ...Extracts,
 		let target = popFrame.spawningTarget;
 		if (   isAnchorLink(target)
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
-			targetElementInDocument(target, popFrame.document).classList.add("block-context-highlighted");
+			highlightTargetElementInDocument(target, popFrame.document);
 
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);
@@ -12812,6 +12831,27 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
     }
 }, "rewrite", (info) => (info.context == "popFrame"));
 
+/**************************************************************************/
+/*  Remove aux-links list labels when transcluding aux-links lists into the 
+	aux-links sections of a page (Backlinks, Similars, Bibliography).
+ */
+addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLinksSections = (eventInfo) => {
+    GWLog("removeAuxLinksListLabelsInAuxLinksSections", "rewrite.js", 1);
+
+	let auxLinksTypes = [
+		"backlinks",
+		"similars",
+		"link-bibliography"
+	];
+	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType => 
+		`#${auxLinksType} > .aux-links-list-label, #${auxLinksType} > .columns > .aux-links-list-label`
+	).join(", ");
+
+	let auxLinksListLabel = eventInfo.container.querySelector(auxLinksListLabelSelector);
+	if (auxLinksListLabel)
+		auxLinksListLabel.remove();
+}, "rewrite", (info) => (info.source == "transclude"));
+
 
 /*********/
 /* LISTS */
@@ -14244,20 +14284,6 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
 /*********************/
 /* LINK BIBLIOGRAPHY */
 /*********************/
-
-/*********************************************************************/
-/*  Remove the “Link Bibliography:” bold text when transcluding a link
-    bibliography into a page’s Link Bibliography section.
- */
-addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingsFromLinkBibliographies = (eventInfo) => {
-    GWLog("removeSubheadingsFromLinkBibliographies", "rewrite.js", 1);
-
-    if (eventInfo.container.closest("section#link-bibliography-section")) {
-        let subheading = eventInfo.container.querySelector("#link-bibliography > .aux-links-list-label");
-        if (subheading)
-            subheading.remove();
-    }
-}, "rewrite", (info) => (info.source == "transclude"));
 
 /*****************************************************************************/
 /*  Apply a class to those link-bibs that should use the more compact styling.

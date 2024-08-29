@@ -811,6 +811,28 @@ function shouldLocalizeContentFromLink(includeLink) {
 	return true;
 }
 
+/*******************************************************************************/
+/*	Adds `block-context-highlighted` class to element targeted by the given link
+	in the given document, if the targeted element exists, and if it is NOT the
+	only immediately child of the document itself.
+ */
+function highlightTargetElementInDocument(link, doc) {
+	let targetElement = targetElementInDocument(link, doc);
+	if (targetElement
+		&& (   targetElement.parentNode == doc
+			&& isOnlyChild(targetElement)
+			) == false) {
+		targetElement.classList.add("block-context-highlighted");
+
+		/*	When highlighting <div> elements, place the manicule appropriately 
+			(and only if appropriate).
+		 */
+		if (   targetElement.tagName == "DIV"
+			&& previousBlockOf(targetElement)?.matches(".heading") == false)
+			targetElement.querySelector("p")?.classList.add("block-context-highlight-here");
+	}
+}
+
 /***********************************************************************/
 /*  Replace an include-link with the given content (a DocumentFragment).
  */
@@ -1080,12 +1102,11 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
 
 			//	Label.
-			backlinksBlock.append(mainBacklinksBlockWrapper.querySelector("#backlinks").firstElementChild.cloneNode(true));
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
 			let sectionLabelHTML = targetBlock.tagName == "SECTION"
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
 								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
-			backlinksBlock.querySelector("p strong").innerHTML = `Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:`;
+			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
 
 			//	List.
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
@@ -1705,9 +1726,7 @@ Transclude = {
 					content = Transclude.blockContext(targetElement, includeLink);
 					if (content) {
 						//	Mark targeted element, for styling purposes.
-						targetElement = targetElementInDocument(includeLink, content);
-						if (targetElement)
-							targetElement.classList.add("block-context-highlighted");
+						highlightTargetElementInDocument(includeLink, content);
 					} else {
 						content = newDocument(targetElement);
 					}

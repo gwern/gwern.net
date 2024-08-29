@@ -67,6 +67,27 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
     }
 }, "rewrite", (info) => (info.context == "popFrame"));
 
+/**************************************************************************/
+/*  Remove aux-links list labels when transcluding aux-links lists into the 
+	aux-links sections of a page (Backlinks, Similars, Bibliography).
+ */
+addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLinksSections = (eventInfo) => {
+    GWLog("removeAuxLinksListLabelsInAuxLinksSections", "rewrite.js", 1);
+
+	let auxLinksTypes = [
+		"backlinks",
+		"similars",
+		"link-bibliography"
+	];
+	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType => 
+		`#${auxLinksType} > .aux-links-list-label, #${auxLinksType} > .columns > .aux-links-list-label`
+	).join(", ");
+
+	let auxLinksListLabel = eventInfo.container.querySelector(auxLinksListLabelSelector);
+	if (auxLinksListLabel)
+		auxLinksListLabel.remove();
+}, "rewrite", (info) => (info.source == "transclude"));
+
 
 /*********/
 /* LISTS */
@@ -1499,20 +1520,6 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
 /*********************/
 /* LINK BIBLIOGRAPHY */
 /*********************/
-
-/*********************************************************************/
-/*  Remove the “Link Bibliography:” bold text when transcluding a link
-    bibliography into a page’s Link Bibliography section.
- */
-addContentInjectHandler(GW.contentInjectHandlers.removeSubheadingsFromLinkBibliographies = (eventInfo) => {
-    GWLog("removeSubheadingsFromLinkBibliographies", "rewrite.js", 1);
-
-    if (eventInfo.container.closest("section#link-bibliography-section")) {
-        let subheading = eventInfo.container.querySelector("#link-bibliography > .aux-links-list-label");
-        if (subheading)
-            subheading.remove();
-    }
-}, "rewrite", (info) => (info.source == "transclude"));
 
 /*****************************************************************************/
 /*  Apply a class to those link-bibs that should use the more compact styling.
