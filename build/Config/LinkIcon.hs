@@ -1098,7 +1098,7 @@ linkIconTestUnitsText =
          , ("/design#backlink", "arrows-pointing-inwards-to-dot", "svg")
          , ("/metadata/annotation/link-bibliography/%252Freview%252Fmovie.html", "bibliography", "svg")
          , ("#link-bibliography", "bibliography", "svg")
-         , ("/design#link-bibliography", "bibliography", "svg")
+         , ("/design#link-bibliographies", "bibliography", "svg")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
