@@ -374,6 +374,9 @@ canonicals = M.fromList
   , ("Lester Hiatt", "Les Hiatt")
   , ("Lester Richard Hiatt", "Les Hiatt")
   , ("Lester R. Hiatt", "Les Hiatt")
+  , ("Jian'an G. Luan", "Jian’an Luan")
+  , ("Jian’an Luan", "Jian'an Luan")
+  , ("David Hinds", "David A. Hinds")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -623,11 +626,15 @@ authorLinkDB = M.fromList $
     , ("Scott D. Gordon", "https://research.com/u/scott-d-gordon")
     , ("John Lambert", "https://x.com/JohnLaTwC")
     , ("Owain Evans", "https://owainevans.github.io/")
-    , ("Ross Girshick", "https://scholar.google.com/citations?user=W8VIEZgAAAAJ&hl=en&oi=ao")
-    , ("Nicholas J. Timpson", "https://scholar.google.com/citations?user=jRYUWdUAAAAJ&hl=en&oi=ao")
-    , ("Kristian Hveem", "https://scholar.google.com/citations?user=epz0IZIAAAAJ&hl=en")
+    , ("Ross Girshick", "https://scholar.google.com/citations?user=W8VIEZgAAAAJ")
+    , ("Nicholas J. Timpson", "https://scholar.google.com/citations?user=jRYUWdUAAAAJ")
+    , ("Kristian Hveem", "https://scholar.google.com/citations?user=epz0IZIAAAAJ")
     , ("Sasha Chapin", "https://www.sashachapin.com/")
     , ("Les Hiatt", "https://en.wikipedia.org/wiki/Lester_Hiatt")
+    , ("Jian’an Luan", "https://www.mrc-epid.cam.ac.uk/people/jianan-luan/")
+    , ("Jack Clark", "https://jack-clark.net/about/")
+    , ("David A. Hinds", "https://scholar.google.com/citations?user=epTHxM0AAAAJ")
+    , ("Aditya Grover", "https://scholar.google.com/citations?user=oOhnPUgAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

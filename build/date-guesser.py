@@ -3,8 +3,8 @@
 
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
-# Date: 2024-06-11
-# When:  Time-stamp: "2024-08-27 22:16:05 gwern"
+# Date: 2024-08-21
+# When:  Time-stamp: "2024-08-28 12:42:11 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -265,6 +265,30 @@ Task examples:
 2022-10-17
 - "2024-06-7, https://www.newyorker.com/culture/the-front-row/flipside-is-a-treasure-trove-of-music-and-memory, <em>Flipside</em> Is a Treasure Trove of Music and Memory: Chris Wilcha's documentary explores life, love, and art through his connection to a venerable record store"
 2024-06-07
+- "The 2024 Olympic Games in Paris: A Look Ahead - Sports Illustrated"
+""
+- "https://web.archive.org/web/20100915000000*/http://example.com"
+2010-09-15
+- "COVID-19: Two Years Later - A Retrospective (Published on March 11, 2022)"
+2022-03-11
+- "Apple WWDC 2023 Keynote: iOS 17, macOS 14, and More"
+2023-06-05
+- "SpaceX's Starship: From Prototype to Orbit (2019-2023)"
+2023
+- "https://doi.org/10.1038/s41586-021-03819-2"
+""
+- "Last updated: 2023-09-15T14:30:00Z - Company Blog"
+2023-09-15
+- "The Best Movies of the '90s: A Nostalgic Journey"
+""
+- "Bitcoin Whitepaper: 15th Anniversary Edition (October 31, 2008)"
+2008-10-31
+- "https://example.com/blog/2022/03/article-slug.html"
+2022-03
+- "Released in Q4 2023: Our New Product Line"
+2023
+- "20th Century Fox presents: A 21st Century Film"
+""
 
 Task:
 

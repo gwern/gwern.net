@@ -46,7 +46,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
