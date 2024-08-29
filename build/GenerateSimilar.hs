@@ -219,7 +219,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "GenerateSimilar.embeddings2Forest: called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "GenerateSimilar.embeddings2Forest: called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 32 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 15 3 31 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "GenerateSimilar.embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
