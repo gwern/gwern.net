@@ -280,7 +280,7 @@ Extracts = { ...Extracts,
 		let target = popFrame.spawningTarget;
 		if (   isAnchorLink(target)
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
-			targetElementInDocument(target, popFrame.document).classList.add("block-context-highlighted");
+			highlightTargetElementInDocument(target, popFrame.document);
 
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);

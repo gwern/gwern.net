@@ -184,6 +184,11 @@ Popins = {
 			if (element.buttonAction)
 				element.addActivateEvent(element.buttonAction);
 		});
+
+		//	Bind auxiliary title-link click event.
+		popin.titleBar.querySelectorAll("a").forEach(link => {
+			link.addActivateEvent(Popins.popinTitleBarLinkClicked);
+		});
 	},
 
 	/*  Add secondary title-link to a popin which has a title-link.
@@ -592,6 +597,17 @@ Popins = {
 		event.stopPropagation();
 
 		Popins.removePopin(event.target);
+	},
+
+	//	A click (tap) on a popin title-link.
+	popinTitleBarLinkClicked: (event) => {
+		GWLog("Popins.popinClicked", "popins.js", 2);
+
+		let link = event.target.closest("a");
+		if (   link.hostname == location.hostname
+			&& link.pathname == location.pathname
+			&& link.target == "_self")
+			Popins.removePopin(Popins.containingPopFrame(link));
 	},
 
 	/*  The keyup event.
