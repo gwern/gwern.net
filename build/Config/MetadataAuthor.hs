@@ -635,6 +635,7 @@ authorLinkDB = M.fromList $
     , ("Jack Clark", "https://jack-clark.net/about/")
     , ("David A. Hinds", "https://scholar.google.com/citations?user=epTHxM0AAAAJ")
     , ("Aditya Grover", "https://scholar.google.com/citations?user=oOhnPUgAAAAJ")
+    , ("Junxiong Wang", "https://www.cs.cornell.edu/~junxiong/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
