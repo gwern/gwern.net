@@ -19,14 +19,14 @@ import Utils (printGreen)
 import qualified Config.Misc (cd)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 200
+maxEmbedAtOnce = 2000
 
 main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
-          let mdl = take maxEmbedAtOnce $ filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ map fst $ reverse $ sortItemPathDateModified $ M.toList $
+          let mdl = filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ map fst $ reverse $ sortItemPathDateModified $ M.toList $
                 M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
-          mdlMissing <- filterM (fmap not . similaritemExistsP) mdl
+          mdlMissing <- filterM (fmap not . similaritemExistsP) mdl --fmap (take maxEmbedAtOnce) $ filterM (fmap not . similaritemExistsP) mdl
           bdb <- readBacklinksDB
           edb <- readEmbeddings
           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
