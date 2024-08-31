@@ -7,7 +7,9 @@ import Data.FileStore.Utils (runShellCommand)
 import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
-import MetadataFormat (cleanAbstractsHTML, trimTitle, checkURL, cleanAuthors)
+import MetadataFormat (cleanAbstractsHTML, trimTitle, checkURL)
+import MetadataAuthor (cleanAuthors)
+
 import Utils (replace, trim, printRed)
 import Paragraph (processParagraphizer)
 

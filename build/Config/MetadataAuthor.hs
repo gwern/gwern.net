@@ -8,6 +8,16 @@ import qualified Data.Text as T (Text)
 
 import Interwiki (toWikipediaEnURL)
 
+-- tests: unique keys, URL keys
+extractTwitterUsernameTestSuite :: [(String,String)]
+extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/1703913578036904431", "grantslatton")
+                                  , ("https://x.com/grantslatton", "grantslatton")
+                                  , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
+                                  , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
+                                  , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
+                                  , ("https://x.com/dseetharaman?lang=en", "dseetharaman")
+                                  ]
+
 -- config testing: all unique
 authorCollapseTestCases :: [(String, [Inline])]
 authorCollapseTestCases =
@@ -23,6 +33,43 @@ authorCollapseTestCases =
   , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
   , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
          ]
+
+-- infix rewrites
+-- Testing: unique keys, test keys for regexp validity
+cleanAuthorsRegexps, cleanAuthorsFixedRewrites :: [(String,String)]
+cleanAuthorsRegexps = [
+  ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2") -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
+  , (",$", "")
+  , (", +", ", ")
+  , ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1") -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3") -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5") -- 3-author
+  , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5, \\8 \\7") -- 4-author, and I won't try for more
+  , ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2")                              -- "A.Smith"      → "A. Smith"
+  , (" ([A-Z])([A-Z]) ([A-Za-z]+)", " \\1. \\2. \\3")             -- " LK Barnes"   → " L. K. Barnes"
+  , ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3")               -- "A.B. Smith"   → "A. B. Smith"
+  , ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4") -- "C.A.B. Smith" → "C. A. B. Smith"
+  , (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. ")                   -- "John HAB Smith" → "John H. A. B. Smith"
+  , (" ([A-Z])([A-Z]) ", " \\1. \\2. ")                               -- "John HA Smith"  → "John H. A. Smith"
+  , (" ([A-Z]\\.) ([A-Z]) ", " \\1 \\2. ")                            -- "John H. A Smith"  → "John H. A. Smith"
+  , (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 ")                            -- "John H A. Smith"  → "John H. A. Smith"
+  , (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
+  ]
+cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ",")
+                            , ("Dr ", ""), (" Eh.D.", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", "")
+                            , (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", "")
+                            , (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", ")
+                            , (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", "")
+                            , (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ",")
+                            , (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ",")
+                            , (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", ")
+                            , ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ",")
+                            , (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ",")
+                            , ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", "")
+                            , (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")
+                            , (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ",")
+                            , (" CAAB,", ","), (" DVM,", ","), (" D.V.M.", ","), (" M. D. M. P. H.", "")
+                            , (" M. D. MMM", ""), (" M. D. MHS", "")]
 
 -- Config tests: unique list
 authorLinkBlacklist :: [T.Text]
@@ -377,6 +424,8 @@ canonicals = M.fromList
   , ("Jian'an G. Luan", "Jian’an Luan")
   , ("Jian’an Luan", "Jian'an Luan")
   , ("David Hinds", "David A. Hinds")
+  , ("Zvi Moshowitz", "Zvi Mowshowitz")
+  , ("Astralite Heart", "AstraliteHeart")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -1866,4 +1915,4 @@ authorWpLinkDB =
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
-    , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen", "Central Committee of the Communist Party of China"]
+    , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen", "Central Committee of the Communist Party of China", "William Vickrey"]

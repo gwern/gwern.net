@@ -3,7 +3,7 @@
 {- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-08-06 10:39:07 gwern"
+When:  Time-stamp: "2024-08-31 18:50:21 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -46,11 +46,59 @@ import Network.HTTP (urlEncode)
 import Data.FileStore.Utils (runShellCommand)
 import Interwiki (toWikipediaEnURLSearch)
 import LinkMetadataTypes (Metadata)
-import Utils (split, frequency)
+import Utils (split, frequency, trim, replaceMany, sedMany)
 import qualified LinkBacklink as BL
 import Query (extractURLs)
+import Cycle (testInfixRewriteLoops)
 
-import qualified Config.MetadataAuthor as C
+import qualified Config.MetadataAuthor as CA
+
+-- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
+cleanAuthors :: String -> String
+cleanAuthors = trim . replaceMany CA.cleanAuthorsFixedRewrites . sedMany CA.cleanAuthorsRegexps
+
+cleanAuthorsTest :: [(String,String,String)]
+cleanAuthorsTest = testInfixRewriteLoops CA.cleanAuthorsFixedRewrites cleanAuthors
+
+
+-- A Twitter username is a 1–15 character alphanumeric/underscore string:
+-- must handle both "https://x.com/grantslatton/status/1703913578036904431" and "https://x.com/grantslatton":
+-- Unit-tests in `Config.MetadataFormat.extractTwitterUsernameTestSuite`.
+extractTwitterUsername :: String -> String
+extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
+   sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?(\\?lang=[a-z]+)?$", "\\1")] url
+
+-- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
+--
+-- eg. > authorsInitialize "J. Smith, Foo Bar"
+-- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
+--
+-- > authorsInitialize "John Jacob Jingleheimer Schmidt"
+-- → [Str "John Jacob Jingleheimer Schmidt"]
+-- vs:
+-- > authorsInitialize "John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt"
+-- → [Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
+--    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
+--    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"]]
+--
+-- BUG: does not initialize names with Unicode. This is because the regex library with search-and-replace does not support Unicode, and the regex libraries which support Unicode do not provide search-and-replace. Presumably I can hack up a search-and-replace on the latter.
+-- Example: > authorsInitialize "Robert Geirhos, Jörn-Henrik Jacobsen, Claudio Michaelis, ..."
+-- → [Span ("",[],[("title","Robert Geirhos")]) [Str "R. Geirhos"],Str ", ",Str "J\246rn-Henrik Jacobsen", ...]
+authorsInitialize :: String -> [Inline]
+authorsInitialize aut = let authors = split ", " aut in
+                          if length authors == 1 then [Str $ T.pack aut]
+                          else
+                              intersperse (Str ", ") $
+                              map (\a -> let short = sedMany (reverse [
+                                               -- three middle-names:
+                                                 ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- two middle-names:
+                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- one middle-name:
+                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
+                                               -- no middle-name:
+                                               , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
+                                           if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 -- For link bibliographies / tag pages, better truncate author lists at a reasonable length.
 --
@@ -62,7 +110,7 @@ authorsTruncateString :: String -> String
 authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else head $ split ", " after)
 
 authorCollapseTest :: [(String, [Inline])]
-authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) C.authorCollapseTestCases
+authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) CA.authorCollapseTestCases
 
 authorCollapse :: String -> [Inline]
 authorCollapse aut
@@ -87,9 +135,9 @@ authorCollapse aut
   in [Space, authorSpan]
 
 -- authorsCanonicalizeT :: T.Text -> T.Text
--- authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) C.canonicals) . T.splitOn ", "
+-- authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) CA.canonicals) . T.splitOn ", "
 authorsCanonicalize :: String -> String
-authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a (M.lookup a C.canonicals)) . split ", "
+authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a (M.lookup a CA.canonicals)) . split ", "
 
 -- we allow empty strings for convenience in processing annotations
 authorsLinkify :: T.Text -> [Inline]
@@ -106,15 +154,15 @@ linkify ""  = Space
 linkify " " = Space
 linkify aut -- skip anything which might be HTML:
   | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
-  | otherwise = case M.lookup aut C.authorLinkDB of
+  | otherwise = case M.lookup aut CA.authorLinkDB of
                   Nothing -> Str aut
                   Just u -> let aut' = T.takeWhile (/= '#') aut in -- author disambiguation is done by appending an anchor-style disambig like '#foo'; once we have done the lookup, we no longer need it and delete it for display
                                 Link nullAttr [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
 
 authorPrioritize :: [T.Text] -> [(Int,T.Text)]
 authorPrioritize auts = reverse $ frequency $ map fst $
-  filter (\(_,b) -> isNothing b) $ map (\a -> (a, M.lookup a C.authorLinkDB)) $
-  filter (`notElem` C.authorLinkBlacklist) auts
+  filter (\(_,b) -> isNothing b) $ map (\a -> (a, M.lookup a CA.authorLinkDB)) $
+  filter (`notElem` CA.authorLinkBlacklist) auts
 
 -- Compile a list of all authors, and calculate a weighted frequency list for them.
 -- We weight authors by: # of annotations × # of backlinks (of each annotation).
