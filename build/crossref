@@ -13,6 +13,8 @@
 
 set -e
 
+if [ $# != 1 ]; then echo -e "crossref fatal error: Exactly 1 argument is required.\nReceived $# arguments, as \"$*\"" >&2 && exit 1; fi
+
 . ~/wiki/static/build/bash.sh # for path2file
 
 TARGET_ORIGINAL="$(path2File "$1")"

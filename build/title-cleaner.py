@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-28 12:37:05 gwern"
+# When:  Time-stamp: "2024-08-30 22:14:36 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -318,6 +318,10 @@ Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weap
 "New Study Reveals Surprising Results"
 - "Top 10 Programming Languages to Learn in 2024 - Dev.to - The Practical Developer Community"
 "Top 10 Programming Languages to Learn in 2024"
+- "Have posted this before, but it really left an impression about crows, and the b…"
+"Have posted this before, but it really left an impression about crows, and the…"
+- "I've posted this comment before but I grew up in Florida on a decent amount of l..."
+"I've posted this comment before but I grew up in Florida on a decent amount of..."
 
 Task:
 

@@ -24,6 +24,7 @@ maxEmbedAtOnce = 2000
 main :: IO ()
 main = do Config.Misc.cd
           md  <- readLinkMetadata
+          -- prioritize the most recently modified/added non-index items:
           let mdl = filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ map fst $ reverse $ sortItemPathDateModified $ M.toList $
                 M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
           mdlMissing <- filterM (fmap not . similaritemExistsP) mdl --fmap (take maxEmbedAtOnce) $ filterM (fmap not . similaritemExistsP) mdl

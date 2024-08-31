@@ -153,7 +153,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                      -- like `gwtag adversarial https://arxiv.org/pdf/2406.20053`, and create the annotation for the abstract page instead:
                    -- eg. "https://arxiv.org/pdf/2406.20053#org=foo"
                    -- → "https://arxiv.org/abs/2406.20053#org=foo"
-                   | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
+                   | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/abs/" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
                    | otherwise = l
 
