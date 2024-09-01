@@ -142,7 +142,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
-  let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified links) (maximum $ getDatesModified links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
@@ -240,8 +240,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
                else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
-generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
-generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail thumbnailText
+generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
+generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
              "title: ‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
@@ -253,8 +253,8 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              thumbnail,
              thumbnailText,
              "thumbnail-css: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
-             "created: 'N/A'",
-             if date=="" then "" else "modified: \'" ++ date++"\'",
+             "created: '" ++ dateCreated ++ "'",
+             "modified: \'" ++ dateModified ++ "\'",
              "status: 'in progress'",
              previous,
              next,
@@ -316,11 +316,9 @@ sortByDatePublished = sortBy compareEntries
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
 
-
--- assuming already-descending-sorted input from `sortByDateBoth`, output the date of the first (ie. newest) item:
-getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
-getNewestDate [] = ""
-getNewestDate ((_,(_,_,date,date',_,_,_),_):_) = max date date'
+getDatesModified :: [(FilePath,MetadataItem,FilePath)] -> [String]
+getDatesModified [] = []
+getDatesModified items = filter (not . null) $ map (\(_,(_,_,_,date',_,_,_),_) -> date') items
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =
