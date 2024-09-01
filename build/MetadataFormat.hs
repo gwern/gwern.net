@@ -102,11 +102,11 @@ isDate d = case length (split "-" d) of
     2 -> isValidDate "%Y-%m" d
     3 -> isValidDate "%Y-%m-%d" d
     _ -> False
-
-isValidDate :: String -> String -> Bool
-isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
-    Just _ -> True
-    Nothing -> False
+ where
+  isValidDate :: String -> String -> Bool
+  isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
+      Just _ -> True
+      Nothing -> False
 
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
@@ -187,4 +187,5 @@ guessDateFromString u  =
            (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/date-guesser.py" [u]
            case status of
                ExitFailure err -> printRed ("Exit Failure: " ++ intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
-               _ -> return $ delete "\"\"" $ trim $ U.toString mb
+               _ -> let dateNew = delete "\"\"" $ trim $ U.toString mb in
+                      if isDate dateNew then return dateNew else error $ "MetadataFormat.guessDateFromString: date-guesser.py returned an invalid date: " ++ dateNew ++ "; input: " ++ u
