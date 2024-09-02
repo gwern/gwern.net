@@ -107,21 +107,21 @@ cleanAuthorsRegexps = [
   , (" ([A-Z]) ([A-Z]\\.) ", " \\1. \\2 ")                            -- "John H A. Smith"  → "John H. A. Smith"
   , (" ([A-Z]) ", " \\1. ")                                             -- "John H Smith"   → "John H. Smith"
   ]
-cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ","),
-                             ("Dr ", ""), (" Eh.D.", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""),
-                             (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""),
-                             (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "),
-                             (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", ""),
-                             (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","),
-                             (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","),
-                             (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "),
-                             ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","),
-                             (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ","),
-                             ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""),
-                             (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior"),
-                             (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ","),
-                             (" CAAB,", ","), (" DVM,", ","), (" D.V.M.", ","),
-                             (" M. D. MMM", "")]
+cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "), (" MA,", ","), (", MA,", ","), (" MS,", ",")
+                            , ("Dr ", ""), (" Eh.D.", ""), (" PhD", ""), (" Ph.D.", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", "")
+                            , (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", "")
+                            , (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", ")
+                            , (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" M. Sc.", ""), (" B. Sc.", "")
+                            , (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ",")
+                            , (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" BA(Hons),1", ""), (" , BSc(Hons),1", ",")
+                            , (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", ")
+                            , ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ",")
+                            , (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), (", PhD1", ",")
+                            , ("  DMSc", ""), (",, ", ", "), (", ,,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", "")
+                            , (" et al.", ""), (", et al.", ""), ("Jr.", "Junior"), (", Jr.", " Junior"), (", Junior", " Junior")
+                            , (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ",")
+                            , (" CAAB,", ","), (" DVM,", ","), (" D.V.M.", ","), (" M. D. M. P. H.", "")
+                            , (" M. D. MMM", ""), (" M. D. MHS", "")]
 
 -- 'author' metadata to be blacklisted: usually either nonsense, a third party, software tool, etc
 -- testing: unique list
@@ -1737,12 +1737,14 @@ htmlRewriteFixed =
          , ("regularisation", "regularization")
          , ("urbanisatio", "nurbanization")
          , ("organisation", "organization")
+         , ("diarisation", "diarization")
          , ("vectorised", "vectorized")
          , ("nonspecifically", "non-specifically")
          , ("attentionless", "attention-less")
          , ("disfavour", "disfavor")
          , ("nonpredictive", "non-predictive")
          , ("subquadratic-time", "sub-quadratic-time")
+         , ("nonimmersive", "non-immersive")
          , ("webscale", "web-scale")
          , ("tobenchmarks", "to benchmarks")
          , ("fertilised", "fertilized")
@@ -1763,6 +1765,8 @@ htmlRewriteFixed =
          , (" ofthe", " of the")
          , (" ofdata", " of data")
          , ("onCIFAR", "on CIFAR")
+         , ("Lee Sidol", "Lee Sedol")
+         , ("DeepBlue", "Deep Blue")
          , ("thatuse", "that use")
          , ("nuture", "nurture")
          , ("\8201", " ")
@@ -1853,6 +1857,8 @@ htmlRewriteFixed =
          , (",”", "”,")
          , (",’", "’,")
          , (" (”", " (“")
+         , (". . . ,", "…,")
+         , (", … ,", ", …,")
          , ("\8236", "") -- POP DIRECTIONAL FORMATTING
          , ("\8234", "") -- LEFT-TO-RIGHT EMBEDDING
          , ("\160", " ") -- NO BREAK SPACE
@@ -1863,13 +1869,3 @@ htmlRewriteFixed =
 htmlRewriteRegexpBefore = [ ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", "")
          , (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", "") -- rm AERA classification tags they stick into the Crossref abstracts; must be run *before* because JEL codes like 'R2' or 'L2' will be rewritten into sub/superscript under the assumption they are the scientific concepts, which then breaks the JEL match.
          ]
-
--- tests: unique keys, URL keys
-extractTwitterUsernameTestSuite :: [(String,String)]
-extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/1703913578036904431", "grantslatton")
-                                  , ("https://x.com/grantslatton", "grantslatton")
-                                  , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
-                                  , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
-                                  , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
-                                  , ("https://x.com/dseetharaman?lang=en", "dseetharaman")
-                                  ]

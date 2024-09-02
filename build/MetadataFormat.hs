@@ -1,12 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
--- Various string-munging utilities aimed at metadata, like cleaning titles, authors, dates etc.
+-- Various string-munging utilities aimed at metadata; authors are handled in MetadataAuthor, titles in MetadataTitle
 
 module MetadataFormat where
 
-import Data.List (intersperse, isSuffixOf, isPrefixOf, intercalate, unfoldr)
+import Data.List (isSuffixOf, isPrefixOf, intercalate, unfoldr)
 import Numeric (showFFloat)
 import System.FilePath (takeBaseName)
-import qualified Data.Text as T (pack)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
@@ -14,7 +13,6 @@ import System.Exit (ExitCode(ExitFailure))
 import Data.Time (parseTimeM, defaultTimeLocale, Day)
 
 import Text.Regex.TDFA ((=~))
-import Text.Pandoc (Inline(Span, Str))
 
 import Cycle (testInfixRewriteLoops)
 import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, split, trim, printRed, delete)
@@ -54,13 +52,6 @@ balanced str = helper str "" 0 0
     matchingBracket ']' = '['
     matchingBracket '}' = '{'
     matchingBracket _ = error "Invalid bracket"
-
--- A Twitter username is a 1–15 character alphanumeric/underscore string:
--- must handle both "https://x.com/grantslatton/status/1703913578036904431" and "https://x.com/grantslatton":
--- Unit-tests in `Config.MetadataFormat.extractTwitterUsernameTestSuite`.
-extractTwitterUsername :: String -> String
-extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
-   sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?(\\?lang=[a-z]+)?$", "\\1")] url
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.
@@ -111,11 +102,11 @@ isDate d = case length (split "-" d) of
     2 -> isValidDate "%Y-%m" d
     3 -> isValidDate "%Y-%m-%d" d
     _ -> False
-
-isValidDate :: String -> String -> Bool
-isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
-    Just _ -> True
-    Nothing -> False
+ where
+  isValidDate :: String -> String -> Bool
+  isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
+      Just _ -> True
+      Nothing -> False
 
 -- Heuristic checks for specific link sources:
 checkURL :: String -> IO ()
@@ -128,13 +119,6 @@ processDOI = replaceMany [("–", "-"), ("—", "-"), ("https://doi.org/", "")] 
 processDOIArxiv url = "10.48550/arXiv." ++
                                sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
                                (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
-
--- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
-cleanAuthors :: String -> String
-cleanAuthors = trim . replaceMany C.cleanAuthorsFixedRewrites . sedMany C.cleanAuthorsRegexps
-
-cleanAuthorsTest :: [(String,String,String)]
-cleanAuthorsTest = testInfixRewriteLoops C.cleanAuthorsFixedRewrites cleanAuthors
 
 -- test for possible infinite-loops in the rewrite suite; our initial source of cases is just the fixed-string rewrites.
 -- The cycle detector is not enough because the rewrites operate infix, not by replacing the *whole* string, so it's possible to have expansion/contraction which produces loops.
@@ -153,7 +137,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                      -- like `gwtag adversarial https://arxiv.org/pdf/2406.20053`, and create the annotation for the abstract page instead:
                    -- eg. "https://arxiv.org/pdf/2406.20053#org=foo"
                    -- → "https://arxiv.org/abs/2406.20053#org=foo"
-                   | "https://arxiv.org/" `isPrefixOf` l = sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
+                   | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
                    | otherwise = l
 
@@ -172,38 +156,6 @@ trimTitle t = let t' = reverse $ sedMany [("†.*", ""), -- eg. "Relation of Ser
 pageNumberParse :: String -> String
 pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg
-
--- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
---
--- eg. > authorsInitialize "J. Smith, Foo Bar"
--- → [Str "J. Smith",Str ", ",Span ("",[],[("title","Foo Bar")]) [Str "F. Bar"]]
---
--- > authorsInitialize "John Jacob Jingleheimer Schmidt"
--- → [Str "John Jacob Jingleheimer Schmidt"]
--- vs:
--- > authorsInitialize "John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt, John Jacob Jingleheimer Schmidt"
--- → [Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
---    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"],Str ", ",
---    Span ("",[],[("title","John Jacob Jingleheimer Schmidt")]) [Str "J. Schmidt"]]
---
--- BUG: does not initialize names with Unicode. This is because the regex library with search-and-replace does not support Unicode, and the regex libraries which support Unicode do not provide search-and-replace. Presumably I can hack up a search-and-replace on the latter.
--- Example: > authorsInitialize "Robert Geirhos, Jörn-Henrik Jacobsen, Claudio Michaelis, ..."
--- → [Span ("",[],[("title","Robert Geirhos")]) [Str "R. Geirhos"],Str ", ",Str "J\246rn-Henrik Jacobsen", ...]
-authorsInitialize :: String -> [Inline]
-authorsInitialize aut = let authors = split ", " aut in
-                          if length authors == 1 then [Str $ T.pack aut]
-                          else
-                              intersperse (Str ", ") $
-                              map (\a -> let short = sedMany (reverse [
-                                               -- three middle-names:
-                                                 ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                               -- two middle-names:
-                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                               -- one middle-name:
-                                               , ("^([A-Z.-])[A-za-z.-]+ [A-za-z.-]+ (.*)", "\\1. \\2")
-                                               -- no middle-name:
-                                               , ("^([A-Z.-])[A-za-z.-]+ (.*)", "\\1. \\2")]) a in
-                                           if a==short then Str (T.pack a) else Span ("", [], [("title", T.pack a)]) [Str (T.pack short)]) authors
 
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
@@ -235,4 +187,5 @@ guessDateFromString u  =
            (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/date-guesser.py" [u]
            case status of
                ExitFailure err -> printRed ("Exit Failure: " ++ intercalate " ::: " [u, show status, show err, show mb, show stderr]) >> return ""
-               _ -> return $ delete "\"\"" $ trim $ U.toString mb
+               _ -> let dateNew = delete "\"\"" $ trim $ U.toString mb in
+                      if isDate dateNew then return dateNew else error $ "MetadataFormat.guessDateFromString: date-guesser.py returned an invalid date: " ++ dateNew ++ "; input: " ++ u

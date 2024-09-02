@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-08-27 18:55:53 gwern"
+When:  Time-stamp: "2024-08-31 12:58:41 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -85,8 +85,8 @@ import System.GlobalLock as GL (lock) -- global-lock
 import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
-import MetadataAuthor (authorsCanonicalize)
-import MetadataFormat (cleanAuthors, guessDateFromLocalSchema, guessDateFromString, isDate)
+import MetadataAuthor (authorsCanonicalize, cleanAuthors)
+import MetadataFormat (guessDateFromLocalSchema, guessDateFromString, isDate)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
 readGTX :: FilePath -> IO MetadataList
@@ -119,8 +119,8 @@ readGTXSlow path = do C.cd
 fixDate :: (Path, MetadataItem) -> IO (Path, MetadataItem)
 fixDate x@(_,(_,_,"",_,_,_,_))             = return x
 fixDate x@(p,(t,a,d,dd,doi,tags,abstract)) = if isDate d then return x else
-              do print $ "Guessing... " ++ (d ++ ", " ++ p ++ ", " ++ t)
-                 d' <- guessDateFromString (d ++ ", " ++ p ++ ", " ++ t)
+              do print $ "Guessing... " ++ (d ++ ", " ++ p ++ ", " ++ t ++ " by " ++ a)
+                 d' <- guessDateFromString (d ++ ", " ++ p ++ ", " ++ t ++ " by " ++ a)
                  print $ "Guessed: " ++ d'
                  if d' == "" then return x else
                    if isDate d' then return (p,(t,a,d',dd,doi,tags,abstract))
@@ -134,7 +134,13 @@ parseGTX content = let subContent = T.splitOn "\n---\n" $ T.drop 4 content -- de
 
 tupleize :: [T.Text] -> (Path, MetadataItem)
 tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
-                                        (T.unpack t, T.unpack a, T.unpack d, T.unpack dc, doiOrKV x $ T.unpack kvs, map T.unpack $ T.words tags, if abstract==[""] then "" else T.unpack $ T.unlines abstract))
+                                        (T.unpack t,
+                                         T.unpack a,
+                                         T.unpack d,
+                                         T.unpack dc,
+                                         doiOrKV x $ T.unpack kvs,
+                                         map T.unpack $ T.words tags,
+                                         if abstract==[""] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "GTX.tuplize: empty list"
 tupleize x  = error $ "GTX.tuplize: missing mandatory list entries: " ++ show x
 

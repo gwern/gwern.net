@@ -11,7 +11,7 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
 -- directory (mostly showing random snippets).
 
-import Control.Monad (filterM, void, unless)
+import Control.Monad (filterM, void, unless, when)
 -- import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
@@ -35,8 +35,7 @@ import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy, titlecase')
-import MetadataFormat (extractTwitterUsername)
-import MetadataAuthor (authorCollapse)
+import MetadataAuthor (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete)
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
@@ -115,6 +114,8 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
 
+  when (not newestp && 0 == sum [length dirsChildren, length dirsSeeAlsos, length triplets, length linksAll]) $ error $ "generateDirectory.listings: non-'newest' tag contained no directory children, see-also tags, files, annotations, or links? This would appear to be a meaningless tag; remove or populate it! : " ++ show dirs ++ " : " ++ show dir''
+
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
   Prelude.mapM_ (\(l,_,_) -> case M.lookup l md' of
                          Nothing -> void $ annotateLink md' (Link nullAttr [] (T.pack l, ""))
@@ -141,7 +142,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
-  let header = generateYAMLHeader parentDirectory' previous next tagSelf (getNewestDate links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified links) (maximum $ getDatesModified links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
@@ -239,8 +240,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
                else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
-generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> (Int,Int,Int) -> String -> String -> String
-generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) thumbnail thumbnailText
+generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
+generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
              "title: ‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag",
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
@@ -252,8 +253,8 @@ generateYAMLHeader parent previous next d date (directoryN,annotationN,linkN) th
              thumbnail,
              thumbnailText,
              "thumbnail-css: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
-             "created: 'N/A'",
-             if date=="" then "" else "modified: \'" ++ date++"\'",
+             "created: '" ++ dateCreated ++ "'",
+             "modified: \'" ++ dateModified ++ "\'",
              "status: 'in progress'",
              previous,
              next,
@@ -315,11 +316,9 @@ sortByDatePublished = sortBy compareEntries
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
 
-
--- assuming already-descending-sorted input from `sortByDateBoth`, output the date of the first (ie. newest) item:
-getNewestDate :: [(FilePath,MetadataItem,FilePath)] -> String
-getNewestDate [] = ""
-getNewestDate ((_,(_,_,date,date',_,_,_),_):_) = max date date'
+getDatesModified :: [(FilePath,MetadataItem,FilePath)] -> [String]
+getDatesModified [] = []
+getDatesModified items = filter (not . null) $ map (\(_,(_,_,_,date',_,_,_),_) -> date') items
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =

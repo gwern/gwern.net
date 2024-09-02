@@ -228,6 +228,7 @@ whiteList = [ ( "/crop#hands"
       ]
     )
   , ("https://en.wikipedia.org/wiki/Marc_Andreessen", ["Marc Andreessen"])
+  , ("https://en.wikipedia.org/wiki/Microsoft_Bing", ["Bing", "MS Bing", "Microsoft Bing", "Bing Search"])
   , ("https://en.wikipedia.org/wiki/Large_language_model", ["LLMs", "LLM", "large language models", "large language model"])
   , ("https://en.wikipedia.org/wiki/Biometrics", ["biometric", "biometrics"])
   , ("https://openai.com/index/hello-gpt-4o/", ["GPT-4o"])

@@ -17,7 +17,7 @@ minimumSuggestions = 3
 
 -- prevent pathological loops by requesting no more than i times:
 iterationLimit :: Int
-iterationLimit = 4
+iterationLimit = 5
 
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
@@ -42,7 +42,7 @@ blackListURLs = [] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.02455
                 --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898064/"]
 
 minDistance, maxDistance :: Double
-maxDistance = 0.58 -- chosen ad hoc by looking at a small sample and noting there seemed to be a cliff of relevancy at ~0.60 as of 2023-09-04 using text-embedding-ada-002 - WARNING: must be rechecked for every engine change!
+maxDistance = 0.95 -- [chosen ad hoc by looking at a small sample and noting there seemed to be a cliff of relevancy at ~0.60 as of 2023-09-04 using text-embedding-ada-002 - WARNING: must be rechecked for every engine change!] [rechosen 2024-08-28 for new smaller truncated embedding]
 minDistance = 0.01 -- avoids self-matches and other odd errors
 
 -- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
@@ -51,4 +51,4 @@ minTagAuto :: Int
 minTagAuto = 3
 
 randSeed :: Word64
-randSeed = 17
+randSeed = 20

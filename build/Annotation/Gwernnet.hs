@@ -15,7 +15,8 @@ import Text.Regex.TDFA ((=~))
 import Annotation.PDF (pdf)
 import Image (invertImage)
 import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
-import MetadataFormat (checkURL, cleanAbstractsHTML, isDate, sectionAnonymousRegex, footnoteRegex, cleanAuthors)
+import MetadataFormat (checkURL, cleanAbstractsHTML, isDate, sectionAnonymousRegex, footnoteRegex)
+import MetadataAuthor (cleanAuthors)
 import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim, delete) -- safeHtmlWriterOptions, sedMany
 import Tags (listTagDirectoriesAll, abbreviateTag)
 import LinkAuto (linkAutoHtml5String)
@@ -62,7 +63,7 @@ gwern md p
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             do let p' = sed "^/" "" $ delete "https://gwern.net/" p
-               -- let indexP = "doc/" `isPrefixOf` p' && "/index" `isInfixOf` p'
+               let indexP = "doc/" `isPrefixOf` p' && "/index" `isInfixOf` p'
                printGreen p'
                checkURL p
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
@@ -81,7 +82,8 @@ gwern md p
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap safeKeywords metas
                         let author = cleanAuthors $ concatMap safeAuthor metas
-                        let author' = if author == "Gwern Branwen" then "Gwern" else author
+                        let author' = if indexP then "" else
+                                        if author == "Gwern Branwen" then "Gwern" else author
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           safeContent $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else delete "https://gwern.net/" thumbnail

@@ -219,7 +219,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "GenerateSimilar.embeddings2Forest: called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "GenerateSimilar.embeddings2Forest: called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 32 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 40 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "GenerateSimilar.embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -385,7 +385,7 @@ generateItem md linkTagsP p2 = case M.lookup p2 md of
                                   Just (_,_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,_,tags,_) ->
                                     [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
-                                      [Link ("", ["link-annotated", "backlink-not", "id-not"],
+                                      [Link ("", ["link-annotated", "id-not", "backlink-not"],
                                              -- link-tags are particularly useful when reviewing single-shot reccomendations while writing annotations
                                               if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
                                             ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]

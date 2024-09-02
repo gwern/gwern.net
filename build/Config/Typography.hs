@@ -91,7 +91,7 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Between", "Caseness", "Goodbye", "By", "Around", "Christmas", "One", "Wars", "Michigan", "Act", "Circa",
                                   "Horizon", "Study", "Alamos", "Dover", "War", "London", "York", "Paris", "Berlin", "Francisco", "As", "Why",
                                   "Indicators", "China", "China’s", "Books", "During", "Halloween", "Sweden", "Norway", "Finland", "Suicides",
-                                  "Camps", "Tamala", "Math", "States"]
+                                  "Camps", "Tamala", "Math", "States", "Uniqueness"]
 
 -- testing: unique list
 dateRangeDurationTestCases :: [(Int, Inline, Inline)]

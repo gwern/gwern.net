@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2024-05-31 16:00:07 gwern"
+# When:  Time-stamp: "2024-08-29 12:24:30 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -48,12 +48,12 @@
 set -x
 
 # Input: X BPEs of text
-# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models
+# Output: <https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models>
 # 'text-embedding-3' models can be truncated to smaller dimensions which retain most performance, using a `dimension` argument.
 # <https://openai.com/index/new-embedding-models-and-api-updates/> <https://platform.openai.com/docs/guides/embeddings/use-cases>
 
 ENGINE="text-embedding-3-large"
-ENGINE_DIMENSION="256"
+ENGINE_DIMENSION="512"
 TEXT="$*"
 if [ "${#TEXT}" == 0 ]; then TEXT=$(</dev/stdin); fi
 TEXT_LENGTH="${#TEXT}"

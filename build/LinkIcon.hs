@@ -73,7 +73,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
  -- lb/bl/sl:
- | u == "#link-bibliography" || u == "/design#link-bibliography" || "/metadata/annotation/link-bibliography/" `T.isPrefixOf` u = addIcon x ("bibliography", "svg") -- original SVG: "List" <https://thenounproject.com/icon/list-4184262/>, Paisley (CC-BY)
+ | u == "#link-bibliography" || u == "/design#link-bibliographies" || "/metadata/annotation/link-bibliography/" `T.isPrefixOf` u = addIcon x ("bibliography", "svg") -- original SVG: "List" <https://thenounproject.com/icon/list-4184262/>, Paisley (CC-BY)
  | u == "#similars" || u == "/design#similar-links" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
  | u == "#backlinks" || u == "/design#backlink" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
  | anyPrefixT u ["/metadata/annotation/"] = x
