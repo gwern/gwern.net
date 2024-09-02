@@ -254,16 +254,25 @@ function newDisclosureButton(options) {
 
 /****************************************************************************/
 /*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
-	namely cases where a div.abstract has a span.abstract-collapse; also 
-	fix erroneous HTML structure caused by well-meaning but misguided Pandoc 
-	HTML structure rectification applied to such cases.
+	namely cases where a div.abstract (or a section.abstract, etc.) has a 
+	span.abstract-collapse; also fix erroneous HTML structure caused by 
+	well-meaning but misguided Pandoc HTML structure rectification (namely, 
+	wrapping a span.collapse in a <p>) applied to such cases.
  */
 addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = (eventInfo) => {
 	GWLog("preprocessMismatchedCollapseHTML", "collapse.js", 1);
 
-	eventInfo.container.querySelectorAll("div.collapse span.abstract-collapse").forEach(possiblyMismatchedAbstract => {
+	let possiblyMismatchedAbstractCollapseBlockTags = [
+		"div",
+		"section"
+	];
+	let possiblyMismatchedAbstractSelector = possiblyMismatchedAbstractCollapseBlockTags.map(tagSelector => 
+		`${tagSelector}.collapse span.abstract-collapse`
+	).join(", ");
+
+	eventInfo.container.querySelectorAll(possiblyMismatchedAbstractSelector).forEach(possiblyMismatchedAbstract => {
 		let containingCollapse = possiblyMismatchedAbstract.closest(".collapse");
-		if (containingCollapse.tagName == "DIV") {
+		if (possiblyMismatchedAbstractCollapseBlockTags.includes(containingCollapse.tagName.toLowerCase())) {
 			possiblyMismatchedAbstract.parentElement.parentElement.insertBefore(possiblyMismatchedAbstract, possiblyMismatchedAbstract.parentElement);
 			rewrapContents(possiblyMismatchedAbstract, "div", {
 				moveClasses: true
