@@ -150,13 +150,11 @@
         </section>$endif$
         </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
-        <nav id="navigation" title="Website Navigation: Top of Page/Previous Page/Next Page">
-          <a id="navigation-previous" class="link-page-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
-            ><svg><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
+        <nav id="navigation" title="Website Navigation: Top of Page">
+          <svg id="navigation-left" ><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg>
           <a id="navigation-center" class="link-page-not" title="Return to top of current page" href="#top"
             ><svg><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#center" /></svg></a>
-          <a id="navigation-next" class="link-page-not" rel="next" href="$next$" title="Link to next page by topic, ‘$next$’"
-            ><svg><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
+          <svg id="navigation-right"><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg>
         </nav>
 
         <div class="markdownBody" id="footer">

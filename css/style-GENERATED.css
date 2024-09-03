@@ -1655,7 +1655,7 @@ section.collapse > .heading {
     margin: 0 -0.45em 0 0;
 }
 .collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
-	margin: 0 -0.45em 0 -0.45em;
+    margin: 0 -0.45em 0 -0.45em;
 }
 
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
@@ -4587,11 +4587,11 @@ ol.link-bibliography-list-compact > li::before {
         margin: 2.5em 0 0 0;
         justify-content: space-between;
     }
-    #navigation #navigation-next,
-    #navigation #navigation-previous {
+    #navigation #navigation-right,
+    #navigation #navigation-left {
         flex-grow: 1;
     }
-    #navigation #navigation-next {
+    #navigation #navigation-right {
         transform: scale(-1, 1);
     }
     #navigation #navigation-center {
@@ -4603,8 +4603,8 @@ ol.link-bibliography-list-compact > li::before {
         margin: 3em 0 0 0;
         justify-content: center;
     }
-    #navigation #navigation-next,
-    #navigation #navigation-previous {
+    #navigation #navigation-right,
+    #navigation #navigation-left {
         display: none;
     }
     #navigation #navigation-center {

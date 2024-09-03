@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-09-01 20:30:12 gwern"
+When: Time-stamp: "2024-09-03 19:02:48 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -205,9 +205,6 @@ postCtx md =
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
     modificationTimeField "modified" "%F" <>
-    -- page navigation defaults:
-    constField "next" "/index" <>
-    constField "previous" "/index" <>
     -- metadata:
     constField "status" "notes" <>
     constField "confidence" "log" <>
