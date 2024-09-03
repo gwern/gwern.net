@@ -1758,6 +1758,7 @@ htmlRewriteFixed =
          , ("PsycArticles", "PsycARTICLES")
          , ("behaviour", "behavior")
          , ("de Novo", "De Novo")
+         , ("thususe", "thus use")
          , ("small saple", "small sample")
          , (" model s ", " model’s ")
          , (" ofsmoking", " of smoking")

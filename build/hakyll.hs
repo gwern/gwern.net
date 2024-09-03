@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-08-19 09:37:27 gwern"
+When: Time-stamp: "2024-09-01 20:30:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -201,6 +201,7 @@ postCtx md =
     boolField "similars-yes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
     boolField "linkbib-yes"   (check (const True)         getLinkBibLinkCheck) <>
     dateField "created" "%F" <>
+    -- constField "created" "N/A"  <> -- NOTE: we make 'created' a mandatory field by not setting a default, so template compilation will crash
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
     modificationTimeField "modified" "%F" <>

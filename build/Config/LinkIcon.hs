@@ -119,6 +119,7 @@ linkIconRulesSingle u
  | u'' u "www.forbes.com" = ("F", "text") -- red capital F serif
  | u'' u "fortune.com" = ("F", "text,sans") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
  | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
+ | u' u "cerebras" = ("C", "text,sans") -- Cerebras: <https://www.cerebras.net>, <#cerebras> affiliation; overrides Arxiv.org; the Cerebras logo is a odd set of 4 semi-concentric circles <https://cerebras.ai/wp-content/uploads/2022/03/cerebras-white-01.png> which is both unfamiliar/odd and looks terrible at link-icon resolution (like some sort of small animal like a chipmunk or gerbil)
  | u'' u "arxiv.org" || u'' u "browse.arxiv.org" || u'' u "proceedings.mlr.press" || u'' u "aclanthology.org" = ("𝛘", "text") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'ACL' & 'PMLR' ("Proceedings of Machine Learning Research") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really.
  | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u' u "theatlantic.com" = ("A", "text,italic") -- The Atlantic: replicate sloping by italics
@@ -174,6 +175,7 @@ linkIconRulesSingle u
  | u'' u "www.thebeliever.net" = ("𝐁", "text") -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
  | u'' u "solar.lowtechmagazine.com" = ("☀", "text") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
  | u'' u "www.nobelprize.org" = ("🏅", "text") -- Nobel Prize, SPORTS MEDAL
+ | u'' u "waitbutwhy.com" = ("♚", "text") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♚" BLACK CHESS KING (U+265A). If that doesn't work, a 'WBW' tri-text icon is feasible.
  | otherwise = ("", "")
 
 linkIconRulesDouble u
@@ -1099,6 +1101,9 @@ linkIconTestUnitsText =
          , ("/metadata/annotation/link-bibliography/%252Freview%252Fmovie.html", "bibliography", "svg")
          , ("#link-bibliography", "bibliography", "svg")
          , ("/design#link-bibliographies", "bibliography", "svg")
+         , ("https://www.cerebras.net/press-release/cerebras-announces-third-generation-wafer-scale-engine", "C", "text,sans")
+         , ("https://arxiv.org/abs/2309.10818#cerebras", "C", "text,sans")
+         , ("https://waitbutwhy.com/whatsourproblem", "♚", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

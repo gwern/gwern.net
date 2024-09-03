@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-31 12:46:29 gwern"
+# When:  Time-stamp: "2024-09-02 10:19:54 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -920,44 +920,44 @@ else
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
     wrap λ "Metadata HTML files: garbage or control characters detected?" &
 
-    λ(){ ge -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.gtx; }
+    λ(){ gec -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.gtx; }
     wrap λ "Wikipedia annotations in GTX metadata database, but will be ignored by popups! Override with non-WP URL?" &
 
-    λ(){ ge -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.gtx; }
+    λ(){ gec -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.gtx; }
     wrap λ "Wrong filepaths in GTX metadata database—missing prefix?" &
 
     λ(){ gec -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.gtx | \
              gfv -e '%' -e '<figure>' -e 'alt="Figure ' -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscript abbreviations in GTX metadata database" &
 
-    λ(){ ge -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
+    λ(){ gec -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
     wrap λ "Superscript abbreviations are weirdly capitalized?" &
 
     λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' ; }
     wrap λ "Superscripts/subscripts have spaces in front?" &
 
-    λ(){ ge -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
+    λ(){ gec -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database" &
 
-    λ(){ grep --perl-regexp --null --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
+    λ(){ grep --perl-regexp --null --color --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
     wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)"
 
-    λ(){ gf -e ' significant'  ./metadata/full.gtx; }
+    λ(){ gfc -e ' significant'  ./metadata/full.gtx; }
     wrap λ "Misleading language in full.gtx" &
 
-    λ(){ gf -e '/doc/www/'  ./metadata/full.gtx; }
+    λ(){ gfc -e '/doc/www/'  ./metadata/full.gtx; }
     wrap λ "Generated local archive links showing up in manual annotations." &
 
-    λ(){ gf -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
+    λ(){ gfc -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!" &
 
-    λ(){ ge -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.gtx; }
+    λ(){ gec -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.gtx; }
     wrap λ "Bad paths in metadata databases: redundant anchors" &
 
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
     wrap λ "Broken anchors in directory indexes." &
 
-    λ(){ ls | gf -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | ge -e '^[014-9]' 2> /dev/null; }
+    λ(){ ls | gf -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | ge -ec '^[014-9]' 2> /dev/null; }
     wrap λ "Files in root wiki directory which should be in docs/ (perhaps a move gone awry)?" &
 
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }

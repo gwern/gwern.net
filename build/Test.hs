@@ -202,11 +202,22 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
         safeLink (_, (Link _ _ (u,_))) = isURLT u
         safeLink x = error $ "Test.isURLT (URL of second).safeLink: passed an Inline which was not a 'Link' (with a valid URL)? erroring out. Original: " ++ show x
 
--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
 
 testAll :: IO ()
 testAll = do Config.Misc.cd
 
+             printGreen ("Testing link icon matches…" :: String)
+             unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)
+
+             printGreen ("Testing interwiki rewrite rules…" :: String)
+             unless (null interwikiTestSuite) $ printRed ("Interwiki rules have errors in: " ++ show interwikiTestSuite)
+             unless (null interwikiCycleTestSuite) $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestSuite)
+
+             printGreen ("Tested config rules for uniqueness requirements, verified: " ++ show testConfigs)
+
+             archives <- testLinkRewrites
+             unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
                [footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
@@ -223,22 +234,10 @@ testAll = do Config.Misc.cd
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 
-             printGreen ("Tested config rules for uniqueness requirements, verified: " ++ show testConfigs)
-
-             printGreen ("Testing interwiki rewrite rules…" :: String)
-             unless (null interwikiTestSuite) $ printRed ("Interwiki rules have errors in: " ++ show interwikiTestSuite)
-             unless (null interwikiCycleTestSuite) $ printRed ("Interwiki redirect rewrite rules have errors in: " ++ show interwikiCycleTestSuite)
-
-             archives <- testLinkRewrites
-             unless (null archives) $ printRed ("Link-archive rewrite test suite has errors in: " ++ show archives)
-
              unless (null authorCollapseTest) $ printRed ("Author-collapse test suite has errors in: " ++ show authorCollapseTest)
 
              xn <- testXOTD
              printGreen ("Testing X-of-the-day data… verified: " ++ show xn :: String)
-
-             printGreen ("Testing link icon matches…" :: String)
-             unless (null linkIconTest) $ printRed ("Link icon rules have errors in: " ++ show linkIconTest)
 
              unless (null printDoubleTestSuite) $ printRed ("Double-printing function test suite has errors in: " ++ show printDoubleTestSuite)
 

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-08-27 11:48:18 gwern"
+;;; When:  Time-stamp: "2024-09-02 11:37:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1694,8 +1694,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:graph:]]\\) - +\\([[:graph:]]\\)" "\\1---\\2"     nil begin end) ; em dash for interjections
        (query-replace-regexp "\\([[:digit:]]+\\)-\\([[:digit:]]\\)"   "\\1--\\2"      nil begin end) ; en dash for ranges like "5-10"
        (query-replace-regexp "\\([[:digit:]]\\)\\.\\([[:digit:]]+\\)-\\([[:digit:]]\\)"   "\\1.\\2--\\3"      nil begin end) ; en dash for ranges like "1.5-10"
-       (query-replace-regexp " \\([[:digit:]]%\\)-\\([[:digit:]]\\)"   " \\1--\\2"      nil begin end) ; en dash for percentage ranges: eg ' 10%-50%'
-       (query-replace-regexp "(\\([[:digit:]]+%\\)-\\([[:digit:]]+\\)"   "(\\1--\\2"      nil begin end) ; en dash for percentage ranges: eg '10%-50%'
+       (query-replace-regexp " \\([[:digit:]]\\)%?-\\([[:digit:]]\\)"   " \\1--\\2"        nil begin end) ; en dash for percentage ranges: eg ' 10%-50%' (we need to avoid URL encoding with all of its percentages)
+       (query-replace-regexp "(\\([[:digit:]]+\\)%?-\\([[:digit:]]+\\)"   "(\\1--\\2"      nil begin end) ; en dash for percentage ranges: eg '(10%-50%)'
+       (query-replace-regexp " \\([[:digit:]]+\\)%? to \\([[:digit:]]+\\)"   " \\1--\\2"   nil begin end) ; en dash for percentage ranges: eg '10% to 50%'
        (query-replace-regexp " \\([[:digit:]]+\\) [-–—]+ \\([[:digit:]]+\\)"   " \\1--\\2"      nil begin end) ; en dash for numerical space-separated ranges: eg '1990 - 1995' (whether separated by en/em/hyphen)
        (query-replace-regexp "\\([a-zA-Z]\\)–\\([[a-zA-Z]]\\)"       "\\1-\\2"       nil begin end) ; remove mistakenly used en dashes
        (query-replace-regexp "\\([a-zA-Z]\\)–\\([a-zA-Z]\\)"               "\\1-\\2"       nil begin end) ; check for misplaced en-dashes…
@@ -1721,6 +1722,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\*\\*\\*\\(.*\\)\\*\\*\\*" "**_\\1_**" nil begin end) ; '***' is a bad way to write bold-italics in Markdown because it's unreliable to read/parse
        (replace-all "<Strong>" "**")
        (replace-all "</Strong>" "**")
+       (query-replace-regexp "\\([A-Z][a-z]+\\), Citation\\([12][0-9][0-9][0-9]\\)" "\\1 \\2" nil begin end) ; T&F: "3.4 hours/day(Annie, Citation2019; Comscore, Citation2018; Kemp, Citation2020)"
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\.? (\\([[:digit:]]+[a-z]?\\))" "\\1 et al \\2" nil begin end) ; 'Heald et al. (2015a)' → 'Heald et al 2015a'
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\. \\([[:digit:]]+\\)" "\\1 et al \\2" nil begin end)
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) (\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\))" "\\1 \\2" nil begin end) ; 'Darwin (1875)' → 'Darwin 1875'
@@ -2066,7 +2068,7 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
 
       (setq $pos (point-max))
       (goto-char $pos)
-      (insert "\n---------------\n")
+      (insert "\n---\n")
       (yank)
       (goto-char $pos)
 

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-08-31 12:52:06 gwern"
+When:  Time-stamp: "2024-09-01 19:15:53 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, toLower, isNumber)
 import Data.Maybe (fromMaybe)
-import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size) -- traverseWithKey, union, Map
+import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
@@ -61,6 +61,7 @@ import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
 import MetadataAuthor (authorCollapse)
+import Config.MetadataAuthor (authorLinkDB)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -260,8 +261,10 @@ readLinkMetadataAndCheck = do
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
-             mapM_ (\a -> unless (null a) $ when (isDate a || isNumber (head a) || isPunctuation (head a)) (printRed "Mixed up author & date?: " >> printGreen a) ) authors
-             let authorsBadChars = filter (\a -> anyInfix a [";", "&", "?", "!"] || isPunctuation (last a)) $ filter (not . null) authors
+             mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB))
+                                                  (printRed "Mixed up author & date?: " >> printGreen a) ) authors
+             let authorsBadChars = filter (\a -> a `notElem` ["K. U."] && -- author whitelist
+                                                 (anyInfix a [";", "&", "?", "!"] || isPunctuation (last a))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc)) finalL

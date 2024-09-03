@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-08-31 12:39:46 gwern"
+# When:  Time-stamp: "2024-09-02 19:28:42 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -436,6 +436,8 @@ TOKONATSU
 /wsr/ - Worksafe Requests § Thread #661741
 - "(Yiddish) an important person, often in the negative sense of self-important; a bigwig"
 (Yiddish) an important person, often in the negative sense of self-important; a bigwig
+- "My impression from reading this has always been "Almost there! Keep going." If y... | Hacker News"
+My impression from reading this has always been "Almost there! Keep going." If...
 
 Task:
 

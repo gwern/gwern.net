@@ -301,8 +301,8 @@ sortByDateModified = sortBy compareEntries
   where
     compareEntries (f, (_, _, _, d, _, _, _), _) (f', (_, _, _, d', _, _, _), _)
       | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
-      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
-      | head f == '/' = LT -- '/' paths come after non '/' paths
+      | head f  == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f  == '/' = LT -- '/' paths come after non '/' paths
       | head f' == '/' = GT -- non '/' paths come before '/' paths
       | otherwise = compare f f' -- Alphabetical order for the rest
 
@@ -317,8 +317,9 @@ sortByDatePublished = sortBy compareEntries
       | otherwise = compare f f' -- Alphabetical order for the rest
 
 getDatesModified :: [(FilePath,MetadataItem,FilePath)] -> [String]
-getDatesModified [] = []
-getDatesModified items = filter (not . null) $ map (\(_,(_,_,_,date',_,_,_),_) -> date') items
+getDatesModified [] = ["N/A"]
+getDatesModified items = let results = filter (not . null) $ map (\(_,(_,_,_,date',_,_,_),_) -> date') items
+                         in if null results then getDatesModified [] else results
 
 generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [[Block]]
 generateDirectoryItems parent current ds =
