@@ -165,7 +165,7 @@ safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExten
 inlineMath2Text :: Inline -> IO Inline
 inlineMath2Text x@(Math InlineMath a) =
   do (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/latex2unicode.py", T.unpack a]
-     let mb' = T.pack $ trim $ delete "Converted output: " $ U.toString mb
+     let mb' = T.pack $ trim $ U.toString mb
      case status of
        ExitFailure err -> printGreen (intercalate " : " [T.unpack a, T.unpack mb', ppShow status, ppShow err, ppShow mb']) >> printRed "latex2unicode.py failed!" >> return x
        _ -> return $ if mb' == a then x else RawInline (Format "html") mb'
