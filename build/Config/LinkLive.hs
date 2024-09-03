@@ -25,10 +25,10 @@ miscUrlRules u
 
 -- all tested using `isDomain` in `Test`, and are unique lists, and no overlap between: `goodDomainsSub`/`badDomainsSub`, `goodDomainsSimple`/`badDomainsSimple`, `goodLinks`/`badLinks`.
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks :: [T.Text]
-goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
-                   ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org",
-                   ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com",
-                   ".blogspot.com", "antifandom.com"]
+goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com"
+                 , ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org"
+                 , ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com"
+                 , ".blogspot.com", "antifandom.com"]
 goodDomainsSimple =
   ["1dollarscan.com"
     , "humanprogress.org"

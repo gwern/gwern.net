@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-04-23 10:47:20 gwern"
+When:  Time-stamp: "2024-09-02 22:38:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -92,13 +92,13 @@ urlLive u | u'     `elem`   C.badDomainsSimple  = Just False
 linkLivePrioritize :: IO [(Int, T.Text)]
 linkLivePrioritize = do b <- readBacklinksDB
                         let b' = M.toList $ M.map length b
-                        let b'' = map (\(c,d) -> (host c,d)) $ filter (\(url',count) -> count >= C.linkLivePrioritizeMinimum &&
+                        let b'' = map (\(c,d) -> (host c,d)) $ filter (\(url',_) ->
                                                                                        not ("pdf" `T.isInfixOf` url' || "PDF" `T.isInfixOf` url' || ".ps" `T.isInfixOf` url') &&
                                                                                        host url' `notElem` C.linkLivePrioritizeBlacklist &&
                                                                                        (isNothing . urlLive) url' &&
                                                                                        ("." `T.isInfixOf` url')) b'
                         let b''' =  M.fromListWith (+) b''
-                        let hits = reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
+                        let hits = reverse $ filter (\(count,_) -> count >= C.linkLivePrioritizeMinimum) $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
                         unless (null hits) $ mapM_ (\(_,l) -> writeLinkLiveTestcase b l) hits
                         return hits
   where
