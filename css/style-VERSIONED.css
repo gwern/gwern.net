@@ -4558,15 +4558,16 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
-/*  Navigation bar for previous/next page links (horizontal divider based on:
+/*  Navigation bar for return-to-top link + side-arrows (horizontal divider based on:
     https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg )
-    On mobile, we hide the forward/back links.
+    On mobile, we hide the side-arrows.
  */
 
 #navigation {
     display: flex;
     align-items: center;
     opacity: 0.8;
+    color: var(--GW-nav-header-link-color);
 }
 #navigation a {
     line-height: 1;
