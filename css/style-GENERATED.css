@@ -8417,13 +8417,13 @@ a[data-link-icon='∇'] .link-icon-hook::after { /* The Gradient.pub */
     opacity: 0.85;
 }
 
-a[data-link-icon='✉'] .link-icon-hook::after {
+a[data-link-icon='✉'] .link-icon-hook::after { /* ENVELOPE / letter / \9993 */
     --link-icon-size: 1.1em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.05em;
 
     font-weight: bold;
-    opacity: 0.80;
+    opacity: 0.75;
 }
 
 a[data-link-icon='M𝐑'] .link-icon-hook::after {
@@ -8525,7 +8525,11 @@ a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
 a[data-link-icon='≈'] .link-icon-hook::after { /* similar-links (ALMOST EQUAL TO) */
         --link-icon-offset-y: 0em;
         --link-icon-size: 0.90em;
-        opacity: 0.95;
+        opacity: 0.90;
+}
+
+a[data-link-icon='♔'] .link-icon-hook::after { /* WBW / Wait But Why */
+        opacity: 0.70;
 }
 
 /****************************/
@@ -8706,12 +8710,12 @@ a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
-a[data-link-icon='hacker-news'] .link-icon-hook::after {
+a[data-link-icon='hacker-news'] .link-icon-hook::after { /* HN / YC / Y Combinator */
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
-    opacity: 0.65;
+    opacity: 0.60;
 }
 a[data-link-icon='hacker-news']:hover .link-icon-hook::after {
     opacity: 0.2;
@@ -9143,7 +9147,7 @@ a[data-link-icon='tiktok'] .link-icon-hook::after {
 }
 
 a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
-    opacity: 0.50;
+    opacity: 0.55;
     --link-icon-size: 0.75em;
 }
 

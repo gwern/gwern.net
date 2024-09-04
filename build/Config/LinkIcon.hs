@@ -175,7 +175,7 @@ linkIconRulesSingle u
  | u'' u "www.thebeliever.net" = ("𝐁", "text") -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
  | u'' u "solar.lowtechmagazine.com" = ("☀", "text") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
  | u'' u "www.nobelprize.org" = ("🏅", "text") -- Nobel Prize, SPORTS MEDAL
- | u'' u "waitbutwhy.com" = ("♚", "text") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♚" BLACK CHESS KING (U+265A). If that doesn't work, a 'WBW' tri-text icon is feasible.
+ | u'' u "waitbutwhy.com" = ("♔", "text") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible.
  | otherwise = ("", "")
 
 linkIconRulesDouble u
@@ -364,7 +364,7 @@ linkIconRulesQuad u
  | u'' u "vndb.org" = ("VNDB", "text,quad,sans")
  | u'' u "www.huffpost.com" = ("HUFF", "text,quad,sans")
  | u'' u "longreads.com" = ("Long", "text,quad")
- | u'' u "warontherocks.com" = ("WOTR", "text,quad,sans")
+ | u'' u "warontherocks.com" = ("WOT R", "text,quad,sans")
  | u'' u "krebsonsecurity.com" = ("Krebs", "text,quad,sans") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
  | u'' u "www.nextplatform.com" = ("NEXT", "text,quad,sans") -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
  | u'' u "www.vetta.org" = ("Legg", "text,quad,sans") -- Shane Legg (DeepMind)
@@ -842,7 +842,7 @@ linkIconTestUnitsText =
          , ("https://vitalik.eth.limo/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
          , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "wandb", "svg")
-         , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
+         , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOT R", "text,quad,sans")
          , ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text")
          , ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text,tri")
          , ("https://web.archive.org/web/20120702152514/https://www.nlm.nih.gov/news/calhoun_papers_released.html",  "internet-archive","svg")
@@ -1103,7 +1103,7 @@ linkIconTestUnitsText =
          , ("/design#link-bibliographies", "bibliography", "svg")
          , ("https://www.cerebras.net/press-release/cerebras-announces-third-generation-wafer-scale-engine", "C", "text,sans")
          , ("https://arxiv.org/abs/2309.10818#cerebras", "C", "text,sans")
-         , ("https://waitbutwhy.com/whatsourproblem", "♚", "text")
+         , ("https://waitbutwhy.com/whatsourproblem", "♔", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
