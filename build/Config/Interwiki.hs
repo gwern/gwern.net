@@ -5947,4 +5947,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Genetic_correlates", "Genetic_correlation")
         , ("Evelyn_Baring,_1<sup>st</sup>_Earl_of_Cromer", "Evelyn_Baring,_First_Earl_of_Cromer")
         , ("Nike", "Nike,_Inc.")
+        , ("CSV", "Comma-separated_values")
+        , ("WAIS", "Wechsler_Adult_Intelligence_Scale")
         ]

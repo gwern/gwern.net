@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2024-09-01 09:01:17 gwern"
+# When:  Time-stamp: "2024-09-04 14:46:54 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -26,6 +26,7 @@ prompt = """
 Task: Guess the date mentioned in the input.
 The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023'; if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
 Dates are valid only between 1000AD and 2100AD; any dates outside that date range are probably mistakes, and do not print those.
+(Note also that all surviving web pages were created after 1990AD, and web page dates pre-2010AD are increasingly unlikely.)
 If there is more than one valid date, print only the first one.
 Do not make up dates; if you are unsure, print only the empty string "".
 

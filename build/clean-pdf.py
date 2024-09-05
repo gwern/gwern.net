@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-08-18 20:47:29 gwern"
+# When:  Time-stamp: "2024-09-03 09:34:23 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -96,6 +96,21 @@ Philippe Autier, Mathieu Boniol, Cécile Pizot, Patrick Mullie
 
 <text>MIND WANDERING DURING IMPLICIT LEARNING IS ASSOCIATED WITH INCREASED PERIODIC EEG ACTIVITY AND IMPROVED EXTRACTION OF HIDDEN PROBABILISTIC PATTERNS</text> →
 Mind Wandering During Implicit Learning Is Associated With Increased Periodic EEG Activity And Improved Extraction Of Hidden Probabilistic Patterns
+
+<text>Hockenhull Joanna, Wood David M., Dargan Paul I.</text> →
+Joanna Hockenhull, David M. Wood, Paul I. Dargan
+
+<text>Bjelakovic G, Gluud LL, Nikolova D, Whitfield K, Wetterslev J, Simonetti RG, Bjelakovic M, Gluud C.</text> →
+G. Bjelakovic, L. L. Gluud, D. Nikolova, K. Whitfield, J. Wetterslev, R. G. Simonetti, M. Bjelakovic, C. Gluud
+
+<text>Burkhart Kimberly Phelps James R.</text> →
+Kimberly Burkhart, James R. Phelps
+
+<text>Winson Fu Zun Yang
+1,2
+, Avijit Chowdhury1,2 , Marta Bianciardi2,3,4 , Remko van Lutterveld5,6 , Terje Sparby7,8,9 ,
+Matthew D. Sacchet1,2, *</text> →
+Winson Fu Zun Yang, Avijit Chowdhury, Marta Bianciardi, Remko van Lutterveld, Terje Sparby, Matthew D. Sacchet
 
 Input:
 <text>{target}</text> →

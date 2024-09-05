@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-02 22:33:17 gwern"
+# When:  Time-stamp: "2024-09-04 11:47:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -758,7 +758,7 @@ else
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
-    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeGTX "metadata/full.gtx"'; }
+    λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs." &
 
     λ(){ gwa | gf -- '[]' | gfv -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | gev --perl-regexp '\e\[36ma\e\[0m: '

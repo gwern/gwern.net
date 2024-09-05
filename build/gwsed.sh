@@ -68,7 +68,8 @@ else
             fi
         fi
     else
-        echo "Wrong number of unique arguments: $*" 1>&2
+        echo "Wrong number of unique arguments: $#"
+        echo "received arguments were: \"$*\"" 1>&2
         exit 2
     fi
 fi

@@ -137,7 +137,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                      -- like `gwtag adversarial https://arxiv.org/pdf/2406.20053`, and create the annotation for the abstract page instead:
                    -- eg. "https://arxiv.org/pdf/2406.20053#org=foo"
                    -- → "https://arxiv.org/abs/2406.20053#org=foo"
-                   | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
+                   | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/html/" "https://arxiv.org/abs/" $ replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
                    | otherwise = l
 
@@ -157,6 +157,7 @@ pageNumberParse :: String -> String
 pageNumberParse u = let pg = sed ".*\\.pdf#page=([0-9]+).*" "\\1" u
                     in if u == pg then "" else pg
 
+------
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
@@ -180,6 +181,7 @@ dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuf
 
 -- TODO: in a few months, after more counter-examples have been added, run this on all outstanding date-less metadata items. But first check it against all known dates.
 -- LinkMetadata.walkAndUpdateLinkMetadata True (\x@(a,(_,_,d,_,_,_,_)) -> if d == "" && (not (null (intersect "0123456789" a))) then let date = System.IO.Unsafe.unsafePerformIO (guessDateFromString a) in if null date then return x else putStrLn (a ++ " : " ++ System.IO.Unsafe.unsafePerformIO (guessDateFromString a)) >> return x else return x)
+-- `guessDateFromString` is called by `Annotation.linkDispatcher` & `GTX.fixDate` for slow reads.
 guessDateFromString :: String -> IO String
 guessDateFromString "" = error "MetadataFormat.guessDateFromString: passed an empty string argument, which should never happen!"
 guessDateFromString u  =

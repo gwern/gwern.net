@@ -456,6 +456,11 @@ canonicals = M.fromList
   , ("David Buss", "David M. Buss")
   , ("Arthur Jensen", "Arthur R. Jensen")
   , ("Jurgen Schmidhuber", "J\252rgen Schmidhuber")
+  , ("dlberes", "Damon Beres")
+  , ("Michelle Meyer", "Michelle N. Meyer")
+  , ("stefaesthesia", "Stefanie")
+  , ("regehr", "John Regehr")
+  , ("Bernard S. Greenberg", "Bernard Greenberg")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -719,6 +724,13 @@ authorLinkDB = M.fromList $
     , ("Tri Dao", "https://tridao.me/")
     , ("Antonio Torralba", "https://mitibmwatsonailab.mit.edu/people/antonio-torralba/")
     , ("Robin Sloan", "https://www.robinsloan.com/")
+    , ("Yukinori Okada", "https://www.osaka-u.ac.jp/en/news/global_outlook/research_highlights/research_highlights201807_1")
+    , ("Thomas Wolf", "https://thomwolf.io/")
+    , ("Michelle N. Meyer", "https://www.michellenmeyer.com/")
+    , ("Aaron Courville", "https://scholar.google.com/citations?user=km6CP8cAAAAJ&hl=en")
+    , ("Eric Jang", "https://evjang.com/about/")
+    , ("Stefanie", "https://x.com/stefaesthesia")
+    , ("John Regehr", "https://en.wikipedia.org/wiki/John_Regehr")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1950,4 +1962,4 @@ authorWpLinkDB =
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
-    , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"]
+    , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe", "Ted Chiang", "Bernard Greenberg"]

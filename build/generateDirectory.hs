@@ -114,7 +114,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let links = filter (\(f,_,_) -> not ("wikipedia.org/wiki/" `isInfixOf` f)) linksAll -- TODO: isWikipedia?
   let linksWP = linksAll \\ links
 
-  when (not newestp && 0 == sum [length dirsChildren, length dirsSeeAlsos, length triplets, length linksAll]) $ error $ "generateDirectory.listings: non-'newest' tag contained no directory children, see-also tags, files, annotations, or links? This would appear to be a meaningless tag; remove or populate it! : " ++ show dirs ++ " : " ++ show dir''
+  when (not newestp && 0 == sum [length dirsChildren, length dirsSeeAlsos, length triplets, length linksAll, length linksSelf]) $ error $ "generateDirectory.listings: non-'newest' tag contained no directory children, see-also tags, files, annotations, or links? This would appear to be a meaningless tag; remove or populate it! : " ++ " : " ++ show dir''
 
   -- walk the list of observed links and if they do not have an entry in the annotation database, try to create one now before doing any more work:
   Prelude.mapM_ (\(l,_,_) -> case M.lookup l md' of
