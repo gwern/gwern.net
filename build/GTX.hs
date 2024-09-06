@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2024-09-03 09:51:19 gwern"
+When:  Time-stamp: "2024-09-06 18:51:43 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -85,8 +85,8 @@ import System.GlobalLock as GL (lock) -- global-lock
 import Config.Misc as C (cd, root, todayDayString, yesterdayDayString, lateNight)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithDefault, tag2Default)
-import MetadataAuthor (authorsCanonicalize, cleanAuthors)
-import MetadataFormat (guessDateFromLocalSchema, guessDateFromString, isDate)
+import Metadata.Author (authorsCanonicalize, cleanAuthors)
+import Metadata.Date (guessDateFromLocalSchema, guessDateFromString, isDate)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
 
 readGTX :: FilePath -> IO MetadataList

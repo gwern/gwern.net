@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Config.MetadataAuthor where
+module Config.Metadata.Author where
 
 import qualified Data.Map.Strict as M (fromList, Map)
 import Text.Pandoc (Inline(Link, Span, Space, Str))
@@ -463,6 +463,9 @@ canonicals = M.fromList
   , ("Bernard S. Greenberg", "Bernard Greenberg")
   , ("Sharon Kardia", "Sharon L. R. Kardia")
   , ("Mika Kähönen", "Kähönen Mika")
+  , ("Kathryn Kemper", "Kathryn E. Kemper")
+  , ("John Rice", "John P. Rice")
+  , ("Jari Marko Lahti", "Jari Lahti")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -733,11 +736,15 @@ authorLinkDB = M.fromList $
     , ("Eric Jang", "https://evjang.com/about/")
     , ("Stefanie", "https://x.com/stefaesthesia")
     , ("John Regehr", "https://en.wikipedia.org/wiki/John_Regehr")
-    , ("Sharon Kardia", "https://en.wikipedia.org/wiki/Sharon_Kardia")
-    , ("Nikita Nangia", "https://scholar.google.com/citations?user=DoXtjzcAAAAJ&hl=en&oi=ao")
-    , ("Kähönen Mika", "https://scholar.google.com/citations?user=fZXV3C8AAAAJ&hl=en&oi=ao")
+    , ("Sharon L. R. Kardia", "https://en.wikipedia.org/wiki/Sharon_Kardia")
+    , ("Nikita Nangia", "https://scholar.google.com/citations?user=DoXtjzcAAAAJ")
+    , ("Kähönen Mika", "https://scholar.google.com/citations?user=fZXV3C8AAAAJ")
     , ("Laurens van der Maaten", "https://lvdmaaten.github.io/")
     , ("H. Tracy Hall", "https://en.wikipedia.org/wiki/Tracy_Hall")
+    , ("Kathryn E. Kemper", "https://imb.uq.edu.au/profile/1720/kathryn-kemper")
+    , ("John P. Rice", "https://profiles.wustl.edu/en/persons/john-rice")
+    , ("Jari Lahti", "https://scholar.google.com/citations?user=3qAsiw8AAAAJ")
+    , ("F. Filce Leek", "/doc/history/1986-dixon.pdf")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

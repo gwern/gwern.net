@@ -1,4 +1,4 @@
-module MetadataTitle where
+module Metadata.Title where
 
 import Data.List (isInfixOf, intercalate)
 import Network.HTTP (urlDecode)
@@ -6,10 +6,10 @@ import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 
-import MetadataFormat (filterMeta, pageNumberParse, trimTitle, cleanAbstractsHTML)
+import Metadata.Format (filterMeta, pageNumberParse, trimTitle, cleanAbstractsHTML)
 import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL, replaceMany, deleteMany)
 import Config.Misc as CM (cd)
-import Config.MetadataTitle as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
+import Config.Metadata.Title as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
 
 -- Attempt to parse tooltips back into citation metadata:
 tooltipToMetadata :: String -> String -> (String,String,String)

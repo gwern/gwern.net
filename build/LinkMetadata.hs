@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-09-01 19:15:53 gwern"
+When:  Time-stamp: "2024-09-06 18:49:31 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, dateTruncateBad, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -54,14 +54,15 @@ import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
-import MetadataFormat (processDOI, cleanAbstractsHTML, isDate, linkCanonicalize, balanced, dateTruncateBad) -- authorsInitialize,
+import Metadata.Format (processDOI, cleanAbstractsHTML, linkCanonicalize, balanced) -- authorsInitialize,
+import Metadata.Date (dateTruncateBad, isDate)
 import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
-import MetadataAuthor (authorCollapse)
-import Config.MetadataAuthor (authorLinkDB)
+import Metadata.Author (authorCollapse)
+import Config.Metadata.Author (authorLinkDB)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -164,7 +165,7 @@ readLinkMetadataSlow = do
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
--- TODO: split out into 3 functions at different levels of intensity: 1 full, 1 half, 1 auto and the composition; many of these functions would be better off in MetadataFormat or somewhere
+-- TODO: split out into 3 functions at different levels of intensity: 1 full, 1 half, 1 auto and the composition; many of these functions would be better off in Metadata.Format or somewhere
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:

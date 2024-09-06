@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Config.MetadataFormat where
+module Config.Metadata.Format where
 
 -- testing: unique keys
 balancedBracketTestCases :: [(String, String)]
@@ -1748,6 +1748,8 @@ htmlRewriteFixed =
          , ("webscale", "web-scale")
          , ("tobenchmarks", "to benchmarks")
          , ("fertilised", "fertilized")
+         , ("systematise", "systematize")
+         , ("contextualise", "contextualize")
          , ("metabolising", "metabolizing")
          , ("polygeneti", "cpolygenic")
          , ("submodels", "sub-models")

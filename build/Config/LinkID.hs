@@ -292,7 +292,7 @@ linkIDOverrides =
        , ("https://openai.com/index/clip/", "radford-et-al-blog")
        , ("https://openai.com/research/dall-e", "ramesh-et-al-2021-dalle-blog")
        , ("https://openai.com/research/fine-tuning-gpt-2", "ziegler-et-al-2019-blog")
-       , ("https://openai.com/research/image-gpt", "chen-et-al-2020-blog")
+       , ("https://openai.com/index/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/research/jukebox", "jukebox-blog")
        , ("https://openai.com/research/musenet", "musenet-blog")
        , ("https://openai.com/index/openai-five-defeats-dota-2-world-champions/", "oa5-blog")

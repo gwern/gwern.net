@@ -13,7 +13,7 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 
 import GTX (readGTXFast)
-import MetadataFormat (cleanAbstractsHTML)
+import Metadata.Format (cleanAbstractsHTML)
 import LinkMetadataTypes (Metadata)
 import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
 import Config.Paragraph as C

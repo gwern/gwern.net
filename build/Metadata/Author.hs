@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-{- MetadataAuthor.hs: module for managing 'author' metadata & hyperlinking author names in annotations
+{- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
 When:  Time-stamp: "2024-08-31 18:50:21 gwern"
@@ -33,7 +33,7 @@ Subsequent author links can be prioritized by the usual approach of setting up a
 This could further come with some browser automation like searching Wikipedia + Google + Google Scholar profile.
 -}
 
-module MetadataAuthor where
+module Metadata.Author where
 
 import Control.Monad (void)
 import Data.List (intersperse, intercalate)
@@ -51,7 +51,7 @@ import qualified LinkBacklink as BL
 import Query (extractURLs)
 import Cycle (testInfixRewriteLoops)
 
-import qualified Config.MetadataAuthor as CA
+import qualified Config.Metadata.Author as CA
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
@@ -63,9 +63,9 @@ cleanAuthorsTest = testInfixRewriteLoops CA.cleanAuthorsFixedRewrites cleanAutho
 
 -- A Twitter username is a 1–15 character alphanumeric/underscore string:
 -- must handle both "https://x.com/grantslatton/status/1703913578036904431" and "https://x.com/grantslatton":
--- Unit-tests in `Config.MetadataFormat.extractTwitterUsernameTestSuite`.
+-- Unit-tests in `Config.Metadata.Format.extractTwitterUsernameTestSuite`.
 extractTwitterUsername :: String -> String
-extractTwitterUsername url = (\u -> if length u > 15 then error ("MetadataFormat.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
+extractTwitterUsername url = (\u -> if length u > 15 then error ("Metadata.Format.extractTwitterUsername: extracted username >15 characters in length, which is illegal; extracted: " ++ u ++ "; URL:" ++ url) else u) $
    sedMany [("^https:\\/\\/x\\.com\\/([a-zA-Z0-9_]+)(/.*)?(\\?lang=[a-z]+)?$", "\\1")] url
 
 -- Compact lists of authors to abbreviate personal names, but preserve the full name in a span tooltip for on-hover like usual.
@@ -186,13 +186,13 @@ authorBrowseTopN md n = do let mdl = M.toList md
 -- search for an author in various search engines to conveniently define a URL for an author:
 -- generally, we want the WP article first, then a GS profile is often second-best, and if we can't find anything there, something in the wild west of the general Internet may be the only option.
 authorBrowseSearchEngines :: [T.Text] -> IO ()
-authorBrowseSearchEngines [] = error "MetadataAuthor.authorBrowseSearchEngines: passed an empty list; this should never happen!"
-authorBrowseSearchEngines [""] = error "MetadataAuthor.authorBrowseSearchEngines: passed an empty string; this should never happen!"
+authorBrowseSearchEngines [] = error "Metadata.Author.authorBrowseSearchEngines: passed an empty list; this should never happen!"
+authorBrowseSearchEngines [""] = error "Metadata.Author.authorBrowseSearchEngines: passed an empty string; this should never happen!"
 authorBrowseSearchEngines authors = let urls = concatMap authorURLs authors
                                        in void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium"
                                           (map T.unpack urls)
  where authorURLs :: T.Text -> [T.Text]
-       authorURLs "" = error "MetadataAuthor.authorURLs: passed an empty string for an author; this should never happen!"
+       authorURLs "" = error "Metadata.Author.authorURLs: passed an empty string for an author; this should never happen!"
        authorURLs author = let escapedAuthor = T.pack $ urlEncode $ T.unpack author
                                wpSearchURL = toWikipediaEnURLSearch author
                                gsURL = "https://scholar.google.com/scholar?q=" `T.append` escapedAuthor

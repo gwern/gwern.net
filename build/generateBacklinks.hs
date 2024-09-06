@@ -36,7 +36,7 @@ import qualified Config.Misc as C (backlinkBlackList, cd)
 import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSortedMagic,
                         Embeddings, ListSortedMagic)
 
-import MetadataAuthor (authorsLinkify, authorsLinkifyAndExtractURLs)
+import Metadata.Author (authorsLinkify, authorsLinkifyAndExtractURLs)
 
 main :: IO ()
 main = do -- we read arguments from stdin using `getContents` in main'
@@ -157,7 +157,7 @@ filterIfAuthored :: Metadata -> T.Text -> [(String,T.Text,T.Text)] -> [(String,T
 filterIfAuthored md caller titleCallers = filter (\(_,_,url) -> f (T.unpack url)) titleCallers
    where f u = case M.lookup u md of
                  Nothing -> False
-                 Just (_,authors,_,_,_,_,_) -> caller `elem` (map (\(a,_,_) -> a) $ concatMap Query.extractURL $ MetadataAuthor.authorsLinkify (T.pack authors))
+                 Just (_,authors,_,_,_,_,_) -> caller `elem` (map (\(a,_,_) -> a) $ concatMap Query.extractURL $ Metadata.Author.authorsLinkify (T.pack authors))
 
 parseAnnotationForLinks :: T.Text -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks caller (_,aut,_,_,_,_,abstract) =

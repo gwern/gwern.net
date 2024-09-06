@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-09-05 12:28:25 gwern"
+-- When:  Time-stamp: "2024-09-06 18:51:27 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -82,7 +82,8 @@ import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, looku
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
 import Config.Misc (currentYear)
-import MetadataFormat (isDate, printDouble)
+import Metadata.Format (printDouble)
+import Metadata.Date (isDate)
 import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete)
 import Config.Inflation as C
 

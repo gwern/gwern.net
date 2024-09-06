@@ -36,7 +36,7 @@ import qualified Data.Text as T (pack)
 
 import Config.Misc as C (root)
 import LinkMetadata (annotateLink, readLinkMetadata)
-import MetadataFormat (linkCanonicalize)
+import Metadata.Format (linkCanonicalize)
 import GTX (readGTXFast, writeGTX)
 import LinkMetadataTypes (MetadataList, MetadataItem, Failure(Temporary, Permanent))
 import Tags (guessTagFromShort, listTagsAll)

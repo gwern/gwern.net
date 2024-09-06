@@ -1,4 +1,4 @@
-module Config.MetadataTitle where
+module Config.Metadata.Title where
 
 separators :: String
 separators = "—·|"

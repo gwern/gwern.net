@@ -12,8 +12,9 @@ import qualified Data.Text as T (unpack, elem, head)
 import Text.Pandoc (Inline(Link))
 
 import Cycle (isCycleLess)
-import MetadataFormat (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, isDate, cleanAbstractsHTML,
+import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, cleanAbstractsHTML,
                       footnoteRegex, sectionAnonymousRegex, badUrlRegex)
+import Metadata.Date (isDate)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 
 -- module self-tests:
@@ -28,7 +29,7 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest, dateRangeDurationTestCasesTestsuite)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
-import MetadataAuthor (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername)
+import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername)
 
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -44,11 +45,11 @@ import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
 import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
-import qualified Config.MetadataFormat (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
+import qualified Config.Metadata.Format (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
-import qualified Config.MetadataAuthor (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite)
-import qualified Config.MetadataTitle (badStrings, stringReplace, stringDelete)
+import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite)
+import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
 
 import Text.Regex.Base.RegexLike (makeRegexM)
 import Text.Regex (Regex)
@@ -141,7 +142,7 @@ testXOTD = do s <- XOTD.readTTDB Config.XOfTheDay.siteDBPath
 
 -- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
 testConfigs :: Int
-testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBadSubstrings, isUniqueList Config.MetadataFormat.filterMetaBadWholes
+testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBadSubstrings, isUniqueList Config.Metadata.Format.filterMetaBadWholes
                                , ensure "Test.GenerateSimilar.blackListURLs" "isURLAny (URL & file)" isURLAny $
                                  isUniqueList Config.GenerateSimilar.blackListURLs
                                , isUniqueList Config.LinkArchive.whiteListMatchesFixed
@@ -159,7 +160,7 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" safeLink Config.Interwiki.testCases)
               , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)
-              , length (ensure "Test.testConfigs.extracTwitterUsernameTestSuite" "isURL (URL of first)" (\(u1,_) -> isURL u1) Config.MetadataAuthor.extractTwitterUsernameTestSuite)
+              , length (ensure "Test.testConfigs.extracTwitterUsernameTestSuite" "isURL (URL of first)" (\(u1,_) -> isURL u1) Config.Metadata.Author.extractTwitterUsernameTestSuite)
               , length $ isUniqueAll Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "isURLAnyT" (isURLAnyT . fst) Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
@@ -179,17 +180,17 @@ testConfigs = sum $ map length [isUniqueList Config.MetadataFormat.filterMetaBad
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURLAny u && not (isURLT ident)) Config.LinkID.linkIDOverrides
-              , length $ isUniqueKeys Config.MetadataAuthor.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.MetadataAuthor.cleanAuthorsRegexps, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.MetadataFormat.htmlRewriteFixed, length $ isUniqueKeys Config.MetadataAuthor.extractTwitterUsernameTestSuite
-              , length $ filter (\(input,output) -> MetadataFormat.balanced input /= output) $ isUniqueKeys Config.MetadataFormat.balancedBracketTestCases
-              , length $ isUniqueAll Config.MetadataAuthor.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.MetadataAuthor.authorLinkDB)
-              , length $ isUniqueValues (M.toList Config.MetadataAuthor.canonicals), length $ isUniqueList Config.MetadataAuthor.authorLinkBlacklist
-              , length $ isUniqueAll Config.MetadataFormat.htmlRewriteTestCases
+              , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
+              , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
+              , length $ isUniqueAll Config.Metadata.Author.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
+              , length $ isUniqueValues (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist
+              , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
-              , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.MetadataAuthor.authorLinkDB)
-              , length $ ensure "Test.authorLinkDB" "no broken HTML entities indicated by a '&'" (\name -> not ('&' `T.elem` name)) (M.keys Config.MetadataAuthor.authorLinkDB)
-              , length $ isCycleLess (M.toList Config.MetadataAuthor.canonicals), length $ isCycleLess (M.toList Config.MetadataAuthor.authorLinkDB)
-              , length $ (map T.unpack $ M.keys Config.MetadataAuthor.authorLinkDB) `intersect` (M.keys Config.MetadataAuthor.canonicals)
-              , length $ isUniqueList Config.MetadataTitle.badStrings, length $ isUniqueList Config.MetadataTitle.stringDelete, length $ isUniqueKeys Config.MetadataTitle.stringReplace
+              , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.Metadata.Author.authorLinkDB)
+              , length $ ensure "Test.authorLinkDB" "no broken HTML entities indicated by a '&'" (\name -> not ('&' `T.elem` name)) (M.keys Config.Metadata.Author.authorLinkDB)
+              , length $ isCycleLess (M.toList Config.Metadata.Author.canonicals), length $ isCycleLess (M.toList Config.Metadata.Author.authorLinkDB)
+              , length $ (map T.unpack $ M.keys Config.Metadata.Author.authorLinkDB) `intersect` (M.keys Config.Metadata.Author.canonicals)
+              , length $ isUniqueList Config.Metadata.Title.badStrings, length $ isUniqueList Config.Metadata.Title.stringDelete, length $ isUniqueKeys Config.Metadata.Title.stringReplace
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
@@ -221,10 +222,10 @@ testAll = do Config.Misc.cd
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
                [footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
-               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.MetadataAuthor.cleanAuthorsRegexps ++ Config.MetadataFormat.htmlRewriteRegexpBefore ++ Config.MetadataFormat.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
-             let regexUnitTests = filter (\(before,after) -> MetadataFormat.cleanAbstractsHTML before /= after) Config.MetadataFormat.htmlRewriteTestCases
+               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.Metadata.Author.cleanAuthorsRegexps ++ Config.Metadata.Format.htmlRewriteRegexpBefore ++ Config.Metadata.Format.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
+             let regexUnitTests = filter (\(before,after) -> Metadata.Format.cleanAbstractsHTML before /= after) Config.Metadata.Format.htmlRewriteTestCases
              unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)
-             let twitterUsernameTests = filter (\(u,username) -> extractTwitterUsername u /= username) Config.MetadataAuthor.extractTwitterUsernameTestSuite
+             let twitterUsernameTests = filter (\(u,username) -> extractTwitterUsername u /= username) Config.Metadata.Author.extractTwitterUsernameTestSuite
              unless (null twitterUsernameTests) $ printRed ("Twitter username parsing unit test suite has errors in: " ++ show twitterUsernameTests)
 
              printGreen ("Testing file-transclusions…" :: String)

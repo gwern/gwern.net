@@ -9,8 +9,8 @@ import System.Exit (ExitCode(ExitFailure))
 
 import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path, Metadata)
-import MetadataFormat (checkURL, cleanAbstractsHTML, processDOI)
-import MetadataAuthor (cleanAuthors)
+import Metadata.Format (checkURL, cleanAbstractsHTML, processDOI)
+import Metadata.Author (cleanAuthors)
 import Utils (printRed, replace)
 import Paragraph (processParagraphizer)
 

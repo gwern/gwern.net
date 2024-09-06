@@ -939,7 +939,7 @@ custom = [
         , ("[Dd]rop-?caps?", "https://en.wikipedia.org/wiki/Initial")
         , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
         , ("[Gg]scan2pdf", "https://gscan2pdf.sourceforge.net/")
-        , ("iGPT", "https://openai.com/research/image-gpt")
+        , ("iGPT", "https://openai.com/index/image-gpt/")
         , ("(InstructGPT|GPT ?3\\.5)", "https://arxiv.org/abs/2203.02155#openai")
         , ("[Ii]nbreeding[ -]depression", "https://en.wikipedia.org/wiki/Inbreeding_depression")
         , ("lbpcascade_animeface", "https://github.com/nagadomi/lbpcascade_animeface")
