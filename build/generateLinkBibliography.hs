@@ -84,7 +84,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
           do
 
              let pairs = linksToAnnotations md links
-                 body = [Para [Link nullAttr [Strong [Str "Bibliography"], Str ":"] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am pairs]
+                 body = [Para [Link nullAttr [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am pairs]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
