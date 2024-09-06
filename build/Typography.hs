@@ -393,10 +393,11 @@ dateDurationSingle todayYear oldYear
 
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
 -- attempt to exclude any currency amounts (not guaranteed to work)
+-- Tested in `Config.Typography.dateRangeDurationTestCases`
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
-dateFullRangeRegex = makeRegex ("([^#×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^×€¢¥£\\$]*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^#0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’][^#×€¢¥£\\$]*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("([^#×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^p×€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^#0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’p][^#×€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $

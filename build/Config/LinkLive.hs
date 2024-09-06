@@ -17,8 +17,8 @@ wikipediaURLs = [".wikipedia.org"]
 
 miscUrlRules :: T.Text -> Maybe Bool
 miscUrlRules u
-          |  "https://www.youtube.com/embed/" `T.isPrefixOf` u = Just True -- embeds do not set X-FRAME options, which is why they work & all regular YT links do not.
-          | "https://www.youtube.com/channel/" `T.isPrefixOf` u || "https://www.youtube.com/watch?v=" `T.isPrefixOf` u = Just False
+          |  "https://www.youtube.com/embed/" `T.isPrefixOf` u = Just True -- embeds do not set X-FRAME options, which is why they work & all other regular YT links do not:
+          | "https://www.youtube.com/" `T.isPrefixOf` u = Just False
           -- Markdeep is a self-contained JS in-page-Markdown library, so the main homepage (regular HTML) works as a live popup, but not any of the demos (which need to run JS, which live popup iframes don't allow)
           | "https://casual-effects.com" `T.isPrefixOf` u = Just $ not $ ".md.html" `T.isInfixOf` u
           | otherwise = Nothing
@@ -54,7 +54,6 @@ goodDomainsSimple =
     , "animekritik.wordpress.com"
     , "ansuz.sooke.bc.ca"
     , "apenwarr.ca"
-    , "apnews.com"
     , "archinte.jamanetwork.com"
     , "architext.design"
     , "archivebox.io"
@@ -2278,7 +2277,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.wireheading.com"
    , "www.wnycstudios.org"
    , "www.wolframalpha.com"
-   , "www.worksinprogress.co"
+   , "worksinprogress.co"
    , "www.worldcat.org"
    , "www.wunderground.com"
    , "www.wzzm13.com"
@@ -2326,7 +2325,6 @@ badDomainsSimple = [ "2chan.us"
    , "3quarksdaily.com"
    , "ai.meta.com"
    , "blog.daviskedrosky.com"
-   , "blog.research.google"
    , "civitai.com"
    , "classic.clinicaltrials.gov"
    , "cwe.mitre.org"
@@ -2361,6 +2359,9 @@ badDomainsSimple = [ "2chan.us"
    , "www.whitehouse.gov"
    , "www.yahoo.com"
    , "zenodo.org"
+   , "apnews.com"
+   , "research.com"
+   , "research.google"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -2406,7 +2407,6 @@ goodLinks =
             , "https://animekritik.wordpress.com/2011/12/03/imperialism-translation-gunbuster-episode-five/"
             , "https://ansuz.sooke.bc.ca/entry/23"
             , "https://apenwarr.ca/log/?m=201707#04"
-            , "https://apnews.com/article/a6a67fb761304e3cae7497faa32dcdc9"
             , "https://arbtt.nomeata.de/"
             , "https://architext.design/about/"
             , "https://archivebox.io/"
@@ -4576,7 +4576,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://3quarksdaily.com/3quarksdaily/2011/06/a-crab-canon-for-douglas-hofstadter.html"
             , "https://ai.meta.com/blog/code-llama-large-language-model-coding/"
             , "https://blog.daviskedrosky.com/p/did-profits-from-slavery-finance"
-            , "https://blog.research.google/2017/07/using-deep-learning-to-create.html"
+            , "https://research.google/blog/using-deep-learning-to-create-professional-level-photographs/"
             , "https://civitai.com/"
             , "https://classic.clinicaltrials.gov/ct2/show/NCT00352170"
             , "https://cwe.mitre.org/data/definitions/330.html"
@@ -4611,4 +4611,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.whitehouse.gov/briefing-room/speeches-remarks/2022/09/16/remarks-by-national-security-advisor-jake-sullivan-at-the-special-competitive-studies-project-global-emerging-technologies-summit/"
             , "https://www.yahoo.com/lifestyle/kanye-west-says-misdiagnosed-bipolar-disorder-sleep-deprivation-000405518.html"
             , "https://zenodo.org/records/10035659"
+            , "https://apnews.com/article/a6a67fb761304e3cae7497faa32dcdc9"
+            , "https://apnews.com/article/kansas-city-chiefs-philadelphia-eagles-technology-science-82bc20f207e3e4cf81abc6a5d9e6b23a"
+            , "https://research.com/u/gudmar-thorleifsson-1"
             ]

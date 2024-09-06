@@ -6,6 +6,14 @@ separators = "—·|"
 badStringPatterns, badStrings :: [String]
 badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found"]
 
+-- testing: unique keys
+stringReplace :: [(String,String)]
+stringReplace = [("  ", " ")
+                , ("Â°", "°")
+                , ("Â ", " ")
+                , (" â\200\224 ", "—")
+                , ("\128\200\231", "’")]
+
 -- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
 -- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
 badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
@@ -46,15 +54,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC"]
-
--- testing: unique keys
-stringReplace :: [(String,String)]
-stringReplace = [("  ", " ")
-                , ("Â°", "°")
-                , ("Â ", " ")
-                , (" â\200\224 ", "—")
-                , ("\128\200\231", "’")]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2"]
 
 -- testing: unique list
 stringDelete :: [String]
@@ -134,4 +134,5 @@ stringDelete = [" - The Public Domain Review"
             , " - Google Fonts", " : Download For Free, View Sample Text, Rating And More On Fontsgeek.Com"
             , "Run Deep: ", " – Daniel Frank", " - by Dwarkesh Patel", " � Erik Bernhardsson"
             , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
-            , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru", " - HTML: HyperText Markup Language"]
+            , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru"
+            , " - HTML: HyperText Markup Language", " - Joel on Software"]

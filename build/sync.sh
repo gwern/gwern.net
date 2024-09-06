@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-04 11:47:43 gwern"
+# When:  Time-stamp: "2024-09-05 10:17:04 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -550,7 +550,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' | \
+    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' -e 'https://www.youtube.com/watch?t=' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -1483,7 +1483,7 @@ else
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?" &
-    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
+    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | gfv -e ' secs,' -e 'it :: ()' -e '[]'; }
     wrap λ "Need link live whitelist/blacklisting?" &
 
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }

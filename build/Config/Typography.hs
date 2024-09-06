@@ -190,4 +190,7 @@ dateRangeDurationTestCases = [
   , (2025, Str "Honors, #1029."
     , Str "Honors, #1029."
     )
+  , (2026, Str "1600px image"
+    , Str "1600px image"
+    )
   ]

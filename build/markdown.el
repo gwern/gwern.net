@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-02 11:37:59 gwern"
+;;; When:  Time-stamp: "2024-09-05 13:18:54 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -323,13 +323,15 @@ START and END specify the region to operate on."
   "Update gwern.net Markdown files & annotations with latest conventions.
 Mostly string search-and-replace to enforce house style in terms of format."
   (interactive
-       (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
+   (progn
+     (check-parens) ; run this before the save-excursion so we error out immediately & jump to the location of the typo
+     (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
          (goto-char (point-max))
          (insert "\n\n")
-   (let ((begin (if (region-active-p) (region-beginning) (point-min)))
-         (end (if (region-active-p) (region-end) (point-max)))
-         )
-     (save-excursion
+         (let ((begin (if (region-active-p) (region-beginning) (point-min)))
+               (end (if (region-active-p) (region-end) (point-max)))
+               )
+           (save-excursion
        (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
          (goto-char (point-max))
          (insert "\n\n"))
@@ -339,7 +341,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (flyspell-buffer)
        (delete-trailing-whitespace)
        (clean-pdf-text begin end)
-       (check-parens)
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
@@ -1416,6 +1417,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "\nAbbreviations\n" "[**Abbreviations**: " nil begin end)
          (query-replace ".\n<strong>" ".\n\n**" nil begin end)
          (replace-all "\\[<strong>Keywords</strong>:" "\n\n[**Keywords**:")
+         (replace-all "\\[Keyword(s):" "\n\n[**Keywords**:")
        )
        (replace-all ",”" "”,")
        (replace-all ";”" "”;")
@@ -1612,7 +1614,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace " 8)" " (8)" nil begin end)
        (query-replace " 9)" " (9)" nil begin end)
        (query-replace " 10)" " (10)" nil begin end)
-       (check-parens)
 
        (query-replace-regexp " percent\\([[:punct:]]\\)" "%\\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\)×10−\\([[:digit:]]+\\)" "\\1×10<sup>−\\2</sup>" nil begin end) ; minus sign version
@@ -1722,7 +1723,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\*\\*\\*\\(.*\\)\\*\\*\\*" "**_\\1_**" nil begin end) ; '***' is a bad way to write bold-italics in Markdown because it's unreliable to read/parse
        (replace-all "<Strong>" "**")
        (replace-all "</Strong>" "**")
-       (query-replace-regexp "\\([A-Z][a-z]+\\), Citation\\([12][0-9][0-9][0-9]\\)" "\\1 \\2" nil begin end) ; T&F: "3.4 hours/day(Annie, Citation2019; Comscore, Citation2018; Kemp, Citation2020)"
+       (query-replace-regexp "\\([A-Z][a-z]+\\),? Citation\\([12][0-9][0-9][0-9]\\)" "\\1 \\2" nil begin end) ; T&F: "3.4 hours/day(Annie, Citation2019; Comscore, Citation2018; Kemp, Citation2020)", "the scenery of Washimiya town on viewers (Yamamura Citation2012)"
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\.? (\\([[:digit:]]+[a-z]?\\))" "\\1 et al \\2" nil begin end) ; 'Heald et al. (2015a)' → 'Heald et al 2015a'
        (query-replace-regexp "\\([a-zA-Z]+\\) et al\\. \\([[:digit:]]+\\)" "\\1 et al \\2" nil begin end)
        (query-replace-regexp "\\([A-Z][a-zñü]+\\) (\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\))" "\\1 \\2" nil begin end) ; 'Darwin (1875)' → 'Darwin 1875'
@@ -1773,10 +1774,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
      (message "Checking grammar/language…")
      (langtool-check)
      (call-interactively #'langtool-correct-buffer) ; grammar
-     (check-parens)
      (message "Remember to collapse appendices, annotate links, add inflation-adjustments to all '$'/'₿'s, add margin notes, 'invert' images, and run `markdown-lint`")
      nil
-     ))))
+     )))))
 
 (defun clean-pdf-text (&optional start end)
   "Clean PDF-ish text in buffer/region using `/static/build/clean-pdf.py`.

@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-08-27 14:46:29 gwern"
+-- When:  Time-stamp: "2024-09-05 12:28:25 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -19,14 +19,15 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- verbosely putting it in parentheses, like '$10 ($100 in 2019)'. My approach may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.
 --
 -- Years/dates are specified in a variant of my interwiki link syntax (see Interwiki.hs); for example: '[$50]($2000)'
--- or '[₿0.5](₿2017-01-01)'. As a backup syntax (eg. for use inside link anchor texts), one can write it as a span
+-- or '[₿0.5](₿2017-01-01)'.
+-- As a backup syntax (eg. for use inside link anchor texts), one can write it as a span
 -- like '[$50]{inflation=$2000)' (ie. `<span data-inflation="$2000">$50</span>`).
 -- Dollar amounts use year, and Bitcoins use full dates, as the greater
 -- temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs
 -- and need to be manually updated every once in a while; if out of date, the last available rate is
 -- carried forward for future adjustments.
 --
--- Dollar-years may range 1913--∞, although future years may be meaningless.
+-- Dollar-years may range 1913–∞, although future years may be meaningless.
 -- Dollars are inflation-adjusted using the CPI from 1913 to 1958, then the Personal Consumption
 -- Expenditures (PCE) Index thereafter, which is recommended by the Federal Reserve and others as
 -- more accurately reflecting consumer behavior & welfare than the CPI.

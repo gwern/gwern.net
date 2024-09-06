@@ -461,6 +461,8 @@ canonicals = M.fromList
   , ("stefaesthesia", "Stefanie")
   , ("regehr", "John Regehr")
   , ("Bernard S. Greenberg", "Bernard Greenberg")
+  , ("Sharon Kardia", "Sharon L. R. Kardia")
+  , ("Mika Kähönen", "Kähönen Mika")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -731,6 +733,11 @@ authorLinkDB = M.fromList $
     , ("Eric Jang", "https://evjang.com/about/")
     , ("Stefanie", "https://x.com/stefaesthesia")
     , ("John Regehr", "https://en.wikipedia.org/wiki/John_Regehr")
+    , ("Sharon Kardia", "https://en.wikipedia.org/wiki/Sharon_Kardia")
+    , ("Nikita Nangia", "https://scholar.google.com/citations?user=DoXtjzcAAAAJ&hl=en&oi=ao")
+    , ("Kähönen Mika", "https://scholar.google.com/citations?user=fZXV3C8AAAAJ&hl=en&oi=ao")
+    , ("Laurens van der Maaten", "https://lvdmaaten.github.io/")
+    , ("H. Tracy Hall", "https://en.wikipedia.org/wiki/Tracy_Hall")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1962,4 +1969,5 @@ authorWpLinkDB =
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
-    , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe", "Ted Chiang", "Bernard Greenberg"]
+    , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel"]

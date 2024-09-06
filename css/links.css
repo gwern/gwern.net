@@ -616,7 +616,7 @@ a[data-link-icon='econlib'] .link-icon-hook::after { /* torch */
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.1em;
 
-    opacity: 0.75;
+    opacity: 0.70;
 }
 
 a[data-link-icon='erowid'] .link-icon-hook::after {
