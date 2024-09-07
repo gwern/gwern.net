@@ -380,18 +380,18 @@
 	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
 }
 
-/*	Some SVGs used in annotations/essays 
-	(eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg ) 
-	were authored as transparent SVGs, assuming a *white* background. In dark 
+/*	Some SVGs used in annotations/essays
+	(eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg )
+	were authored as transparent SVGs, assuming a *white* background. In dark
 	mode, with a black background set, they are illegible.
 
-	So, in dark mode only, impose a white background on SVGs in <figure>s. 
-	(This is scoped narrowly to only apply to SVGs which are displayed in 
-	<figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part 
-	of the site design, and will have been designed to work with dark mode; 
-	forcing a white background on them may have unpredictable bad effects. If 
-	it turns out that this is still too broad, we may have to instead manually 
-	edit SVGs to force a white background, or selectively whitelist them for a 
+	So, in dark mode only, impose a white background on SVGs in <figure>s.
+	(This is scoped narrowly to only apply to SVGs which are displayed in
+	<figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part
+	of the site design, and will have been designed to work with dark mode;
+	forcing a white background on them may have unpredictable bad effects. If
+	it turns out that this is still too broad, we may have to instead manually
+	edit SVGs to force a white background, or selectively whitelist them for a
 	white background.)
  */
 figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
@@ -596,10 +596,11 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
-/*	Recently-modified link icon.
+/*	Manual link-icon SVGs: Recently-modified, manicule/index
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before {
+.icon-single-white-star-on-black-circle::before,
+.manicule, .icon-manicule-right {
 	filter: invert(1);
 }
 
