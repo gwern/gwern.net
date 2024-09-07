@@ -103,7 +103,7 @@ generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https:
                                           -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
                                           if null itemsWP then [] else [
                                                                         [Div ("",["collapse"],[]) [
-                                                                            Para [Strong [Str "Wikipedia Bibliography"], Str ":"],
+                                                                            Para [Strong [Str "Wikipedia Bibliography:"]],
                                                                             OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
 generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]

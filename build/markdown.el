@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-05 13:18:54 gwern"
+;;; When:  Time-stamp: "2024-09-06 17:53:14 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1144,8 +1144,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([023456789]\\)th" . "\\1^th^")
                         ("\\([1]\\)st"        . "\\1^st^")
                         ("\\([3]\\)rd"        . "\\1^rd^")
-                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
-                        ("(four|fif|six|seven|eigh|nin|ten)th"        . "\\1^th^")
+                        ("\\(four|fif|six|seven|eigh|nin|ten\\)th"        . "\\1^th^")
+                        ("\\(four|fif|six|seven|eigh|nin|ten\\)th"        . "\\1^th^")
                         ; numbers, ranges or changes:
                         ; NOTE: we deliberately omit EN DASH-ification of ranges involving negative numbers. For example, '−0.3 to −3.7'
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
@@ -1634,7 +1634,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
-       (query-replace-regexp "pg?\\. [0-9]" "pg\\1") ; page citations: 'p. 5', 'pg. 5' → 'pg5'
+       (query-replace-regexp "pg?\\. \\([0-9]\\)" "pg\\1") ; page citations: 'p. 50', 'pg. 50' → 'pg50'
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)
