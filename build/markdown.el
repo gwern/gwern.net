@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-06 17:53:14 gwern"
+;;; When:  Time-stamp: "2024-09-07 12:43:09 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -812,6 +812,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("$\frac{n}{2}$" . "_n_⁄2")
                         ("$\frac{N}{2}$" . "_n_⁄2")
                         ("<em>b</em> = " . "β = ")
+                        ("<em>b</em> = −" . "β = −")
+                        ("_b_ = " . "β = ")
+                        ("_b_ = −" . "β = −")
                         (" a2" . " _a_^2^")
                         (" c2" . " _c_^2^")
                         (" e2" . " _e_^2^")
@@ -2313,6 +2316,22 @@ To save effort, we add those as well."
 (add-hook 'html-mode-hook       'balance-parens)
 (add-hook 'python-mode-hook     'balance-parens)
 ; NOTE: I skip YAML mode because syntax-level quoting is kept validated by the database processing, and within-annotation balancing is checked in Hakyll, and using `check-parens` in YAML mode triggers far too many spurious errors.
+
+; Insert the secondary X clipboard at point (handles Unicode correctly); works better than `xclip -o`.
+; Trims whitespace (spurious whitespace is often added by X GUI programs like Firefox eg. double-clicking HTML headers or page titles, requiring tedious manual deletion).
+(global-set-key "\M-`" #'(lambda () (interactive)
+                           (insert-for-yank
+                            (gui-get-selection 'PRIMARY 'UTF8_STRING))))
+; Trim spurious whitespace from other X GUI copy-pastes as well.
+; (We do not attempt to hook `yank` and run this on *all* copy-paste-like behavior, because deleting whitespace could seriously interfere with document or programming modes.)
+(defun my-trim-gui-selection (orig-fun &rest args)
+  "Trim whitespace from text selected via GUI before yanking into Emacs.
+Runs ORIG-FUN on ARGS to create the selected text (ie. original `gui-get-selection` + args)."
+  (let ((selection (apply orig-fun args)))
+    (if (stringp selection)
+        (string-trim selection)
+      selection)))
+(advice-add 'gui-get-selection :around #'my-trim-gui-selection)
 
 ; ispell: ignore code blocks in Pandoc Markdown
 ; TODO: add a fix for '#' not being handled in URLs. current hack borrowed from <https://github.com/jrblevin/markdown-mode/issues/420> (also a good example of maintainers being lazy)
