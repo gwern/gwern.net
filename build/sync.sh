@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-09 21:15:11 gwern"
+# When:  Time-stamp: "2024-09-10 13:08:46 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -571,7 +571,7 @@ else
             "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
-            "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
+            "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not" "icon-special"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right" "inline" "invert" "invert-auto" "invert-not"
             "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not"
             "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"

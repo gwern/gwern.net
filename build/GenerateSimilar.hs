@@ -366,7 +366,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                      ]
                    ]]
 
-             preface = if singleShot then [] else [Para [Link nullAttr [Strong [Str "Similar Links:"]] ("/design#similar-links", "")]]
+             preface = if singleShot then [] else [Para [Link ("",["icon-special"], []) [Strong [Str "Similar Links:"]] ("/design#similar-links", "")]]
              linkList = BulletList $ similarItems ++ googleScholar
 
              pandoc = walk typographyTransform $ Pandoc nullMeta $ preface ++ [linkList]
