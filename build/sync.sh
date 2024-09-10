@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-06 10:42:52 gwern"
+# When:  Time-stamp: "2024-09-09 21:15:11 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -208,6 +208,10 @@ else
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
         ./static/build/generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
+
+        # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
+        λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | gfv -e ' secs,' -e 'it :: ()' -e '[]'; }
+        wrap λ "Need link live whitelist/blacklisting?" &
     fi
   fi
 
@@ -568,7 +572,7 @@ else
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not"
-            "link-modified-recently" "icon-single-white-star-on-black-circle" "inline" "invert" "invert-auto" "invert-not"
+            "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right" "inline" "invert" "invert-auto" "invert-not"
             "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not"
             "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"
             "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
@@ -743,7 +747,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep -F --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -758,7 +762,7 @@ else
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
-    λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"'; }
+    λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"' | gfv -e ' secs,' -e ' bytes' -e 'it :: ()'; }
     wrap λ "Annotations that need to be rewritten into paragraphs." &
 
     λ(){ gwa | gf -- '[]' | gfv -e '/newsletter/' | sort; } # we exclude future newsletter issues as deliberately untagged to avoid appearing at the top of the newsletter tag # | gev --perl-regexp '\e\[36ma\e\[0m: '
@@ -783,7 +787,7 @@ else
     λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)." &
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -- ./metadata/full.gtx ./metadata/half.gtx | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -- ./metadata/full.gtx ./metadata/half.gtx | \
              gec -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)." &
 
@@ -854,7 +858,7 @@ else
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
-            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -- ./metadata/*.gtx | \
+            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -1048,7 +1052,7 @@ else
  if [ "$SLOW" ]; then
 
    # continue building author database
-   (ghci -istatic/build/ ./static/build/MetadataAuthor.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &)
+   (ghci -istatic/build/ ./static/build/Metadata/Author.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &)
 
    # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
    CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
@@ -1095,6 +1099,9 @@ else
         fi
 
     (chromium --temp-profile "https://gwern.net/index#footer" &> /dev/null &) # check the X-of-the-day in a different & cache-free browser instance
+
+    λ(){ run_gold_test; }
+    wrap λ "Lorem pages changed? Review, and if good, run 'lorem_update' to update the gold snapshots."
 
     # once in a while, do a detailed check for accessibility issues using WAVE Web Accessibility Evaluation Tool:
     everyNDays 200 && chromium "https://wave.webaim.org/report#/$CHECK_RANDOM_PAGE" &
@@ -1483,8 +1490,8 @@ else
     ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?" &
-    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | gfv -e ' secs,' -e 'it :: ()' -e '[]'; }
-    wrap λ "Need link live whitelist/blacklisting?" &
+    λ() { gf '>{.archive-not .link-annotated-not .link-live}' ./lorem-link.md; }
+    wrap λ "Sites needing link live whitelist/blacklisting?"
 
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }
     wrap λ "Refactor out pages?" &

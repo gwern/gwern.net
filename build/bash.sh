@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-08-26 15:32:25 gwern"
+# When:  Time-stamp: "2024-09-09 21:15:15 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -609,4 +609,54 @@ sort_by_lastmodified () {
         # Return to the original directory
         popd >/dev/null
     done | sort --reverse --numeric | cut --delimiter=' ' --fields=2-
+}
+
+# KNOWN GOOD / GOLD UNIT-TESTING (experimental)
+# the </lorem*> pages exercise most site functionality, and many errors or regressions in new patches should show up as changes in the generated HTML.
+# So we can simply compare the new HTML to old stored snapshots to inspect any changes (`run_regression_test`), and if the changes are good, update the snapshots (`lorem_update`).
+SITE_URL="https://gwern.net"
+SNAPSHOT_DIR="./metadata/snapshot"
+CONTENT_DIR="$HOME/wiki/"
+
+get_lorem_pages() {
+    find "$CONTENT_DIR" -name "lorem*.md" -printf "%f\n" | sed 's/\.md$//'
+}
+
+download_page() {
+    local page=$1
+    local output_file="${SNAPSHOT_DIR}/${page}"
+    local temp_file; temp_file=$(mktemp)
+    curl -s "${SITE_URL}/${page}" >> "$temp_file"
+    mv "$temp_file" "${output_file}"
+}
+
+compare_page() {
+    local page=$1
+    local snapshot_file="${SNAPSHOT_DIR}/${page}"
+    local temp_file; temp_file=$(mktemp)
+
+    curl -s "${SITE_URL}/${page}" >> "${temp_file}"
+
+    if ! diff -q "${temp_file}" "${snapshot_file}" >/dev/null; then
+        red "Changes detected in ${page}:"
+        wdiff "${snapshot_file}" "${temp_file}"
+    fi
+
+    rm "${temp_file}"
+}
+
+lorem_update() {
+    green "Updating snapshots…"
+    mkdir -p "${SNAPSHOT_DIR}"
+    get_lorem_pages | while read -r page; do
+        download_page "${page}"
+        green "Updated snapshot for ${page}"
+    done
+}
+
+run_gold_test() {
+    green "Running known-good gold-unit tests on the Lorem pages…"
+    get_lorem_pages | while read -r page; do
+        compare_page "${page}"
+    done
 }
