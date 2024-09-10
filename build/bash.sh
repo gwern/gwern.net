@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-09 21:15:15 gwern"
+# When:  Time-stamp: "2024-09-10 11:37:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -626,7 +626,9 @@ download_page() {
     local page=$1
     local output_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
-    curl -s "${SITE_URL}/${page}" >> "$temp_file"
+    # we version the infrastructure files with a 10-digit seconds-level Unix timestamp to bust caches, and those will change every time those are modified, eg. to add a link-icon, and trigger spurious changes. So we used sed to remove those from both downloaded snapshots & downloaded live pages.
+    curl --silent "${SITE_URL}/${page}" |
+        sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "$temp_file"
     mv "$temp_file" "${output_file}"
 }
 
@@ -635,27 +637,26 @@ compare_page() {
     local snapshot_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
 
-    curl -s "${SITE_URL}/${page}" >> "${temp_file}"
+    curl --silent "${SITE_URL}/${page}" | sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "${temp_file}"
 
-    if ! diff -q "${temp_file}" "${snapshot_file}" >/dev/null; then
-        red "Changes detected in ${page}:"
-        wdiff "${snapshot_file}" "${temp_file}"
+    if ! diff --brief "${temp_file}" "${snapshot_file}" >/dev/null; then
+        red "Changes detected in \"${page}\":"
+        diff --color "${snapshot_file}" "${temp_file}"
     fi
 
     rm "${temp_file}"
 }
 
 lorem_update() {
-    green "Updating snapshots…"
+    bold "Updating snapshots…"
     mkdir -p "${SNAPSHOT_DIR}"
     get_lorem_pages | while read -r page; do
         download_page "${page}"
-        green "Updated snapshot for ${page}"
+        echo "Updated snapshot for \"${page}\""
     done
 }
 
 run_gold_test() {
-    green "Running known-good gold-unit tests on the Lorem pages…"
     get_lorem_pages | while read -r page; do
         compare_page "${page}"
     done
