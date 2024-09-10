@@ -466,6 +466,12 @@ canonicals = M.fromList
   , ("Kathryn Kemper", "Kathryn E. Kemper")
   , ("John Rice", "John P. Rice")
   , ("Jari Marko Lahti", "Jari Lahti")
+  , ("James Tiptree Jr.", "Alice B. Sheldon")
+  , ("James Tiptree, Jr.", "Alice B. Sheldon")
+  , ("James Tiptree, Junior", "Alice B. Sheldon")
+  , ("Alice Sheldon", "Alice B. Sheldon")
+  , ("Alice Bradley Sheldon", "Alice B. Sheldon")
+  , ("Larry A. Wasserman", "Larry Wasserman")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -745,6 +751,8 @@ authorLinkDB = M.fromList $
     , ("John P. Rice", "https://profiles.wustl.edu/en/persons/john-rice")
     , ("Jari Lahti", "https://scholar.google.com/citations?user=3qAsiw8AAAAJ")
     , ("F. Filce Leek", "/doc/history/1986-dixon.pdf")
+    , ("Alice B. Sheldon", "https://en.wikipedia.org/wiki/James_Tiptree_Jr.")
+    , ("Larry Wasserman", "https://en.wikipedia.org/wiki/Larry_A._Wasserman")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

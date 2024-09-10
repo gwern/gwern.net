@@ -773,6 +773,7 @@ goodDomainsSimple =
     , "www.semafor.com"
     , "www.spencergreenberg.com"
     , "www8.austlii.edu.au"
+    , "dynomight.net"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -3091,6 +3092,7 @@ goodLinks =
             , "https://www.semafor.com/article/01/09/2023/microsoft-eyes-10-billion-bet-on-chatgpt"
             , "https://www.spencergreenberg.com"
             , "https://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VCC/2013/70.html"
+            , "https://dynomight.net/automated/"
             ]
 
 badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
