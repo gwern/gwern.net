@@ -1959,50 +1959,57 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
     });
 }, "rewrite");
 
-/************************************************************************/
-/*  Assign proper link icons to self-links (directional or otherwise) and
-    local links, ignoring links with existing icon attributes.
-    See `LinkIcon`+`Config.LinkIcon` & <https://gwern.net/design-graveyard#link-icon-css-regexps>.
+/******************************************************************************/
+/*  Assign local navigation link icons: directional in-page links, generic
+	(non-directional) self-links, and local page links. (These should be 
+	applied only within body text, including pop-frames but excluding page
+	metadata sections; and should not be applied to links that already have a
+	special link icon, e.g. one assigned on the back-end; nor to links that are
+	specifically marked as needing no icon at all.)
  */
-addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (eventInfo) => {
-    GWLog("designateSpecialLinkIcons", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIcons = (eventInfo) => {
+    GWLog("designateLocalNavigationLinkIcons", "rewrite.js", 1);
 
-    // Do not override existing link-icons; a normal self-link or anchor link should have no
-    // link-icon. (Also make sure the data-attributes are not empty string values, as might be the
-    // case if the backend or processing goes wrong.)
-    // An example here would be in essays: the special-case of the sl/lb/bl anchor links
-    // which jump to the respective section at the end of the page where those are
-    // actually transcluded. We want the 3 special link-icons for those, and those are
-    // hardwired in the `default.html` template, but the runtime JS will overwrite those
-    // with the arrows if it doesn't check for the link-icon data-attributes being set already.
-    const shouldProcessLink = (link) => {
-        return !(link.dataset.linkIcon?.trim() || link.dataset.linkIconType?.trim());
-    };
+	/*	Do not display special link icons in these containers and for these 
+		elements.
+	 */
+	let exclusionSelector = [
+		".icon-not",
+		".icon-special",
+		"#sidebar",
+		"#page-metadata",
+		"#footer",
+		".aux-links"
+	].join(", ");
 
     //  Self-links (anchorlinks to the current page).
-    eventInfo.container.querySelectorAll(".link-self:not(.icon-not)").forEach(link => {
-        if (!shouldProcessLink(link)) return;
+    eventInfo.container.querySelectorAll(".link-self").forEach(link => {
+		if (link.closest(exclusionSelector))
+			return;
 
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = "\u{00B6}"; // '¶' PILCROW SIGN
+        link.dataset.linkIcon = "\u{00B6}"; // ‘¶’ PILCROW SIGN
 
         /*  Directional navigation links on self-links: for each self-link like
-            "see [later](#later-identifier)", find the linked identifier,
+            “see [later](#later-identifier)”, find the linked identifier,
             whether it's before or after, and if it is before/previously,
-            annotate the self-link with '↑' (UPWARDS ARROW) and if after/later, '
-            ↓' (DOWNWARDS ARROW).
+            annotate the self-link with ‘↑’ (UPWARDS ARROW) and if after/later, 
+            ‘↓’ (DOWNWARDS ARROW).
 
-            This helps the reader know if it's a backwards link to an identifier already
-            read, or an unread identifier, enabling a mental map and reducing the
-            cognitive overhead of constantly choosing whether to follow a reference.
+            This helps the reader know if it’s a backwards link to an identifier 
+            already read, or an unread identifier, enabling a mental map and 
+            reducing the cognitive overhead of constantly choosing whether to 
+            follow a reference.
 
             This was implemented statically pre-transclusion as an optimization,
             but given that dynamism forces runtime checking of relative status
             for all new fragments (popups or transclude), that has been removed
-            in favor of this JS hook, to simplify code & ensure a single source of truth.
+            in favor of this JS hook, to simplify code & ensure a single source 
+            of truth.
          */
         let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
-        if (target == null) return;
+        if (target == null)
+        	return;
 
         link.dataset.linkIconType = "svg";
         link.dataset.linkIcon =
@@ -2012,13 +2019,18 @@ addContentInjectHandler(GW.contentInjectHandlers.designateSpecialLinkIcons = (ev
     });
 
     //  Local links (to other pages on the site).
-    eventInfo.container.querySelectorAll(".link-page:not(.icon-not)").forEach(link => {
-        if (!shouldProcessLink(link)) return;
+    eventInfo.container.querySelectorAll(".link-page").forEach(link => {
+		if (link.closest(exclusionSelector))
+			return;
+
+        if (   link.dataset.linkIcon
+        	&& [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon) == false)
+            return;
 
         link.dataset.linkIconType = "text";
         link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
-                                ? "\u{00B6}"   // '¶'
-                                : "\u{1D50A}"; // '𝔊' MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
+                                ? "\u{00B6}"   // ‘¶’
+                                : "\u{1D50A}"; // ‘𝔊’ MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
     });
 }, "rewrite");
 

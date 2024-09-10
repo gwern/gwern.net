@@ -102,12 +102,12 @@
           <svg class="logo-image" viewBox="0 0 64 75"><use href="/static/img/logo/logo-smooth.svg#logo" /></svg>
         </a>
         <div class="sidebar-links">
-        <a class="icon-not       link-page link-annotated" href="/about"                title="Site ideals, source, content, traffic, examples, license" rel="author">Site</a>
-        <a class="icon-not       link-page link-annotated" href="/me"                   title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on" rel="author">Me</a>
-        <a class="icon-not new   link-page link-annotated" href="/changelog"            title="Changelog of what's new or updated">Changes</a>
-        <a class="icon-not       link-page"                href="/doc/newsletter/index" title="Monthly mailing list archives" rel="me">News</a>
-        <a class="icon-not                    link-page"   href="/doc/newest/index"     title="Most recent link annotations">Links</a>
-        <a class="icon-not patreon" href="https://www.patreon.com/gwern" title="Link to Patreon donation profile to support my writing" rel="me">Patreon</a>
+        <a class="link-page link-annotated" href="/about"                title="Site ideals, source, content, traffic, examples, license" rel="author">Site</a>
+        <a class="link-page link-annotated" href="/me"                   title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on" rel="author">Me</a>
+        <a class="new   link-page link-annotated" href="/changelog"            title="Changelog of what's new or updated">Changes</a>
+        <a class="link-page"                href="/doc/newsletter/index" title="Monthly mailing list archives" rel="me">News</a>
+        <a class="link-page"   href="/doc/newest/index"     title="Most recent link annotations">Links</a>
+        <a class="patreon" href="https://www.patreon.com/gwern" title="Link to Patreon donation profile to support my writing" rel="me">Patreon</a>
         </div>
       </nav>
 
@@ -121,10 +121,10 @@
           $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
           <div class="page-metadata-fields">
               $if(author)$ <span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
-              <span class="page-date-range"><span class="page-creation" title="Date page contents were begun."><em>$created$</em></span>–<span class="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title-plain$': $url$.md" class="icon-not" href="$url$.md"><span class="page-modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span></span>
+              <span class="page-date-range"><span class="page-creation" title="Date page contents were begun."><em>$created$</em></span>–<span class="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title-plain$': $url$.md" href="$url$.md"><span class="page-modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span></span>
               <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span>
-              <span class="page-confidence"><a href="/about#confidence-tags" class="icon-not" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
-              <span class="page-importance"><a href="/about#importance-tags" class="icon-not" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
+              <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
+              <span class="page-importance"><a href="/about#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
               $if(backlinks-yes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
               $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
               $if(linkbib-yes)$<span class="link-bibliography"><a href="#link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
@@ -159,18 +159,18 @@
 
         <div class="markdownBody" id="footer">
           <p id="footer-anonymous-feedback">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7uqL7B_l1HFIfXc8D_nZyumaOv58msK7jhl4XzQjWODWKdA/viewform" title="Google Docs web form for submitting anonymized feedback to Gwern Branwen" class="icon-not">[&hairsp;Send Anonymous Feedback&hairsp;]</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7uqL7B_l1HFIfXc8D_nZyumaOv58msK7jhl4XzQjWODWKdA/viewform" title="Google Docs web form for submitting anonymized feedback to Gwern Branwen">[&hairsp;Send Anonymous Feedback&hairsp;]</a>
           </p>
 
           <div id="x-of-the-day">
-            <p><a id="qotd" class="include include-spinner-not icon-not" href="/metadata/today-quote.html">[Quote Of The Day]</a></p>
+            <p><a id="qotd" class="include include-spinner-not" href="/metadata/today-quote.html">[Quote Of The Day]</a></p>
 
-            <p><a id="sotd" class="include include-spinner-not icon-not" href="/metadata/today-site.html">[Site Of The Day]</a></p>
+            <p><a id="sotd" class="include include-spinner-not" href="/metadata/today-site.html">[Site Of The Day]</a></p>
 
-            <p><a id="atod" class="include include-spinner-not icon-not" href="/metadata/today-annotation.html">[Annotation Of The Day]</a></p>
+            <p><a id="atod" class="include include-spinner-not" href="/metadata/today-annotation.html">[Annotation Of The Day]</a></p>
           </div>
 
-          <p><a id="psa-adblock" class="include adsense include-spinner-not icon-not" href="/metadata/psa-adblock.html">[adblock public service announcement]</a></p>
+          <p><a id="psa-adblock" class="include adsense include-spinner-not" href="/metadata/psa-adblock.html">[adblock public service announcement]</a></p>
         </div>
 
       </article>
