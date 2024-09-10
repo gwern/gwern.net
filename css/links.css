@@ -1095,24 +1095,26 @@ a[data-link-icon='emacs'] .link-icon-hook::after {
 a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.20em;
+
     opacity: 0.65;
 }
 
 a[data-link-icon='tiktok'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.15em;
-    --link-icon-size: 0.75em;
 }
 
 a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
-    opacity: 0.55;
-    --link-icon-size: 0.75em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.35em;
 }
 
 a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
-    opacity: 0.65;
     --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.20em;
+
+    opacity: 0.65;
 }
 
 /*=------------------=*/
