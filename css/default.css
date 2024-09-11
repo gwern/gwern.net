@@ -3431,9 +3431,8 @@ ol.link-bibliography-list-compact > li::before {
 #navigation a:hover {
     color: var(--GW-body-link-color);
 }
-#navigation a svg {
+#navigation svg {
     margin: 0;
-    width: 100%;
     height: 1.65em;
 }
 
