@@ -168,10 +168,13 @@ function versionedAssetURL(pathname) {
 
     (or -2, -3, etc., selecting randomly from available numbered alternates).
 
+	Alternatively, a valid regular expression pattern (in string form, not a 
+	RegExp object) may be provided.
+
     Specified assets must be listed in the versioned asset database.
  */
 function randomAsset(assetPathnamePattern) {
-    let assetPathnameRegExp = new RegExp(assetPathnamePattern);
+    let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let alternateAssetPathnames = [ ];
     for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
