@@ -472,6 +472,11 @@ canonicals = M.fromList
   , ("Alice Sheldon", "Alice B. Sheldon")
   , ("Alice Bradley Sheldon", "Alice B. Sheldon")
   , ("Larry A. Wasserman", "Larry Wasserman")
+  , ("David Weir", "David R. Weir")
+  , ("Michael Weedon", "Michael N. Weedon")
+  , ("Michael N Weedon", "Michael N. Weedon")
+  , ("Jessica Faul", "Jessica D. Faul")
+  , ("Jennifer Smith", "Jennifer A. Smith")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -753,6 +758,19 @@ authorLinkDB = M.fromList $
     , ("F. Filce Leek", "/doc/history/1986-dixon.pdf")
     , ("Alice B. Sheldon", "https://en.wikipedia.org/wiki/James_Tiptree_Jr.")
     , ("Larry Wasserman", "https://en.wikipedia.org/wiki/Larry_A._Wasserman")
+    , ("Michael L. Smith", "https://scholar.google.com/citations?user=lREVIHgAAAAJ")
+    , ("David R. Weir", "https://hrs.isr.umich.edu/about/scientific-leadership/david-r-weir")
+    , ("Andy Zou", "https://andyzoujm.github.io/")
+    , ("Albert Gu", "https://scholar.google.com/citations?user=DVCHv1kAAAAJ&hl=en&oi=ao")
+    , ("Michael N. Weedon", "https://medicine.exeter.ac.uk/people/profile/index.php?web_id=Michael_Weedon")
+    , ("Mordechai Guri", "https://www.wired.com/story/air-gap-researcher-mordechai-guri/")
+    , ("Merete Nordentoft", "https://ikm.ku.dk/english/contact/specialties/psychiatry/?pure=en%2Fpersons%2Fmerete-nordentoft(6d0fe19c-7c81-463b-8bc8-822d71584b69).html")
+    , ("John M. Starr", "https://research.com/u/john-m-starr")
+    , ("Jessica D. Faul", "https://hrs.isr.umich.edu/about/scientific-leadership/jessica-faul")
+    , ("Jennifer A. Smith", "https://sph.umich.edu/faculty-profiles/smith-jennifer.html")
+    , ("Casey Handmer", "https://www.caseyhandmer.com/")
+    , ("Kazutaka Kurihara", "https://sites.google.com/site/qurihara/top-english")
+    , ("Koji Tsukada", "https://mobiquitous.com/index-e.html")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1985,4 +2003,4 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift"]

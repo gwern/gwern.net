@@ -4,7 +4,7 @@ separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found"]
+badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -54,7 +54,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists"]
 
 -- testing: unique list
 stringDelete :: [String]
@@ -135,4 +135,4 @@ stringDelete = [" - The Public Domain Review"
             , "Run Deep: ", " – Daniel Frank", " - by Dwarkesh Patel", " � Erik Bernhardsson"
             , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
             , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru"
-            , " - HTML: HyperText Markup Language", " - Joel on Software"]
+            , " - HTML: HyperText Markup Language", " - Joel on Software", "Neal Stephenson - "]

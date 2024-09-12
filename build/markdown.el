@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-07 12:43:09 gwern"
+;;; When:  Time-stamp: "2024-09-11 22:07:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1858,16 +1858,24 @@ formatting following some European conventions.
 
 The function checks if the year input by the user is a numeric string.
 If it is not, the function outputs an error message and does not perform
-the replacement."
-  (interactive)
+the replacement.
+
+The user can exit the function by appending `q` to the year input (e.g., `2024q`).
+This is more convenient than accepting & quitting."
+(interactive)
   (let ((from "\\([-−]?\\$\\([0-9,.]+\\)\\([kmbt]?\\)\\)\\>"))
     (if (not (string-match-p from (buffer-string)))
         (message "query-inflation-adjust: No dollar amounts to adjust; exiting.")
-      (let* ((year (read-string "Year: " (format-time-string "%Y"))))
-        (if (string-match-p "\\`[0-9]+\\'" year)
-            (let ((to (concat "[$\\2]($" year ")\\3")))
-              (query-replace-regexp from to nil (point-min) (point-max)))
-          (message "Invalid year"))))))
+      (let* ((year-input (read-string "Year ('q' skips): " (format-time-string "%Y")))
+             (year (replace-regexp-in-string "q$" "" year-input)))
+        (cond
+         ((string-match-p "q$" year-input)
+          (message "query-inflation-adjust: User chose to skip."))
+         ((string-match-p "\\`[0-9]+\\'" year)
+          (let ((to (concat "[$\\2]($" year ")\\3")))
+            (query-replace-regexp from to nil (point-min) (point-max))
+            (message "Inflation adjustment completed for year %s." year)))
+         (t (message "Invalid year input. Please enter a valid year or append 'q' to skip.")))))))
 
 ;; (defun number-with-commas (num)
 ;;   "Format a number `NUM` with commas."
