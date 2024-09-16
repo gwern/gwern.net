@@ -14,7 +14,7 @@ import Text.Pandoc (Inline(Link))
 import Cycle (isCycleLess)
 import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, cleanAbstractsHTML,
                       footnoteRegex, sectionAnonymousRegex, badUrlRegex)
-import Metadata.Date (isDate)
+import Metadata.Date (isDate, dateRangeDurationTestCasesTestsuite)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 
 -- module self-tests:
@@ -27,7 +27,7 @@ import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
-import Typography (titleCaseTest, dateRangeDurationTestCasesTestsuite)
+import Typography (titleCaseTest)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername)
 
