@@ -20,7 +20,7 @@ import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
 
 import Data.Text.Titlecase (titlecase)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc(Pandoc), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta)
+import Text.Pandoc -- (Inline(..), Block(..), Pandoc(Pandoc), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta)
 import Text.Pandoc.Walk (walk, walkM)
 
 import LinkIcon (linkIcon)
@@ -44,7 +44,8 @@ typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtens
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
-                        walk (imageCaptionLinebreak . dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
+                        walk figureCaptionLinebreak .
+                        walk (dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
@@ -294,39 +295,38 @@ titlecaseInline :: Inline -> Inline
 titlecaseInline (Str s) = Str $ T.pack $ titlecase' $ T.unpack s
 titlecaseInline       x = x
 
-----
--- Figure figcaption style:
--- image captions would benefit from a bit of linebreak. I can't find a way with GPT-4 to make this work reliably in CSS-only because breaking at italics is unreliable (eg. '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'. Editing in a <br /> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with strong then text then em, and then has additional text not starting with em/strong, wrap the additional text in a new paragraph.'
-{- $ echo '![**Figure 1**: Caption](foo.jpg)' | pandoc -w native
-[Para[Image("",[],[])[Strong[Str"Figure",Space,Str"1"],Str":",Space,Str"Caption"]("foo.jpg","fig:")]]
-$ echo '![**Figure 1**: _Caption._ Foo bar.](foo.jpg)' | pandoc -w native
-[Para[Image("",[],[])[Strong[Str"Figure",Space,Str"1"],Str":",Space,Emph[Str"Caption."],Space,Str"Foo",Space,Str"bar."]("foo.jpg","fig:")]]
-→ [Para [Image ("",[],[]) [Strong [Str "Figure",Space,Str "1"],Str ":",Space,Emph [Str "Caption."],LineBreak,Str "Foo",Space,Str "bar."] ("foo.jpg","fig:")]]
-→ <figure><img src="foo.jpg" alt="Figure 1: Caption. Foo bar." /><figcaption aria-hidden="true"><strong>Figure 1</strong>: <em>Caption.</em><br />Foo bar.</figcaption></figure>
+{-
+Figure figcaption style:
+image captions would benefit from a bit of linebreak. I can't find a way with GPT-4 to make this work reliably in CSS-only because breaking at italics is unreliable (eg. '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'. Editing in a <br /> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
 
-> imageCaptionLinebreak $ Image ("",[],[]) [Strong [Str "Figure 2"],Str ": ",Emph [Str "Instability of an unsteered bicycle."],Str " This shows 800 runs of a bicycle being pushed to the right. For each run, the path of the front wheel on the ground is shown until the bicycle has fallen over. The unstable oscillatory nature is due to the subcritical speed of the bicycle, which loses further speed with each oscillation."] ("/doc/reinforcement-learning/model-free/2001-cook-figure2-chaoticdynamicsofunsteeredvirtualbicycleover800runs.png","fig:")
-Image ("",[],[]) [Strong [Str "Figure 2"],Str ": ",Emph [Str "Instability of an unsteered bicycle."],LineBreak,Str " This shows 800 runs of a bicycle being pushed to the right. For each run, the path of the front wheel on the ground is shown until the bicycle has fallen over. The unstable oscillatory nature is due to the subcritical speed of the bicycle, which loses further speed with each oscillation."] ("/doc/reinforcement-learning/model-free/2001-cook-figure2-chaoticdynamicsofunsteeredvirtualbicycleover800runs.png","fig:")
+> figureCaptionLinebreak $ Figure nullAttr (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."]) []) []
+→ Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],LineBreak,Str "Figure long description after a linebreak."]) []) []
+
+TODO: this is complex enough that I probably want to set up a testsuite of rewrites. We'll see if the fix to work on Figure rather than Image is enough.
 -}
-imageCaptionLinebreak :: Inline -> Inline
--- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
-imageCaptionLinebreak x@(Image _ (Strong _ : Str ": (" : Emph _ : _) _) = x
-imageCaptionLinebreak x@(Image _ (_ : _ : LineBreak : _) _) = x
-imageCaptionLinebreak x@(Image _ (_ : _ : _ : LineBreak : _) _) = x
-imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : LineBreak : _) _) = x
-imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : _ : LineBreak : _) _) = x
-imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) =
-  Image y
-  (Strong a : Str b : Emph c : LineBreak : d)
-  z
-imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) =
-  Image y
-  (Strong a : Str b : Emph c : LineBreak : d)
-  z
-imageCaptionLinebreak x = x
+-- types:
+-- Figure = Figure !Attr !Caption ![Block]
+-- Caption = Caption !(Maybe ShortCaption) ![Block]
+-- ShortCaption = [Inline]
+figureCaptionLinebreak :: Block -> Block
+figureCaptionLinebreak x@(Figure _ (Caption Nothing  _) _) = x
+figureCaptionLinebreak   (Figure a (Caption (Just c) d) e) =
+                          Figure a (Caption (Just $ captionLinebreak c) d) e
+  where captionLinebreak :: [Inline] -> [Inline]
+         -- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
+        captionLinebreak y@(Strong _ : Str ": (" : Emph _ : _) = y
+        captionLinebreak y@(_ : _ : LineBreak : _)             = y
+        captionLinebreak y@(_ : _ : _ : LineBreak : _)         = y
+        captionLinebreak y@(_ : _ : _ : _ : LineBreak : _)     = y
+        captionLinebreak y@(_ : _ : _ : _ : _ : LineBreak : _) = y
+        captionLinebreak (Strong f : Str g : Space : Emph h : i) = Strong f : Str g : Emph h : LineBreak : i
+        captionLinebreak (Strong f : Str g :         Emph h : i) = Strong f : Str g : Emph h : LineBreak : i
+        captionLinebreak y = y
+figureCaptionLinebreak x = x
 
 -- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
 -- See </lorem-inline#date-subscripts>, </subscript#date-ranges>.
--- TODO: handle single years as just duration subscripts; handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
+-- TODO: handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
 dateRangeDuration todayYear x@(Str s)                                 = dateRangeDurationRaw todayYear x s
 dateRangeDuration todayYear x@(Span ("", ["date-range"], []) [Str s]) = dateRangeDurationRaw todayYear x s
