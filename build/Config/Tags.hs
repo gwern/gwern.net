@@ -341,6 +341,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("economics/advertising", "ads")
           , ("economics/experience-curve", "experience curves")
           , ("economics/georgism", "Georgism")
+          , ("genetics/microbiome/acne", "acne")
           , ("genetics/microbiome", "microbiome")
           , ("genetics/heritable/correlation/mendelian-randomization", "Mendelian Randomization")
           , ("genetics/heritable/correlation", "genetic correlation")

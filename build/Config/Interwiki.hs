@@ -5951,4 +5951,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("WAIS", "Wechsler_Adult_Intelligence_Scale")
         , ("Bluesky", "Bluesky_(social_network)")
         , ("Alice_Bradley_Sheldon", "James_Tiptree_Jr.")
+        , ("Pit_bulls", "Pit_bull")
+        , ("Third_space", "Third_place")
         ]

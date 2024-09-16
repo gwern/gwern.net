@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2024-09-03 14:25:51 gwern"
+# When:  Time-stamp: "2024-09-14 19:34:43 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -40,10 +40,10 @@ Converted output: <em>H</em> ≫ 1
 Details:
 
 - Convert only if the result is unambiguous.
-- Note that inputs may be very short, because each LaTeX fragment in an ArXiv abstract is processed individually. Many inputs will be a short as single letters (which are variables).
-- Assume only default environment settings with no redefinitions or uses like `\\newcommand` or `\\begin`.
-- Do not modify block-level equations, or complex structures such as diagrams or tables or arrays or matrices (eg `\\begin{bmatrix}`), or illustrations such as drawn by TikZ or `\\draw` , as those require special processing. Do not convert them & simply repeat it if the input is not an inline math expression.
-- If a TeX command has no reasonable Unicode equivalent, such as the `\\overrightarrow{AB}`/`\\vec{AB}` or `\\check{a}` or `\\underline`/`overline` commands in LaTeX, simply repeat it.
+- Note that inputs may be very short, because each LaTeX fragment in an ArXiv abstract is processed individually. Many inputs will be as short as a single letter (which are variables).
+- Assume only default environment settings with no redefinitions or uses like `\\newcommand` or `\\begin`. Skip custom operators.
+- Do not modify block-level equations, or complex structures such as diagrams or tables or arrays or matrices (eg `\\begin{bmatrix}`), or illustrations such as drawn by TikZ or `\\draw` , as those require special processing (eg. matrixes must be converted into HTML tables). Do not convert them & simply repeat it if the input is not an inline math expression.
+- If a TeX command has no reasonable Unicode equivalent, such as the `\\overrightarrow{AB}`/`\\vec{AB}` or `\\check{a}` or `\\underline`/`\\overline` commands in LaTeX, simply repeat it.
 - If a TeX command merely adjusts positioning, size, or margin (such as `\\big`/`\\raisebox`/`\\big`/`\\Big`), always omit it from the conversion (as it is probably unnecessary & would need to be handled specially if it was).
 - The TeX/LaTeX special glyphs (`\\TeX` & `\\LaTeX`) are handled elsewhere; do not convert them, but simply repeat it.
 - Use Unicode entities, eg. MATHEMATICAL CAPITAL SCRIPT O `𝒪` in place of `\\mathcal{O}`, and likewise for the Fraktur ones (`\\mathfrak`) and bold ones (`\\mathbb`). Convert to the closest Unicode entity that exists. Convert symbols, special symbols, mathematical operators, and Greek letters. Convert even if the Unicode is rare (such as  `𝒪`). If there is no Unicode equivalent (such as because there is not a matching letter in that font family, or no appropriate combining character), then do not convert it.
@@ -53,8 +53,8 @@ Details:
 - For complex fractions which use superscripts or subscripts, multiple arguments etc, do not convert them & simply repeat them. eg. do not convert `\\(\\frac{a^{b}}{c^{d}}\\)`, as it is too complex.
 - Convert roots such as square or cube roots if that would be unambiguous. For example, `\\sqrt[3]{8}` → `∛8` is good, but not `\\sqrt[3]{ab}` because `∛<em>ab</em>` is ambiguous; do not convert complex roots like `\\sqrt[3]{ab}`.
 - Color & styling: if necessary, you may use simple CSS inline with a `<span style="">` declaration, such as to color something blue using `<span style="color: blue">`.
+- Outlines/boxes: you may use simple inline CSS to draw borders.
 - Be careful about dash use: correctly use MINUS SIGN (−) vs EM DASH (—) vs EN DASH (–) vs HYPHEN-MINUS (-).
-
 
 More rules/examples for edge-cases:
 
@@ -107,6 +107,8 @@ Pr(text | α)
 ♣
 - '\\textcolor{red}{x}'
 <span style="color: red">x</span>
+- '\\textcolor{red}{X}'
+<span style="color: red">X</span>
 - '\\textbf{bolding}'
 <strong>bolding</strong>
 - '\\textit{emphasis}'
@@ -153,6 +155,48 @@ M<sub>☉</sub
 (<em>n</em>, <em>d</em>, λ)
 - '\\Lambda'
 Λ
+- '\\not\\approx'
+≉
+- '\\left\\langle A \\middle| B \\right\\rangle'
+⟨<em>A</em>|<em>B</em>⟩
+- '\\mathcal{R}'
+ℛ
+- '\\mathbb{R}'
+ℝ
+- '\\cancel{x}'
+x̸
+- '\\left{\\frac{1}{2} \\right}'
+\\left{\\frac{1}{2} \\right}
+- '\\dot{x}'
+x&#775;
+- '\\ddot{x}'
+x&#776;
+- 'x^{y^{z}}'
+<em>x</em><sup><em>y</em><sup><em>z</em></sup><sup>
+- '\\lim_{x \\to \\infty} f(x)'
+lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</em>)
+- '\\boxed{A}'
+<span style="display: inline-block; border: 1px solid black; padding: 0 3px; margin: 0 2px; line-height: 1.2; font-style: italic;">A</span>
+- '\\'
+&#8201;
+- '\\:'
+&#8197;
+- '\\;'
+&#8198;
+- '\\quad'
+&#8195;
+- '\\qquad'
+&#8195;&#8195;
+- '!'
+&#8202;
+- '\\!'
+
+- En space
+&#8194;
+- Figure space
+&#8199;
+- Punctuation space
+&#8200;
 
 Task:
 

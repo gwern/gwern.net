@@ -477,6 +477,24 @@ canonicals = M.fromList
   , ("Michael N Weedon", "Michael N. Weedon")
   , ("Jessica Faul", "Jessica D. Faul")
   , ("Jennifer Smith", "Jennifer A. Smith")
+  , ("__anjor", "Anjor Kanekar")
+  , ("Zygmunt Z.", "Zygmunt Zajc")
+  , ("Nelson Repenning", "Nelson P. Repenning")
+  , ("John Sterman", "John D. Sterman")
+  , ("John David Sterman", "John D. Sterman")
+  , ("mehran__jalali", "Mehran Jalali")
+  , ("Outsideness", "Nick Land")
+  , ("Henry Volzke", "Henry Völzke")
+  , ("Felix Day", "Felix R. Day")
+  , ("FR Day", "Felix R. Day")
+  , ("F. R. Day", "Felix R. Day")
+  , ("F.R. Day", "Felix R. Day")
+  , ("Andrew D. Grotzinger", "Andrew D. Grotzinger")
+  , ("Andrew D Grotzinger", "Andrew D. Grotzinger")
+  , ("Andrew Grotzinger", "Andrew D. Grotzinger")
+  , ("A. D. Grotzinger", "Andrew D. Grotzinger")
+  , ("AD Grotzinger", "Andrew D. Grotzinger")
+  , ("A.D. Grotzinger", "Andrew D. Grotzinger")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -771,6 +789,16 @@ authorLinkDB = M.fromList $
     , ("Casey Handmer", "https://www.caseyhandmer.com/")
     , ("Kazutaka Kurihara", "https://sites.google.com/site/qurihara/top-english")
     , ("Koji Tsukada", "https://mobiquitous.com/index-e.html")
+    , ("Anjor Kanekar", "https://anjor.xyz/")
+    , ("Zygmunt Zajc", "https://fastml.com/about/")
+    , ("Nelson P. Repenning", "https://mitsloan.mit.edu/faculty/directory/nelson-p-repenning")
+    , ("John D. Sterman", "https://en.wikipedia.org/wiki/John_Sterman")
+    , ("Mehran Jalali", "https://x.com/mehran__jalali")
+    , ("Richard J. Sullivan", "https://en.wikipedia.org/wiki/Sir_Richard_Sullivan,_1st_Baronet")
+    , ("Henry Völzke", "https://scholar.google.com/citations?user=k3hYjjYAAAAJ&hl=en&oi=ao")
+    , ("Felix R. Day", "https://scholar.google.com/citations?user=UtxHZp8AAAAJ&hl=en&oi=ao")
+    , ("Andrew D. Grotzinger", "https://www.colorado.edu/ibg/andrew-grotzinger")
+    , ("Alan F. Wright", "https://research.com/u/alan-f-wright")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2003,4 +2031,4 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"]

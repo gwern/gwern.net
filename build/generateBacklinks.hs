@@ -8,7 +8,7 @@ module Main where
 
 import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
                     runPure, writeHtml5String,
-                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..), nullAttr)
+                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, stripSuffix, Text)
 import qualified Data.Text.IO as TIO (readFile)

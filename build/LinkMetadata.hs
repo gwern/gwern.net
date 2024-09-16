@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-09-06 18:49:31 gwern"
+When:  Time-stamp: "2024-09-15 10:55:10 gwern"
 License: CC-0
 -}
 
@@ -264,7 +264,7 @@ readLinkMetadataAndCheck = do
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
-             let authorsBadChars = filter (\a -> a `notElem` ["K. U."] && -- author whitelist
+             let authorsBadChars = filter (\a -> a `notElem` ["K. U.", "6510#HN"] && -- author whitelist
                                                  (anyInfix a [";", "&", "?", "!"] || isPunctuation (last a))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
