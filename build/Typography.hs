@@ -298,23 +298,29 @@ titlecaseInline       x = x
 
 {-
 Figure figcaption style:
-image captions would benefit from a bit of linebreak. I can't find a way with GPT-4 to make this work reliably in CSS-only because breaking at italics is unreliable (eg. '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'. Editing in a <br /> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
+the Gwern.net house style for images with captions, particularly images from research papers, is similar to that of abstracts: break up the giant blocks endemic to scientific papers into more readable paragraphs.
+So a figure like `![**Figure 1**: _Short summary._ Long more detailed description, which should possibly be split into multiple paragraphs, particularly if it is a multi-panel image.](/doc/foo.jpg)` should linebreak between 'Figure 1: Short summary' and 'Long more detailed description'.
+We encode the 3 types by putting the figure ID into bold, the short summary into italics, and then the long description is everything afterwards (possibly split up internally using linebreaks, eg. if it has multiple sub-descriptions like '(a–f)').
+
+To avoid the toil of adding linebreaks manually everywhere, we try to detect & add the linebreak automatically.
+I can't find a way to make this work reliably in CSS-only because breaking at italics is unreliable (eg. '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'.
+Editing in a <br /> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
+So we implement this as a Pandoc AST rewrite on the 'Figure' element that that `![]()` compiles to.
 
 > figureCaptionLinebreak $ Figure nullAttr (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."]) []) []
 → Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],LineBreak,Str "Figure long description after a linebreak."]) []) []
-
-TODO: this is complex enough that I probably want to set up a testsuite of rewrites. We'll see if the fix to work on Figure rather than Image is enough.
 -}
--- types:
--- Figure = Figure !Attr !Caption ![Block]
--- Caption = Caption !(Maybe ShortCaption) ![Block]
--- ShortCaption = [Inline]
+-- Relevant Pandoc types:
+-- `Figure = Figure !Attr !Caption ![Block]`
+-- `Caption = Caption !(Maybe ShortCaption) ![Block]`
+-- `ShortCaption = [Inline]`
 figureCaptionLinebreak :: Block -> Block
+-- Figures have few semantics we can enforce or error out on (eg. a Figure is not guaranteed to have any caption, nor any attributes, nor any alt text), other than requiring an image with a URL; however, we don't need to check for those, because that is enforced in `Image.invertFile`.
 figureCaptionLinebreak x@(Figure _ (Caption Nothing  _) _) = x
 figureCaptionLinebreak   (Figure a (Caption (Just c) d) e) =
                           Figure a (Caption (Just $ captionLinebreak c) d) e
   where captionLinebreak :: [Inline] -> [Inline]
-         -- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
+         -- special-case: `**Figure 1**: (_a_) Foo. (_b_) Bar. (_c_) Baz.` We don't want to linebreak there using the usual logic because it yields brokenness like `Figure 1: (a\n) ...`. So detect & skip:
         captionLinebreak y@(Strong _ : Str ": (" : Emph _ : _) = y
         captionLinebreak y@(_ : _ : LineBreak : _)             = y
         captionLinebreak y@(_ : _ : _ : LineBreak : _)         = y
@@ -324,3 +330,27 @@ figureCaptionLinebreak   (Figure a (Caption (Just c) d) e) =
         captionLinebreak (Strong f : Str g :         Emph h : i) = Strong f : Str g : Emph h : LineBreak : i
         captionLinebreak y = y
 figureCaptionLinebreak x = x
+
+{-
+-- skeleton: `Figure nullAttr (Caption (Just []) []) []`
+figureCaptionLinebreakTestcases :: [(Block, Block)]
+figureCaptionLinebreakTestcases = [ (Figure nullAttr (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],LineBreak,Str "Figure long description after a linebreak."]) []) [])
+                                  , (Plain [], Plain [])
+                                  , (Figure nullAttr (Caption (Just []) []) [], Figure nullAttr (Caption (Just []) []) [])
+                                  , (Figure nullAttr (Caption Nothing []) [], Figure nullAttr (Caption Nothing []) []), (Figure nullAttr (Caption (Just [Strong [Str "Figure 2"], Str ": (", Emph [Str "a"], Str ")"]) []) []
+                                                                                                                        , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 2"],Str ": (",Emph [Str "a"],Str ")"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 3"], Emph [Str ": expansion"], LineBreak, Str "Rest of caption"]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 3"],Emph [Str ": expansion"],LineBreak,Str "Rest of caption"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 4"], Emph [Str ": expansion"], Str "expansion #2", LineBreak, Str "Rest of caption"]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 4"],Emph [Str ": expansion"],Str "expansion #2",LineBreak,Str "Rest of caption"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 5"], Emph [Str ": expansion"], Str "expansion #2", Str "expansion #3", LineBreak, Str "Rest of caption"]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 5"],Emph [Str ": expansion"],Str "expansion #2",Str "expansion #3",LineBreak,Str "Rest of caption"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 6"], Emph [Str ": expansion"], Str "expansion #2", Str "expansion #3", Str "expansion #4", LineBreak, Str "Rest of caption"]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 6"],Emph [Str ": expansion"],Str "expansion #2",Str "expansion #3",Str "expansion #4",LineBreak,Str "Rest of caption"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 7"], Str "str", Space, Emph [Str ": expansion"], Str "rest of caption", Str "expansion #3", Str "expansion #4", LineBreak, Str "Rest of caption"]) []) []
+                                    , Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 7"],Str "str",Emph [Str ": expansion"],LineBreak,Str "rest of caption",Str "expansion #3",Str "expansion #4",LineBreak,Str "Rest of caption"]) []) [])
+                                  , (Figure nullAttr (Caption (Just [Strong [Str "Figure 8"], Str "str", Emph [Str ": expansion"], Str "rest of caption", Str "expansion #3", Str "expansion #4", LineBreak, Str "Rest of caption"]) []) [],
+                                     Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 8"],Str "str",Emph [Str ": expansion"],LineBreak,Str "rest of caption",Str "expansion #3",Str "expansion #4",LineBreak,Str "Rest of caption"]) []) [])
+                                  ]
+-}
