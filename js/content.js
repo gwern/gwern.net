@@ -391,8 +391,8 @@ Content = {
                 //  Fire contentDidLoad event.
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Content.contentTypes.dropcapInfo.load",
-                    container: content,
-                    document: content,
+                    container: contentDocument,
+                    document: contentDocument,
                     loadLocation: new URL(link.href)
                 });
 
