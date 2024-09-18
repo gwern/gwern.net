@@ -489,12 +489,15 @@ canonicals = M.fromList
   , ("FR Day", "Felix R. Day")
   , ("F. R. Day", "Felix R. Day")
   , ("F.R. Day", "Felix R. Day")
-  , ("Andrew D. Grotzinger", "Andrew D. Grotzinger")
   , ("Andrew D Grotzinger", "Andrew D. Grotzinger")
   , ("Andrew Grotzinger", "Andrew D. Grotzinger")
+  , ("A Grotzinger", "Andrew D. Grotzinger")
+  , ("A. Grotzinger", "Andrew D. Grotzinger")
   , ("A. D. Grotzinger", "Andrew D. Grotzinger")
   , ("AD Grotzinger", "Andrew D. Grotzinger")
   , ("A.D. Grotzinger", "Andrew D. Grotzinger")
+  , ("habryka", "Oliver Habryka")
+  , ("John Peralta", "John A. Peralta")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -799,6 +802,9 @@ authorLinkDB = M.fromList $
     , ("Felix R. Day", "https://scholar.google.com/citations?user=UtxHZp8AAAAJ&hl=en&oi=ao")
     , ("Andrew D. Grotzinger", "https://www.colorado.edu/ibg/andrew-grotzinger")
     , ("Alan F. Wright", "https://research.com/u/alan-f-wright")
+    , ("Oliver Habryka", "https://www.lesswrong.com/users/habryka4")
+    , ("Ben Pace", "https://www.lesswrong.com/users/benito")
+    , ("John A. Peralta", "http://www.johnperaltafineart.com/meet-the-artist")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

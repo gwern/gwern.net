@@ -774,6 +774,7 @@ goodDomainsSimple =
     , "www.spencergreenberg.com"
     , "www8.austlii.edu.au"
     , "dynomight.net"
+    , "sander.ai"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -3093,6 +3094,7 @@ goodLinks =
             , "https://www.spencergreenberg.com"
             , "https://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VCC/2013/70.html"
             , "https://dynomight.net/automated/"
+            , "https://sander.ai/2020/09/01/typicality.html"
             ]
 
 badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"

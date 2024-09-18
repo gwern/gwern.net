@@ -65,7 +65,7 @@ convertInterwikiLinks doc = walk (convertInterwikiLinksInline doc) doc
 -- BUG: Escaping bugs with Unicode: eg. [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
 -- but if I simply Network.HTTP.urlEncode the article, that breaks a lot of other stuff (like colons in namespaces)...? What *is* the right way to escape/encode WP article names?
 convertInterwikiLinksInline :: Pandoc -> Inline -> Inline
-convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error (convertInterwikiLinksInline): no anchor text‽ " ++ show x ++ " : " ++ show doc
+convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error (Interwiki.convertInterwikiLinksInline): no anchor text‽ " ++ show x ++ " :\n" ++ show doc
 convertInterwikiLinksInline _ x@(Link _ _ ("", _))        = x
 convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinksInline): tooltip malformed with excess whitespace? " ++ show x else

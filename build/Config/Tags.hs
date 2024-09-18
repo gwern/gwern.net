@@ -92,6 +92,7 @@ tagsShort2LongRewrites =
    , ("rl/chess", "reinforcement-learning/chess"), ("xrisk", "existential-risk"), ("risk", "existential-risk")
    , ("human-adversarial", "ai/nn/adversarial/human"), ("adversarial-human", "ai/nn/adversarial/human"), ("mlps", "ai/nn/fully-connected")
    , ("mlp", "ai/nn/fully-connected"), ("gpt-4", "ai/nn/transformer/gpt/4"), ("gpt4", "ai/nn/transformer/gpt/4")
+   , ("fim", "anime/my-little-pony"), ("mylittlepony", "anime/my-little-pony"), ("pony", "anime/my-little-pony"), ("mlpfim", "anime/my-little-pony"), ("mlp-fim", "anime/my-little-pony")
    , ("gp-4", "ai/nn/transformer/gpt/4"), ("gpt-5", "ai/nn/transformer/gpt/5"), ("gpt5", "ai/nn/transformer/gpt/5")
    , ("gp-5", "ai/nn/transformer/gpt/5"), ("gp5", "ai/nn/transformer/gpt/5"), ("attention/sparse", "ai/nn/transformer/attention/sparsity")
    , ("ai/sparsity", "sparsity")
@@ -142,7 +143,8 @@ tagsShort2LongRewrites =
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
    , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
-   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution")]
+   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution")
+   , ("fermi", "science/fermi-problem"), ("fermi-estimate", "science/fermi-problem"), ("fermi-calculation", "science/fermi-problem"), ("fermi-problems", "science/fermi-problem")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -161,6 +163,7 @@ shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be"
 -- testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
           ("traffic/ab-testing", "Web A/B testing") -- NOTE: TLAs cannot be put into smallcaps because we italicize tags but Source Serif Pro does not have italic smallcaps <https://github.com/adobe-fonts/source-serif/issues/46>.
+          , ("science/fermi-problem", "Fermi problems")
           , ("science/chemistry/disappearing-polymorph", "disappearing polymorphs (chemistry)")
           , ("science/chemistry", "chemistry")
           , ("technology/northpaw", "Northpaw compass")
@@ -216,6 +219,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("nootropic/magnesium", "magnesium (nootropic)")
           , ("nootropic/potassium", "potassium (sleep)")
           , ("math/humor", "STEM humor")
+          , ("longevity/metformin", "metformin")
           , ("longevity/fasting", "fasting")
           , ("longevity/epigenetics", "epigenetics (aging)")
           , ("longevity/aspirin", "aspirin (aging)")
@@ -264,6 +268,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
           , ("cat/biology", "cat biology")
           , ("biology/booger", "boogers")
           , ("biology/ant", "ants")
+          , ("anime/my-little-pony", "<em>My Little Pony</em>")
           , ("anime/hafu", "<em>hafu</em> (anime)")
           , ("anime/eva/rebuild/2/2010-crc", "<em>Rebuild 2.0</em> book")
           , ("anime/eva/rebuild/2", "<em>Rebuild 2.0</em>")

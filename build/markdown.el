@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-11 22:07:43 gwern"
+;;; When:  Time-stamp: "2024-09-17 10:23:27 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -655,20 +655,20 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("rUKB =" . "<em>r</em><sub>UKB</sub> =")
                         (" r " . " _r_ ")
                         ("Mr = " . "_M_~r~ = ")
-                        ("zMR " . "_z_~MR~")
+                        ("zMR " . "_z_~MR~ ")
                         ("z score" . "_z_ score")
                         ("z-score" . "_z_-score")
                         (" z-" . " _z_-")
                         ("Mage=" . "M~age~ = ")
-                        ("Mage " . "M~age~")
-                        ("Mage " . "M~age~")
-                        ("tmax " . "t~max~")
+                        ("Mage " . "M~age~ ")
+                        ("Mage " . "M~age~ ")
+                        ("tmax " . "t~max~ ")
                         ("Cmax" . "C~max~")
                         ("AUClast" . "AUC~last~")
                         ("AUC∞" . "AUC~∞~")
                         ("AUC0–t" . "AUC~0–t~")
                         ("SDage=" . "SD~age~ = ")
-                        ("SDage " . "SD~age~")
+                        ("SDage " . "SD~age~ ")
                         ("mean=" . "mean = ")
                         ("OR=" . "OR = ")
                         ("AOR=" . "AOR = ")
@@ -765,7 +765,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" m3" . " m^3^")
                         ("kg/m2" . "kg⁄m^2^")
                         (" m2" . "m^2^")
-                        (" m^2 " . "m^2^")
+                        (" m^2 " . "m^2^ ")
                         ("×1−1×min" . " × 1<sup>−1</sup> × min")
                         ("t1/2" . "t<sub>1⁄2</sub>")
                         (" m/s" . " m⁄s")

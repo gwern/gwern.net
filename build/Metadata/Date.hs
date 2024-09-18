@@ -63,7 +63,7 @@ guessDateFromString u  =
                       if isDate dateNew then return dateNew else error $ "Metadata.Format.guessDateFromString: date-guesser.py returned an invalid date: " ++ dateNew ++ "; input: " ++ u
 
 
--- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg `<span class="date-range">1939–1945</span>`.
+-- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg. `<span class="date-range">1939–1945</span>`.
 -- See </lorem-inline#date-subscripts>, </subscript#date-ranges>.
 -- TODO: handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
@@ -88,8 +88,8 @@ dateRangeDurationRaw todayYear x s =
            let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                dateSecondS = take 4 $ T.unpack dateSecond
                dateLongP     = T.length dateFirst > 4 && T.length dateSecond > 4 -- is full date-pair?
-               dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '170' days
-               dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg '9' → "9d" '170' -> "6m" (6 months)
+               dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg. '170' days
+               dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg. '9' → "9d" '170' -> "6m" (6 months)
                dateFirstInt  = read dateFirstS :: Int
                dateSecondInt = read dateSecondS :: Int
                dateRangeInt  = dateSecondInt - dateFirstInt
