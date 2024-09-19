@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-10 11:37:17 gwern"
+# When:  Time-stamp: "2024-09-19 09:45:31 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -591,21 +591,24 @@ sort_by_lastmodified () {
     while read -r dir; do
         # Change to the directory
         pushd "$dir" >/dev/null || continue
-
         # Get list of files not ignored by git
         git_files=$(git ls-files --exclude-standard)
-
         if [ -n "$git_files" ]; then
             # Find the most recently modified file among git-tracked files
-            latest_file=$(find $git_files -type f -printf '%T@ %p\n' 2>/dev/null \
-                              | sort --numeric | tail -1)
-            if [ -n "$latest_file" ]; then
-                # Extract the timestamp and print it with the directory
-                timestamp=$(echo "$latest_file" | cut --delimiter=' ' --fields=1)
-                echo "$timestamp $dir"
-            fi
+            latest_file=$(git ls-files --exclude-standard -z | xargs -0 stat -f '%m %N' 2>/dev/null | sort --reverse --numeric | head --lines=1)
+        else
+            # If no git-tracked files, find the most recently modified untracked file
+            latest_file=$(find . -type f -not -path './.git/*' -printf '%T@ %p\n' 2>/dev/null | sort --reverse --numeric | head --lines=1)
         fi
-
+        if [ -n "$latest_file" ]; then
+            # Extract the timestamp and print it with the directory
+            timestamp=$(echo "$latest_file" | cut --delimiter=' ' --fields=1)
+            echo "$timestamp $dir"
+        else
+            # If no files found, use the directory's modification time
+            timestamp=$(stat -f '%m' . 2>/dev/null || stat -c '%Y' .)
+            echo "$timestamp $dir"
+        fi
         # Return to the original directory
         popd >/dev/null
     done | sort --reverse --numeric | cut --delimiter=' ' --fields=2-

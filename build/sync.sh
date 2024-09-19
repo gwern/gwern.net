@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-11 12:22:26 gwern"
+# When:  Time-stamp: "2024-09-18 19:22:29 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -210,8 +210,14 @@ else
         ./static/build/generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
-        λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | gfv -e ' secs,' -e 'it :: ()' -e '[]'; }
+        λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
+                   -e 'do { l <- linkLivePrioritize; putStrLn (Text.Show.Pretty.ppShow l); }' | \
+                  gfv -e ' secs,' -e 'it :: ()' -e '[]'; }
         wrap λ "Need link live whitelist/blacklisting?" &
+    else
+        # we don't rebuild *all* tag-directories, but we will build any empty ones (ie. newly-created ones), because otherwise they will kill a fast sync (and I'd often forget at night that it has to be a full sync after creating a tag during the day):
+        DIRECTORIES_EMPTY="$(find ./doc/ -type f -name "index.md" -size 0)"
+        [ -n "$DIRECTORIES_EMPTY" ] && runghc -istatic/build/ ./static/build/generateDirectory $DIRECTORIES_EMPTY
     fi
   fi
 
