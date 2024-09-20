@@ -11,7 +11,7 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
 -- directory (mostly showing random snippets).
 
-import Control.Monad (filterM, void, unless, when)
+import Control.Monad (filterM, void, when)
 -- import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
@@ -47,7 +47,8 @@ main = do C.cd
 
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
-          let dirs' = sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let newestp = any (`isInfixOf` "newest") dirs
+          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
@@ -63,7 +64,7 @@ main = do C.cd
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
-          unless (length dirs < 5) $
+          when (length dirs > 5 || newestp) $
             generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
