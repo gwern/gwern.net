@@ -29,6 +29,9 @@ authorCollapseTestCases =
   , ("a, b, c, d, e, f",[Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
   , ("a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
 
+  -- hash disambiguation rendering:
+  , ("b#disambiguation", [Space,Span ("",["author","cite-author"],[]) [Str "b"]])
+
   -- test with link rewrites enabled:
   , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
   , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",["abstract-collapse-only"],[]) [Span ("",["cite-author-plural"],[]) []],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
@@ -498,6 +501,16 @@ canonicals = M.fromList
   , ("A.D. Grotzinger", "Andrew D. Grotzinger")
   , ("habryka", "Oliver Habryka")
   , ("John Peralta", "John A. Peralta")
+  , ("MLP Wikia", "<em>My Little Pony</em> Wikia")
+  , ("M L. P. Wikia", "<em>My Little Pony</em> Wikia")
+  , ("Penelope Lind", "Penelope A. Lind")
+  , ("S. Justin Newman", "Saul Justin Newman")
+  , ("S. Newman", "Saul Justin Newman")
+  , ("S Newman", "Saul Justin Newman")
+  , ("Saul Newman", "Saul Justin Newman")
+  , ("S. J. Newman", "Saul Justin Newman")
+  , ("SJ Newman", "Saul Justin Newman")
+  , ("S.J. Newman", "Saul Justin Newman")
   ]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
@@ -805,6 +818,12 @@ authorLinkDB = M.fromList $
     , ("Oliver Habryka", "https://www.lesswrong.com/users/habryka4")
     , ("Ben Pace", "https://www.lesswrong.com/users/benito")
     , ("John A. Peralta", "http://www.johnperaltafineart.com/meet-the-artist")
+    , ("<em>My Little Pony</em> Wikia", "https://mlp.fandom.com/wiki/My_Little_Pony_Friendship_is_Magic_Wiki")
+    , ("Sven Cichon", "https://scholar.google.com/citations?user=oF24hDgAAAAJ&hl=en")
+    , ("Robin Rombach", "https://scholar.google.com/citations?user=ygdQhrIAAAAJ&hl=en&oi=ao")
+    , ("Peter Vollenweider", "https://orcid.org/0000-0002-0765-896X")
+    , ("Penelope A. Lind", "https://www.qimrberghofer.edu.au/people/penelope-lind/")
+    , ("Saul Justin Newman", "https://www.ageing.ox.ac.uk/people/view/552")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

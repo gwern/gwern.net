@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-08-31 18:50:21 gwern"
+When:  Time-stamp: "2024-09-21 10:22:39 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -153,11 +153,12 @@ linkify :: T.Text -> Inline
 linkify ""  = Space
 linkify " " = Space
 linkify aut -- skip anything which might be HTML:
-  | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
+  | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = Str aut' -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
   | otherwise = case M.lookup aut CA.authorLinkDB of
-                  Nothing -> Str aut
-                  Just u -> let aut' = T.takeWhile (/= '#') aut in -- author disambiguation is done by appending an anchor-style disambig like '#foo'; once we have done the lookup, we no longer need it and delete it for display
-                                Link nullAttr [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
+                  Nothing -> Str aut'
+                  Just u ->  Link nullAttr [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
+  where aut' :: T.Text
+        aut' = T.takeWhile (/= '#') aut -- author disambiguation is done by appending an anchor-style disambig like '#foo'; once we have done the lookup, we no longer need it and delete it for display
 
 authorPrioritize :: [T.Text] -> [(Int,T.Text)]
 authorPrioritize auts = reverse $ frequency $ map fst $
