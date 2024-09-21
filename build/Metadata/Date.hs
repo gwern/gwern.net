@@ -112,7 +112,10 @@ dateRangeDurationRaw todayYear x s =
                          Span ("", ["subsup"], []) [Superscript [Str "–"],
                                                     Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
                        Str dateSecond] ++
-                       if durationP then [] else [Subscript [Str (dateDurationT`T.append`"ya")]])] ++
+                       if durationP then [] else [Subscript
+                                                 [Span ("", [], [("title", dateFirst`T.append`" was "`T.append`dateDurationT`T.append`" years ago.")]) [Str (dateDurationT`T.append`"ya")]]]
+                      )
+                    ] ++
                    if T.null after then [] else [dateRangeDuration todayYear $ Str after]
          z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
 
