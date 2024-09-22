@@ -183,11 +183,7 @@ main {
 	 */
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
-    }
-    #sidebar .sidebar-links a:nth-child(1),
-    #sidebar .sidebar-links a:nth-child(2),
-    #sidebar .sidebar-links a:nth-child(3) {
-        min-width: 25%;
+		flex: 1 1 33%;
     }
     #sidebar .sidebar-links a.patreon {
         display: none;
