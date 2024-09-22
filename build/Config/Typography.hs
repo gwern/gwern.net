@@ -144,7 +144,7 @@ dateRangeDurationTestCases = [
     , Span ("",[],[]) [Str "(17) 5. ",Span ("",["date-range"],[("title","The date range 2001-01-01\8211\&2005-08-19 lasted 4 years (1,692 days), ending 19 years ago.")]) [Str "2001-01-01",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "4y"]],Str "2005-08-19",Subscript [Span ("",[],[("title","2001-01-01 was 19 years ago.")]) [Str "19ya"]]]]
     )
   , (2024, Str "(18) The new program launched in 1980. 400 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984-02-10\8211\&1987-11-30"
-    , Span ("",[],[]) [Str "(18) The new program launched in ",Span ("",["date-range"],[]) [Str "1980",Subscript [Str "44ya"]],Span ("",[],[]) [Str ". 400 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Span ("",[],[("title","1984 was 37 years ago.")]) [Str "37ya"]]],Span ("",[],[]) [Str ", expanded to 500, also tested ",Span ("",["date-range"],[("title","The date range 1984-02-10\8211\&1987-11-30 lasted 3 years (1,390 days), ending 37 years ago.")]) [Str "1984-02-10",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3y"]],Str "1987-11-30",Subscript [Span ("",[],[("title","1984-02-10 was 37 years ago.")]) [Str "37ya"]]]]]]
+    , Span ("",[],[]) [Str "(18) The new program launched in ",Span ("",["date-range"],[]) [Str "1980",Subscript [Span ("",[],[("title","1980 was 44 years ago.")]) [Str "44ya"]]],Span ("",[],[]) [Str ". 400 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3"]],Str "1987",Subscript [Span ("",[],[("title","1984 was 37 years ago.")]) [Str "37ya"]]],Span ("",[],[]) [Str ", expanded to 500, also tested ",Span ("",["date-range"],[("title","The date range 1984-02-10\8211\&1987-11-30 lasted 3 years (1,390 days), ending 37 years ago.")]) [Str "1984-02-10",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "3y"]],Str "1987-11-30",Subscript [Span ("",[],[("title","1984-02-10 was 37 years ago.")]) [Str "37ya"]]]]]]
     )
   , (2024, Str "(19) Test 1,850. Bar 1,900-2,000"
     , Str "(19) Test 1,850. Bar 1,900-2,000"
@@ -177,7 +177,7 @@ dateRangeDurationTestCases = [
     , Str "(28) a good book costs $1542--1600 to print in the medieval era"
     )
   , (2024, Str "(29) It is now the 2000s. But as a date range, does that mean 2000, 2009, or maybe a mean date like 2004? And if that means any of those, what does 1900s mean?"
-    , Span ("",[],[]) [Span ("",[],[]) [Span ("",[],[]) [Str "(29) It is now the 2000s. But as a date range, does that mean ",Span ("",["date-range"],[]) [Str "2000",Subscript [Str "24ya"]],Str ", "],Span ("",["date-range"],[]) [Str "2009",Subscript [Str "15ya"]],Str ", or maybe a mean date like "],Span ("",["date-range"],[]) [Str "2004",Subscript [Str "20ya"]],Str "? And if that means any of those, what does 1900s mean?"]
+    , Span ("",[],[]) [Span ("",[],[]) [Span ("",[],[]) [Str "(29) It is now the 2000s. But as a date range, does that mean ",Span ("",["date-range"],[]) [Str "2000",Subscript [Span ("",[],[("title","2000 was 24 years ago.")]) [Str "24ya"]]],Str ", "],Span ("",["date-range"],[]) [Str "2009",Subscript [Span ("",[],[("title","2009 was 15 years ago.")]) [Str "15ya"]]],Str ", or maybe a mean date like "],Span ("",["date-range"],[]) [Str "2004",Subscript [Span ("",[],[("title","2004 was 20 years ago.")]) [Str "20ya"]]],Str "? And if that means any of those, what does 1900s mean?"]
     )
   , (2024, Str "(30) So, in 2020, the Leela team raced to train larger networks. She sourced compute from corporate donors and friends’ GTX 1070s."
     , Span ("",[],[]) [Str "(30) So, in ",Str "2020",Str ", the Leela team raced to train larger networks. She sourced compute from corporate donors and friends\8217 GTX 1070s."]
@@ -193,5 +193,8 @@ dateRangeDurationTestCases = [
     )
   , (2026, Str "(34) 1600px image"
     , Str "(34) 1600px image"
+    )
+  , (2027, Str "(35) Has not been published since 2001."
+    , Span ("",[],[]) [Str "(35) Has not been published since ",Span ("",["date-range"],[]) [Str "2001",Subscript [Span ("",[],[("title","2001 was 26 years ago.")]) [Str "26ya"]]],Str "."]
     )
   ]

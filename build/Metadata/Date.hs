@@ -129,9 +129,13 @@ dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed
 dateDurationSingle todayYear oldYear
   | todayYear < 1000            = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
   | otherwise = let oldYearInt = read (T.unpack oldYear) :: Int
-                    yearsSince = todayYear - oldYearInt in
+                    yearsSince  = todayYear - oldYearInt
+                    yearsSinceT = T.pack $ formatIntWithCommas yearsSince
+                in
                   if yearsSince < minDuration then Str oldYear else
-                    Span ("", ["date-range"], []) [Str oldYear, Subscript [Str $ T.pack (formatIntWithCommas yearsSince)`T.append`"ya"]]
+                    Span ("", ["date-range"], []) [Str oldYear,
+                                                   Subscript [Span ("", [], [("title", oldYear`T.append`" was "`T.append`yearsSinceT`T.append`" years ago.")]) [Str (yearsSinceT`T.append`"ya")]]
+                                                  ]
 
 -- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
 -- attempt to exclude any currency amounts (not guaranteed to work)
