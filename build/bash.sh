@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-21 11:16:37 gwern"
+# When:  Time-stamp: "2024-09-22 16:15:24 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -14,7 +14,59 @@
 
 source /usr/share/bash-completion/bash_completion || true # useful for better `upload` tab-completion
 
-# Default parallelism:
+# Bash completion function for ghc/ghci Haskell source files
+#
+# Features:
+# - Completes Haskell source files (.hs) and directories
+# - Excludes object (.o) and interface (.hi) files
+# - Case-insensitive matching
+# - Recursive directory search (depth limit: 5)
+# - Adds trailing slashes to directories without appending spaces
+#
+# Usage: Source this file or add it to your bash_completion.d directory
+# Note: we wrote this one because the official GHC bash tab-completion script
+# <https://gitlab.haskell.org/ghc/ghc/-/blob/wip/ci/utils/completion/ghc.bash>
+# has not been modified in a decade, doesn't seem to be shipped at all by
+# <https://github.com/scop/bash-completion>, and I don't really use the
+# limited completions that old one offers.
+_ghc_ghci_completion() {
+    local cur lower_cur
+    _init_completion || return
+
+    local IFS=$'\n'
+    local valid_completions=()
+
+    shopt -s nocaseglob nullglob
+
+    add_completions() {
+        local dir="$1" prefix="$2" depth="$3"
+        [[ $depth -gt 5 ]] && return
+
+        for file in "$dir"*; do
+            local rel_file="${file#$dir}"
+            if [[ -d "$file" ]]; then
+                valid_completions+=("$prefix$rel_file/")
+                add_completions "$file/" "$prefix$rel_file/" $((depth + 1))
+            elif [[ "$file" == *.hs && ! "$file" =~ \.o$|\.hi$ ]]; then
+                valid_completions+=("$prefix$rel_file")
+            fi
+        done
+    }
+
+    add_completions "./" "" 0
+
+    shopt -u nocaseglob nullglob
+
+    lower_cur=${cur,,}
+    mapfile -t COMPREPLY < <(for c in "${valid_completions[@]}"; do
+        [[ "${c,,}" == "$lower_cur"* ]] && printf '%s\n' "$c"
+    done)
+
+    [[ ${#COMPREPLY[@]} -eq 1 && ${COMPREPLY[0]} == */ ]] && compopt -o nospace
+}
+complete -o nospace -F _ghc_ghci_completion ghc ghci
+
+# Default Haskell parallelism:
 export N="7"
 
 set -e
