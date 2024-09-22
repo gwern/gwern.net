@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-19 09:45:31 gwern"
+# When:  Time-stamp: "2024-09-21 11:16:37 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -644,7 +644,7 @@ compare_page() {
 
     if ! diff --brief "${temp_file}" "${snapshot_file}" >/dev/null; then
         red "Changes detected in \"${page}\":"
-        diff --color "${snapshot_file}" "${temp_file}"
+        diff --color=always "${snapshot_file}" "${temp_file}"
     fi
 
     rm "${temp_file}"

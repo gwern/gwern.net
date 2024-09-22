@@ -94,14 +94,14 @@ linkIconRulesOverrides u
  | u' u "pandoc" && not (u' u "tufte") = ("PNDC", "text,quad,sans") -- general catch-all, overrides Google Groups (`pandoc-discuss`), with a further override for Tufte-related stuff (which get 'ET')
  | aU'' u ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' u ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = ("ET", "text") -- override CRAN
  | u'' u "groups.google.com" = ("✉", "text")
- | u'' u "scholar.google.com" = ("google-scholar", "svg") -- Google Scholar.
+ | u'' u "scholar.google.com" || u'' u "research.com" = ("google-scholar", "svg") -- Google Scholar.
  | u'' u "docs.google.com" = ("word-doc", "svg")
  | u'' u "www.theinformation.com" = ("the-information", "svg") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'? Overrides Microsoft & other tech companies
  | u'' u "www.semafor.com" = ("SMFR", "text,quad") -- Semafor <https://www.semafor.com/> <https://en.wikipedia.org/wiki/Semafor_(website)>; somewhat like _The Information_; official logo is a boring serif wordmark (<https://en.wikipedia.org/wiki/File:Semafor_logo.png>), and the favicon is an interesting 'cut off' 'S'-silhouette-in-square <https://www.semafor.com/safari-pinned-tab-icon.svg> but they've done a bad enough job branding it no one would recognize it, so we use a quad-abbreviation of 'SEMAFOR'
  | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
  | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,mono") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
- | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
+ | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai", "chatgpt.com"] = ("openai", "svg") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face
@@ -446,6 +446,7 @@ linkIconRulesSVG u
  | u'' u "www.statnews.com" = ("stat-news", "svg") -- STAT News <https://en.wikipedia.org/wiki/Stat_(website)> based on <https://www.statnews.com/wp-content/themes/stat/images/stat-logo.svg>; using Unicode '𝐴' to replicate the 'A' in 'STAT' is probably unreliable cross-platform so we transform the 'STAT' logotype into a quad SVG icon instead.
  | aU'' u ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = ("the-pirate-bay", "svg") -- in theory, you can get a skull & crossbones by Unicode Emoji: BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/> (and if that doesn't work try adding U+FE0F to the end). This turns out to be too unreliable across systems (fonts? OSes? browser versions?) that we replaced it with a proper SVG version of The Pirate Bay's cassette-tape (yes, really) + cross-bones.
  | u'' u "retractionwatch.com" = ("magnifying-glass", "svg") -- Retraction Watch <https://en.wikipedia.org/wiki/Retraction_Watch> LEFT-POINTING HOUR GLASS
+ | u'' u "quoteinvestigator.com" = ("magnifying-glass", "svg") -- basically the same Sherlock Holmes magnifying-glass idea
  | u'' u "www.yudkowsky.net" = ("yud", "svg") -- but of course: י HEBREW LETTER YUD 0x05D9; we use an SVG icon here for the same reason we use a math alef elsewhere instead of the Hebrew one (the RTL of Hebrew script will screw up some browsers, like Mac Firefox)
  | u'' u "nautil.us" = ("nautilus", "svg") -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG)
  | u'' u "www.scholarpedia.org" = ("scholarpedia", "svg") -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
@@ -509,7 +510,11 @@ linkIconTestUnitsText =
          , ("/doc/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg")
          , ("/doc/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans")
          , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg")
-         , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai",  "openai","svg")
+         , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai",     "openai","svg")
+         , ("https://gptprompts.wikidot.com/context-stuffing",                "openai","svg")
+         , ("https://arxiv.org/abs/1611.02779#openai",                        "openai","svg")
+         , ("https://openai.com/index/better-language-models/",               "openai","svg")
+         , ("https://chatgpt.com/share/261034ff-f5d5-404c-b354-c9d58e3af509", "openai","svg")
          , ("/doc/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg")
          , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg")
          , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg")
@@ -545,7 +550,6 @@ linkIconTestUnitsText =
          , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans")
          , ("http://esr.ibiblio.org/?p=7183", "ESR","text,tri,sans")
          , ("https://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
-         , ("https://gptprompts.wikidot.com/context-stuffing", "openai","svg")
          , ("http://host.robots.ox.ac.uk/pascal/VOC/", "VOC", "text,tri,sans")
          , ("http://iqtest.dk/main.swf",  "file-video","svg")
          , ("http://journals.cambridge.org/production/action/cjoGetFulltext?fulltextid=1463440", "⛨", "text")
@@ -583,7 +587,6 @@ linkIconTestUnitsText =
          , ("https://arstechnica.com/gadgets/2011/09/the-post-jobs-era-tim-cook-brings-philanthropy-back-to-apple/",  "ars","text,tri,sans")
          , ("https://arxiv.org/abs/0707.1051",  "\120536","text")
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans")
-         , ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg")
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg")
          , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg")
          , ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic")
@@ -753,7 +756,6 @@ linkIconTestUnitsText =
          , ("https://oeis.org/A001006", "OEIS", "text,quad,sans")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans")
          , ("https://onlinelibrary.wiley.com/doi/full/10.1111/brv.12407",  "W","text,sans")
-         , ("https://openai.com/index/better-language-models/",  "openai","svg")
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans")
          , ("https://osf.io/dhx48/",         "ψ", "text")
          , ("https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3774989", "SSRN", "text,quad")
@@ -786,12 +788,14 @@ linkIconTestUnitsText =
          , ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "springerlink", "svg")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
          , ("https://retractionwatch.com/2011/02/28/crystal-myth-11-more-retractions-from-crystallography-journal-after-2010-fakery/", "magnifying-glass", "svg")
+         , ("https://quoteinvestigator.com/2012/11/11/exhaust-alternatives/", "magnifying-glass", "svg")
          , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
          , ("https://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text")
          , ("https://scale.com/", "SCLE", "text,quad,mono")
-         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google-scholar","svg")
+         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg")
+         , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg")
          , ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text")
          , ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic")
          , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/",           "nasa", "svg")

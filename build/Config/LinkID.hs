@@ -401,4 +401,5 @@ linkIDOverrides =
        , ("https://statmodeling.stat.columbia.edu/2019/11/24/why-we-sleep-update-some-thoughts-while-we-wait-for-matthew-walker-to-respond-to-alexey-guzeys-criticisms/", "gelman-2019-sleep-2")
        , ("https://statmodeling.stat.columbia.edu/2019/12/26/whassup-with-why-we-sleep/", "gelman-2019-sleep-3")
        , ("https://statmodeling.stat.columbia.edu/2019/12/27/why-we-sleep-data-manipulation-a-smoking-gun/", "gelman-2019-sleep-4")
+       , ("https://arxiv.org/abs/2302.06675#google", "chen-et-al-2023-optimization-discovery")
       ]

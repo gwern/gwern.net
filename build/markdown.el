@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-17 10:23:27 gwern"
+;;; When:  Time-stamp: "2024-09-21 18:57:46 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2277,15 +2277,20 @@ These margin-notes are used as very abbreviated italicized summaries of the
   (surround-region-or-word "[" "]{.marginnote}"))
 (defun html-insert-margin-note ()
   "Surround selected region FOO BAR (or word FOO) with a `margin-note`.
-\(Implemented as a special `<span>` class.\)
+\(Implemented as a special `<span>` HTML class.\)
 This creates marginal glosses (in the left margin) as counterparts to sidenotes.
 These margin-notes are used as very abbreviated italicized summaries of the
  paragraph \(like very small inlined section headers\).
 When inserting margin-notes into HTML snippets, that usually means an annotation
 and the margin-note is an editorial insertion, which are denoted by paired `[]` brackets.
-To save effort, we add those as well."
+To save typing effort, we add those as well if not present."
   (interactive)
-  (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))
+  (let ((content (if (use-region-p)
+                     (buffer-substring-no-properties (region-beginning) (region-end))
+                   (thing-at-point 'word t))))
+    (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
+        (surround-region-or-word "<span class=\"marginnote\">" "</span>")
+      (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))))
 ;; keybindings:
 ;;; Markdown:
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))

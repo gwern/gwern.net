@@ -5953,4 +5953,8 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Alice_Bradley_Sheldon", "James_Tiptree_Jr.")
         , ("Pit_bulls", "Pit_bull")
         , ("Third_space", "Third_place")
+        , ("Lister", "Joseph_Lister")
+        , ("Fleming", "Alexander_Fleming")
+        , ("Nearest_neighbor", "Nearest_neighbor_search")
+        , ("Huygens", "Christiaan_Huygens")
         ]

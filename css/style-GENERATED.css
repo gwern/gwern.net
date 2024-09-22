@@ -8525,7 +8525,7 @@ a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
 a[data-link-icon='≈'] .link-icon-hook::after { /* similar-links (ALMOST EQUAL TO) */
         --link-icon-offset-y: 0em;
         --link-icon-size: 0.90em;
-        opacity: 0.90;
+        opacity: 0.85;
 }
 
 a[data-link-icon='♔'] .link-icon-hook::after { /* WBW / Wait But Why */
