@@ -80,7 +80,7 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
                     ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi"
                     , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
 
--- list of rewrites for 'alternative name' → 'canonical name'
+-- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
 -- Config tests: unique values, no loops
 canonicals :: M.Map String String
 canonicals = M.fromList
@@ -387,9 +387,6 @@ canonicals = M.fromList
   , ("smerity", "Stephen Merity")
   , ("S merity", "Stephen Merity")
   , ("S Merity", "Stephen Merity")
-  , ("Michel Nivard", "Michel G. Nivard")
-  , ("Michel Nivar", "Michel G. Nivard")
-  , ("Michel G. Nivar", "Michel G. Nivard")
   , ("jek", "James Bradbury")
   , ("jekbradbury", "James Bradbury")
   , ("David Porteous", "David J. Porteous")
@@ -409,14 +406,6 @@ canonicals = M.fromList
   , ("srush_nlp", "Alexander M. Rush")
   , ("Sasha Rush", "Alexander M. Rush")
   , ("Alexander Rush", "Alexander M. Rush")
-  , ("W David Hill", "W. David Hill")
-  , ("W D Hill", "W. David Hill")
-  , ("W. D. Hill", "W. David Hill")
-  , ("W.D. Hill", "W. David Hill")
-  , ("SD Gordon", "Scott D. Gordon")
-  , ("Scott D Gordon", "Scott D. Gordon")
-  , ("S. D. Gordon", "Scott D. Gordon")
-  , ("S D Gordon", "Scott D. Gordon")
   , ("Anlatan", "NovelAI")
   , ("CFGeek", "Charles Foster")
   , ("RokoMijic", "Roko Mijic")
@@ -472,12 +461,9 @@ canonicals = M.fromList
   , ("James Tiptree Jr.", "Alice B. Sheldon")
   , ("James Tiptree, Jr.", "Alice B. Sheldon")
   , ("James Tiptree, Junior", "Alice B. Sheldon")
-  , ("Alice Sheldon", "Alice B. Sheldon")
   , ("Alice Bradley Sheldon", "Alice B. Sheldon")
   , ("Larry A. Wasserman", "Larry Wasserman")
   , ("David Weir", "David R. Weir")
-  , ("Michael Weedon", "Michael N. Weedon")
-  , ("Michael N Weedon", "Michael N. Weedon")
   , ("Jessica Faul", "Jessica D. Faul")
   , ("Jennifer Smith", "Jennifer A. Smith")
   , ("__anjor", "Anjor Kanekar")
@@ -488,30 +474,14 @@ canonicals = M.fromList
   , ("mehran__jalali", "Mehran Jalali")
   , ("Outsideness", "Nick Land")
   , ("Henry Volzke", "Henry Völzke")
-  , ("Felix Day", "Felix R. Day")
-  , ("FR Day", "Felix R. Day")
-  , ("F. R. Day", "Felix R. Day")
-  , ("F.R. Day", "Felix R. Day")
-  , ("Andrew D Grotzinger", "Andrew D. Grotzinger")
-  , ("Andrew Grotzinger", "Andrew D. Grotzinger")
-  , ("A Grotzinger", "Andrew D. Grotzinger")
-  , ("A. Grotzinger", "Andrew D. Grotzinger")
-  , ("A. D. Grotzinger", "Andrew D. Grotzinger")
-  , ("AD Grotzinger", "Andrew D. Grotzinger")
-  , ("A.D. Grotzinger", "Andrew D. Grotzinger")
   , ("habryka", "Oliver Habryka")
-  , ("John Peralta", "John A. Peralta")
   , ("MLP Wikia", "<em>My Little Pony</em> Wikia")
   , ("M L. P. Wikia", "<em>My Little Pony</em> Wikia")
-  , ("Penelope Lind", "Penelope A. Lind")
-  , ("S. Justin Newman", "Saul Justin Newman")
-  , ("S. Newman", "Saul Justin Newman")
-  , ("S Newman", "Saul Justin Newman")
-  , ("Saul Newman", "Saul Justin Newman")
-  , ("S. J. Newman", "Saul Justin Newman")
-  , ("SJ Newman", "Saul Justin Newman")
-  , ("S.J. Newman", "Saul Justin Newman")
   ]
+
+-- tests: unique
+canonicalsWithInitials :: [String]
+canonicalsWithInitials = ["Ingrid Sigfrid Melle", "Ken K. Ong", "Lenore J. Launer", "Olli T. Raitakari", "Andrew D. Grotzinger", "Penelope A. Lind", "Saul Justin Newman", "Alice B. Sheldon", "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill", "Scott D. Gordon", "Michel G. Nivard"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -824,6 +794,14 @@ authorLinkDB = M.fromList $
     , ("Peter Vollenweider", "https://orcid.org/0000-0002-0765-896X")
     , ("Penelope A. Lind", "https://www.qimrberghofer.edu.au/people/penelope-lind/")
     , ("Saul Justin Newman", "https://www.ageing.ox.ac.uk/people/view/552")
+    , ("Olli T. Raitakari", "https://www.utu.fi/en/people/olli-raitakari")
+    , ("Luke Metz", "https://scholar.google.com/citations?user=k_u5ULgAAAAJ&hl=en&oi=ao")
+    , ("Lenore J. Launer", "https://irp.nih.gov/pi/lenore-launer")
+    , ("Ken K. Ong", "https://www.mrc-epid.cam.ac.uk/people/ken-ong/")
+    , ("Ingrid Sigfrid Melle", "https://www.med.uio.no/klinmed/english/people/aca/imelle/")
+    , ("Howard Edenberg", "https://medicine.iu.edu/faculty/6488/edenberg-howard")
+    , ("George Dedoussis", "https://scholar.google.com/citations?user=5yBxRloAAAAJ&hl=en&oi=ao")
+    , ("Evelin Mihailov", "https://www.etis.ee/CV/Evelin_Mihailov/eng/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-09-21 10:22:39 gwern"
+When:  Time-stamp: "2024-09-23 13:30:16 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -27,7 +27,7 @@ However, for an annotation of a LessWrong blog post, eg. it might be manually wr
 If this is common for an author, it would be possible to define 'disambiguated' author names, using the familiar HTML anchor syntax trick we already use for disambiguating multiple annotations of the same URL: the annotation specifies an author name like "Eliezer Yudkowsky#Twitter", and the author link database specifies `("Eliezer Yudkowsky#Twitter", "https://x.com/esyudkowsky")`.
 This can also be applied to multiple people of the same name, giving them a mnemonic disambiguation: "John Smith#genetics" vs "John Smith#venture-capital" etc.
 
-The initial set of author links was created by pinging Wikipedia for whether a non-disambiguation article existed for the exact author name.
+The first set of author links was created by pinging Wikipedia for whether a non-disambiguation article existed for the exact author name.
 (This resulted in many false positives, but so it goes.)
 Subsequent author links can be prioritized by the usual approach of setting up a blacklist of author names, and then regularly reviewing the 𝑛 top author names by site-wide frequency.
 This could further come with some browser automation like searching Wikipedia + Google + Google Scholar profile.
@@ -36,8 +36,9 @@ This could further come with some browser automation like searching Wikipedia + 
 module Metadata.Author where
 
 import Control.Monad (void)
-import Data.List (intersperse, intercalate)
-import qualified Data.Map.Strict as M (lookup, map, toList)
+import Data.Char (isLetter, toUpper)
+import Data.List (intersperse, intercalate, foldl')
+import qualified Data.Map.Strict as M (lookup, map, fromList, toList, union, Map)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
 import Data.Maybe (isJust, isNothing, fromMaybe)
 import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr, Pandoc(Pandoc), Block(Para), nullMeta)
@@ -52,6 +53,51 @@ import Query (extractURLs)
 import Cycle (testInfixRewriteLoops)
 
 import qualified Config.Metadata.Author as CA
+
+-- Convenience function for defining author aliases to map various ways of spelling or abbreviating an author's name, as papers & databases can be very inconsistent about how they handle first names & middle names. This avoids the manual toil of trying to catch every variant by hand.
+--
+-- The input must be a full name with 2–3 components like "Foo Bar" or "Foo Baz Bar" or "Foo B. Bar", "Foo Baz Quux Bar", <30 characters (very long names suggest errors like swapped metadata fields).
+--
+-- > name2Abbreviations "Ken Ong"
+-- → [("K. Ong","Ken Ong"),("K Ong","Ken Ong")]
+-- > name2Abbreviations "Ken J. Ong"
+-- → [("K J. Ong","Ken J. Ong"),("K J Ong","Ken J. Ong"),("K. J. Ong","Ken J. Ong"),("K. J Ong","Ken J. Ong"),("K. Ong","Ken J. Ong"),("Ken Ong","Ken J. Ong"),("Ken J Ong","Ken J. Ong")]
+-- > name2Abbreviations "Ingrid Sigfrid Melle"
+-- → [("I S Melle","Ingrid Sigfrid Melle"),("I Sigfrid Melle","Ingrid Sigfrid Melle"),("I. Melle","Ingrid Sigfrid Melle"),("I. S. Melle","Ingrid Sigfrid Melle"),("I. Sigfrid Melle","Ingrid Sigfrid Melle"),("I.S. Melle","Ingrid Sigfrid Melle"),("IS Melle","Ingrid Sigfrid Melle"),("Ingrid Melle","Ingrid Sigfrid Melle"),("Ingrid S Melle","Ingrid Sigfrid Melle"),("Ingrid S. Melle","Ingrid Sigfrid Melle")]
+name2Abbreviations :: String -> [(String, String)]
+name2Abbreviations fullName
+  | null fullName                                = error $ "Author.name2Abbreviations: Name cannot be empty; input was: '" ++ fullName ++ "'"
+  | length nameParts < 2 || length nameParts > 3 = error $ "Author.name2Abbreviations: Name must have 2 or 3 parts; input was: '" ++ fullName ++ "'"
+  | any null nameParts                           = error $ "Author.name2Abbreviations: Name parts cannot be empty; input was: '" ++ fullName ++ "'"
+  | (not . all (isLetter . head)) nameParts      = error $ "Author.name2Abbreviations: Each name part must start with a letter; input was: '" ++ fullName ++ "'"
+  | any ((> 50) . length) nameParts              = error $ "Author.name2Abbreviations: Each name part must be 50 characters or less; input was: '" ++ fullName ++ "'"
+  | otherwise = case nameParts of
+      [first, lastName] ->
+        let iFirst = i first
+        in [ (iFirst ++ ". " ++ lastName, fullName)
+           , (iFirst ++ " " ++ lastName, fullName)
+           ]
+      [first, middle, lastName] ->
+        let iFirst = i first
+            iMiddle = if length middle == 2 && last middle == '.' then middle else i middle
+            middleAbbreviations = if length middle == 2 && last middle == '.'
+                                  then [middle, init middle]
+                                  else [iMiddle ++ ".", iMiddle, middle]
+        in nub $ -- use nub to remove potential duplicates
+           [ (iFirst ++ " " ++ m ++ " " ++ lastName, fullName) | m <- middleAbbreviations ] ++
+           [ (iFirst ++ ". " ++ m ++ " " ++ lastName, fullName) | m <- middleAbbreviations ] ++
+           [ (iFirst ++ "." ++ iMiddle ++ ". " ++ lastName, fullName) | length middle > 2 ] ++
+           [ (iFirst ++ ". " ++ lastName, fullName)
+           , (first ++ " " ++ lastName, fullName)
+           ] ++
+           [ (first ++ " " ++ m ++ " " ++ lastName, fullName) | m <- middleAbbreviations, m /= middle ]
+      _ -> error $ "Author.name2Abbreviations: Unexpected number of name parts; input was: '" ++ fullName ++ "'" -- This should never be reached due to earlier checks
+  where
+    nameParts :: [String]
+    nameParts = words fullName
+    i :: String -> String
+    i = (:[]) . toUpper . head
+    nub = foldl' (\seen x -> if x `elem` seen then seen else seen ++ [x]) []
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
@@ -137,7 +183,11 @@ authorCollapse aut
 -- authorsCanonicalizeT :: T.Text -> T.Text
 -- authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) CA.canonicals) . T.splitOn ", "
 authorsCanonicalize :: String -> String
-authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a (M.lookup a CA.canonicals)) . split ", "
+authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a $ M.lookup a authorDB) . split ", "
+
+-- final database of alias→author rewrites: combine the handwritten with the generated.
+authorDB :: M.Map String String
+authorDB = CA.canonicals `M.union` M.fromList (concatMap name2Abbreviations CA.canonicalsWithInitials) -- note: left overrides right, so the handwritten `canonicals` override any generated-initials
 
 -- we allow empty strings for convenience in processing annotations
 authorsLinkify :: T.Text -> [Inline]
