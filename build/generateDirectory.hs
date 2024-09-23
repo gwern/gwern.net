@@ -331,11 +331,15 @@ generateDirectoryItems parent current ds =
  where
        parent'' = case parent of
                      Nothing -> []
-                     Just p -> [[Para [Span nullAttr [Link ("",
+                     Just p -> let parentName = if p == "/index" then [Str " (homepage)"] else
+                                                  if p == "/doc/index" then [Str " (all tags)"] else
+                                                    [Str " (‘", Str (abbreviateTag (T.pack (drop 5 (takeDirectory p)))), Str "’ tag)"]
+                                in
+                                                  [[Para [Span nullAttr [Link ("",
                                                                ["link-tag", "directory-indexes-upwards"],
                                                                [("rel","tag")]
                                                              )
-                                                               [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append` (T.pack $ tail $ takeDirectory p) `T.append` "/' (ascending)")]]]]
+                                                               ([Str "Parent"]++parentName) (T.pack p, "Link to parent directory '" `T.append` (T.pack $ tail $ takeDirectory p) `T.append` "/' (ascending)")]]]]
 
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
