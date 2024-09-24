@@ -451,6 +451,7 @@ replaceChecked before after str
         variablesS = show variables
 -- TODO: would it be useful to have a 'replaceDeleteStrict' which allows a "" `after` argument, since that's one of the most common use-cases?
 
+-- a count, in ascending order:
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))
 

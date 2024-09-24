@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-21 19:24:08 gwern"
+# When:  Time-stamp: "2024-09-23 09:30:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -988,7 +988,7 @@ else
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.md}"
-            TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" >/dev/null | \
+            TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
                        gfv -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
                              -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
                              -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
@@ -1304,8 +1304,10 @@ else
              awk 'length($0) > 240 {print "WARNING: Long path (" length($0) " chars):", $0}'; }
     wrap λ "Dangerously long full filepaths; shorten them."
 
-    λ(){ gf --before-context=1 -e 'Right Nothing' -e 'Just ""' -e '//"' ./metadata/archive.hs; }
+    λ(){ gf --before-context=1 -e 'Right Nothing' -e 'Just ""' ./metadata/archive.hs; }
     wrap λ "Links failed to archive (broken)."
+    λ(){ gf --before-context=1 -e '//"' ./metadata/archive.hs | gfv -e 'https://esolangs.org/wiki////'; }
+    wrap λ "Links rewritten incorrectly (double trailing-slash) in archive DB (broken)."
 
     λ(){ find . -type f | gfv -e '.'; }
     wrap λ "Every file should have at least one period in them (extension)."

@@ -333,7 +333,7 @@ generateDirectoryItems parent current ds =
                      Nothing -> []
                      Just p -> let parentName = if p == "/index" then [Str " (homepage)"] else
                                                   if p == "/doc/index" then [Str " (all tags)"] else
-                                                    [Str " (‘", Str (abbreviateTag (T.pack (drop 5 (takeDirectory p)))), Str "’ tag)"]
+                                                    [Str " (‘", Emph [Str (abbreviateTag (T.pack (drop 5 (takeDirectory p))))], Str "’ tag)"]
                                 in
                                                   [[Para [Span nullAttr [Link ("",
                                                                ["link-tag", "directory-indexes-upwards"],

@@ -32,7 +32,7 @@ if [ "${*##*.}" = "pdf" ]; then
 
         # WARNING: unbelievably, 'tr' (still) doesn't support Unicode and does bizarre things with it
         TITLE=$(exiftool -q -q -printFormat \$Title -Title "$TARGET" | \
-                    sed -e 's/()//' -e 's/­//g' -e 's/[–—]/-/g' -e "s/\(.\+\)'\(.\+\)'\(.\+\)/\1‘\2’\3/g" -e "s/'/\&\#39\;/g"  -e 's/\([0-9]+\)-\([0-9]+\)/\1–\2/g' -e 's/\(.*\) - \(.*\)/\1—\2/g' -e 's/\([a-z]\)_ /\1: /g' -e 's/^ *//g' -e 's/ *$//g' -e 's/\.$//' -e 's/\&#39\;/’/g' -e 's/â\&#x80\;\&#x99\;/’/g' -e 's/.*PII\: .*//g' -e 's/☆//' -e 's/^_$//' | \
+                    sed -e 's/()//' -e 's/­//g' -e 's/[–—]/-/g' -e "s/\(.\+\)'\(.\+\)'\(.\+\)/\1‘\2’\3/g" -e "s/'/\&\#39\;/g"  -e 's/\([0-9]+\)-\([0-9]+\)/\1–\2/g' -e 's/\(.*\) - \(.*\)/\1—\2/g' -e 's/\([a-z]\)_ /\1: /g' -e 's/^ *//g' -e 's/ *$//g' -e 's/\.$//' -e 's/\&#39\;/’/g' -e 's/â\&#x80\;\&#x99\;/’/g' -e 's/.*PII\: .*//g' -e 's/☆//' -e 's/^_$//' -e 's/\([A-Z]\)\&\([A-Z]\)/\1\&amp;\2/g' | \
                     tr -d '\n')
     echo ""
     echo "---"

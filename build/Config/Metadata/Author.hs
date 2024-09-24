@@ -2034,4 +2034,4 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren"]
