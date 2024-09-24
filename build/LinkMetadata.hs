@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-09-15 10:55:10 gwern"
+When:  Time-stamp: "2024-09-23 20:09:16 gwern"
 License: CC-0
 -}
 
@@ -49,7 +49,7 @@ import Typography (titlecase', typesetHtmlField)
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
-import LinkID (authorsToCite, generateID)
+import LinkID (authorsToCite, generateID, getDisambiguatedPairs)
 import LinkLive (linkLive, alreadyLive, linkLiveString)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
 import Query (extractLinksInlines)
@@ -261,10 +261,11 @@ readLinkMetadataAndCheck = do
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
+             let authorWhitelist = ["K. U.", "6510#HN"] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
-             mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB))
+             mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
-             let authorsBadChars = filter (\a -> a `notElem` ["K. U.", "6510#HN"] && -- author whitelist
+             let authorsBadChars = filter (\a -> a `notElem` authorWhitelist &&
                                                  (anyInfix a [";", "&", "?", "!"] || isPunctuation (last a))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
@@ -297,6 +298,10 @@ readLinkMetadataAndCheck = do
              -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
              let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
              unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
+
+             -- ensure that link IDs are unique, and report ambiguous ones for fixing:
+             let disambigs = LinkID.getDisambiguatedPairs final
+             unless (null disambigs) (printRed "Link ID overrides: " >> print disambigs)
 
              return final
 

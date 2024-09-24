@@ -1,17 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkID (authorsToCite, generateID, generateURL) where
+module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2Id) where
 
 import Data.Char (isAlphaNum, isPunctuation, toLower)
-import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
-import Data.Maybe (fromJust)
+import Data.List (isInfixOf, isPrefixOf, isSuffixOf, sortOn)
+import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
-import qualified Data.Text as T (pack, unpack, Text)
+import qualified Data.Text as T (null, pack, unpack, Text)
+import qualified Data.Map.Strict as M (toList, fromListWith, (!))
+import Text.Printf (printf)
 
-import LinkMetadataTypes (MetadataItem, Path)
+import LinkMetadataTypes (Metadata, MetadataItem, Path)
 import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete)
 import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
+
+-- convenience wrapper around `generateID`:
+metadataItem2Id :: Path -> MetadataItem -> T.Text
+metadataItem2Id "" mi = error $ "LinkID.metadataItem2Id: passed an empty URL for an ID; metadata item was: " ++ show mi
+-- we choose to not require non-empty author/dates, to allow convenient application to the entire metadata database, like to look for colliding IDs:
+metadataItem2Id u (_,author,date,_,_,_,_) = generateID u author date
 
 -- To ensure unique-ish links (see /design#backlink on why this is important), duplicate annotation links should be handled:
 --
@@ -83,3 +91,22 @@ authorsToCite url author date =
                                firstAuthorSurname ++ " " ++ year ++ suffix'
 citeToID :: String -> String
 citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map toLower . replace " " "-" . replace " & " "-"
+
+-- find all ambiguous link IDs in the current metadata database, and print out along with a '-n' disambiguation for adding to the link ID overrides in `Config.LinkID`:
+getDisambiguatedPairs :: Metadata -> [(Path, String)]
+getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easier to see what URLs are disambiguated from each other
+    concatMap processDuplicates $
+    filter (\(_, urls) -> length urls > 1) $
+    M.toList $
+    M.fromListWith (++) $
+    mapMaybe (\(url, item) ->
+        let ident = metadataItem2Id url item
+        in if T.null ident then Nothing else Just (ident, [url])
+    ) $
+    M.toList md
+  where
+    processDuplicates :: (T.Text, [Path]) -> [(Path, String)]
+    processDuplicates (ident, urls) =
+        let padding = length (show (length urls))
+            sortedUrls = sortOn (metadataItem2Id (T.unpack ident) . (md M.!)) urls
+        in zipWith (\url (n :: Int) -> (url, T.unpack ident ++ "-" ++ printf ("%0" ++ show padding ++ "d") n)) sortedUrls [1..]
