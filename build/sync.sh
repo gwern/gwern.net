@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-23 09:30:05 gwern"
+# When:  Time-stamp: "2024-09-25 12:14:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -80,7 +80,7 @@ else
         ( s() { gwsed "$@"; }
           set +e
           ## domain/URL rewrites:
-          s 'https://mobile.x.com' 'https://x.com'; s 'https://www.x.com' 'https://x.com'; s 'https://twitter.com/' 'https://x.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://scribe.rip' 'https://freedium.cfd'; s 'https://www.arxiv.org/' 'https://arxiv.org/';
+          s 'https://mobile.x.com' 'https://x.com'; s 'https://www.x.com' 'https://x.com'; s 'https://twitter.com/' 'https://x.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://scribe.rip' 'https://www.freedium.cfd'; s 'https://www.arxiv.org/' 'https://arxiv.org/';
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
@@ -753,7 +753,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep -F --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -864,7 +864,7 @@ else
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
-            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -- ./metadata/*.gtx | \
+            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -1306,7 +1306,7 @@ else
 
     λ(){ gf --before-context=1 -e 'Right Nothing' -e 'Just ""' ./metadata/archive.hs; }
     wrap λ "Links failed to archive (broken)."
-    λ(){ gf --before-context=1 -e '//"' ./metadata/archive.hs | gfv -e 'https://esolangs.org/wiki////'; }
+    λ(){ gf -e '//"' ./metadata/archive.hs | gfv -e 'https://esolangs.org/wiki////' | cut --delimiter='"' --fields=2; }
     wrap λ "Links rewritten incorrectly (double trailing-slash) in archive DB (broken)."
 
     λ(){ find . -type f | gfv -e '.'; }
@@ -1400,8 +1400,22 @@ else
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
+     if [ -n "$CORRUPT" ]; then
+         echo "Found JPGs with PNG data: $CORRUPT"
+         echo "attempting to convert the PNG ones into JPG…"
+         for FILE in $CORRUPT; do
+             if file "$FILE" | grep -F --silent 'PNG image data'; then
+                 echo "Converting $FILE"
+                 TMP=$(mktemp /tmp/XXXX.jpg)
+                 convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
+             fi
+         done
+     fi; }
+    wrap λ "JPGs with PNG data" &
+
     λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
-    wrap λ "Corrupted JPGs" &
+    wrap λ "Corrupted JPGs (were not PNGs and so not attempting to repair)" &
 
     λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
          if [ -n "$CORRUPT" ]; then
@@ -1415,7 +1429,7 @@ else
                  fi
              done
          fi; }
-    wrap λ "Corrupted PNGs" &
+    wrap λ "Corrupted PNGs (attempted to repair JPG ones)" &
 
     λ(){ find ./ -name "*.svg" -mtime -31 -print0 | xargs --null --max-procs="$N" -I {} sh -c \
           'xmllint --noout "{}" 2>/dev/null && identify "{}" >/dev/null 2>&1 || echo "{}"'; }
@@ -1461,12 +1475,12 @@ else
          local optimized_size=
          optimized_size="$(stat --printf="%s" "$temp_gif")"
 
-         local size_diff
-         size_diff="$((original_size - optimized_size))"
+         local size_delta
+         size_delta="$((original_size - optimized_size))"
          local min_reduction
          min_reduction="$(echo "scale=0; $original_size * 0.1 / 1" | bc)"
 
-         if [ "$size_diff" -ge "$min_reduction" ]; then
+         if [ "$size_delta" -ge "$min_reduction" ]; then
            mv "$temp_gif" "$gif" && echo "Optimized $gif"
          else
            rm "$temp_gif"

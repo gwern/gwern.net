@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-22 16:15:24 gwern"
+# When:  Time-stamp: "2024-09-25 09:35:32 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -694,7 +694,7 @@ compare_page() {
 
     curl --silent "${SITE_URL}/${page}" | sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "${temp_file}"
 
-    if ! diff --brief "${temp_file}" "${snapshot_file}" >/dev/null; then
+    if ! diff --ignore-space-change --brief "${temp_file}" "${snapshot_file}" >/dev/null; then
         red "Changes detected in \"${page}\":"
         diff --color=always "${snapshot_file}" "${temp_file}"
     fi

@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-09-23 13:30:16 gwern"
+When:  Time-stamp: "2024-09-24 10:59:44 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -37,8 +37,9 @@ module Metadata.Author where
 
 import Control.Monad (void)
 import Data.Char (isLetter, toUpper)
-import Data.List (intersperse, intercalate, foldl')
-import qualified Data.Map.Strict as M (lookup, map, fromList, toList, union, Map)
+import Data.List (intersperse, intercalate)
+import Data.Containers.ListUtils (nubOrd)
+import qualified Data.Map.Strict as M (lookup, map, fromList, toList, unionWithKey, Map)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
 import Data.Maybe (isJust, isNothing, fromMaybe)
 import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr, Pandoc(Pandoc), Block(Para), nullMeta)
@@ -83,7 +84,7 @@ name2Abbreviations fullName
             middleAbbreviations = if length middle == 2 && last middle == '.'
                                   then [middle, init middle]
                                   else [iMiddle ++ ".", iMiddle, middle]
-        in nub $ -- use nub to remove potential duplicates
+        in nubOrd $ -- remove potential duplicates due to abbreviation punctuation of either first or middle name
            [ (iFirst ++ " " ++ m ++ " " ++ lastName, fullName) | m <- middleAbbreviations ] ++
            [ (iFirst ++ ". " ++ m ++ " " ++ lastName, fullName) | m <- middleAbbreviations ] ++
            [ (iFirst ++ "." ++ iMiddle ++ ". " ++ lastName, fullName) | length middle > 2 ] ++
@@ -97,7 +98,6 @@ name2Abbreviations fullName
     nameParts = words fullName
     i :: String -> String
     i = (:[]) . toUpper . head
-    nub = foldl' (\seen x -> if x `elem` seen then seen else seen ++ [x]) []
 
 -- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
 cleanAuthors :: String -> String
@@ -186,8 +186,12 @@ authorsCanonicalize :: String -> String
 authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a $ M.lookup a authorDB) . split ", "
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
+-- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.
 authorDB :: M.Map String String
-authorDB = CA.canonicals `M.union` M.fromList (concatMap name2Abbreviations CA.canonicalsWithInitials) -- note: left overrides right, so the handwritten `canonicals` override any generated-initials
+authorDB = M.unionWithKey e
+             CA.canonicals
+            (M.fromList (concatMap name2Abbreviations CA.canonicalsWithInitials))
+  where e zero one _ = error $ "Author.authorDB: there were two overlapping canonicalized results (both '" ++ one ++ "') for the input author name '" ++ zero ++ "'"
 
 -- we allow empty strings for convenience in processing annotations
 authorsLinkify :: T.Text -> [Inline]

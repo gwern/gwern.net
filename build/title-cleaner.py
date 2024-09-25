@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-09-23 09:40:37 gwern"
+# When:  Time-stamp: "2024-09-25 11:00:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -452,6 +452,10 @@ Why I Am a Bad Correspondent
 ""
 - "ORCID"
 ""
+- "This page could not be found"
+""
+- "Jonas Hietala: Why I still blog after 15 years"
+Why I still blog after 15 years
 
 Task:
 

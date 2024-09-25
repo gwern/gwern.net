@@ -477,11 +477,20 @@ canonicals = M.fromList
   , ("habryka", "Oliver Habryka")
   , ("MLP Wikia", "<em>My Little Pony</em> Wikia")
   , ("M L. P. Wikia", "<em>My Little Pony</em> Wikia")
+  , ("Ben Domingue", "Benjamin W. Domingue")
+  , ("Ben W. Domingue", "Benjamin W. Domingue")
+  , ("ashleevance", "Ashlee Vance")
+  , ("Richard P. Feynman", "Richard Feynman")
   ]
 
 -- tests: unique
 canonicalsWithInitials :: [String]
-canonicalsWithInitials = ["Ingrid Sigfrid Melle", "Ken K. Ong", "Lenore J. Launer", "Olli T. Raitakari", "Andrew D. Grotzinger", "Penelope A. Lind", "Saul Justin Newman", "Alice B. Sheldon", "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill", "Scott D. Gordon", "Michel G. Nivard"]
+canonicalsWithInitials =
+ ["Ingrid Sigfrid Melle", "Ken K. Ong", "Lenore J. Launer", "Olli T. Raitakari"
+  , "Andrew D. Grotzinger", "Penelope A. Lind", "Saul Justin Newman", "Alice B. Sheldon"
+  , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
+  , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
+  , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -799,9 +808,15 @@ authorLinkDB = M.fromList $
     , ("Lenore J. Launer", "https://irp.nih.gov/pi/lenore-launer")
     , ("Ken K. Ong", "https://www.mrc-epid.cam.ac.uk/people/ken-ong/")
     , ("Ingrid Sigfrid Melle", "https://www.med.uio.no/klinmed/english/people/aca/imelle/")
-    , ("Howard Edenberg", "https://medicine.iu.edu/faculty/6488/edenberg-howard")
+    , ("Howard J. Edenberg", "https://medicine.iu.edu/faculty/6488/edenberg-howard")
     , ("George Dedoussis", "https://scholar.google.com/citations?user=5yBxRloAAAAJ&hl=en&oi=ao")
     , ("Evelin Mihailov", "https://www.etis.ee/CV/Evelin_Mihailov/eng/")
+    , ("Bruce M. Psaty", "https://gim.uw.edu/people/faculty/bruce-m-psaty")
+    , ("Benjamin W. Domingue", "https://cepa.stanford.edu/ben-domingue/")
+    , ("Tune H. Pers", "https://scholar.google.com/citations?user=S-ZRIq4AAAAJ&hl=en&oi=ao")
+    , ("Travis T. Mallard", "https://scholar.google.com/citations?user=lgaX5ooAAAAJ&hl=en&oi=ao")
+    , ("Thomas Illig", "https://www.mhh.de/en/institute-zentren-forschungseinrichtungen/hannover-unified-biobank-hub/about-us/prof-dr-thomas-illig")
+    , ("Peter Kraft", "https://www.hsph.harvard.edu/profile/peter-kraft/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2034,4 +2049,4 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer"]

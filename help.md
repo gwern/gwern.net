@@ -59,7 +59,7 @@ backlink: False
 **Useful links**:
 
 <!-- - [full site user guide](/design#user-guide) -->
-- [home/index](/index "‘Essays’, Gwern 2009") ([long summary version](/index-long))
+- [home/index](/index "‘Essays’, Gwern 2009") ([long summary version](/index-long "‘Long Essay Index’, Gwern 2009"))
 - about site: [writings](/about "‘About This Website’, Gwern 2010"), [website design](/design "‘Design Of This Website’, Gwern 2010"), [Gwern](/me "‘About Gwern’, Gwern 2009")
 - [browse all files](/doc/index "‘Essays’, Gwern 2009"), or [newest](/doc/newest/index "‘Essays’, Gwern 2009")
 - [browse new pages](/changelog "‘Changelog’, Gwern 2013")

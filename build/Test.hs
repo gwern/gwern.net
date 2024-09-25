@@ -29,7 +29,7 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
-import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername)
+import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 
 -- test the tests as configuration files for duplicates etc:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -180,6 +180,7 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURLAny u && not (isURLT ident)) Config.LinkID.linkIDOverrides
+               , length $ Metadata.Author.authorDB
               , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
               , length $ isUniqueAll Config.Metadata.Author.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
