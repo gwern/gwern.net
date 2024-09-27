@@ -250,7 +250,7 @@ goodDomainsSimple =
     , "ledger-cli.org"
     , "lesswrong.com"
     , "lettersofnote.com"
-    , "libgen.rs"
+    , "libgen.li"
     , "lifescivc.com"
     , "lithub.com"
     , "longitudinal.blog"
@@ -775,6 +775,7 @@ goodDomainsSimple =
     , "www8.austlii.edu.au"
     , "dynomight.net"
     , "sander.ai"
+    , "reactormag.com"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -2381,7 +2382,7 @@ goodLinks =
             , "https://inhumanexperiment.blogspot.com/2009/03/increasing-intelligence-by-playing.html"
             , "https://jakewestfall.org/"
             , "https://langsec.org/"
-            , "https://libgen.rs/scimag/"
+            , "https://libgen.li/scimag/"
             , "https://mattmahoney.net/dc/dce.html"
             , "https://neojaponisme.com/"
             , "https://norvig.com/norvigs-law.html"
@@ -4619,5 +4620,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.politico.com/magazine/story/2018/11/11/republican-party-anti-pornography-politics-222096/"
             , "https://www.theparisreview.org/interviews/4155/the-art-of-the-essay-no-1-e-b-white"
             , "https://www.axios.com/2023/09/08/walter-isaacson-elon-musk-book-excerpt"
+            , "https://reactormag.com/equoid/"
             ]
 

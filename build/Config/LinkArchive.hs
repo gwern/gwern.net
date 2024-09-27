@@ -537,7 +537,7 @@ whiteListMatchesFixed = [
       , "beepb00p.xyz" -- stable
       , "equestriadaily.com/search" -- service
       , "libgen.is" -- service
-      , "libgen.rs" -- service
+      , "libgen.li" -- service
       , "nyaa.se" -- service
       , "nyaa.eu" -- service
       , "nyaa.si" -- service

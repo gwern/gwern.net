@@ -48,7 +48,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
                      "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com",
                      "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net",
                      "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
-                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com", "www.cs.cmu.edu", "minimaxir.com", "dynomight.net"]
+                              , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com", "www.cs.cmu.edu", "minimaxir.com", "dynomight.net", "www.spencergreenberg.com"]
 ------------------------------------------------------------------------------------------
 
 -- all legal types of displays
@@ -441,7 +441,7 @@ linkIconRulesSVG u
  | aU'' u ["link.springer.com", "rd.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg")  -- (♘) WHITE CHESS KNIGHT as SVG
  | u'' u "www.metaculus.com" = ("metaculus", "svg")
  | u'' u "wandb.ai" = ("wandb", "svg") -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon
- | aU'' u ["libgen.rs", "libgen.org", "library.bz"] = ("raven", "svg") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
+ | aU'' u ["libgen.li", "libgen.org", "library.bz"] = ("raven", "svg") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
  | u'' u "www.hoover.org" = ("hoover-institution", "svg") -- <https://en.wikipedia.org/wiki/Hoover_Institution_Library_and_Archives> <https://en.wikipedia.org/wiki/Hoover_Tower> <https://en.wikipedia.org/wiki/New_Cathedral_of_Salamanca>
  | u'' u "www.statnews.com" = ("stat-news", "svg") -- STAT News <https://en.wikipedia.org/wiki/Stat_(website)> based on <https://www.statnews.com/wp-content/themes/stat/images/stat-logo.svg>; using Unicode '𝐴' to replicate the 'A' in 'STAT' is probably unreliable cross-platform so we transform the 'STAT' logotype into a quad SVG icon instead.
  | aU'' u ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = ("the-pirate-bay", "svg") -- in theory, you can get a skull & crossbones by Unicode Emoji: BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/> (and if that doesn't work try adding U+FE0F to the end). This turns out to be too unreliable across systems (fonts? OSes? browser versions?) that we replaced it with a proper SVG version of The Pirate Bay's cassette-tape (yes, really) + cross-bones.
@@ -555,7 +555,7 @@ linkIconTestUnitsText =
          , ("http://journals.cambridge.org/production/action/cjoGetFulltext?fulltextid=1463440", "⛨", "text")
          , ("https://kanzaki.sub.jp/archives/000272.html", "NGE", "text,tri")
          , ("http://libgen.org/search.php?req=%22wheel+of+time%22", "raven", "svg")
-         , ("https://libgen.rs/", "raven", "svg")
+         , ("https://libgen.li/", "raven", "svg")
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text")
          , ("http://neuralnetworksanddeeplearning.com/chap6.html", "MN", "text")
          , ("https://news.bbc.co.uk/2/hi/8448731.stm",  "BBC","text,tri,sans")

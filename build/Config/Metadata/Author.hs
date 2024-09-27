@@ -481,6 +481,8 @@ canonicals = M.fromList
   , ("Ben W. Domingue", "Benjamin W. Domingue")
   , ("ashleevance", "Ashlee Vance")
   , ("Richard P. Feynman", "Richard Feynman")
+  , ("Lars Lind", "Lars L. Lind")
+  , ("Kenneth Stanley", "Kenneth O. Stanley")
   ]
 
 -- tests: unique
@@ -490,7 +492,7 @@ canonicalsWithInitials =
   , "Andrew D. Grotzinger", "Penelope A. Lind", "Saul Justin Newman", "Alice B. Sheldon"
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
-  , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard"]
+  , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind", "Kenneth O. Stanley"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -817,6 +819,11 @@ authorLinkDB = M.fromList $
     , ("Travis T. Mallard", "https://scholar.google.com/citations?user=lgaX5ooAAAAJ&hl=en&oi=ao")
     , ("Thomas Illig", "https://www.mhh.de/en/institute-zentren-forschungseinrichtungen/hannover-unified-biobank-hub/about-us/prof-dr-thomas-illig")
     , ("Peter Kraft", "https://www.hsph.harvard.edu/profile/peter-kraft/")
+    , ("Mark Chen", "https://event.technologyreview.com/emtech-mit-2023/speaker/901826/mark-chen")
+    , ("Mohit Bansal", "https://www.cs.unc.edu/~mbansal/")
+    , ("Lars L. Lind", "https://research.com/u/lars-lind")
+    , ("Jonathan Frankle", "http://www.jfrankle.com/")
+    , ("Wendell H. Oswalt", "https://obits.oregonlive.com/us/obituaries/oregon/name/wendell-oswalt-obituary?id=12843091")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1543,7 +1550,7 @@ authorWpLinkDB =
     ,"Marilynn B. Brewer", "Marina Butovskaya", "Mario Ivankovic", "Mario Maj", "Mario Szegedy"
     ,"Marion Leboyer", "Marion Roberts", "Marios Papaefthymiou", "Marius Lindauer", "Mariza de Andrade"
     ,"Marjo-Riitta J\228rvelin", "Marjolein Kriek", "Mark A. Davis", "Mark A. McDaniel", "Mark A. Murphy"
-    ,"Mark Aldrich", "Mark Braverman", "Mark Caulfield", "Mark Chen", "Mark D. McDonnell"
+    ,"Mark Aldrich", "Mark Braverman", "Mark Caulfield", "Mark D. McDonnell"
     ,"Mark D. Shriver", "Mark D. West", "Mark Gerstein", "Mark Girolami", "Mark Granovetter"
     ,"Mark Horowitz", "Mark I. McCarthy", "Mark J. Daly", "Mark Jenkinson", "Mark Keil"
     ,"Mark Kelly", "Mark Kirkpatrick", "Mark Lathrop", "Mark Lyons", "Mark Mazzetti"
@@ -2049,4 +2056,4 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"]

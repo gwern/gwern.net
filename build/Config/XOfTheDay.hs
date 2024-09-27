@@ -110,7 +110,7 @@ siteBlackList = [
           "knightcolumbia.org", "knowyourmeme.com", "koeln.ccc.de", "k-on.fandom.com", "kotaku.com",
           "labs.la.utexas.edu", "lacbzxobeprssrfx.onion", "laion.ai", "lambdalabs.com", "laplab.ucsd.edu",
           "lareviewofbooks.org", "latanyasweeney.org", "latitude.io", "lavaan.ugent.be", "ldsc.broadinstitute.org",
-          "learn.microsoft.com", "lectoblix.bandcamp.com", "legacy.imagemagick.org", "letters.temporarystate.net", "libgen.rs",
+          "learn.microsoft.com", "lectoblix.bandcamp.com", "legacy.imagemagick.org", "letters.temporarystate.net", "libgen.li",
           "library.mpib-berlin.mpg.de", "library.sciencemadness.org", "lifescivc.com", "link.springer.com", "lists.urth.net",
           "lists.wikimedia.org", "lithub.com", "lobste.rs", "longtermrisk.org", "lostpinesyaupontea.com",
           "lucumr.pocoo.org", "ludix.com", "lxj616.github.io", "magenta.tensorflow.org", "mailchi.mp",
@@ -491,4 +491,7 @@ siteBlackList = [
           , "ocw.mit.edu","x.com","zenodo.org","www.robots.ox.ac.uk","www.genecards.org","deepmind.com","blog.samaltman.com", "ai.googleblog.com", "www.clinicaltrialsregister.eu"
           , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"
           , "members.madasafish.com","isfdb.org","cwe.mitre.org","ai.meta.com"
-          , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu", "linkinghub.elsevier.com", "www.cs.cmu.edu", "fonts.google.com", "www.ed.ac.uk","3quarksdaily.com", "research.com", "dynomight.net"]
+          , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu"
+          , "linkinghub.elsevier.com", "www.cs.cmu.edu", "fonts.google.com", "www.ed.ac.uk"
+          , "3quarksdaily.com", "research.com", "dynomight.net", "www.mercatus.org"
+          , "reactormag.com","pure.au.dk","news.sankakucomplex.com"]

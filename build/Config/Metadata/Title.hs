@@ -54,7 +54,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists", "ORCID", "This page could not be found"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists", "ORCID", "This page could not be found", "Are you a robot?"]
 
 -- testing: unique list
 stringDelete :: [String]

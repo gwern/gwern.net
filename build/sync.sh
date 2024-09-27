@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-25 12:14:52 gwern"
+# When:  Time-stamp: "2024-09-26 09:39:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -594,7 +594,7 @@ else
             "directory-indexes" "directory-indexes-sideways" "display-pop-not" "footnote-back" "footnotes" "image-focus-not"
             "include" "include-strict" "include-lazy" "include-annotation" "include-even-when-collapsed" "include-spinner-not"
             "include-replace-container" "include-replace-container-not" "include-unwrap" "include-block-context" "include-omit-metadata" "include-content"
-            "include-content-no-header" "include-block-context-expanded" "include-annotation-core" "include-content-core" "marginnote" "markdownBody"
+            "include-content-no-header" "include-block-context-expanded" "include-annotation-core" "include-annotation-partial" "include-content-core" "marginnote" "markdownBody"
             "mjpage" "mjpage__block" "mjx-base" "mjx-box" "MJXc-display" "mjx-cell"
             "mjx-char" "mjx-charbox" "mjx-chtml" "MJXc-space1" "MJXc-space2" "MJXc-space3"
             "MJXc-stacked" "MJXc-TeX-ams-R" "MJXc-TeX-cal-R" "MJXc-TeX-main-R" "MJXc-TeX-math-I" "MJXc-TeX-size1-R"
