@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-09-23 20:09:16 gwern"
+When:  Time-stamp: "2024-09-28 10:23:48 gwern"
 License: CC-0
 -}
 
@@ -45,7 +45,7 @@ import Config.LinkID (affiliationAnchors)
 import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
-import Typography (titlecase', typesetHtmlField)
+import Typography (titlecase', typesetHtmlField, titleWrap)
 import Image (invertImageInline, addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
@@ -503,7 +503,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
      -- Just ("",   _,_,_,_,_,_)  -> nonAnnotatedLink
      -- Just (_,    _,_,_,_,_,"") -> nonAnnotatedLink
      Just x@(tle,aut,dt,_,kvs,ts,abst) ->
-       let tle' = if null tle then "<code>"++f++"</code>" else if "<em>"`isPrefixOf`tle && "</em>"`isSuffixOf`tle then tle else "“"++tle++"”"
+       let tle' = if null tle then "<code>"++f++"</code>" else Typography.titleWrap tle
            lid = let tmpID = generateID f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
            -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popover the second time.

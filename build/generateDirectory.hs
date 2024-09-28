@@ -34,7 +34,7 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
-import Typography (identUniquefy, titlecase')
+import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete)
 import Config.Misc as C (cd)
@@ -238,7 +238,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
   in
     let
         link = if t=="" then Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author
-               else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [Str "“", RawInline (Format "html") (T.pack $ titlecase' t), Str "”"] (T.pack f, "") : author
+               else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [RawInline (Format "html") (T.pack $ Typography.titleWrap t)] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
@@ -401,7 +401,7 @@ generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
                                     authorShort = authorsToCite f aut dt
                                     -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.
                                     sectionTitle = if "https://x.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
-                                                     T.pack $ "“"++titlecase' t++"”" ++
+                                                     T.pack $ Typography.titleWrap t ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  Header headerLevel (sectionID, [], []) [RawInline (Format "html") sectionTitle]

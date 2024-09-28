@@ -9,10 +9,11 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField) where
+module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
+import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text,)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
@@ -295,6 +296,11 @@ titleCaseTest = filter (\(original,expected) -> titlecase' original /= expected)
 titlecaseInline :: Inline -> Inline
 titlecaseInline (Str s) = Str $ T.pack $ titlecase' $ T.unpack s
 titlecaseInline       x = x
+
+-- double-quote a title only if it is not italicized, indicating a book title:
+titleWrap :: String -> String
+titleWrap "" = error "Typography.titleWrap: called on an empty title, this should never happen!"
+titleWrap t = let t' = titlecase' t in if "<em>" `isPrefixOf` t && "</em>" `isSuffixOf` t then t' else "“" ++ t' ++ "”"
 
 {-
 Figure figcaption style:
