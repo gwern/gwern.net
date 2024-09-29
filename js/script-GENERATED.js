@@ -4935,7 +4935,7 @@ Annotations = { ...Annotations,
         return Array.from(container.querySelectorAll("a[class*='link-annotated']")).filter(link => Annotations.isAnnotatedLink(link));
     },
 
-    /*  Returns the target identifier: the relative url (for local links), 
+    /*  Returns the target identifier: the relative url (for local links),
     	or the full URL (for foreign links).
 
         Used for loading annotations, and caching reference data.
@@ -4988,8 +4988,8 @@ Annotations = { ...Annotations,
 				&& referenceData != Annotations.loadingFailedString);
     },
 
-    /*  Returns cached annotation reference data for a given link, or else 
-    	either “LOADING_FAILED” (if loading the annotation was attempted but 
+    /*  Returns cached annotation reference data for a given link, or else
+    	either “LOADING_FAILED” (if loading the annotation was attempted but
     	failed) or null (if the annotation has not been loaded).
      */
     referenceDataForLink: (link) => {
@@ -5037,8 +5037,8 @@ Annotations = { ...Annotations,
 
 			GW.notificationCenter.removeHandlerForEvent("Annotations.annotationDidLoad", didLoadHandler);
         };
-		let options = { 
-        	once: true, 
+		let options = {
+        	once: true,
         	condition: (info) => info.link == link
         };
 
@@ -5066,21 +5066,21 @@ Annotations = { ...Annotations,
 				if (pageImage)
 					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
-				/*	Construct and cache a reference data object, then fire the 
+				/*	Construct and cache a reference data object, then fire the
 					appropriate event.
 				 */
 				let referenceData = Annotations.referenceDataFromParsedAPIResponse(responseDocument, link);
 				if (referenceData) {
 					Annotations.cacheReferenceDataForLink(referenceData, link);
 
-					GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { 
-						link: link 
+					GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", {
+						link: link
 					});
 				} else {
 					Annotations.cacheReferenceDataForLink(Annotations.loadingFailedString, link);
 
-					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { 
-						link: link 
+					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", {
+						link: link
 					});
 
 					//	Send request to record failure in server logs.
@@ -5104,15 +5104,15 @@ Annotations = { ...Annotations,
 
 	//	Called by: Annotations.load
 	referenceDataFromParsedAPIResponse: (response, link) => {
-		let titleLink = response.querySelector([ Annotations.annotatedLinkFullClass, 
-												 Annotations.annotatedLinkPartialClass 
+		let titleLink = response.querySelector([ Annotations.annotatedLinkFullClass,
+												 Annotations.annotatedLinkPartialClass
 												 ].map(className => `a.${className}`).join(", "));
 
 		//	Strip date ranges (if any).
 		stripDateRangeMetadataInBlock(titleLink);
 
 		//	On mobile, use mobile-specific link href, if provided.
-		let titleLinkHref = (   titleLink.dataset.hrefMobile 
+		let titleLinkHref = (   titleLink.dataset.hrefMobile
 							 && GW.isMobile())
 							? titleLink.dataset.hrefMobile
 							: titleLink.href;
@@ -5132,16 +5132,16 @@ Annotations = { ...Annotations,
 			titleLinkClasses.push("link-live");
 
 		//	Special data attributes for the title link.
-		let titleLinkDataAttributes = [ 
-			"urlHtml", 
+		let titleLinkDataAttributes = [
+			"urlHtml",
 			"urlArchive",
 			"urlOriginal",
 			"imageWidth",
 			"imageHeight",
 			"aspectRatio"
-		].map(attributeName => 
-			titleLink.dataset[attributeName] 
-			? `data-${(attributeName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${titleLink.dataset[attributeName]}"` 
+		].map(attributeName =>
+			titleLink.dataset[attributeName]
+			? `data-${(attributeName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${titleLink.dataset[attributeName]}"`
 			: null
 		).filter(Boolean);
 
@@ -5149,7 +5149,7 @@ Annotations = { ...Annotations,
 		if (titleLink.dataset.linkIcon) {
 			titleLinkDataAttributes.push(`data-link-icon-type="${(titleLink.dataset.linkIconType)}"`);
 			titleLinkDataAttributes.push(`data-link-icon="${(titleLink.dataset.linkIcon)}"`);
-		} else if (   link 
+		} else if (   link
 				   && link.dataset.linkIcon) {
 			titleLinkDataAttributes.push(`data-link-icon-type="${(link.dataset.linkIconType)}"`)
 			titleLinkDataAttributes.push(`data-link-icon="${(link.dataset.linkIcon)}"`);
@@ -5173,8 +5173,8 @@ Annotations = { ...Annotations,
 		let dateElement = response.querySelector(".date");
 		if (dateElement) {
 			let dateClass = [ "data-field", ...(dateElement.classList) ].join(" ");
-			dateHTML = `<span class="${dateClass}" title="${dateElement.textContent}">` 
-					 + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") 
+			dateHTML = `<span class="${dateClass}" title="${dateElement.textContent}">`
+					 + dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "")
 					 + `</span>`;
 		}
 
@@ -5189,15 +5189,15 @@ Annotations = { ...Annotations,
 		//	The backlinks link (if exists).
 		let backlinksElement = response.querySelector(".backlinks");
 		let backlinksHTML = backlinksElement
-							? `<span 
-								class="data-field aux-links backlinks" 
+							? `<span
+								class="data-field aux-links backlinks"
 								>${backlinksElement.innerHTML}</span>`
 							: null;
 
 		//	The similar-links link (if exists).
 		let similarsElement = response.querySelector(".similars");
 		let similarsHTML = similarsElement
-						   ? `<span 
+						   ? `<span
 							   class="data-field aux-links similars"
 							   >${similarsElement.innerHTML}</span>`
 						   : null;
@@ -5205,7 +5205,7 @@ Annotations = { ...Annotations,
 		//	The link-link-bibliography link (if exists).
 		let linkbibElement = response.querySelector(".link-bibliography");
 		let linkbibHTML = linkbibElement
-						  ? `<span 
+						  ? `<span
 							  class="data-field aux-links link-bibliography"
 							  >${linkbibElement.innerHTML}</span>`
 						  : null;
@@ -5241,8 +5241,8 @@ Annotations = { ...Annotations,
 		let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
 		let fileIncludesHTML = null;
 		if (fileIncludesElement) {
-			/*	Remove any file embed links that lack a valid content 
-				type (e.g., foreign-site links that have not been 
+			/*	Remove any file embed links that lack a valid content
+				type (e.g., foreign-site links that have not been
 				whitelisted for embedding).
 			 */
 			Transclude.allIncludeLinksInContainer(fileIncludesElement).forEach(includeLink => {
@@ -5267,7 +5267,8 @@ Annotations = { ...Annotations,
 
 		//	Pop-frame title text.
 		let popFrameTitleLink = titleLink.cloneNode(true);
-		//	Trim quotes.
+		//	Trim quotes from both title usage: because it is positioned & bolded, the quotes add nothing
+        //  (but we leave alone the <em>s in some titles, as generated by the backend, because that is for book titles).
 		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
 		if (   /^['"‘“]/.test(first.textContent) == true
 			&& /['"’”]$/.test(last.textContent)  == true) {
@@ -5279,7 +5280,7 @@ Annotations = { ...Annotations,
 		return {
 			document: response,
 			content: {
-				title:                    titleLink.innerHTML,
+				title:                    popFrameTitleText,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           titleLinkClasses.join(" "),
 				titleLinkDataAttributes:  titleLinkDataAttributes,
@@ -5301,7 +5302,7 @@ Annotations = { ...Annotations,
 		};
 	},
 
-	/*  Post-process an already-constructed local annotation 
+	/*  Post-process an already-constructed local annotation
 		(do HTML cleanup, etc.).
 	 */
 	postProcessAnnotationAbstract: (abstractDocument, link = null) => {
