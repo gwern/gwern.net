@@ -686,60 +686,60 @@
      */
     --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
 
-	/*	Wikipedia math images assume a white background; transparent images
-		don’t look right if that assumption is violated.
+    /*  Wikipedia math images assume a white background; transparent images
+        don’t look right if that assumption is violated.
 
-		NOTE: This color value is --GW-body-background-color with the CSS
-		`invert(1)` filter applied. If you modify --GW-body-background-color,
-		modify this also!
-	 */
-	--GW-wikipedia-math-image-background-color: #e9e9e9;
+        NOTE: This color value is --GW-body-background-color with the CSS
+        `invert(1)` filter applied. If you modify --GW-body-background-color,
+        modify this also!
+     */
+    --GW-wikipedia-math-image-background-color: #e9e9e9;
 
-	/*	Wikipedia images in figures likewise assume a white background, but
-		might be transparent (and don’t get inverted).
-	 */
-	--GW-wikipedia-image-background-color: #fff;
+    /*  Wikipedia images in figures likewise assume a white background, but
+        might be transparent (and don’t get inverted).
+     */
+    --GW-wikipedia-image-background-color: #fff;
 
-	/*	Similar to the above, but for all SVGs, which don’t get inverted.
-	 */
-	--GW-transparent-svg-background-color: #fff;
+    /*  Similar to the above, but for all SVGs, which don’t get inverted.
+     */
+    --GW-transparent-svg-background-color: #fff;
 
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
-	--GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
+    --GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
 
-	--GW-popins-popin-title-bar-button-color: #bbb;
+    --GW-popins-popin-title-bar-button-color: #bbb;
 
     --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
     --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
     --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
     --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
 
-	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
-	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
+    --GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
+    --GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
 }
 
-/*	Some SVGs used in annotations/essays
-	(eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg )
-	were authored as transparent SVGs, assuming a *white* background. In dark
-	mode, with a black background set, they are illegible.
+/*  Some SVGs used in annotations/essays
+    (eg. /doc/genetics/selection/artificial//2023-meyer-figure1-moralacceptabilityandpersonalwillingnesstouseembryoselectionorgeneticeditinginausapopulationsurvey.svg )
+    were authored as transparent SVGs, assuming a *white* background. In dark
+    mode, with a black background set, they are illegible.
 
-	So, in dark mode only, impose a white background on SVGs in <figure>s.
-	(This is scoped narrowly to only apply to SVGs which are displayed in
-	<figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part
-	of the site design, and will have been designed to work with dark mode;
-	forcing a white background on them may have unpredictable bad effects. If
-	it turns out that this is still too broad, we may have to instead manually
-	edit SVGs to force a white background, or selectively whitelist them for a
-	white background.)
+    So, in dark mode only, impose a white background on SVGs in <figure>s.
+    (This is scoped narrowly to only apply to SVGs which are displayed in
+    <figure>, and not SVGs elsewhere—because SVGs elsewhere are probably part
+    of the site design, and will have been designed to work with dark mode;
+    forcing a white background on them may have unpredictable bad effects. If
+    it turns out that this is still too broad, we may have to instead manually
+    edit SVGs to force a white background, or selectively whitelist them for a
+    white background.)
  */
 figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
-	background-color: var(--GW-transparent-svg-background-color);
+    background-color: var(--GW-transparent-svg-background-color);
 }
 
-/*	Audio elements don’t change color in dark mode, so their hover styles need
-	adjusted.
+/*  Audio elements don’t change color in dark mode, so their hover styles need
+    adjusted.
  */
 .markdownBody figure audio:hover {
     border-color: var(--GW-figure-outline-color);
@@ -748,27 +748,27 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
         0 0 4px 0 currentColor;
 }
 /*  Special styles for special browsers.
-	*/
+    */
 @supports (-moz-appearance: none) {
-	.markdownBody figure audio {
-	    border-color: var(--GW-figure-outline-color);
-	}
+    .markdownBody figure audio {
+        border-color: var(--GW-figure-outline-color);
+    }
 }
 
-/*	Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
-	similar to the arabesque navbar.
+/*  Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
+    similar to the arabesque navbar.
 
-	Footers help denote “this is the end”, and avoid the somewhat lame effect of
-	just having the anonymous feedback link at the end of the page and ending
-	there with nothing else.
+    Footers help denote “this is the end”, and avoid the somewhat lame effect of
+    just having the anonymous feedback link at the end of the page and ending
+    there with nothing else.
 
-	Implementation: Modifying the ‘fill’ does not work so well when we call an
-	SVG as a ‘background-image’ (like for the  footers on the index page), so we
-	do variable+invert tricks to get a white copy of the logo as a hack.
+    Implementation: Modifying the ‘fill’ does not work so well when we call an
+    SVG as a ‘background-image’ (like for the  footers on the index page), so we
+    do variable+invert tricks to get a white copy of the logo as a hack.
  */
 #footer-decoration-container a.footer-logo::after {
-	filter: invert(1);
-	background-color: var(--GW-body-background-color-inverted);
+    filter: invert(1);
+    background-color: var(--GW-body-background-color-inverted);
 }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
@@ -802,7 +802,7 @@ div.admonition.error::before {
     filter: none;
 }
 
-/*	SVG icons in the two darker styles of admonitions.
+/*  SVG icons in the two darker styles of admonitions.
  */
 div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
 div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
@@ -863,28 +863,28 @@ img:not(.drop-filter-on-hover-not):not(.invert):not(.invert-auto):hover {
 
 img[src$=".svg"].invert,
 img[src$=".svg"].invert-auto {
-	background-color: transparent;
+    background-color: transparent;
 }
 img[src$=".svg"].invert:hover,
 img[src$=".svg"].invert-auto:hover {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
 }
 
-/*	Image alt-text.
+/*  Image alt-text.
  */
 img.invert::before,
 img.invert-auto::before {
-	filter: invert(1);
+    filter: invert(1);
 }
 img.invert:hover::before,
 img.invert-auto:hover::before {
-	filter: none;
+    filter: none;
 }
-/*	Styling the image alt-text interferes with the transitions in dark mode.
-	(We include non-class’d `img` in this selector for consistency.)
+/*  Styling the image alt-text interferes with the transitions in dark mode.
+    (We include non-class’d `img` in this selector for consistency.)
 
-	TEMPORARY until we transition to a color-based instead of filter-based
-	scheme for this. —SA 2022-07-29
+    TEMPORARY until we transition to a color-based instead of filter-based
+    scheme for this. —SA 2022-07-29
  */
 img,
 img:hover,
@@ -892,7 +892,7 @@ img.invert,
 img.invert:hover,
 img.invert-auto,
 img.invert-auto:hover {
-	transition: none;
+    transition: none;
 }
 
 /*  For images which have been manually marked up with ‘.invert-not’, we
@@ -901,7 +901,7 @@ img.invert-auto:hover {
     the color is important and shouldn’t be faded out by default.
  */
 #markdownBody img.invert-not {
-	filter: none;
+    filter: none;
 }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
@@ -918,10 +918,10 @@ img.invert-auto:hover {
     opacity: 0.4;
 }
 
-/*	Include-link loading spinner.
+/*  Include-link loading spinner.
  */
 a.include-loading.include-spinner::after {
-	filter: invert(1);
+    filter: invert(1);
 }
 
 /*  Masked links key toggle info alert panel.
@@ -936,28 +936,30 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
-/*	Manual link-icon SVGs: Recently-modified, manicule/index
+/*  Manual link-icon SVGs: Recently-modified, manicule/index, theme-toggle icons
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
-.manicule, .icon-manicule-right {
-	filter: invert(1);
+.manicule, .icon-manicule-right, .icon-single-white-star-on-black-circle,
+.icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
+.icon-magnifying-glass, .icon-gear-solid {
+    filter: invert(1);
 }
 
-/*	Math in Wikipedia pop-frames.
+/*  Math in Wikipedia pop-frames.
  */
 .wikipedia-entry .wikipedia-math-block-wrapper img,
 .wikipedia-entry .wikipedia-math-inline-wrapper img {
-	filter: invert(1);
-	background-color: var(--GW-wikipedia-math-image-background-color);
+    filter: invert(1);
+    background-color: var(--GW-wikipedia-math-image-background-color);
 }
 
-/*	Images in figures in Wikipedia pop-frames.
+/*  Images in figures in Wikipedia pop-frames.
  */
 .wikipedia-entry figure img {
-	background-color: var(--GW-wikipedia-image-background-color);
+    background-color: var(--GW-wikipedia-image-background-color);
 }
 </style>
-<link rel="stylesheet" href="/static/css/head.css?v=1727568164">
-<script src="/static/js/head.js?v=1727568164"></script>
+<link rel="stylesheet" href="/static/css/head.css?v=1727622577">
+<script src="/static/js/head.js?v=1727622577"></script>
 <link rel="preload" href="/static/img/icon/icons.svg?v=1725950287" as="image">

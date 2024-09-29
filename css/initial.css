@@ -36,14 +36,14 @@
 
     --GW-body-text-font-size: 20px;
 
-	--GW-body-max-width: 935px;
-	--GW-body-side-padding: 20px;
+    --GW-body-max-width: 935px;
+    --GW-body-side-padding: 20px;
 }
 @media all and (max-width: 649px) {
     :root {
         --GW-body-text-font-size: 18px;
 
-		--GW-body-side-padding: 15px;
+        --GW-body-side-padding: 15px;
     }
 }
 
@@ -55,13 +55,13 @@
 html,
 .shadow-body {
     --base-font-size: var(--GW-body-text-font-size);
-	--background-color: var(--GW-body-background-color);
+    --background-color: var(--GW-body-background-color);
 
     background-color: var(--background-color);
     color: var(--GW-body-text-color);
     font-weight: 400;
     font-family: var(--GW-serif-font-stack);
-	font-size: var(--base-font-size);
+    font-size: var(--base-font-size);
 }
 
 
@@ -69,18 +69,18 @@ html,
 /* ADAPTIVENESS */
 /****************/
 
-/*	Utility classes: show something only on mobile (`.desktop-not`)
-	or only on desktop (`.mobile-not`).
+/*  Utility classes: show something only on mobile (`.desktop-not`)
+    or only on desktop (`.mobile-not`).
  */
 @media all and (max-width: 649px) {
-	.mobile-not {
-		display: none !important;
-	}
+    .mobile-not {
+        display: none !important;
+    }
 }
 @media all and (min-width: 650px) {
-	.desktop-not {
-		display: none !important;
-	}
+    .desktop-not {
+        display: none !important;
+    }
 }
 
 
@@ -133,7 +133,7 @@ main {
     justify-content: center;
 }
 
-/*	Sidebar links (including logo).
+/*  Sidebar links (including logo).
  */
 #sidebar a {
     display: block;
@@ -142,18 +142,18 @@ main {
     margin: 1px 0 1px 2px;
 }
 
-/*	Logo.
+/*  Logo.
  */
 #sidebar a.logo {
     display: flex;
     margin: 1px 0;
 }
 #sidebar a.logo .logo-image {
-	width: var(--logo-width);
-	height: calc(var(--logo-width) * 94/80);
+    width: var(--logo-width);
+    height: calc(var(--logo-width) * 94/80);
 }
 
-/*	Sidebar links (not including logo).
+/*  Sidebar links (not including logo).
  */
 #sidebar .sidebar-links {
     flex: 1 1 100%;
@@ -170,8 +170,8 @@ main {
         margin-top: 1em;
     }
 
-	/*	Logo.
-	 */
+    /*  Logo.
+     */
     #sidebar a.logo {
         padding: 0.5em 0.375em;
     }
@@ -179,11 +179,11 @@ main {
         --logo-width: 2.5em;
     }
 
-	/*	Sidebar links (not including logo).
-	 */
+    /*  Sidebar links (not including logo).
+     */
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
-		flex: 1 1 33%;
+        flex: 1 1 33%;
     }
     #sidebar .sidebar-links a.patreon {
         display: none;
@@ -195,8 +195,8 @@ main {
         margin-top: 0.5em;
     }
 
-	/*	Sidebar links (including logo).
-	 */
+    /*  Sidebar links (including logo).
+     */
     #sidebar a {
         color: var(--GW-nav-header-link-color);
     }
@@ -204,16 +204,16 @@ main {
         color: var(--GW-nav-header-link-hover-color);
     }
 
-	/*	Sidebar links (not including logo).
-	 */
+    /*  Sidebar links (not including logo).
+     */
     #sidebar .sidebar-links a {
         text-transform: uppercase;
         font-weight: 600;
     }
 
     @media all and (max-width: 1179px) {
-		/*	Logo.
-		 */
+        /*  Logo.
+         */
         #sidebar a.logo {
             padding: 0.25em 0.375em;
         }
@@ -222,8 +222,8 @@ main {
         }
     }
     @media all and (min-width: 1180px) {
-		/*	Logo.
-		 */
+        /*  Logo.
+         */
         #sidebar a.logo {
             position: absolute;
             right: 100%;
@@ -238,17 +238,17 @@ main {
         }
         #sidebar a.logo.fading {
             transition:
-            	opacity 1s ease;
+                opacity 1s ease;
         }
         #sidebar a.logo .logo-image {
             --logo-width: 4em;
         }
 
-		/*	Sidebar links (not including logo).
-		 */
-		#sidebar .sidebar-links a:first-child {
-			margin-left: 0;
-		}
+        /*  Sidebar links (not including logo).
+         */
+        #sidebar .sidebar-links a:first-child {
+            margin-left: 0;
+        }
     }
 }
 
@@ -260,13 +260,13 @@ main {
 @media all and (max-width: 649px) {
     header {
         padding: 0 1em;
-		margin-top: 1.75rem;
+        margin-top: 1.75rem;
     }
 }
 @media all and (min-width: 650px) {
     header {
         padding: 0 2em;
-		margin-top: 2.125rem;
+        margin-top: 2.125rem;
     }
 }
 
@@ -286,10 +286,10 @@ header h1 {
     }
 }
 
-/*	Source Serif Pro has no italic small caps, sadly.
+/*  Source Serif Pro has no italic small caps, sadly.
  */
 header h1 em {
-	font-variant-caps: normal;
+    font-variant-caps: normal;
 }
 
 
@@ -307,23 +307,23 @@ article {
 /***********************/
 
 #page-metadata {
-	--text-alignment: center;
-	--text-hyphenation: none;
-	--text-indent: 0em;
+    --text-alignment: center;
+    --text-hyphenation: none;
+    --text-indent: 0em;
 
     line-height: 1.5;
 }
 
 #page-metadata:not(:last-child) {
-	margin-bottom: 2.25rem;
+    margin-bottom: 2.25rem;
 }
 
 #page-metadata > * + * {
-	margin-top: 0.75em;
+    margin-top: 0.75em;
 }
 
 /*************/
-/*	Page tags.
+/*  Page tags.
  */
 #page-metadata .link-tags {
     font-family: var(--GW-monospaced-font-stack);
@@ -339,17 +339,17 @@ article {
 }
 
 /********************/
-/*	Page description.
+/*  Page description.
  */
-/*	Override normal handling of italics: before, we wrapped descriptions in
-	`<em>`; however, they compile to HTML which can contain italics of their
-	own (eg. book titles). This causes HTML Tidy to warn about nested italics
-	(which is valid HTML but *usually* means you’ve made an error - this often
-	triggers when I mess up bolding, for example, like on /gpt-3). So we
-	removed the wrapper in favor of the above `font-style: italic`. However,
-	now the titles don’t unitalicize automatically like they would for nested
-	italics! So we force italicized titles back to normal Roman font to match
-	the expected typographic convention.
+/*  Override normal handling of italics: before, we wrapped descriptions in
+    `<em>`; however, they compile to HTML which can contain italics of their
+    own (eg. book titles). This causes HTML Tidy to warn about nested italics
+    (which is valid HTML but *usually* means you’ve made an error - this often
+    triggers when I mess up bolding, for example, like on /gpt-3). So we
+    removed the wrapper in favor of the above `font-style: italic`. However,
+    now the titles don’t unitalicize automatically like they would for nested
+    italics! So we force italicized titles back to normal Roman font to match
+    the expected typographic convention.
  */
 #page-metadata .page-description {
     font-style: italic;
@@ -359,57 +359,57 @@ article {
 }
 
 /************************/
-/*	Page metadata fields.
+/*  Page metadata fields.
  */
 #page-metadata .page-metadata-fields {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: center;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
 }
 #page-metadata .page-metadata-fields > span {
     white-space: nowrap;
 }
 /*  Interpunct separators for the metadata fields; looks nicer than semicolons
-	or slashes.
+    or slashes.
  */
 #page-metadata .page-metadata-fields > span::after {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     margin: 0 0.75em;
 }
-/*	No separator at line end.
+/*  No separator at line end.
  */
 #page-metadata .page-metadata-fields .page-importance::after,
 #page-metadata .page-metadata-fields > span:last-child::after {
-	display: none;
+    display: none;
 }
 
-/*	Flex order.
+/*  Flex order.
  */
 /* date, author, status */
 #page-metadata .page-metadata-fields .page-author,
 #page-metadata .page-metadata-fields .page-date-range,
 #page-metadata .page-metadata-fields .page-status {
-	order: 1;
+    order: 1;
 }
 /* certainty, importance */
 #page-metadata .page-metadata-fields .page-confidence,
 #page-metadata .page-metadata-fields .page-importance {
-	order: 3;
+    order: 3;
 }
 /* backlinks, similar, bibliography */
 #page-metadata .page-metadata-fields .backlinks,
 #page-metadata .page-metadata-fields .similars,
 #page-metadata .page-metadata-fields .link-bibliography {
-	order: 5;
+    order: 5;
 }
 
-/*	Author.
+/*  Author.
  */
 #page-metadata .page-metadata-fields .page-author {
     white-space: normal;
 }
 
-/*	Page source link.
+/*  Page source link.
  */
 #page-metadata .page-metadata-fields .page-date-range .page-source a {
     font-variant-numeric: oldstyle-nums;
@@ -425,14 +425,14 @@ article {
         line-height: calc(1.5 / (19/20));
     }
 
-	/*	Page tags.
-	 */
+    /*  Page tags.
+     */
     #page-metadata .link-tags {
         font-size: calc((16/20) * var(--GW-body-text-font-size));
     }
 
-	/*	Page metadata fields.
-	 */
+    /*  Page metadata fields.
+     */
     #page-metadata .page-metadata-fields {
         font-size: calc((18/20) * var(--GW-body-text-font-size));
     }
@@ -452,20 +452,20 @@ article {
         font-size: calc((17/18) * var(--GW-body-text-font-size));
     }
 
-	/*	Page tags.
-	 */
+    /*  Page tags.
+     */
     #page-metadata .link-tags {
         font-size: calc((16/18) * var(--GW-body-text-font-size));
     }
 
-	/*	Page description.
-	 */
+    /*  Page description.
+     */
     #page-metadata .page-description {
         line-height: calc(25/17);
     }
 
-	/*	Page metadata fields.
-	 */
+    /*  Page metadata fields.
+     */
     #page-metadata .page-metadata-fields {
         display: flex;
         flex-flow: row wrap;
@@ -488,23 +488,23 @@ article {
     #page-metadata .page-metadata-fields::after {
         order: 4;
     }
-    /*	No separator at line end.
+    /*  No separator at line end.
      */
-	#page-metadata .page-metadata-fields .page-author::after,
+    #page-metadata .page-metadata-fields .page-author::after,
     #page-metadata .page-metadata-fields .page-status::after {
         display: none;
     }
-	/*	Author (on its own line).
-	 */
-	#page-metadata .page-metadata-fields .page-author {
-		flex: 1 1 100%;
-		text-align: center;
-	}
-	#page-metadata .page-metadata-fields .page-author::after {
-		content: "";
-		display: block;
-		height: calc(1em * (3/18));
-	}
+    /*  Author (on its own line).
+     */
+    #page-metadata .page-metadata-fields .page-author {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+    #page-metadata .page-metadata-fields .page-author::after {
+        content: "";
+        display: block;
+        height: calc(1em * (3/18));
+    }
 }
 
 
@@ -517,13 +517,13 @@ article {
 }
 
 .TOC.hidden {
-	display: none;
+    display: none;
 }
 
 .TOC {
-	--text-indent: 0em;
-	--text-alignment: left;
-	--text-hyphenation: none;
+    --text-indent: 0em;
+    --text-alignment: left;
+    --text-hyphenation: none;
 
     border: 1px solid var(--GW-TOC-border-color);
     background-color: var(--GW-TOC-background-color);
@@ -532,7 +532,7 @@ article {
 }
 
 /*************************/
-/*	TOC for main document.
+/*  TOC for main document.
  */
 
 #TOC {
@@ -541,31 +541,31 @@ article {
     z-index: 20;
 }
 @media all and (min-width: 901px) {
-	/*	On desktop, we want the TOC side by side with the content.
-	 */
+    /*  On desktop, we want the TOC side by side with the content.
+     */
     #TOC {
-		margin: 0 2.25rem 1rem 0;
+        margin: 0 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
-		box-shadow:
-			-1rem 0 0 0 var(--background-color),
-			2.25rem 0 0 0 var(--background-color);
+        box-shadow:
+            -1rem 0 0 0 var(--background-color),
+            2.25rem 0 0 0 var(--background-color);
     }
 }
 @media all and (max-width: 900px) {
-	/*  On mobile, we want the TOC to be inline.
-	 */
+    /*  On mobile, we want the TOC to be inline.
+     */
     #TOC {
         margin: 3rem auto 0 auto;
     }
 }
 
 /*********************************/
-/*	TOCs on directory index pages.
+/*  TOCs on directory index pages.
  */
 
 body[class*='-index'] #TOC {
-	margin-top: 2.5rem;
+    margin-top: 2.5rem;
 }
 @media all and (min-width: 650px) {
     body[class*='-index'] #TOC {
@@ -575,8 +575,8 @@ body[class*='-index'] #TOC {
     }
 }
 
-/*	TOCs with nothing but links (no “Miscellaneous”, no link bibliography).
-	(This happens on some directory index pages.)
+/*  TOCs with nothing but links (no “Miscellaneous”, no link bibliography).
+    (This happens on some directory index pages.)
  */
 
 body[class*='-index'] #TOC.TOC-links-only {
@@ -612,10 +612,10 @@ body[class*='-index'] #TOC.TOC-links-only li {
     padding-bottom: 0;
 }
 @media all and (max-width: 900px) {
-	#TOC.collapsed {
-		margin-top: 2rem;
-		background-image: none;
-	}
+    #TOC.collapsed {
+        margin-top: 2rem;
+        background-image: none;
+    }
 }
 
 #TOC.collapsed + * {
@@ -627,7 +627,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     overflow: hidden;
 }
 
-/*	Collapsed TOC label.
+/*  Collapsed TOC label.
  */
 
 #TOC.collapsed::before {
@@ -659,7 +659,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
     }
 }
 
-/*	TOC collapse toggle button.
+/*  TOC collapse toggle button.
  */
 
 #TOC .toc-collapse-toggle-button {
@@ -680,12 +680,12 @@ body[class*='-index'] #TOC.TOC-links-only li {
     font-size: inherit;
     z-index: 1;
     cursor: pointer;
-	visibility: hidden;
+    visibility: hidden;
 }
 #TOC.collapsed .toc-collapse-toggle-button {
     width: 100%;
     height: 100%;
-	visibility: visible;
+    visibility: visible;
 }
 
 #TOC .toc-collapse-toggle-button span {
@@ -719,8 +719,8 @@ body[class*='-index'] #TOC.TOC-links-only li {
 }
 
 @media all and (max-width: 649px) {
-	/*	In expanded state, place button above.
-	 */
+    /*  In expanded state, place button above.
+     */
     #TOC:not(.collapsed) .toc-collapse-toggle-button {
         top: -1.75em;
         right: unset;
@@ -758,8 +758,8 @@ body[class*='-index'] #TOC.TOC-links-only li {
 }
 
 @media all and (max-width: 900px) {
-	/*	Divider line between the columns.
-	 */
+    /*  Divider line between the columns.
+     */
     #TOC {
         background-image:
             linear-gradient(var(--GW-TOC-border-color),
@@ -769,18 +769,18 @@ body[class*='-index'] #TOC.TOC-links-only li {
         background-position: 50% 0;
     }
 
-	/*	Two-column layout.
-	 */
+    /*  Two-column layout.
+     */
     #TOC > ul {
         column-count: 2;
         column-gap: 1.25em;
     }
-	#TOC ul > li:first-child {
-		break-before: avoid-column;
-	}
+    #TOC ul > li:first-child {
+        break-before: avoid-column;
+    }
 
-	/*	But not on directory index pages.
-	 */
+    /*  But not on directory index pages.
+     */
     body[class*='-index'] #TOC {
         background-image: none;
     }
@@ -807,8 +807,8 @@ body[class*='-index'] #TOC.TOC-links-only li {
 }
 
 @media all and (max-width: 900px) {
-	/*	No numbers on mobile.
-	 */
+    /*  No numbers on mobile.
+     */
     #TOC ul > li {
         padding-left: 0;
     }
@@ -850,38 +850,38 @@ body[class*='-index'] #TOC.TOC-links-only li {
     padding: 0 0.25rem 0 0;
 }
 @media all and (hover: hover) {
-	.TOC a:hover,
-	.markdownBody .TOC a:hover {
-		background-color: var(--GW-TOC-link-hover-background-color);
-		color: var(--GW-TOC-link-hover-color);
-	}
-	.TOC a:hover::after,
-	.markdownBody .TOC a:hover::after {
-		content: "";
-		display: inline-block;
-		position: absolute;
-		left: 100%;
-		top: 0;
-		background-color: var(--GW-TOC-link-hover-indicator-bar-color);
-		width: 0.25em;
-		height: 100%;
-	}
+    .TOC a:hover,
+    .markdownBody .TOC a:hover {
+        background-color: var(--GW-TOC-link-hover-background-color);
+        color: var(--GW-TOC-link-hover-color);
+    }
+    .TOC a:hover::after,
+    .markdownBody .TOC a:hover::after {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        left: 100%;
+        top: 0;
+        background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+        width: 0.25em;
+        height: 100%;
+    }
 }
 @media all and (hover: none) {
-	.TOC a {
-		position: relative;
-	}
-	.TOC a::before {
-		content: "";
-		position: absolute;
-		left: -0.50em;
-		top: -0.25em;
-		width: calc(100% + 0.75em);
-		height: calc(100% + 0.50em);
-	}
+    .TOC a {
+        position: relative;
+    }
+    .TOC a::before {
+        content: "";
+        position: absolute;
+        left: -0.50em;
+        top: -0.25em;
+        width: calc(100% + 0.75em);
+        height: calc(100% + 0.50em);
+    }
 }
 
-/*	Inline code in TOC links.
+/*  Inline code in TOC links.
  */
 .TOC code {
     font-family: inherit;
@@ -947,8 +947,8 @@ body[class*='-index'] #TOC.TOC-links-only li {
     line-height: inherit;
     padding: 0;
     text-align: right;
-	font-weight: normal;
-	font-variant-numeric: tabular-nums;
+    font-weight: normal;
+    font-variant-numeric: tabular-nums;
     pointer-events: none;
     color: var(--GW-TOC-number-color);
 }
@@ -962,26 +962,26 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /****************/
 
 .markdownBody {
-	--base-block-spacing: 0.25em;
+    --base-block-spacing: 0.25em;
 
     /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
         un-hyphenatable lines from causing H-scrolling.
      */
     overflow-wrap: break-word;
 
-	/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and
-		available natively in the SS fonts:
+    /*  Cute ‘old-style’ numerals, look a little nicer inline in text, and
+        available natively in the SS fonts:
 
-		https://practicaltypography.com/alternate-figures.html#oldstyle-figures
-	 */
+        https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+     */
     font-variant-numeric: oldstyle-nums;
 
-	line-height: var(--line-height);
+    line-height: var(--line-height);
 }
 
 /*  Replaces A/B-test-set average value; the wider the screen, the more
-	line-height is necessary, and no one size suits all, so set 4 brackets
-	of increasing height.
+    line-height is necessary, and no one size suits all, so set 4 brackets
+    of increasing height.
  */
 @media all and (max-width: 649px) {
     .markdownBody {
@@ -989,25 +989,25 @@ body[class*='-index'] #TOC.TOC-links-only li {
     }
 }
 @media all and (max-width: 999px) {
-	.markdownBody {
-		--line-height: 1.50;
-	}
+    .markdownBody {
+        --line-height: 1.50;
+    }
 }
 @media all and (max-width: 1199px) {
-	.markdownBody {
-		--line-height: 1.55;
-	}
+    .markdownBody {
+        --line-height: 1.55;
+    }
 }
 @media all and (min-width: 1200px) {
-	.markdownBody {
-		--line-height: 1.60;
-	}
+    .markdownBody {
+        --line-height: 1.60;
+    }
 }
 
-/*	`bsm` = “block spacing multiplier”
+/*  `bsm` = “block spacing multiplier”
  */
 .markdownBody .block {
-	margin-top: calc(var(--base-block-spacing) * var(--bsm));
+    margin-top: calc(var(--base-block-spacing) * var(--bsm));
 }
 
 
@@ -1015,10 +1015,10 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /* SECTIONS */
 /************/
 
-/*	Collapsed sections should not intersect the TOC.
+/*  Collapsed sections should not intersect the TOC.
  */
 section.collapse.expanded-not {
-	display: flow-root;
+    display: flow-root;
 }
 
 /*  Lazy-load below-fold sections in supported browsers.
@@ -1033,7 +1033,7 @@ section.level1:nth-of-type(n+4) {
  */
 
 /************/
-/*	Headings.
+/*  Headings.
  */
 
 .heading {
@@ -1043,25 +1043,25 @@ section.level1:nth-of-type(n+4) {
 }
 @media all and (min-width: 1180px) {
     .heading {
-		margin-left: calc(-1 * var(--base-font-size));
-	}
+        margin-left: calc(-1 * var(--base-font-size));
+    }
 }
 
-/*	H1.
+/*  H1.
  */
 
 section.level1 > .heading {
     text-align: right;
     font-weight: 600;
-	font-variant-caps: small-caps;
+    font-variant-caps: small-caps;
     letter-spacing: -0.75px;
     padding: 0 0.05em 0.025em calc(1.25 * var(--base-font-size));
     border-bottom: 1px solid var(--GW-H1-border-color);
 }
 @media all and (max-width: 1179px) {
-	section.level1 > .heading {
-		font-size: 1.75em;
-	}
+    section.level1 > .heading {
+        font-size: 1.75em;
+    }
 }
 @media all and (min-width: 1180px) {
     section.level1 > .heading {
@@ -1070,13 +1070,13 @@ section.level1 > .heading {
 }
 
 section.level1 > .heading em {
-	font-variant-caps: normal;
+    font-variant-caps: normal;
 }
 section.level1 > .heading em:last-child {
     padding-right: 0.075em;
 }
 
-/*	H2.
+/*  H2.
  */
 section.level2 > .heading {
     text-transform: uppercase;
@@ -1085,7 +1085,7 @@ section.level2 > .heading {
     border-bottom: 1px dotted var(--GW-H2-border-color);
 }
 
-/*	H3.
+/*  H3.
  */
 section.level3 > .heading {
     text-transform: capitalize;
@@ -1093,21 +1093,21 @@ section.level3 > .heading {
     font-weight: bold;
 }
 
-/*	H4.
+/*  H4.
  */
 section.level4 > .heading {
     text-transform: capitalize;
     font-size: 1.2em;
 }
 
-/*	H5.
+/*  H5.
  */
 section.level5 > .heading {
     text-transform: capitalize;
     font-size: 1.1em;
 }
 
-/*	H6.
+/*  H6.
  */
 section.level6 > .heading {
     text-transform: capitalize;
@@ -1120,19 +1120,19 @@ section.level6 > .heading {
 /*= Misc. styling in headings =*/
 /*=---------------------------=*/
 
-/*	No link underlining in headings.
+/*  No link underlining in headings.
  */
 .markdownBody .heading a {
     background: none;
 }
 
-/*	Disable bold within headings.
+/*  Disable bold within headings.
  */
 .heading strong {
-	font-weight: inherit;
+    font-weight: inherit;
 }
 
-/*	Inline code in headings.
+/*  Inline code in headings.
  */
 .heading code {
     border: none;
@@ -1157,13 +1157,13 @@ body[class*='-index'] section#see-also > .heading a {
 /**************/
 
 p {
-	margin: 0;
+    margin: 0;
 }
 
 p.empty-graf {
-	height: 0 !important;
-	margin: 0 !important;
-	visibility: hidden;
+    height: 0 !important;
+    margin: 0 !important;
+    visibility: hidden;
 }
 
 /*  On wide screens (desktop), use fully-justified text (words get
@@ -1190,43 +1190,43 @@ p.empty-graf {
 .markdownBody p {
     -webkit-hyphens: var(--text-hyphenation);
     hyphens: var(--text-hyphenation);
-	text-align: var(--text-alignment);
+    text-align: var(--text-alignment);
 }
 
 .markdownBody p:not(.first-graf) {
-	text-indent: var(--text-indent);
+    text-indent: var(--text-indent);
 }
 
-/*	Prevent inheritance of indentation property.
+/*  Prevent inheritance of indentation property.
  */
 .markdownBody p * {
-	text-indent: 0em;
+    text-indent: 0em;
 }
 
-/*	Specify indentation, alignment, hyphenation.
+/*  Specify indentation, alignment, hyphenation.
  */
 .markdownBody {
-	--text-indent: 1.75em;
+    --text-indent: 1.75em;
     --text-alignment: justify;
     --text-hyphenation: auto;
 }
-/*	Justification only matters for the wide.
+/*  Justification only matters for the wide.
  */
 @media all and (max-width: 649px) {
-	.markdownBody {
-		--text-alignment: left;
-	}
+    .markdownBody {
+        --text-alignment: left;
+    }
 }
-/*	Larger indentation in main content column on non-phones.
+/*  Larger indentation in main content column on non-phones.
  */
 @media all and (min-width: 650px) {
-	#markdownBody {
-		--text-indent: 2.5em;
-	}
+    #markdownBody {
+        --text-indent: 2.5em;
+    }
 }
 
 /**************/
-/*	Exceptions.
+/*  Exceptions.
  */
 
 /*  EPITAPH (eg /LARPing)
@@ -1242,9 +1242,9 @@ p.empty-graf {
 /***************/
 
 blockquote {
-	--blockquote-vertical-padding: 0.9em;
-	--blockquote-horizontal-padding: 1.25em;
-	--blockquote-font-size-scaling-factor: 0.95;
+    --blockquote-vertical-padding: 0.9em;
+    --blockquote-horizontal-padding: 1.25em;
+    --blockquote-font-size-scaling-factor: 0.95;
 
     display: flow-root;
     margin: 0;
@@ -1255,14 +1255,14 @@ blockquote {
 }
 @media all and (max-width: 649px) {
     blockquote {
-		--blockquote-vertical-padding: 0.7em;
-		--blockquote-horizontal-padding: 1em;
+        --blockquote-vertical-padding: 0.7em;
+        --blockquote-horizontal-padding: 1em;
     }
 }
 
 blockquote > * {
-	font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
-	line-height: calc((var(--line-height) - 0.05) / var(--blockquote-font-size-scaling-factor));
+    font-size: calc(var(--blockquote-font-size-scaling-factor) * 1em);
+    line-height: calc((var(--line-height) - 0.05) / var(--blockquote-font-size-scaling-factor));
 }
 
 /*  Three-level of blockquote emphasis (darkening).
@@ -1281,30 +1281,30 @@ blockquote,
     --background-color: var(--GW-blockquote-background-color-level-three);
 }
 
-/*	Borders must follow a different cycle.
+/*  Borders must follow a different cycle.
  */
 blockquote,
 .blockquote-level-1 {
-	--border-color: var(--GW-blockquote-border-color-level-one);
+    --border-color: var(--GW-blockquote-border-color-level-one);
 }
 .blockquote-level-2,
 .blockquote-level-5 {
-	--border-color: var(--GW-blockquote-border-color-level-two);
+    --border-color: var(--GW-blockquote-border-color-level-two);
 }
 .blockquote-level-3,
 .blockquote-level-6 {
-	--border-color: var(--GW-blockquote-border-color-level-three);
+    --border-color: var(--GW-blockquote-border-color-level-three);
 }
 .blockquote-level-4 {
-	--border-color: var(--GW-blockquote-border-color-level-four);
+    --border-color: var(--GW-blockquote-border-color-level-four);
 }
 
-/*	Headings in blockquotes.
+/*  Headings in blockquotes.
  */
 @media all and (min-width: 1180px) {
     blockquote .heading {
-		margin-left: 0;
-	}
+        margin-left: 0;
+    }
 }
 
 
@@ -1313,10 +1313,10 @@ blockquote,
 /*********/
 
 .list {
-	--text-alignment: left;
+    --text-alignment: left;
     --list-left-padding: 2.5em;
 
-	margin: 0;
+    margin: 0;
     padding: 0;
     list-style-type: none;
 }
@@ -1326,9 +1326,9 @@ blockquote,
     }
 }
 @media all and (min-width: 650px) {
-	.list.big-list {
-		--text-alignment: justify;
-	}
+    .list.big-list {
+        --text-alignment: justify;
+    }
 }
 
 li {
@@ -1342,12 +1342,12 @@ li {
 /*=-----------------------=*/
 
 ul > li::before {
-	content: var(--list-bullet);
+    content: var(--list-bullet);
     position: absolute;
     z-index: 1;
     display: block;
-	left: calc(var(--list-left-padding) - 1.375em);
-	top: 0.35em;
+    left: calc(var(--list-left-padding) - 1.375em);
+    top: 0.35em;
     width: 0.75em;
     height: 1em;
     line-height: 1;
@@ -1356,15 +1356,15 @@ ul > li::before {
 
 ul,
 ul.list-level-1 {
-	--list-bullet: var(--GW-image-single-black-star-svg);
-	--list-bullet-opacity: 0.65;
+    --list-bullet: var(--GW-image-single-black-star-svg);
+    --list-bullet-opacity: 0.65;
 }
 ul.list-level-2 {
     --list-bullet: var(--GW-image-single-white-star-svg);
     --list-bullet-opacity: 0.85;
 }
 ul.list-level-3 {
-    /*	This rotates into more of a ‘lozenge’ square for variety’s sake.
+    /*  This rotates into more of a ‘lozenge’ square for variety’s sake.
      */
     --list-bullet: var(--GW-image-single-white-star-rotated-svg);
     --list-bullet-opacity: 0.85;
@@ -1374,11 +1374,11 @@ ul.list-level-3 {
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
-/*	This may not be necessary. It definitely causes the `start` HTML list
-	property to not work correctly, so if indeed it’s unnecessary otherwise, it
-	should be removed. Commenting it out for now until we can confirm that no
-	bugs are caused by its absence.
-		—SA 2023-07-24
+/*  This may not be necessary. It definitely causes the `start` HTML list
+    property to not work correctly, so if indeed it’s unnecessary otherwise, it
+    should be removed. Commenting it out for now until we can confirm that no
+    bugs are caused by its absence.
+        —SA 2023-07-24
 /*
 ol {
     counter-reset: list-item;
@@ -1393,20 +1393,20 @@ ol > li::before {
     position: absolute;
     z-index: 15;
     display: block;
-	left: 0;
-	top: 0;
+    left: 0;
+    top: 0;
     width: calc(var(--list-left-padding) - 0.375em);
     text-align: right;
 }
 
 /*  Specific list type overrides. (Used by auto-sequencing, but can also be
-	invoked manually from the source.)
+    invoked manually from the source.)
 
-	Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic
-	numerals like `<ol type="1">`. Pandoc Markdown defaults to the latter if you
-	write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a
-	plain `<ol>` which can be more easily styled.
-	(See https://pandoc.org/MANUAL.html#extension-startnum .)
+    Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic
+    numerals like `<ol type="1">`. Pandoc Markdown defaults to the latter if you
+    write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a
+    plain `<ol>` which can be more easily styled.
+    (See https://pandoc.org/MANUAL.html#extension-startnum .)
 */
 ol > li::before,
 ol.list-type-decimal > li::before {
@@ -1430,36 +1430,36 @@ ol.list-type-upper-roman > li::before {
 /*=---------------------------------------------=*/
 
 .link-modified-recently-list-item {
-	--list-bullet: var(--GW-image-single-white-star-on-black-circle-svg);
+    --list-bullet: var(--GW-image-single-white-star-on-black-circle-svg);
 }
 .link-modified-recently-list-item::before {
-	opacity: 0.7;
+    opacity: 0.7;
 }
 
 
 /**********/
 /* FLOATS */
 /**********/
-/*	Floating figures (mostly for amusing asides/memes), floating small tables,
-	code blocks, blockquotes, etc.
+/*  Floating figures (mostly for amusing asides/memes), floating small tables,
+    code blocks, blockquotes, etc.
  */
 
 @media all and (min-width: 650px) {
-	.markdownBody {
-		--float-side-margin: 2em;
-	}
-	.markdownBody blockquote {
-		--float-side-margin: 1.5em;
-	}
+    .markdownBody {
+        --float-side-margin: 2em;
+    }
+    .markdownBody blockquote {
+        --float-side-margin: 1.5em;
+    }
 
-	div.float,
-	figure.float {
+    div.float,
+    figure.float {
         max-width: calc(50% - var(--float-side-margin));
         margin-bottom: calc(var(--float-side-margin) * 0.5);
         position: relative;
         z-index: 1;
-	}
-	div.float-right,
+    }
+    div.float-right,
     figure.float-right {
         float: right;
         margin-right: 0;
@@ -1489,16 +1489,16 @@ figure {
 }
 
 @media all and (min-width: 650px) {
-	/*	Reduce reflow.
-	 */
-	img.float-right,
-	img.float-left {
-		max-width: calc(50% - var(--float-side-margin));
-	}
+    /*  Reduce reflow.
+     */
+    img.float-right,
+    img.float-left {
+        max-width: calc(50% - var(--float-side-margin));
+    }
 }
 
 /*******************/
-/*	Figure contents.
+/*  Figure contents.
  */
 
 .figure-inner-wrapper {
@@ -1574,7 +1574,7 @@ figcaption {
     margin: auto;
     padding: 0.5em 0.875em calc(0.5em + 1px) 0.875em;
     width: fit-content;
-	background-color: var(--background-color);
+    background-color: var(--background-color);
 }
 @media all and (max-width: 649px) {
     figcaption {
@@ -1587,7 +1587,7 @@ figcaption {
 }
 
 figcaption p:first-of-type {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 figcaption strong {
@@ -1633,8 +1633,8 @@ figure.width-full {
     font-variant-caps: initial;
 }
 #markdownBody .marginnote.sidenote {
-	--text-hyphenation: none;
-	--background-color: transparent;
+    --text-hyphenation: none;
+    --background-color: transparent;
 
     display: flex;
     justify-content: right;
@@ -1660,8 +1660,8 @@ figure.width-full {
 #markdownBody .marginnote.sidenote:hover {
     box-shadow: none;
 }
-/*	Make links in margin notes (somewhat unusual but should be supported simply
-	because that’s what one would expect) clickable/hover-able.
+/*  Make links in margin notes (somewhat unusual but should be supported simply
+    because that’s what one would expect) clickable/hover-able.
  */
 #markdownBody .marginnote.sidenote::after {
     z-index: -1;
@@ -1675,42 +1675,42 @@ figure.width-full {
     right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
 }
 
-/*	Special “manicule” margin notes.
+/*  Special “manicule” margin notes.
  */
 .marginnote.manicule svg {
-	display: inline-block;
-	width: 1.75em;
-	top: 0.2em;
-	position: relative;
-	opacity: 0.9;
+    display: inline-block;
+    width: 1.75em;
+    top: 0.2em;
+    position: relative;
+    opacity: 0.9;
 }
 #markdownBody .marginnote.manicule.sidenote {
-	font-size: inherit;
-	padding-top: 0.2em;
-	opacity: 1;
-	pointer-events: none;
+    font-size: inherit;
+    padding-top: 0.2em;
+    opacity: 1;
+    pointer-events: none;
 }
 #markdownBody .marginnote.manicule.sidenote::after {
-	display: none;
+    display: none;
 }
 
 /*******************************************/
-/*	Margin note blocks at start of sections.
+/*  Margin note blocks at start of sections.
  */
 
 .markdownBody .margin-notes-block {
-	text-align: center;
-	hyphens: none;
+    text-align: center;
+    hyphens: none;
 }
 
 .markdownBody .margin-notes-block.hidden {
-	display: none;
+    display: none;
 }
 
 .markdownBody .margin-notes-block .marginnote:nth-last-child(n+2)::after {
-	content: "•";
-	margin: 0 0.75em;
-	opacity: 0.5;
+    content: "•";
+    margin: 0 0.75em;
+    opacity: 0.5;
 }
 
 
@@ -1730,7 +1730,7 @@ a {
     color: var(--GW-body-link-hover-color);
 }
 .markdownBody a:visited {
-	color: var(--GW-body-link-visited-color);
+    color: var(--GW-body-link-visited-color);
 }
 .markdownBody a:visited:hover {
     color: var(--GW-body-link-hover-color);
@@ -1751,7 +1751,7 @@ a {
 May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
 */
 
-/*	Color-inverted containers.
+/*  Color-inverted containers.
  */
 .markdownBody .colors-invert a {
     color: var(--GW-body-link-inverted-color);
@@ -1760,18 +1760,18 @@ May be able at some point to simplify this using regular link underlining, since
     color: var(--GW-body-link-inverted-hover-color);
 }
 .markdownBody .colors-invert a:visited {
-	color: var(--GW-body-link-inverted-visited-color);
+    color: var(--GW-body-link-inverted-visited-color);
 }
 .markdownBody .colors-invert a:visited:hover {
     color: var(--GW-body-link-inverted-hover-color);
 }
 
 .markdownBody a {
-	--link-underline-background-color: var(--background-color);
-	--link-underline-gradient-line-color: currentColor;
+    --link-underline-background-color: var(--background-color);
+    --link-underline-gradient-line-color: currentColor;
 
     background-image: linear-gradient(var(--link-underline-gradient-line-color),
-    								  var(--link-underline-gradient-line-color));
+                                      var(--link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x;
     background-position: 0% calc(100% - 0.1em);
@@ -1791,7 +1791,7 @@ May be able at some point to simplify this using regular link underlining, since
         -0.17em 0       var(--link-underline-background-color);
 }
 
-/*	Links with decoration disabled.
+/*  Links with decoration disabled.
  */
 .markdownBody a.decorate-not,
 .markdownBody a.decorate-not * {
@@ -1838,13 +1838,14 @@ a code {
 .markdownBody em {
     margin-right: 0.1em;
 
-	/*	Source Serif Pro has no italic small caps.
-	 */
+    /*  Source Serif Pro has no italic small caps.
+     */
     font-variant-caps: normal;
 }
 
-/*	Inline SVG icons: recently-modified link icons, and theme-toggle SVG icons.
-    (These need to be in initial.css because they are used in the opening paragraphs of /index.)
+/*  Inline SVG icons: recently-modified link icons, and theme-toggle SVG icons.
+    (These need to be in `initial.css` because they are used in the opening paragraphs of /index.)
+    NOTE: SVG icons need to also be inverted in `dark-mode-adjustments.css` (to avoid invisibility).
  */
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle,
@@ -1853,7 +1854,7 @@ a code {
 .icon-message-slash-solid,
 .icon-magnifying-glass,
 .icon-gear-solid { position: relative;
-    background-color: var(--link-underline-background-color); }
+                   background-color: var(--link-underline-background-color); }
 
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle { padding-left: 0.85em; }
@@ -1862,9 +1863,9 @@ a code {
 .icon-book-open-solid,
 .icon-message-slash-solid,
 .icon-gear-solid { padding: 0.35em;
-				    opacity: 65%; }
+                   opacity: 65%; }
 .icon-magnifying-glass { padding: 0.5em;
-						 opacity: 90%; }
+                         opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
 .icon-moon-solid::before,
@@ -1920,7 +1921,7 @@ a code {
 /*=--------------=*/
 
 /*  On wide viewports, hide the margin notes until it is determined which layout
-	form it should take (‘sidenote’ or ‘inline’).
+    form it should take (‘sidenote’ or ‘inline’).
  */
 @media all and (min-width: 1761px) {
     .marginnote:not(.inline):not(.sidenote) {
@@ -1990,11 +1991,11 @@ body.page-index #sidebar a.patreon {
 
 body.page-index article,
 body.page-index #markdownBody {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 /***********/
-/*	Nav bar.
+/*  Nav bar.
  */
 
 /*  No index self-link. */
@@ -2044,42 +2045,42 @@ body.page-index #markdownBody #notable {
     }
     @media all and (min-width: 1041px) {
         body.page-index #markdownBody {
-			grid-template-columns: 1fr 1fr;
-	        grid-column-gap: 2em;
+            grid-template-columns: 1fr 1fr;
+            grid-column-gap: 2em;
         }
-		body.page-index #markdownBody .abstract,
-		body.page-index #markdownBody hr {
-			grid-column-start: 1;
-			grid-column-end: -1;
-		}
+        body.page-index #markdownBody .abstract,
+        body.page-index #markdownBody hr {
+            grid-column-start: 1;
+            grid-column-end: -1;
+        }
     }
-	/*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
-		the initial row being ‘meta’ blocks, we leave #notable visible
-		(for a newest/popular/notable triplet)
-	 */
-	@media all and (min-width: 1761px) {
-		body.page-index #markdownBody {
-			grid-template-columns: 45ch 45ch 45ch;
-			margin-left: -20ch;
-		}
-		body.page-index #markdownBody #notable {
-			display: block;
-		}
-		body.page-index #markdownBody .abstract {
-			max-width: 935px;
-			margin-left: 20ch;
-		}
-		body.page-index #markdownBody hr {
-			margin-left: -5ch;
-		}
-	}
+    /*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
+        the initial row being ‘meta’ blocks, we leave #notable visible
+        (for a newest/popular/notable triplet)
+     */
+    @media all and (min-width: 1761px) {
+        body.page-index #markdownBody {
+            grid-template-columns: 45ch 45ch 45ch;
+            margin-left: -20ch;
+        }
+        body.page-index #markdownBody #notable {
+            display: block;
+        }
+        body.page-index #markdownBody .abstract {
+            max-width: 935px;
+            margin-left: 20ch;
+        }
+        body.page-index #markdownBody hr {
+            margin-left: -5ch;
+        }
+    }
 }
 
 /*****************/
-/*	Link sections.
+/*  Link sections.
  */
 
-/*	Headings.
+/*  Headings.
  */
 body.page-index #markdownBody section h1 {
     font-size: 1.5em;
@@ -2104,8 +2105,8 @@ body.page-index #markdownBody section h1 a::after {
    wrecking the 'color'. Since there is currently no three-level nesting, we don't need to worry about cycling,
    and just lighten the color of the first/second level markers by overriding them. */
 body.page-index #markdownBody section ul {
-	--list-left-padding: 1.375em;
-	--text-alignment: left;
+    --list-left-padding: 1.375em;
+    --text-alignment: left;
     --list-bullet: var(--GW-image-single-white-star-svg);
     --list-bullet-opacity: 0.85;
 }
@@ -2116,22 +2117,22 @@ body.page-index #markdownBody section ul ul {
 
 @media all and (max-width: 649px) {
     body.page-index #markdownBody section ul p {
-		margin-bottom: 0.15em;
+        margin-bottom: 0.15em;
         line-height: 1.65;
         overflow-wrap: break-word;
     }
 }
 
 /**********************************/
-/*	Miscellaneous things on /index.
+/*  Miscellaneous things on /index.
  */
 
-/*	For desktop users, we hide the horizontal rulers on the /index page as they
-	are unnecessary given the flowing columns; for mobile users, we’ll separate
-	sections by rulers because they only get a single very long column to scroll
-	through, which lacks a sense of hierarchy/chunking. However, desktop users
-	still get the initial <hr> inserted by sed to divide the two blocks of
-	New/Popular/Notable from all-topics sections (which has no class set on it).
+/*  For desktop users, we hide the horizontal rulers on the /index page as they
+    are unnecessary given the flowing columns; for mobile users, we’ll separate
+    sections by rulers because they only get a single very long column to scroll
+    through, which lacks a sense of hierarchy/chunking. However, desktop users
+    still get the initial <hr> inserted by sed to divide the two blocks of
+    New/Popular/Notable from all-topics sections (which has no class set on it).
  */
 @media all and (min-width: 650px) {
 /*  Horizontal ruler on the home page.
@@ -2155,40 +2156,40 @@ body.page-index #markdownBody section ul ul {
 /*=------------=*/
 
 .doc-index-tag-short {
-	display: block;
-	font-size: 0.875em;
-	padding-left: 1.5em;
-	font-family: var(--GW-sans-serif-font-stack);
+    display: block;
+    font-size: 0.875em;
+    padding-left: 1.5em;
+    font-family: var(--GW-sans-serif-font-stack);
 }
 
 body.page-doc-index #see-alsos > ul > li {
-	padding: 0;
+    padding: 0;
 }
 body.page-doc-index #see-alsos > ul > li::before {
-	display: none;
+    display: none;
 }
 
 body.page-doc-index #see-alsos code {
-	background: inherit;
-	border: none;
-	padding: 0;
+    background: inherit;
+    border: none;
+    padding: 0;
 }
 
 
 /*****************************/
 /* SOURCE CODE FILE PREVIEWS */
 /*****************************/
-/*	Syntax-highlighted code files, viewed by themselves (not in a popup).
+/*  Syntax-highlighted code files, viewed by themselves (not in a popup).
  */
 
 body.file-preview-source-code {
-	max-width: unset;
-	padding: 0;
+    max-width: unset;
+    padding: 0;
 }
 body.file-preview-source-code pre {
-	max-height: unset;
-	border: none;
+    max-height: unset;
+    border: none;
 }
 body.file-preview-source-code pre code {
-	padding: 1rem;
+    padding: 1rem;
 }
