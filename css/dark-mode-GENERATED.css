@@ -602,7 +602,7 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
 .icon-single-white-star-on-black-circle::before,
 .manicule, .icon-manicule-right, .icon-single-white-star-on-black-circle,
 .icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
-.icon-magnifying-glass, .icon-gear-solid {
+.icon-magnifying-glass, .icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid {
     filter: invert(1);
 }
 

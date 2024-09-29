@@ -1,10 +1,10 @@
 ---
 title: Site Help
-description: "Short cheat sheet documentation about Gwern.net keybindings & features."
+description: "Short cheatsheet documentation about Gwern.net keybindings & features."
 thumbnail: /doc/cs/css/2023-11-08-gwern-gwernnet-essaypopup-catitecture-withanxiousblackcatatwindowsillthumbnail.png
 thumbnail-text: "Screenshot of Gwern.net popup features."
 created: 2024-04-05
-modified: 2024-04-05
+modified: 2024-09-29
 status: in progress
 confidence: log
 importance: 0
@@ -14,16 +14,13 @@ error404: false
 backlink: False
 ...
 
-<div class="columns">
-**Features**:
+- Switch to **Dark Mode**: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-moon-solid"></span>)
+- or back to **Light** Mode: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-sun-solid"></span>)
+- **Reader** Mode: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-book-open-solid"></span>)
+- **Disable Popups**: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-message-slash-solid"></span>)
 
-- Switch to Dark Mode: click [gear icon] to open *Theme Toggle* → click [moon icon]
-- Light Mode: click [gear icon] to open *Theme Toggle* → click [sun icon]
-- Reader Mode: click [gear icon] to open *Theme Toggle* → click [opened-book icon]
-- Disable All Popups: click [gear icon] to open *Theme Toggle* → click [struck-out bubble icon]
-
-    [Or]{.smallcaps} hover any link → click [struck-out eye icon]
-- [Search Site](https://cse.google.com/cse?cx=009114923999563836576%3Adv0a4ndtmly): `/`, or click [magnifying-glass icon]
+    [Or]{.smallcaps} hover any link → click (<span class="icon-eye-slash-solid"></span>)
+- [**Search** Site](https://cse.google.com/cse?cx=009114923999563836576%3Adv0a4ndtmly): `/`, or click (<span class="icon-magnifying-glass"></span>)
 
 <div class="mobile-not">
 **Popup Keybindings**:
@@ -54,7 +51,6 @@ backlink: False
 - `Scroll` to zoom in/out
 
     when zoomed in, `drag` to pan; `double-click` to reset size & position
-</div>
 
 **Useful links**:
 
@@ -64,5 +60,5 @@ backlink: False
 - [browse all files](/doc/index "‘Essays’, Gwern 2009"), or [newest](/doc/newest/index "‘Essays’, Gwern 2009")
 - [browse new pages](/changelog "‘Changelog’, Gwern 2013")
 - [Substack](https://gwern.substack.com/ "‘Gwern.net newsletter (Substack subscription page)’, Branwen 2013") [newsletter](/doc/newsletter/index "‘Essays’, Gwern 2009")
-- [site search](https://www.google.com/search?q=site%3Agwern%2Enet)
+- [Google `site:` search](https://www.google.com/search?q=site%3Agwern%2Enet)
 </div>

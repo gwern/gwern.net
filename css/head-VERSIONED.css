@@ -1849,30 +1849,25 @@ a code {
  */
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle,
-.icon-moon-solid,
-.icon-book-open-solid,
-.icon-message-slash-solid,
-.icon-magnifying-glass,
-.icon-gear-solid { position: relative;
-                   background-color: var(--link-underline-background-color); }
+.icon-moon-solid, .icon-book-open-solid,
+.icon-message-slash-solid, .icon-magnifying-glass,
+.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid {
+    position: relative;
+    background-color: var(--link-underline-background-color); }
 
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle { padding-left: 0.85em; }
 
-.icon-moon-solid,
-.icon-book-open-solid,
-.icon-message-slash-solid,
-.icon-gear-solid { padding: 0.35em;
-                   opacity: 65%; }
+.icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
+.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid { padding: 0.35em;
+                                                           opacity: 65%; }
 .icon-magnifying-glass { padding: 0.5em;
                          opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before,
-.icon-moon-solid::before,
-.icon-book-open-solid::before,
-.icon-message-slash-solid::before,
-.icon-magnifying-glass::before,
-.icon-gear-solid::before {
+.icon-single-white-star-on-black-circle::before, .icon-moon-solid::before,
+.icon-book-open-solid::before, .icon-message-slash-solid::before,
+.icon-magnifying-glass::before, .icon-gear-solid::before, .icon-sun-solid::before,
+.icon-eye-slash-solid::before {
     content: "";
     background-repeat: no-repeat;
     background-position: center left;
@@ -1889,11 +1884,13 @@ a code {
     opacity: 0.75;
 }
 .icon-single-white-star-on-black-circle::before { background-position: center; }
-.icon-moon-solid::before { background-image: url('/static/img/icon/icons.svg?v=1725950287#moon-solid'); }
-.icon-book-open-solid::before { background-image: url('/static/img/icon/icons.svg?v=1725950287#book-open-solid'); }
+.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1725950287#moon-solid'); }
+.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1725950287#book-open-solid'); }
 .icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1725950287#message-slash-solid'); }
-.icon-magnifying-glass::before { background-image: url('/static/img/icon/icons.svg?v=1725950287#magnifying-glass'); }
-.icon-gear-solid::before { background-image: url('/static/img/icon/icons.svg?v=1725950287#gear-solid'); }
+.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1725950287#magnifying-glass'); }
+.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1725950287#gear-solid'); }
+.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1725950287#sun-solid'); }
+.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1725950287#eye-slash-solid'); }
 
 /*************/
 /* SIDENOTES */
