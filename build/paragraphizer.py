@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-09-05 20:07:04 gwern"
+# When:  Time-stamp: "2024-09-28 13:02:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -438,6 +438,10 @@ Finally, we discuss implications for marine conservation policies and suggest pr
 - Input: <abstract>Attention mechanisms that confer selective focus on a strict subset of input elements are nearly ubiquitous in language models today. We posit there to be downside to the use of attention: most information present in the input is necessarily lost. In support of this idea we observe poor input representation accuracy in transformers, but find more accurate representation in what we term masked mixers which replace self-attention with masked convolutions.</abstract> →
 Attention mechanisms that confer selective focus on a strict subset of input elements are nearly ubiquitous in language models today. We posit there to be downside to the use of attention: most information present in the input is necessarily lost.
 In support of this idea we observe poor input representation accuracy in transformers, but find more accurate representation in what we term <strong>masked mixers</strong> which replace self-attention with masked convolutions.
+- Input: <abstract>This study evaluates the impact of depression treatment on economic behavior in Karnataka, India. We cross-randomize pharmacotherapy and livelihoods assistance among 1,000 depressed adults and evaluate impacts on depression severity, socioeconomic outcomes, and several potential pathways. When combined, the interventions reduce depression severity, with benefits that persist after treatment concludes. Pharmacotherapy alone has a weaker effect that is only marginally significant and dissipates sooner. Depression treatment does not significantly increase earnings, consumption, or human capital investment in children.</abstract> →
+This study evaluates the impact of depression treatment on economic behavior in Karnataka, India.
+We cross-randomize pharmacotherapy and livelihoods assistance among 1,000 depressed adults and evaluate impacts on depression severity, socioeconomic outcomes, and several potential pathways.
+When combined, the interventions reduce depression severity, with benefits that persist after treatment concludes. Pharmacotherapy alone has a weaker effect that is only marginally significant and dissipates sooner. Depression treatment does not significantly increase earnings, consumption, or human capital investment in children.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 

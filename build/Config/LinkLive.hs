@@ -2989,7 +2989,7 @@ goodLinks =
             , "https://www.thisfursonadoesnotexist.com/"
             , "https://www.thisworddoesnotexist.com/"
             , "https://www.thriftbooks.com/"
-            -- , "https://reactormag.com/day-of-the-kraken/" -- new site, need to check
+            , "https://reactormag.com/day-of-the-kraken/" -- new site, need to check
             , "https://www.tranquiltuesdays.com/product/white-peony-white-tea/"
             , "https://www.trentonbricken.com/Tail-Free-Sampling/"
             , "https://www.trubrain.com/"
@@ -4620,6 +4620,5 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.politico.com/magazine/story/2018/11/11/republican-party-anti-pornography-politics-222096/"
             , "https://www.theparisreview.org/interviews/4155/the-art-of-the-essay-no-1-e-b-white"
             , "https://www.axios.com/2023/09/08/walter-isaacson-elon-musk-book-excerpt"
-            , "https://reactormag.com/equoid/"
             ]
 

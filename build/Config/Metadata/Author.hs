@@ -481,8 +481,6 @@ canonicals = M.fromList
   , ("Ben W. Domingue", "Benjamin W. Domingue")
   , ("ashleevance", "Ashlee Vance")
   , ("Richard P. Feynman", "Richard Feynman")
-  , ("Lars Lind", "Lars L. Lind")
-  , ("Kenneth Stanley", "Kenneth O. Stanley")
   ]
 
 -- tests: unique
@@ -824,6 +822,10 @@ authorLinkDB = M.fromList $
     , ("Lars L. Lind", "https://research.com/u/lars-lind")
     , ("Jonathan Frankle", "http://www.jfrankle.com/")
     , ("Wendell H. Oswalt", "https://obits.oregonlive.com/us/obituaries/oregon/name/wendell-oswalt-obituary?id=12843091")
+    , ("Harm-Jan Westra", "https://scholar.google.com/citations?user=REHR8RQAAAAJ&hl=en&oi=ao")
+    , ("Barret Zoph", "https://barretzoph.github.io/")
+    , ("Claes Ohlsson", "https://scholar.google.com/citations?user=RcHgovUAAAAJ&hl=en&oi=ao")
+    , ("Aysu Okbay", "https://scholar.google.com/citations?user=QK359x8AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
