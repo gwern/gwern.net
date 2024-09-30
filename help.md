@@ -17,15 +17,13 @@ backlink: False
 - Switch to **Dark Mode**: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-moon-solid"></span>)
 - or back to **Light** Mode: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-sun-solid"></span>)
 - **Reader** Mode: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-book-open-solid"></span>)
-- **Disable Popups**: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-message-slash-solid"></span>)
-
-    [Or]{.smallcaps} hover any link → click (<span class="icon-eye-slash-solid"></span>)
+- <span class="mobile-not">Disable **Popups**: click (<span class="icon-gear-solid"></span>) to open *Theme Toggle* → click (<span class="icon-message-slash-solid"></span>)</span><span class="desktop-not">Disable **Popovers**: hover any link → click (<span class="icon-eye-slash-solid"></span>)</span>
 - [**Search** Site](https://cse.google.com/cse?cx=009114923999563836576%3Adv0a4ndtmly): `/`, or click (<span class="icon-magnifying-glass"></span>)
 
 <div class="mobile-not">
 **Popup Keybindings**:
 
-- `?`: pop up [this help page](/static/help)
+<!-- - `?`: pop up [this help page](/static/help "‘Site Help’, Gwern 2024") -->
 - `Esc`: close current popup
 - to *Zoom*:
 
