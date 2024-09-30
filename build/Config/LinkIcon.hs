@@ -62,16 +62,21 @@ linkIconTypes = ["text", "svg"
 -- Helper functions for URL matches:
 u', u'' :: T.Text -> T.Text -> Bool
 -- Loose check: simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
+u' ""  v  = error $ "Config.LinkIcon.u': empty string passed as argument; url was '', domain was " ++ show v
+u' url "" = error $ "Config.LinkIcon.u': empty string passed as argument; url was " ++ show url ++ ", domain was ''"
 u' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v
-           then error ("LinkIcon.hs: Overly strict prefix in infix matching (u'): " ++ show url ++ ":" ++ show v)
+           then error ("Config.LinkIcon: Overly strict prefix in infix matching (u'): " ++ show url ++ ":" ++ show v)
            else v `T.isInfixOf` url
 -- Stricter check: more stringent check, matching exactly the domain name:
+u'' ""  v  = error $ "Config.LinkIcon.u'': empty string passed as argument; url was '', domain was " ++ show v
+u'' url "" = error $ "Config.LinkIcon.u'': empty string passed as argument; url was " ++ show url ++ ", domain was ''"
 u'' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v
-            then error ("LinkIcon.hs: Overly strict prefix in infix matching (u''): " ++ show url ++ ":" ++ show v)
+            then error ("Config.LinkIcon: Overly strict prefix in infix matching (u''): " ++ show url ++ ":" ++ show v)
             else isHostOrArchive v url
 
 iE :: T.Text -> [T.Text] -> Bool
-iE url = elem (T.drop 1 $ extension url)
+iE ""  args = error $ "Config.LinkIcon.iE: passed an empty string as the first argument; rest were: " ++ show args
+iE url args = elem (T.drop 1 $ extension url) args
 aU', aU'' :: T.Text -> [T.Text] -> Bool
 aU'  url = any (u' url)
 aU'' url = any (u'' url)
@@ -85,6 +90,7 @@ linkIconRules u = let result = filter (/=("","")) $ map (\f -> f u) [linkIconRul
                                                                 linkIconRulesTriple, linkIconRulesQuad, linkIconRulesSVG, linkIconRulesFiletypes]
                                in if null result then ("","") else head result
 
+linkIconRulesOverrides "" = error "Config.LinkIcon.linkIconRulesOverrides: passed empty string as the URL; this should never happen!"
 -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL. This must be matched first.
 linkIconRulesOverrides u
  | u' u "deepmind"  = ("deepmind", "svg") -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
@@ -108,6 +114,7 @@ linkIconRulesOverrides u
  | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text") -- override Yahoo! email
  | otherwise = ("","")
 
+linkIconRulesSingle "" = error "Config.LinkIcon.linkIconRulesSingle: passed empty string as the URL; this should never happen!"
 linkIconRulesSingle u
  | aU'' u ["psyarxiv.com", "files.osf.io", "osf.io"] = ("ψ", "text") -- Unicode trickery icons: GREEK SMALL LETTER PSI
  | u'' u "unsongbook.com" = ("ℵ", "text") -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.)
@@ -176,9 +183,10 @@ linkIconRulesSingle u
  | u'' u "solar.lowtechmagazine.com" = ("☀", "text") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
  | u'' u "www.nobelprize.org" = ("🏅", "text") -- Nobel Prize, SPORTS MEDAL
  | u'' u "waitbutwhy.com" = ("♔", "text") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible.
- | u'' u "" = ("❍", "text") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
+ | u'' u "senseis.xmp.net" = ("❍", "text") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | otherwise = ("", "")
 
+linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
 linkIconRulesDouble u
  | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' u "www.frontiersin.org" = ("FS", "text,sans") -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
@@ -267,6 +275,7 @@ linkIconRulesDouble u
  | otherwise = ("", "")
 
 -- Tri/triple TLAs
+linkIconRulesTriple "" = error "Config.LinkIcon.linkIconRulesTriple: passed empty string as the URL; this should never happen!"
 linkIconRulesTriple u
  | u'' u "andrewgelman.com" || u'' u "statmodeling.stat.columbia.edu" = ("▅▇▃", "text") -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u' u "animenewsnetwork.com" = ("ANN", "text,tri")
@@ -330,6 +339,7 @@ linkIconRulesTriple u
  | otherwise = ("","")
 
  -- Quad-letter (square) icons.
+linkIconRulesQuad "" = error "Config.LinkIcon.linkIconRulesQuad: passed empty string as the URL; this should never happen!"
 linkIconRulesQuad u
  | aU'' u ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad") -- The Journal of the American Medical Association (JAMA)
  | u'' u "www.cell.com" = ("CELL", "text,quad,sans") -- Cell: their logo is unrecognizable (and dumb)
@@ -390,6 +400,7 @@ linkIconRulesQuad u
  | otherwise = ("", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
+linkIconRulesSVG "" = error "Config.LinkIcon.linkIconRulesSVG: passed empty string as the URL; this should never happen!"
 linkIconRulesSVG u
  | aU'' u ["texample.net", "ctan.org", "www.tug.org", "tug.org"] = ("tex", "svg") -- Properly turning the 'TeX' logotype in a link icon is hard. You can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable (it's not great on computer screens to begin with, and shrunk down to a link-icon, even worse); you can cheat in pure Unicode with 'TₑX' (LATIN SUBSCRIPT SMALL LETTER E U+2091;, there is no 'LARGE LETTER E' unfortunately) but this took winds up looking pretty bad in practice. So what I did was create my own SVG TeX link-icon in Inkscape, using Source Serif Pro bold letters, arranged by hand like the logotype, and then rescaled horizontally ~120% to make the strokes thick enough that they'd survive downscaling. *That* works.
  | aU'' u ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' u "amazon.co." = ("amazon", "svg")
@@ -464,6 +475,7 @@ linkIconRulesSVG u
  | otherwise = ("", "")
 
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
+linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passed empty string as the URL; this should never happen!"
 linkIconRulesFiletypes u
  | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = ("archive", "svg")
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg")
