@@ -117,6 +117,9 @@ Popups = {
 			});
 		});
 
+		//	Enable default popup tiling control keys (aswdqexzfrcv).
+		Popups.setPopupTilingControlKeys();
+
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
@@ -629,8 +632,6 @@ Popups = {
 	/*  Popup tiling control keys.
 	 */
 	popupTilingControlKeys: (localStorage.getItem("popup-tiling-control-keys") || ""),
-	//	This function is currently unused (but should be used in the future).
-	//		—SA, 2022-02-01
 	setPopupTilingControlKeys: (keystring) => {
 		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
