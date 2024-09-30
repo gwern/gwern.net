@@ -176,6 +176,7 @@ linkIconRulesSingle u
  | u'' u "solar.lowtechmagazine.com" = ("☀", "text") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
  | u'' u "www.nobelprize.org" = ("🏅", "text") -- Nobel Prize, SPORTS MEDAL
  | u'' u "waitbutwhy.com" = ("♔", "text") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible.
+ | u'' u "" = ("❍", "text") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | otherwise = ("", "")
 
 linkIconRulesDouble u
@@ -1108,6 +1109,7 @@ linkIconTestUnitsText =
          , ("https://www.cerebras.net/press-release/cerebras-announces-third-generation-wafer-scale-engine", "C", "text,sans")
          , ("https://arxiv.org/abs/2309.10818#cerebras", "C", "text,sans")
          , ("https://waitbutwhy.com/whatsourproblem", "♔", "text")
+         , ("https://senseis.xmp.net/", "❍", "text")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

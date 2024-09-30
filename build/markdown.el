@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-22 21:56:31 gwern"
+;;; When:  Time-stamp: "2024-09-29 22:15:09 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -512,6 +512,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("|ra|" . "|<em>r<sub>a</sub></em>|")
                      ("| ra |" . "|<em>r<sub>a</sub></em>|")
                      ("| _r~a~_ |" . "|<em>r<sub>a</sub></em>|")
+                     ("(rtt = " . "(<em>r<sub>tt</sub></em> = ")
                      (" n = " . " _n_ = ")
                      ("(n ≈" . "(_n_ ≈")
                      (" n ≈" . " _n_ ≈")

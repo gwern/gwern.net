@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-25 09:35:32 gwern"
+# When:  Time-stamp: "2024-09-29 18:02:06 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -29,7 +29,7 @@ source /usr/share/bash-completion/bash_completion || true # useful for better `u
 # has not been modified in a decade, doesn't seem to be shipped at all by
 # <https://github.com/scop/bash-completion>, and I don't really use the
 # limited completions that old one offers.
-_ghc_ghci_completion() {
+_ghc_ghci_completion () {
     local cur lower_cur
     _init_completion || return
 
@@ -38,7 +38,7 @@ _ghc_ghci_completion() {
 
     shopt -s nocaseglob nullglob
 
-    add_completions() {
+    add_completions () {
         local dir="$1" prefix="$2" depth="$3"
         [[ $depth -gt 5 ]] && return
 
@@ -192,7 +192,7 @@ pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments argumen
 
 # concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
 # This accepts Docx files as well due to their frequency in supplemental files, so `pdf-append foo.pdf supplement-1.doc supplement-2.pdf` is allowed (Docx is converted to PDF by `doc2pdf`).
-pdf-append() {
+pdf-append () {
     if [ $# -lt 2 ]; then echo "Not enough arguments" >&2 && return 1; fi
 
     ORIGINAL=$(path2File "$1")
@@ -224,7 +224,7 @@ pdf-append() {
     rm -rf "$TEMP_DIR"
 }
 
-doc2pdf() {
+doc2pdf () {
     [ $# -eq 0 ] && { echo "Usage: doc2pdf <input_file> [output_file]"; return 1; }
     input="$1"
     output="${2:-${input%.*}.pdf}"
@@ -237,9 +237,9 @@ doc2pdf() {
 
 
 # trim whitespace from around JPG/PNG images
-crop_one () { if [[ "$@" =~ .*\.(jpg|png) ]]; then
-        nice convert $(path2File "$@") -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
-crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
+crop_one () { if [[ "$*" =~ .*\.(jpg|png) ]]; then
+        nice convert "$(path2File "$@")" -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
+crop () { export -f crop_one; ls "$(path2File "$@")" | parallel crop_one; }
 # WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
 export -f crop crop_one
 
@@ -249,7 +249,7 @@ alias invert="mogrify -negate"
 # `$ invert-error-report https://gwern.net/doc/math/2024-zhang-figure1-overfittingofmodelfamiliestogsm8k.png`
 invert-error-report () { curl --request 'POST' 'https://invertornot.com/api/correction' \
                               --header 'accept: application/json' --header 'Content-Type: application/json' \
-                              --data '["'$1'"]'; }
+                              --data '["'"$1"'"]'; }
 
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
@@ -352,7 +352,7 @@ alias exiftool="exiftool -overwrite_original"
 gw () {
     if [ $# == 0 ]; then echo "Missing search query." >&2 && return 2; fi
 
-    QUERY="$*";
+    QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs ~/*.md;
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
@@ -361,7 +361,7 @@ gw () {
            grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
            xargs grep -F --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
     if [ -z "$RESULTS" ]; then
-        gwl "$@" # fall back to double-checking IRC logs
+        gwl "$QUERY" # fall back to double-checking IRC logs
     else
         echo "$RESULTS"
     fi
@@ -673,11 +673,11 @@ SITE_URL="https://gwern.net"
 SNAPSHOT_DIR="./metadata/snapshot"
 CONTENT_DIR="$HOME/wiki/"
 
-get_lorem_pages() {
+get_lorem_pages () {
     find "$CONTENT_DIR" -name "lorem*.md" -printf "%f\n" | sed 's/\.md$//'
 }
 
-download_page() {
+download_page () {
     local page=$1
     local output_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
@@ -687,7 +687,7 @@ download_page() {
     mv "$temp_file" "${output_file}"
 }
 
-compare_page() {
+compare_page () {
     local page=$1
     local snapshot_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
@@ -702,7 +702,7 @@ compare_page() {
     rm "${temp_file}"
 }
 
-lorem_update() {
+lorem_update () {
     bold "Updating snapshots…"
     mkdir -p "${SNAPSHOT_DIR}"
     get_lorem_pages | while read -r page; do
@@ -711,7 +711,7 @@ lorem_update() {
     done
 }
 
-run_gold_test() {
+run_gold_test () {
     get_lorem_pages | while read -r page; do
         compare_page "${page}"
     done

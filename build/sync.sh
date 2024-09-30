@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-09-26 09:39:53 gwern"
+# When:  Time-stamp: "2024-09-29 20:05:39 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -578,7 +578,9 @@ else
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not" "icon-special"
-            "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right" "inline" "invert" "invert-auto" "invert-not"
+            "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right"
+            "icon-book-open-solid" "icon-gear-solid" "icon-magnifying-glass" "icon-message-slash-solid" "icon-moon-solid" "icon-sun-solid" "icon-eye-slash-solid"
+            "inline" "invert" "invert-auto" "invert-not"
             "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not"
             "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"
             "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
@@ -753,7 +755,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep -F --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -864,7 +866,7 @@ else
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
-            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -- ./metadata/*.gtx | \
+            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
@@ -1400,7 +1402,7 @@ else
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
-    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gf 'PNG image data' | cut --delimiter=':' --fields=1)
      if [ -n "$CORRUPT" ]; then
          echo "Found JPGs with PNG data: $CORRUPT"
          echo "attempting to convert the PNG ones into JPG…"

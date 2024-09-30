@@ -2833,4 +2833,6 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/2401.10463","zhu-et-al-2024-3")
        , ("https://arxiv.org/abs/1612.03144#facebook","lin-et-al-2016-1")
        , ("https://arxiv.org/abs/1608.08225","lin-et-al-2016-2")
+       , ("https://arxiv.org/abs/2403.17141","yang-et-al-2024-1")
+       , ("/doc/longevity/metformin/2024-yang.pdf","yang-et-al-2024-2")
       ]

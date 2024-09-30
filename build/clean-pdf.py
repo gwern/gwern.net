@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-09-03 09:34:23 gwern"
+# When:  Time-stamp: "2024-09-28 20:44:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -111,6 +111,9 @@ Kimberly Burkhart, James R. Phelps
 , Avijit Chowdhury1,2 , Marta Bianciardi2,3,4 , Remko van Lutterveld5,6 , Terje Sparby7,8,9 ,
 Matthew D. Sacchet1,2, *</text> →
 Winson Fu Zun Yang, Avijit Chowdhury, Marta Bianciardi, Remko van Lutterveld, Terje Sparby, Matthew D. Sacchet
+
+<text>David A. Fishbain, MSc, MD, FAPA,*,†,‡,§ Robert Cutler, PhD,*,§ Hubert L. Rosomoff, MD, DMSc,†,‡,§ and Renee Steele Rosomoff</text> →
+David A. Fishbain, Robert Cutler, Hubert L. Rosomoff, Renee Steele Rosomoff
 
 Input:
 <text>{target}</text> →
