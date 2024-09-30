@@ -1860,7 +1860,7 @@ a code {
 
 .icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
 .icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid { padding: 0.35em;
-                                                           opacity: 65%; }
+                                                           opacity: 70%; }
 .icon-magnifying-glass { padding: 0.5em;
                          opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,

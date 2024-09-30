@@ -600,7 +600,7 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
-.manicule, .icon-manicule-right, .icon-single-white-star-on-black-circle,
+.manicule, .icon-manicule-right,
 .icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
 .icon-magnifying-glass, .icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid {
     filter: invert(1);
