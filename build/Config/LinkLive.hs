@@ -2366,6 +2366,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.theparisreview.org"
    , "www.axios.com"
    , "mhooten.github.io"
+   , "blog.novelai.net"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -4620,5 +4621,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.politico.com/magazine/story/2018/11/11/republican-party-anti-pornography-politics-222096/"
             , "https://www.theparisreview.org/interviews/4155/the-art-of-the-essay-no-1-e-b-white"
             , "https://www.axios.com/2023/09/08/walter-isaacson-elon-musk-book-excerpt"
+            , "https://blog.novelai.net/data-efficient-language-transfer-with-gpt-j-45daedaaf35a"
             ]
 

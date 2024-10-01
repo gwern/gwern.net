@@ -21,9 +21,9 @@ backlink: False
 - [**Search** Site](https://cse.google.com/cse?cx=009114923999563836576%3Adv0a4ndtmly): `/`, or click (<span class="icon-magnifying-glass"></span>)
 
 <div class="mobile-not">
-**Popup Keybindings**: <!-- keep synced with `popups.js:L1000:buttonTitles -->
+**Popup Keybindings**: <!-- NOTE: keep synced with `popups.js:L1000:buttonTitles` -->
 
-<!-- - `?`: pop up [this help page](/static/help "‘Site Help’, Gwern 2024") -->
+<!-- TODO: when enabled in the toggle bar: - `?`: pop up [this help page](/static/help "‘Site Help’, Gwern 2024") -->
 - `Esc`: close current popup
 - to *Zoom*:
 
@@ -52,7 +52,7 @@ backlink: False
 
 **Useful links**:
 
-<!-- - [full site user guide](/design#user-guide) -->
+<!-- TODO: - [full site user guide](/design#user-guide) -->
 - [home/index](/index "‘Essays’, Gwern 2009") ([long summary version](/index-long "‘Long Essay Index’, Gwern 2009"))
 - about site: [writings](/about "‘About This Website’, Gwern 2010"), [website design](/design "‘Design Of This Website’, Gwern 2010"), [Gwern](/me "‘About Gwern’, Gwern 2009")
 - [browse all files](/doc/index "‘Essays’, Gwern 2009"), or [newest links](/doc/newest/index "‘Essays’, Gwern 2009")

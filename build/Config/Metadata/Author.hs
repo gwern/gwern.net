@@ -494,7 +494,7 @@ canonicalsWithInitials =
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
-  , "Kenneth O. Stanley"]
+  , "Kenneth O. Stanley", "Sarah E. Harris"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -835,6 +835,11 @@ authorLinkDB = M.fromList $
     , ("Zhili Zheng", "https://scholar.google.com/citations?user=mLFZunUAAAAJ&hl=en&oi=ao")
     , ("Veronique Vitart", "https://www.ed.ac.uk/mrc-human-genetics-unit/research/vitart-group")
     , ("N. A. Smith", "https://nasmith.github.io/")
+    , ("Kannan Srinivasan", "https://www.analysisgroup.com/experts-and-consultants/affiliated-experts/kannan-srinivasan/")
+    , ("Teresa Ferreira", "https://www.researchgate.net/profile/Teresa-Ferreira-7")
+    , ("Stefania Bandinelli", "https://research.com/u/stefania-bandinelli")
+    , ("Saurav Kadavath", "https://scholar.google.com/citations?user=Z2Uo_FcAAAAJ&hl=en&oi=ao")
+    , ("Sarah E. Harris", "https://www.ed.ac.uk/profile/sarah-harris")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1449,7 +1454,7 @@ authorWpLinkDB =
     ,"K. Paige Harden", "K. Patricia Cross", "K. T. Compton", "K. V. Mardia", "Kaare Christensen"
     ,"Kah Kay Sung", "Kai Chen", "Kai Zen", "Kai-Fu Lee", "Kai-Uwe Hinrichs"
     ,"Kaiming He", "Kaiping Zheng", "Kamal Gupta", "Kameshwar Prasad", "Kang Zhang"
-    ,"Kang Zhao", "Kannan Srinivasan", "Kara Swisher", "Karan Goel", "Karanjeet Singh"
+    ,"Kang Zhao", "Kara Swisher", "Karan Goel", "Karanjeet Singh"
     ,"Karen A. Cerulo", "Karen C. Johnson", "Karen Carr", "Karen F. Berman", "Karen Hao"
     ,"Karen Horney", "Karen L. Mohlke", "Karen Oegema", "Karen Simonyan", "Karestan C. Koenen"
     ,"Karestan Koenen", "Kari Stefansson", "Karim R. Lakhani", "Karin Broberg", "Karin Strauss"

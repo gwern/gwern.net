@@ -369,7 +369,7 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 -- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""` or as a shortcut, `delete "foo"`), or 'just in case'.
 -- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
-replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before ++ "") else intercalate after . split before
+replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before) else intercalate after . split before
 -- NOTE: a `splitT` is unnecessary because Data.Text defines its own `split`/`splitAt`/`splitOn` functions.
 split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []
@@ -466,12 +466,12 @@ host p = case parseURIReference (T.unpack p) of
                                 Just uridomain' -> T.pack $ uriRegName uridomain'
 
 anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
-anyInfix p = any (`isInfixOf` p)
+anyInfix  p = any (`isInfixOf`  p)
 anyPrefix p = any (`isPrefixOf` p)
 anySuffix p = any (`isSuffixOf` p)
 
 anyInfixT, anyPrefixT, anySuffixT :: T.Text -> [T.Text] -> Bool
-anyInfixT p = any (`T.isInfixOf` p)
+anyInfixT  p = any (`T.isInfixOf`  p)
 anyPrefixT p = any (`T.isPrefixOf` p)
 anySuffixT p = any (`T.isSuffixOf` p)
 
@@ -484,11 +484,9 @@ hasAny [] _          = False             -- An empty search list: always false
 hasAny _ []          = False             -- An empty list to scan: always false
 hasAny search (x:xs) = x `elem` search || hasAny search xs
 
-
 -- Data.Text equivalent of System.FilePath.takeExtension
 takeExtension :: T.Text -> T.Text
 takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
-
 
 -- | 'repeated' finds only the elements that are present more than once in the list.
 -- Example:
@@ -496,7 +494,6 @@ takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
 -- > repeated  "foo bar" == "o"
 repeated :: Ord a => [a] -> [a]
 repeated xs = M.keys $ M.filter (> (1::Int)) $ M.fromListWith (+) [(x,1) | x <- xs]
-
 
 -- eg. 'calculateDateSpan "1939-09-01" "1945-05-08"' → 2077
 -- or 'calculateDateSpan "1939-09" "1945-05"' → 2070 (where the day is assumed to be the first of the month)
