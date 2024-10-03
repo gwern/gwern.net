@@ -131,18 +131,19 @@ generateLinkBibliographyItem am (f,mi) = generateAnnotationTransclusionBlock am 
 
 -- TODO: refactor out to Query?
 extractLinksFromPage :: String -> IO [String]
-extractLinksFromPage "" = error "generateLinkBibliography: `extractLinksFromPage` called with an empty '' string argument—this should never happen!"
+extractLinksFromPage "" = error "generateLinkBibliography.extractLinksFromPage: called with an empty '' string argument—this should never happen!"
 extractLinksFromPage path =
   do existsp <- doesFileExist path
-     if not existsp then return [] else
-                    do f <- TIO.readFile path
-                       let pE = runPure $ readMarkdown def{readerExtensions=pandocExtensions} f
-                       return $ case pE of
-                                  Left  _ -> []
-                                  -- make the list unique, but keep the original ordering
-                                  Right p -> map (replace "https://gwern.net/" "/") $
-                                                     filter (\l -> head l /= '#') $ -- self-links are not useful in link bibliographies
-                                                     nubOrd $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
+     if not existsp then error $ "generateLinkBibliography.extractLinksFromPage: file argument does not exist? tried to read: " ++ path
+       else
+        do f <- TIO.readFile path
+           let pE = runPure $ readMarkdown def{readerExtensions=pandocExtensions} f
+           return $ case pE of
+                      Left  err -> error $ "generateLinkBibliography.extractLinksFromPage: file failed Pandoc parsing; file path was: " ++ path ++ "; error message was: " ++ show err ++ "; full read file contents were: " ++ show f
+                      -- make the list unique, but keep the original ordering
+                      Right p   -> map (replace "https://gwern.net/" "/") $
+                                         filter (\l -> head l /= '#') $ -- self-links are not useful in link bibliographies
+                                         nubOrd $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
 
 linksToAnnotations :: Metadata -> [String] -> [(String,MetadataItem)]
 linksToAnnotations m = map (linkToAnnotation m)
