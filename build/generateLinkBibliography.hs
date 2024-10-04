@@ -29,16 +29,17 @@ import qualified Data.Text as T (pack, unpack)
 import System.Directory (doesFileExist, getModificationTime)
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, RawInline, Str, Strong), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
+import Text.Pandoc (Inline(Code, Link, RawInline, Str, Strong, Space), Format(Format), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(BlockQuote, Div, OrderedList, Para), Pandoc(..), writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkBacklink (getLinkBibLink, getAnnotationLinkCheck)
+import LinkID (metadataItem2Id)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import Query (extractURLs, extractLinks)
+import Query (extractLinkIDsWith)
 import Typography (typographyTransform, titlecase')
-import Utils (writeUpdatedFile, replace, printRed)
+import Utils (writeUpdatedFile, replace, printRed, toPandoc)
 import Interwiki (convertInterwikiLinks)
 import qualified Config.Misc as C (mininumLinkBibliographyFragment)
 
@@ -77,14 +78,14 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                       if '#' `elem` path && abstract=="" then return [] -- if it's just an empty annotation triggered by a section existing, ignore
                       else
                         extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".md") -- Markdown essay
-                    else return $ map T.unpack $ nubOrd $ extractLinks False (T.pack abstract) -- annotation
+                    else return $ nubOrd $ map (\(a,b) -> (T.unpack a, T.unpack b)) $ extractLinkIDsWith (const True) (T.pack path) $ toPandoc abstract -- annotation
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
-        let links = filter (\l -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
-        when (length (filter (\l -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
+        let links = filter (\(l,_) -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
+        when (length (filter (\(l,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do
 
-             let pairs = linksToAnnotations md links
-                 body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am pairs]
+             let triplets = linksToAnnotations md links
+                 body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
@@ -94,24 +95,25 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                Right p' -> do when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
                               writeUpdatedFile "link-bibliography-fragment" path' p'
 
-generateLinkBibliographyItems :: ArchiveMetadata -> [(String,MetadataItem)] -> Block
+generateLinkBibliographyItems :: ArchiveMetadata -> [(String,String,MetadataItem)] -> Block
 generateLinkBibliographyItems _ [] = Para []
-generateLinkBibliographyItems am items = let itemsWP = filter (\(u,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
-                                             itemsPrimary =  items \\ itemsWP
-                                    in OrderedList (1, DefaultStyle, DefaultDelim)
-                                      (map (generateLinkBibliographyItem am) itemsPrimary ++
-                                          -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
-                                          if null itemsWP then [] else [
-                                                                        [Div ("",["collapse"],[]) [
-                                                                            Para [Strong [Str "Wikipedia Bibliography:"]],
-                                                                            OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
+generateLinkBibliographyItems am items =
+  let itemsWP      = filter (\(u,_,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
+      itemsPrimary =  items \\ itemsWP
+  in OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsPrimary ++
+        -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
+        if null itemsWP then [] else [
+                                      [Div ("",["collapse"],[]) [
+                                          Para [Strong [Str "Wikipedia Bibliography:"]],
+                                          OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
                                       )
-generateLinkBibliographyItem  :: ArchiveMetadata -> (String,MetadataItem) -> [Block]
-generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
+generateLinkBibliographyItem  :: ArchiveMetadata -> (String,String,MetadataItem) -> [Block]
+generateLinkBibliographyItem _ (f,ident,(t,_,_,_,_,_,""))  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
+      prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank'; TODO: should this include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote'?
       -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
       -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
       -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
@@ -123,14 +125,17 @@ generateLinkBibliographyItem _ (f,(t,_,_,_,_,_,""))  = -- short:
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     if t=="" then
-      Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")] : transcludeTarget
+      Para (prefix ++ [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]) : transcludeTarget
     else
-      Para [Link nullAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")] : transcludeTarget
+      Para (prefix ++ [Link nullAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")]) : transcludeTarget
 -- long items:
-generateLinkBibliographyItem am (f,mi) = generateAnnotationTransclusionBlock am (f,mi)
+generateLinkBibliographyItem am (f,ident,mi) = let prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ "#" ++ ident), "Original context in page."), Space] in
+                                                 wrapWith prefix $ generateAnnotationTransclusionBlock am (f,mi)
+   where wrapWith p ((Para x) : xs) = Para (p++x) : xs -- inject the prefix into the first Paragraph which is the regular link generated by the transclusion block
+         wrapWith p x = error $ "generateLinkBibliography.generateLinkBibliographyItem.wrapWith: attempted rewrite of generateAnnotationTransclusionBlock failed because the pattern-match didn't fire like it's always supposed to; did the output '[Block]' change? Inputs were: prefix: " ++ show p ++ " : transclude block: " ++ show x
 
 -- TODO: refactor out to Query?
-extractLinksFromPage :: String -> IO [String]
+extractLinksFromPage :: String -> IO [(String,String)]
 extractLinksFromPage "" = error "generateLinkBibliography.extractLinksFromPage: called with an empty '' string argument—this should never happen!"
 extractLinksFromPage path =
   do existsp <- doesFileExist path
@@ -141,13 +146,21 @@ extractLinksFromPage path =
            return $ case pE of
                       Left  err -> error $ "generateLinkBibliography.extractLinksFromPage: file failed Pandoc parsing; file path was: " ++ path ++ "; error message was: " ++ show err ++ "; full read file contents were: " ++ show f
                       -- make the list unique, but keep the original ordering
-                      Right p   -> map (replace "https://gwern.net/" "/") $
-                                         filter (\l -> head l /= '#') $ -- self-links are not useful in link bibliographies
-                                         nubOrd $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
+                      Right p   -> map (\(a,b) -> (replace "https://gwern.net/" "/" a, b)) $
+                                         filter (\(l,_) -> head l /= '#') $ -- self-links are not useful in link bibliographies
+                                         nubOrd $ map (\(a,b) -> (T.unpack a, T.unpack b)) $ extractLinkIDsWith (const True) (T.pack path) p
 
-linksToAnnotations :: Metadata -> [String] -> [(String,MetadataItem)]
-linksToAnnotations m = map (linkToAnnotation m)
-linkToAnnotation :: Metadata -> String -> (String,MetadataItem)
-linkToAnnotation m u = case M.lookup u m of
-                         Just i  -> (u,i)
-                         Nothing -> (u,("","","","",[],[],""))
+linksToAnnotations :: Metadata -> [(String,String)] -> [(String,String,MetadataItem)]
+linksToAnnotations _ [] = []
+linksToAnnotations m items = map (linkToAnnotation m) items
+linkToAnnotation :: Metadata -> (String,String) -> (String,String,MetadataItem)
+linkToAnnotation _ ("",ident) = error $ "generateLinkBibliography.linkToAnnotation: empty URL input; ID: " ++ ident
+linkToAnnotation m (u,ident) = case M.lookup u m of
+                                 Just mi  ->
+                                   let ident' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2Id u mi) in
+                                     (u,ident',mi)
+                                 Nothing -> let mi' = ("","","","",[],[],"")
+                                                ident'' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2Id u mi')
+                                            in
+                                                  (u,ident'',mi')
+
