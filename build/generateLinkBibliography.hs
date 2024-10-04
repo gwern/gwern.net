@@ -125,9 +125,9 @@ generateLinkBibliographyItem _ (f,ident,(t,_,_,_,_,_,""))  = -- short:
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     if t=="" then
-      Para (prefix ++ [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]) : transcludeTarget
+      Para (prefix ++ [Link ("",["id-not"],[]) [Code nullAttr (T.pack f')] (T.pack f, "")]) : transcludeTarget
     else
-      Para (prefix ++ [Link nullAttr [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")]) : transcludeTarget
+      Para (prefix ++ [Link ("",["id-not"],[]) [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")]) : transcludeTarget
 -- long items:
 generateLinkBibliographyItem am (f,ident,mi) = let prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ "#" ++ ident), "Original context in page."), Space] in
                                                  wrapWith prefix $ generateAnnotationTransclusionBlock am (f,mi)
