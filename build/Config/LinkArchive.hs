@@ -19,8 +19,9 @@ archiveDelay = 60
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
 isCheapArchive url = f url || f (transformURLsForArchiving url)
-  where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081", "x.com", "greaterwrong.com",
-                                   "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
+  where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081"
+                         , "x.com", "greaterwrong.com", "https://github.com/"
+                         , "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
 -- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
@@ -53,6 +54,7 @@ transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["?view=theater"]) then u ++ "?view=theater" else u)
   . replace "https://medium.com" "https://www.freedium.cfd"
   . addAmazonAffiliate
+  . addGithubReadme
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
   . transformURItoGW
   . transformWPtoMobileWP
@@ -82,6 +84,8 @@ localizeLinktestCases = [
     , ("https://darkrunescape.fandom.com/wiki/Doubling_money_scam", ("", "", "https://antifandom.com/darkrunescape/wiki/Doubling_money_scam", []))
     , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433?view=theater", []))
     , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
+    , ("https://github.com/nevesnunes/z80-sans", ("", "", "https://github.com/nevesnunes/z80-sans#readme", []))
+    , ("https://github.com/mame/quine-relay", ("", "", "https://github.com/mame/quine-relay#readme", []))
     , ("https://en.wikipedia.org/wiki/George_Washington", ("", "", "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent", []))
     , ("https://web.archive.org/web/20200928174939/http://thismarketingblogdoesnotexist.com/", ("", "", "https://web.archive.org/web/20200928174939if_/http://thismarketingblogdoesnotexist.com/", []))
     , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",
@@ -197,9 +201,14 @@ transformWPtoMobileWP uri = fromMaybe uri $ do
 --
 -- For non-Amazon links, we just return them unchanged.
 addAmazonAffiliate :: String -> String
-addAmazonAffiliate l = if ("www.amazon.com/" `isInfixOf` l) && not ("tag=gwernnet-20" `isInfixOf` l) then
+addAmazonAffiliate "" = error "LinkArchive.addAmazonAffiliate: passed an empty string!"
+addAmazonAffiliate l  = if ("www.amazon.com/" `isInfixOf` l) && not ("tag=gwernnet-20" `isInfixOf` l) then
                                         if "?" `isInfixOf` l then l ++ "&tag=gwernnet-20" else l ++ "?tag=gwernnet-20"
                                        else l
+
+addGithubReadme :: String -> String
+addGithubReadme "" = error "LinkArchive.addGithubReadme: passed an empty string!"
+addGithubReadme u  = sed "^(https://github.com/[A-Za-z0-9-]+/[A-Za-z0-9-]+)$" "\\1#readme" u
 
 {- re URL transforms: Why?
 
