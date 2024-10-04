@@ -233,15 +233,7 @@ Content = {
 	},
 
 	shouldLocalizeContentFromLink: (link) => {
-		let shouldLocalize = Content.referenceDataForLink(link)?.shouldLocalize;
-		if (   shouldLocalize == true
-			|| shouldLocalize == false)
-			return shouldLocalize;
-
-		if (Content.contentTypeForLink(link) == Content.contentTypes.localPage)
-			return true;
-
-		return false;
+		return Content.referenceDataForLink(link)?.shouldLocalize ?? false;
 	},
 
     objectHTMLForURL: (url, options = { }) => {
@@ -1872,7 +1864,8 @@ Content = {
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
                     popFrameTitleText:       popFrameTitleTextParts.join(" "),
-                    popFrameTitleTextShort:  popFrameTitleTextParts.first
+                    popFrameTitleTextShort:  popFrameTitleTextParts.first,
+                    shouldLocalize:          true
                 }
             },
 

@@ -1887,16 +1887,12 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
     if (baseLocation == null)
         return;
 
-    let loadLocation = (eventInfo.loadLocation ?? baseLocation);
-
     let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (   (   eventInfo.localize == true
-                // if initial base page load
-                || eventInfo.container == document.body)
+        if (   eventInfo.localize == true
             && (   link.getAttribute("href").startsWith("#")
-                || link.pathname == loadLocation.pathname)
+                || link.pathname == eventInfo.loadLocation.pathname)
                    // if the link refers to an element also in the loaded content
             && (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                    //  if the link refers to the loaded content container itself
@@ -1910,10 +1906,14 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                             && eventInfo.mergeFootnotes == true)
                            //  if we’re merging a footnote for transcluded content
                         || (   eventInfo.source == "transclude.footnotes"
-                            && link.classList.contains("footnote-back")))))) {
+                            && link.classList.contains("footnote-back"))
+                        )
+                    )
+                )
+            ) {
             link.pathname = baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
-            link.pathname = loadLocation.pathname;
+			link.pathname = eventInfo.loadLocation.pathname;
         }
     });
 }, "rewrite");
