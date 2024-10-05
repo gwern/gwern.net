@@ -13,8 +13,9 @@ body.reader-mode-active #sidenote-column-left,
 body.reader-mode-active #sidenote-column-right,
 body.reader-mode-active #navigation,
 body.reader-mode-active #footer,
-body.reader-mode-active .inflation-adjusted .subsup{
-	display: none;
+body.reader-mode-active .inflation-adjusted .subsup,
+body.reader-mode-active .date-range sub {
+    display: none;
 }
 
 /* Preserve the positioning of related elements by hiding visibility, instead of deleting entirely. */
@@ -22,164 +23,164 @@ body.reader-mode-active .markdownBody a .indicator-hook,
 body.reader-mode-active .markdownBody a .link-icon-hook,
 body.reader-mode-active .footnote-ref,
 body.reader-mode-active .footnote-back,
-body.reader-mode-active .date-range sub {
-	visibility: hidden;
+body.reader-mode-active .date-range .subsup sub {
+    visibility: hidden;
 }
 
 body.reader-mode-active #sidebar a.logo {
-	border-color: transparent;
+    border-color: transparent;
 }
 
 body.reader-mode-active #TOC ul li {
-	padding-left: 0.125em;
+    padding-left: 0.125em;
 }
 
 body.reader-mode-active .markdownBody .spawns-popup,
 body.reader-mode-active .markdownBody .spawns-popin {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 body.reader-mode-active .markdownBody a .indicator-hook::before {
-	padding-left: 0.3em;
-	box-shadow:
-		-0.17em  0.05em 0 0 var(--link-underline-background-color),
-		-0.17em -0.05em 0 0 var(--link-underline-background-color),
-		-0.17em  0      0 0 var(--link-underline-background-color);
-	background-image:
-		linear-gradient(var(--link-underline-background-color),
-						var(--link-underline-background-color)),
-		linear-gradient(var(--link-underline-gradient-line-color),
-						var(--link-underline-gradient-line-color)),
-		linear-gradient(var(--link-underline-gradient-line-color),
-						var(--link-underline-gradient-line-color));
-	background-size:
-		1px  0.5em,
-		100% 1px,
-		1px  calc(0.75em - 0.1em);
-	background-position:
-		0 0.1em,
-		0 calc(100% - 0.1em),
-		0 calc(100% - 0.1em);
+    padding-left: 0.3em;
+    box-shadow:
+        -0.17em  0.05em 0 0 var(--link-underline-background-color),
+        -0.17em -0.05em 0 0 var(--link-underline-background-color),
+        -0.17em  0      0 0 var(--link-underline-background-color);
+    background-image:
+        linear-gradient(var(--link-underline-background-color),
+                        var(--link-underline-background-color)),
+        linear-gradient(var(--link-underline-gradient-line-color),
+                        var(--link-underline-gradient-line-color)),
+        linear-gradient(var(--link-underline-gradient-line-color),
+                        var(--link-underline-gradient-line-color));
+    background-size:
+        1px  0.5em,
+        100% 1px,
+        1px  calc(0.75em - 0.1em);
+    background-position:
+        0 0.1em,
+        0 calc(100% - 0.1em),
+        0 calc(100% - 0.1em);
 }
 
 body.reader-mode-active .markdownBody a .link-icon-hook {
-	position: absolute;
-	box-shadow:
-		 0.17em  0.05em 0 0 var(--link-underline-background-color),
-		 0.17em -0.05em 0 0 var(--link-underline-background-color),
-		 0.17em  0      0 0 var(--link-underline-background-color);
-	background-color: var(--link-underline-background-color);
-	background-image:
-		linear-gradient(var(--link-underline-gradient-line-color),
-						var(--link-underline-gradient-line-color));
-	background-size:
-		100% 1px;
-	background-position:
-		0 calc(100% - 0.2em);
-	background-repeat: no-repeat;
+    position: absolute;
+    box-shadow:
+         0.17em  0.05em 0 0 var(--link-underline-background-color),
+         0.17em -0.05em 0 0 var(--link-underline-background-color),
+         0.17em  0      0 0 var(--link-underline-background-color);
+    background-color: var(--link-underline-background-color);
+    background-image:
+        linear-gradient(var(--link-underline-gradient-line-color),
+                        var(--link-underline-gradient-line-color));
+    background-size:
+        100% 1px;
+    background-position:
+        0 calc(100% - 0.2em);
+    background-repeat: no-repeat;
 }
 
 body.reader-mode-active .markdownBody a.has-annotation .link-icon-hook {
-	background-image: var(--link-underline-background-image);
-	background-size: 2px 1px;
-	background-repeat: repeat-x;
+    background-image: var(--link-underline-background-image);
+    background-size: 2px 1px;
+    background-repeat: repeat-x;
 }
 
 body.reader-mode-active .markdownBody a:hover {
-	position: relative;
-	z-index: 111;
+    position: relative;
+    z-index: 111;
 }
 
 body.reader-mode-active .markdownBody a:hover .indicator-hook,
 body.reader-mode-active .markdownBody a:hover .link-icon-hook {
-	visibility: visible;
+    visibility: visible;
 }
 
 body.reader-mode-active.masked-links-hidden .markdownBody a .indicator-hook,
 body.reader-mode-active.masked-links-hidden .markdownBody a .link-icon-hook {
-	display: none;
+    display: none;
 }
 
 body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open),
 body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open):visited,
 body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open):hover {
-	color: inherit;
-	background: none;
-	cursor: text;
+    color: inherit;
+    background: none;
+    cursor: text;
 }
 
 body.reader-mode-active.masked-links-hidden .markdownBody a:link,
 body.reader-mode-active.masked-links-hidden .markdownBody a:link * {
-	text-shadow: none;
+    text-shadow: none;
 }
 
 body.reader-mode-active.masked-links-hidden .markdownBody a code {
-	border-bottom-width: 1px;
+    border-bottom-width: 1px;
 }
 
-/*	Footnotes section self-link.
+/*  Footnotes section self-link.
  */
 body.reader-mode-active .markdownBody section.footnotes .section-self-link:hover {
-	position: absolute !important;
-	cursor: pointer !important;
+    position: absolute !important;
+    cursor: pointer !important;
 }
 
 /*  Citations.
  */
 body.reader-mode-active .markdownBody .cite-joiner {
-	display: initial;
+    display: initial;
 }
 body.reader-mode-active .markdownBody .cite-date::before {
-	content: " ";
+    content: " ";
 }
 
 body.reader-mode-active .markdownBody .cite-date {
-	vertical-align: unset;
-	font-size: unset;
-	line-height: unset;
-	font-variant-numeric: unset;
-	margin-left: unset;
+    vertical-align: unset;
+    font-size: unset;
+    line-height: unset;
+    font-variant-numeric: unset;
+    margin-left: unset;
 }
 body.reader-mode-active .markdownBody .cite-author-plural::after {
-	content: " ";
+    content: " ";
 }
 
-/*	Misc.
+/*  Misc.
  */
 body.reader-mode-active .markdownBody p code {
-	--background-color: inherit;
+    --background-color: inherit;
 
-	border-color: transparent;
+    border-color: transparent;
 }
 
 body.reader-mode-active .date-range .subsup {
-	margin: 0;
+    margin: 0;
 }
 
 /*  Mobile layout adjustments.
  */
 @media all and (max-width: 649px) {
-	body.reader-mode-active #sidebar {
-		position: relative;
-	}
-	body.reader-mode-active #sidebar a.logo {
-		margin: 0;
-		padding: 0;
-	}
-	body.reader-mode-active #sidebar a.logo .logo-image {
-		width: 1.5rem;
-		background-color: var(--GW-body-background-color);
-		padding: 0 10px 0 11px;
-	}
-	body.reader-mode-active #sidebar a.logo::before {
-		content: "";
-		position: absolute;
-		width: 100%;
-		height: 0;
-		border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
-		left: 0;
-		top: 50%;
-		z-index: -1;
-	}
+    body.reader-mode-active #sidebar {
+        position: relative;
+    }
+    body.reader-mode-active #sidebar a.logo {
+        margin: 0;
+        padding: 0;
+    }
+    body.reader-mode-active #sidebar a.logo .logo-image {
+        width: 1.5rem;
+        background-color: var(--GW-body-background-color);
+        padding: 0 10px 0 11px;
+    }
+    body.reader-mode-active #sidebar a.logo::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 0;
+        border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
+        left: 0;
+        top: 50%;
+        z-index: -1;
+    }
 }
