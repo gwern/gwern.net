@@ -1211,7 +1211,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document: document,
         loadLocation: pageURL,
         flags: (  GW.contentDidInjectEventFlags.clickable
-                | GW.contentDidInjectEventFlags.fullWidthPossible)
+                | GW.contentDidInjectEventFlags.fullWidthPossible
+                | GW.contentDidInjectEventFlags.localize)
     });
 });
 window.addEventListener("load", () => {

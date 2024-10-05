@@ -5594,15 +5594,7 @@ Content = {
 	},
 
 	shouldLocalizeContentFromLink: (link) => {
-		let shouldLocalize = Content.referenceDataForLink(link)?.shouldLocalize;
-		if (   shouldLocalize == true
-			|| shouldLocalize == false)
-			return shouldLocalize;
-
-		if (Content.contentTypeForLink(link) == Content.contentTypes.localPage)
-			return true;
-
-		return false;
+		return Content.referenceDataForLink(link)?.shouldLocalize ?? false;
 	},
 
     objectHTMLForURL: (url, options = { }) => {
@@ -7233,7 +7225,8 @@ Content = {
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
                     popFrameTitleText:       popFrameTitleTextParts.join(" "),
-                    popFrameTitleTextShort:  popFrameTitleTextParts.first
+                    popFrameTitleTextShort:  popFrameTitleTextParts.first,
+                    shouldLocalize:          true
                 }
             },
 
@@ -8496,12 +8489,14 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "transclude.footnotesSection",
             container: footnotesSectionWrapper,
-            document: containingDocument
+            document: containingDocument,
+            loadLocation: loadLocationForIncludeLink(includeLink)
         });
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude.footnotesSection",
 			container: footnotesSectionWrapper,
 			document: containingDocument,
+            loadLocation: loadLocationForIncludeLink(includeLink),
             flags: 0
 		});
 
@@ -9175,7 +9170,8 @@ Transclude = {
 					loadEventInfo: {
 						source: "transclude",
 						contentType: contentTypeIdentifierForIncludeLink(includeLink),
-						includeLink: includeLink
+						includeLink: includeLink,
+						loadLocation: loadLocationForIncludeLink(includeLink)
 					}
 				};
 
@@ -14656,16 +14652,12 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
     if (baseLocation == null)
         return;
 
-    let loadLocation = (eventInfo.loadLocation ?? baseLocation);
-
     let injectingIntoFullPage = (eventInfo.document.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
     eventInfo.container.querySelectorAll("a[href]").forEach(link => {
-        if (   (   eventInfo.localize == true
-                // if initial base page load
-                || eventInfo.container == document.body)
+        if (   eventInfo.localize == true
             && (   link.getAttribute("href").startsWith("#")
-                || link.pathname == loadLocation.pathname)
+                || link.pathname == eventInfo.loadLocation.pathname)
                    // if the link refers to an element also in the loaded content
             && (   eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
                    //  if the link refers to the loaded content container itself
@@ -14679,10 +14671,14 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                             && eventInfo.mergeFootnotes == true)
                            //  if we’re merging a footnote for transcluded content
                         || (   eventInfo.source == "transclude.footnotes"
-                            && link.classList.contains("footnote-back")))))) {
+                            && link.classList.contains("footnote-back"))
+                        )
+                    )
+                )
+            ) {
             link.pathname = baseLocation.pathname;
         } else if (link.getAttribute("href").startsWith("#")) {
-            link.pathname = loadLocation.pathname;
+			link.pathname = eventInfo.loadLocation.pathname;
         }
     });
 }, "rewrite");
@@ -14693,7 +14689,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
  */
 addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventInfo) => {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
-
+    
     let baseLocation = baseLocationForDocument(eventInfo.document);
     if (baseLocation == null)
         return;
@@ -14713,15 +14709,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
             || link.closest(exclusionSelector))
             return;
 
-        if (   link.pathname == baseLocation.pathname
-                // if initial base page load
-            && (   eventInfo.container == document.body
-                // if the link refers to an element also in the loaded content
-                || eventInfo.container.querySelector(selectorFromHash(link.hash)) != null
-                // if the link refers to the loaded content container itself
-                || (   eventInfo.container instanceof Element
-                    && eventInfo.container.matches(selectorFromHash(link.hash))))) {
-            link.swapClasses([ "link-self", "link-page" ], 0);
+        if (link.pathname == baseLocation.pathname) {
+        	link.swapClasses([ "link-self", "link-page" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-page" ], 1);
         }
@@ -14776,7 +14765,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
             in favor of this JS hook, to simplify code & ensure a single source 
             of truth.
          */
-        let target = eventInfo.container.querySelector(selectorFromHash(link.hash));
+        let target = eventInfo.document.querySelector(selectorFromHash(link.hash));
         if (target == null)
         	return;
 

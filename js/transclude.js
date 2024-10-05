@@ -1251,12 +1251,14 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "transclude.footnotesSection",
             container: footnotesSectionWrapper,
-            document: containingDocument
+            document: containingDocument,
+            loadLocation: loadLocationForIncludeLink(includeLink)
         });
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude.footnotesSection",
 			container: footnotesSectionWrapper,
 			document: containingDocument,
+            loadLocation: loadLocationForIncludeLink(includeLink),
             flags: 0
 		});
 
@@ -1930,7 +1932,8 @@ Transclude = {
 					loadEventInfo: {
 						source: "transclude",
 						contentType: contentTypeIdentifierForIncludeLink(includeLink),
-						includeLink: includeLink
+						includeLink: includeLink,
+						loadLocation: loadLocationForIncludeLink(includeLink)
 					}
 				};
 
