@@ -1,3 +1,4 @@
+/* Elements to be deleted completely. */
 body.reader-mode-active #sidebar .sidebar-links,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
@@ -12,11 +13,17 @@ body.reader-mode-active #sidenote-column-left,
 body.reader-mode-active #sidenote-column-right,
 body.reader-mode-active #navigation,
 body.reader-mode-active #footer,
-body.reader-mode-active .inflation-adjusted .subsup,
-body.reader-mode-active .date-range sub,
-body.reader-mode-active .footnote-ref,
-body.reader-mode-active .footnote-back {
+body.reader-mode-active .inflation-adjusted .subsup{
 	display: none;
+}
+
+/* Preserve the positioning of related elements by hiding visibility, instead of deleting entirely. */
+body.reader-mode-active .markdownBody a .indicator-hook,
+body.reader-mode-active .markdownBody a .link-icon-hook,
+body.reader-mode-active .footnote-ref,
+body.reader-mode-active .footnote-back,
+body.reader-mode-active .date-range sub {
+	visibility: hidden;
 }
 
 body.reader-mode-active #sidebar a.logo {
@@ -77,11 +84,6 @@ body.reader-mode-active .markdownBody a.has-annotation .link-icon-hook {
 	background-image: var(--link-underline-background-image);
 	background-size: 2px 1px;
 	background-repeat: repeat-x;
-}
-
-body.reader-mode-active .markdownBody a .indicator-hook,
-body.reader-mode-active .markdownBody a .link-icon-hook {
-	visibility: hidden;
 }
 
 body.reader-mode-active .markdownBody a:hover {
