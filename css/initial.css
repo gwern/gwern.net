@@ -1676,6 +1676,7 @@ figure.width-full {
 }
 
 /*  Special “manicule” margin notes.
+    For manual use, see '.icon-manicule-right' (default), and '.icon-manicule-left' (mirrored).
  */
 .marginnote.manicule svg {
     display: inline-block;
@@ -1863,13 +1864,14 @@ a code {
                                                            padding: 0.4em;
                                                            opacity: 70%; }
 .icon-magnifying-glass { margin: 0.1em;
-                         padding: 0.5em;
+                         padding: 0.4em;
                          opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before, .icon-moon-solid::before,
-.icon-book-open-solid::before, .icon-message-slash-solid::before,
+.icon-single-white-star-on-black-circle::before,
+.icon-moon-solid::before, .icon-book-open-solid::before, .icon-message-slash-solid::before,
 .icon-magnifying-glass::before, .icon-gear-solid::before, .icon-sun-solid::before,
-.icon-eye-slash-solid::before {
+.icon-eye-slash-solid::before,
+.icon-manicule-right::before, .icon-manicule-left::before {
     content: "";
     background-repeat: no-repeat;
     background-position: center left;
@@ -1893,6 +1895,8 @@ a code {
 .icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg#gear-solid'); }
 .icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg#sun-solid'); }
 .icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg#eye-slash-solid'); }
+.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg#manicule-right'); }
+.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg#manicule-left'); }
 
 /*************/
 /* SIDENOTES */

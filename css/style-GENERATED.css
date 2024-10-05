@@ -8523,13 +8523,14 @@ a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
 }
 
 a[data-link-icon='≈'] .link-icon-hook::after { /* similar-links (ALMOST EQUAL TO) */
-        --link-icon-offset-y: 0em;
-        --link-icon-size: 0.95em;
-        opacity: 0.85;
+    --link-icon-offset-y: 0em;
+    --link-icon-size: 0.95em;
+    opacity: 0.85;
 }
 
 a[data-link-icon='♔'] .link-icon-hook::after { /* WBW / Wait But Why */
-        opacity: 0.70;
+    --link-icon-size: 1em;
+    opacity: 0.75;
 }
 
 /****************************/
@@ -8589,7 +8590,7 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
 }
 
 a[data-link-icon='sgfp']a[data-link-icon-type*=quad][data-link-icon-type*=mono] .link-icon-hook::after {
-        line-height: 0.95; /* 'g' overlaps without more line-height */
+    line-height: 0.95; /* 'g' overlaps without more line-height */
 }
 
 /*=---------------------------------=*/
