@@ -85,7 +85,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
           do
 
              let triplets = linksToAnnotations md links
-                 body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am triplets]
+                 body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
@@ -95,25 +95,26 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                Right p' -> do when (path' == "") $ error ("generateLinkBibliography.hs: writeLinkBibliographyFragment: writing out failed because received empty path' from getLinkBibLink for original path: " ++ path)
                               writeUpdatedFile "link-bibliography-fragment" path' p'
 
-generateLinkBibliographyItems :: ArchiveMetadata -> [(String,String,MetadataItem)] -> Block
-generateLinkBibliographyItems _ [] = Para []
-generateLinkBibliographyItems am items =
+generateLinkBibliographyItems :: ArchiveMetadata -> String -> [(String,String,MetadataItem)] -> Block
+generateLinkBibliographyItems _ _ [] = Para []
+generateLinkBibliographyItems am pathParent items =
   let itemsWP      = filter (\(u,_,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
       itemsPrimary =  items \\ itemsWP
-  in OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsPrimary ++
+  in OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent) itemsPrimary ++
         -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
         if null itemsWP then [] else [
                                       [Div ("",["collapse"],[]) [
                                           Para [Strong [Str "Wikipedia Bibliography:"]],
-                                          OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am) itemsWP)]]]
+                                          OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent) itemsWP)]]]
                                       )
-generateLinkBibliographyItem  :: ArchiveMetadata -> (String,String,MetadataItem) -> [Block]
-generateLinkBibliographyItem _ (f,ident,(t,_,_,_,_,_,""))  = -- short:
+generateLinkBibliographyItem  :: ArchiveMetadata -> String -> (String,String,MetadataItem) -> [Block]
+generateLinkBibliographyItem _ pathParent (f,ident,(t,_,_,_,_,_,""))  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
-      prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank'; TODO: should this include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote'?
+        -- NOTE: this must include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote', otherwise it will be rewritten incorrectly when transcluded. Like in the link-bib for '/design', a href='#gwern-sidenote' would be rewritten by the transclude JS to point to the 'original within-page anchor', in this case, '/metadata/annotation/link-bibliography/%2fdesign.html', which is of course completely incorrect - we want it to point to the ID anchor in */design*.
+      prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ pathParent ++ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank';
       -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
       -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
       -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
@@ -129,7 +130,7 @@ generateLinkBibliographyItem _ (f,ident,(t,_,_,_,_,_,""))  = -- short:
     else
       Para (prefix ++ [Link ("",["id-not"],[]) [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")]) : transcludeTarget
 -- long items:
-generateLinkBibliographyItem am (f,ident,mi) = let prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ "#" ++ ident), "Original context in page."), Space] in
+    generateLinkBibliographyItem am pathParent (f,ident,mi) = let prefix = if null ident then [] else [Link ("",["id-not"],[]) [RawInline (Format "HTML") "&ZeroWidthSpace;"] ((T.pack $ pathParent ++ "#" ++ ident), "Original context in page."), Space] in
                                                  wrapWith prefix $ generateAnnotationTransclusionBlock am (f,mi)
    where wrapWith p ((Para x) : xs) = Para (p++x) : xs -- inject the prefix into the first Paragraph which is the regular link generated by the transclusion block
          wrapWith p x = error $ "generateLinkBibliography.generateLinkBibliographyItem.wrapWith: attempted rewrite of generateAnnotationTransclusionBlock failed because the pattern-match didn't fire like it's always supposed to; did the output '[Block]' change? Inputs were: prefix: " ++ show p ++ " : transclude block: " ++ show x
