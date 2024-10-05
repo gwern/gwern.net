@@ -142,8 +142,8 @@ dateDurationSingle todayYear oldYear
 -- Tested in `Config.Typography.dateRangeDurationTestCases`
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex
 dateRangeRegex     = makeRegex ("(.*)([12][0-9][0-9][0-9])(--?|–)([12][0-9][0-9][0-9])(.*)" :: T.Text)
-dateFullRangeRegex = makeRegex ("([^#×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^p×€¢¥£\\$]*)" :: T.Text)
-singleYearRegex    = makeRegex ("(.*[^#0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’p][^#×€¢¥£\\$]*)" :: T.Text)
+dateFullRangeRegex = makeRegex ("([^~#×€¢¥£\\$]*)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)(--?|–)([12][0-9][0-9][0-9]-[0-9][0-9][-]?[0-9]?[0-9]?)([^~p×€¢¥£\\$]*)" :: T.Text)
+singleYearRegex    = makeRegex ("(.*[^~#0-9-–×€¢¥£\\$])([12][0-9][0-9][0-9])([^0-9-s–’p][^#×€¢¥£\\$]*)" :: T.Text)
 
 dateRangeDurationTestCasesTestsuite :: [(Int, Inline, Inline, Inline)]
 dateRangeDurationTestCasesTestsuite = filter (\(_,_,expected',actual) -> expected' /= actual) $

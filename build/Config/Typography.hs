@@ -197,4 +197,7 @@ dateRangeDurationTestCases = [
   , (2027, Str "(35) Has not been published since 2001."
     , Span ("",[],[]) [Str "(35) Has not been published since ",Span ("",["date-range"],[]) [Str "2001",Subscript [Span ("",[],[("title","2001 was 26 years ago.")]) [Str "26ya"]]],Str "."]
     )
+  , (2028, Str "We sampled ~1000 ZIP codes."
+    , Str "We sampled ~1000 ZIP codes."
+    )
   ]

@@ -232,6 +232,7 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])", " \\1,\\2,\\3,\\4,\\5") -- trillions
          , ("([0-9]+) ([0-9]+)",                                                             "\\1,\\2") -- '50 000' → '50,000'
          , ("([0-9]+) percent([ [:punct:]])", "\\1%\\2") -- eg '$22,000 (46 percent) higher annual early-career wages than they would'
+         , ("\\(([0-9\\.]+)x ", "(\\1× ") -- "we are faster (10.1x faster) than a competitor" → "we are faster (10.1× faster) than a competitor"
          , ("([0-9][0-9]+) [xX] ([0-9][0-9]+) ", "\\1×\\2") -- "high fidelity generation of 1024 x 1024 images" / "0.85 X 30 mEq/kg"
          , ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px") --  "Alexnet performance for 16 x16 px features)."
          , ("([0-9]+)[ -]fold", "\\1×")
