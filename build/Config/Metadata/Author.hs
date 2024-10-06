@@ -484,6 +484,12 @@ canonicals = M.fromList
   , ("RobertMMetcalfe", "Robert Metcalfe")
   , ("Bob Metcalfe", "Robert Metcalfe")
   , ("miramurati", "Mira Murati")
+  , ("Economist", "<em>The Economist</em>")
+  , ("The Economist", "<em>The Economist</em>")
+  , ("Economist Magazine", "<em>The Economist</em>")
+  , ("DaveShapi", "David Shapiro")
+  , ("Robert McGrew", "Bob McGrew")
+  , ("bobmcgrewai", "Bob McGrew")
   ]
 
 -- tests: unique
@@ -494,7 +500,7 @@ canonicalsWithInitials =
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
-  , "Kenneth O. Stanley", "Sarah E. Harris"]
+  , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -840,6 +846,14 @@ authorLinkDB = M.fromList $
     , ("Stefania Bandinelli", "https://research.com/u/stefania-bandinelli")
     , ("Saurav Kadavath", "https://scholar.google.com/citations?user=Z2Uo_FcAAAAJ&hl=en&oi=ao")
     , ("Sarah E. Harris", "https://www.ed.ac.uk/profile/sarah-harris")
+    , ("<em>The Economist</em>", "https://en.wikipedia.org/wiki/The_Economist")
+    , ("Preben Bo Mortensen", "https://www.emedevents.com/speaker-profile/preben-bo-mortensen")
+    , ("Rodney J. Scott", "https://hmri.org.au/research/researchers/laureate-professor-rodney-scott/")
+    , ("Riccardo E. Marioni", "https://www.research.ed.ac.uk/en/persons/riccardo-marioni")
+    , ("David Shapiro", "https://www.youtube.com/@DaveShap")
+    , ("Bob McGrew", "https://x.com/bobmcgrewai")
+    , ("Niko McCarty", "https://blog.atomsonly.com/")
+    , ("Gordon Stables", "https://en.wikipedia.org/wiki/William_Gordon_Stables")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

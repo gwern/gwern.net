@@ -48,7 +48,7 @@ main = do C.cd
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let newestp = any (`isInfixOf` "newest") dirs
-          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index-long.md" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index" $ delete "/index-long" $ delete "/index-long.md" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata

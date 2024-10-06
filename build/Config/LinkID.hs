@@ -2835,4 +2835,5 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/1608.08225","lin-et-al-2016-2")
        , ("https://arxiv.org/abs/2403.17141","yang-et-al-2024-1")
        , ("/doc/longevity/metformin/2024-yang.pdf","yang-et-al-2024-2")
+       , ("https://arxiv.org/abs/2410.01201","feng-et-al-2024-1"),("https://arxiv.org/abs/2406.07515","feng-et-al-2024-2"),("https://arxiv.org/abs/2405.13956#borealis","feng-et-al-2024-3")
       ]

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-09-29 22:15:09 gwern"
+;;; When:  Time-stamp: "2024-10-05 21:31:31 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -742,6 +742,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("n-gram" . "<em>n</em>-gram")
                         ("k-mean" . "<em>k</em>-mean")
                         ("partial Î·2" . "partial η<sup>2</sup>")
+                        ("η2p" . "<em>η</em><span class=\"subsup\"><sub>p</sub><sup>2</sup></span>")
                         ("s9 " . "s’ ") ; workaround MedRxiv/BioRxiv consistent malformation of "s'" as "s9" (somehow); can't auto-replace due to 'CRISPR-Cas9' etc
                         (" −." . " −0.")
                         ("50/50" . "50:50")
@@ -1149,21 +1150,21 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([023456789]\\)th" . "\\1^th^")
                         ("\\([1]\\)st"        . "\\1^st^")
                         ("\\([3]\\)rd"        . "\\1^rd^")
-                        ("\\(four|fif|six|seven|eigh|nin|ten\\)th"        . "\\1^th^")
-                        ("\\(four|fif|six|seven|eigh|nin|ten\\)th"        . "\\1^th^")
+                        ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
+                        ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
                         ; numbers, ranges or changes:
                         ; NOTE: we deliberately omit EN DASH-ification of ranges involving negative numbers. For example, '−0.3 to −3.7'
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
                         ; appropriately, but the glyphs are way too similar-looking. (Sorry, I didn't design English punctuation.)
                         ; And this is also true if any of the numbers have minus signs (eg. '−0.3–3.7' or '0.3–−3.7' would be no better).
                         ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2")
-                        (" one to \\([0-9∞.]+\\)"                    . " \\1–\\2")
+                        (" one to \\([0-9∞.]+\\)"                    . " 1–\\1")
                         ("from \\([0-9∞.]+\\) to \\([0-9∞.]+\\)"     . "\\1–\\2")
                         ("\\([0-9∞\\.]+\\) to \\([0-9∞\\.]+\\)"      . "\\1–\\2")
                         ("\\([0-9∞\\.]+\\) through \\([0-9∞\\.]+\\)" . "\\1–\\2")
-                        ("from \\([0-9∞.]+|one|two|three\\) to \\([0-9∞.]+\\)"     . "\\1 → \\2")
+                        ("from \\([0-9∞%.]+\\|one\\|two\\|three\\) to \\([0-9∞.]+\\)"     . "\\1 → \\2")
                         ("\\([a-z]+\\)- and \\([a-z]+-[a-z]+\\)"     . "\\1 & \\2")
-                        ("\\([0-9∞.]++|one|two|three\\) to \\([0-9∞.]+\\)"          . "\\1 → \\2")
+                        ("\\([0-9∞.]+\\|one\\|two\\|three\\) to \\([0-9∞.]+\\)"          . "\\1 → \\2")
                         ("between \\([0-9∞.]+\\) and \\([0-9∞.]+\\)" . "\\1–\\2") ; "range between 2 and 10" → "range 2–10"
                         (" \\([0-9∞.]+\\) or \\([0-9∞.]+\\) "        . " \\1–\\2 ")
                         ("\\([0-9∞.]+\\)- to \\([0-9∞.]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
