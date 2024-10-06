@@ -49,18 +49,17 @@ htmlDownloadAndParseTitleClean "" = error "Annotation.htmlDownloadAndParseTitleC
 htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.htmlDownloadAndParseTitleClean: passed a non-URL argument, which should never happen: " ++ show u else
  do
   title <- htmlDownloadAndParseTitle u
-  let title' = trim $ unlines $ take 1 $ lines $ clean $ if any (`elem` C.separators) title
-                              then reverse $ tail $ dropWhile (`notElem` C.separators) $ reverse title
-                              else title
+  let title' = trim $ unlines $ take 1 $ lines $ replaceMany C.stringReplace $ deleteMany C.stringDelete $
+                 if any (`elem` C.separators) title
+                 then reverse $ tail $ dropWhile (`notElem` C.separators) $ reverse title
+                 else title
   if title' `elem` C.badStrings || anyInfix title' C.badStringPatterns || length title' < 5 || length title' > 500
   then return "" -- no need to shell out to a LLM for cleaning if it is a known-bad title
   else
-        do titleCleaned <- cleanTitleWithAI title'
+        do titleCleaned <- fmap cleanAbstractsHTML $ cleanTitleWithAI title'
            return $ if titleCleaned == "" then "" else
                      if titleCleaned /= title' && titleCleaned `isInfixOf` title' then titleCleaned
                        else title'
-     where clean :: String -> String
-           clean = replaceMany C.stringReplace . deleteMany C.stringDelete
 
 -- shell out to `title-cleaner.py` to clean a title using LLMs:
 cleanTitleWithAI :: String -> IO String
