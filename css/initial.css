@@ -1852,7 +1852,8 @@ a code {
 .icon-single-white-star-on-black-circle,
 .icon-moon-solid, .icon-book-open-solid,
 .icon-message-slash-solid, .icon-magnifying-glass,
-.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid {
+.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid,
+.icon-manicule-left, .icon-manicule-right {
     position: relative;
     background-color: var(--link-underline-background-color); }
 
@@ -1861,10 +1862,10 @@ a code {
 
 .icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
 .icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid { margin: 0.1em;
-                                                           padding: 0.4em;
+                                                           padding-left: 0.8em;
                                                            opacity: 70%; }
 .icon-magnifying-glass { margin: 0.1em;
-                         padding: 0.4em;
+                         padding: 0.6em;
                          opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
