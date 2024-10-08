@@ -48,7 +48,7 @@ main = do C.cd
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let newestp = any (`isInfixOf` "newest") dirs
-          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index" $ delete "/index-long" $ delete "/index-long.md" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
@@ -211,7 +211,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 -- And for new essays, but not annotations/links, we want to use a broader definition of 'new' to include *modified*: as modified >= created, we just use modification time instead
 filterDbNewest :: Int -> Int -> Int -> Metadata -> Metadata
 filterDbNewest selfN annotationN linkN md = let -- ml = M.toList md
-                                                mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p || "/changelog" `isPrefixOf` p)) md
+                                                mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/index-long" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p || "/changelog" `isPrefixOf` p)) md
                                                 selfs      = take selfN $ sortItemDateModified $ M.toList $ M.filterWithKey (\p (_,aut,_,_,_,_,_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"] && not ('#' `elem` p)) mdAnnotated
 
                                                 annotations = take annotationN $ sortItemPathDateCreated $ M.toList $

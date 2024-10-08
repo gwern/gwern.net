@@ -273,7 +273,6 @@ canonicals = M.fromList
   , ("Gary L. Drescher", "Gary Drescher")
   , ("Doug Hofstadter", "Douglas Hofstadter")
   , ("Douglas R. Hofstadter", "Douglas Hofstadter")
-  , ("Irving John Good", "I. J. Good")
   , ("Emily Willoughby", "Emily A. Willoughby")
   , ("James Lee", "James J. Lee")
   , ("Timothy P. Lillicrap", "Timothy Lillicrap")
@@ -490,6 +489,8 @@ canonicals = M.fromList
   , ("DaveShapi", "David Shapiro")
   , ("Robert McGrew", "Bob McGrew")
   , ("bobmcgrewai", "Bob McGrew")
+  , ("barret_zoph", "Barret Zoph")
+  , ("Misha Laskin", "Michael Laskin")
   ]
 
 -- tests: unique
@@ -500,7 +501,7 @@ canonicalsWithInitials =
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
-  , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"]
+  , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni", "Irving John Good", "Robert J. Cava"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -854,6 +855,11 @@ authorLinkDB = M.fromList $
     , ("Bob McGrew", "https://x.com/bobmcgrewai")
     , ("Niko McCarty", "https://blog.atomsonly.com/")
     , ("Gordon Stables", "https://en.wikipedia.org/wiki/William_Gordon_Stables")
+    , ("Philippe Amouyel", "https://www.openaccessgovernment.org/contributor_profile/philippe-amouyel/")
+    , ("Patrick Turley", "https://www.paturley.com/")
+    , ("Michael Laskin", "https://scholar.google.com/citations?user=DOGDnwsAAAAJ")
+    , ("Michael J. Gill", "https://scholar.google.com/citations?user=9R38cgIAAAAJ&hl=en&oi=ao")
+    , ("Michael Gill", "https://scholar.google.com/citations?user=kYY5xu8AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2086,4 +2092,7 @@ authorWpLinkDB =
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
-    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb", "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov", "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"]
+    , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
+    , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
+    , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
+    , "Robert J. Cava", "Zoe Laughlin"]

@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-09-28 13:02:17 gwern"
+# When:  Time-stamp: "2024-10-06 12:02:57 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -442,6 +442,10 @@ In support of this idea we observe poor input representation accuracy in transfo
 This study evaluates the impact of depression treatment on economic behavior in Karnataka, India.
 We cross-randomize pharmacotherapy and livelihoods assistance among 1,000 depressed adults and evaluate impacts on depression severity, socioeconomic outcomes, and several potential pathways.
 When combined, the interventions reduce depression severity, with benefits that persist after treatment concludes. Pharmacotherapy alone has a weaker effect that is only marginally significant and dissipates sooner. Depression treatment does not significantly increase earnings, consumption, or human capital investment in children.
+- Input: <abstract>Large language models can memorize and repeat their training data, causing privacy and copyright risks. To mitigate memorization, we introduce a subtle modification to the next-token training objective that we call the goldfish loss. During training, a randomly sampled subset of tokens are excluded from the loss computation. These dropped tokens are not memorized by the model, which prevents verbatim reproduction of a complete chain of tokens from the training set. We run extensive experiments training billion-scale Llama-2 models, both pre-trained and trained from scratch, and demonstrate reductions in extractable memorization with little to no impact on downstream benchmarks.</abstract> →
+Large language models can memorize and repeat their training data, causing privacy and copyright risks.
+To mitigate memorization, we introduce a subtle modification to the next-token training objective that we call the <strong>goldfish loss</strong>. During training, a randomly sampled subset of tokens are excluded from the loss computation. These dropped tokens are not memorized by the model, which prevents verbatim reproduction of a complete chain of tokens from the training set.
+We run extensive experiments training billion-scale Llama-2 models, both pre-trained and trained from scratch, and demonstrate reductions in extractable memorization with little to no impact on downstream benchmarks.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 
