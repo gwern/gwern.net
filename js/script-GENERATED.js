@@ -3026,7 +3026,7 @@ Popups = {
         //  Create and inject the title bar element.
         popup.titleBar = newElement("DIV", {
             class: "popframe-title-bar",
-            title: "Drag popup by title bar to reposition; `v`: double-click title bar to collapse (hold `⌥/Alt` to collapse all)"
+            title: "Drag popup by title bar to reposition; [v]: double-click title bar to collapse (hold [⌥/Alt] to collapse all)"
         });
         popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
@@ -3093,21 +3093,21 @@ Popups = {
 
         //  Tooltip text for various popup title bar icons.
         buttonTitles: {
-            "close": "`Esc`: Close this popup (hold `⌥/Alt` to close all)",
-            "zoom": "`f`: Maximize this popup to fill the screen",
-            "restore": "`r`: Restore this popup to normal size and position",
-            "pin": "`c`: Pin this popup to the screen (hold `⌥/Alt` to pin all)",
-            "unpin": "`c`: Un-pin (if pinned) this popup from the screen (hold `⌥/Alt` to pin all)",
+            "close": "[Esc]: Close this popup (hold [⌥/Alt] to close all)",
+            "zoom": "[f]: Maximize this popup to fill the screen",
+            "restore": "[r]: Restore this popup to normal size and position",
+            "pin": "[c]: Pin this popup to the screen (hold [⌥/Alt] to pin all)",
+            "unpin": "[c]: Un-pin (if pinned) this popup from the screen (hold [⌥/Alt] to pin all)",
             "options": "Show options", // NOTE: feature & button currently disabled, and no keybinding
-            "zoom-top-left": "`q`: Place this popup in the top-left quarter of the screen",
-            "zoom-top": "`w`: Place this popup on the top half of the screen",
-            "zoom-top-right": "`e`: Place this popup in the top-right quarter of the screen",
-            "zoom-left": "`a`: Place this popup on the left half of the screen",
-            "zoom-right": "`d`: Place this popup on the right half of the screen",
-            "zoom-full": "`f`: Maximize this popup to fill the screen",
-            "zoom-bottom-left": "`z`: Place this popup in the bottom-left quarter of the screen",
-            "zoom-bottom": "`s`: Place this popup on the bottom half of the screen",
-            "zoom-bottom-right": "`x`: Place this popup in the bottom-right quarter of the screen"
+            "zoom-top-left": "[q]: Place this popup in the top-left quarter of the screen",
+            "zoom-top": "[w]: Place this popup on the top half of the screen",
+            "zoom-top-right": "[e]: Place this popup in the top-right quarter of the screen",
+            "zoom-left": "[a]: Place this popup on the left half of the screen",
+            "zoom-right": "[d]: Place this popup on the right half of the screen",
+            "zoom-full": "[f]: Maximize this popup to fill the screen",
+            "zoom-bottom-left": "[z]: Place this popup in the bottom-left quarter of the screen",
+            "zoom-bottom": "[s]: Place this popup on the bottom half of the screen",
+            "zoom-bottom-right": "[x]: Place this popup in the bottom-right quarter of the screen"
         },
 
         //  A generic button, with no icon or tooltip text.
