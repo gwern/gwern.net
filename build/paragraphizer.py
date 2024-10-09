@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-06 12:02:57 gwern"
+# When:  Time-stamp: "2024-10-08 10:34:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -446,6 +446,10 @@ When combined, the interventions reduce depression severity, with benefits that 
 Large language models can memorize and repeat their training data, causing privacy and copyright risks.
 To mitigate memorization, we introduce a subtle modification to the next-token training objective that we call the <strong>goldfish loss</strong>. During training, a randomly sampled subset of tokens are excluded from the loss computation. These dropped tokens are not memorized by the model, which prevents verbatim reproduction of a complete chain of tokens from the training set.
 We run extensive experiments training billion-scale Llama-2 models, both pre-trained and trained from scratch, and demonstrate reductions in extractable memorization with little to no impact on downstream benchmarks.
+- Input: <abstract>To enable building and testing models on long-document comprehension, we introduce QuALITY, a multiple-choice QA dataset with context passages in English that have an average length of about 5,000 tokens, much longer than typical current models can process. Unlike in prior work with passages, our questions are written and validated by contributors who have read the entire passage, rather than relying on summaries or excerpts. In addition, only half of the questions are answerable by annotators working under tight time constraints, indicating that skimming and simple search are not enough to consistently perform well. Our baseline models perform poorly on this task (55.4%) and lag behind human performance (93.5%).</abstract> →
+To enable building and testing models on long-document comprehension, we introduce <strong>QuALITY</strong>, a multiple-choice QA dataset with context passages in English that have an average length of about 5,000 tokens, much longer than typical current models can process. Unlike in prior work with passages, our questions are written and validated by contributors who have read the entire passage, rather than relying on summaries or excerpts.
+In addition, only half of the questions are answerable by annotators working under tight time constraints, indicating that skimming and simple search are not enough to consistently perform well.
+Our baseline models perform poorly on this task (55.4%) and lag behind human performance (93.5%).
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 

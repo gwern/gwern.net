@@ -144,7 +144,7 @@ wpPopupClasses u = ["id-not"] ++ case parseURIReference (T.unpack u) of
                                                             then ["content-transform-not"] else []) ++
                                                            (if u' `elem` linkliveNamespacesNo then ["link-live-not"] else ["link-live"])
 
--- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
+-- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https://en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
 apiNamespacesNo :: [T.Text]
 apiNamespacesNo = ["Category", "File", "Special", "/w/index.php"]

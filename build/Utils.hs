@@ -9,7 +9,7 @@ import qualified Data.Map as M
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, member, insert, Set)
 import Data.Text.IO as TIO (readFile, writeFile)
-import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference)
+import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference, isRelativeReference, uriToString)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
@@ -33,9 +33,10 @@ import Text.Pandoc (def, nullAttr, nullMeta, runPure,
                     writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
+import qualified Debug.Trace as DT (trace)
+
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
--- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final
--- file.
+-- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
 writeUpdatedFile template target contentsNew
  | "" == template || "" == target || "" == contentsNew = error $ "Utils.writeUpdatedFiles: empty argument passed; this should never happen! Arguments were: " ++ show [template, target, T.unpack contentsNew]
@@ -458,12 +459,28 @@ frequency list = sort $ map (\l -> (length l, head l)) (group (sort list))
 pairs :: [b] -> [(b, b)]
 pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
+-- Network.URI-based function to extract the 'host' domain of a URL. Return empty string if not sensible.
+-- This additionally enforces the Gwern.net style guide that host root domains (in absolute, rather than relative, URLs) must have the optional trailing slash, and fatally error out if not (ie. "https://example.com" *must* be written "https://example.com/", as that is the root; however this doesn't apply to any URLs with additional paths, because the slash can mean entirely different things).
+-- URIs may have a whitelist of known schemes (mailto:, irc:) or may be an anchor fragment ('#foo') but then those are skipped. (Others are assumed to be malformed and fatally error.)
 host :: T.Text -> T.Text
-host p = case parseURIReference (T.unpack p) of
-              Nothing -> ""
-              Just uri' -> case uriAuthority uri' of
-                                Nothing -> ""
-                                Just uridomain' -> T.pack $ uriRegName uridomain'
+host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
+  case parseURIReference (T.unpack p) of
+    Nothing -> DT.trace ("Utils.host: Invalid URL; input was: " ++ show p) ""
+    Just uri' ->
+        let scheme = uriScheme uri'
+            -- fragment = T.pack $ uriFragment uri'  -- Extract fragment (if any)
+        in if null scheme || scheme == "mailto:" || scheme == "irc:" then "" -- skip anchor fragments, emails, IRC
+           else if not (scheme == "http:" || scheme == "https:")  -- Only process HTTP/HTTPS URLs
+           then error $ "Utils.host: Unsupported scheme; input was: " ++ show p ++ "; parsed URI was: " ++ show uri' ++ "; scheme was: " ++ show scheme
+           else if isRelativeReference (uriToString id uri' "")  -- Check if it's a relative URL
+           then error $ "Utils.host: Relative URL; input was: " ++ show p ++ "; parsed URI was: " ++ show uri'
+           else case uriAuthority uri' of
+                Nothing -> error $ "Utils.host: No authority in URL; input was: " ++ show p ++ "; parsed URI was: " ++ show uri'
+                Just auth ->
+                    let path = T.pack $ uriPath uri'
+                    in if path == ""  -- If the path is empty, it means the trailing slash is missing
+                       then error $ "Utils.host: Root domain lacks trailing slash; original input was: " ++ show p ++ "; parsed URI was: " ++ show uri'
+                       else T.pack $ uriRegName auth
 
 anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
 anyInfix  p = any (`isInfixOf`  p)

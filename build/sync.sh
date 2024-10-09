@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-06 09:14:39 gwern"
+# When:  Time-stamp: "2024-10-08 18:38:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -17,9 +17,9 @@
 
 cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
-. ./static/build/bash.sh
+. ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
 
-DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
+DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs compressJPG2) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 DEPENDENCIES_MISSING=()
 for DEP in "${DEPENDENCIES[@]}"; do
     if ! command -v "$DEP" &> /dev/null; then
@@ -34,7 +34,7 @@ fi
 # conda activate pytorch # set up virtual environment to get 'beautifulsoup-4' for Python utilities
 
 if [ $(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//') -lt 3 ]; then
-    echo "Error: Less than 3GB of free space in home directory" >&2
+    red "Error: Less than 3GB of free space in home directory; one cannot reliably compile Gwern.net with so little space, so exiting." >&2
     exit 2
 fi
 
@@ -64,7 +64,7 @@ else
     done
     export SLOW SKIP_DIRECTORIES N
 
-    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true;
+    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; # quickly summarize pending changes
         bold "Checking metadata…"
         pkill checkMetadata || true
         rm ~/METADATA.txt &> /dev/null || true
@@ -646,7 +646,8 @@ else
 
     λ(){ ge 'http.*http' ./metadata/archive.hs | \
              gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/' -e 'https://www.latent.space/p/sim-ai#%C2%A7websim-httpswebsimai';
-         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs; }
+         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs;
+         gf '\\8288' ./metadata/archive.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
     λ(){ echo "$PAGES_ALL" | xargs grep -F --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
@@ -898,7 +899,7 @@ else
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
-                 -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -- ./metadata/backlinks.hs;
+                 -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -e 'httpss://' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
        ge 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted." &
@@ -1441,8 +1442,7 @@ else
               xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off |
               gfv -e ': ICC profile tag start not a multiple of 4'; }
-    wrap λ "Partially transparent PNGs (may break in dark mode, converting with \
-            'mogrify -background white -alpha remove -alpha off'…)" &
+    wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' \
              -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \

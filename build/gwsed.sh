@@ -60,10 +60,10 @@ else
                      gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX"; gwsed "#$SUFFIX#$SUFFIX" "#$SUFFIX";
                 fi
                 # Special case cleanup: Remove any doubled trailing slashes
-                if [[ "$2" =~ ^http.*/$ ]]; then
-                    DOUBLES=$(echo "$2" | sed 's/\/\/$/\//')
-                    if [[ "$2" != "$DOUBLES" ]]; then gwsed "$2" "$DOUBLES"; fi
-                fi
+                # if [[ "$2" =~ ^http.*/$ ]]; then
+                #     DOUBLES=$(echo "$2" | sed 's/\/\/$/\//')
+                #     if [[ "$2" != "$DOUBLES" ]]; then gwsed "$2" "$DOUBLES"; fi
+                # fi
 
             fi
         fi

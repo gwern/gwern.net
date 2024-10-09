@@ -1861,11 +1861,11 @@ a code {
 .icon-single-white-star-on-black-circle { padding-left: 0.85em; }
 
 .icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
-.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid { margin: 0.1em;
-                                                           padding-left: 0.8em;
-                                                           opacity: 70%; }
-.icon-magnifying-glass { margin: 0.1em;
-                         padding: 0.6em;
+.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid,
+.icon-manicule-left, .icon-manicule-right { margin: 0.1em;
+                                            padding-left: 0.8em;
+                                            opacity: 70%; }
+.icon-magnifying-glass { padding-left: 1em;
                          opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,

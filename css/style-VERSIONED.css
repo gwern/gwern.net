@@ -9083,7 +9083,7 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
     opacity: 1;
 }
 
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* Retraction Watch */
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: -0.1em;

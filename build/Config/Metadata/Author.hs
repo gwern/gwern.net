@@ -491,6 +491,7 @@ canonicals = M.fromList
   , ("bobmcgrewai", "Bob McGrew")
   , ("barret_zoph", "Barret Zoph")
   , ("Misha Laskin", "Michael Laskin")
+  , ("Popular Science", "<em>Popular Science</em>")
   ]
 
 -- tests: unique
@@ -858,8 +859,15 @@ authorLinkDB = M.fromList $
     , ("Philippe Amouyel", "https://www.openaccessgovernment.org/contributor_profile/philippe-amouyel/")
     , ("Patrick Turley", "https://www.paturley.com/")
     , ("Michael Laskin", "https://scholar.google.com/citations?user=DOGDnwsAAAAJ")
-    , ("Michael J. Gill", "https://scholar.google.com/citations?user=9R38cgIAAAAJ&hl=en&oi=ao")
-    , ("Michael Gill", "https://scholar.google.com/citations?user=kYY5xu8AAAAJ&hl=en&oi=ao")
+    , ("Michael J. Gill", "https://scholar.google.com/citations?user=9R38cgIAAAAJ")
+    , ("Michael Gill", "https://scholar.google.com/citations?user=kYY5xu8AAAAJ")
+    , ("Polina Kuznetsova", "https://scholar.google.com/citations?user=JdEJEicAAAAJ")
+    , ("David Pfau", "http://davidpfau.com/")
+    , ("Jan Leike", "https://jan.leike.name/")
+    , ("Massimo Mangino", "https://scholar.google.com/citations?user=i0m7948AAAAJ")
+    , ("Jonas Bybjerg-Grauholm", "https://en.ssi.dk/about-us/contact/employees/j/jonas-bybjerg-grauholm-jogr")
+    , ("Jeff Clune", "http://jeffclune.com/")
+    , ("<em>Popular Science</em>", "https://en.wikipedia.org/wiki/Popular_Science")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1762,8 +1770,8 @@ authorWpLinkDB =
     ,"Philippe Kruchten", "Phillip A. Sharp", "Phyllis Chesler", "Pierre Baldi", "Pierre Desrochers"
     ,"Pierre Pinson", "Pierre-Simon Laplace", "Pierre-Yves Oudeyer", "Pieter Abbeel", "Pietro De Camilli"
     ,"Pietro Perona", "Pinchas Cohen", "Piotr Stanczyk", "Planet Money", "Polina Anikeeva"
-    ,"Polina Kuznetsova", "Pontiano Kaleebu", "Pontus Skoglund", "Pony Preservation Project", "Popular Science"
-    ,"Poul-Henning Kamp", "Pradeep Dubey", "Pradeep Sharma", "Pranab Bardhan", "Prateek Jain"
+    , "Pontiano Kaleebu", "Pontus Skoglund", "Pony Preservation Project"
+    , "Poul-Henning Kamp", "Pradeep Dubey", "Pradeep Sharma", "Pranab Bardhan", "Prateek Jain"
     ,"Preslav Nakov", "Price V. Fishback", "Priya Krishna", "Przemyslaw Prusinkiewicz", "Psychiatric Genomics Consortium"
     ,"Pushmeet Kohli", "Pushpak Bhattacharyya", "Qi Cao", "Qi Dong", "Qi Guo"
     ,"Qi Sun", "Qi Tian", "Qi Zhou", "Qi Zhu", "Qian Liu"
