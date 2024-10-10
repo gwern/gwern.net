@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap) where
+module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -32,22 +32,32 @@ import Utils (sed, replaceMany, parseRawAllClean, safeHtmlWriterOptions)
 import Config.Misc (currentYear)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
 
+-- if typesetting an 'ephemeral' string which will be used now but not forever, use this. Otherwise, if reformatting a permanent string for long-term use & storage, use 'typesetHtmlFieldPermanent'. The latter will avoid doing things like hardwiring the current year.
 typesetHtmlField :: String -> String
 typesetHtmlField "" = ""
-typesetHtmlField  t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
+typesetHtmlField arg = typesetHtmlFieldPermanent False arg
+
+typesetHtmlFieldPermanent :: Bool -> String -> String
+typesetHtmlFieldPermanent _        "" = ""
+typesetHtmlFieldPermanent permanent t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
                         case fieldPandocMaybe of
-                          Left errr -> error $ " : " ++ t ++ show errr
-                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                          Left errr -> error $ "Typography.typesetHtmlField: string failed to read as Pandoc AST from HTML via Pandoc, erroring out! : " ++ t ++ show errr
+                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = (if permanent then typographyTransformPermanent else typographyTransform) fieldPandoc in
                                                let compiledHTML = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
                                                  case compiledHTML of
                                                    Right fieldHtml -> T.unpack fieldHtml
-                                                   Left errors     -> error "LinkMetadata.typesetHtmlField: string failed to compile through Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
+                                                   Left errors     -> error "Typography.typesetHtmlField: string failed from Pandoc AST to HTML via Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
 
+
+typographyTransformPermanent :: Pandoc -> Pandoc
+typographyTransformPermanent = let year = currentYear in walk (dateRangeDuration year) . typographyTransformPermanent
+
+-- subset of transforms which are safe to store permanently eg. in the metadata database, and which won't change (this excludes primarily the date-range duration adjuster, which by definition will change every year; this doesn't need to exclude the inflation adjuster, because it is not included in the set of typography transforms, although perhaps it should be?)
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk figureCaptionLinebreak .
-                        walk (dateRangeDuration year . citefyInline year . linkLive . linkIcon) .
+                        walk (citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
@@ -256,7 +266,7 @@ capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—' || c == '['
      (before, '[':after) ->
          before ++ "[" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, [])        -> before
-     _                   -> error ("Typography.hs: capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t)
+     _                   -> error $ "Typography.capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t
    where
      capitalizeFirst []     = []
      capitalizeFirst (x:xs) = toUpper x : xs
