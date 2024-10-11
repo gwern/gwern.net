@@ -361,7 +361,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 				//	Wrap bare text nodes and inline elements in <p> elements.
 				if (collapseWrapper.classList.contains("collapse-block"))
-					paragraphizeTextNodesOfElement(collapseAbstract);
+					paragraphizeTextNodesOfElementRetainingMetadata(collapseAbstract);
 
 				//	Make sure “real” abstracts are marked as such.
 				if (   collapseWrapper.classList.contains("collapse-block")

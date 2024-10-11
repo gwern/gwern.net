@@ -876,6 +876,12 @@ function isOnlyChild(node) {
 		return false, no matter what the node may contain). (NOTE: If this 
 		option is set, all other options are ignored.)
 
+	alsoExcludePredicate (Node => boolean)
+		If the predicate returns true when called with the node as argument, 
+		always consider it to be non-empty (and thus always return false, 
+		no matter what the node may contain). (NOTE: If this option is set, 
+		the options below will still take effect.)
+
 	excludeSelector (string)
 		If the node is an element node, then if *and only if* it matches the 
 		given selector, always consider it to be non-empty (and thus always 
@@ -912,6 +918,8 @@ function isNodeEmpty(node, options) {
 	if (options.excludePredicate != null) {
 		if (options.excludePredicate(node))
 			return false;
+	} else if (options.alsoExcludePredicate?.(node)) {
+		return false;
 	} else if (node.nodeType == Node.ELEMENT_NODE) {
 		if (   options.excludeIdentifiedElements
 			&& node.id > "") {
@@ -938,8 +946,22 @@ function isNodeEmpty(node, options) {
 
 /************************************************************************/
 /*	Wrap text nodes and inline elements in the given element in <p> tags.
+
+	Available option fields:
+
+	nodeOmissionOptions (object)
+		Options to pass to the isNodeEmpty() call that determines whether a 
+		node should be dropped when aggregating nodes into paragraphs.
+
  */
-function paragraphizeTextNodesOfElement(element) {
+function paragraphizeTextNodesOfElement(element, options) {
+	options = Object.assign({
+		nodeOmissionOptions: {
+			alsoExcludeSelector: "a, br", 
+			excludeIdentifiedElements: true
+		}
+	}, options);
+
 	let inlineElementSelector = [
 		"a",
 		"em",
@@ -954,19 +976,17 @@ function paragraphizeTextNodesOfElement(element) {
 
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
-	let omitNode = (node) => isNodeEmpty(node, {
-		alsoExcludeSelector: "a, br", 
-		excludeIdentifiedElements: true
-	});
+	let shouldOmitNode = (node) => isNodeEmpty(node, options.nodeOmissionOptions);
 	let node;
 	do {
 		node = nodes.shift();
+		let omitNode = shouldOmitNode(node);
 		if (   (   node?.nodeType == Node.TEXT_NODE
 				|| (   node?.nodeType == Node.ELEMENT_NODE
 					&& node.matches(inlineElementSelector)))
-			&& omitNode(node) == false) {
+			&& omitNode == false) {
 			nodeSequence.push(node);
-		} else if (omitNode(node)) {
+		} else if (omitNode) {
 			node?.remove();
 		} else {
 			if (nodeSequence.length > 0) {

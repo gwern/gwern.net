@@ -80,6 +80,36 @@ GW.layout = {
 		".popframe"
 	].join(", "),
 
+	emptyNodeExclusionPredicate: (node) => {
+		if (node.nodeType != Node.ELEMENT_NODE)
+			return false;
+
+		/*	Exclude elements that have any classes (discounting 
+			classes added by the layout system).
+		 */
+		let classes = Array.from(node.classList);
+		[	"block",
+			"first-block",
+			"empty-graf",
+			"first-graf",
+			"list",
+			"in-list",
+			"float",
+			"has-floats",
+			"heading"
+			].forEach(layoutClass => {
+			classes.remove(layoutClass);
+		});
+		if (classes.length > 0)
+			return true;
+
+		//	Exclude elements that have any data attributes.
+		if (Object.keys(node.dataset).length > 0)
+			return true;
+
+		return false;
+	},
+
 	blockSpacing: [
 		[ "body.page-index .abstract > p.first-block",	 7, false ],
 		[ "body.page-index section",					 7, false ],
@@ -528,7 +558,7 @@ function sequentialBlockOf(element, direction, options) {
 	}
 
 	//	Skip empty elements.
-	if (   isNodeEmpty(element[siblingKey]) == true
+	if (   isNodeEmpty_metadataAware(element[siblingKey]) == true
 		&& isNonEmpty(element[siblingKey], options) == false)
 		return sequentialBlockOf(element[siblingKey], direction, options);
 
@@ -594,7 +624,7 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 			if (   terminalBlock
 				&& isSkipped(terminalBlock, options) == false
-				&& (   isNodeEmpty(terminalBlock) == false
+				&& (   isNodeEmpty_metadataAware(terminalBlock) == false
 					|| isNonEmpty(terminalBlock, options) == true))
 				return terminalBlock;
 		}
@@ -794,6 +824,32 @@ function stripDropcapClassesFrom(block) {
 	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("dropcap-"))));
 }
 
+/**************************************************************************/
+/*	Like paragraphizeTextNodesOfElement, but retains elements with metadata
+	(an ID, non-layout classes, or any data attributes), as well as links,
+	<br> elements, and lists.
+ */
+function paragraphizeTextNodesOfElementRetainingMetadata(element) {
+	paragraphizeTextNodesOfElement(element, {
+		nodeOmissionOptions: {
+			alsoExcludePredicate: GW.layout.emptyNodeExclusionPredicate,
+			alsoExcludeSelector: "a, br, ul, ol", 
+			excludeIdentifiedElements: true
+		}
+	});
+}
+
+/*****************************************************************************/
+/*	Like isNodeEmpty, but does not count elements with metadata as being empty
+	(i.e., if they have an ID, or non-layout classes, or any data attributes).
+ */
+function isNodeEmpty_metadataAware(node) {
+	return isNodeEmpty(node, {
+		alsoExcludePredicate: GW.layout.emptyNodeExclusionPredicate,
+		excludeIdentifiedElements: true
+	});
+}
+
 
 /*********************/
 /* LAYOUT PROCESSORS */
@@ -925,41 +981,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isNodeEmpty(block, {
-				excludePredicate: (node) => {
-					if (node.nodeType != Node.ELEMENT_NODE)
-						return false;
-
-					//	Exclude elements that have an ID.
-					if (node.id > "")
-						return true;
-
-					/*	Exclude elements that have any classes (discounting 
-						classes added by the layout system).
-					 */
-					let classes = Array.from(node.classList);
-					[	"block",
-						"first-block",
-						"empty-graf",
-						"first-graf",
-						"list",
-						"in-list",
-						"float",
-						"has-floats",
-						"heading"
-						].forEach(layoutClass => {
-						classes.remove(layoutClass);
-					});
-					if (classes.length > 0)
-						return true;
-
-					//	Exclude elements that have any data attributes.
-					if (Object.keys(node.dataset).length > 0)
-						return true;
-
-					return false;
-				}
-			});
+			let emptyGraf = isNodeEmpty_metadataAware(block);
 			block.classList.toggle("empty-graf", emptyGraf);
 			if (emptyGraf)
 				return;
@@ -1141,13 +1163,18 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
+		console.log(listItem);
+
 		let firstBlockWithin = firstBlockOf(listItem);
+		console.log(firstBlockWithin);
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
 		//	Apply list item BSM modifier.
 		if (   bsm > ""
 			&& listItem.dataset.bsmMod > "")
 			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
+
+		console.log(bsm);
 
 		//	Apply BSM.
 		if (bsm > "") {

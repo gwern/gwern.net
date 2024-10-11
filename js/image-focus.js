@@ -592,7 +592,7 @@ ImageFocus = {
 				return element;
 			}).filter((element, index, array) => (
 					element != null
-				 && isNodeEmpty(element) == false
+				 && isNodeEmpty_metadataAware(element) == false
 				 && textContentOf(element) != GW.defaultImageAuxText
 				 && array.findIndex(otherElement => (
 				 		otherElement != null

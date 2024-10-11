@@ -1001,7 +1001,7 @@ function includeContent(includeLink, content) {
 
             wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
 
-            if (isNodeEmpty(wrapper.previousSibling)) {
+            if (isNodeEmpty_metadataAware(wrapper.previousSibling)) {
                 wrapper.previousSibling.remove();
                 continue;
             }
@@ -1019,10 +1019,10 @@ function includeContent(includeLink, content) {
                 secondPart.appendChild(thisNode);
             }
 
-            if (isNodeEmpty(firstPart) == true)
+            if (isNodeEmpty_metadataAware(firstPart) == true)
                 firstPart.remove();
 
-            if (isNodeEmpty(secondPart) == false)
+            if (isNodeEmpty_metadataAware(secondPart) == false)
                 wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
         }
     }

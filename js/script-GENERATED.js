@@ -6425,7 +6425,7 @@ Content = {
 
 				//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
 				contentDocument.querySelectorAll(".dmbox-body").forEach(noteBox => {
-					paragraphizeTextNodesOfElement(noteBox);
+					paragraphizeTextNodesOfElementRetainingMetadata(noteBox);
 					noteBox.parentElement.classList.add("admonition", "tip");
 				});
 
@@ -8239,7 +8239,7 @@ function includeContent(includeLink, content) {
 
             wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
 
-            if (isNodeEmpty(wrapper.previousSibling)) {
+            if (isNodeEmpty_metadataAware(wrapper.previousSibling)) {
                 wrapper.previousSibling.remove();
                 continue;
             }
@@ -8257,10 +8257,10 @@ function includeContent(includeLink, content) {
                 secondPart.appendChild(thisNode);
             }
 
-            if (isNodeEmpty(firstPart) == true)
+            if (isNodeEmpty_metadataAware(firstPart) == true)
                 firstPart.remove();
 
-            if (isNodeEmpty(secondPart) == false)
+            if (isNodeEmpty_metadataAware(secondPart) == false)
                 wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
         }
     }
@@ -12985,7 +12985,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventI
         if (listItem.closest(".TOC"))
             return;
 
-        paragraphizeTextNodesOfElement(listItem);
+        paragraphizeTextNodesOfElementRetainingMetadata(listItem);
     });
 }, "rewrite");
 
@@ -13213,7 +13213,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (even
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
     GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElementRetainingMetadata);
 }, "rewrite");
 
 /***************************************************************************/
@@ -15145,7 +15145,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateColorInvertedContainers = 
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (eventInfo) => {
     GWLog("paragraphizeAdmonitionTextNodes", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElementRetainingMetadata);
 }, "rewrite");
 
 /*********************************************/
@@ -16011,7 +16011,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 				//	Wrap bare text nodes and inline elements in <p> elements.
 				if (collapseWrapper.classList.contains("collapse-block"))
-					paragraphizeTextNodesOfElement(collapseAbstract);
+					paragraphizeTextNodesOfElementRetainingMetadata(collapseAbstract);
 
 				//	Make sure “real” abstracts are marked as such.
 				if (   collapseWrapper.classList.contains("collapse-block")
@@ -18310,7 +18310,7 @@ ImageFocus = {
 				return element;
 			}).filter((element, index, array) => (
 					element != null
-				 && isNodeEmpty(element) == false
+				 && isNodeEmpty_metadataAware(element) == false
 				 && textContentOf(element) != GW.defaultImageAuxText
 				 && array.findIndex(otherElement => (
 				 		otherElement != null

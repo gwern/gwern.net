@@ -1064,7 +1064,7 @@ Content = {
 
 				//	Paragraphize note-boxes, if any (e.g., disambiguation notes).
 				contentDocument.querySelectorAll(".dmbox-body").forEach(noteBox => {
-					paragraphizeTextNodesOfElement(noteBox);
+					paragraphizeTextNodesOfElementRetainingMetadata(noteBox);
 					noteBox.parentElement.classList.add("admonition", "tip");
 				});
 

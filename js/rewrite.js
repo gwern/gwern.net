@@ -220,7 +220,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventI
         if (listItem.closest(".TOC"))
             return;
 
-        paragraphizeTextNodesOfElement(listItem);
+        paragraphizeTextNodesOfElementRetainingMetadata(listItem);
     });
 }, "rewrite");
 
@@ -448,7 +448,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (even
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeFigcaptionTextNodes = (eventInfo) => {
     GWLog("paragraphizeFigcaptionTextNodes", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll("figcaption").forEach(paragraphizeTextNodesOfElementRetainingMetadata);
 }, "rewrite");
 
 /***************************************************************************/
@@ -2380,7 +2380,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateColorInvertedContainers = 
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (eventInfo) => {
     GWLog("paragraphizeAdmonitionTextNodes", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElement);
+    eventInfo.container.querySelectorAll(".admonition", ".admonition-title").forEach(paragraphizeTextNodesOfElementRetainingMetadata);
 }, "rewrite");
 
 /*********************************************/
