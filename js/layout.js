@@ -925,7 +925,41 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isNodeEmpty(block);
+			let emptyGraf = isNodeEmpty(block, {
+				excludePredicate: (node) => {
+					if (node.nodeType != Node.ELEMENT_NODE)
+						return false;
+
+					//	Exclude elements that have an ID.
+					if (node.id > "")
+						return true;
+
+					/*	Exclude elements that have any classes (discounting 
+						classes added by the layout system).
+					 */
+					let classes = Array.from(node.classList);
+					[	"block",
+						"first-block",
+						"empty-graf",
+						"first-graf",
+						"list",
+						"in-list",
+						"float",
+						"has-floats",
+						"heading"
+						].forEach(layoutClass => {
+						classes.remove(layoutClass);
+					});
+					if (classes.length > 0)
+						return true;
+
+					//	Exclude elements that have any data attributes.
+					if (Object.keys(node.dataset).length > 0)
+						return true;
+
+					return false;
+				}
+			});
 			block.classList.toggle("empty-graf", emptyGraf);
 			if (emptyGraf)
 				return;
