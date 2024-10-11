@@ -870,10 +870,16 @@ function isOnlyChild(node) {
 
 	Available option fields:
 
+	excludePredicate (Node => boolean)
+		If *and only if* the predicate returns true when called with the node
+		as argument, always consider it to be non-empty (and thus always 
+		return false, no matter what the node may contain). (NOTE: If this 
+		option is set, all other options are ignored.)
+
 	excludeSelector (string)
-		If the node is an element node, then if *and only if* matches the given
-		selector, always consider it to be non-empty (and thus always return 
-		false, no matter what the node may contain). (Note the difference 
+		If the node is an element node, then if *and only if* it matches the 
+		given selector, always consider it to be non-empty (and thus always 
+		return false, no matter what the node may contain). (Note the difference 
 		between this option and `alsoExcludeSelector`, below.)
 
 	alsoExcludeSelector (string)
@@ -891,6 +897,7 @@ function isOnlyChild(node) {
  */
 function isNodeEmpty(node, options) {
 	options = Object.assign({
+		excludePredicate: null,
 		excludeSelector: null,
 		alsoExcludeSelector: null,
 		excludeIdentifiedElements: false
@@ -902,7 +909,10 @@ function isNodeEmpty(node, options) {
     if (node.nodeType == Node.TEXT_NODE)
         return (/^[\s\u2060]*$/.test(node.textContent));
 
-	if (node.nodeType == Node.ELEMENT_NODE) {
+	if (options.excludePredicate != null) {
+		if (options.excludePredicate(node))
+			return false;
+	} else if (node.nodeType == Node.ELEMENT_NODE) {
 		if (   options.excludeIdentifiedElements
 			&& node.id > "") {
 			return false;
@@ -3736,7 +3746,41 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isNodeEmpty(block);
+			let emptyGraf = isNodeEmpty(block, {
+				excludePredicate: (node) => {
+					if (node.nodeType != Node.ELEMENT_NODE)
+						return false;
+
+					//	Exclude elements that have an ID.
+					if (node.id > "")
+						return true;
+
+					/*	Exclude elements that have any classes (discounting 
+						classes added by the layout system).
+					 */
+					let classes = Array.from(node.classList);
+					[	"block",
+						"first-block",
+						"empty-graf",
+						"first-graf",
+						"list",
+						"in-list",
+						"float",
+						"has-floats",
+						"heading"
+						].forEach(layoutClass => {
+						classes.remove(layoutClass);
+					});
+					if (classes.length > 0)
+						return true;
+
+					//	Exclude elements that have any data attributes.
+					if (Object.keys(node.dataset).length > 0)
+						return true;
+
+					return false;
+				}
+			});
 			block.classList.toggle("empty-graf", emptyGraf);
 			if (emptyGraf)
 				return;
