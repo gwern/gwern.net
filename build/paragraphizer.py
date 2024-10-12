@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-08 10:34:10 gwern"
+# When:  Time-stamp: "2024-10-10 21:08:33 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -450,6 +450,10 @@ We run extensive experiments training billion-scale Llama-2 models, both pre-tra
 To enable building and testing models on long-document comprehension, we introduce <strong>QuALITY</strong>, a multiple-choice QA dataset with context passages in English that have an average length of about 5,000 tokens, much longer than typical current models can process. Unlike in prior work with passages, our questions are written and validated by contributors who have read the entire passage, rather than relying on summaries or excerpts.
 In addition, only half of the questions are answerable by annotators working under tight time constraints, indicating that skimming and simple search are not enough to consistently perform well.
 Our baseline models perform poorly on this task (55.4%) and lag behind human performance (93.5%).
+- Input: <abstract><p>We propose a novel neural network architecture, the normalized <a href="https://arxiv.org/abs/1706.03762#google">Transformer</a> (nGPT) with representation learning on the hypersphere. In nGPT, all vectors forming the embeddings, MLP, attention matrices and hidden states are unit norm normalized. The input stream of tokens travels on the surface of a hypersphere, with each layer contributing a displacement towards the target output predictions. These displacements are defined by the MLP and attention blocks, whose vector components also reside on the same hypersphere. Experiments show that nGPT learns much faster, reducing the number of training steps required to achieve the same accuracy by a factor of 4 to 20, depending on the sequence length.</p></abstract> →
+<p>We propose a novel neural network architecture, the <strong>normalized <a href="https://arxiv.org/abs/1706.03762#google">Transformer</a> (nGPT)</strong> with representation learning on the hypersphere.
+In nGPT, all vectors forming the embeddings, MLP, attention matrices and hidden states are unit norm normalized. The input stream of tokens travels on the surface of a hypersphere, with each layer contributing a displacement towards the target output predictions. These displacements are defined by the MLP and attention blocks, whose vector components also reside on the same hypersphere.
+Experiments show that nGPT learns much faster, reducing the number of training steps required to achieve the same accuracy by a factor of 4 to 20, depending on the sequence length.</p>
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 

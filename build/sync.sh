@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-08 18:38:30 gwern"
+# When:  Time-stamp: "2024-10-09 21:12:10 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -646,8 +646,8 @@ else
 
     λ(){ ge 'http.*http' ./metadata/archive.hs | \
              gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/' -e 'https://www.latent.space/p/sim-ai#%C2%A7websim-httpswebsimai';
-         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs;
-         gf '\\8288' ./metadata/archive.hs; }
+         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs ./metadata/backlinks.hs;
+         gf -e \\ ./metadata/archive.hs ./metadata/backlinks.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
     λ(){ echo "$PAGES_ALL" | xargs grep -F --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }

@@ -2838,4 +2838,6 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/2410.01201","feng-et-al-2024-1"),("https://arxiv.org/abs/2406.07515","feng-et-al-2024-2"),("https://arxiv.org/abs/2405.13956#borealis","feng-et-al-2024-3")
        , ("https://arxiv.org/abs/2112.08670","pang-et-al-2021-1"),("https://arxiv.org/abs/2112.08608","pang-et-al-2021-2")
        , ("https://arxiv.org/abs/2409.12822","wen-et-al-2024-1"),("https://arxiv.org/abs/2402.18510","wen-et-al-2024-2")
+       , ("/doc/genetics/heritable/adoption/2021-willoughby.pdf", "willoughby-et-al-2021-adoption-iq")
+       , ("/doc/genetics/heritable/adoption/2021-willoughby-2.pdf", "willoughby-et-al-2021-adoption-politics")
       ]

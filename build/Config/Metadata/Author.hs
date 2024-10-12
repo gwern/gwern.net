@@ -492,6 +492,9 @@ canonicals = M.fromList
   , ("barret_zoph", "Barret Zoph")
   , ("Misha Laskin", "Michael Laskin")
   , ("Popular Science", "<em>Popular Science</em>")
+  , ("Luke_Metz", "Luke Metz")
+  , ("OriolVinyalsML", "Oriol Vinyals")
+  , ("Colin N. A. Palmer", "Colin Palmer")
   ]
 
 -- tests: unique
@@ -502,7 +505,8 @@ canonicalsWithInitials =
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
-  , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni", "Irving John Good", "Robert J. Cava"]
+  , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -868,6 +872,15 @@ authorLinkDB = M.fromList $
     , ("Jonas Bybjerg-Grauholm", "https://en.ssi.dk/about-us/contact/employees/j/jonas-bybjerg-grauholm-jogr")
     , ("Jeff Clune", "http://jeffclune.com/")
     , ("<em>Popular Science</em>", "https://en.wikipedia.org/wiki/Popular_Science")
+    , ("Yu Cao", "https://scholar.google.com/citations?user=jkEWQIYAAAAJ")
+    , ("Ilja M. Nolte", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/ilja-nolte?lang=en")
+    , ("Geert Molenberghs", "/doc/statistics/survival-analysis/2017-hamasaki.pdf")
+    , ("Furu Wei", "https://scholar.google.com/citations?user=G-V1VpwAAAAJ")
+    , ("Eva Albrecht", "https://www.euengage.org/EvaA.html")
+    , ("David W. Scott", "https://www.stat.rice.edu/~scottdw/")
+    , ("Dan Rujescu", "https://scholar.google.com/citations?user=SsYIclwAAAAJ&hl=en&oi=ao")
+    , ("Colin Palmer", "https://discovery.dundee.ac.uk/en/persons/colin-palmer")
+    , ("Ben A. Oostra", "https://research.com/u/ben-a-oostra")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2072,7 +2085,7 @@ authorWpLinkDB =
     ,"Yoh Iwasa", "Yoichi Takahashi", "Yoji Enokido", "Yolanda Gil", "Yolanda Moses"
     ,"Yong Liu", "Yong Rui", "Yong Tan", "Yong Zhao", "Yonggang Huang"
     ,"Yonhap News Agency", "Yoshihiro Kawaoka", "Yoshiki Kuroda", "Yoshio Miki", "Yoshiyuki Tomino"
-    ,"Yoshua Bengio", "Yossi Matias", "Young-Tae Chang", "Yu (Jeffrey) Hu", "Yu Cao"
+    ,"Yoshua Bengio", "Yossi Matias", "Young-Tae Chang", "Yu (Jeffrey) Hu"
     ,"Yu Gu", "Yu Hu", "Yu Shi", "Yu Song", "Yu Sun"
     ,"Yu Tian", "Yu Xie", "Yu Yamamoto", "Yuan Cao", "Yuan Chen"
     ,"Yuan Hao", "Yuan He", "Yuan Jiang", "Yuan Liang", "Yuan Xie"

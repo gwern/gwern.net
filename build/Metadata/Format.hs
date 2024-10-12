@@ -9,7 +9,7 @@ import Numeric (showFFloat)
 import Text.Regex.TDFA ((=~))
 
 import Cycle (testInfixRewriteLoops)
-import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, trim)
+import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, trim, delete)
 import Config.Metadata.Format as C
 
 -- | Check if brackets & quotes in a string are balanced.
@@ -48,7 +48,6 @@ balanced str = helper str "" 0 0
 
 -- print out Doubles long-form, not in scientific notation. By default, Haskell will print values like '10e8', which is bad for downstream users like the inflation-adjuster JavaScript. But it turns out to be surprisingly hard to print out the literal of a Double/Float without rounding, scientific notation, fractions, precision limitations, or other issues. This tries to do so using Numeric.showFFloat, and includes a test-suite of examples to ensure the String is as expected. For very small amounts like '1.0000000000000002', they will be rounded (to '1').
 -- Precision '0' means nothing after the decimal point, like '0'; '1' means 1 digit after the decimal like '0.1', etc.
-
 printDouble :: Int -> Double -> String
 printDouble precision x
     | x > 1.7976931348623157e308 || x < -1.7976931348623157e308 =
@@ -119,7 +118,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                    -- → "https://arxiv.org/abs/2406.20053#org=foo"
                    | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/html/" "https://arxiv.org/abs/" $ replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
-                   | otherwise = l
+                   | otherwise = delete "\8203" l
 
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea C.filterMetaBadSubstrings || elem ea C.filterMetaBadWholes then "" else ea
