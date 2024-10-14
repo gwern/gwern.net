@@ -1428,7 +1428,7 @@ function GWStopWatch(f, ...args) {
 	(Requires utility.js.)
  */
 function GWServerLogError(errorString, errorType) {
-    doAjax({ location: `${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
+    doAjax({ location: `${location.origin}/404-error-` + fixedEncodeURIComponent(errorString) });
     GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
 }
 
@@ -1628,7 +1628,7 @@ GW.notificationCenter = {
                 handler function is called once (note that if there is a
                 condition function provided [see the ‘condition’ key], the
                 handler function will not be called - and therefore will not be
-                removed - if the named event is fired but the condition 
+                removed - if the named event is fired but the condition
                 evaluates to false).
 
                 If not set, defaults to false (ie. by default a handler is
@@ -2238,15 +2238,15 @@ GW.notificationCenter = {
 			‘localize’
 				Specifies whether content should be “localized” to the context
 				into which it is being injected. (Affects things like link
-				qualification. See transclude.js for more information.) 
+				qualification. See transclude.js for more information.)
 				Generally true for page content, false for auxiliary content.
 
 			‘mergeFootnotes’
-				Specifies whether footnotes in the content will be merged into 
+				Specifies whether footnotes in the content will be merged into
 				the page wherein the content is being injected. Inapplicable on
-				the initial page load, generally false for auxiliary content; 
+				the initial page load, generally false for auxiliary content;
 				generally true for page content, if the ‘localize’ flag is true
-				(although false in some cases even then; see, e.g., the 
+				(although false in some cases even then; see, e.g., the
 				.include-content-core alias class in transclude.js).
  */
 
@@ -2312,7 +2312,7 @@ GW.eventListeners = { };
 
 	Available option fields:
 
-	
+
  */
 function addNamedEventListener(eventName, fn, options) {
 	options = Object.assign({
@@ -2431,7 +2431,7 @@ function updateScrollState(event) {
 }
 addScrollListener(updateScrollState, {
 	name: "updateScrollStateScrollListener",
-	defer: true, 
+	defer: true,
 	ifDeferCallWhenAdd: true
 });
 

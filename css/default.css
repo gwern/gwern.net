@@ -3540,14 +3540,14 @@ ol.link-bibliography-list-compact > li::before {
 /*******************************/
 
 /*=-------------=*/
-/*= /static/404 =*/
+/*= /404 =*/
 /*=-------------=*/
 
-body.page-static-404 figure .figure-inner-wrapper {
+body.page-404 figure .figure-inner-wrapper {
     padding: 0 1em;
 }
 
-body.page-static-404 figure figcaption {
+body.page-404 figure figcaption {
     margin-top: 0.5em;
 }
 

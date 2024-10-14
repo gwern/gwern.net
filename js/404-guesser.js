@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2024-07-18 09:29:40 gwern"
+ * When:  Time-stamp: "2024-10-14 12:27:33 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -186,7 +186,7 @@ async function suggest404Alternatives() {
     const currentPath = window.location.pathname;
     // if we redirected to a 404 rather than received it as an error, then the current URL is useless
     // and can’t be guessed, so we skip the whole business, saving the bandwidth & injection:
-    if (currentPath.endsWith('/404') || currentPath.endsWith('/static/404')) {
+    if (currentPath.endsWith('/404')) {
         console.log('Current page is a 404 page; unable to guess intended URL. Skipping suggestions.');
         return;
     }

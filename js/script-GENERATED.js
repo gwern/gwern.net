@@ -12833,7 +12833,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 }, "rewrite", (info) => (info.context == "popFrame"));
 
 /**************************************************************************/
-/*  Remove aux-links list labels when transcluding aux-links lists into the 
+/*  Remove aux-links list labels when transcluding aux-links lists into the
 	aux-links sections of a page (Backlinks, Similars, Bibliography).
  */
 addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLinksSections = (eventInfo) => {
@@ -12844,7 +12844,7 @@ addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLi
 		"similars",
 		"link-bibliography"
 	];
-	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType => 
+	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType =>
 		`#${auxLinksType} > .aux-links-list-label, #${auxLinksType} > .columns > .aux-links-list-label`
 	).join(", ");
 
@@ -14689,7 +14689,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
  */
 addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventInfo) => {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
-    
+
     let baseLocation = baseLocationForDocument(eventInfo.document);
     if (baseLocation == null)
         return;
@@ -14719,7 +14719,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 
 /******************************************************************************/
 /*  Assign local navigation link icons: directional in-page links, generic
-	(non-directional) self-links, and local page links. (These should be 
+	(non-directional) self-links, and local page links. (These should be
 	applied only within body text, including pop-frames but excluding page
 	metadata sections; and should not be applied to links that already have a
 	special link icon, e.g. one assigned on the back-end; nor to links that are
@@ -14728,7 +14728,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIcons = (eventInfo) => {
     GWLog("designateLocalNavigationLinkIcons", "rewrite.js", 1);
 
-	/*	Do not display special link icons in these containers and for these 
+	/*	Do not display special link icons in these containers and for these
 		elements.
 	 */
 	let exclusionSelector = [
@@ -14751,18 +14751,18 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
         /*  Directional navigation links on self-links: for each self-link like
             “see [later](#later-identifier)”, find the linked identifier,
             whether it's before or after, and if it is before/previously,
-            annotate the self-link with ‘↑’ (UPWARDS ARROW) and if after/later, 
+            annotate the self-link with ‘↑’ (UPWARDS ARROW) and if after/later,
             ‘↓’ (DOWNWARDS ARROW).
 
-            This helps the reader know if it’s a backwards link to an identifier 
-            already read, or an unread identifier, enabling a mental map and 
-            reducing the cognitive overhead of constantly choosing whether to 
+            This helps the reader know if it’s a backwards link to an identifier
+            already read, or an unread identifier, enabling a mental map and
+            reducing the cognitive overhead of constantly choosing whether to
             follow a reference.
 
             This was implemented statically pre-transclusion as an optimization,
             but given that dynamism forces runtime checking of relative status
             for all new fragments (popups or transclude), that has been removed
-            in favor of this JS hook, to simplify code & ensure a single source 
+            in favor of this JS hook, to simplify code & ensure a single source
             of truth.
          */
         let target = eventInfo.document.querySelector(selectorFromHash(link.hash));
@@ -14802,14 +14802,14 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
         /*  Index page, and embeds thereof, do not need the G icon.
 
             NOTE: we do not use the usual method of suppressing G icons
-            (`.icon-not` class), because /index and /static/404 are *so* long
+            (`.icon-not` class), because /index and /404 are *so* long
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
         "body.page-index",
-        "body.page-static-404",
+        "body.page-404",
         ".popframe-body.page-index",
-        ".popframe-body.page-static-404",
+        ".popframe-body.page-404",
 
         //  TOC links should never have link icons under any circumstances.
         ".TOC",
@@ -16563,24 +16563,24 @@ document.addEventListener("selectionchange", GW.selectionChangedRevealElement = 
 			revealElement(element);
 	}
 });
-/*	sidenotes.js: standalone JS library for parsing HTML documents with 
-	Pandoc-style footnotes and dynamically repositioning them into the 
+/*	sidenotes.js: standalone JS library for parsing HTML documents with
+	Pandoc-style footnotes and dynamically repositioning them into the
 	left/right margins, when browser windows are wide enough.
 
-	Sidenotes (see https://gwern.net/Sidenotes ) are superior to footnotes where 
-	possible because they enable the reader to immediately look at them without 
-	requiring user action to “go to” or “pop up” the footnotes; even floating 
+	Sidenotes (see https://gwern.net/sidenote ) are superior to footnotes where
+	possible because they enable the reader to immediately look at them without
+	requiring user action to “go to” or “pop up” the footnotes; even floating
 	footnotes require effort by the reader.
 
-	sidenotes.js is inspired by the Tufte-CSS sidenotes 
-	(https://edwardtufte.github.io/tufte-css/#sidenotes), but where Tufte-CSS 
-	uses static footnotes inlined into the body of the page (requiring 
-	modifications to Pandoc’s compilation), which doesn’t always work well for 
-	particularly long or frequent sidenotes, sidenotes.js will rearrange 
+	sidenotes.js is inspired by the Tufte-CSS sidenotes
+	(https://edwardtufte.github.io/tufte-css/#sidenotes), but where Tufte-CSS
+	uses static footnotes inlined into the body of the page (requiring
+	modifications to Pandoc’s compilation), which doesn’t always work well for
+	particularly long or frequent sidenotes, sidenotes.js will rearrange
 	sidenotes to fit as best as possible, and will respond to window changes.
 
-	Particularly long sidenotes are also partially “collapsed”. Styling 
-	(especially for oversized-sidenotes which must scroll) is done in 
+	Particularly long sidenotes are also partially “collapsed”. Styling
+	(especially for oversized-sidenotes which must scroll) is done in
 	/static/css/default.css “SIDENOTES” section.
 
 	Author: Said Achmiz
@@ -16659,7 +16659,7 @@ Sidenotes = { ...Sidenotes,
 		return (Sidenotes.citations.find(citation => Notes.noteNumberFromHash(citation.id) == number) ?? null);
 	},
 
-	/*	The sidenote of the same number as the given citation; 
+	/*	The sidenote of the same number as the given citation;
 		or, the citation of the same number as the given sidenote.
 	 */
 	counterpart: (element) => {
@@ -16687,7 +16687,7 @@ Sidenotes = { ...Sidenotes,
 
 		//  Clear existing targeting.
 		let targetedElementSelector = [
-			".footnote-ref", 
+			".footnote-ref",
 			".footnote",
 			".sidenote"
 		].map(x => x + ".targeted").join(", ");
@@ -16714,7 +16714,7 @@ Sidenotes = { ...Sidenotes,
 
 	/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on what mode
 		the page is in (based on viewport width), whether each margin note is
-		in a constrained block, and whether it’s on the main page or in 
+		in a constrained block, and whether it’s on the main page or in
 		something like a pop-frame.
 
 		(This function should be called from a load or inject event handler,
@@ -16773,7 +16773,7 @@ Sidenotes = { ...Sidenotes,
 
 		//	Check for cut-off sidenotes.
 		Sidenotes.sidenotes.forEach(sidenote => {
-			/*  Check whether the sidenote is currently hidden (i.e., within a 
+			/*  Check whether the sidenote is currently hidden (i.e., within a
 				currently-collapsed collapse block or similar). If so, skip it.
 			 */
 			if (sidenote.classList.contains("hidden")) {
@@ -16826,13 +16826,13 @@ Sidenotes = { ...Sidenotes,
 
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
-			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right 
+			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
 				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													element: potentiallyOverlappingElement });
 
-			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right 
+			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
 				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
@@ -16912,7 +16912,7 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		/*	Default position for a sidenote within a layout cell is vertically
-			aligned with the footnote reference, or else at the top of the 
+			aligned with the footnote reference, or else at the top of the
 			cell, whichever is lower.
 		 */
 		let defaultNotePosInCellForCitation = (cell, citation) => {
@@ -16944,11 +16944,11 @@ Sidenotes = { ...Sidenotes,
 				return;
 			}
 
-			/*	These functions are used to sort layout cells by best fit for 
+			/*	These functions are used to sort layout cells by best fit for
 				placing the current sidenote.
 			 */
 			let vDistanceToCell = (cell) => {
-				if (   citationBoundingRect.top > cell.rect.top 
+				if (   citationBoundingRect.top > cell.rect.top
 					&& citationBoundingRect.top < cell.rect.bottom)
 					return 0;
 				return (citationBoundingRect.top < cell.rect.top
@@ -16979,7 +16979,7 @@ Sidenotes = { ...Sidenotes,
 				cell, and secondarily by horizontal distance from the sidenote.
 			 */
 			fittingLayoutCells.sort((cellA, cellB) => {
-				return (   (  (vDistanceToCell(cellA) + cellCrowdedness(cellA)) 
+				return (   (  (vDistanceToCell(cellA) + cellCrowdedness(cellA))
 							- (vDistanceToCell(cellB) + cellCrowdedness(cellB)))
 						|| (hDistanceToCell(cellA) - hDistanceToCell(cellB)));
 			});
@@ -17025,8 +17025,8 @@ Sidenotes = { ...Sidenotes,
 								 ? cell.sidenotes[pushUpWhich.first].posInCell
 								 : Math.max(0, getDistance(cell.sidenotes[pushUpWhich.first - 1], cell.sidenotes[pushUpWhich.first]));
 
-				let pushUpDistance = bruteStrength 
-									 ? pushUpForce 
+				let pushUpDistance = bruteStrength
+									 ? pushUpForce
 									 : Math.floor(pushUpForce / pushUpWhich.length);
 				if (pushUpDistance <= roomToPush) {
 					shiftNotesUp(pushUpWhich, pushUpDistance);
@@ -17034,7 +17034,7 @@ Sidenotes = { ...Sidenotes,
 				} else {
 					shiftNotesUp(pushUpWhich, roomToPush);
 					if (pushUpWhich.first == 0)
-						return (pushUpForce - roomToPush);					
+						return (pushUpForce - roomToPush);
 
 					pushUpWhich.splice(0, 0, pushUpWhich.first - 1);
 					return pushNotesUp(pushUpWhich, (pushUpForce - roomToPush), bruteStrength);
@@ -17112,7 +17112,7 @@ Sidenotes = { ...Sidenotes,
 	constructSidenotes: () => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
-		/*  Do nothing if constructSidenotes() somehow gets run extremely early 
+		/*  Do nothing if constructSidenotes() somehow gets run extremely early
 			in the page load process.
 		 */
 		let markdownBody = document.querySelector("#markdownBody");
@@ -17133,9 +17133,9 @@ Sidenotes = { ...Sidenotes,
 
 		//	Add the hidden sidenote storage.
 		markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
-			"id": "hidden-sidenote-storage", 
+			"id": "hidden-sidenote-storage",
 			"class": "footnotes",
-			"style": "display:none" 
+			"style": "display:none"
 		}));
 
 		/*  Create and inject the sidenotes.
@@ -17155,12 +17155,12 @@ Sidenotes = { ...Sidenotes,
 			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
 
 			/*	Fill the sidenote either by copying from an existing footnote
-				in the current page, or else by transcluding the footnote to 
+				in the current page, or else by transcluding the footnote to
 				which the citation refers.
 			 */
 			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
-			let sidenoteContents = newDocument(referencedFootnote 
-											   ? referencedFootnote.childNodes 
+			let sidenoteContents = newDocument(referencedFootnote
+											   ? referencedFootnote.childNodes
 											   : synthesizeIncludeLink(citation, {
 											   		"class": "include-strict include-unwrap",
 											   		"data-include-selector-not": ".footnote-self-link"
@@ -17175,20 +17175,20 @@ Sidenotes = { ...Sidenotes,
 				regeneratePlaceholderIds(sidenoteContents);
 
 			//  Wrap the contents of the footnote in two wrapper divs...
-			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", { 
-				class: "sidenote-outer-wrapper" 
-			})).appendChild(sidenote.innerWrapper = newElement("DIV", { 
-				class: "sidenote-inner-wrapper" 
+			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", {
+				class: "sidenote-outer-wrapper"
+			})).appendChild(sidenote.innerWrapper = newElement("DIV", {
+				class: "sidenote-inner-wrapper"
 			})).append(sidenoteContents);
 
-			/*  Create & inject the sidenote self-links (ie. boxed sidenote 
+			/*  Create & inject the sidenote self-links (ie. boxed sidenote
 				numbers).
 			 */
-			sidenote.append(newElement("A", { 
+			sidenote.append(newElement("A", {
 				"class": "sidenote-self-link",
-				"href": `#sn${noteNumber}` 
-			}, { 
-				"textContent": noteNumber 
+				"href": `#sn${noteNumber}`
+			}, {
+				"textContent": noteNumber
 			}));
 
 			//	Remove footnote self-link.
@@ -17306,10 +17306,10 @@ Sidenotes = { ...Sidenotes,
 		GWLog("Sidenotes.setup", "sidenotes.js", 1);
 
 		/*  If the page was loaded with a hash that points to a footnote, but
-			sidenotes are enabled (or vice-versa), rewrite the hash in 
-			accordance with the current mode (this will also cause the page to 
-			end up scrolled to the appropriate element - footnote or sidenote). 
-			Add an active media query to rewrite the hash whenever the viewport 
+			sidenotes are enabled (or vice-versa), rewrite the hash in
+			accordance with the current mode (this will also cause the page to
+			end up scrolled to the appropriate element - footnote or sidenote).
+			Add an active media query to rewrite the hash whenever the viewport
 			width media query changes.
 		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
@@ -17373,8 +17373,8 @@ Sidenotes = { ...Sidenotes,
 		}, "eventListeners", (info) => info.document == document);
 
 		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
-			footnote reference links (i.e., citations) should point down to 
-			footnotes (this is the default state). But in sidenote mode, 
+			footnote reference links (i.e., citations) should point down to
+			footnotes (this is the default state). But in sidenote mode,
 			footnote reference links should point to sidenotes.
 
 			We therefore rewrite all footnote reference links appropriately to
@@ -17397,12 +17397,12 @@ Sidenotes = { ...Sidenotes,
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#sn" : "#fn") 
+					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#sn" : "#fn")
 									+ Notes.noteNumberFromHash(citation.hash);
 			});
 		}, "rewrite", (info) => info.document == document);
 
-		/*	What happens if the page loads with a URL hash that points to a 
+		/*	What happens if the page loads with a URL hash that points to a
 			sidenote or footnote or citation? We need to scroll appropriately,
 			and do other adjustments, just as we do when the hash updates.
 		 */
@@ -17454,7 +17454,7 @@ Sidenotes = { ...Sidenotes,
 				});
 			}
 
-			/*	Hide mode selectors, as they would otherwise overlap a 
+			/*	Hide mode selectors, as they would otherwise overlap a
 				sidenote that’s on the top-right.
 			 */
 			if (Notes.noteNumberFromHash() > "")
@@ -17506,7 +17506,7 @@ Sidenotes = { ...Sidenotes,
 				name: "Sidenotes.updateSidenotePositionsOnWindowResizeListener"
 			});
 
-			/*	Add handler to bind more sidenote-slide events if more 
+			/*	Add handler to bind more sidenote-slide events if more
 				citations are injected (e.g., in a popup).
 			 */
 			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
@@ -17529,7 +17529,7 @@ Sidenotes = { ...Sidenotes,
 			addScrollListener((event) => {
 				Sidenotes.putAllSidenotesBack();
 			}, {
-				name: "Sidenotes.unSlideSidenotesOnScrollListener", 
+				name: "Sidenotes.unSlideSidenotesOnScrollListener",
 				defer: true
 			});
 		}, (mediaQuery) => {
@@ -17651,9 +17651,9 @@ Sidenotes = { ...Sidenotes,
 			newSidenoteTop = Math.max(sidenoteRect.top, minDistanceFromScreenEdge);
 
 			//	Up to viewport bottom.
-			newSidenoteTop = Math.min(newSidenoteTop + sidenoteRect.height, 
-									  window.innerHeight - minDistanceFromScreenEdge) 
-						   - sidenoteRect.height;		
+			newSidenoteTop = Math.min(newSidenoteTop + sidenoteRect.height,
+									  window.innerHeight - minDistanceFromScreenEdge)
+						   - sidenoteRect.height;
 		}
 
 		let delta = Math.round(newSidenoteTop - sidenoteRect.top);

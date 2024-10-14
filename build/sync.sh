@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-09 21:12:10 gwern"
+# When:  Time-stamp: "2024-10-14 12:26:29 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -869,6 +869,7 @@ else
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
             -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
+         gf -e ' TeX' -e ' LaTeX' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
 
@@ -989,7 +990,7 @@ else
         set +e;
         IFS=$(echo -en "\n\b");
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
-        for PAGE in $PAGES $OTHERS ./static/404; do
+        for PAGE in $PAGES $OTHERS ./404; do
             HTML="${PAGE%.md}"
             TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
                        gfv -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
@@ -1348,7 +1349,7 @@ else
     wrap λ "Corrupted filetype HTMLs" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './static/404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages."
 
     λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a' -e '.mov'; }

@@ -32,7 +32,7 @@ main = do errors <- fmap lines getContents
           files <- listFilesRecursivelyWithBasename C.root
           one <- readFile "static/redirect/nginx.conf"
           two <- readFile "static/redirect/nginx-broken.conf"
-          let redirects = filter (\(_,b) -> b /= "/static/404\";") $ map safeTuplize $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two
+          let redirects = filter (\(_,b) -> b /= "/404\";") $ map safeTuplize $ filter (\p -> length p == 2) $ map (splitOn "$\" \"") $ lines $ one ++ two
           let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\""::String)) a, b)) redirects
           let errorDistances = zip errors $ map (filter (\(d,_,_) -> d <= minDistance) . diffAndRank files redirectsCleaned) errors -- :: [(String, [(Int,String,String)])]
           let redirectPairs = (sortBySecondField $ map (\(err,candidates) -> (err, if null candidates then "" else (\(_,_,target) -> target) (head candidates))) errorDistances) :: [(String,String)]

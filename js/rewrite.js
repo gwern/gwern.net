@@ -68,7 +68,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
 }, "rewrite", (info) => (info.context == "popFrame"));
 
 /**************************************************************************/
-/*  Remove aux-links list labels when transcluding aux-links lists into the 
+/*  Remove aux-links list labels when transcluding aux-links lists into the
 	aux-links sections of a page (Backlinks, Similars, Bibliography).
  */
 addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLinksSections = (eventInfo) => {
@@ -79,7 +79,7 @@ addContentInjectHandler(GW.contentInjectHandlers.removeAuxLinksListLabelsInAuxLi
 		"similars",
 		"link-bibliography"
 	];
-	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType => 
+	let auxLinksListLabelSelector = auxLinksTypes.map(auxLinksType =>
 		`#${auxLinksType} > .aux-links-list-label, #${auxLinksType} > .columns > .aux-links-list-label`
 	).join(", ");
 
@@ -1924,7 +1924,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
  */
 addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventInfo) => {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
-    
+
     let baseLocation = baseLocationForDocument(eventInfo.document);
     if (baseLocation == null)
         return;
@@ -1954,7 +1954,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 
 /******************************************************************************/
 /*  Assign local navigation link icons: directional in-page links, generic
-	(non-directional) self-links, and local page links. (These should be 
+	(non-directional) self-links, and local page links. (These should be
 	applied only within body text, including pop-frames but excluding page
 	metadata sections; and should not be applied to links that already have a
 	special link icon, e.g. one assigned on the back-end; nor to links that are
@@ -1963,7 +1963,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
 addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIcons = (eventInfo) => {
     GWLog("designateLocalNavigationLinkIcons", "rewrite.js", 1);
 
-	/*	Do not display special link icons in these containers and for these 
+	/*	Do not display special link icons in these containers and for these
 		elements.
 	 */
 	let exclusionSelector = [
@@ -1986,18 +1986,18 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
         /*  Directional navigation links on self-links: for each self-link like
             “see [later](#later-identifier)”, find the linked identifier,
             whether it's before or after, and if it is before/previously,
-            annotate the self-link with ‘↑’ (UPWARDS ARROW) and if after/later, 
+            annotate the self-link with ‘↑’ (UPWARDS ARROW) and if after/later,
             ‘↓’ (DOWNWARDS ARROW).
 
-            This helps the reader know if it’s a backwards link to an identifier 
-            already read, or an unread identifier, enabling a mental map and 
-            reducing the cognitive overhead of constantly choosing whether to 
+            This helps the reader know if it’s a backwards link to an identifier
+            already read, or an unread identifier, enabling a mental map and
+            reducing the cognitive overhead of constantly choosing whether to
             follow a reference.
 
             This was implemented statically pre-transclusion as an optimization,
             but given that dynamism forces runtime checking of relative status
             for all new fragments (popups or transclude), that has been removed
-            in favor of this JS hook, to simplify code & ensure a single source 
+            in favor of this JS hook, to simplify code & ensure a single source
             of truth.
          */
         let target = eventInfo.document.querySelector(selectorFromHash(link.hash));
@@ -2037,14 +2037,14 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
         /*  Index page, and embeds thereof, do not need the G icon.
 
             NOTE: we do not use the usual method of suppressing G icons
-            (`.icon-not` class), because /index and /static/404 are *so* long
+            (`.icon-not` class), because /index and /404 are *so* long
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
         "body.page-index",
-        "body.page-static-404",
+        "body.page-404",
         ".popframe-body.page-index",
-        ".popframe-body.page-static-404",
+        ".popframe-body.page-404",
 
         //  TOC links should never have link icons under any circumstances.
         ".TOC",
