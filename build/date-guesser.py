@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2024-09-17 13:04:54 gwern"
+# When:  Time-stamp: "2024-10-13 10:37:27 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -232,7 +232,7 @@ Task examples:
 2024-04-17
 - "The 3rd Thursday of the month after next year after 2024’s vernal equinox"
 2025-03
-- https://www.nature.com/articles/s41586-023-06185-3
+- "https://www.nature.com/articles/s41586-023-06185-3"
 ""
 - "Pi Day five years from the last leap year"
 2029-03-14
@@ -294,7 +294,9 @@ Task examples:
 ""
 - "https://www.salon.com/2002/12/17/tolkien_brin/, J. R. R. Tolkien - enemy of progress: <em>The Lord of the Rings</em> is lovingly crafted, seductive - and profoundly backward-looking."
 2002-12-17
-- The LessWrong 2022 Review
+- "The LessWrong 2022 Review"
+""
+- "Mercy Brown vampire incident : https://en.wikipedia.org/wiki/Mercy_Brown_vampire_incident"
 ""
 
 Task:

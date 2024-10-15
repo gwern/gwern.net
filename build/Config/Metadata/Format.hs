@@ -876,7 +876,7 @@ htmlRewriteFixed =
          , ("(N1 =", "(<em>n</em><sub>1</sub> =")
          , ("(N2 =", "(<em>n</em><sub>2</sub> =")
          , ("M full-scale", "M<sub>full-scale</sub>")
-         , ("M age", "M<sub>age</sub>")
+         , (" M age", " M<sub>age</sub>")
          , ("( <em>n</em> =", "(<em>n</em> =")
          , ("<em>N</em> =", "<em>n</em> =")
          , ("N = ", "<em>N</em> = ")

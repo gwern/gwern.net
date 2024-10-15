@@ -506,7 +506,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -881,6 +881,9 @@ authorLinkDB = M.fromList $
     , ("Dan Rujescu", "https://scholar.google.com/citations?user=SsYIclwAAAAJ&hl=en&oi=ao")
     , ("Colin Palmer", "https://discovery.dundee.ac.uk/en/persons/colin-palmer")
     , ("Ben A. Oostra", "https://research.com/u/ben-a-oostra")
+    , ("jreyesr", "https://blog.jreyesr.com/")
+    , ("Avital Balwit", "https://www.avitalbalwit.com/")
+    , ("Edmund L. Gettier", "https://en.wikipedia.org/wiki/Edmund_Gettier")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

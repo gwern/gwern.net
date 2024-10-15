@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-09-26 10:53:23 gwern"
+# When:  Time-stamp: "2024-10-14 12:11:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -458,6 +458,10 @@ Why I Am a Bad Correspondent
 Why I still blog after 15 years
 - "Are you a robot?"
 ""
+- "Exploring Typst, a new typesetting system similar to LaTeX—jreyesr’s blog"
+"Exploring Typst, a new typesetting system similar to LaTeX"
+- "Flight From Perfection � ‘Better not to begin. Once begun, better to finish!’"
+"‘Better not to begin. Once begun, better to finish!’"
 
 Task:
 

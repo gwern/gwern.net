@@ -9,6 +9,7 @@ badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not fo
 -- testing: unique keys
 stringReplace :: [(String,String)]
 stringReplace = [("  ", " ")
+                , (" � ", " - ")
                 , ("Â°", "°")
                 , ("Â ", " ")
                 , (" â\200\224 ", "—")
@@ -135,4 +136,5 @@ stringDelete = [" - The Public Domain Review"
             , "Run Deep: ", " – Daniel Frank", " - by Dwarkesh Patel", " � Erik Bernhardsson"
             , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
             , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru"
-            , " - HTML: HyperText Markup Language", " - Joel on Software", "Neal Stephenson - "]
+            , " - HTML: HyperText Markup Language", " - Joel on Software", "Neal Stephenson - "
+            , "- jreyesr’s blog", "Old Vintage Computing Research: ", "Flight From Perfection - "]
