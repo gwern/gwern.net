@@ -14,7 +14,7 @@ module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldP
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
 import Data.List (isPrefixOf, isSuffixOf)
-import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text,)
+import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text, head, null)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
@@ -78,6 +78,7 @@ mergeSpaces (Str x:SoftBreak:Str y:xs) = mergeSpaces (Str (x`T.append`" "`T.appe
 mergeSpaces (SoftBreak:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
 mergeSpaces (SoftBreak:xs)             = mergeSpaces (Space:xs)
 mergeSpaces (x:xs)                     = x:mergeSpaces xs
+-- TODO: add unit-tests as the logic gets increasingly tricky
 citefyInline :: Int -> Inline -> Inline
 citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
   where
@@ -97,7 +98,7 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                   (fullMatch:first:second:third:_) ->
                     let
                         citeYear = case decimal third :: Either String (Int, T.Text) of
-                                     Left _ -> 0
+                                     Left   _    -> 0
                                      Right (y,_) -> y
                     in
                       if citeYear > year+3 || -- sanity-check the cite year: generally, a citation can't be for more than 2 years ahead: ie on 31 December 2020, a paper may well have an official date anywhere in 2021, but it would be *highly* unusual for it to be pushed all the way out to 2022 (only the most sluggish of periodicals like annual reviews might do that), so ≥2023 *should* be right out. If we have a 'year' bigger than that, it is probably a false positive, eg. 'Atari 2600' is a video game console and not a paper published by Dr. Atari 6 centuries hence.
@@ -105,10 +106,12 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                         [Str a]
                       else
                         (case T.splitOn fullMatch a of
-                              (before:after) -> [citefyInline year $ Str before] ++ -- NOTE: work around greedy regex
+                              (before:after) ->
+                                if not (T.null $ T.concat after) && T.head (T.concat after) `elem` ['-', '—', '–'] then [Str a] else -- bail out if we may be splitting a date-range or other dash construct
+                                [citefyInline year $ Str before] ++ -- NOTE: work around greedy regex
                                     [Span ("", ["cite"], []) ((if T.strip second == "" then
                                                                  -- the easy single/double author case (we only mess with the date, nothing else)
-                                                                 [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with THIN SPACE
+                                                                 [Span ("", ["cite-author"], []) [Str $ T.replace " " " " first]] -- condense with NARROW NO-BREAK SPACE; this is like using THIN SPACE + WORD JOINER?
                                                                  -- et-al case: different span class to select on, stash the et al joiner in a span to suppress:
                                                                  else [Span ("", ["cite-author-plural"], [("title","et al")]) [Str first]] ++
                                                                        [Span ("", ["cite-joiner"], []) [Str $ " " `T.append` T.replace " " " " (T.strip second) `T.append` " "]]) ++
