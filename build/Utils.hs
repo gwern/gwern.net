@@ -463,6 +463,7 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 -- This additionally enforces the Gwern.net style guide that host root domains (in absolute, rather than relative, URLs) must have the optional trailing slash, and fatally error out if not (ie. "https://example.com" *must* be written "https://example.com/", as that is the root; however this doesn't apply to any URLs with additional paths, because the slash can mean entirely different things).
 -- URIs may have a whitelist of known schemes (mailto:, irc:) or may be an anchor fragment ('#foo') but then those are skipped. (Others are assumed to be malformed and fatally error.)
 -- WARNING: due to the difficulty of getting Network.URI to accept unescaped Unicode, we attempt to escape it before processing, so `host` is operating on a somewhat different URL than you assume if it contains raw Unicode.
+-- (With HTML5, it is valid to have unescaped Unicode in URLs, and Pandoc generates these rather than percent-encode them. However, with older standards, which Network.URI was written against, they are required to be percent-encoded.)
 host :: T.Text -> T.Text
 host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
   case parseURIReference (T.unpack $ escapeUnicode p) of

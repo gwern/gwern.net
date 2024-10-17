@@ -160,7 +160,7 @@ tagsShort2Long = tagsShort2LongRewrites ++
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
-                      "the", "to", "tr", "up", "we", "ls"]
+                      "the", "to", "tr", "up", "we", "ls", "<ul>", "<ol>", "<p>", "<blockquote>"]
 
 -- testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
@@ -232,7 +232,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
   , ("genetics/genome-synthesis", "genome synthesis")
   , ("food/mead", "mead")
-  , ("fiction/science-fiction/batman", "Batman")
+  , ("fiction/science-fiction/batman", "<em>Batman</em>")
   , ("fiction/science-fiction/time-travel", "time-travel")
   , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
   , ("fiction/science-fiction", "Sci-Fi")
@@ -426,8 +426,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychology/dark-knowledge", "dark knowledge (human)")
   , ("psychedelic/lsd", "LSD")
   , ("psychedelic", "psychedelics")
-  , ("statistics/prediction", "forecasting")
   , ("statistics/prediction/election", "election forecast")
+  , ("statistics/prediction", "forecasting")
   , ("reinforcement-learning/scaling", "RL scaling")
   , ("reinforcement-learning/exploration/active-learning/data-pruning", "data pruning")
   , ("reinforcement-learning/exploration/active-learning", "active learning")

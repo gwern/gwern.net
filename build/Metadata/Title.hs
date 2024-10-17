@@ -29,14 +29,14 @@ tooltipToMetadata path s
                           minLength n x = if length x < n then "" else x
 
 wikipediaURLToTitle :: String -> String
-wikipediaURLToTitle "" = error "Annotation.wikipediaURLToTitle: passed an empty string argument, which should never happen!"
+wikipediaURLToTitle "" = error "Metadata.Title.wikipediaURLToTitle: passed an empty string argument, which should never happen!"
 wikipediaURLToTitle u  = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $
                           delete "https://en.wikipedia.org/wiki/" u
 
 htmlDownloadAndParseTitle :: String -> IO String
-htmlDownloadAndParseTitle ""  = error "Annotation.htmlDownloadAndParseTitle: passed an empty string argument, which should never happen!"
+htmlDownloadAndParseTitle ""  = error "Metadata.Title.htmlDownloadAndParseTitle: passed an empty string argument, which should never happen!"
 htmlDownloadAndParseTitle url =
- if not (isURL url) then error $ "Annotation.htmlDownloadAndParseTitle: passed a non-URL argument, which should never happen: " ++ show url else
+ if not (isURL url) then error $ "Metadata.Title.htmlDownloadAndParseTitle: passed a non-URL argument, which should never happen: " ++ show url else
  do CM.cd
     let args = ["static/build/download-title.sh", url]
     (status,stderr,mb) <- runShellCommand "./" Nothing "bash" args
@@ -45,8 +45,8 @@ htmlDownloadAndParseTitle url =
         _ -> return $ U.toString mb
 
 htmlDownloadAndParseTitleClean :: String -> IO String
-htmlDownloadAndParseTitleClean "" = error "Annotation.htmlDownloadAndParseTitleClean: passed an empty string argument, which should never happen!"
-htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Annotation.htmlDownloadAndParseTitleClean: passed a non-URL argument, which should never happen: " ++ show u else
+htmlDownloadAndParseTitleClean "" = error "Metadata.Title.htmlDownloadAndParseTitleClean: passed an empty string argument, which should never happen!"
+htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Metadata.Title.htmlDownloadAndParseTitleClean: passed a non-URL argument, which should never happen: " ++ show u else
  do
   title <- htmlDownloadAndParseTitle u
   let title' = trim $ unlines $ take 1 $ lines $ replaceMany C.stringReplace $ deleteMany C.stringDelete $
