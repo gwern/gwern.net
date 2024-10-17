@@ -5,11 +5,11 @@ import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 import Data.Maybe (fromMaybe)
-import qualified Data.Map as M
+import qualified Data.Map as M (keys, filter, fromListWith)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, member, insert, Set)
 import Data.Text.IO as TIO (readFile, writeFile)
-import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference, isRelativeReference, uriToString)
+import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference, isRelativeReference, uriToString, escapeURIString, isUnescapedInURI)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
@@ -280,7 +280,7 @@ isDomainT = isDomain . T.unpack
 -- Check if a string is a valid remote/external HTTP or HTTPS URL only. To check local paths, use `isURIReference`/`isURIReferenceT`. To check both, use `isURLAny`
 isURL :: String -> Bool
 isURL "" = error "Utils.isURL: passed an empty string as a URL. This should never happen!"
-isURL url = case parseURI url of
+isURL url = case parseURI (T.unpack $ escapeUnicode $ T.pack url) of
               Just uri -> let scheme = uriScheme uri in
                             scheme == "http:" || scheme == "https:"
               Nothing -> False
@@ -297,10 +297,10 @@ isURLAnyT = isURLAny . T.unpack
 -- this is equivalent to checking for the mandatory root slash, and then `isURIReferenceT`.
 isURILocalT :: T.Text -> Bool
 isURILocalT "" = error "Utils.isURILocalT: passed an empty string as a URL. This should never happen!"
-isURILocalT url = T.head url == '/' && isURIReferenceT url
+isURILocalT url = T.head url == '/' && isURIReferenceT (escapeUnicode url)
 
 isURIReferenceT :: T.Text -> Bool
-isURIReferenceT = isURIReference . T.unpack
+isURIReferenceT = isURIReference . T.unpack . escapeUnicode
 
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive domain url = let h = host url in
@@ -462,13 +462,13 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 -- Network.URI-based function to extract the 'host' domain of a URL. Return empty string if not sensible.
 -- This additionally enforces the Gwern.net style guide that host root domains (in absolute, rather than relative, URLs) must have the optional trailing slash, and fatally error out if not (ie. "https://example.com" *must* be written "https://example.com/", as that is the root; however this doesn't apply to any URLs with additional paths, because the slash can mean entirely different things).
 -- URIs may have a whitelist of known schemes (mailto:, irc:) or may be an anchor fragment ('#foo') but then those are skipped. (Others are assumed to be malformed and fatally error.)
+-- WARNING: due to the difficulty of getting Network.URI to accept unescaped Unicode, we attempt to escape it before processing, so `host` is operating on a somewhat different URL than you assume if it contains raw Unicode.
 host :: T.Text -> T.Text
 host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
-  case parseURIReference (T.unpack p) of
+  case parseURIReference (T.unpack $ escapeUnicode p) of
     Nothing -> DT.trace ("Utils.host: Invalid URL; input was: " ++ show p) ""
     Just uri' ->
         let scheme = uriScheme uri'
-            -- fragment = T.pack $ uriFragment uri'  -- Extract fragment (if any)
         in if null scheme || scheme == "mailto:" || scheme == "irc:" then "" -- skip anchor fragments, emails, IRC
            else if not (scheme == "http:" || scheme == "https:")  -- Only process HTTP/HTTPS URLs
            then error $ "Utils.host: Unsupported scheme; input was: " ++ show p ++ "; parsed URI was: " ++ show uri' ++ "; scheme was: " ++ show scheme
@@ -481,6 +481,9 @@ host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
                     in if path == ""  -- If the path is empty, it means the trailing slash is missing
                        then error $ "Utils.host: Root domain lacks trailing slash; original input was: " ++ show p ++ "; parsed URI was: " ++ show uri'
                        else T.pack $ uriRegName auth
+
+escapeUnicode :: T.Text -> T.Text
+escapeUnicode = T.pack . escapeURIString isUnescapedInURI . T.unpack
 
 anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
 anyInfix  p = any (`isInfixOf`  p)
