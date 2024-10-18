@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap) where
+module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -18,6 +18,7 @@ import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn,
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
+import Text.Read (readMaybe)
 
 import Data.Text.Titlecase (titlecase)
 
@@ -27,7 +28,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import Metadata.Date (dateRangeDuration)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
-import Utils (sed, replaceMany, parseRawAllClean, safeHtmlWriterOptions)
+import Utils (sed, replaceMany, parseRawAllClean, safeHtmlWriterOptions, toHTML)
 
 import Config.Misc (currentYear)
 import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
@@ -49,12 +50,12 @@ typesetHtmlFieldPermanent permanent t = let fieldPandocMaybe = runPure $ readHtm
                                                    Left errors     -> error "Typography.typesetHtmlField: string failed from Pandoc AST to HTML via Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
 
 
-typographyTransformPermanent :: Pandoc -> Pandoc
-typographyTransformPermanent = let year = currentYear in walk (dateRangeDuration year) . typographyTransformPermanent
+typographyTransform :: Pandoc -> Pandoc
+typographyTransform = let year = currentYear in walk (dateRangeDuration year) . typographyTransformPermanent
 
 -- subset of transforms which are safe to store permanently eg. in the metadata database, and which won't change (this excludes primarily the date-range duration adjuster, which by definition will change every year; this doesn't need to exclude the inflation adjuster, because it is not included in the set of typography transforms, although perhaps it should be?)
-typographyTransform :: Pandoc -> Pandoc
-typographyTransform = let year = currentYear in
+typographyTransformPermanent :: Pandoc -> Pandoc
+typographyTransformPermanent = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk figureCaptionLinebreak .
                         walk (citefyInline year . linkLive . linkIcon) .
@@ -373,3 +374,34 @@ figureCaptionLinebreakTestcases = [ (Figure nullAttr (Caption (Just [Strong [Str
                                      Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 8"],Str "str",Emph [Str ": expansion"],LineBreak,Str "rest of caption",Str "expansion #3",Str "expansion #4",LineBreak,Str "Rest of caption"]) []) [])
                                   ]
 -}
+
+----
+
+-- turn a given string describing 'completion status', of various levels, into a HTML span element which has the class '.completion-status' and encodes the percentage 0–100% as a data-attribute.
+-- eg 'finished' → '<span class="completion-status" data-progress-percentage="100">finished</span>'.
+-- This could be useful for denoting how finished a page is, where one is in reading through a page, how large a collapse's abstract is compared to the full abstract, progress on individual tasks in a todo or reading list, etc.
+-- They can be stylized in various ways in Unicode or with icons, like using line-drawing or circles filled in clockwise. The data-attribute encodes the full range, so one is not limited to a few arbitrarily-chosen levels like '0, 0.25, 0.5, 0.75, 1'.
+-- Supported completion ranges: essay completion status; subjective confidence calibration
+-- If the string input is not found in the `completionMap` and it parses as an integer, it will be used as-is.
+completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
+completionMap = essayCompletionMap ++ confidenceMap
+essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
+confidenceMap = [("certain", "100"), ("highly likely", "84"), ("likely", "67"), ("possible", "50"), ("unlikely", "34"), ("highly unlikely", "17"), ("remote", "0"), ("log", "100"), ("emotional", "0"), ("fiction", "0")]
+
+completionProgressHTML :: String -> String
+completionProgressHTML "" = error "Typography.completionProgressHTML: passed an empty string, that should never happen!"
+completionProgressHTML status = toHTML $ completionProgressInline status
+completionProgressInline :: String -> Inline
+completionProgressInline "" = error "Typography.completionProgressInline: passed an empty string, that should never happen!"
+completionProgressInline status =
+  case lookup status completionMap of
+   Nothing -> case readMaybe status :: Maybe Int of
+                Nothing -> error $ "Typography.completionProgressInline: asked to provide percentage progress for unknown or malformed input status; requested: " ++ show status
+                Just n -> if n <= 100 && n >= 0 then completionProgressSpan (show n) status else
+                            error $ "Typography.completionProgressInline: was passed an integer which cannot be interpreted as a percentage 0–100; erroring out. Original input: " ++ show status ++ "; parsed integer: " ++ show n
+   Just value -> completionProgressSpan value status
+
+completionProgressSpan :: String -> String -> Inline
+completionProgressSpan "" s = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show s
+completionProgressSpan n "" = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show n
+completionProgressSpan n s = Span ("", ["completion-status"], [("progress-percentage", T.pack n)]) [Str (T.pack s)]

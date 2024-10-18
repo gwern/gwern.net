@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-14 12:26:29 gwern"
+# When:  Time-stamp: "2024-10-18 21:14:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -33,7 +33,10 @@ if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
 fi
 # conda activate pytorch # set up virtual environment to get 'beautifulsoup-4' for Python utilities
 
-if [ $(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//') -lt 3 ]; then
+# cleanup:
+rm --recursive --force -- ./_cache/ ./_site/
+
+if [ "$(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//')" -lt 3 ]; then
     red "Error: Less than 3GB of free space in home directory; one cannot reliably compile Gwern.net with so little space, so exiting." >&2
     exit 2
 fi
@@ -153,8 +156,6 @@ else
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
     cd ../../
-    # cleanup:
-    rm --recursive --force -- ./_cache/ ./_site/
 
   if [ "$SLOW" ]; then
     bold "Checking embeddings database…"
@@ -618,6 +619,7 @@ else
             "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
             "css" "CSS" "d" "D" "diff" "Diff" "Haskell" "html" "HTML" "Javascript" "JavaScript"
             "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
+            "completion-status"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)

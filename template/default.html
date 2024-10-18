@@ -121,8 +121,8 @@
           <div class="page-metadata-fields">
               $if(author)$<span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
               $if(date-range-HTML)$<span class="page-date-range">$date-range-HTML$</span>$endif$
-              <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span>
-              <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence$</em></span>
+              <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
+              <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
               <span class="page-importance"><a href="/about#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
               $if(backlinks-yes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
               $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$

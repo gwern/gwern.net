@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-10-18 19:17:33 gwern"
+When: Time-stamp: "2024-10-18 20:50:45 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -47,7 +47,7 @@ import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
-import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
+import Typography (linebreakingTransform, typographyTransform, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML)
 import Test (testAll)
 import Config.Misc (cd, currentYear)
@@ -208,7 +208,9 @@ postCtx md =
     dateField "modified" "%F" <>
     modificationTimeField "modified" "%F" <>
     -- metadata:
+    progressField "status" "status-plus-progress" <>
     constField "status" "notes" <>
+    progressField "confidence" "confidence-plus-progress" <>
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "css-extension" "dropcaps-de-zs" <>
@@ -276,6 +278,14 @@ titlePlainField d = field d $ \item -> do
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
+
+progressField :: String -> String -> Context String
+progressField d d' = field d' $ \item -> do
+ metadataMaybe <- getMetadataField (itemIdentifier item) d
+ case metadataMaybe of
+   Nothing -> noResult ""
+   Just progress -> return $ completionProgressHTML progress
+
 
 dateRangeHTMLField :: String -> Context String
 dateRangeHTMLField d = field d $ \item -> do
