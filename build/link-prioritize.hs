@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2024-04-17 09:21:42 gwern"
+When:  Time-stamp: "2024-10-17 18:16:34 gwern"
 License: CC-0
 Dependencies: Gwern.net Hakyll libraries
 
@@ -54,8 +54,7 @@ $ find ~/wiki/ -name "*.md" -type f -print0 | parallel --null ~/wiki/static/buil
 module Main where
 
 import Control.Monad (when)
-import qualified Data.Map.Strict as M (elems, fromListWith, lookup, map, size, toList)
-import Utils (replace)
+import qualified Data.Map.Strict as M (elems, fromListWith, lookup, map, size, toList, elems)
 import Data.List (sort)
 import qualified Data.Text as T (isInfixOf, unpack)
 import System.Environment (getArgs)
@@ -63,16 +62,25 @@ import System.Environment (getArgs)
 import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata)
 import LinkMetadataTypes (Metadata)
+import Utils (replace)
+import qualified Config.Metadata.Author as CA (authorLinkDB)
 
 main :: IO ()
 main = do printN:_ <- getArgs
           let printN' = if null printN then maxBound else read printN :: Int
+
           db <- readLinkMetadata
-          when (M.size db < 1000) $ error $ "Database too small? " ++ show db
+          when (M.size db < 1000) $ error $ "link-prioritize.hs: GTX databases are suspiciously small? final database was: " ++ show db
           bdb <- readBacklinksDB
+          -- filter out all URLs used as author bio links: these will often rack up many backlinks, but we generally do not intend to write biographies or summaries of an author's entire career & bibliography, as that is way too hard compared to a more normal annotation requirement. So we extract all URLs from the author database, and filter those out:
+          let authorURLs = M.elems CA.authorLinkDB
+
           let urls = M.toList $ M.map length $ M.fromListWith (++) $ concat $ M.elems bdb
-          let urls' = filter (\(url,_) -> not (isAnnotated db (T.unpack url)) && "." `T.isInfixOf` url && not ("wikipedia.org/wiki/" `T.isInfixOf` url)) urls
+
+          let urls' = filter (\(url,_) -> not (isAnnotated db (T.unpack url)) && "." `T.isInfixOf` url && not ("wikipedia.org/wiki/" `T.isInfixOf` url) && not (url `elem` authorURLs)) urls
+
           let uses = reverse $ sort $ map (\(a,b) -> (b,a)) urls'
+
           putStrLn $ unlines $ take printN' $ map (\(n,url) -> show n ++ " " ++ T.unpack url) uses
 
 isAnnotated :: Metadata -> String -> Bool
