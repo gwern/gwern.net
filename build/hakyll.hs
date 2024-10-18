@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-09-03 19:02:48 gwern"
+When: Time-stamp: "2024-10-18 19:17:33 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,9 +48,10 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline)
-import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete)
+import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML)
 import Test (testAll)
-import Config.Misc (cd)
+import Config.Misc (cd, currentYear)
+import Metadata.Date (dateRangeDuration)
 
 main :: IO ()
 main =
@@ -200,6 +201,7 @@ postCtx md =
     boolField "backlinks-yes" (check notNewsletterOrIndex getBackLinkCheck)    <>
     boolField "similars-yes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
     boolField "linkbib-yes"   (check (const True)         getLinkBibLinkCheck) <>
+    dateRangeHTMLField "date-range-HTML" <>
     dateField "created" "%F" <>
     -- constField "created" "N/A"  <> -- NOTE: we make 'created' a mandatory field by not setting a default, so template compilation will crash
     -- if no manually set last-modified time, fall back to checking file modification time:
@@ -221,14 +223,14 @@ lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do
   let path = "/" ++ delete ".md" (toFilePath $ itemIdentifier item)
   case M.lookup path m of
-    Nothing               -> return Nothing
+    Nothing                 -> return Nothing
     Just (_,_,_,_,_,tags,_) -> return $ Just tags
 
 fieldsTagHTML :: Metadata -> Context String
 fieldsTagHTML m = field "tagsHTML" $ \item -> do
   maybeTags <- lookupTags m item
   case maybeTags of
-    Nothing -> return "" -- noResult "no tag field"
+    Nothing   -> return "" -- noResult "no tag field"
     Just []   -> return ""
     Just [""] -> return ""
     Just tags -> case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv $ map T.pack tags]) of
@@ -274,6 +276,15 @@ titlePlainField d = field d $ \item -> do
                   case metadataMaybe of
                     Nothing -> noResult "no title field"
                     Just t -> return (simplifiedHTMLString t)
+
+dateRangeHTMLField :: String -> Context String
+dateRangeHTMLField d = field d $ \item -> do
+ metadataMaybe1 <- getMetadataField (itemIdentifier item) "created"
+ metadataMaybe2 <- getMetadataField (itemIdentifier item) "modified"
+ case (metadataMaybe1, metadataMaybe2) of
+   (Just created, Just modified) -> let range = dateRangeDuration currentYear (Str $ T.pack $ created ++ "–" ++ modified) in
+                                      return (toHTML range)
+   (_,_) -> noResult "missing created and/or modified field, so could not adjust the date range subscript."
 
 descField :: Bool -> String -> String -> Context String
 descField escape d d' = field d' $ \item -> do
