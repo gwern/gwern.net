@@ -1540,7 +1540,7 @@ htmlRewriteFixed =
          , (" Drosophila melanogaster", " <em>Drosophila melanogaster</em>")
          , (" Arabidopsis Thaliana", " <em>Arabidopsis Thaliana</em>")
          , ("<em>C</em>. <em>elegans</em>", "<em>C. elegans</em>")
-         , (" Caenorhabditis elegans ", " <em>Caenorhabditis elegans</em> ")
+         , (" Caenorhabditis elegans", " <em>Caenorhabditis elegans</em>")
          , (" C. elegans", " <em>C. elegans</em>")
          , (" Bacillus subtilis", " <em>Bacillus subtilis</em>")
          , (" Octopus insularis", " <em>Octopus insularis</em>")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-05 10:49:27 gwern"
+# When:  Time-stamp: "2024-10-18 10:12:05 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -674,10 +674,10 @@ SNAPSHOT_DIR="./metadata/snapshot"
 CONTENT_DIR="$HOME/wiki/"
 
 get_lorem_pages () {
-    find "$CONTENT_DIR" -name "lorem*.md" -printf "%f\n" | sed 's/\.md$//'
+    find "$CONTENT_DIR" -name "lorem*.md" -printf "%f\n" | sed 's/\.md$//' | sort
 }
 
-download_page () {
+lorem_download () {
     local page=$1
     local output_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
@@ -707,7 +707,7 @@ lorem_update () {
     bold "Updating snapshots…"
     mkdir -p "${SNAPSHOT_DIR}"
     get_lorem_pages | while read -r page; do
-        download_page "${page}"
+        lorem_download "${page}"
         echo "Updated snapshot for \"${page}\""
     done
 }

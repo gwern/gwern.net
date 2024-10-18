@@ -2840,4 +2840,13 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/2409.12822","wen-et-al-2024-1"),("https://arxiv.org/abs/2402.18510","wen-et-al-2024-2")
        , ("/doc/genetics/heritable/adoption/2021-willoughby.pdf", "willoughby-et-al-2021-adoption-iq")
        , ("/doc/genetics/heritable/adoption/2021-willoughby-2.pdf", "willoughby-et-al-2021-adoption-politics")
+       , ("https://arxiv.org/abs/2410.02288","cao-et-al-2024-1"),("/doc/ai/anime/danbooru/2024-cao.pdf","cao-et-al-2024-2"),("https://arxiv.org/abs/2410.07095#openai","chan-et-al-2024-1")
+       , ("https://arxiv.org/abs/2408.04681","chan-et-al-2024-2")
+       , ("https://www.lesswrong.com/posts/rYDas2DDGGDRc8gGB/unifying-bargaining-notions-1-2","diffractor-2022-1"),("https://www.lesswrong.com/posts/RZNmNwc9SxdKayeQh/unifying-bargaining-notions-2-2","diffractor-2022-2")
+       , ("https://arxiv.org/abs/2410.07524#nvidia","he-et-al-2024-1"),("https://arxiv.org/abs/2406.02550","he-et-al-2024-2")
+       , ("https://weirdgloop.org/blog/why-were-helping-more-wikis-move-away-from-fandom#why-do-we-actually-care","lee-2024-1"),("https://thesephist.com/posts/epistemic-calibration/","lee-2024-2"),("https://arxiv.org/abs/2410.09754","lee-et-al-2024-1"),("/doc/longevity/glp/semaglutide/2024-lee.pdf","lee-et-al-2024-2")
+       , ("https://arxiv.org/abs/2410.07166","li-et-al-2024-1"),("https://arxiv.org/abs/2410.06405","li-et-al-2024-2")
+       , ("https://arxiv.org/abs/2307.15771#deepmind","mcgrath-et-al-2023-1"),("/doc/cat/psychology/2023-mcgrath.pdf","mcgrath-et-al-2023-2")
+       , ("https://arxiv.org/abs/2402.12291","shu-et-al-2024-1"),("/doc/ai/nn/gan/stylegan/2024-shu.pdf","shu-et-al-2024-2")
+       , ("https://arxiv.org/abs/2304.11082","wolf-et-al-2023-1"),("/doc/biology/2023-wolf.pdf","wolf-et-al-2023-2")
       ]

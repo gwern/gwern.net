@@ -278,6 +278,7 @@ whiteList url
 whiteListMatchesFixed :: [String]
 whiteListMatchesFixed = [
       "archive.org/details/", "archive.org/download/", "scholar.archive.org"
+      , "example.com"
       , ".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
       , ".xz"

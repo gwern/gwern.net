@@ -15,7 +15,7 @@ import System.FilePath (takeDirectory, takeExtension)
 import System.IO (stderr, hPutStr)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Show.Pretty (ppShow)
-import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace, head, append, reverse, takeWhile)
+import qualified Data.Text as T (Text, concat, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf, replace, head, append, reverse, takeWhile, strip, dropWhile, elem)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
@@ -55,6 +55,9 @@ trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
   where badChars :: Char -> Bool
         badChars c = isSpace c || (c=='-')
+
+simplifiedHtmlToString :: String -> String
+simplifiedHtmlToString = T.unpack . T.strip . simplifiedDoc . toPandoc
 
 simplifiedString :: String -> String
 simplifiedString s = trim $ -- NOTE: 'simplified' will return a trailing newline, which is unhelpful when rendering titles.
@@ -467,7 +470,9 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 host :: T.Text -> T.Text
 host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
   case parseURIReference (T.unpack $ escapeUnicode p) of
-    Nothing -> DT.trace ("Utils.host: Invalid URL; input was: " ++ show p) ""
+    Nothing -> let anchor = T.dropWhile (/='#') p in
+                 if '#' `T.elem` anchor then "" else -- we skip this 'bad' URL because it may just be us using the PmWiki range syntax for transcludes, like `/lorem-link#internal-page-links#` or `/note/killing-rabbits##`; but if there is no hash in what appears to be the anchor, then we may have a real issue and should complain about it:
+                   DT.trace ("Utils.host: Invalid URL; input was: " ++ show p) ""
     Just uri' ->
         let scheme = uriScheme uri'
         in if null scheme || scheme == "mailto:" || scheme == "irc:" then "" -- skip anchor fragments, emails, IRC

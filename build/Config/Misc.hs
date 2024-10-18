@@ -69,7 +69,7 @@ backlinkBlackList :: T.Text -> Bool
 backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."
 backlinkBlackList e
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "/private"] = True
-  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/"] = True
+  | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "https://example.com"] = True
                    -- WARNING: do not filter out 'metadata/annotation' because that leads to empty databases & infinite loops
   | otherwise = False
   where f = if T.head e == '#' then e else T.takeWhile (/= '#') e -- drop anchors to avoid spurious mismatches eg. '/index#backlink-id-of-some-sort' would bypass a mere '"/index" `isSuffixOf`' check without this.

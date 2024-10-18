@@ -495,6 +495,9 @@ canonicals = M.fromList
   , ("Luke_Metz", "Luke Metz")
   , ("OriolVinyalsML", "Oriol Vinyals")
   , ("Colin N. A. Palmer", "Colin Palmer")
+  , ("Lukasz Kaiser", "Łukasz Kaiser")
+  , ("Benjamin K. Goodrich", "Ben Goodrich")
+  , ("Benjamin Goodrich", "Ben Goodrich")
   ]
 
 -- tests: unique
@@ -506,7 +509,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -878,12 +881,21 @@ authorLinkDB = M.fromList $
     , ("Furu Wei", "https://scholar.google.com/citations?user=G-V1VpwAAAAJ")
     , ("Eva Albrecht", "https://www.euengage.org/EvaA.html")
     , ("David W. Scott", "https://www.stat.rice.edu/~scottdw/")
-    , ("Dan Rujescu", "https://scholar.google.com/citations?user=SsYIclwAAAAJ&hl=en&oi=ao")
+    , ("Dan Rujescu", "https://scholar.google.com/citations?user=SsYIclwAAAAJ")
     , ("Colin Palmer", "https://discovery.dundee.ac.uk/en/persons/colin-palmer")
     , ("Ben A. Oostra", "https://research.com/u/ben-a-oostra")
     , ("jreyesr", "https://blog.jreyesr.com/")
     , ("Avital Balwit", "https://www.avitalbalwit.com/")
     , ("Edmund L. Gettier", "https://en.wikipedia.org/wiki/Edmund_Gettier")
+    , ("Behnam Neyshabur", "https://www.neyshabur.net/")
+    , ("Aiden Corvin", "https://www.tcd.ie/research/profiles/?profile=acorvin")
+    , ("Tian Ge", "https://researchers.mgh.harvard.edu/profile/13053035/Tian-Ge")
+    , ("Thomas Wang", "https://scholar.google.com/citations?user=NncsJNQAAAAJ")
+    , ("Paul Darwin Foote", "/doc/science/1979-astin.pdf")
+    , ("Jakob Uszkoreit", "https://scholar.google.com/citations?user=mOG0bwsAAAAJ")
+    , ("Aidan N. Gomez", "https://en.wikipedia.org/wiki/Aidan_Gomez")
+    , ("Łukasz Kaiser", "https://scholar.google.com/citations?user=JWmiQR0AAAAJ")
+    , ("Ben Goodrich", "https://polisci.columbia.edu/content/benjamin-k-goodrich")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -995,7 +1007,7 @@ authorWpLinkDB =
     ,"Barbara Schneider", "Barbara Stoddard Burks", "Barbara Sullivan", "Barbara Wold", "Barry Cunliffe"
     ,"Barry Horowitz", "Baruch Fischhoff", "Basem Al-Shayeb", "Basil Hetzel", "Beat Keller"
     ,"Beatrice H. Hahn", "Beatrice de Gelder", "Beatriz Luna", "Bei Shi", "Ben Goldacre"
-    ,"Ben Goodrich", "Ben Higgins", "Ben Horowitz", "Ben Laurie", "Ben Rattray"
+    , "Ben Higgins", "Ben Horowitz", "Ben Laurie", "Ben Rattray"
     ,"Ben Shneiderman", "Ben Silverman", "Benedict Jones", "Benedict Smith", "Benedicto Crespo-Facorro"
     ,"Beng Chin Ooi", "Bengt Holmstr\246m", "Benjamin A. Garcia", "Benjamin A. Olken"
     ,"Benjamin B", "Benjamin B. Lahey", "Benjamin Black", "Benjamin Breen", "Benjamin Djulbegovic"
@@ -1043,7 +1055,7 @@ authorWpLinkDB =
     ,"Cass R. Sunstein", "Catharine R. Gale", "Catherine Dulac", "Catherine Jami", "Catherine Marshall"
     ,"Catherine McBride", "Catherine Plaisant", "Catherine Potenski", "Cathleen Schine", "Catholijn Jonker"
     ,"Cathryn Lewis", "Cathryn M. Lewis", "Cathy J. Price", "Cathy King", "Cathy Spatz Widom"
-    ,"Cathy Williams", "Cathy Wu", "Cecil R. Reynolds", "Cecilia D\8217Anastasio", "Cecilia Lindgren"
+    , "Cathy Wu", "Cecil R. Reynolds", "Cecilia D\8217Anastasio", "Cecilia Lindgren"
     ,"Cecilia Magnusson", "Cees Dekker", "Celeste Kidd", "Celeste Lyn Paul", "Celia Greenwood"
     ,"Cell Press", "Celso Arango", "Chaim Goodman-Strauss", "Chandler Burr", "Chang Jiang"
     ,"Chang Xu", "Chantal Radimilahy", "Chao Agnes Hsiung", "Chao Chen", "Chao Dong"
@@ -1871,7 +1883,7 @@ authorWpLinkDB =
     ,"Roland G. Fryer", "Roland R. Griffiths", "Rolf Dobelli", "Roman Kotov", "Ron Milo"
     ,"Ron Rosenbaum", "Ronald A. Fisher", "Ronald A. Howard", "Ronald C. Kessler", "Ronald Davis"
     ,"Ronald Duncan", "Ronald J. Williams", "Ronald K. Siegel", "Ronald Kessler", "Ronald Kim"
-    ,"Ronald Klein", "Ronald L. Simons", "Ronald Rogowski", "Ronald S. Burt", "Ronald S. Wilson"
+    , "Ronald L. Simons", "Ronald Rogowski", "Ronald S. Burt", "Ronald S. Wilson"
     ,"Ronald W. Davis", "Ronen Eldan", "Ronen Segev", "Rong Zhang", "Ronin Network"
     ,"Ronke Olabisi", "Rory Collins", "Rosalind Picard", "Rosalind Raine", "Rose Andrew"
     ,"Roshan Cools", "Roshan Rao", "Ross Goodwin", "Ross J. Baldessarini", "Ross L. Prentice"
@@ -2119,4 +2131,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit"]

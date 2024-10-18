@@ -73,9 +73,9 @@ dateRangeDuration _ x = x
 
 dateRangeDurationRaw :: Int -> Inline -> T.Text -> Inline
 dateRangeDurationRaw todayYear x s =
- let yearMatch     = match dateRangeRegex     s :: [[T.Text]]
-     fullDateMatch = match dateFullRangeRegex s :: [[T.Text]]
-     singleYearMatch = match singleYearRegex s :: [[T.Text]]
+ let yearMatch       = match dateRangeRegex     s :: [[T.Text]]
+     fullDateMatch   = match dateFullRangeRegex s :: [[T.Text]]
+     singleYearMatch = match singleYearRegex    s :: [[T.Text]]
      dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
  in if '$' `T.elem` s then x else -- HACK: patch over the regexps not doing a full job of excluding comma-less currencies
   case singleYearMatch of

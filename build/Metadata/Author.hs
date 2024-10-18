@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-09-24 10:59:44 gwern"
+When:  Time-stamp: "2024-10-17 09:42:54 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -162,7 +162,8 @@ authorCollapse :: String -> [Inline]
 authorCollapse aut
   | aut `elem` ["", "N/A", "N/\8203A"] = []
   | otherwise =
-  let authors = intersperse (Str ", ") $ map (linkify . T.pack) $ split ", " aut
+  let authors = intersperse (Str ", ") $ map (linkify . -- removes '#' disambiguation as well
+                                               T.pack) $ split ", " aut
       authorSpan = if length authors <= 2 then Span ("", ["author", "cite-author"], []) authors
                                                else if length authors < 8 then
                                                       Span ("", ["author"], []) authors
