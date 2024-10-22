@@ -896,10 +896,10 @@ authorLinkDB = M.fromList $
     , ("Aidan N. Gomez", "https://en.wikipedia.org/wiki/Aidan_Gomez")
     , ("Łukasz Kaiser", "https://scholar.google.com/citations?user=JWmiQR0AAAAJ")
     , ("Ben Goodrich", "https://polisci.columbia.edu/content/benjamin-k-goodrich")
-    , ("Llion Jones", "https://scholar.google.com/citations?user=_3_P5VwAAAAJ&hl=en&oi=ao")
-    , ("Illia Polosukhin", "https://scholar.google.com/citations?user=3SyxFIAAAAAJ&hl=en&oi=ao")
-    , ("Teven Le Scao", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ&hl=en&oi=ao")
-    , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ&hl=en&oi=ao")
+    , ("Llion Jones", "https://scholar.google.com/citations?user=_3_P5VwAAAAJ")
+    , ("Illia Polosukhin", "https://scholar.google.com/citations?user=3SyxFIAAAAAJ")
+    , ("Teven Le Scao", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
+    , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
     , ("Richard Mott Gummere", "/doc/history/1969-allis.pdf#page=11")
     ]
 

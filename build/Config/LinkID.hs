@@ -2850,4 +2850,5 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/2402.12291","shu-et-al-2024-1"),("/doc/ai/nn/gan/stylegan/2024-shu.pdf","shu-et-al-2024-2")
        , ("https://arxiv.org/abs/2304.11082","wolf-et-al-2023-1"),("/doc/biology/2023-wolf.pdf","wolf-et-al-2023-2")
        , ("https://arxiv.org/abs/2410.09754","lee-et-al-2024-1-1"),("https://arxiv.org/abs/2406.13121#google","lee-et-al-2024-1-2"),("https://arxiv.org/abs/2405.20233","lee-et-al-2024-2-1"),("/doc/longevity/glp/semaglutide/2024-lee.pdf","lee-et-al-2024-2-2")
+       , ("https://arxiv.org/abs/2410.05258","ye-et-al-2024-1"),("https://arxiv.org/abs/2407.20311","ye-et-al-2024-2")
       ]
