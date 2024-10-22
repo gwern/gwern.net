@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2024-09-27 22:33:42 gwern"
+# When:  Time-stamp: "2024-10-21 21:10:00 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -201,6 +201,10 @@ lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</e
 𝒪(<em>m′</em> log<sup>2</sup> <em>m′</em>)
 - 'n&#39;'
 <em>n′</em>
+- '$%$'
+%
+- '%'
+%
 
 Task:
 

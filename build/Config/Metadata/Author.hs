@@ -896,6 +896,11 @@ authorLinkDB = M.fromList $
     , ("Aidan N. Gomez", "https://en.wikipedia.org/wiki/Aidan_Gomez")
     , ("Łukasz Kaiser", "https://scholar.google.com/citations?user=JWmiQR0AAAAJ")
     , ("Ben Goodrich", "https://polisci.columbia.edu/content/benjamin-k-goodrich")
+    , ("Llion Jones", "https://scholar.google.com/citations?user=_3_P5VwAAAAJ&hl=en&oi=ao")
+    , ("Illia Polosukhin", "https://scholar.google.com/citations?user=3SyxFIAAAAAJ&hl=en&oi=ao")
+    , ("Teven Le Scao", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ&hl=en&oi=ao")
+    , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ&hl=en&oi=ao")
+    , ("Richard Mott Gummere", "/doc/history/1969-allis.pdf#page=11")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2131,4 +2136,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca"]

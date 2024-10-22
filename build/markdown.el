@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-10-05 21:31:31 gwern"
+;;; When:  Time-stamp: "2024-10-20 19:22:49 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -65,7 +65,7 @@
               scheme-mode sgml-mode sh-mode sml-mode markdown-mode ledger-mode)))
 (make-face 'taylor-special-words-safe)
 (set-face-attribute 'taylor-special-words-safe nil :foreground "White" :background "Green")
-(let ((pattern "\\<\\(DONE\\|OK\\|DELAYED\\|SKIPPED\\)\\>"))
+(let ((pattern "\\<\\(DONE\\|OK\\|SKIPPED\\)\\>"))
   (mapc
    (lambda (mode)
      (font-lock-add-keywords mode `((,pattern 1 'taylor-special-words-safe prepend))))

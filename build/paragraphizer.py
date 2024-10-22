@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-16 21:24:29 gwern"
+# When:  Time-stamp: "2024-10-20 20:38:14 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -463,6 +463,10 @@ We release all our models to the community.
 Multi-query attention (MQA), which only uses a single key-value head, drastically speeds up decoder inference. However, MQA can lead to quality degradation, and moreover it may not be desirable to train a separate model just for faster inference.
 We (1) propose a recipe for uptraining existing multi-head language model checkpoints into models with MQA using 5% of original pre-training compute, and (2) introduce <strong>grouped-query attention (GQA)</strong>, a generalization of multi-query attention which uses an intermediate (more than one, less than number of query heads) number of key-value heads.
 We show that uptrained GQA achieves quality close to multi-head attention with comparable speed to MQA.
+- Input: <abstract>Although domestic cats are among the most common companion animals, we still know very little about the details of the cat-human relationship. With a questionnaire, we asked 157 Hungarian cat owners about their pet’s behavior, cognitive abilities, and social interactions. We analyzed the responses with PCA resulting in 11 traits. The effect of cats’ and owners’ demographic variables on the main components was further analyzed with GLM. The results showed strong similarity to the surveys performed with companion dogs, but we also found features that were mainly cat-specific.</abstract> →
+Although domestic cats are among the most common companion animals, we still know very little about the details of the cat-human relationship.
+With a questionnaire, we asked 157 Hungarian cat owners about their pet’s behavior, cognitive abilities, and social interactions. We analyzed the responses with PCA resulting in 11 traits. The effect of cats’ and owners’ demographic variables on the main components was further analyzed with GLM.
+The results showed strong similarity to the surveys performed with companion dogs, but we also found features that were mainly cat-specific.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 
