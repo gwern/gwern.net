@@ -141,7 +141,7 @@ generateCaller md target (caller, callers) =
                                [Str ":"]),
                          -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
                          BlockQuote [Para [Link ("",
-                                                  ["backlink-not", "include-block-context-expanded"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
+                                                  ["backlink-not", "include-block-context-expanded", "collapsible"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
                                                   if selfIdent=="" then [] else [("target-id",selfIdent)]
                                                 )
                                                 [Str "[backlink context]"] -- NOTE: matched on by `LinkBacklink.getBackLinkCount`; if this is modified or rendered not 1-per-backlink, update that too.

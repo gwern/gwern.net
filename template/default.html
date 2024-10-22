@@ -137,11 +137,11 @@
         <noscript><div id="noscript-warning-footer" class="admonition error" title="Warning to NoScript Users"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the bibliography require JS enabled to load.]</p></div></noscript>
         $if(backlinks-yes)$<section id="backlinks-section" class="level1">
           <h1><a href="#backlinks-section" title="Link to section: § 'Backlinks'">Backlinks</a></h1>
-          <a id="backlinks" href="/metadata/annotation/backlink/$escaped-url$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict" data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">[Backlinks (what links here)]</a>
+          <a id="backlinks" href="/metadata/annotation/backlink/$escaped-url$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict collapsible" data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">[Backlinks (what links here)]</a>
         </section>$endif$
         $if(similars-yes)$<section id="similars-section" class="level1">
           <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
-          <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict" data-link-icon="≈" data-link-icon-type="text">[Similar links by topic]</a>
+          <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict collapsible" data-link-icon="≈" data-link-icon-type="text">[Similar links by topic]</a>
           </section>$endif$
         $if(linkbib-yes)$<section id="link-bibliography-section" class="level1 collapse">
           <h1 class="collapse"><a href="#link-bibliography-section" title="Link to section: § 'Bibliography'">Bibliography</a></h1> <!-- NOTE: In theory, '.collapse' on a '<h1>' is redundant with the '<section>'; but added to parallel Pandoc-generated headers which set all attributes/classes on both. -->
