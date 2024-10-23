@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-21 22:51:35 gwern"
+# When:  Time-stamp: "2024-10-22 21:51:44 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -642,6 +642,28 @@ else
     ## NOTE: 8381 <https://github.com/jgm/pandoc/issues/8381> is a WONTFIX by jgm, so no solution but to manually check for it. Fortunately, it is rare.
 
     # λ(){ echo "$PAGES_ALL" | xargs --max-args=100 elinks -dump |
+
+    # check YAML metadata properties; properties should either have 1 or none, usually.
+    # Upstream Pandoc will only warn on duplicate YAML keys (<https://github.com/jgm/pandoc/issues/10312>)
+    # but we want to check more than that.
+    count       () { ge --count $@; }
+    notOne      () { gfv -e ':1'; }
+    moreThanOne () { gev -e ':1$' -e ':0$'; }
+    λ(){ count '^title: '       $PAGES | notOne
+         count '^description: ' $PAGES | notOne | gfv -e '/note/' -e '/newsletter/'
+         count '^confidence: '  $PAGES | notOne
+         count '^created: '     $PAGES | notOne
+         count '^status: '      $PAGES | notOne
+       }
+    wrap λ "Essays missing required metadata field (need exactly one of title/description/confidence/created/status)"
+    λ(){ count '^css-extension: '  $PAGES | moreThanOne
+         count '^modified: '       $PAGES | moreThanOne
+         count '^thumbnail-css: '  $PAGES | moreThanOne
+         count '^thumbnail: '      $PAGES | moreThanOne
+         count '^thumbnail-text: ' $PAGES | moreThanOne
+         count '^importance: '     $PAGES | moreThanOne
+       }
+    wrap λ "Essays with redundant or duplicate metadata fields (must have no more than one of css-extension/modified/thumbnail-css/thumbnail/thumbnail-text/importance)"
 
     λ(){ echo "$PAGES_ALL" | xargs grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
