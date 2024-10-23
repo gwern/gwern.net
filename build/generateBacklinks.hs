@@ -8,7 +8,7 @@ module Main where
 
 import Text.Pandoc (nullMeta, unMeta, MetaValue(MetaBool),
                     runPure, writeHtml5String,
-                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Strong, Str), Format(..))
+                    Pandoc(Pandoc), Block(BlockQuote, BulletList, Para), Inline(Link, RawInline, Span, Strong, Str), Format(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack, tail, takeWhile, stripSuffix, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -144,7 +144,7 @@ generateCaller md target (caller, callers) =
                                                   ["backlink-not", "include-block-context-expanded", "collapsible"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
                                                   if selfIdent=="" then [] else [("target-id",selfIdent)]
                                                 )
-                                                [Str "[backlink context]"] -- NOTE: matched on by `LinkBacklink.getBackLinkCount`; if this is modified or rendered not 1-per-backlink, update that too.
+                                                [Span ("",["abstract-collapse"],[]) [Str "[backlink context]"]] -- NOTE: matched on by `LinkBacklink.getBackLinkCount`; if this is modified or rendered not 1-per-backlink, update that too.
                                                 (u, "")
                                           ]
                                     ]
