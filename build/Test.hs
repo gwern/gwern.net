@@ -98,32 +98,37 @@ isUniqueList = checkUniqueOrThrow "Simple list contains duplicates:"
 -- Association-list checks:
 -- 1. isUnique: all key-value pairs are unique and there are no duplicates
 isUnique :: (Eq a, Show a, Eq b, Ord a, Ord b, Show b) => [(a,b)] -> [(a,b)]
-isUnique = checkUniqueOrThrow "Association List contains duplicate key-value pairs:"
+isUnique = checkUniqueOrThrow "Test.isUnique: Association List contains duplicate key-value pairs:"
 
 -- 2. isUniqueKeys: all keys are unique and there are no duplicates
 isUniqueKeys :: (Eq a, Ord a, Show a, Show b) => [(a,b)] -> [(a,b)]
 isUniqueKeys xs
   | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate keys:" duplicates
+  | otherwise = throwError "Test.isUniqueKeys: Association List contains duplicate keys:" duplicates
   where duplicates = getDuplicates (map fst xs)
 -- special-case:
 isUniqueKeys3 :: (Eq a, Ord a, Show a) => [(a,b,c)] -> [(a,b,c)]
 isUniqueKeys3 xs
   | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate keys (ie. 'a' of '(a,b,c)'):" duplicates
+  | otherwise = throwError "Test.isUniqueKeys3: Association List contains duplicate keys (ie. 'a' of '(a,b,c)'):" duplicates
   where duplicates = getDuplicates (map (\(a,_,_) -> a) xs)
+isUniqueKeys4 :: (Eq a, Ord a, Show a) => [(a,b,c,d)] -> [(a,b,c,d)]
+isUniqueKeys4 xs
+  | null duplicates = xs
+  | otherwise = throwError "Test.isUniqueKeys4: Association List contains duplicate keys (ie. 'a' of '(a,b,c,d)'):" duplicates
+  where duplicates = getDuplicates (map (\(a,_,_,_) -> a) xs)
 
 isUniqueMiddle3 :: (Eq a, Ord a, Ord b, Show b, Show a) => [(a,b,c)] -> [(a,b,c)]
 isUniqueMiddle3 xs
   | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate middle-keys (ie. 'b' of '(a,b,c)'):" duplicates
+  | otherwise = throwError "Test.isUniqueMiddle3: Association List contains duplicate middle-keys (ie. 'b' of '(a,b,c)'):" duplicates
   where duplicates = getDuplicates (map (\(_,b,_) -> b) xs)
 
 -- 3. isUniqueValues: all values are unique and there are no duplicates
 isUniqueValues :: (Show a, Ord a, Eq b, Ord b, Show b) => [(a,b)] -> [(a,b)]
 isUniqueValues xs
   | null duplicates = xs
-  | otherwise = throwError "Association List contains duplicate values:" duplicates
+  | otherwise = throwError "Test.isUniqueValues: Association List contains duplicate values:" duplicates
   where duplicates = getDuplicates (map snd xs)
 
 -- 4. isUniqueAll: all keys, values, and key-value pairs are unique
@@ -155,8 +160,8 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
                                            , isUniqueList Config.LinkSuggester.badAnchorStrings
                                            , isUniqueList Config.XOfTheDay.siteBlackList
                                            , ensure "Test.XOfTheDay.siteBlackList" "isDomainT" isDomainT Config.XOfTheDay.siteBlackList] ++ -- T.Text
-              [length $ isUniqueKeys3 Config.LinkIcon.linkIconTestUnitsText,
-               length $ ensure "Test.linkIconTestUnitsText" "isURLAnyT" (\(u,_,_) -> T.head u == '#' || isURLAnyT u) Config.LinkIcon.linkIconTestUnitsText] ++
+              [length $ isUniqueKeys4 Config.LinkIcon.linkIconTestUnitsText,
+               length $ ensure "Test.linkIconTestUnitsText" "isURLAnyT" (\(u,_,_,_) -> T.head u == '#' || isURLAnyT u) Config.LinkIcon.linkIconTestUnitsText] ++
               [length $ isUniqueKeys Config.Interwiki.testCases, length (isUniqueKeys Config.Interwiki.redirectDB), length $ isUniqueList Config.Interwiki.quoteOverrides
               , length (ensure "Test.testConfigs.testCases" "isURLT (URL of second)" safeLink Config.Interwiki.testCases)
               , length (ensure "Test.testConfigs.redirectDB" "isURLT (URL of second)" (\(_,u2) -> isURLT u2) Config.Interwiki.redirectDB)

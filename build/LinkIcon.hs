@@ -2,10 +2,11 @@
 
 module LinkIcon (addIcon, linkIcon, linkIconTest, linkIconPrioritize) where
 
+import Data.Char (isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
@@ -21,6 +22,8 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- Doing this at compile-time in Haskell is easier and also reduces performance burden on the client
 -- browser. For a more detailed discussion of the problems & solution, and history of prior link-icon
 -- implementations, see <https://gwern.net/design-graveyard#link-icon-css-regexps>.
+--
+-- We attempt to use as simple monochrome icons as possible to fit into the Gwern.net overall theme and reduce clutter & maintenance. We prefer typographical ones which can be inlined, will look familiar, and don't require a custom SVG (which would bloat the SVG sprite sheet). We prioritize domains by their frequency, and regularly review them; if a domain can't be given a good link icon, we add it to the review blacklist to ignore them. We try to avoid being overly clever: if it is not obvious to us what a link-icon should be, then that means having one is wrong! (Unless we want to make an exception, like because it is for site infrastructure, the reader may learn it quickly, or we just like it too much to not have a link-icon.)
 
 -- Rules for URL → icon. All supported examples: <https://gwern.net/lorem-link>
 -- Supported icon types:
@@ -73,14 +76,14 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasIcon x           = x
  | hasKeyAL u C.overrideLinkIcons = let i = fromJust $ lookup u C.overrideLinkIcons in addIcon x i
  -- lb/bl/sl:
- | u == "#link-bibliography" || u == "/design#link-bibliographies" || "/metadata/annotation/link-bibliography/" `T.isPrefixOf` u = addIcon x ("bibliography", "svg") -- original SVG: "List" <https://thenounproject.com/icon/list-4184262/>, Paisley (CC-BY)
- | u == "#similars" || u == "/design#similar-links" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
- | u == "#backlinks" || u == "/design#backlink" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
+ | u == "#link-bibliography" || u == "/design#link-bibliographies" || "/metadata/annotation/link-bibliography/" `T.isPrefixOf` u = addIcon x ("bibliography", "svg", "") -- original SVG: "List" <https://thenounproject.com/icon/list-4184262/>, Paisley (CC-BY)
+ | u == "#similars" || u == "/design#similar-links" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text", "") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
+ | u == "#backlinks" || u == "/design#backlink" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg", "") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
  | anyPrefixT u ["/metadata/annotation/"] = x
 
- | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg")
- | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg")
- | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg")
+ | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg", "")
+ | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg", "")
+ | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg", "")
 
  | otherwise = removeIconDuplicate $ addIcon x $ C.linkIconRules u
 linkIcon x = x
@@ -117,11 +120,11 @@ hasIconURL = hasIcon . getIcon
 getIcon :: T.Text -> Inline
 getIcon u = linkIcon $ Link nullAttr [] (u,"")
 
-addIcon :: Inline -> (T.Text, T.Text) -> Inline
-addIcon x ("", "") = x
-addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType)  =
+addIcon :: Inline -> (T.Text, T.Text, T.Text) -> Inline
+addIcon x ("", "", "") = x
+addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType, iconColor)  =
   if hasIcon x then x else Link (idt,cl,
-                                  [("link-icon",icon), ("link-icon-type",iconType)] ++
+                                  [("link-icon",icon), ("link-icon-type",iconType), ("link-icon-color",iconColor)] ++
                                   ks) a (b,c)
 addIcon x _ = x
 
@@ -160,10 +163,20 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 -- which would not trigger the unit-test and looks correct (because stringly-typed), but is wrong.
 --
 -- TODO: does not test more complex behavior like suppression of redundant link-icons
-linkIconTest :: [(T.Text,T.Text,T.Text)]
-linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
+linkIconTest :: [(T.Text,T.Text,T.Text,T.Text)]
+linkIconTest = filter (\(url, li, lit, litCol) -> linkIcon (Link nullAttr [] (url,""))
                                           /=
-                                          Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,"")
+                                          Link ("",[], [("link-icon",li), ("link-icon-type", lit), ("link-icon-color",isValidCssHexColor litCol)]) [] (url,"")
                                           || not (all (`elem` C.linkIconTypes) (T.splitOn "," lit))
                                                    )
                C.linkIconTestUnitsText
+
+-- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format:
+isValidCssHexColor :: T.Text -> T.Text
+isValidCssHexColor ""    = ""
+isValidCssHexColor color = case T.unpack color of
+    '#':rest -> if length rest /= 3 && length rest /= 6 then error $ "LinkIcon.isValidCssHexColor: hex value was an invalid length, neither 3 nor 6? Original input was: " ++ show color
+                else if not (all isHexDigit rest) then error $ "LinkIcon.isValidCssHexColor: hex value was proper length, but contained non-hexadecimal characters? Original input was: " ++ show color
+                                                       else color
+    _  -> error $ "LinkIcon.isValidCssHexColor: input CSS hex color failed hex check; did not start with a hash? Original input was: " ++ show color
+
