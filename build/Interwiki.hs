@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
 import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
@@ -15,7 +15,7 @@ import Cycle (isCycleLess, findCycles)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText, deleteT)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
-import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response) -- http-conduit
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode) -- http-conduit
 import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
 import Control.Exception (catch, SomeException)
 -- import Network.HTTP.Client (Response)
@@ -37,6 +37,32 @@ isWPDisambig articleName = do
       in if "Not found" `isInfixOf` responseBody
          then Nothing
          else Just ("\"type\":\"disambiguation\"" `isInfixOf` responseBody)
+
+-- verify that a WP article exists at the argument URL (not name/title), by checking for a 404 error.
+-- This print outs a warning message about bad WP articles and the response code.
+-- WP uses standard 404 errors:
+-- $ curl --head 'https://en.wikipedia.org/wiki/George_Washington_XYZ'
+-- HTTP/2 404 / date: Sat, 26 Oct 2024 16:54:11 GMT / ...
+--
+-- For reference, The WP API JSON response for an article which doesn't exist looks like this:
+-- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington_XYZ'
+-- {"type":"https://mediawiki.org/wiki/HyperSwitch/errors/not_found","title":"Not found.","method":"get","detail":"Page or revision not found.","uri":"/en.wikipedia.org/v1/page/summary/George_Washington_XYZ"}
+-- As opposed to:
+-- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington'
+-- {"type":"standard","title":"George Washington", ... }
+isWPArticle :: T.Text -> IO ()
+isWPArticle url = do
+    request <- parseRequest ("HEAD " ++ T.unpack url)
+    result  <- catch (Right <$> httpLBS request) handleExceptionIO :: IO (Either String (Response U.ByteString))
+    case result of
+        Left err       -> putStrLn $ "Warning: Error checking Wikipedia article: " ++ err
+        Right response ->
+            if getResponseStatusCode response == 404
+                then putStrLn $ "Warning: Wikipedia article does not exist: " ++ T.unpack url
+                else return ()  -- Article exists, no warning needed
+  where
+    handleExceptionIO :: SomeException -> IO (Either String a)
+    handleExceptionIO e = return $ Left $ show e
 
 -- Exception handler for all exceptions
 handleException :: SomeException -> IO (Either String (Response U.ByteString))
