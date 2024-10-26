@@ -6,7 +6,7 @@ import Data.Char (isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
@@ -124,7 +124,7 @@ addIcon :: Inline -> (T.Text, T.Text, T.Text) -> Inline
 addIcon x ("", "", "") = x
 addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType, iconColor)  =
   if hasIcon x then x else Link (idt,cl,
-                                  [("link-icon",icon), ("link-icon-type",iconType), ("link-icon-color",iconColor)] ++
+                                  ([("link-icon",icon), ("link-icon-type",iconType)] ++ if T.null iconColor then [] else [("link-icon-color",iconColor)]) ++
                                   ks) a (b,c)
 addIcon x _ = x
 
@@ -164,9 +164,9 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 --
 -- TODO: does not test more complex behavior like suppression of redundant link-icons
 linkIconTest :: [(T.Text,T.Text,T.Text,T.Text)]
-linkIconTest = filter (\(url, li, lit, litCol) -> linkIcon (Link nullAttr [] (url,""))
+linkIconTest = filter (\(url, li, lit, litc) -> linkIcon (Link nullAttr [] (url,""))
                                           /=
-                                          Link ("",[], [("link-icon",li), ("link-icon-type", lit), ("link-icon-color",isValidCssHexColor litCol)]) [] (url,"")
+                                          Link ("",[], ([("link-icon",li), ("link-icon-type", lit)]++if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) [] (url,"")
                                           || not (all (`elem` C.linkIconTypes) (T.splitOn "," lit))
                                                    )
                C.linkIconTestUnitsText
