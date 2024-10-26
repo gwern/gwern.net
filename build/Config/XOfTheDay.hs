@@ -331,7 +331,7 @@ siteBlackList = [
           "youarenotsosmart.com", "yirugi.github.io", "yang-song.github.io", "xmarquez.github.io", "xcorr.net",
           "www3.bostonglobe.com", "www108.lamp.le.ac.uk", "www1.ICSI.Berkeley.EDU", "www.zdnet.com", "www.yalelawjournal.org",
           "www.xprize.org", "www.wry.me", "www.word.golf", "www.wnycstudios.org", "www.wiringthebrain.com",
-          "www.williameasterly.org", "www.wheels.org", "www.wesjones.com", "www.washingtonian.com", "www.vulture.com",
+          "www.williameasterly.org", "www.wheels.org", "www.washingtonian.com", "www.vulture.com",
           "www.vpri.org", "www.volokh.com", "www.varsity.co.uk", "www.vanderbilt.edu", "www.uv.es",
           "www.universetoday.com", "www.uliwestphal.de", "www.uc.pt", "www.uaedreform.org", "www.u.arizona.edu",
           "www.typografie.info", "www.typical.me", "www.twitch.tv", "www.tug.org", "www.trfetzer.com",

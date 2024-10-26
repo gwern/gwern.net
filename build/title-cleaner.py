@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-10-16 22:17:29 gwern"
+# When:  Time-stamp: "2024-10-24 15:58:11 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -464,6 +464,10 @@ Why I still blog after 15 years
 "‘Better not to begin. Once begun, better to finish!’"
 - "A Knight at the Opera: The Best RPG Cover of all Time" https://knightattheopera.blogspot.com/2024/05/the-best-rpg-cover-of-all-time.html
 "The Best RPG Cover of all Time"
+- "ScienceDirect"
+""
+- "Res Obscura: Seven Weeks to Venice: History Through Isochronic Maps"
+"Seven Weeks to Venice: History Through Isochronic Maps"
 
 Task:
 

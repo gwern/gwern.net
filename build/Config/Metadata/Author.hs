@@ -498,6 +498,10 @@ canonicals = M.fromList
   , ("Lukasz Kaiser", "Łukasz Kaiser")
   , ("Benjamin K. Goodrich", "Ben Goodrich")
   , ("Benjamin Goodrich", "Ben Goodrich")
+  , ("Joseph R. Biden Junior", "Joe Biden")
+  , ("Joseph R. Biden",        "Joe Biden")
+  , ("iamaheron_", "heron")
+  , ("chillzaza_", "Zahid Khawaja")
   ]
 
 -- tests: unique
@@ -509,7 +513,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -745,7 +749,7 @@ authorLinkDB = M.fromList $
     , ("Cornelius A. Rietveld", "https://scholar.google.com/citations?user=EEqPJRYAAAAJ")
     , ("Sheng Shen", "https://sincerass.github.io/")
     , ("Steve Hsu", "https://stevehsu.substack.com/")
-    , ("Spencer Greenberg", "https://www.spencergreenberg.com")
+    , ("Spencer Greenberg", "https://www.spencergreenberg.com/")
     , ("Xie Jingyi", "https://github.com/hsfzxjy")
     , ("Flo Crivello", "https://flocrivello.com/")
     , ("Cecilia M. Lindgren", "https://en.wikipedia.org/wiki/Cecilia_Lindgren")
@@ -901,6 +905,12 @@ authorLinkDB = M.fromList $
     , ("Teven Le Scao", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
     , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
     , ("Richard Mott Gummere", "/doc/history/1969-allis.pdf#page=11")
+    , ("Marcella Rietschel", "https://epws.org/individual-member/prof-marcella-rietschel/")
+    , ("Sam McCandlish", "https://scholar.google.com/citations?user=gHp0pu4AAAAJ&hl=en&oi=ao")
+    , ("Rona J. Strawbridge", "https://www.gla.ac.uk/schools/healthwellbeing/staff/ronastrawbridge/#biography,researchinterests,publications,researchdatasets,professionalactivities%26recognition,teaching,supervision,grants,2019,2020,2021,articles")
+    , ("Martina Müller-Nurasyid", "https://scholar.google.com/citations?user=-q3OQeUAAAAJ&hl=en&oi=ao")
+    , ("heron", "https://x.com/iamaheron_")
+    , ("Zahid Khawaja", "https://github.com/zahidkhawaja")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2136,4 +2146,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe"]

@@ -19,7 +19,7 @@ whitelist = ["/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pd
             , "https://transformer-circuits.pub/2021/framework/index.html#anthropic", "https://arxiv.org/abs/astro-ph/9912202"
             , "https://arxiv.org/abs/math/0512268", "https://arxiv.org/abs/chao-dyn/9406003"
             , "https://arxiv.org/abs/0905.3590", "https://arxiv.org/abs/1302.2898"
-            , "https://arxiv.org/abs/hep-ph/9306225", "/doc/cs/2017-denning.pdf"
+            , "https://arxiv.org/abs/hep-ph/9306225", "/doc/cs/hardware/2017-denning.pdf"
             , "/doc/cs/hardware/2015-brooks.pdf", "/doc/genetics/heritable/2018-vogel.pdf"
             , "/doc/genetics/heritable/2019-kaiser.pdf", "/doc/genetics/selection/artificial/2023-meyer-supplement-science.ade1083_sm.pdf"
             , "/doc/genetics/selection/natural/2022-walsh.pdf", "/doc/psychiatry/autism/2024-schindel.pdf"

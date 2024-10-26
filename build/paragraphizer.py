@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-20 20:38:14 gwern"
+# When:  Time-stamp: "2024-10-25 21:32:34 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -467,6 +467,15 @@ We show that uptrained GQA achieves quality close to multi-head attention with c
 Although domestic cats are among the most common companion animals, we still know very little about the details of the cat-human relationship.
 With a questionnaire, we asked 157 Hungarian cat owners about their pet’s behavior, cognitive abilities, and social interactions. We analyzed the responses with PCA resulting in 11 traits. The effect of cats’ and owners’ demographic variables on the main components was further analyzed with GLM.
 The results showed strong similarity to the surveys performed with companion dogs, but we also found features that were mainly cat-specific.
+- Input: <abstract>Few-shot learners aim to recognize new object classes based on a small number of labeled training examples. To prevent overfitting, state-of-the-art few-shot learners use meta-learning on convolutional-network features and perform classification using a nearest-neighbor classifier. This paper studies the accuracy of nearest-neighbor baselines without meta-learning. Surprisingly, we find simple feature transformations suffice to obtain competitive few-shot learning accuracies. For example, we find that a nearest-neighbor classifier used in combination with mean-subtraction and 𝓁<sub>2</sub>-normalization outperforms prior results in 3⁄5 settings on the miniImageNet dataset.</abstract> →
+Few-shot learners aim to recognize new object classes based on a small number of labeled training examples. To prevent overfitting, state-of-the-art few-shot learners use meta-learning on convolutional-network features and perform classification using a nearest-neighbor classifier.
+This paper studies the accuracy of nearest-neighbor baselines without meta-learning.
+Surprisingly, we find simple feature transformations suffice to obtain competitive few-shot learning accuracies.
+For example, we find that a nearest-neighbor classifier used in combination with mean-subtraction and 𝓁<sub>2</sub>-normalization outperforms prior results in 3⁄5 settings on the miniImageNet dataset.
+- Input: <abstract>Instruct (or “chat”) tuned models have become the primary way in which most people interact with large language models. As opposed to “base” or “foundation” models, instruct-tuned models are optimized to respond to imperative statements. We present Hermes 3, a neutrally-aligned generalist instruct and tool use model with strong reasoning and creative abilities. Its largest version, Hermes 3 405B, achieves state of the art performance among open weight models on several public benchmarks.</abstract> →
+Instruct (or “chat”) tuned models have become the primary way in which most people interact with large language models. As opposed to “base” or “foundation” models, instruct-tuned models are optimized to respond to imperative statements.
+We present <strong>Hermes 3</strong>, a neutrally-aligned generalist instruct and tool use model with strong reasoning and creative abilities.
+Its largest version, Hermes 3 405B, achieves state of the art performance among open weight models on several public benchmarks.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 
