@@ -6791,6 +6791,9 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         text-underline-position: from-font;
         text-underline-offset: -0.05em;
     }
+    .markdownBody p a:link.link-dropcap {
+        text-decoration: none;
+    }
 
     /*  Label the page tags, as offline/in-print, they will look quite
         mysterious.
