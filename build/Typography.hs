@@ -22,7 +22,7 @@ import Text.Read (readMaybe)
 
 import Data.Text.Titlecase (titlecase)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc(Pandoc), Caption(Caption), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta)
+import Text.Pandoc (Inline(..), Block(..), Pandoc(Pandoc), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta) -- Caption(Caption),
 import Text.Pandoc.Walk (walk, walkM)
 
 import Metadata.Date (dateRangeDuration)
@@ -57,7 +57,7 @@ typographyTransform = let year = currentYear in typographyTransformPermanent . w
 typographyTransformPermanent :: Pandoc -> Pandoc
 typographyTransformPermanent = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
-                        walk figureCaptionLinebreak .
+                        walk imageCaptionLinebreak .
                         walk (citefyInline year . linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
@@ -334,6 +334,24 @@ So we implement this as a Pandoc AST rewrite on the 'Figure' element that that `
 -- `Figure = Figure !Attr !Caption ![Block]`
 -- `Caption = Caption !(Maybe ShortCaption) ![Block]`
 -- `ShortCaption = [Inline]`
+imageCaptionLinebreak :: Inline -> Inline
+-- special-case: 'Figure 1: (a) foo. (b) bar. Baz.' We don't want to linebreak there using the usual logic because it yields brokenness like 'Figure 1: (a\n) ...'. So detect & skip.
+imageCaptionLinebreak x@(Image _ (Strong _ : Str ": (" : Emph _ : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak x@(Image _ (_ : _ : _ : _ : _ : LineBreak : _) _) = x
+imageCaptionLinebreak (Image y (Strong a : Str b : Space : Emph c : d) z) =
+  Image y
+  (Strong a : Str b : Emph c : LineBreak : d)
+  z
+imageCaptionLinebreak (Image y (Strong a : Str b :         Emph c : d) z) =
+  Image y
+  (Strong a : Str b : Emph c : LineBreak : d)
+  z
+imageCaptionLinebreak x = x
+
+{-
 figureCaptionLinebreak :: Block -> Block
 -- Figures have few semantics we can enforce or error out on (eg. a Figure is not guaranteed to have any caption, nor any attributes, nor any alt text), other than requiring an image with a URL; however, we don't need to check for those, because that is enforced in `Image.invertFile`.
 figureCaptionLinebreak x@(Figure _ (Caption Nothing  _) _) = x
@@ -350,7 +368,7 @@ figureCaptionLinebreak   (Figure a (Caption (Just c) d) e) =
         captionLinebreak (Strong f : Str g :         Emph h : i) = Strong f : Str g : Emph h : LineBreak : i
         captionLinebreak y = y
 figureCaptionLinebreak x = x
-
+-}
 {-
 -- skeleton: `Figure nullAttr (Caption (Just []) []) []`
 figureCaptionLinebreakTestcases :: [(Block, Block)]
