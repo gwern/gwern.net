@@ -2610,10 +2610,9 @@ function injectSpecialPageLogo(logoType, options = { }) {
      */
     let replaceLogo = (logoImage) => {
         //  Get new logo URL (random, if need be).
-        console.log(logoPathname);
         if (options.randomize)
             logoPathname = randomAsset(logoPathname);
-        console.log(logoPathname);
+
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
         //  Create new image element and wrapper.
@@ -4004,18 +4003,13 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
-		console.log(listItem);
-
 		let firstBlockWithin = firstBlockOf(listItem);
-		console.log(firstBlockWithin);
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
 		//	Apply list item BSM modifier.
 		if (   bsm > ""
 			&& listItem.dataset.bsmMod > "")
 			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
-
-		console.log(bsm);
 
 		//	Apply BSM.
 		if (bsm > "") {

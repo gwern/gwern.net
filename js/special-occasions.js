@@ -47,10 +47,9 @@ function injectSpecialPageLogo(logoType, options = { }) {
      */
     let replaceLogo = (logoImage) => {
         //  Get new logo URL (random, if need be).
-        console.log(logoPathname);
         if (options.randomize)
             logoPathname = randomAsset(logoPathname);
-        console.log(logoPathname);
+
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
         //  Create new image element and wrapper.

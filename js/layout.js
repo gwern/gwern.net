@@ -1163,18 +1163,13 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
-		console.log(listItem);
-
 		let firstBlockWithin = firstBlockOf(listItem);
-		console.log(firstBlockWithin);
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
 		//	Apply list item BSM modifier.
 		if (   bsm > ""
 			&& listItem.dataset.bsmMod > "")
 			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
-
-		console.log(bsm);
 
 		//	Apply BSM.
 		if (bsm > "") {
