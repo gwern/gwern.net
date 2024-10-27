@@ -675,7 +675,7 @@ function rewrapContents(...args) {
 /*************************************************************************/
 /*  Unwrap all elements specified by the given selector.
 
-	Available option fields (default value):
+	Available option fields:
 
 	root (Element|Document|DocumentFragment)
 		Look for the given selector within the subtree of this node.

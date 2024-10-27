@@ -6,8 +6,29 @@
 /*  Inject a special page logo image of a specific type (‘halloween’,
     ‘christmas’, etc.). Directory structure and file naming for the
     specified logo type must match existing holiday logos.
+
+	Available option fields:
+
+	randomize (boolean)
+		If set to `true`, selects one of the multiple available logos of the
+		specified type, from image files named according to a scheme that 
+		includes a number in the name. Otherwise, selects the single, 
+		deterministically named image file (which is named according to a 
+		scheme determined by the type and mode option).
+
+	mode (string)
+		May be “light” or “dark”, or null. Affects the scheme that determines
+		the path and file name(s) expected for the logo image file(s). This
+		option should be null if there is just the one logo image (or set of
+		logo images) that is used in both light and dark mode; otherwise, the
+		appropriate mode should be specified.
  */
-function injectSpecialPageLogo(logoType, options = { }) {
+function injectSpecialPageLogo(logoType, options) {
+	options = Object.assign({
+		mode: null,
+		randomize: false
+	}, options);
+
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 
     let logoPathname;
@@ -83,11 +104,19 @@ function injectSpecialPageLogo(logoType, options = { }) {
     }
 }
 
+/*****************/
+/*  Configuration.
+ */
+
+GW.specialOccasionTestLocalStorageKeyPrefix = "special-occasion-test-";
+
+GW.specialOccasionTestPageNamePrefix = "test-";
+
 /*  If a special function is provided to apply classes, one should also be
     provided to remove those classes. (See the ‘halloween’ entry for example.)
  */
 GW.specialOccasions = [
-    [ "halloween", isTodayHalloween, () => {
+    [ "halloween", isItHalloween, () => {
         //  Default to dark mode during Halloween.
         DarkMode.defaultMode = "dark";
 
@@ -103,7 +132,7 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
       } ],
-    [ "christmas", isTodayChristmas, () => {
+    [ "christmas", isItChristmas, () => {
         //  Different special styles for light and dark mode.
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
         let specialClass = DarkMode.computedMode() == "light"
@@ -116,7 +145,7 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
-    [ "april-fools", isTodayAprilFools, () => {
+    [ "april-fools", isItAprilFools, () => {
         document.body.classList.add("special-april-fools");
 
         /*  Turn off the funny after half a minute (the blackletter joke has
@@ -129,7 +158,7 @@ GW.specialOccasions = [
       }, () => {
         document.body.classList.remove("special-april-fools");
       } ],
-    [ "easter", isTodayEaster, () => {
+    [ "easter", isItEaster, () => {
         document.body.classList.add("special-easter");
         //  Replace logo.
 //         injectSpecialPageLogo("easter");
@@ -138,18 +167,52 @@ GW.specialOccasions = [
       } ],
 ];
 
-function toggleTestHalloween(enable) {
-    if (enable)
-        localStorage.setItem("test-halloween", true);
-    else
-        localStorage.removeItem("test-halloween");
+/******************************************************************************/
+/*	Debugging function; pass a special occasion identifier string (e.g. 
+	“halloween”, “christmas”, “april-fools”, etc.), and either `true` to enable 
+	testing of that special occasion, or `false` (or nothing) to disable 
+	testing of that special occasion. (Calling this function with no arguments, 
+	or null for the first argument, disables all special occasion testing.)
+
+	When testing is enabled for a special occasion, the special occasion code 
+	will behave as if that special occasion is currently taking place (and any 
+	special-occasion-specific styling or other modifications will be applied).
+
+	NOTE: Testing for multiple special occasions may be enabled simultaneously, 
+	but this results in undefined behavior.
+ */
+function toggleSpecialOccasionTest(specialOccasionName = null, enable = false) {
+	if (specialOccasionName == null) {
+		let activeSpecialOccasionTestKeys = [ ];
+		for (let i = 0; i < localStorage.length; i++) {
+			let localStorageKey = localStorage.key(i);
+			if (localStorageKey.startsWith(GW.specialOccasionTestLocalStorageKeyPrefix))
+				activeSpecialOccasionTestKeys.push(localStorageKeys);
+		}
+		activeSpecialOccasionTestKeys.forEach(key => {
+			localStorage.removeItem(key);
+		});
+
+		return;
+	}
+
+	let specialOccasionTestKey = GW.specialOccasionTestLocalStorageKeyPrefix + specialOccasionName;
+	if (enable) {
+		localStorage.setItem(specialOccasionTestKey, true)
+	} else {
+		localStorage.removeItem(specialOccasionTestKey);
+	}
 }
 
-//  Test page: </lorem-halloween>
-function isTodayHalloween() {
+/********************************************/
+/*	Returns true if it’s Halloween right now.
+
+	Test page: </lorem-halloween>
+*/
+function isItHalloween() {
    // The test page is Halloween Town.
-   if (   document.body.classList.contains("test-halloween")
-       || localStorage.getItem("test-halloween") == "true")
+   if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "halloween")
+       || localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "halloween") == "true")
        return true;
 
    // Match languages from Halloween-celebrating regions (which has gone global <https://en.wikipedia.org/wiki/Halloween#Geography>)
@@ -172,18 +235,15 @@ function isTodayHalloween() {
    }
 }
 
-function toggleTestChristmas(enable) {
-    if (enable)
-        localStorage.setItem("test-christmas", true);
-    else
-        localStorage.removeItem("test-christmas");
-}
+/********************************************/
+/*	Returns true if it’s Christmas right now.
 
-//  Test page: </lorem-christmas>
-function isTodayChristmas() {
+	Test page: </lorem-christmas>
+*/
+function isItChristmas() {
     //  The test page is Christmas Town.
-    if (   document.body.classList.contains("test-christmas")
-        || localStorage.getItem("test-christmas") == "true")
+    if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "christmas")
+        || localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "christmas") == "true")
         return true;
 
     let now = new Date();
@@ -195,18 +255,15 @@ function isTodayChristmas() {
     return (date == "Dec 24" && hour >= 18) || (date == "Dec 25");
 }
 
-function toggleTestAprilFools(enable) {
-    if (enable)
-        localStorage.setItem("test-april-fools", true);
-    else
-        localStorage.removeItem("test-april-fools");
-}
+/***************************************************/
+/*	Returns true if it’s April Fool’s Day right now.
 
-//  Test page: </lorem-april-fools>
-function isTodayAprilFools() {
+	Test page: </lorem-april-fools>
+*/
+function isItAprilFools() {
     //  The test page is blackletterFraktur-town.
-    if (   document.body.classList.contains("test-april-fools")
-        || localStorage.getItem("test-april-fools") == "true")
+    if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "april-fools")
+        || localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "april-fools") == "true")
         return true;
 
     let now = new Date();
@@ -219,17 +276,14 @@ function isTodayAprilFools() {
     return (date == "Apr 01" && hour >= 8 && hour <= 15);
 }
 
-function toggleTestEaster(enable) {
-    if (enable)
-        localStorage.setItem("test-easter", true);
-    else
-        localStorage.removeItem("test-easter");
-}
+/*****************************************/
+/*	Returns true if it’s Easter right now.
 
-//  Test page: </lorem-easter>
-function isTodayEaster() {
-    if (   document.body.classList.contains("test-easter")
-        || localStorage.getItem("test-easter") == "true")
+	Test page: </lorem-easter>
+*/
+function isItEaster() {
+    if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "easter")
+        || localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "easter") == "true")
         return true;
 
     /*  Easter dates 2024–2050 from <https://www.assa.org.au/edm/#List20>;
@@ -251,6 +305,29 @@ function isTodayEaster() {
     return easterDates.includes(today);
 }
 
+/******************************************************************************/
+/*	Applies or removes special-occasion-related CSS classes to the <body>
+	element.
+
+	For each special occasion defined in GW.specialOccasions, calls the 
+	specified testing function (e.g., isItHalloween()).
+
+	If the test returns true, then calls the specified application function if 
+	one is provided; otherwise just adds to <body> a class 
+	`special-` + <the name of the special occasion> (e.g., “halloween”).
+
+	If the test returns false, then calls the specified removal function if
+	one is provided. If no such function is provided, AND there is no 
+	application function either (and thus the application consisted merely
+	of the default action of adding the default class `special-WHATEVER`), now 
+	simply removes that default class.
+
+	NOTE: If an application function is provided, but no corresponding removal
+	function is provided, then this function will do nothing when an active
+	special occasion mode is toggled off! That is why it’s important to provide
+	a removal function when providing an application function (see the existing
+	entries in GW.specialOccasions for examples).
+*/
 function applySpecialOccasionClasses() {
     for (let occasion of GW.specialOccasions) {
         let [ name, test, doIfTrue, doIfFalse ] = occasion;
@@ -268,6 +345,11 @@ function applySpecialOccasionClasses() {
     }
 }
 
+/***************************************************************************/
+/*	Apply special occasion classes (if need be) when the <body> element is 
+	created; update them (applying or removing, as appropriate) whenever the 
+	mode changes.
+ */
 doWhenBodyExists(() => {
     applySpecialOccasionClasses();
     GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
