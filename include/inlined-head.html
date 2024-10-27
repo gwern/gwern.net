@@ -771,6 +771,13 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
     background-color: var(--GW-body-background-color-inverted);
 }
 
+/*	The ornaments at the corners of the “X of the day” box must be inverted.
+ */
+#x-of-the-day::before,
+#x-of-the-day::after {
+	filter: invert(1);
+}
+
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
  */
 hr::after,
@@ -960,6 +967,6 @@ a[data-link-icon-type*='svg'] .link-icon-hook::after {
     background-color: var(--GW-wikipedia-image-background-color);
 }
 </style>
-<link rel="stylesheet" href="/static/css/head.css?v=1729962101">
-<script src="/static/js/head.js?v=1729978932"></script>
-<link rel="preload" href="/static/img/icon/icons.svg?v=1728147531" as="image">
+<link rel="stylesheet" href="/static/css/head.css?v=1729686157">
+<script src="/static/js/head.js?v=1730043024"></script>
+<link rel="preload" href="/static/img/icon/icons.svg?v=1728676325" as="image">

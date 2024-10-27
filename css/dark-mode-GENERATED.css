@@ -431,6 +431,13 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
     background-color: var(--GW-body-background-color-inverted);
 }
 
+/*	The ornaments at the corners of the “X of the day” box must be inverted.
+ */
+#x-of-the-day::before,
+#x-of-the-day::after {
+	filter: invert(1);
+}
+
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
  */
 hr::after,
