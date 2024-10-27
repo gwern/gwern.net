@@ -25,6 +25,7 @@ import Control.Exception (catch, SomeException)
 -- While if there is apparently no article at all, return `Nothing` (as callers may need to treat non-existent WP articles differently from disambig WP articles).
 -- Bash shell equivalent: `API_RESPONSE=$(curl --silent "https://en.wikipedia.org/api/rest_v1/page/summary/$(basename "$URL")"); if [[ $API_RESPONSE == *'"type":"disambiguation"'* ]]; then echo "Warning: $URL is a disambiguation page."`
 isWPDisambig :: T.Text -> IO (Maybe Bool)
+isWPDisambig ""          = error "Interwiki.isWPDisambig: called with an empty string! This should never happen."
 isWPDisambig articleName = do
   let encodedArticleName = escapeWikiArticleTitle articleName
   let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
@@ -51,15 +52,16 @@ isWPDisambig articleName = do
 -- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington'
 -- {"type":"standard","title":"George Washington", ... }
 isWPArticle :: T.Text -> IO ()
+isWPArticle ""  = error "Interwiki.isWPArticle: called with an empty string! This should never happen."
 isWPArticle url = do
     request <- parseRequest ("HEAD " ++ T.unpack url)
     result  <- catch (Right <$> httpLBS request) handleExceptionIO :: IO (Either String (Response U.ByteString))
     case result of
-        Left err       -> putStrLn $ "Warning: Error checking Wikipedia article: " ++ err
+        Left err       -> putStrLn $ "Error (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err
         Right response ->
             if getResponseStatusCode response == 404
-                then putStrLn $ "Warning: Wikipedia article does not exist: " ++ T.unpack url
-                else return ()  -- Article exists, no warning needed
+                then putStrLn $ "Error (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url
+                else return ()
   where
     handleExceptionIO :: SomeException -> IO (Either String a)
     handleExceptionIO e = return $ Left $ show e
@@ -71,9 +73,11 @@ handleException _ = return $ Left "An exception occurred"
 toWikipediaEnURL :: T.Text -> T.Text
 toWikipediaEnURL title = "https://en.wikipedia.org/wiki/" `T.append` escapeWikiArticleTitle title
 toWikipediaEnURLSearch :: T.Text -> T.Text
+toWikipediaEnURLSearch ""    = error "Interwiki.toWikipediaEnURLSearch: called with an empty string! This should never happen."
 toWikipediaEnURLSearch title = "https://en.wikipedia.org/w/index.php?fulltext=1&search=" `T.append` escapeWikiArticleTitle title
 
 escapeWikiArticleTitle :: T.Text -> T.Text
+escapeWikiArticleTitle ""    = error "Interwiki.escapeWikiArticleTitle: called with an empty string! This should never happen."
 escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
                                replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $
                                deunicode title
@@ -114,8 +118,8 @@ convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, arti
   where
     interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
-    interwikiurl "" _ = error (show x)
-    interwikiurl _ "" = error (show x)
+    interwikiurl "" _ = error $ "Interwiki.interwikiurl called with an empty URL; original argument to parent function was: " ++ show x
+    interwikiurl _ "" = error $ "Interwiki.interwikiurl called with an empty argument; original argument to parent function was: " ++ show x
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
                        in
                          fixedPoint wpURLRedirectRewrites $ u `T.append` escapeWikiArticleTitle a'
@@ -135,6 +139,7 @@ wpURLRewrites ref
 
 -- bypass WP redirects to make links slightly faster, more consistent (important for link-suggester), and avoid noise in linkchecker runs warning about redirects:
 -- NOTE: we match by prefix due to hash-anchors.
+wpURLRedirectRewrites ""  = error "Interwiki.wpURLRedirectRewrites: called with an empty string! This should never happen."
 wpURLRedirectRewrites url = let baseURL = T.takeWhile (/='#') url
                                 hits = take 1 $ filter (\(t,_) -> (T.takeWhile (/='#') t) == baseURL) C.redirectDB in
                               if null hits then url else T.replace baseURL (snd $ head hits) url -- TODO: T.replace could be checked further, with a hypothetical `replaceCheckedT`
@@ -157,6 +162,7 @@ interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCy
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: T.Text -> [T.Text]
+wpPopupClasses "" = error "Interwiki.wpPopupClasses: called with an empty string! This should never happen."
 wpPopupClasses u = ["id-not"] ++ case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
