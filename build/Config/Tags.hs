@@ -146,7 +146,7 @@ tagsShort2LongRewrites =
    , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution")
    , ("fermi", "science/fermi-problem"), ("fermi-estimate", "science/fermi-problem"), ("fermi-calculation", "science/fermi-problem"), ("fermi-problems", "science/fermi-problem")
    , ("clock", "longevity/epigenetics"), ("aging-clock", "longevity/epigenetics"), ("epigenetic-clock", "longevity/epigenetics"), ("clocks", "longevity/epigenetics")
-   , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("elisp", "lisp"), ("ramssey", "ramsey")]
+   , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("elisp", "lisp"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability"), ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -444,6 +444,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("reinforcement-learning/openai", "OA")
   , ("cs/linkrot/archiving", "Internet archiving")
   , ("cs/linkrot", "linkrot")
+  , ("cs/lisp/emacs", "Emacs")
   , ("technology/security", "infosec")
   , ("technology/google", "Google")
   , ("technology/digital-antiquarian", "<em>Digital Antiquarian</em>")
@@ -474,6 +475,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("darknet-market/dnm-archive", "DNM Archives")
   , ("darknet-market", "DNMs")
   , ("nootropic/quantified-self/weather", "weather & mood")
+  , ("nootropic/quantified-self/heart-rate-variability", "HRV")
   , ("nootropic/quantified-self", "QS")
   , ("nootropic/lsd", "LSD microdosing")
   , ("philosophy/frank-ramsey", "Frank Ramsey")

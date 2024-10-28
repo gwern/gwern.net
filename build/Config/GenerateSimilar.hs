@@ -7,7 +7,7 @@ import GHC.Word (Word64)
 bestNEmbeddings :: Int
 bestNEmbeddings = 20
 
--- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://platform.openai.com/tokenizer), so text-embedding-ada-002's 8191 BPEs ~ 32764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
+-- how long is too long? OA guesstimates 1 BPE = 4 characters on average (<https://platform.openai.com/tokenizer>), so text-embedding-ada-002's 8,191 BPEs ~ 32,764 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 maximumLength :: Int
 maximumLength = 32700
 
@@ -17,7 +17,7 @@ minimumSuggestions = 3
 
 -- prevent pathological loops by requesting no more than i times:
 iterationLimit :: Int
-iterationLimit = 5
+iterationLimit = 6
 
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
@@ -51,4 +51,4 @@ minTagAuto :: Int
 minTagAuto = 3
 
 randSeed :: Word64
-randSeed = 20
+randSeed = 21

@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-25 21:32:34 gwern"
+# When:  Time-stamp: "2024-10-26 12:36:36 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -476,6 +476,11 @@ For example, we find that a nearest-neighbor classifier used in combination with
 Instruct (or “chat”) tuned models have become the primary way in which most people interact with large language models. As opposed to “base” or “foundation” models, instruct-tuned models are optimized to respond to imperative statements.
 We present <strong>Hermes 3</strong>, a neutrally-aligned generalist instruct and tool use model with strong reasoning and creative abilities.
 Its largest version, Hermes 3 405B, achieves state of the art performance among open weight models on several public benchmarks.
+- Input: <abstract>It is well known that dogs are capable of following human verbal instructions. However, very little is known about the equivalent ability in cats. In this study, we used a switched stimuli task to examine whether cats rapidly form picture-word association, which is a fundamental ability for word learning. We presented cats with two meaningless picture-word combinations, in the habituation phase. Then, on half of the trials we switched the combination (switched condition), but the other half of the trials remained as before (non-switched condition). If cats rapidly form picture-word association, they were expected to look at the monitor for longer in the switched condition, reflecting detection of the change. We used human speech as stimuli in Exp.1, and mechanical sounds (electronic sounds) in Exp.2. Cats expressed detection of the switched combination in Exp.1, where human speech and objects were paired. However, in Exp.2 where non-social sounds and objects were paired, there was no statistical difference between switched and non-switched conditions, although there was a main effect of condition when the data from the two experiments were pooled. These results demonstrate that cats can rapidly form picture-word association. Further research should investigate whether domestication has played a role in this ability.</abstract> →
+It is well known that dogs are capable of following human verbal instructions. However, very little is known about the equivalent ability in cats.
+In this study, we used a switched stimuli task to examine whether cats rapidly form picture-word association, which is a fundamental ability for word learning. We presented cats with two meaningless picture-word combinations, in the habituation phase. Then, on half of the trials we switched the combination (switched condition), but the other half of the trials remained as before (non-switched condition). If cats rapidly form picture-word association, they were expected to look at the monitor for longer in the switched condition, reflecting detection of the change. We used human speech as stimuli in Exp.1, and mechanical sounds (electronic sounds) in Exp.2.
+Cats expressed detection of the switched combination in Exp.1, where human speech and objects were paired. However, in Exp.2 where non-social sounds and objects were paired, there was no statistical difference between switched and non-switched conditions, although there was a main effect of condition when the data from the two experiments were pooled.
+These results demonstrate that cats can rapidly form picture-word association. Further research should investigate whether domestication has played a role in this ability.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 

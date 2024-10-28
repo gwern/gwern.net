@@ -502,6 +502,8 @@ canonicals = M.fromList
   , ("Joseph R. Biden",        "Joe Biden")
   , ("iamaheron_", "heron")
   , ("chillzaza_", "Zahid Khawaja")
+  , ("colin_fraser", "Colin Fraser")
+  , ("JAAKKO TUOMILEHTO", "Jaakko Tuomilehto")
   ]
 
 -- tests: unique
@@ -513,7 +515,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -906,11 +908,20 @@ authorLinkDB = M.fromList $
     , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
     , ("Richard Mott Gummere", "/doc/history/1969-allis.pdf#page=11")
     , ("Marcella Rietschel", "https://epws.org/individual-member/prof-marcella-rietschel/")
-    , ("Sam McCandlish", "https://scholar.google.com/citations?user=gHp0pu4AAAAJ&hl=en&oi=ao")
+    , ("Sam McCandlish", "https://scholar.google.com/citations?user=gHp0pu4AAAAJ")
     , ("Rona J. Strawbridge", "https://www.gla.ac.uk/schools/healthwellbeing/staff/ronastrawbridge/#biography,researchinterests,publications,researchdatasets,professionalactivities%26recognition,teaching,supervision,grants,2019,2020,2021,articles")
-    , ("Martina Müller-Nurasyid", "https://scholar.google.com/citations?user=-q3OQeUAAAAJ&hl=en&oi=ao")
+    , ("Martina Müller-Nurasyid", "https://scholar.google.com/citations?user=-q3OQeUAAAAJ")
     , ("heron", "https://x.com/iamaheron_")
     , ("Zahid Khawaja", "https://github.com/zahidkhawaja")
+    , ("Kimin Lee", "https://sites.google.com/view/kiminlee")
+    , ("Juha Karjalainen", "https://scholar.google.com/citations?user=LEKc4vwAAAAJ")
+    , ("Joyce Y. Tung", "https://typeset.io/authors/joyce-y-tung-2awr195zbq")
+    , ("Joshua B. Tenenbaum", "https://en.wikipedia.org/wiki/Joshua_Tenenbaum")
+    , ("Colin Fraser", "https://colin-fraser.net/")
+    , ("Jaakko Tuomilehto", "https://www.scot-ship.ac.uk/professor-jaakko-tuomilehto.html")
+    , ("Daniel W. Belsky", "https://scholar.google.com/citations?user=w3xyjf8AAAAJ&hl=en&oi=ao")
+    , ("Aravind Srinivas", "https://scholar.google.com/citations?user=GhrKC1gAAAAJ&hl=en&oi=ao")
+    , ("Anders Hamsten", "https://ki.se/en/people/anders-hamsten")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

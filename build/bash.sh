@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-18 10:12:05 gwern"
+# When:  Time-stamp: "2024-10-27 17:45:42 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -155,7 +155,7 @@ pdfcut () { for PDF in "$@"; do
 # delete the last page of the PDF, similar to `pdfcut`:
 pdfcut-last () {
     if [ $# -ne 1 ]; then
-        echo "Usage: pdfcut-last <pdf-file>" >&2
+        red "Usage: pdfcut-last <pdf-file>" >&2
         return 1
     fi
 
@@ -167,7 +167,7 @@ pdfcut-last () {
 
     # If the PDF has only one page, we can't remove the last page
     if [ "$PAGES" -eq 1 ]; then
-        echo "Error: The PDF has only one page. Cannot remove the last page." >&2
+        red "Error: The PDF has only one page. Cannot remove the last page." >&2
         return 1
     fi
 
@@ -180,7 +180,7 @@ pdfcut-last () {
     (crossref "$ORIGINAL" &)
 }
 # sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
-pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." >&2 && return 1; fi
+pdfcut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&
@@ -192,15 +192,18 @@ pdfcut-append () { if [ $# -ne 1 ]; then echo "Wrong number of arguments argumen
 
 # concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
 # This accepts Docx files as well due to their frequency in supplemental files, so `pdf-append foo.pdf supplement-1.doc supplement-2.pdf` is allowed (Docx is converted to PDF by `doc2pdf`).
+# (The appended PDFs are soft-deleted by default, by moving them to the used temporary directory, which is not removed afterwards. In case of a rare problem, they can be retrieved from there.)
 pdf-append () {
-    if [ $# -lt 2 ]; then echo "Not enough arguments" >&2 && return 1; fi
-
+    if [ $# -lt 2 ]; then red "Not enough arguments" >&2 && return 1; fi
     ORIGINAL=$(path2File "$1")
     TARGET=$(mktemp /tmp/XXXXXX.pdf)
     TEMP_DIR=$(mktemp -d)
 
     # Convert non-PDF files to PDF using doc2pdf
     PDF_FILES=()
+    # Store the files that will need to be moved to temp dir (all except first)
+    FILES_TO_MOVE=("${@:2}")
+
     for file in "$@"; do
         if [[ "$file" =~ \.(pdf|PDF)$ ]]; then
             PDF_FILES+=("$file")
@@ -209,27 +212,45 @@ pdf-append () {
             doc2pdf "$file" "$output_pdf"
             PDF_FILES+=("$output_pdf")
         else
-            echo "Skipping unsupported file: $file" >&2
+            red "Skipping unsupported file: $file" >&2
         fi
     done
 
     # Concatenate PDFs
-    pdftk "${PDF_FILES[@]}" cat output "$TARGET"
+    if pdftk "${PDF_FILES[@]}" cat output "$TARGET"; then
+        # If concatenation successful, preserve metadata from the first PDF
+        if exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"; then
+            # Move the original files (excluding the first one) to temp directory
+            for file in "${FILES_TO_MOVE[@]}"; do
+                if [ -f "$file" ]; then
+                    mv "$file" "$TEMP_DIR/"
+                    bold "Moved $file to $TEMP_DIR" >&2
+                fi
+            done
 
-    # Preserve metadata from the first PDF
-    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"
+            # List contents of temp directory
+            bold "Contents of temporary directory:" >&2
+            ls -l "$TEMP_DIR" >&2
 
-    # Cleanup
-    rm -f "$TARGET"
-    rm -rf "$TEMP_DIR"
+            return 0
+        else
+            red "Error preserving metadata or moving target file" >&2
+            rm -f "$TARGET"
+            return 1
+        fi
+    else
+        red "PDF concatenation failed" >&2
+        rm -f "$TARGET"
+        return 1
+    fi
 }
 
 doc2pdf () {
-    [ $# -eq 0 ] && { echo "Usage: doc2pdf <input_file> [output_file]"; return 1; }
+    [ $# -eq 0 ] && { red "Usage: doc2pdf <input_file> [output_file]"; return 1; }
     input="$1"
     output="${2:-${input%.*}.pdf}"
 
-    [[ ! -s "$input" || ! "$input" =~ \.(doc|docx|odt)$ ]] && { echo "Error: Invalid or empty file: $input"; return 1; }
+    [[ ! -s "$input" || ! "$input" =~ \.(doc|docx|odt)$ ]] && { red "Error: Invalid or empty file: $input"; return 1; }
 
     soffice --convert-to pdf "$input" --headless --outdir "$(dirname "$output")"
     [ "$#" -eq 2 ] && mv "${input%.*}.pdf" "$output"
@@ -341,7 +362,7 @@ e () { FILE=""
 
            else emacsclient "$FILE";
            fi;
-       else echo "File does not exist? $FILE"
+       else red "File does not exist? $FILE"
        fi;
      }
 alias ea="exiftool -All"
@@ -350,7 +371,7 @@ alias exiftool="exiftool -overwrite_original"
 # Gwern.net searches:
 ## fixed-grep gwern.net specifically:
 gw () {
-    if [ $# == 0 ]; then echo "Missing search query." >&2 && return 2; fi
+    if [ $# == 0 ]; then red "Missing search query." >&2 && return 2; fi
 
     QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
@@ -415,19 +436,19 @@ else
         if [[ ! $(pwd) =~ "/home/gwern/wiki/".* ]]; then cd ~/wiki/ ; fi
         OLD=$(echo "$1" | tr -d '  ⁠' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g' )
         NEW=$(echo "$2" | tr -d ' ⁠ ' | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///g' | xargs realpath | sed -e 's/\/home\/gwern\/wiki\//\//g')
-        if [[ "$NEW" == "" ]]; then echo "Processing arguments failed, exiting immediately!" >&2 ; echo "$OLD" "$NEW" >&2 ; return 8; fi
+        if [[ "$NEW" == "" ]]; then red "Processing arguments failed, exiting immediately!" >&2 ; echo "$OLD" "$NEW" >&2 ; return 8; fi
         # Check if the parent directory of the NEW path exists
         NEW_DIR=$(dirname "$HOME/wiki$NEW")
         if [ ! -d "$NEW_DIR" ]; then
-            echo "Target directory $NEW_DIR does not exist. Operation aborted." >&2
+            red "Target directory $NEW_DIR does not exist. Operation aborted." >&2
             return 7
         fi
 
         if [ -d "$HOME/wiki$OLD" ] || [ -d "${OLD:1}" ]; then
-            echo "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories." >&2
+            red "The first argument ($1 $OLD) is a directory. Please use 'gwmvdir' to rename entire directories." >&2
             return 3
         elif [ ! -f "$HOME/wiki$OLD" ] && [ ! -f "${OLD:1}" ]; then
-            echo "File $OLD not found in current directory or ~/wiki" >&2
+            red "File $OLD not found in current directory or ~/wiki" >&2
             return 4
         fi
 
@@ -438,7 +459,7 @@ else
 
         cd ~/wiki/
         if [[ -a ~/wiki$NEW ]]; then
-            echo "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first." >&2
+            red "Moved-to target file $NEW exists! Will not move $OLD and overwrite it. If you deliberately want to overwrite $NEW, then explicitly delete it first." >&2
             return 5
         fi
 
@@ -453,10 +474,10 @@ else
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
         else
-            echo "File does not exist? $OLD (to be moved to $NEW)" >&2 && return 1;
+            red "File does not exist? $OLD (to be moved to $NEW)" >&2 && return 1;
         fi
 
-        rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || echo "gwmv: rsync failed?" > /dev/null &
+        rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || red "gwmv: rsync failed?" > /dev/null &
         gwsed "$OLD" "$NEW"
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
@@ -583,7 +604,7 @@ is_downloading () {
 mvuri () {
     # Check if inotifywait is installed
     if ! command -v inotifywait &> /dev/null; then
-        echo "inotifywait could not be found. Please install 'inotify-tools' package."
+        red "inotifywait could not be found. Please install 'inotify-tools' package."
         exit
     fi
 
@@ -613,7 +634,7 @@ mvuri () {
   done
   # the file may not yet be fully written, so we additionally wait until it's (probably) complete:
   is_downloading "$SOURCE" 10 # most web pages <10kb are broken or error pages
-  echo "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
+  bold "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
       mv "$SOURCE" "$DESTINATION"
       php ~/wiki/static/build/deconstruct_singlefile.php "$DESTINATION"
@@ -708,7 +729,7 @@ lorem_update () {
     mkdir -p "${SNAPSHOT_DIR}"
     get_lorem_pages | while read -r page; do
         lorem_download "${page}"
-        echo "Updated snapshot for \"${page}\""
+        bold "Updated snapshot for \"${page}\""
     done
 }
 

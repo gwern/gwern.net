@@ -793,7 +793,7 @@ linkIconTestUnitsText =
          , ("https://osf.io/preprints/psyarxiv/gjh95/",   "ψ", "text", "")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad", "")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans", "")
-         , ("https://quantifiedself.com/2014/04/eric-jain-sleep-moon-phases/", "QS", "text,sans", "")
+         , ("https://quantifiedself.com/blog/the-false-god-of-coffee/", "QS", "text,sans", "")
          , ("https://quantum.country/qcvc", "MN", "text", "")
          , ("https://queue.acm.org/detail.cfm?ref=rss&id=2856460", "acm", "text,tri,sans", "")
          , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans", "")
