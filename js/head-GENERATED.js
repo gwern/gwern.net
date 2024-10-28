@@ -2750,7 +2750,7 @@ function toggleSpecialOccasionTest(specialOccasionName = null, enable = false) {
 		for (let i = 0; i < localStorage.length; i++) {
 			let localStorageKey = localStorage.key(i);
 			if (localStorageKey.startsWith(GW.specialOccasionTestLocalStorageKeyPrefix))
-				activeSpecialOccasionTestKeys.push(localStorageKeys);
+				activeSpecialOccasionTestKeys.push(localStorageKey);
 		}
 		activeSpecialOccasionTestKeys.forEach(key => {
 			localStorage.removeItem(key);
