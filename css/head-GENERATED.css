@@ -2326,6 +2326,37 @@ body.special-halloween-dark #sidebar span.logo-image img {
     }
 }
 
+body.special-halloween-dark hr::after {
+	filter: none;
+    opacity: 1;
+}
+body.special-halloween-dark hr::after,
+body.special-halloween-dark .horizontal-rule-nth-0 hr::after {
+    background-image: url('/static/img/ornament/halloween/sun-verginasun-black.svg');
+}
+body.special-halloween-dark .horizontal-rule-nth-1 hr::after {
+    background-image: url('/static/img/ornament/halloween/japanesecrest-tsukinihoshi-dottedmoon.svg');
+}
+body.special-halloween-dark .horizontal-rule-nth-2 hr::after {
+    background-image: url('/static/img/ornament/halloween/asterism-triplewhitestar.svg');
+}
+
+body.special-halloween-dark #x-of-the-day::before,
+body.special-halloween-dark #x-of-the-day::after {
+    background-image:
+        url('/static/img/ornament/halloween/three-wavy-lines-ornament-left.svg'),
+        url('/static/img/ornament/halloween/three-wavy-lines-ornament-right.svg');
+    filter: none;
+    opacity: 0.75;
+}
+body.special-halloween-dark #x-of-the-day .site-of-the-day blockquote {
+    background-image: url('/static/img/ornament/halloween/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
+}
+body.special-halloween-dark #x-of-the-day .site-of-the-day blockquote::before,
+body.special-halloween-dark #x-of-the-day .site-of-the-day blockquote::after {
+    background-image: url('/static/img/ornament/halloween/swissspiralroll.svg');
+}
+
 /*  Styles for /index
  */
 body.page-index.special-halloween-dark #sidebar a:hover {

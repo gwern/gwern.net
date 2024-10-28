@@ -116,15 +116,15 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
  */
 hr::after,
-.horizontal-rule-nth-0 hr::after {
+div.horizontal-rule-nth-0 hr::after {
     opacity: 1;
     filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-.horizontal-rule-nth-1 hr::after {
+div.horizontal-rule-nth-1 hr::after {
     opacity: 0.75;
     filter: invert(1);
 }
-.horizontal-rule-nth-2 hr::after {
+div.horizontal-rule-nth-2 hr::after {
     opacity: 0.85;
     filter: invert(1);
 }
