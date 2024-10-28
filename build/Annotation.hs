@@ -16,7 +16,7 @@ import Metadata.Author (extractTwitterUsername)
 import Metadata.Title (tooltipToMetadata, wikipediaURLToTitle, htmlDownloadAndParseTitleClean)
 import Typography (typesetHtmlFieldPermanent)
 import Utils (replace, anyPrefix)
-
+import Config.Misc as C (todayDayString)
 import qualified Data.Text as T (unpack)
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
@@ -24,13 +24,17 @@ linkDispatcher :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher md (Link _ _ (l, tooltip)) =
  do let l' = linkCanonicalize $ T.unpack l
     mi <- linkDispatcherURL md l'
+
+    today <- todayDayString
+    let defaultCreatedToToday d = if null d then today else d
+
     case mi of
       -- apply global per-field rewrites here
       Right (l'',(title,author,dateRaw,dc,kvs,tags,abstract)) ->
         do date <- if dateRaw /= "" then return dateRaw else guessDateFromString (title ++ " : " ++ l'')
-           return $ Right (l'',(reformatTitle title,author,date,dc,kvs,tags,abstract))
+           return $ Right (l'',(reformatTitle title,author,date,defaultCreatedToToday dc,kvs,tags,abstract))
       Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
-                           if title/="" then return (Right (l',(reformatTitle title,author,date',"",[],[],""))) else return mi
+                           if title/="" then return (Right (l',(reformatTitle title,author,date',defaultCreatedToToday "",[],[],""))) else return mi
       Left Temporary -> return mi
   where reformatTitle = typesetHtmlFieldPermanent False . replace " – " "—" . replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 linkDispatcher _ x = error ("Annotation.linkDispatcher passed a non-Link Inline element: " ++ show x)
