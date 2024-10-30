@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-10-25 19:59:25 gwern"
+When:  Time-stamp: "2024-10-27 18:40:58 gwern"
 License: CC-0
 -}
 
@@ -42,7 +42,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
 import Interwiki (convertInterwikiLinks)
 import Typography (titlecase', typesetHtmlField, titleWrap)
@@ -394,6 +394,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                 unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
 
      let annotated = M.lookup target'' md
+     today <- C.todayDayString
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just i  -> return (Right (target'', i))
@@ -402,7 +403,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return (Left Temporary)
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], [], "") >> return (Left Permanent)
+                       Left Permanent -> appendLinkMetadata target'' ("", "", "", today, [], [], "") >> return (Left Permanent)
                        Right y@(f,m@(_,_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:

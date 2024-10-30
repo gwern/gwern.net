@@ -69,6 +69,8 @@ main = do
             mapM_ (\link -> mapM_ (changeOneTag link) tags) links
 
 changeOneTag :: String -> String -> IO ()
+changeOneTag "" tag  = error $ "changeTag.changeOneTag: empty string; other was: " ++ tag
+changeOneTag link "" = error $ "changeTag.changeOneTag: empty string; other was: " ++ link
 changeOneTag link tag = do
           let link' = replace "https://gwern.net/" "/" link
           -- allow shortcut additions like 'changeTag.hs doc/foo.pdf psychology'
@@ -105,12 +107,14 @@ writeUpdatedGTX oldList target newList = when (oldList /= newList) $ writeGTX ta
 -- (which will be in auto.gtx), and then run changeTag.hs *again*, so this time it has an annotation
 -- to work with (and will do auto.gtx → half.gtx).
 addNewLink :: String -> String -> IO ()
-addNewLink tag p = do md <- readLinkMetadata
-                      returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
-                      case returnValue of
+addNewLink ""  p  = error $ "changeTag.addNewLink: empty string passed in; other argument 'p' was: "   ++ p
+addNewLink tag "" = error $ "changeTag.addNewLink: empty string passed in; other argument 'tag' was: " ++ tag
+addNewLink tag p  = do md <- readLinkMetadata
+                       returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
+                       case returnValue of
                         Left Temporary -> error ("annotateLink returned a Temporary error! " ++ show tag ++ " : " ++ show p)
                         Left Permanent -> changeOneTag p tag
-                        Right _ -> changeOneTag p tag
+                        Right _        -> changeOneTag p tag
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList
 changeTag "" a b  = error $ "changeTag called with empty arguments: " ++ "\"\""  ++ ":" ++ show a  ++ ":" ++ show b  ++ "; this should never happen."

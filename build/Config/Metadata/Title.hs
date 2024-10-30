@@ -137,4 +137,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
             , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru"
             , " - HTML: HyperText Markup Language", " - Joel on Software", "Neal Stephenson - "
-            , "- jreyesr’s blog", "Old Vintage Computing Research: ", "Flight From Perfection - ", "A Knight at the Opera: ", "Res Obscura: "]
+            , "- jreyesr’s blog", "Old Vintage Computing Research: ", "Flight From Perfection - ", "A Knight at the Opera: ", "Res Obscura: ", " • European Platform of Women Scientists", " - HoloWiki - A Holography FAQ"]

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-25 16:56:49 gwern"
+# When:  Time-stamp: "2024-10-27 09:22:56 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1086,7 +1086,7 @@ else
  if [ "$SLOW" ]; then
 
    # continue building author database
-   (ghci -istatic/build/ ./static/build/Metadata/Author.hs ./static/build/LinkMetadata.hs -e 'do {md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &)
+   (ghci -istatic/build/ ./static/build/Metadata/Author.hs ./static/build/LinkMetadata.hs -e 'do { md <- LinkMetadata.readLinkMetadata; authorBrowseTopN md 4; }' > /dev/null &)
 
    # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
    CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
