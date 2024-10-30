@@ -100,6 +100,9 @@ body.special-halloween-dark #navigation a:hover {
 body.special-halloween-dark #sidebar svg.logo-image {
     visibility: hidden;
 }
+body.special-halloween-dark #sidebar svg.logo-image.visible {
+	visibility: visible;
+}
 body.special-halloween-dark #sidebar span.logo-image img {
     filter: none;
 }

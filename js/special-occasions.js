@@ -2,7 +2,7 @@
 /* SPECIAL OCCASIONS */
 /*********************/
 
-/********************************************************************/
+/*****************************************************************************/
 /*  Inject a special page logo image of a specific type (‘halloween’,
     ‘christmas’, etc.). Directory structure and file naming for the
     specified logo type must match existing holiday logos.
@@ -32,14 +32,15 @@ function injectSpecialPageLogo(logoType, options) {
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 
     let logoPathname;
+    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))`;
     if (options.randomize) {
         logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R-small-${scale}x.png`
-                       : `/static/img/logo/${logoType}/logo-${logoType}-%R-small-${scale}x.png`;
+                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R${fileFormatRegexpSuffix}$`
+                       : `/static/img/logo/${logoType}/logo-${logoType}-%R${fileFormatRegexpSuffix}$`;
     } else {
         logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-small-${scale}x.png`
-                       : `/static/img/logo/${logoType}/logo-${logoType}-small-${scale}x.png`;
+                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}${fileFormatRegexpSuffix}$`
+                       : `/static/img/logo/${logoType}/logo-${logoType}${fileFormatRegexpSuffix}$`;
     }
 
     //  Temporarily brighten logo, then fade slowly after set duration.
@@ -73,17 +74,30 @@ function injectSpecialPageLogo(logoType, options) {
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
-        //  Create new image element and wrapper.
-        let imageWrapper = newElement("SPAN", {
-            class: "logo-image"
-        });
-        imageWrapper.append(newElement("IMG", {
-            class: "figure-not",
-            src: versionedLogoURL.pathname + versionedLogoURL.search
-        }));
+		if (logoPathname.endsWith(".svg")) {
+			//	Create new <svg> element.
+			let svgContainer = elementFromHTML(`<svg 
+												 class="logo-image visible" 
+												 viewBox="0 0 64 75"
+												 ><use 
+												   href="${versionedLogoURL}#logo"
+												   ></use></svg>`);
 
-        //  Inject wrapped image.
-        logoImage.replaceWith(imageWrapper);
+			//	Inject inline SVG.
+			logoImage.replaceWith(svgContainer);
+		} else {
+			//  Create new image element and wrapper.
+			let imageWrapper = newElement("SPAN", {
+				class: "logo-image"
+			});
+			imageWrapper.append(newElement("IMG", {
+				class: "figure-not",
+				src: versionedLogoURL.pathname + versionedLogoURL.search
+			}));
+
+			//  Inject wrapped image.
+			logoImage.replaceWith(imageWrapper);
+		}
 
         //  Brighten logo; fade (over 1 second) after 20 seconds.
         brightenLogoTemporarily(20 * 1000, 1000);

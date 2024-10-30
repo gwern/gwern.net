@@ -36,6 +36,7 @@ GW.assetVersions = {
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-1x.png": "1697576584",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-3x.png": "1697576584",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-2.svg": "1730273039",
 	"/static/font/dropcap/dropcat/dark/B-dark-1-small-1x.png": "1707794183",
 	"/static/font/dropcap/dropcat/dark/B-dark-1-small-2x.png": "1705376804",
 	"/static/font/dropcap/dropcat/dark/B-dark-2-small-1x.png": "1705376804",
