@@ -2565,7 +2565,7 @@ document.addEventListener("readystatechange", () => {
 /* SPECIAL OCCASIONS */
 /*********************/
 
-/********************************************************************/
+/*****************************************************************************/
 /*  Inject a special page logo image of a specific type (‘halloween’,
     ‘christmas’, etc.). Directory structure and file naming for the
     specified logo type must match existing holiday logos.
@@ -2595,14 +2595,15 @@ function injectSpecialPageLogo(logoType, options) {
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 
     let logoPathname;
+    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))`;
     if (options.randomize) {
         logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R-small-${scale}x.png`
-                       : `/static/img/logo/${logoType}/logo-${logoType}-%R-small-${scale}x.png`;
+                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R${fileFormatRegexpSuffix}$`
+                       : `/static/img/logo/${logoType}/logo-${logoType}-%R${fileFormatRegexpSuffix}$`;
     } else {
         logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-small-${scale}x.png`
-                       : `/static/img/logo/${logoType}/logo-${logoType}-small-${scale}x.png`;
+                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}${fileFormatRegexpSuffix}$`
+                       : `/static/img/logo/${logoType}/logo-${logoType}${fileFormatRegexpSuffix}$`;
     }
 
     //  Temporarily brighten logo, then fade slowly after set duration.
@@ -2636,17 +2637,30 @@ function injectSpecialPageLogo(logoType, options) {
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
-        //  Create new image element and wrapper.
-        let imageWrapper = newElement("SPAN", {
-            class: "logo-image"
-        });
-        imageWrapper.append(newElement("IMG", {
-            class: "figure-not",
-            src: versionedLogoURL.pathname + versionedLogoURL.search
-        }));
+		if (logoPathname.endsWith(".svg")) {
+			//	Create new <svg> element.
+			let svgContainer = elementFromHTML(`<svg 
+												 class="logo-image visible" 
+												 viewBox="0 0 64 75"
+												 ><use 
+												   href="${versionedLogoURL}#logo"
+												   ></use></svg>`);
 
-        //  Inject wrapped image.
-        logoImage.replaceWith(imageWrapper);
+			//	Inject inline SVG.
+			logoImage.replaceWith(svgContainer);
+		} else {
+			//  Create new image element and wrapper.
+			let imageWrapper = newElement("SPAN", {
+				class: "logo-image"
+			});
+			imageWrapper.append(newElement("IMG", {
+				class: "figure-not",
+				src: versionedLogoURL.pathname + versionedLogoURL.search
+			}));
+
+			//  Inject wrapped image.
+			logoImage.replaceWith(imageWrapper);
+		}
 
         //  Brighten logo; fade (over 1 second) after 20 seconds.
         brightenLogoTemporarily(20 * 1000, 1000);
@@ -4329,7 +4343,7 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1728676325",
+	"/static/img/icon/icons.svg": "1730274355",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
@@ -4366,6 +4380,36 @@ GW.assetVersions = {
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-1x.png": "1697576584",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/halloween/dark/logo-halloween-dark-1-small-3x.png": "1697576584",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-11-small-1x.png": "1730284082",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-11-small-2x.png": "1730284082",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-11-small-3x.png": "1730284082",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-12-small-1x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-12-small-2x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-12-small-3x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-13-small-1x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-13-small-2x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-13-small-3x.png": "1730283464",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-14-small-1x.png": "1730283695",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-14-small-2x.png": "1730283695",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-14-small-3x.png": "1730283695",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-2-small-1x.png": "1730276048",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-2-small-2x.png": "1730276047",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-2-small-3x.png": "1730276047",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-3-small-1x.png": "1730276585",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-3-small-2x.png": "1730276585",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-3-small-3x.png": "1730276585",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-4-small-1x.png": "1730276929",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-4-small-2x.png": "1730276929",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-4-small-3x.png": "1730276929",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-5-small-1x.png": "1730277269",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-5-small-2x.png": "1730277269",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-5-small-3x.png": "1730277269",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-7-small-1x.png": "1730278129",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-7-small-2x.png": "1730278129",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-7-small-3x.png": "1730278129",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-8-small-1x.png": "1730283463",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-8-small-2x.png": "1730283463",
+	"/static/img/logo/halloween/dark/logo-halloween-dark-8-small-3x.png": "1730283463",
 	"/static/font/dropcap/dropcat/dark/B-dark-1-small-1x.png": "1707794183",
 	"/static/font/dropcap/dropcat/dark/B-dark-1-small-2x.png": "1705376804",
 	"/static/font/dropcap/dropcat/dark/B-dark-2-small-1x.png": "1705376804",
