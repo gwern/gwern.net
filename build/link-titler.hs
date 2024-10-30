@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2024-06-10 16:20:18 gwern"
+-- When:  Time-stamp: "2024-10-28 09:52:58 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -36,54 +36,57 @@ import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (append, replace, pack, unpack, Text)
 
 import LinkID (authorsToCite)
-import LinkMetadata (walkAndUpdateLinkMetadata, readLinkMetadata)
+import LinkMetadata (walkAndUpdateLinkMetadata, readLinkMetadataSlow)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 import Utils (printGreen, writeUpdatedFile, replace, deleteMany)
 
 main :: IO ()
-main = do md <- readLinkMetadata
+main = do md <- readLinkMetadataSlow
 
           -- update specified Markdown files:
           args <- getArgs
           printGreen "Updating Markdown arguments…"
           Par.mapM_ (addTitlesToFile md) args
 
-          -- update annotations; reminder: `walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()`
+          -- update annotations; type signature reminder: `walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()`
           printGreen "Updating all HTML annotations as well…"
           walkAndUpdateLinkMetadata False (addTitlesToHTML md)
 
 addTitlesToFile :: Metadata -> String -> IO ()
 addTitlesToFile md filepath = do
-          fileContents <- TIO.readFile filepath
+ fileContents <- TIO.readFile filepath
 
-          let pandoc = parseMarkdownOrHTML True fileContents
-          let links = extractURLsAndAnchorTooltips pandoc
+ let pandoc = parseMarkdownOrHTML True fileContents
+ let links = extractURLsAndAnchorTooltips pandoc
 
-          let untitled = map (\(u,titles') -> (u, head titles')) $ filter (\(_,titles) -> length titles == 1) links :: [(T.Text, T.Text)]
+ let untitled = map (\(u,titles') -> (u, head titles')) $
+                filter (\(_,titles) -> length titles == 1) links :: [(T.Text, T.Text)]
 
-          let titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
-                                 map (\(u,t') -> case M.lookup (T.unpack u) md of
-                                                   Nothing -> ("","")
-                                                   Just ("",_,_,_,_,_,_) -> ("","")
-                                                   Just (_,"",_,_,_,_,_) -> ("","")
-                                                   Just (_,_,"",_,_,_,_) -> ("","")
-                                                   Just (t,aut,dt,_,_,_,_) -> if T.pack t == t' ||
-                                                                                textSimplifier (T.pack t) == textSimplifier t'
-                                                                            then ("","") else
-                                                                              let authorCite = authorsToCite (T.unpack u) aut dt in
-                                                                              (u, T.pack $
-                                                                                  if textSimplifier t' == textSimplifier (T.pack authorCite) then t
-                                                                                  else "‘" ++ (replace "’’" "’" t) ++ "’, " ++ authorCite)
-                               ) untitled :: [(T.Text, T.Text)]
+ let titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
+                        map (\(u,t') ->
+                         case M.lookup (T.unpack u) md of
+                           Nothing                 -> ("","")
+                           Just ("",_,_,_,_,_,_)   -> ("","")
+                           Just (_, "",_,_,_,_,_)  -> ("","")
+                           Just (_,  _,"",_,_,_,_) -> ("","")
+                           Just (t,aut,dt,_,_,_,_) ->
+                             if T.pack t == t' ||
+                                textSimplifier (T.pack t) == textSimplifier t'
+                             then ("","") else
+                               let authorCite = authorsToCite (T.unpack u) aut dt in
+                                 (u, T.pack $
+                                     if textSimplifier t' == textSimplifier (T.pack authorCite) then t
+                                     else "‘" ++ (replace "’’" "’" t) ++ "’, " ++ authorCite)
+                      ) untitled :: [(T.Text, T.Text)]
 
-          let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")") -- TODO: `replaceCheckedT`
-                                                                     (url `T.append` " \"" `T.append` titleNew `T.append` "\")")
-                                                                     text)
-                             fileContents titled
+ let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")") -- TODO: `replaceCheckedT`
+                                                            (url `T.append` " \"" `T.append` titleNew `T.append` "\")")
+                                                            text)
+                    fileContents titled
 
-          writeUpdatedFile "link-titler" filepath updatedFile
-          return ()
+ writeUpdatedFile "link-titler" filepath updatedFile
+ return ()
 
 -- TODO: refactor; most of this is redundant
 addTitlesToHTML :: Metadata -> (String,MetadataItem) -> IO (String,MetadataItem)
@@ -91,7 +94,8 @@ addTitlesToHTML md (path,(title,author,date,dc,kvs,tags,abstract))
   = let pandoc = parseMarkdownOrHTML False (T.pack abstract)
         links = M.toList $ M.fromListWith (++) $ extractURLsAndAnchorTooltips pandoc
 
-        untitled = map (\(u,titles') -> (u, head titles')) $ filter (\(_,titles) -> length titles == 1) links :: [(T.Text, T.Text)]
+        untitled = map (\(u,titles') -> (u, head titles')) $
+                   filter (\(_,titles) -> length titles == 1) links :: [(T.Text, T.Text)]
 
         titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
                            map (\(u,t') -> case M.lookup (T.unpack u) md of

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-10-20 19:22:49 gwern"
+;;; When:  Time-stamp: "2024-10-28 19:34:50 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -931,6 +931,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("denylist" . "blacklist")
                         ("PGI" . "PGS")
                         (" <sup>" . "<sup>") ; can't auto-replace because of instances like isotopic elements with *prefixed* superscripts, eg ' <sup>60</sup>Co'
+                        ("BCE" . "BC")
+                        ("CE"  . "AD")
                                         ; replace all word-numbers with actual numbers:
                         (" one-hundred" . " 100")
                         (" one hundred" . " 100")

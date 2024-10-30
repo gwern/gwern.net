@@ -2856,4 +2856,10 @@ linkIDOverrides =
        ,("https://onlinelibrary.wiley.com/doi/10.1111/add.16679","qeadan-et-al-2024-1"),("/doc/psychiatry/alcoholism/2024-qeadan.pdf","qeadan-et-al-2024-2")
        ,("https://arxiv.org/abs/2410.09038","wong-et-al-2024-1"),("/doc/longevity/glp/semaglutide/2024-wong.pdf","wong-et-al-2024-2"),("https://arxiv.org/abs/2311.10054","zheng-et-al-2023-1"),("https://arxiv.org/abs/2309.03882","zheng-et-al-2023-2")
        ,("https://arxiv.org/abs/2410.13893","sehwag-et-al-2024-1"),("https://arxiv.org/abs/2407.15811","sehwag-et-al-2024-2")
+       ,("https://slatestarcodex.com/2014/04/28/the-control-group-is-out-of-control/","alexander-2014-1"),("https://slatestarcodex.com/2014/04/16/do-you-believe-me-doc/","alexander-2014-2")
+       ,("/static/build/text2epositive.py","gwern-2024-epositive"),("/doc/genetics/selection/natural/2024-10-28-gwern-meme-carcinization-bookofjobsatantofuturamarobotdevilevolution.jpg","gwern-2024-carcinization")
+       ,("https://krebsonsecurity.com/2024/10/the-global-surveillance-free-for-all-in-mobile-ad-data/","krebs-2024-mobiletracking"),("https://krebsonsecurity.com/2024/10/a-single-cloud-compromise-can-feed-an-army-of-ai-sex-bots/","krebs-2024-jailbreaks")
+       ,("https://arxiv.org/abs/2410.09754","lee-et-al-2024-1-1"),("https://arxiv.org/abs/2406.13121#google","lee-et-al-2024-1-2"),("https://arxiv.org/abs/2405.20233","lee-et-al-2024-2-1"),("/doc/longevity/glp/semaglutide/2024-lee.pdf","lee-et-al-2024-2-2")
+       ,("https://archive.org/details/cu31924092592785/page/10/mode/1up","mayhew-1851-ratcatcher"),("/doc/cat/biology/1851-mayhew-londonlabourandthelondonpoor-v1-thecatsmeatman.pdf","mayhew-1851-catsmeantman")
+       ,("https://arxiv.org/abs/2410.09400","xu-et-al-2024-1"),("/doc/psychology/vision/2024-xu.pdf","xu-et-al-2024-2")
       ]

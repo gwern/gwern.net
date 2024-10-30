@@ -57,10 +57,10 @@ isWPArticle url = do
     request <- parseRequest ("HEAD " ++ T.unpack url)
     result  <- catch (Right <$> httpLBS request) handleExceptionIO :: IO (Either String (Response U.ByteString))
     case result of
-        Left err       -> putStrLn $ "Error (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err
+        Left err       -> putStrLn $ "Warning (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err
         Right response ->
             if getResponseStatusCode response == 404
-                then putStrLn $ "Error (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url
+                then putStrLn $ "Warning (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url
                 else return ()
   where
     handleExceptionIO :: SomeException -> IO (Either String a)
