@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-29 11:29:25 gwern"
+# When:  Time-stamp: "2024-10-30 19:42:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -107,7 +107,7 @@ else
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
-          ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep -E`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
+          ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep --extended-regexp`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
           for file in $(find . -type f -name "*.md" -or -name "*.gtx"); do
               if grep -qE "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
@@ -436,23 +436,21 @@ else
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html installation: `npm install --prefix ~/src/ mathjax-node-page`
     bold "Compiling LaTeX JS+HTML into static CSS+HTML…"
     staticCompileMathJax () {
-        if [[ $(gf -e '<span class="math inline"' -e '<span class="math display"' "$@") ]]; then
-            TARGET=$(mktemp /tmp/XXXXXXX.html)
-            cat "$@" | ~/src/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
-            ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
-            ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
-                sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' \
-                    -e 's/<style type="text\/css">\.mjx-chtml/<style id="mathjax-styles" type="text\/css">.mjx-chtml/' >> "$TARGET";
+      TARGET=$(mktemp /tmp/XXXXXXX.html)
+      cat "$@" | ~/src/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
+      ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
+      ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
+          sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' \
+              -e 's/<style type="text\/css">\.mjx-chtml/<style id="mathjax-styles" type="text\/css">.mjx-chtml/' >> "$TARGET";
 
-            if [[ -s "$TARGET" ]]; then
-                mv "$TARGET" "$@" && echo "$@ succeeded";
-            else red "$@ failed MathJax compilation";
-            fi
-        fi
+      if [[ -s "$TARGET" ]]; then
+          mv "$TARGET" "$@" && echo "$@ succeeded";
+      else red "$@ failed MathJax compilation";
+      fi
     }
     export -f staticCompileMathJax
     (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
-     find _site/metadata/annotation/ -name '*.html') | \
+     find _site/metadata/annotation/ -name '*.html') | xargs --max-procs=0 --max-args=1000 grep --fixed-strings --with-filename -e '<span class="math inline"' -e '<span class="math display"' | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
     # essays only:
@@ -510,7 +508,7 @@ else
     set +e
 
     λ(){
-         echo "$PAGES_ALL" | xargs grep -F -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+         echo "$PAGES_ALL" | xargs grep --fixed-strings -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      gfv -e '/1955-nash' -e '/backstop' -e '/death-note-anonymity' -e '/difference' \
                                                           -e '/lorem' -e '/modus' -e '/order-statistics' -e '/conscientiousness-and-online-education' \
                                 -e 'doc%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
@@ -561,7 +559,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep -F -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep -F --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' -e 'https://www.youtube.com/watch?t=' | \
+    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep --fixed-strings -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep --fixed-strings --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' -e 'https://www.youtube.com/watch?t=' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -628,14 +626,14 @@ else
 
         # Check for whitelisted classes *not* present, suggesting a typo or stale entry in the whitelist:
         for class in "${html_classes_whitelist[@]}"; do
-            if ! grep -E --invert-match --line-regexp --quiet "$class" <<< "$html_classes"; then
+            if ! grep --extended-regexp --invert-match --line-regexp --quiet "$class" <<< "$html_classes"; then
                 echo "'""$class""' is not in HTML classes"
             fi
         done | less
     }
     wrap λ "Mysterious HTML classes in compiled HTML?"
 
-    λ(){ echo "$PAGES_ALL" | gfv 'hafu' | xargs grep -F --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
+    λ(){ echo "$PAGES_ALL" | gfv 'hafu' | xargs grep --fixed-strings --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';
        }
     wrap λ "Punctuation like possessives should go *inside* the link (unless it is an apostrophe in which case it should go outside due to Pandoc bug #8381)."
@@ -665,7 +663,7 @@ else
        }
     wrap λ "Essays with redundant or duplicate metadata fields (must have no more than one of css-extension/modified/thumbnail-css/thumbnail/thumbnail-text/importance)"
 
-    λ(){ echo "$PAGES_ALL" | xargs grep -E --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
+    λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
     λ(){ ge 'http.*http' ./metadata/archive.hs | \
@@ -674,10 +672,10 @@ else
          gf -e \\ ./metadata/archive.hs ./metadata/backlinks.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
-    λ(){ echo "$PAGES_ALL" | xargs grep -F --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
+    λ(){ echo "$PAGES_ALL" | xargs grep --fixed-strings --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep -F --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'collapse}' -e 'interview}' -e 'cssExtension' -e 'thumbnailText' -e 'thumbnailCSS' -e '!Margin'; }
+    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep --fixed-strings --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'include-replace}' -e 'include-replace ' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'collapse}' -e 'interview}' -e 'cssExtension' -e 'thumbnailText' -e 'thumbnailCSS' -e '!Margin'; }
     wrap λ "Misspelled/outdated classes in HTML."
 
     λ(){
@@ -699,7 +697,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]+\#[a-z]+'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" -type f -exec grep -E -e 'css-extension:' {} \; | \
+    λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e 'css-extension:' {} \; | \
        gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
@@ -779,7 +777,7 @@ else
     wrap λ "Broken tables in HTML."
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
-             xargs --max-args=500 grep -F --with-filename --color=always \
+             xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
                    -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
@@ -1093,7 +1091,7 @@ else
    # Filter URLs: Exclude URLs present in the checked list:
    FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                         | while read -r URL; do
-                        if ! grep -Fxq "$URL" "$CHECKED_URLS_FILE"; then
+                        if ! grep --fixed-strings --line-regexp --quiet "$URL" "$CHECKED_URLS_FILE"; then
                             echo "$URL"
                         fi
                     done)
@@ -1105,7 +1103,7 @@ else
    FILTERED_ANNOTATIONS=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k \
                  | sed -e 's/metadata\/annotation\/\(.*\)/\1/' \
                  | while read -r ANNOTATION_URL; do
-                     if ! grep -Fxq "$ANNOTATION_URL" "$CHECKED_URLS_FILE"; then
+                     if ! grep --fixed-strings --line-regexp --quiet "$ANNOTATION_URL" "$CHECKED_URLS_FILE"; then
                        echo "$ANNOTATION_URL"
                      fi
                    done; )
@@ -1433,7 +1431,7 @@ else
          echo "Found JPGs with PNG data: $CORRUPT"
          echo "attempting to convert the PNG ones into JPG…"
          for FILE in $CORRUPT; do
-             if file "$FILE" | grep -F --silent 'PNG image data'; then
+             if file "$FILE" | grep --fixed-strings --silent 'PNG image data'; then
                  echo "Converting $FILE"
                  TMP=$(mktemp /tmp/XXXX.jpg)
                  convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
@@ -1450,7 +1448,7 @@ else
              echo "Found broken PNGs: $CORRUPT"
              echo "attempting to convert the JPG ones into PNG…"
              for FILE in $CORRUPT; do
-                 if file "$FILE" | grep -F --silent 'JPEG image data'; then
+                 if file "$FILE" | grep --fixed-strings --silent 'JPEG image data'; then
                      echo "Converting $FILE"
                      TMP=$(mktemp /tmp/XXXX.png)
                      convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
@@ -1548,7 +1546,7 @@ else
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }
     wrap λ "Refactor out pages?" &
 
-    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-args=1000 grep -F --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | ge '^ +[4-9][0-9][0-9][0-9]+ +'; }
+    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-args=1000 grep --fixed-strings --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | ge '^ +[4-9][0-9][0-9][0-9]+ +'; }
     wrap λ "Similar-links: overused links (>999) indicate pathological lookups; blacklist links as necessary." &
 
     λ(){ ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \
@@ -1561,7 +1559,7 @@ else
     λ() { find . -type f -name "*.hs" | gfv -e 'static/' -e 'metadata/' | xargs hlint | gfv 'No hints'; }
     wrap λ "Check hosted Haskell files for Hlint style suggestions."
 
-    λ() { find ./static/build/ -type f -name "*.hs" -exec grep -F 'nub ' {} \; ; }
+    λ() { find ./static/build/ -type f -name "*.hs" -exec grep --fixed-strings 'nub ' {} \; ; }
     wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' for safety instead)."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.

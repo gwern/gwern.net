@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-27 17:45:42 gwern"
+# When:  Time-stamp: "2024-10-30 19:43:22 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -81,10 +81,10 @@ wrap () { OUTPUT=$($1 2>&1)
               echo -e "$OUTPUT";
               echo -n "End: "; red "$WARN";
           fi; }
-ge  () { grep -E "$@"; }
+ge  () { grep --extended-regexp "$@"; }
 gec  () { ge --color=always "$@"; }
 gev () { ge --invert-match "$@"; }
-gf  () { grep -F "$@"; }
+gf  () { grep --fixed-strings "$@"; }
 gfc  () { gf --color=always "$@"; }
 gfv () { gf --invert-match "$@"; }
 export -f bold red wrap ge gec gev gf gfc gfv
@@ -379,8 +379,8 @@ gw () {
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-           grep -F -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
-           xargs grep -F --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
+           grep --fixed-strings -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
+           xargs grep --fixed-strings --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
     if [ -z "$RESULTS" ]; then
         gwl "$QUERY" # fall back to double-checking IRC logs
     else
@@ -389,19 +389,19 @@ gw () {
 }
 
 ## file names only
-gwf () { (cd ~/wiki/ && find . -type f | grep -F -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
+gwf () { (cd ~/wiki/ && find . -type f | grep --fixed-strings -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
 ## Newsletter only:
 gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
         find ~/wiki/newsletter/ -type f -name "*.md" | \
-             grep -F -v -e '.#' |
-            sort --unique  | xargs grep -E --ignore-case --color=always --with-filename "$QUERY" | cut --characters 1-2048; }
+             grep --fixed-strings -v -e '.#' |
+            sort --unique  | xargs grep --extended-regexp --ignore-case --color=always --with-filename "$QUERY" | cut --characters 1-2048; }
 ## Annotations:
 # gwa: defined in ~/wiki/static/build/gwa
 gwal () { gwa "$@" | less -p "$@"; }
 
 ## #lesswrong IRC logs
 gwl () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
-         grep -E --context=1 --text --ignore-case -- "$QUERY" ~/doc/irclogs/*/\#lesswrong.log; }
+         grep --extended-regexp --context=1 --text --ignore-case -- "$QUERY" ~/doc/irclogs/*/\#lesswrong.log; }
 
 # Gwern.net modifications:
 ## gwsed shortcut for the common use case of updating a domain HTTP → HTTPS; typically the URLs are otherwise unchanged, and don't need to be individually updated.
@@ -506,7 +506,7 @@ gwmvdir () {
     NEW="$(readlink --canonicalize "$NEW" | cut -d '/' -f 5-)"
     mkdir -p "$NEW"
     git add "$NEW"
-    for FILE in $(ls "$OLD"/* | grep -F -v 'index.md'); do
+    for FILE in $(ls "$OLD"/* | grep --fixed-strings -v 'index.md'); do
         echo $FILE
         gwmv "$FILE" "$NEW/$(basename $FILE)"
     done
@@ -522,13 +522,13 @@ alias t="gwtag"
 gwtag () { (
              wait; # just in case another tool might be running (eg. gwtag or gwsed)
              cd ~/wiki/ &&
-                     # echo "---" && grep -F -- "$1" ./metadata/*.gtx || true
+                     # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx || true
                      timeout 20m nice ./static/build/changeTag +RTS -N2 -RTS "$@"; echo "" # &&
-                         # echo "---" && grep -F -- "$1" ./metadata/*.gtx
+                         # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx
          ); }
 
 # eg. `"ai ai/anime ai/anime/danbooru ... ai/scaling ai/scaling/economics ... japan/poetry/shotetsu japan/poetry/teika ... technology/digital-antiquarian ... zeo/short-sleeper"`
-GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep -F -v -e 'doc/rotten.com' -e 'doc/www/' \
+GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep --fixed-strings -v -e 'doc/rotten.com' -e 'doc/www/' \
                          -e 2000-iapac-norvir -e mountimprobable.com -e personal/2011-gwern-yourmorals.org \
                          -e psychology/european-journal-of-parapsychology -e reinforcement-learning/armstrong-controlproblem \
                          -e statistics/order/beanmachine-multistage -e gwern.net-gitstats -e metadata/annotation | \
@@ -537,7 +537,7 @@ GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep -F -v -e 'doc/rotte
 GWERNNET_DIRS_SHORT="$(echo $GWERNNET_DIRS_FULL | tr '/' '\n' | tr ' ' '\n' | sort --unique)"
 # for completing tags which may need to be disambiguated, like 'gpt/nonfiction':
 # eg. `"1/lsd 2/2010-crc 3/fiction 3/nonfiction ... palm/2 personality/conscientiousness personality/psychopathy ... video/analysis video/generation vision/dream"`
-GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep -E -e '[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+' | \
+GWERNNET_DIRS_SUFFIXES="$(echo $GWERNNET_DIRS_FULL | tr ' ' '\n' | grep --extended-regexp -e '[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+' | \
                                rev | cut --delimiter='/' --fields=1-2 | rev | sort --unique)"
 complete -W "$GWERNNET_DIRS_FULL $GWERNNET_DIRS_SHORT $GWERNNET_DIRS_SUFFIXES" u gwtag gwt t
 
