@@ -145,6 +145,9 @@ function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = n
     added.
  */
 function cancelDoWhenMatchMedia(name) {
+	if (GW.mediaQueryResponders[name] == null)
+		return;
+
     GW.mediaQueryResponders[name](null, true);
 
     for (let [ key, mediaQuery ] of Object.entries(GW.mediaQueries))
