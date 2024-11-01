@@ -2638,7 +2638,8 @@ function injectSpecialPageLogo(logoType, options) {
 	options = Object.assign({
 		mode: null,
 		randomize: false,
-		identifier: null
+		identifier: null,
+		link: null
 	}, options);
 
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
@@ -2689,6 +2690,9 @@ function injectSpecialPageLogo(logoType, options) {
         and so cannot be called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
+		//	Get enclosing link, in case we have to modify it.
+		let logoLink = logoImage.closest("a");
+
         //  Get new logo URL (random, if need be).
 		logoPathname = randomAsset(logoPathname);
 
@@ -2714,6 +2718,10 @@ function injectSpecialPageLogo(logoType, options) {
             logoImage.replaceWith(imageWrapper);
         }
 
+		//	Point the logo link at the provided URL.
+		if (options.link)
+			logoLink.href = options.link;
+
         //  Brighten logo; fade (over 1 second) after 20 seconds.
         brightenLogoTemporarily(20 * 1000, 1000);
     });
@@ -2727,6 +2735,9 @@ function resetPageLogo() {
         and so cannot be called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
+		//	Get enclosing link.
+		let logoLink = logoImage.closest("a");
+
         let versionedLogoURL = versionedAssetURL("/static/img/logo/logo-smooth.svg");
 
 		//	Create new <svg> element.
@@ -2734,6 +2745,9 @@ function resetPageLogo() {
 
 		//	Inject inline SVG.
 		logoImage.replaceWith(svgContainer);
+
+		//	Point the logo link back to the index page.
+		logoLink.href = "/index";
     });
 }
 
@@ -2761,11 +2775,12 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
         //  Replace logo.
+        let newLogoLink = URLFromString("/dropcap#halloween");
         doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth", 
            (mediaQuery) => {
-        	injectSpecialPageLogo("halloween", { mode: "dark", randomize: true });
+        	injectSpecialPageLogo("halloween", { mode: "dark", randomize: true, link: newLogoLink });
         }, (mediaQuery) => {
-			injectSpecialPageLogo("halloween", { mode: "dark", identifier: "1" });
+			injectSpecialPageLogo("halloween", { mode: "dark", identifier: "1", link: newLogoLink });
         }, (mediaQuery) => {
         	resetPageLogo();
         });
@@ -2783,7 +2798,8 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
         //  Replace logo.
-        injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true });
+        let newLogoLink = URLFromString("/dropcap#halloween");
+        injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true, link: newLogoLink });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
