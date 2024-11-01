@@ -2289,6 +2289,14 @@ body.special-halloween-dark .heading {
     color: var(--GW-body-text-color);
 }
 
+@media all and (max-width: 649px) {
+	body.special-halloween-dark #sidebar a {
+		--GW-body-link-color: var(--GW-blood-red-arterial);
+
+		color: var(--GW-body-link-color);
+	}
+}
+
 body.special-halloween-dark #navigation {
     color: var(--GW-blood-red);
 }

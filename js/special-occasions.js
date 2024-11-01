@@ -2,6 +2,40 @@
 /* SPECIAL OCCASIONS */
 /*********************/
 
+/**************************************************************************/
+/*	Returns the source string for the <svg> container for an SVG page logo.
+ */
+function svgPageLogoContainerSourceForURL(logoURL) {
+	return `<svg 
+			 class="logo-image visible" 
+			 viewBox="0 0 64 75"
+			 ><use 
+			   href="${logoURL}#logo"
+			   ></use></svg>`;
+}
+
+/***************************************************************************/
+/*	Calls the provided page logo replacement function, when the page logo is
+	available.
+ */
+function replacePageLogoWhenPossible(replaceLogo) {
+    let logoSelector = "#sidebar .logo-image";
+    let logoImage;
+    if (logoImage = document.querySelector(logoSelector)) {
+        replaceLogo(logoImage);
+    } else {
+        let observer = new MutationObserver((mutationsList, observer) => {
+            if (   window.randomAsset
+            	&& window.versionedAssetURL
+            	&& (logoImage = document.querySelector(logoSelector))) {
+                observer.disconnect();
+                replaceLogo(logoImage);
+            }
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+}
+
 /*****************************************************************************/
 /*  Inject a special page logo image of a specific type (‘halloween’,
     ‘christmas’, etc.). Directory structure and file naming for the
@@ -16,32 +50,53 @@
 		deterministically named image file (which is named according to a 
 		scheme determined by the type and mode option).
 
+		NOTE: This field is ignored if an identifier (see below) is given.
+
 	mode (string)
 		May be “light” or “dark”, or null. Affects the scheme that determines
 		the path and file name(s) expected for the logo image file(s). This
 		option should be null if there is just the one logo image (or set of
 		logo images) that is used in both light and dark mode; otherwise, the
 		appropriate mode should be specified.
+
+	identifier (string)
+		If there are one or more numbered logos image files (for randomization
+		purposes), but we wish to select a specific one, we may provide a 
+		numeric identifier string ("1", "14", etc.); the logo image file with
+		that numeric identifier in the file name will be selected.
+
+		NOTE: If this option field is specified, then the `randomize` field is
+		ignored.
  */
 function injectSpecialPageLogo(logoType, options) {
 	options = Object.assign({
 		mode: null,
-		randomize: false
+		randomize: false,
+		identifier: null
 	}, options);
 
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 
-    let logoPathname;
+	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
+    let logoIdentifierRegexpString = ``;
+    if (options.identifier)
+    	logoIdentifierRegexpString = `-${options.identifier}`;
+    else if (options.randomize)
+    	logoIdentifierRegexpString = `-%R`;
+
+	/*	Bitmap files come in several scales (for different pixel densities of
+		display); SVGs are singular.
+	 */
     let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))`;
-    if (options.randomize) {
-        logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}-%R${fileFormatRegexpSuffix}$`
-                       : `/static/img/logo/${logoType}/logo-${logoType}-%R${fileFormatRegexpSuffix}$`;
-    } else {
-        logoPathname = options.mode
-                       ? `/static/img/logo/${logoType}/${options.mode}/logo-${logoType}-${options.mode}${fileFormatRegexpSuffix}$`
-                       : `/static/img/logo/${logoType}/logo-${logoType}${fileFormatRegexpSuffix}$`;
-    }
+
+	/*	File name pattern further depends on whether we have separate light
+		and dark logos of this sort.
+	 */
+	let logoPathname = `/static/img/logo/${logoType}/`
+					 + (options.mode
+					 	? `${options.mode}/logo-${logoType}-${options.mode}`
+					 	: `logo-${logoType}`)
+					 + `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
 
     //  Temporarily brighten logo, then fade slowly after set duration.
     let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
@@ -67,21 +122,15 @@ function injectSpecialPageLogo(logoType, options) {
     /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
         and so cannot be called prior to this.
      */
-    let replaceLogo = (logoImage) => {
+    replacePageLogoWhenPossible(logoImage => {
         //  Get new logo URL (random, if need be).
-        if (options.randomize)
-            logoPathname = randomAsset(logoPathname);
+		logoPathname = randomAsset(logoPathname);
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
 		if (logoPathname.endsWith(".svg")) {
 			//	Create new <svg> element.
-			let svgContainer = elementFromHTML(`<svg 
-												 class="logo-image visible" 
-												 viewBox="0 0 64 75"
-												 ><use 
-												   href="${versionedLogoURL}#logo"
-												   ></use></svg>`);
+			let svgContainer = elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL));
 
 			//	Inject inline SVG.
 			logoImage.replaceWith(svgContainer);
@@ -101,21 +150,25 @@ function injectSpecialPageLogo(logoType, options) {
 
         //  Brighten logo; fade (over 1 second) after 20 seconds.
         brightenLogoTemporarily(20 * 1000, 1000);
-    };
+    });
+}
 
-    let logoSelector = "#sidebar .logo-image";
-    let logoImage;
-    if (logoImage = document.querySelector(logoSelector)) {
-        replaceLogo(logoImage);
-    } else {
-        let observer = new MutationObserver((mutationsList, observer) => {
-            if (logoImage = document.querySelector(logoSelector)) {
-                observer.disconnect();
-                replaceLogo(logoImage);
-            }
-        });
-        observer.observe(document.documentElement, { childList: true });
-    }
+/******************************************/
+/*	Reset the page logo to the default one.
+ */
+function resetPageLogo() {
+    /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
+        and so cannot be called prior to this.
+     */
+    replacePageLogoWhenPossible(logoImage => {
+        let versionedLogoURL = versionedAssetURL("/static/img/logo/logo-smooth.svg");
+
+		//	Create new <svg> element.
+		let svgContainer = elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL));
+
+		//	Inject inline SVG.
+		logoImage.replaceWith(svgContainer);
+    });
 }
 
 /*****************/
@@ -142,9 +195,18 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
         //  Replace logo.
-        injectSpecialPageLogo("halloween", { mode: "dark", randomize: true });
+        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth", 
+           (mediaQuery) => {
+        	injectSpecialPageLogo("halloween", { mode: "dark", randomize: true });
+        }, (mediaQuery) => {
+			injectSpecialPageLogo("halloween", { mode: "dark", identifier: "1" });
+        }, (mediaQuery) => {
+        	resetPageLogo();
+        });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
+
+        cancelDoWhenMatchMedia("GW.setHalloweenPageLogoForViewportWidth");
       } ],
     [ "christmas", isItChristmas, () => {
         //  Different special styles for light and dark mode.
@@ -224,29 +286,31 @@ function toggleSpecialOccasionTest(specialOccasionName = null, enable = false) {
 	Test page: </lorem-halloween>
 */
 function isItHalloween() {
-   // The test page is Halloween Town.
-   if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "halloween")
-       || localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "halloween") == "true")
-       return true;
+	//	The test page is Halloween Town.
+	if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "halloween")
+		|| localStorage.getItem(GW.specialOccasionTestLocalStorageKeyPrefix + "halloween") == "true")
+		return true;
 
-   // Match languages from Halloween-celebrating regions (which has gone global <https://en.wikipedia.org/wiki/Halloween#Geography>)
-   let language = window.navigator.userLanguage || window.navigator.language;
-   let langCode = language.slice(0, 2).toLowerCase();  // prefix to match language groups like ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
-   // Primary: en,ga,gd (English/Irish/Scots) | Moderate: de,nl,fr,es (Europe) + ja,ko (Asia)
-   const halloweenLangs = new Set(['en','ga','gd','de','nl','fr','es','ja','ko']);
+	// 	Match languages from Halloween-celebrating regions (which has gone global <https://en.wikipedia.org/wiki/Halloween#Geography>)
+	//	prefix to match language groups like ‘en’, ‘en-US’, ‘en-GB’, ‘en-AU’...
+	//	Primary: en,ga,gd (English/Irish/Scots) | Moderate: de,nl,fr,es (Europe) + ja,ko (Asia)
+	const halloweenLangs = new Set(['en','ga','gd','de','nl','fr','es','ja','ko']);
 
-   if (halloweenLangs.has(langCode)) {
-       let now = new Date();
-       let date = now.toString().slice(4,10);
-       let hour = now.getHours();
-       /*  It is a sin to celebrate Halloween while there is daylight; however,
-           calculating local sunset or local ambient light is too hard (where
-           would we even get that geolocation or light sensor data from‽), so
-           we will simply define 'night' as ≥6PM and <6AM. */
-       return (date == "Oct 31" && hour >= 18) || (date == "Nov 01" && hour < 6);
-   } else {
-       return false;
-   }
+	let langCode = (window.navigator.userLanguage ?? window.navigator.language).slice(0, 2).toLowerCase();
+	if (halloweenLangs.has(langCode)) {
+		let now = new Date();
+		let date = now.toString().slice(4,10);
+		let hour = now.getHours();
+
+		/*  It is a sin to celebrate Halloween while there is daylight; however,
+			calculating local sunset or local ambient light is too hard (where
+			would we even get that geolocation or light sensor data from‽), so
+			we will simply define 'night' as ≥6PM and <6AM.
+		 */
+		return (date == "Oct 31" && hour >= 18) || (date == "Nov 01" && hour < 6);
+	} else {
+	   return false;
+	}
 }
 
 /********************************************/
