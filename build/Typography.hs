@@ -401,6 +401,7 @@ figureCaptionLinebreakTestcases = [ (Figure nullAttr (Caption (Just [Strong [Str
 -- They can be stylized in various ways in Unicode or with icons, like using line-drawing or circles filled in clockwise. The data-attribute encodes the full range, so one is not limited to a few arbitrarily-chosen levels like '0, 0.25, 0.5, 0.75, 1'.
 -- Supported completion ranges: essay completion status; subjective confidence calibration
 -- If the string input is not found in the `completionMap` and it parses as an integer, it will be used as-is.
+-- TODO: config test: unique pairs, unique keys, all keys = positive integers 0-100
 completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
 completionMap = essayCompletionMap ++ confidenceMap
 essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
@@ -419,7 +420,8 @@ completionProgressInline status =
                             error $ "Typography.completionProgressInline: was passed an integer which cannot be interpreted as a percentage 0–100; erroring out. Original input: " ++ show status ++ "; parsed integer: " ++ show n
    Just value -> completionProgressSpan value status
 
+-- TODO: unit-test when finalized
 completionProgressSpan :: String -> String -> Inline
 completionProgressSpan "" s = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show s
 completionProgressSpan n "" = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show n
-completionProgressSpan n s = Span ("", ["completion-status"], [("progress-percentage", T.pack n)]) [Str (T.pack s)]
+completionProgressSpan n s  = Span ("", ["completion-status"], [("progress-percentage", T.pack n)]) [Str (T.pack s)]

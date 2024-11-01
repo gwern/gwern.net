@@ -28,7 +28,7 @@ listFilesRecursivelyWithBasename dir = do
   return $ concat paths
 
 main :: IO ()
-main = do errors <- fmap lines getContents
+main = do errors <- fmap (filter (not . null)) $ fmap lines getContents
           files <- listFilesRecursivelyWithBasename C.root
           one <- readFile "static/redirect/nginx.conf"
           two <- readFile "static/redirect/nginx-broken.conf"

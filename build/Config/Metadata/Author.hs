@@ -506,6 +506,7 @@ canonicals = M.fromList
   , ("JAAKKO TUOMILEHTO", "Jaakko Tuomilehto")
   , ("Sauers_", "Sauers")
   , ("Tinca Polderman", "Tinca J. C. Polderman")
+  , ("sharifshameem", "Sharif Shameem")
   ]
 
 -- tests: unique
@@ -929,6 +930,7 @@ authorLinkDB = M.fromList $
     , ("Zachary C. Lipton", "https://en.wikipedia.org/wiki/Zachary_Lipton")
     , ("Victor Sanh", "https://scholar.google.com/citations?user=6STg_7IAAAAJ&hl=en&oi=ao")
     , ("Tinca J. C. Polderman", "https://www.amsterdamumc.org/en/research/researchers/tinca-polderman-2.htm")
+    , ("Sharif Shameem", "https://sharif.io/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

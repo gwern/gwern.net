@@ -7,27 +7,27 @@
     ‘christmas’, etc.). Directory structure and file naming for the
     specified logo type must match existing holiday logos.
 
-	Available option fields:
+    Available option fields:
 
-	randomize (boolean)
-		If set to `true`, selects one of the multiple available logos of the
-		specified type, from image files named according to a scheme that 
-		includes a number in the name. Otherwise, selects the single, 
-		deterministically named image file (which is named according to a 
-		scheme determined by the type and mode option).
+    randomize (boolean)
+        If set to `true`, selects one of the multiple available logos of the
+        specified type, from image files named according to a scheme that
+        includes a number in the name. Otherwise, selects the single,
+        deterministically named image file (which is named according to a
+        scheme determined by the type and mode option).
 
-	mode (string)
-		May be “light” or “dark”, or null. Affects the scheme that determines
-		the path and file name(s) expected for the logo image file(s). This
-		option should be null if there is just the one logo image (or set of
-		logo images) that is used in both light and dark mode; otherwise, the
-		appropriate mode should be specified.
+    mode (string)
+        May be “light” or “dark”, or null. Affects the scheme that determines
+        the path and file name(s) expected for the logo image file(s). This
+        option should be null if there is just the one logo image (or set of
+        logo images) that is used in both light and dark mode; otherwise, the
+        appropriate mode should be specified.
  */
 function injectSpecialPageLogo(logoType, options) {
-	options = Object.assign({
-		mode: null,
-		randomize: false
-	}, options);
+    options = Object.assign({
+        mode: null,
+        randomize: false
+    }, options);
 
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
 
@@ -74,30 +74,30 @@ function injectSpecialPageLogo(logoType, options) {
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
-		if (logoPathname.endsWith(".svg")) {
-			//	Create new <svg> element.
-			let svgContainer = elementFromHTML(`<svg 
-												 class="logo-image visible" 
-												 viewBox="0 0 64 75"
-												 ><use 
-												   href="${versionedLogoURL}#logo"
-												   ></use></svg>`);
+        if (logoPathname.endsWith(".svg")) {
+            //  Create new <svg> element.
+            let svgContainer = elementFromHTML(`<svg
+                                                 class="logo-image visible"
+                                                 viewBox="0 0 64 75"
+                                                 ><use
+                                                   href="${versionedLogoURL}#logo"
+                                                   ></use></svg>`);
 
-			//	Inject inline SVG.
-			logoImage.replaceWith(svgContainer);
-		} else {
-			//  Create new image element and wrapper.
-			let imageWrapper = newElement("SPAN", {
-				class: "logo-image"
-			});
-			imageWrapper.append(newElement("IMG", {
-				class: "figure-not",
-				src: versionedLogoURL.pathname + versionedLogoURL.search
-			}));
+            //  Inject inline SVG.
+            logoImage.replaceWith(svgContainer);
+        } else {
+            //  Create new image element and wrapper.
+            let imageWrapper = newElement("SPAN", {
+                class: "logo-image"
+            });
+            imageWrapper.append(newElement("IMG", {
+                class: "figure-not",
+                src: versionedLogoURL.pathname + versionedLogoURL.search
+            }));
 
-			//  Inject wrapped image.
-			logoImage.replaceWith(imageWrapper);
-		}
+            //  Inject wrapped image.
+            logoImage.replaceWith(imageWrapper);
+        }
 
         //  Brighten logo; fade (over 1 second) after 20 seconds.
         brightenLogoTemporarily(20 * 1000, 1000);
@@ -182,46 +182,46 @@ GW.specialOccasions = [
 ];
 
 /******************************************************************************/
-/*	Debugging function; pass a special occasion identifier string (e.g. 
-	“halloween”, “christmas”, “april-fools”, etc.), and either `true` to enable 
-	testing of that special occasion, or `false` (or nothing) to disable 
-	testing of that special occasion. (Calling this function with no arguments, 
-	or null for the first argument, disables all special occasion testing.)
+/*  Debugging function; pass a special occasion identifier string (e.g.
+    “halloween”, “christmas”, “april-fools”, etc.), and either `true` to enable
+    testing of that special occasion, or `false` (or nothing) to disable
+    testing of that special occasion. (Calling this function with no arguments,
+    or null for the first argument, disables all special occasion testing.)
 
-	When testing is enabled for a special occasion, the special occasion code 
-	will behave as if that special occasion is currently taking place (and any 
-	special-occasion-specific styling or other modifications will be applied).
+    When testing is enabled for a special occasion, the special occasion code
+    will behave as if that special occasion is currently taking place (and any
+    special-occasion-specific styling or other modifications will be applied).
 
-	NOTE: Testing for multiple special occasions may be enabled simultaneously, 
-	but this results in undefined behavior.
+    NOTE: Testing for multiple special occasions may be enabled simultaneously,
+    but this results in undefined behavior.
  */
 function toggleSpecialOccasionTest(specialOccasionName = null, enable = false) {
-	if (specialOccasionName == null) {
-		let activeSpecialOccasionTestKeys = [ ];
-		for (let i = 0; i < localStorage.length; i++) {
-			let localStorageKey = localStorage.key(i);
-			if (localStorageKey.startsWith(GW.specialOccasionTestLocalStorageKeyPrefix))
-				activeSpecialOccasionTestKeys.push(localStorageKey);
-		}
-		activeSpecialOccasionTestKeys.forEach(key => {
-			localStorage.removeItem(key);
-		});
+    if (specialOccasionName == null) {
+        let activeSpecialOccasionTestKeys = [ ];
+        for (let i = 0; i < localStorage.length; i++) {
+            let localStorageKey = localStorage.key(i);
+            if (localStorageKey.startsWith(GW.specialOccasionTestLocalStorageKeyPrefix))
+                activeSpecialOccasionTestKeys.push(localStorageKey);
+        }
+        activeSpecialOccasionTestKeys.forEach(key => {
+            localStorage.removeItem(key);
+        });
 
-		return;
-	}
+        return;
+    }
 
-	let specialOccasionTestKey = GW.specialOccasionTestLocalStorageKeyPrefix + specialOccasionName;
-	if (enable) {
-		localStorage.setItem(specialOccasionTestKey, true)
-	} else {
-		localStorage.removeItem(specialOccasionTestKey);
-	}
+    let specialOccasionTestKey = GW.specialOccasionTestLocalStorageKeyPrefix + specialOccasionName;
+    if (enable) {
+        localStorage.setItem(specialOccasionTestKey, true)
+    } else {
+        localStorage.removeItem(specialOccasionTestKey);
+    }
 }
 
 /********************************************/
-/*	Returns true if it’s Halloween right now.
+/*  Returns true if it’s Halloween right now.
 
-	Test page: </lorem-halloween>
+    Test page: </lorem-halloween>
 */
 function isItHalloween() {
    // The test page is Halloween Town.
@@ -242,17 +242,17 @@ function isItHalloween() {
        /*  It is a sin to celebrate Halloween while there is daylight; however,
            calculating local sunset or local ambient light is too hard (where
            would we even get that geolocation or light sensor data from‽), so
-           we will simply define 'night' as ≥6PM and <6AM. */
-       return (date == "Oct 31" && hour >= 18) || (date == "Nov 01" && hour < 6);
+           we will simply define 'night' as ≥5PM and <7AM. */
+       return (date == "Oct 31" && hour >= 17) || (date == "Nov 01" && hour < 7);
    } else {
        return false;
    }
 }
 
 /********************************************/
-/*	Returns true if it’s Christmas right now.
+/*  Returns true if it’s Christmas right now.
 
-	Test page: </lorem-christmas>
+    Test page: </lorem-christmas>
 */
 function isItChristmas() {
     //  The test page is Christmas Town.
@@ -270,9 +270,9 @@ function isItChristmas() {
 }
 
 /***************************************************/
-/*	Returns true if it’s April Fool’s Day right now.
+/*  Returns true if it’s April Fool’s Day right now.
 
-	Test page: </lorem-april-fools>
+    Test page: </lorem-april-fools>
 */
 function isItAprilFools() {
     //  The test page is blackletterFraktur-town.
@@ -291,9 +291,9 @@ function isItAprilFools() {
 }
 
 /*****************************************/
-/*	Returns true if it’s Easter right now.
+/*  Returns true if it’s Easter right now.
 
-	Test page: </lorem-easter>
+    Test page: </lorem-easter>
 */
 function isItEaster() {
     if (   document.body.classList.contains(GW.specialOccasionTestPageNamePrefix + "easter")
@@ -320,27 +320,27 @@ function isItEaster() {
 }
 
 /******************************************************************************/
-/*	Applies or removes special-occasion-related CSS classes to the <body>
-	element.
+/*  Applies or removes special-occasion-related CSS classes to the <body>
+    element.
 
-	For each special occasion defined in GW.specialOccasions, calls the 
-	specified testing function (e.g., isItHalloween()).
+    For each special occasion defined in GW.specialOccasions, calls the
+    specified testing function (e.g., isItHalloween()).
 
-	If the test returns true, then calls the specified application function if 
-	one is provided; otherwise just adds to <body> a class 
-	`special-` + <the name of the special occasion> (e.g., “halloween”).
+    If the test returns true, then calls the specified application function if
+    one is provided; otherwise just adds to <body> a class
+    `special-` + <the name of the special occasion> (e.g., “halloween”).
 
-	If the test returns false, then calls the specified removal function if
-	one is provided. If no such function is provided, AND there is no 
-	application function either (and thus the application consisted merely
-	of the default action of adding the default class `special-WHATEVER`), now 
-	simply removes that default class.
+    If the test returns false, then calls the specified removal function if
+    one is provided. If no such function is provided, AND there is no
+    application function either (and thus the application consisted merely
+    of the default action of adding the default class `special-WHATEVER`), now
+    simply removes that default class.
 
-	NOTE: If an application function is provided, but no corresponding removal
-	function is provided, then this function will do nothing when an active
-	special occasion mode is toggled off! That is why it’s important to provide
-	a removal function when providing an application function (see the existing
-	entries in GW.specialOccasions for examples).
+    NOTE: If an application function is provided, but no corresponding removal
+    function is provided, then this function will do nothing when an active
+    special occasion mode is toggled off! That is why it’s important to provide
+    a removal function when providing an application function (see the existing
+    entries in GW.specialOccasions for examples).
 */
 function applySpecialOccasionClasses() {
     for (let occasion of GW.specialOccasions) {
@@ -360,9 +360,9 @@ function applySpecialOccasionClasses() {
 }
 
 /***************************************************************************/
-/*	Apply special occasion classes (if need be) when the <body> element is 
-	created; update them (applying or removing, as appropriate) whenever the 
-	mode changes.
+/*  Apply special occasion classes (if need be) when the <body> element is
+    created; update them (applying or removing, as appropriate) whenever the
+    mode changes.
  */
 doWhenBodyExists(() => {
     applySpecialOccasionClasses();
