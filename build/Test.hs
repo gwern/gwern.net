@@ -7,7 +7,7 @@ import Data.List (intersect, foldl')
 import qualified Data.Map.Strict as M (keys, toList)
 import qualified Data.Set as Set (empty, insert, member)
 import Data.Char (isAlpha, isLower)
-import qualified Data.Text as T (unpack, elem, head)
+import qualified Data.Text as T (unpack, elem, head, pack)
 
 import Text.Pandoc (Inline(Link))
 
@@ -16,6 +16,7 @@ import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, 
                       footnoteRegex, sectionAnonymousRegex, badUrlRegex)
 import Metadata.Date (isDate, dateRangeDurationTestCasesTestsuite)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
+import LinkID (url2ID)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata)
@@ -234,9 +235,15 @@ testAll = do Config.Misc.cd
              let twitterUsernameTests = filter (\(u,username) -> extractTwitterUsername u /= username) Config.Metadata.Author.extractTwitterUsernameTestSuite
              unless (null twitterUsernameTests) $ printRed ("Twitter username parsing unit test suite has errors in: " ++ show twitterUsernameTests)
 
-             printGreen ("Testing file-transclusions…" :: String)
+             printGreen ("Reading in metadata databases…" :: String)
              md <- readLinkMetadata
              am <- readArchiveMetadataAndCheck
+
+             let linkids = map (url2ID . T.pack) $ M.keys md
+             let linkidLength = length $ isUniqueList linkids
+             printGreen ("Checked URL hash uniqueness for: " ++ show linkidLength)
+
+             printGreen ("Testing file-transclusions…" :: String)
              let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)

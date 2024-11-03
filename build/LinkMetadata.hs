@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-10-27 18:40:58 gwern"
+When:  Time-stamp: "2024-11-03 10:45:58 gwern"
 License: CC-0
 -}
 

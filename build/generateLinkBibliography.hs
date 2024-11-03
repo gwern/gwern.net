@@ -34,7 +34,7 @@ import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
 import LinkBacklink (getLinkBibLink, getAnnotationLinkCheck)
-import LinkID (metadataItem2Id)
+import LinkID (metadataItem2ID)
 import LinkMetadata (generateAnnotationTransclusionBlock, readLinkMetadata, hasAnnotation, isPagePath)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Query (extractLinkIDsWith)
@@ -158,10 +158,10 @@ linkToAnnotation :: Metadata -> (String,String) -> (String,String,MetadataItem)
 linkToAnnotation _ ("",ident) = error $ "generateLinkBibliography.linkToAnnotation: empty URL input; ID: " ++ ident
 linkToAnnotation m (u,ident) = case M.lookup u m of
                                  Just mi  ->
-                                   let ident' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2Id u mi) in
+                                   let ident' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2ID u mi) in
                                      (u,ident',mi)
                                  Nothing -> let mi' = ("","","","",[],[],"")
-                                                ident'' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2Id u mi')
+                                                ident'' = if not (null ident) then ident else T.unpack (LinkID.metadataItem2ID u mi')
                                             in
                                                   (u,ident'',mi')
 

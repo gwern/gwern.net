@@ -1,25 +1,43 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2Id) where
+module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID) where
 
 import Data.Char (isAlphaNum, isPunctuation, toLower)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf, sortOn)
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
-import qualified Data.Text as T (null, pack, unpack, Text)
+import qualified Data.Text as T (null, pack, unpack, take, Text)
 import qualified Data.Map.Strict as M (toList, fromListWith, (!))
 import Text.Printf (printf)
+
+-- hash IDs:
+import qualified Crypto.Hash.SHA1 as SHA1 (hash)
+import qualified Data.ByteString.Base64.URL as B64URL (encode)
+import qualified Data.ByteString.Char8 as BS (take)
+import qualified Data.Text.Encoding as TE (decodeUtf8, encodeUtf8)
 
 import LinkMetadataTypes (Metadata, MetadataItem, Path)
 import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, simplifiedHtmlToString)
 import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
 
+-- Convert a URL/path to a 9-character URL-safe Base64 ID, using SHA-1.
+-- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020".
+-- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
+--
+-- Implementation: We use a Web Crypto browser-available hash (SHA-1, like LinkArchive), encoded into URL-safe Base64 (eg. 'https://example.com' → 'Mnw_2ofO'), which we truncate to a short length (9 characters) which is readable & will not bloat the HTML *too* much, but which is long enough that it should have near-zero collision probability over the expected scale of Gwern.net for the foreseeable future (<1m metadata-less URL paths).
+-- Collisions are not necessarily *too* harmful, but if they happen, the author is expected to resolve them by either adding metadata to offending links or manually overriding link IDs in `Config.LinkID`.
+url2ID :: T.Text -> T.Text
+url2ID "" = error "LinkID.url2ID: passed empty string as a URL/path to hash into an ID, which should never happen."
+url2ID url = T.take 9 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
+  where
+    hash = SHA1.hash (TE.encodeUtf8 url)
+
 -- convenience wrapper around `generateID`:
-metadataItem2Id :: Path -> MetadataItem -> T.Text
-metadataItem2Id "" mi = error $ "LinkID.metadataItem2Id: passed an empty URL for an ID; metadata item was: " ++ show mi
+metadataItem2ID :: Path -> MetadataItem -> T.Text
+metadataItem2ID "" mi = error $ "LinkID.metadataItem2ID: passed an empty URL for an ID; metadata item was: " ++ show mi
 -- we choose to not require non-empty author/dates, to allow convenient application to the entire metadata database, like to look for colliding IDs:
-metadataItem2Id u (_,author,date,_,_,_,_) = generateID u author date
+metadataItem2ID u (_,author,date,_,_,_,_) = generateID u author date
 
 -- To ensure unique-ish links (see /design#backlink on why this is important), duplicate annotation links should be handled:
 --
@@ -45,12 +63,10 @@ generateID url author date
   | ("Gwern Branwen" == author || "gwern" == author || "Gwern" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
   = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
-  -- skip tag links:
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
-  -- shikata ga nai:
-  | author == "" = ""
-  | date   == "" = ""
+  -- _shikata ga nai_, not enough metadata; we use the hash ID fallback:
+  | author == "" || date == "" = url2ID (T.pack url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
@@ -100,7 +116,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
     M.toList $
     M.fromListWith (++) $
     mapMaybe (\(url, item) ->
-        let ident = metadataItem2Id url item
+        let ident = metadataItem2ID url item
         in if T.null ident then Nothing else Just (ident, [url])
     ) $
     M.toList md
@@ -108,5 +124,5 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
     processDuplicates :: (T.Text, [Path]) -> [(Path, String)]
     processDuplicates (ident, urls) =
         let padding = length (show (length urls))
-            sortedUrls = sortOn (metadataItem2Id (T.unpack ident) . (md M.!)) urls
+            sortedUrls = sortOn (metadataItem2ID (T.unpack ident) . (md M.!)) urls
         in zipWith (\url (n :: Int) -> (url, T.unpack ident ++ "-" ++ printf ("%0" ++ show padding ++ "d") n)) sortedUrls [1..]
