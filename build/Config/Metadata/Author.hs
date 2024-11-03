@@ -507,6 +507,11 @@ canonicals = M.fromList
   , ("Sauers_", "Sauers")
   , ("Tinca Polderman", "Tinca J. C. Polderman")
   , ("sharifshameem", "Sharif Shameem")
+  , ("Themistocles (Tim) L. Assimes", "Themistocles L. Assimes")
+  , ("Tim L. Assimes", "Themistocles L. Assimes")
+  , ("Tim Assimes", "Themistocles L. Assimes")
+  , ("Bret C. Devereaux", "Bret Devereaux")
+  , ("QiaochuYuan", "Qiaochu Yuan")
   ]
 
 -- tests: unique
@@ -518,7 +523,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -926,11 +931,19 @@ authorLinkDB = M.fromList $
     , ("Aravind Srinivas", "https://scholar.google.com/citations?user=GhrKC1gAAAAJ")
     , ("Anders Hamsten", "https://ki.se/en/people/anders-hamsten")
     , ("Sauers", "https://x.com/Sauers_")
-    , ("Albert Vernon Smith", "https://scholar.google.com/citations?user=8b-433kAAAAJ&hl=en&oi=ao")
+    , ("Albert Vernon Smith", "https://scholar.google.com/citations?user=8b-433kAAAAJ")
     , ("Zachary C. Lipton", "https://en.wikipedia.org/wiki/Zachary_Lipton")
-    , ("Victor Sanh", "https://scholar.google.com/citations?user=6STg_7IAAAAJ&hl=en&oi=ao")
+    , ("Victor Sanh", "https://scholar.google.com/citations?user=6STg_7IAAAAJ")
     , ("Tinca J. C. Polderman", "https://www.amsterdamumc.org/en/research/researchers/tinca-polderman-2.htm")
     , ("Sharif Shameem", "https://sharif.io/")
+    , ("Cube Flipper", "https://smoothbrains.net/")
+    , ("Thomas W. Mühleisen", "https://www.researchgate.net/profile/Thomas-Muehleisen")
+    , ("Themistocles L. Assimes", "https://profiles.stanford.edu/tim_assimes")
+    , ("Sailaja Vedantam", "https://scholar.google.com/citations?user=2lzF-1gAAAAJ&hl=en&oi=ao")
+    , ("Per O. J. Hall", "https://scholar.google.com/citations?user=NKaIzaAAAAAJ&hl=en&oi=ao")
+    , ("Per Hall", "https://ki.se/en/people/per-hall")
+    , ("Bret Devereaux", "https://acoup.blog/about-the-pedant/")
+    , ("Qiaochu Yuan", "https://x.com/QiaochuYuan")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2166,4 +2179,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl"]

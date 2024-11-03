@@ -6,10 +6,10 @@
 /*	Returns the source string for the <svg> container for an SVG page logo.
  */
 function svgPageLogoContainerSourceForURL(logoURL) {
-	return `<svg 
-			 class="logo-image visible" 
+	return `<svg
+			 class="logo-image visible"
 			 viewBox="0 0 64 75"
-			 ><use 
+			 ><use
 			   href="${logoURL}#logo"
 			   ></use></svg>`;
 }
@@ -61,7 +61,7 @@ function replacePageLogoWhenPossible(replaceLogo) {
 
 	identifier (string)
 		If there are one or more numbered logos image files (for randomization
-		purposes), but we wish to select a specific one, we may provide a 
+		purposes), but we wish to select a specific one, we may provide a
 		numeric identifier string ("1", "14", etc.); the logo image file with
 		that numeric identifier in the file name will be selected.
 
@@ -210,7 +210,7 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#halloween");
-        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth", 
+        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth",
            (mediaQuery) => {
         	injectSpecialPageLogo("halloween", { mode: "dark", randomize: true, link: newLogoLink });
         }, (mediaQuery) => {
@@ -232,13 +232,14 @@ GW.specialOccasions = [
         document.body.classList.add(specialClass);
 
         //  Replace logo.
-        let newLogoLink = URLFromString("/dropcap#halloween");
+        let newLogoLink = URLFromString("/dropcap#christmas");
         injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true, link: newLogoLink });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
       } ],
     [ "april-fools", isItAprilFools, () => {
         document.body.classList.add("special-april-fools");
+        // TODO: no April Fools logos or dropcaps.. for now. Maybe 2025?
 
         /*  Turn off the funny after half a minute (the blackletter joke has
             worn old by then).

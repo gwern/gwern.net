@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-10-27 11:08:29 gwern"
+# When:  Time-stamp: "2024-11-02 20:37:44 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -472,6 +472,14 @@ Why I still blog after 15 years
 "Prof. Marcella Rietschel"
 - "Lippmann Security—HoloWiki—A Holography FAQ"
 "Lippmann Security"
+- "How China Is Like the 19th Century U.S.—by Brian Potter"
+"How China Is Like the 19th Century U.S."
+- "Why some brothers only date whites and 'others'.-Free Online Library"
+"Why some brothers only date whites and 'others'."
+- "Ebony: where the men are: the 10 best cities"
+"Where the men are: the 10 best cities"
+- "The Old Fools by Philip Larkin"
+"The Old Fools"
 
 Task:
 

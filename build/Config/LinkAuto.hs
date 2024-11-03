@@ -47,7 +47,7 @@ custom = [
         , ("(CNNs?|[Cc]onvolutional [Nn]eural [Nn]etworks?)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
         , ("(COCO|MS[- ]?COCO)", "https://arxiv.org/abs/1405.0312#microsoft")
         , ("(CURL|Curl|curl)", "https://en.wikipedia.org/wiki/CURL")
-        , ("(Czeslaw Milosz|Czesław Miłosz|Miłosz|Milosz)", "https://en.wikipedia.org/wiki/Czeslaw_Milosz")
+        , ("(Czesław Miłosz|Czesław Miłosz|Miłosz|Milosz)", "https://en.wikipedia.org/wiki/Czeslaw_Milosz")
         , ("(DAICON III|DAICON IV)", "https://en.wikipedia.org/wiki/Daicon_III_and_IV_Opening_Animations")
         , ("(Deep[Mm]ind.?Lab|DM[Ll]ab-30|DM[Ll]ab)", "https://arxiv.org/abs/1612.03801#deepmind")
         , ("(EHR|[Ee]lectronic [Hh]ealth [Rr]ecords?)", "https://en.wikipedia.org/wiki/Electronic_health_record")
