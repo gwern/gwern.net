@@ -2069,26 +2069,27 @@ function enableLinkIcon(link) {
     //  Add hook.
     link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
 
-    //  Set CSS variable.
+    //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {
         link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
-
-		if (link.dataset.linkIconColor > "") {
-			link.style.setProperty("--link-icon-color-hover", link.dataset.linkIconColor);
-		}
     } else if (link.dataset.linkIconType.includes("svg")) {
         let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
         link.style.setProperty("--link-icon-url",
             `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
+    }
 
-		if (link.dataset.linkIconColor > "") {
+	//	Set CSS variable (link icon hover color, plus optional altered icon).
+	if (link.dataset.linkIconColor > "") {
+		link.style.setProperty("--link-icon-color-hover", link.dataset.linkIconColor);
+
+		if (link.dataset.linkIconType.includes("svg")) {
 			doWhenSVGIconsLoaded(() => {
 				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon));
 				svg.setAttribute("fill", link.dataset.linkIconColor);
 				link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
 			});
 		}
-    }
+	}
 
     //  Set class.
     link.classList.add("has-icon");
