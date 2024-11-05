@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-02 18:22:16 gwern"
+# When:  Time-stamp: "2024-11-04 08:59:18 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -889,7 +889,8 @@ else
             -e '</strong>:. ' -e 'http://https://' -e '#"' -e "#'" -e '<strong>Highlights</strong>: ' -e 'jats:styled-content' \
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
-            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' -- ./metadata/*.gtx | \
+            -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' \
+            -e '<n/em>' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }

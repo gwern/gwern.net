@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-02 20:37:44 gwern"
+# When:  Time-stamp: "2024-11-04 22:23:55 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -480,6 +480,12 @@ Why I still blog after 15 years
 "Where the men are: the 10 best cities"
 - "The Old Fools by Philip Larkin"
 "The Old Fools"
+- "About the Pedant - A Collection of Unmitigated Pedantry"
+"About the Pedant"
+- "Home"
+""
+- "Q&amp;A—Dominic Cummings substack"
+"Q&amp;A"
 
 Task:
 

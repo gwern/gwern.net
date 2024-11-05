@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-10-28 19:34:50 gwern"
+;;; When:  Time-stamp: "2024-11-04 09:16:39 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1198,26 +1198,33 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "\"- " "\"---" nil begin end)
 
          (query-replace "\nQuestion " "\n**Question**: " nil begin end)
+         (query-replace "Question\n" "**Question**: " nil begin end)
          (query-replace "Question:" "**Question**: " nil begin end)
          (replace-all "\n\nPurpose" "\n\n**Background**:")
          (replace-all "\nFindings " "\n**Findings**: ")
          (replace-all "\nRecent Findings " "\n**Findings**: ")
          (replace-all "\nMeaning " "\n**Meaning**: ")
+         (replace-all "\nMeaning\n" "\n**Meaning**: ")
          (replace-all "\nImportance " "\n**Importance**: ")
+         (replace-all "\nImportance\n" "\n**Importance**: ")
          (replace-all "^Importance " "**Importance**: ")
          (replace-all "\nObjective and Method: " "\n**Objective & Method**: ")
          (replace-all "\nObjective " "\n**Objective**: ")
          (replace-all "\nDesign, Setting, and Participants " "\n**Design, Setting, & Participants**: ")
+         (replace-all "\nDesign, Setting, and Participants\n" "\n**Design, Setting, & Participants**: ")
          (replace-all "\nSearch methods\n\n" "\n\n<strong>Search Method</strong>: ")
          (replace-all " (Methods)" " (<strong>Method</strong>)")
          (replace-all "\nSelection criteria\n\n" "\n\n<strong>Selection Criteria</strong>: ")
          (replace-all "\nInterventions " "\n**Interventions**: ")
+         (replace-all "\nInterventions\n" "\n**Interventions**: ")
          (replace-all "\nMain Outcomes and Measures " "\n**Main Outcomes & Measures**: ")
+         (replace-all "\nMain Outcomes and Measures\n" "\n**Main Outcomes & Measures**: ")
          (replace-all "Measurement and Results:" "**Measurement & Results**:")
          (replace-all "\nResults and conclusion " "\n**Result & Conclusion**: ")
          (replace-all "\nResults " "\n**Results**: ")
          (replace-all "\nConclusions and Relevance " "\n**Conclusion & Relevance**: ")
          (replace-all "\nTrial Registration " "\n**Trial Registration**: ")
+         (replace-all "\nTrial Registration\n" "\n**Trial Registration**: ")
          (replace-all "Background\n" "\n**Background**: ")
          (replace-all "\nBackground " "**Background**: ")
          (replace-all "Introduction: " "\n**Introduction**: ")
