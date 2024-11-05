@@ -136,6 +136,10 @@
 /*= COMMON STYLES =*/
 /*=================*/
 
+a[data-link-icon][data-link-icon-color]:hover {
+	--link-underline-gradient-line-color: var(--link-icon-color-hover);
+}
+
 /*******************/
 /*  Graphical icons.
     */
