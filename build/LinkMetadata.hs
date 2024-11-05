@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-04 08:41:11 gwern"
+When:  Time-stamp: "2024-11-05 10:27:20 gwern"
 License: CC-0
 -}
 
@@ -517,7 +517,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                                  if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
                                            [Str (T.pack $ dateTruncateBad dt)]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
-           backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
+           backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "id-not", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
            similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
@@ -547,9 +547,9 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
                                                    else
-                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a></p>\n</div>")) `T.append`
-                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\"><strong>Similar Links:</strong></a></p>\n</div>")) `T.append`
-                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Bibliography:</strong></a></p>\n</div>")))
+                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a></p>\n</div>")) `T.append`
+                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\"><strong>Similar Links:</strong></a></p>\n</div>")) `T.append`
+                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Bibliography:</strong></a></p>\n</div>")))
                                                               )]
                        ]) ++
                 generateFileTransclusionBlock am True (f, x)
