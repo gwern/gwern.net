@@ -2072,10 +2072,22 @@ function enableLinkIcon(link) {
     //  Set CSS variable.
     if (link.dataset.linkIconType.includes("text")) {
         link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
+
+		if (link.dataset.linkIconColor > "") {
+			link.style.setProperty("--link-icon-color-hover", link.dataset.linkIconColor);
+		}
     } else if (link.dataset.linkIconType.includes("svg")) {
         let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
         link.style.setProperty("--link-icon-url",
             `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
+
+		if (link.dataset.linkIconColor > "") {
+			doWhenSVGIconsLoaded(() => {
+				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon));
+				svg.setAttribute("fill", link.dataset.linkIconColor);
+				link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
+			});
+		}
     }
 
     //  Set class.

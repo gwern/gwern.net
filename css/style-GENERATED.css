@@ -8201,7 +8201,11 @@ a[data-link-icon-type='svg'] .link-icon-hook::after {
     opacity: 0.55;
 }
 a[data-link-icon-type='svg']:hover .link-icon-hook::after {
-    opacity: 0.3;
+	opacity: 0.3;
+}
+a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
+	background-image: var(--link-icon-url-hover, var(--link-icon-url));
+    opacity: 1.0;
 }
 
 /*****************/
@@ -8231,6 +8235,12 @@ a[data-link-icon-type*='text'] .link-icon-hook::after {
     line-height: 1;
     overflow-wrap: normal;
 }
+
+a[data-link-icon-type*='text'][data-link-icon-color]:hover .link-icon-hook::after {
+	color: var(--link-icon-color-hover, currentColor);
+	opacity: 1.0;
+}
+
 a[data-link-icon-type*='sans'] .link-icon-hook::after {
     font-family: var(--link-icon-font-sans);
 }
@@ -8932,9 +8942,6 @@ a[data-link-icon='youtube'] .link-icon-hook::after {
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.5;
-}
-a[data-link-icon='youtube']:hover .link-icon-hook::after {
-    opacity: 0.2;
 }
 
 a[data-link-icon='yud'] .link-icon-hook::after {
