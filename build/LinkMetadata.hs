@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-03 10:45:58 gwern"
+When:  Time-stamp: "2024-11-04 08:41:11 gwern"
 License: CC-0
 -}
 
@@ -518,10 +518,10 @@ generateAnnotationBlock am (f, ann) blp slp lb =
                                            [Str (T.pack $ dateTruncateBad dt)]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
-           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
+           similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
-                                                                                   [Link ("",["aux-links", "link-page", "link-bibliography"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
+                                                                                   [Link ("",["aux-links", "link-page", "id-not", "link-bibliography"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there… which might disable walks?

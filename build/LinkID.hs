@@ -65,6 +65,7 @@ generateID url author date
   = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
+  | "#" `isPrefixOf` url = "" -- HACK/TODO: skip self-links: often there's a bunch of them because we may repeatedly refer to a particular section on a page (is this safe? do we actually need self-links to have unique IDs per use?)
   -- _shikata ga nai_, not enough metadata; we use the hash ID fallback:
   | author == "" || date == "" = url2ID (T.pack url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
