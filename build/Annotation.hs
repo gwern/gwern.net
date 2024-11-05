@@ -45,7 +45,7 @@ linkDispatcherURL md l
       return (Left Permanent)
   -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], [], ""))
-  | "arxiv.org/abs/" `isInfixOf` l || "browse.arxiv.org/html/" `isInfixOf` l = arxiv md l
+  | "arxiv.org/abs/" `isInfixOf` l = arxiv md l
   | "https://openreview.net/forum?id=" `isPrefixOf` l || "https://openreview.net/pdf?id=" `isPrefixOf` l =
       openreview md l
   | anyPrefix l ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv md l

@@ -483,7 +483,6 @@ Links.targetLinkTypes = [
         (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
      */
     [ "\u{1D6D8}",      "text",                     "arxiv.org"                         ],
-    [ "\u{1D6D8}",      "text",                     "browse.arxiv.org"                  ],
 
     /******************************************************/
     /*  Icons made of one or more regular ASCII characters.

@@ -22,7 +22,7 @@ import Config.Misc as C -- (cd)
 
 arxiv :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 arxiv md url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
-               let url' = replace "https://browse.arxiv.org/html/" "https://arxiv.org/abs/" $ replace "http://" "https://" url
+               let url' = replace "http://" "https://" url
                (status,bs, arxivid) <- arxivDownload url'
                case status of
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
