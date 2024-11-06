@@ -117,6 +117,7 @@ $disparate_assets = [
 	"{$css_dir}/initial-fonts-VERSIONED.css",
 	"{$css_dir}/reader-mode-initial.css",
 
+	"{$js_dir}/color.js",
 	"{$js_dir}/misc.js",
 	"{$js_dir}/popups.js",
 	"{$js_dir}/popins.js",
