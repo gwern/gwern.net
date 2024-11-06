@@ -55,7 +55,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Computer Vision and Learning LMU Munich", "Ryan Moulton's Articles"
      , "Page not found : Stanford University", "GoLocalPDX", "Bookslut"
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
-     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists", "ORCID", "This page could not be found", "Are you a robot?", "Dario Amodei", "Nabeel S. Qureshi", "ScienceDirect", "smoothbrains.net", "Home"]
+     , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists", "ORCID", "This page could not be found", "Are you a robot?", "Dario Amodei", "Nabeel S. Qureshi", "ScienceDirect", "smoothbrains.net", "home"]
 
 -- testing: unique list
 stringDelete :: [String]
@@ -97,7 +97,7 @@ stringDelete = [" - The Public Domain Review"
             , "The Virtuosi: ", "Tom Waits - ", " \9733 The Scintillating But Ultimately Untrue Thought", " (Aaron Swartz: The Weblog)"
             , " (Aaron Swartz's Raw Thought)", " - Inquiries Journal", "Locus Online: ", "Loper OS \187 "
             , "Mike On Ads  \187 Blog Archive   \187 ", " // Hayao Miyazaki Web", " - GhibliWiki", "\8212The Intercept"
-            , " American Political Science Review", "zlkj.in - ", " : zhanpei fang", "zenpundit.com  \187 Blog Archive   \187 "
+            , "zlkj.in - ", " : zhanpei fang", "zenpundit.com  \187 Blog Archive   \187 "
             , "American Express\nApple Pay\nDiners Club\nDiscover\nMeta Pay\nGoogle Pay\nMastercard\nPayPal\nShop Pay\nVenmo\nVisa", " \8211 You Are Not So Smart", " - XTools", "xkcd: "
             , " \8211 xcorr: AI &amp; neuro", " \226\128\148 LessWrong", " : Free Download, Borrow, and Streaming : Internet Archive\nInternet Archive logo\nDonate icon\nSearch icon\nSearch icon\nUpload icon\nUser icon\nWeb icon\nTexts icon\nVideo icon\nAudio icon\nSoftware icon\nImages icon\nDonate icon\nEllipses icon\nHamburger icon\nSearch icon\nDonate icon", " - 80,000 Hours"
             , " - EvaGeeks.org Forum - an Evangelion Fan Community", " - MathOverflow", " - Cross Validated", " - Wikisource, the free online library"
@@ -114,7 +114,7 @@ stringDelete = [" - The Public Domain Review"
             , " / Habr\nHabr\nSearch\nWrite a publication\nSettings\nPull to refresh\nReading time\nViews\nTotal votes 54: \226\134\145\&53 and \226\134\147\&1\nAdd to bookmarks\nComments\nSend message\nComments\nFacebook\nTwitter\nTelegram", " \8211 Sydsvenskan\nSydsvenskan\nSydsvenskan\nSt\228ng\nSt\228ng\nTill toppen av sidan\nSydsvenskan\nFacebook\nTwitter\nInstagram", " The Digital Antiquarian", " -\n\nsourcehut git"
             , " - Hoogle", " - User Experience Stack Exchange", " - Wiktionary, the free dictionary", " PNAS Nexus"
             , " on DeviantArt", "steve yegge - ", "statistics - ", " - Google Search"
-            , " :: hub.darcs.net", " - Everything2.com", " - Google Drive", "apfelmus - "
+            , " :: hub.darcs.net", " - Everything2.com", "apfelmus - "
             , "ag.algebraic geometry - ", " - Wolfram", " - dbSNP - NCBI\nTwitter\nFacebook\nLinkedIn\nGitHub\nTwitter\nSM-Facebook\nSM-Youtube", " - Theoretical Computer Science Stack Exchange"
             , " - Marketoonist", " - Vocaloid Database", " -- joshua schachter's blog", "nt.number theory - "
             , " - Super User", " International Journal of Epidemiology", "mscroggs.co.uk Blog: ", " - AniDB"

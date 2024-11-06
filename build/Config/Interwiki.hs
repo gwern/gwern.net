@@ -2196,7 +2196,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Hamilton's_principle", "Hamilton%27s_principle")
           , ("Hamilton's_rule", "Kin_selection#Hamilton's_rule")
           , ("Hamlet's_Mill", "Hamlet%27s_Mill")
-          , ("Hamming_window", "Window_function#A_list_of_window_functions")
+          , ("Hamming_window", "Window_function#Examples_of_window_functions")
           , ("Hampton_Court", "Hampton_Court_Palace")
           , ("Han-tan", "Handan")
           , ("Han_Dynasty", "Han_dynasty")

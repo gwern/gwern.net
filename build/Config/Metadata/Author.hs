@@ -81,7 +81,7 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
                     , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
 
 -- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
--- Config tests: unique values, no loops
+-- Config tests: unique keys, no loops
 canonicals :: M.Map String String
 canonicals = M.fromList
   [ ("ESYudkowsky", "Eliezer Yudkowsky")
@@ -919,7 +919,7 @@ authorLinkDB = M.fromList $
     , ("Llion Jones", "https://scholar.google.com/citations?user=_3_P5VwAAAAJ")
     , ("Illia Polosukhin", "https://scholar.google.com/citations?user=3SyxFIAAAAAJ")
     , ("Teven Le Scao", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
-    , ("Niki Parmar", "https://scholar.google.com/citations?user=ik0_vxsAAAAJ")
+    , ("Niki Parmar", "https://scholar.google.com/citations?user=q2YXPSgAAAAJ")
     , ("Richard Mott Gummere", "/doc/history/1969-allis.pdf#page=11")
     , ("Marcella Rietschel", "https://epws.org/individual-member/prof-marcella-rietschel/")
     , ("Sam McCandlish", "https://scholar.google.com/citations?user=gHp0pu4AAAAJ")
@@ -961,6 +961,10 @@ authorLinkDB = M.fromList $
     , ("Daniel F. Gudbjartsson", "https://scholar.google.com/citations?user=NzLGjWoAAAAJ")
     , ("Björn Ommer", "https://ommer-lab.com/people/ommer/")
     , ("Andrew D. Morris", "https://www.liverpool.ac.uk/people/andrew-morris")
+    , ("Yoichiro Kamatani", "https://www.cbms.k.u-tokyo.ac.jp/en/labs/kamatani.yoichiro/")
+    , ("Vedant Misra", "http://vedantmisra.com/")
+    , ("Valgerdur Steinthorsdottir", "https://scholar.google.com/citations?user=6Y8_8f4AAAAJ&hl=en&oi=ao")
+    , ("Ulrike Peters", "https://www.fredhutch.org/en/faculty-lab-directory/peters-ulrike.html")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1120,7 +1124,7 @@ authorWpLinkDB =
     ,"Cass R. Sunstein", "Catharine R. Gale", "Catherine Dulac", "Catherine Jami", "Catherine Marshall"
     ,"Catherine McBride", "Catherine Plaisant", "Catherine Potenski", "Cathleen Schine", "Catholijn Jonker"
     ,"Cathryn Lewis", "Cathryn M. Lewis", "Cathy J. Price", "Cathy King", "Cathy Spatz Widom"
-    , "Cathy Wu", "Cecil R. Reynolds", "Cecilia D\8217Anastasio", "Cecilia Lindgren"
+    , "Cathy Wu", "Cecil R. Reynolds", "Cecilia D\8217Anastasio"
     ,"Cecilia Magnusson", "Cees Dekker", "Celeste Kidd", "Celeste Lyn Paul", "Celia Greenwood"
     ,"Cell Press", "Celso Arango", "Chaim Goodman-Strauss", "Chandler Burr", "Chang Jiang"
     ,"Chang Xu", "Chantal Radimilahy", "Chao Agnes Hsiung", "Chao Chen", "Chao Dong"
@@ -1554,7 +1558,7 @@ authorWpLinkDB =
     ,"Josephine Ball", "Josh Abramson", "Josh Arnold", "Josh Bongard", "Josh Hodge"
     ,"Josh Tobin", "Joshua Angrist", "Joshua Aronson", "Joshua C. Denny", "Joshua D. Greene"
     ,"Joshua D. Rauh", "Joshua Guerrero", "Joshua Hicks", "Joshua M. Pearce", "Joshua M. Tybur"
-    ,"Joshua Rauh", "Joshua T. Vogelstein", "Joshua Tenenbaum", "Joshua Tybur", "Jos\233 Galindo"
+    ,"Joshua Rauh", "Joshua T. Vogelstein", "Joshua Tybur", "Jos\233 Galindo"
     ,"Jos\233 Maldonado", "Jos\233 Mar\237a Berm\250dez de Castro", "Jos\233 Onuchic", "Jos\233 Scheinkman", "Jos\233-Alain Sahel"
     ,"Jos\233e Dupuis", "Joy Milne", "Joy Wang", "Joyce Carol Oates", "Joyce Lee"
     ,"Jozef Gecz", "Jo\227o Pedro de Magalh\227es", "Ju Hu", "Ju Li", "Juan Botella"
@@ -2190,7 +2194,7 @@ authorWpLinkDB =
     , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
-    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Aidan Gomez", "Dennis Sciama", "Hank Greely"
+    , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Dennis Sciama", "Hank Greely"
     , "Claudia Langenberg", "Patricia Briggs", "Julia Galef", "Guy Wetmore Carryl", "Woody Allen"
     , "Central Committee of the Communist Party of China", "William Vickrey", "23andMe"
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"

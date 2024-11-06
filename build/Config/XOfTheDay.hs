@@ -492,6 +492,6 @@ siteBlackList = [
           , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"
           , "members.madasafish.com","isfdb.org","cwe.mitre.org","ai.meta.com"
           , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu"
-          , "linkinghub.elsevier.com", "www.cs.cmu.edu", "fonts.google.com", "www.ed.ac.uk"
+          , "linkinghub.elsevier.com", "fonts.google.com", "www.ed.ac.uk"
           , "3quarksdaily.com", "research.com", "dynomight.net", "www.mercatus.org"
           , "reactormag.com","pure.au.dk","news.sankakucomplex.com", "ilovetypography.com"]

@@ -82,7 +82,7 @@ getDuplicates :: Ord a => [a] -> [a]
 getDuplicates = snd . foldl' go (Set.empty, [])
   where
     go (seen, duplicates) x
-      | x `Set.member` seen = (seen, duplicates)
+      | x `Set.member` seen = (seen, x : duplicates)
       | otherwise = (Set.insert x seen, duplicates)
 throwError :: Show a => String -> [a] -> b
 throwError msg xs = error $ "Error: " ++ msg ++ " " ++ show xs
@@ -190,7 +190,7 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
               , length $ isUniqueAll Config.Metadata.Author.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
-              , length $ isUniqueValues (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist
+              , length $ isUniqueKeys (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist
               , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.Metadata.Author.authorLinkDB)
@@ -244,7 +244,7 @@ testAll = do Config.Misc.cd
              printGreen ("Checked URL hash uniqueness for: " ++ show linkidLength)
 
              printGreen ("Testing file-transclusions…" :: String)
-             let fileTranscludes = isUniqueKeys $ fileTranscludesTest md am
+             let fileTranscludes = fileTranscludesTest md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 

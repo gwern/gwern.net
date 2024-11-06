@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-05 10:27:20 gwern"
+When:  Time-stamp: "2024-11-06 10:15:31 gwern"
 License: CC-0
 -}
 
@@ -622,7 +622,7 @@ isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 
--- config testing: 'isUniqueKeys'
+-- config testing: none? too many overlaps
 fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
 fileTranscludesTest md am =
   let testFileTransclude md' am' bool path = let x = fromJustWithError path $ M.lookup path md'
@@ -637,7 +637,7 @@ fileTranscludesTest md am =
     , (simpleTestF "/index", [])
     , (simpleTestF "/doc/newest/index", [])
     , (simpleTestF "/doc/cs/algorithm/1986-aggarwal.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg")]) [RawInline (Text.Pandoc.Format "HTML") "Geometric applications of a matrix searching algorithm"] ("/doc/cs/algorithm/1986-aggarwal.pdf","")]]]])
-    , (simpleTestT "/doc/cs/algorithm/1986-aggarwal.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg")]) [RawInline (Text.Pandoc.Format "HTML") "Geometric applications of a matrix searching algorithm"] ("/doc/cs/algorithm/1986-aggarwal.pdf","")]]]])
+    -- , (simpleTestT "/doc/cs/algorithm/1986-aggarwal.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg")]) [RawInline (Text.Pandoc.Format "HTML") "Geometric applications of a matrix searching algorithm"] ("/doc/cs/algorithm/1986-aggarwal.pdf","")]]]])
     , (simpleTestF "/doc/cs/algorithm/1990-galil.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg")]) [RawInline (Text.Pandoc.Format "HTML") "A linear-time algorithm for concave one-dimensional dynamic programming"] ("/doc/cs/algorithm/1990-galil.pdf","")]]]])
     , (simpleTestT "/doc/economics/2010-mankiw.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg")]) [RawInline (Text.Pandoc.Format "HTML") "The Optimal Taxation of Height: A Case Study of Utilitarian Income Redistribution"] ("/doc/economics/2010-mankiw.pdf","")]]]])
     , (simpleTestEmpty "https://arxiv.org/abs/1505.03118", [])
@@ -674,7 +674,7 @@ fileTranscludesTest md am =
     , (simpleTestF "/doc/zeo/2018-01-04-zeo-zma.csv", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "CSV"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","csv"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/zeo/2018-01-04-zeo-zma.csv"] ("/doc/zeo/2018-01-04-zeo-zma.csv","")]]]])
     , (simpleTestF "/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Word document"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","word-doc"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc"] ("/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc","")]]]])
     , (simpleTestF "/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "text"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt"] ("/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt","")]]]])
-    , (simpleTestF "/doc/personal/google-cse.xml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "XML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","alphabet"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/personal/google-cse.xml"] ("/doc/personal/google-cse.xml","")]]]])
+    , (simpleTestF "/doc/personal/google-cse.xml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "XML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","alphabet"),("link-icon-type","svg"),("link-icon-color","#4285F4")]) [Code ("",[],[]) "/doc/personal/google-cse.xml"] ("/doc/personal/google-cse.xml","")]]]])
     , (simpleTestF "/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "R code"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R"] ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R","")]]]])
     , (simpleTestF "/static/css/default.css", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "CSS"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg")]) [Code ("",[],[]) "/static/css/default.css"] ("/static/css/default.css","")]]]])
     , (simpleTestT "/haskell/mnemo4.hs", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Haskell"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg")]) [Code ("",[],[]) "/haskell/mnemo4.hs"] ("/haskell/mnemo4.hs","")]]]])

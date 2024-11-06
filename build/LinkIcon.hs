@@ -176,7 +176,11 @@ isValidCssHexColor :: T.Text -> T.Text
 isValidCssHexColor ""    = ""
 isValidCssHexColor color = case T.unpack color of
     '#':rest -> if length rest /= 3 && length rest /= 6 then error $ "LinkIcon.isValidCssHexColor: hex value was an invalid length, neither 3 nor 6? Original input was: " ++ show color
-                else if not (all isHexDigit rest) then error $ "LinkIcon.isValidCssHexColor: hex value was proper length, but contained non-hexadecimal characters? Original input was: " ++ show color
-                                                       else color
+                else if not (all isHexDigit rest) then
+                       if length rest == 8 then
+                         error $ "LinkIcon.isValidCssHexColor: hex value was length-8; does this have 2 opacity values at the end, and is RGBA? Convert to RGB if so. Original input was: " ++ show color
+                       else
+                         error $ "LinkIcon.isValidCssHexColor: hex value was proper length, but contained non-hexadecimal characters? Original input was: " ++ show color
+                     else color
     _  -> error $ "LinkIcon.isValidCssHexColor: input CSS hex color failed hex check; did not start with a hash? Original input was: " ++ show color
 
