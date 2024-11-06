@@ -2083,8 +2083,17 @@ function enableLinkIcon(link) {
 		link.style.setProperty("--link-icon-color-hover", link.dataset.linkIconColor);
 
 		if (link.dataset.linkIconType.includes("svg")) {
+			let transformColor = (colorCode) => {
+				return Color.processColorValue(colorCode, [
+					[ "colorize", link.dataset.linkIconColor ]
+				]);
+			};
+
 			doWhenSVGIconsLoaded(() => {
-				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon));
+				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/"(#[0-9A-Fa-f]+)"/g, 
+					(match, colorCode) => {
+						return `"${(transformColor(colorCode))}"`;
+					}));
 				svg.setAttribute("fill", link.dataset.linkIconColor);
 				link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
 			});

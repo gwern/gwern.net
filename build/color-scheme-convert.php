@@ -283,11 +283,11 @@ function HSVFromRGB($rgb_components) {
 		$del_G = ((($var_Max - $var_G) / 6) + ($del_Max / 2)) / $del_Max;
 		$del_B = ((($var_Max - $var_B) / 6) + ($del_Max / 2)) / $del_Max;
 
-		if ($var_R == $var_Max) $H = $del_B - $del_G;
+		     if ($var_R == $var_Max) $H = $del_B - $del_G;
 		else if ($var_G == $var_Max) $H = (1.0/3.0) + $del_R - $del_B;
 		else if ($var_B == $var_Max) $H = (2.0/3.0) + $del_G - $del_R;
 
-		if ($H < 0) $H += 1;
+		     if ($H < 0) $H += 1;
     	else if ($H > 1) $H -= 1;
 	}
 	
@@ -313,12 +313,12 @@ function RGBFromHSV($hsv_components) {
 		
 		$var_r = $var_g = $var_b = 0.0;
 
-		if ($var_i == 0) { $var_r = $V; $var_g = $var_3; $var_b = $var_1; }
-		else if ($var_i == 1) { $var_r = $var_2; $var_g = $V; $var_b = $var_1; }
-		else if ($var_i == 2) { $var_r = $var_1; $var_g = $V; $var_b = $var_3; }
-		else if ($var_i == 3) { $var_r = $var_1; $var_g = $var_2; $var_b = $V; }
-		else if ($var_i == 4) { $var_r = $var_3; $var_g = $var_1; $var_b = $V ; }
-		else { $var_r = $V; $var_g = $var_1 ; $var_b = $var_2; }
+		     if ($var_i == 0) { $var_r = $V;     $var_g = $var_3; $var_b = $var_1; }
+		else if ($var_i == 1) { $var_r = $var_2; $var_g = $V;     $var_b = $var_1; }
+		else if ($var_i == 2) { $var_r = $var_1; $var_g = $V;     $var_b = $var_3; }
+		else if ($var_i == 3) { $var_r = $var_1; $var_g = $var_2; $var_b = $V;     }
+		else if ($var_i == 4) { $var_r = $var_3; $var_g = $var_1; $var_b = $V;     }
+		else                  { $var_r = $V;     $var_g = $var_1; $var_b = $var_2; }
 
 		$R = $var_r * 255.0;
 		$G = $var_g * 255.0;
@@ -373,7 +373,6 @@ function LabFromXYZ($xyz_components) {
 }
 
 function XYZFromLab($lab_components) {
-	
 	$var_Y = ($lab_components[0] + 16.0) / 116.0;
 	$var_X = $lab_components[1] / 500.0 + $var_Y;
 	$var_Z = $var_Y - $lab_components[2] / 200.0;
@@ -385,7 +384,7 @@ function XYZFromLab($lab_components) {
 							  (($component - 16.0/116.0) / 7.787);
 	}
 
-	$xyz_components[0] *= 95.047;
+	$xyz_components[0] *=  95.047;
 	$xyz_components[1] *= 100.000;
 	$xyz_components[2] *= 108.883;
 

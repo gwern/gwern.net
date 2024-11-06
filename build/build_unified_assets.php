@@ -34,6 +34,7 @@ $css = [
 ];
 
 $js = [
+	'color.js',
 	'misc.js',
 	'popups.js',
 	'popins.js',
