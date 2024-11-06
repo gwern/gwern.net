@@ -6,7 +6,7 @@ import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`).
 -- Useful in cases where we can't or won't edit the link directly to set link-icons
--- (eg. like in /fiction/clippy, where I do a manual override of link-icons to rickroll the reader:
+-- (eg. like in </fiction/clippy>, where I do a manual override of link-icons to rickroll the reader:
 -- `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`.
 -- If we couldn't for some reason, we can hardwire that exact URL here.)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text,T.Text))]
@@ -97,16 +97,16 @@ linkIconRulesOverrides "" = error "Config.LinkIcon.linkIconRulesOverrides: passe
 linkIconRulesOverrides u
  | u' u "deepmind"  = ("deepmind", "svg", "#4185f4") -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
  | u' u "schmidhuber" || u' u "people.idsia.ch/~juergen/" = ("SMDH", "text,quad,sans", "") -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
- | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", "#1877F2")
+ | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", "#1877f2")
  | u' u "sites.google.com/berkeley.edu" || aU'' u ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = ("BAIR", "text,quad,mono", "") -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
  | u' u "pandoc" && not (u' u "tufte") = ("PNDC", "text,quad,sans", "") -- general catch-all, overrides Google Groups (`pandoc-discuss`), with a further override for Tufte-related stuff (which get 'ET')
  | aU'' u ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' u ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = ("ET", "text", "#b1282b") -- override CRAN
- | u'' u "groups.google.com" = ("✉", "text", "#4285F4")
- | u'' u "scholar.google.com" || u'' u "research.com" = ("google-scholar", "svg", "#4285F4") -- Google Scholar.
- | u'' u "docs.google.com" = ("word-doc", "svg", "#4285F4")
+ | u'' u "groups.google.com" = ("✉", "text", "#4285f4")
+ | u'' u "scholar.google.com" || u'' u "research.com" = ("google-scholar", "svg", "#4285f4") -- Google Scholar.
+ | u'' u "docs.google.com" = ("word-doc", "svg", "#4285f4")
  | u'' u "www.theinformation.com" = ("the-information", "svg", "#f32a52") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'? Overrides Microsoft & other tech companies
  | u'' u "www.semafor.com" = ("SMFR", "text,quad", "") -- Semafor <https://www.semafor.com/> <https://en.wikipedia.org/wiki/Semafor_(website)>; somewhat like _The Information_; official logo is a boring serif wordmark (<https://en.wikipedia.org/wiki/File:Semafor_logo.png>), and the favicon is an interesting 'cut off' 'S'-silhouette-in-square <https://www.semafor.com/safari-pinned-tab-icon.svg> but they've done a bad enough job branding it no one would recognize it, so we use a quad-abbreviation of 'SEMAFOR'
- | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg", "#4285F4") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
+ | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg", "#4285f4") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
  | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,mono", "") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic", "#77ba00") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable); color: green
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai", "chatgpt.com"] = ("openai", "svg", "") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
@@ -283,23 +283,23 @@ linkIconRulesTriple u
  | u' u "animenewsnetwork.com" = ("ANN", "text,tri", "#006598") -- color: blue; TODO: SVG the three-circle green-blue logo?
  | u'' u "www.catb.org" || u'' u "esr.ibiblio.org" = ("ESR", "text,tri,sans", "#0000ee") -- color: bright blue, used in weird favicon logo
  | u'' u "arstechnica.com" = ("ars", "text,tri,sans", "#ff4e00") -- Ars is an orange box, not usable; TODO: orange background / white 'ars'?
- | u' u ".bbc.com" || u' u ".bbc.co.uk" = ("BBC", "text,tri,sans", "") -- BBC: no usable logo
- | u' u ".bmj.com" = ("bmj", "text,tri,sans", "") -- British Medical Journal or just ‘bmj’
- | u'' u "www.cdc.gov" = ("CDC", "text,tri", "")
- | u'' u "boardgamegeek.com" = ("BGG", "text,tri,sans", "") -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
+ | u' u ".bbc.com" || u' u ".bbc.co.uk" = ("BBC", "text,tri,sans", "") -- BBC: no usable logo; TODO: white on black 'BBC'?
+ | u' u ".bmj.com" = ("bmj", "text,tri,sans", "#2a6ebb") -- British Medical Journal or just ‘bmj’; TODO: white on blue
+ | u'' u "www.cdc.gov" = ("CDC", "text,tri", "#0057b7") -- TOOD: white on blue background
+ | u'' u "boardgamegeek.com" = ("BGG", "text,tri,sans", "#ff5100") -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>; color: bright orange
  | u'' u "thehub7dnl5nmcz5.onion" = ("Hub", "text,tri,sans", "")
- | u'' u "www.abc.net.au" || u'' u "abcnews.go.com" = ("ABC", "text,tri,sans", "") -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
- | u'' u "www.odt.co.nz" = ("ODT", "text,tri", "")
- | u'' u "knowyourmeme.com" = ("KYM", "text,tri", "")
- | u'' u "freakonomics.com" = ("FRK", "text,tri,sans", "") -- hybrid apple-orange icon (get it, "comparing apples & oranges", "") doesn't work as favicon or link
- | u'' u "aiimpacts.org" = ("AII", "text,tri", "")
- | u'' u "scp-wiki.wikidot.com" = ("SCP", "text,tri,sans", "")
+ | u'' u "www.abc.net.au" || u'' u "abcnews.go.com" = ("ABC", "text,tri,sans", "#fdc605") -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>; color: bright yellow
+ | u'' u "www.odt.co.nz" = ("ODT", "text,tri", "#1a65ad") -- color: blue
+ | u'' u "knowyourmeme.com" = ("KYM", "text,tri", "#13133e") -- color: dark purple; TODO: white text on purple bg
+ | u'' u "freakonomics.com" = ("FRK", "text,tri,sans", "#c25700") -- hybrid apple-orange icon (get it, "comparing apples & oranges", "") doesn't work as favicon or link; TODO: SVG color icon
+ | u'' u "aiimpacts.org" = ("AII", "text,tri", "#2396ce") -- light blue; TODO: white-on-blue text
+ | u'' u "scp-wiki.wikidot.com" = ("SCP", "text,tri,sans", "#823f3f") -- color: light red/brown
  | aU'' u ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' u "www.reddit.com/r/AIDungeon"  || u' u "www.patreon.com/AIDungeon" = ("AID", "text,tri,sans", "")
- | u'' u "nap.nationalacademies.org" = ("NAP", "text,tri", "")
- | u' u ".cnn.com" = ("CNN", "text,tri,sans", "")
- | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "") -- NPR styles it in lowercase in their |n|p|r| logo
- | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute…
- | u'' u "lwn.net" = ("LWN", "text,tri,sans", "")
+ | u'' u "nap.nationalacademies.org" = ("NAP", "text,tri", "#1d1646") -- color: dark purple-blue
+ | u' u ".cnn.com" = ("CNN", "text,tri,sans", "#cc0000") -- color: bright red; TODO: color SVG 'CNN'-worm icon
+ | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "#237bbd") -- NPR styles it in lowercase in their |n|p|r| logo; color: light-blue from 'r' in 'npr' logo; TODO: SVG color logo
+ | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "#3a2820") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute… color: dark brown (from background of theme)
+ | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: Tux penguin feet
  | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("F.ai", "text,tri", "")
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "")
  | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("CBS", "text,tri,sans", "")
@@ -429,7 +429,7 @@ linkIconRulesSVG u
  | u' u "tumblr.com" = ("tumblr", "svg", "")
  | aU'' u ["x.com", "blog.x.com", "developer.x.com" ] ||
    -- we host local HTML mirrors of Twitter/Nitter for archiving & annotation-override reasons; rather than give them an uninformative HTML icon, we detect & override here to assign them the bird icon. They follow the schema `/doc/foo/$DATE-$AUTHOR-twitter-$TITLE.html`:
-   (isLocal u && hasExtension ".html" u && "-twitter-" `T.isInfixOf` u) = ("twitter", "svg", "#1DA1F2")
+   (isLocal u && hasExtension ".html" u && "-twitter-" `T.isInfixOf` u) = ("twitter", "svg", "#1da1f2")
  | u'' u "www.uptontea.com" = ("upton-tea", "svg", "")
  | u'' u "soundcloud.com" = ("audio", "svg", "")
  | u' u ".bandcamp.com" = ("audio", "svg", "")
@@ -531,7 +531,7 @@ linkIconTestUnitsText =
          , ("https://openai.com/index/better-language-models/",               "openai","svg", "")
          , ("https://chatgpt.com/share/261034ff-f5d5-404c-b354-c9d58e3af509", "openai","svg", "")
          , ("/doc/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt",  "txt","svg", "")
-         , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", "#1877F2")
+         , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", "#1877f2")
          , ("/doc/anime/eva/2010-1000enpark-tokyo-oota-heiwajimakoen.jpg",  "image","svg", "")
          , ("/doc/cat/psychology/drug/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg", "")
          , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg", "")
@@ -547,7 +547,7 @@ linkIconTestUnitsText =
          , ("/doc/iq/ses/2011-gensowski-figure7-totaleffectofiqandpersonalityonlifetimeearnings.png",  "image","svg", "")
          , ("/doc/iq/2014-tenijenhuis-supplement.doc",  "word-doc","svg", "")
          , ("/doc/personal/businesscard-front-draft.xcf",  "image","svg", "")
-         , ("/doc/personal/google-cse.xml",  "alphabet","svg", "#4285F4")
+         , ("/doc/personal/google-cse.xml",  "alphabet","svg", "#4285f4")
          , ("/doc/personal/rss-subscriptions.opml",  "txt","svg", "")
          , ("/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg", "")
          , ("/doc/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg", "")
@@ -561,7 +561,7 @@ linkIconTestUnitsText =
          , ("/doc/touhou/2013-c84-downloads.json",  "txt","svg", "")
          , ("/doc/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg", "")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad", "")
-         , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans", "")
+         , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans", "#cc0000")
          , ("http://blog.sigfpe.com/2005/08/absence-of-evidence-is-evidence-of.html", "sgfp", "text,quad,mono", "")
          , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans", "")
          , ("http://esr.ibiblio.org/?p=7183", "ESR","text,tri,sans", "#0000ee")
@@ -582,13 +582,13 @@ linkIconTestUnitsText =
          , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE","text,tri", "")
          , ("https://6b.eleuther.ai/", "eleutherai", "svg", "")
          , ("https://80000hours.org/podcast/episodes/sam-bankman-fried-high-risk-approach-to-crypto-and-doing-good/", "80k", "text,tri,sans", "")
-         , ("https://abcnews.go.com/Health/MedicalMysteries/story?id=3679532&page=1", "ABC", "text,tri,sans", "")
-         , ("https://about.google/",  "alphabet","svg", "#4285F4")
+         , ("https://abcnews.go.com/Health/MedicalMysteries/story?id=3679532&page=1", "ABC", "text,tri,sans", "#fdc605")
+         , ("https://about.google/",  "alphabet","svg", "#4285f4")
          , ("https://academic.oup.com/ageing/article/36/5/507/40586", "OUP", "text,tri", "")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri", "")
          , ("https://aidungeon.medium.com/introducing-ai-dungeon-translate-a50e35f6df83", "AID", "text,tri,sans", "")
-         , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", "#1877F2")
-         , ("https://aiimpacts.org/2019-recent-trends-in-gpu-price-per-flops/", "AII", "text,tri", "")
+         , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", "#1877f2")
+         , ("https://aiimpacts.org/2019-recent-trends-in-gpu-price-per-flops/", "AII", "text,tri", "#2396ce")
          , ("https://aino.bandcamp.com/track/--2",  "audio","svg", "")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri", "")
          , ("https://animekritik.wordpress.com/2011/05/12/evangelion-2-0-surnames-statements-and-makinami/", "NGE", "text,tri", "")
@@ -608,19 +608,19 @@ linkIconTestUnitsText =
          -- Arxiv overrides:
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans", "")
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", "#4185f4")
-         , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg", "#4285F4")
+         , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg", "#4285f4")
          , ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic", "")
-         , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", "#1877F2")
+         , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", "#1877f2")
          , ("https://arxiv.org/abs/2111.02114#laion", "laion", "svg", "#1d374e")
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg", "#d4a27f")
-         , ("https://arxiv.org/pdf/2009.06732#org=google&page=6",  "alphabet","svg", "#4285F4")
+         , ("https://arxiv.org/pdf/2009.06732#org=google&page=6",  "alphabet","svg", "#4285f4")
          , ("https://www.astralcodexten.com/p/know-your-amphetamines",  "SSC","text,tri", "")
          , ("https://babel.hathitrust.org/cgi/pt?id=uc1.c101988734&view=1up&seq=1", "internet-archive","svg", "")
          , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono", "")
          , ("https://beepb00p.xyz/pkm-search.html", "\129302", "text", "")
          , ("https://betonit.blog/2022/03/02/make-desertion-fast/", "econlib", "svg", "")
          , ("https://bitcointalk.org/index.php?topic=82952.0;all",  "bitcoin","svg", "")
-         , ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,tri,sans", "")
+         , ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,tri,sans", "#2a6ebb")
          , ("https://bldgblog.com/2015/12/four-floor-war/", "BLDG", "text,quad,mono", "")
          , ("https://blog.23andme.com/articles/genes-scream-for-ice-cream", "23", "text", "#a40e7b")
          , ("https://blog.archive.org/2011/08/17/scanning-a-braille-playboy/",  "internet-archive","svg", "")
@@ -634,7 +634,7 @@ linkIconTestUnitsText =
          , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic", "#77ba00")
          , ("https://blottyparchment.livejournal.com/7541.html?thread=233845", "LJ", "text,sans", "#004359")
          , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13",  "springerlink", "svg", "")
-         , ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,tri,sans", "")
+         , ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,tri,sans", "#ff5100")
          , ("https://boards.4chan.org/jp/", "4CH", "text,sans", "")
          , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans", "")
          , ("https://boingboing.net/2011/02/03/cosmic-commodities-h.html", "bb", "text,mono", "#ff0202")
@@ -662,12 +662,12 @@ linkIconTestUnitsText =
          , ("https://dl.acm.org/doi/10.1145/3266037.3266090", "acm", "text,tri,sans", "")
          , ("https://dl.dropboxusercontent.com/u/182368464/umineko-compress.tar.xz",  "dropbox","svg", "")
          , ("https://dnstats.net/market/Amazon+Dark", "dn", "text,sans", "")
-         , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", "#4285F4")
+         , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", "#4285f4")
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg", "")
          , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text", "#b1282b")
          , ("https://elifesciences.org/articles/16351", "eL", "text,sans", "")
          , ("https://en.bitcoin.it/wiki/Witcoin",  "bitcoin","svg", "")
-         , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", "#1877F2")
+         , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", "#1877f2")
          , ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text", "")
          , ("https://en.wikibooks.org/wiki/Category:Book:Accountancy", "wikipedia","svg", "")
          , ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg", "")
@@ -683,7 +683,7 @@ linkIconTestUnitsText =
          , ("https://forum.effectivealtruism.org/posts/nSot23sAjoZRgaEwa/2016-ai-risk-literature-review-and-charity-comparison", "EA", "text", "")
          , ("https://forum.evageeks.org/index.php",  "EG","text", "")
          , ("https://foundation.wikimedia.org/wiki/Privacy_policy",  "wikipedia","svg", "")
-         , ("https://freakonomics.com/2007/05/what-do-you-have-to-say-about-ron-paul/", "FRK", "text,tri,sans", "")
+         , ("https://freakonomics.com/2007/05/what-do-you-have-to-say-about-ron-paul/", "FRK", "text,tri,sans", "#c25700")
          , ("https://fullfrontal.moe/interview-mahiro-maeda/", "NGE", "text,tri", "")
          , ("https://gameprogrammingpatterns.com/singleton.html", "GPP", "text,tri,sans", "")
          , ("https://github.com/clayh53/tufte-jekyll", "ET", "text", "#b1282b")
@@ -695,11 +695,11 @@ linkIconTestUnitsText =
          , ("https://github.com/paul-buerkner/brms#overview",  "R","text", "")
          , ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,quad,mono", "")
          , ("https://groups.google.com/g/pandoc-discuss/c/jgb-Q0F2p1Y/m/1DogIEAtAQAJ", "PNDC", "text,quad,sans", "")
-         , ("https://groups.google.com/group/ankisrs/",  "\9993","text", "#4285F4")
+         , ("https://groups.google.com/group/ankisrs/",  "\9993","text", "#4285f4")
          , ("https://groups.yahoo.com/group/givewell/message/287", "GW", "text", "#669bb5")
          , ("https://groups.yahoo.com/group/tiffanygrantfanclub/message/5697",  "\9993","text", "#5e21cf")
          , ("https://guzey.com/how-life-sciences-actually-work/", "A.G.", "text,sans", "")
-         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg", "#4285F4")
+         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg", "#4285f4")
          , ("https://gwern.substack.com/",  "substack","svg", "")
          , ("https://habr.com/ru/articles/516190/", "Habr", "text,quad,sans", "")
          , ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "FF", "text,sans", "#e66000")
@@ -728,7 +728,7 @@ linkIconTestUnitsText =
          , ("https://journals.plos.org/plosmedicine/article/fetchObject.action?uri=info:doi/10.1371/journal.pmed.0020124.t004&representation=PNG_M",  "plos","svg", "")
          , ("https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0023175",  "plos","svg", "")
          , ("https://kk.org/books/out-of-control",  "KK","text,sans", "#f4eb00")
-         , ("https://knowyourmeme.com/memes/navy-seal-copypasta", "KYM", "text,tri", "")
+         , ("https://knowyourmeme.com/memes/navy-seal-copypasta", "KYM", "text,tri", "#13133e")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Krbs", "text,quad,sans", "")
          , ("https://laion.ai/blog/coca/", "laion", "svg", "#1d374e")
          , ("https://latitude.io/blog/how-we-accidentally-gave-our-bots-their-personalities/", "AID", "text,tri,sans", "")
@@ -738,9 +738,9 @@ linkIconTestUnitsText =
          , ("https://longbets.org/",  "X","text,overline", "")
          , ("https://longnow.org/ideas/lenski-long-term-evolution-experiment/",  "X","text,overline", "")
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad", "")
-         , ("https://lwn.net/Articles/286233/", "LWN", "text,tri,sans", "")
+         , ("https://lwn.net/Articles/286233/", "LWN", "text,tri,sans", "#fed050")
          , ("https://machinelearning.apple.com/research/hey-siri", "apple", "svg", "")
-         , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg", "#4285F4")
+         , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg", "#4285f4")
          , ("https://marginalrevolution.com/",  "M\119825","text", "#00c79f")
          , ("https://conversationswithtyler.com/episodes/seth-godin/",  "M\119825","text", "#00c79f")
          , ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stack-exchange","svg", "")
@@ -756,7 +756,7 @@ linkIconTestUnitsText =
          , ("https://web.archive.org/web/20211105092005/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans", "")
          , ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans", "")
          , ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,tri,sans", "")
-         , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri", "")
+         , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri", "#1d1646")
          , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg", "")
          , ("https://news.ycombinator.com/item?id=10012625",  "hacker-news","svg", "")
          , ("https://hn.algolia.com/#!/story/forever/prefix/0/gameprogrammingpatterns.com", "hacker-news","svg", "")
@@ -805,14 +805,14 @@ linkIconTestUnitsText =
          , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad", "")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text", "")
          , ("https://scale.com/", "SCLE", "text,quad,mono", "")
-         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", "#4285F4")
-         , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", "#4285F4")
+         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", "#4285f4")
+         , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", "#4285f4")
          , ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text", "#3f1d0b")
          , ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic", "")
          , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/",           "nasa", "svg", "")
          , ("https://scottaaronson.blog/?p=1438", "S.A.", "text,sans", "#4181b7")
          , ("https://www.scottaaronson.com/democritus/", "S.A.", "text,sans", "#4181b7")
-         , ("https://scp-wiki.wikidot.com/antimemetics-division-hub", "SCP", "text,tri,sans", "")
+         , ("https://scp-wiki.wikidot.com/antimemetics-division-hub", "SCP", "text,tri,sans", "#823f3f")
          , ("https://sethroberts.net/2008/10/03/diet-and-acne-continued/", "SR", "text,sans", "")
          , ("https://sg.finance.yahoo.com/news/japan-makes-bitcoin-linked-drug-arrest-165138422--finance.html", "Y!", "text,sans", "#5e21cf")
          , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,mono", "")
@@ -832,7 +832,6 @@ linkIconTestUnitsText =
          , ("https://stats.grok.se/en/201109/Accountancy", "wikipedia","svg", "")
          , ("https://techcrunch.com/2013/02/23/the-chinese-are-coming-the-chinese-are-coming/", "TC", "text,mono", "#0a8935")
          , ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "tex","svg", "")
-         , ("https://text.npr.org/974534021", "npr", "text,tri,sans", "")
          , ("https://theconversation.com/altruism-in-birds-magpies-have-outwitted-scientists-by-helping-each-other-remove-tracking-devices-175246", "🗨", "text", "")
          , ("https://thegradient.pub/gpt2-and-the-nature-of-intelligence/", "∇", "text", "")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans", "")
@@ -847,9 +846,9 @@ linkIconTestUnitsText =
          , ("https://tug.org/FontCatalogue/goudyinitialen/", "tex","svg", "")
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text", "#1c6486")
          , ("https://x.com/EvaMonkey/", "EG", "text", "")
-         , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg", "#1DA1F2")
-         , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg", "#1DA1F2")
-         , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg", "#1DA1F2")
+         , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg", "#1da1f2")
+         , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg", "#1da1f2")
+         , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg", "#1da1f2")
          , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg", "#d4a27f")
          , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,mono", "")
          , ("https://x.com/razibkhan/status/1463204399954776073", "RK", "text,sans", "")
@@ -871,7 +870,7 @@ linkIconTestUnitsText =
          , ("https://what-if.xkcd.com/145/",  "XKCD","text,quad,sans", "")
          , ("https://wiki.archiveteam.org/index.php?title=Google_Reader",  "internet-archive","svg", "")
          , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg", "")
-         , ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,tri,sans", "")
+         , ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,tri,sans", "#fdc605")
          , ("https://www.alcor.org/library/alcor-membership-statistics/", "alcor", "svg", "")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans", "#3f51b5")
          , ("https://www.amazon.co.jp/%E6%AE%8B%E9%85%B7%E3%81%AA%E5%A4%A9%E4%BD%BF%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB%E2%80%95%E6%96%B0%E4%B8%96%E7%B4%80%E3%82%A8%E3%83%B4%E3%82%A1%E3%83%B3%E3%82%B2%E3%83%AA%E3%82%AA%E3%83%B3JUNE%E8%AA%AD%E6%9C%AC-SUN%E3%83%BCMAGAZINE-MOOK-JUNE%E7%B7%A8%E9%9B%86%E9%83%A8/dp/490601125X",  "amazon","svg", "")
@@ -897,7 +896,7 @@ linkIconTestUnitsText =
          , ("https://www.candyjapan.com/2013-year-in-review", "🍬", "text", "")
          , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans", "")
          , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "CBS", "text,tri,sans", "")
-         , ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text,tri", "")
+         , ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text,tri", "#0057b7")
          , ("https://www.cell.com/ajhg/fulltext/S0002-9297(18)30405-1",  "CELL","text,quad,sans", "")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg", "")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
@@ -922,7 +921,7 @@ linkIconTestUnitsText =
          , ("https://www.fanfiction.net/s/10360716/1/The-Metropolitan-Man",  "FFN","text,tri,sans", "")
          , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri", "")
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text", "")
-         , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans", "")
+         , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans", "#3a2820")
          , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,mono", "")
          , ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text", "")
          , ("https://fortune.com/2023/01/10/microsoft-investment-10-billion-openai-chatgpt/", "F", "text,sans", "")
@@ -978,11 +977,12 @@ linkIconTestUnitsText =
          , ("https://www.nextplatform.com/2019/08/20/big-blue-open-sources-power-chip-instruction-set/", "NEXT", "text,quad,sans", "")
          , ("https://www.nlsinfo.org/content/cohorts/nlsy97", "NLS", "text,tri,sans", "")
          , ("https://www.nngroup.com/articles/aesthetic-usability-effect/", "NN", "text,sans", "#600c20")
-         , ("https://www.npr.org/2011/04/16/135450214/eight-is-too-much-for-short-sleepers", "npr", "text,tri,sans", "")
+         , ("https://www.npr.org/2011/04/16/135450214/eight-is-too-much-for-short-sleepers", "npr", "text,tri,sans", "#237bbd")
+         , ("https://text.npr.org/974534021", "npr", "text,tri,sans", "#237bbd")
          , ("https://www.nybooks.com/articles/2020/01/16/alma-mahler-it-had-to-be-her/", "NYRB", "text,quad", "")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans", "")
          , ("https://www.nzherald.co.nz/nz/drug-mail-or-mule-risks-the-same/QHX3IGRINL7AN5QZR3JRSOQ3NA/", "𝕳", "text", "")
-         , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri", "")
+         , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri", "#1a65ad")
          , ("https://www.openphilanthropy.org/research/how-much-computational-power-does-it-take-to-match-the-human-brain/", "open-philanthropy", "svg", "")
          , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text", "")
          , ("https://www.overcomingbias.com/p/stupider-than-you-realizehtml",  "OB","text", "#263f5d")

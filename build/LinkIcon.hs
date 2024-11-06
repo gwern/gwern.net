@@ -6,7 +6,7 @@ import Data.Char (isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null, toLower)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
@@ -124,7 +124,7 @@ addIcon :: Inline -> (T.Text, T.Text, T.Text) -> Inline
 addIcon x ("", "", "") = x
 addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType, iconColor)  =
   if hasIcon x then x else Link (idt,cl,
-                                  ([("link-icon",icon), ("link-icon-type",iconType)] ++ if T.null iconColor then [] else [("link-icon-color",iconColor)]) ++
+                                  ([("link-icon",icon), ("link-icon-type",iconType)] ++ if T.null iconColor then [] else [("link-icon-color",T.toLower iconColor)]) ++
                                   ks) a (b,c)
 addIcon x _ = x
 
@@ -171,7 +171,8 @@ linkIconTest = filter (\(url, li, lit, litc) -> linkIcon (Link nullAttr [] (url,
                                                    )
                C.linkIconTestUnitsText
 
--- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format:
+-- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format.
+-- (Note that we allow uppercase 'A–F' but we emit only lowercase 'a–f' for consistency/readability.)
 isValidCssHexColor :: T.Text -> T.Text
 isValidCssHexColor ""    = ""
 isValidCssHexColor color = case T.unpack color of
