@@ -320,7 +320,7 @@ siteBlackList = [
           "worrydream.com", "wondermark.com", "whyevolutionistrue.com", "vocadb.net", "tom7.org",
           "thecodelesscode.com", "taibbi.substack.com", "strangeremains.com", "status451.com", "slimemoldtimemold.com",
           "sites.duke.edu", "www.semianalysis.com", "samizdat.co", "rejecthero.wordpress.com", "read.atavist.com",
-          "razib.substack.com", "projects.tampabay.com", "practicalguidetoevil.wordpress.com", "poets.org", "ooo.ghostbows.ooo",
+          "projects.tampabay.com", "practicalguidetoevil.wordpress.com", "poets.org", "ooo.ghostbows.ooo",
           "obscuritory.com", "nvlabs.github.io", "nonint.com", "news.nationalgeographic.com", "msls.net",
           "moon-tone.bandcamp.com", "journal.sjdm.org", "joshmitteldorf.scienceblog.com", "jacquesmattheij.com", "iosband.github.io",
           "instsci.org", "idlewords.com", "hyperdimensionfumo.bandcamp.com", "freekorea.us", "features.propublica.org",
