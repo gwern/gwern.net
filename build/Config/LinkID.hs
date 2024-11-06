@@ -2869,4 +2869,6 @@ linkIDOverrides =
        ,("https://arxiv.org/abs/2410.09400","xu-et-al-2024-3"),("/doc/psychology/vision/2024-xu.pdf","xu-et-al-2024-4")
        ,("https://acoup.blog/2022/12/16/collections-why-rings-of-powers-middle-earth-feels-flat/","devereaux-2022-1"),("https://acoup.blog/2022/02/11/collections-rome-decline-and-fall-part-iii-things/","devereaux-2022-2")
        ,("https://onlinelibrary.wiley.com/doi/full/10.1111/jsr.12312","monica-et-al-2015-1"),("/doc/zeo/2015-dellamonica.pdf","monica-et-al-2015-2")
+       , ("https://plato.stanford.edu/entries/death/#DepDef", "sep-2021-death-deprivation")
+       , ("https://plato.stanford.edu/entries/death/#SymArg", "sep-2021-death-symmetry")
       ]
