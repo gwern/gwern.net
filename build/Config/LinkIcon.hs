@@ -110,16 +110,16 @@ linkIconRulesOverrides u
  | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,mono", "") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
  | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic", "#77ba00") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable); color: green
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai", "chatgpt.com"] = ("openai", "svg", "") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
- | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic", "") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS". color: none, because the MS window pane icon uses red/green/yellow/blue, none dominating, and I can't replicate that; TODO: SVG alt?
- | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg", "#d4a27f") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media. Color: Claude brown
+ | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic", "") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS". color: none, because the MS window pane icon uses red/green/yellow/blue, none dominating, and I can't replicate that; TODO: color SVG icon
+ | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg", "#d4a27f") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media. color: Claude brown
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg", "#1d374e") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face; color: dark blue
  | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text", "#669bb5") -- override Yahoo! email; color: light blue
  | otherwise = ("","", "")
 
 linkIconRulesSingle "" = error "Config.LinkIcon.linkIconRulesSingle: passed empty string as the URL; this should never happen!"
 linkIconRulesSingle u
- | aU'' u ["psyarxiv.com", "files.osf.io", "osf.io"] = ("ψ", "text", "#cf1d35") -- Color: red. TODO: SVG icon? Might be nice to use the Ψ+red-backdrop logo for hover coloring at some point... Unicode trickery icons: GREEK SMALL LETTER PSI
- | u'' u "unsongbook.com" = ("ℵ", "text", "#b47810") -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.); color: mustard yellow background; TODO: SVG icon?
+ | aU'' u ["psyarxiv.com", "files.osf.io", "osf.io"] = ("ψ", "text", "#cf1d35") -- Unicode trickery icons: GREEK SMALL LETTER Ψ. Color: red. TODO: color SVG icon?
+ | u'' u "unsongbook.com" = ("ℵ", "text", "#b47810") -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.); color: mustard yellow background; TODO: color SVG icon?
  | u'' u "meltingasphalt.com" = ("▲", "text", "#aa0000") -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE; color: red
  | u'' u "www.tinyletter.com" = ("✉", "text", "#e72223") -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE; color: red (from heart-envelope icon)
  | u'' u "groups.yahoo.com" = ("✉", "text", "#5e21cf") -- color: Yahoo dark purple
@@ -127,40 +127,40 @@ linkIconRulesSingle u
  | u' u "carryiton.net/chain-letter/" = ("✉", "text", "") -- linked only for the archive, so this is an appropriate icon
  | u'' u "www.forbes.com" = ("F", "text", "#dc0000") -- red capital F serif; color: red
  | u'' u "fortune.com" = ("F", "text,sans", "#dc0000") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
- | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text", "#5e5086") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA \120524 primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain; color: very faded purple?
+ | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text", "#5e5086") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA \120524 primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain; color: faded purple
  | u' u "cerebras" = ("C", "text,sans", "#f05a29") -- Cerebras: <https://www.cerebras.net/>, <#cerebras> affiliation; overrides Arxiv.org; the Cerebras logo is a odd set of 4 semi-concentric circles <https://cerebras.ai/wp-content/uploads/2022/03/cerebras-white-01.png> which is both unfamiliar/odd and looks terrible at link-icon resolution (like some sort of small animal like a chipmunk or gerbil)
- | u'' u "arxiv.org" || u'' u "proceedings.mlr.press" || u'' u "aclanthology.org" = ("𝛘", "text", "#b31b1b") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'ACL' & 'PMLR' ("Proceedings of Machine Learning Research", "") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really. Color: red
- | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text", "") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B; TODO: white-on-black background
+ | u'' u "arxiv.org" || u'' u "proceedings.mlr.press" || u'' u "aclanthology.org" = ("𝛘", "text", "#b31b1b") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'ACL' & 'PMLR' ("Proceedings of Machine Learning Research", "") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really. color: red
+ | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text", "") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B; TODO: white-on-black text background
  | u' u "theatlantic.com" = ("A", "text,italic", "#e7131a") -- The Atlantic: replicate sloping by italics
  | u'' u "www.dailymail.co.uk" = ("𝔐", "text", "") -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
  | aU'' u ["danbooru.donmai.us", "derpibooru.org", "safebooru.org"] = ("❐", "text", "#ba9570") -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE; color: brown
  | u'' u "www.edge.org" = ("E", "text,italic", "")
- | u'' u "www.economist.com" = ("E", "text,sans", "#e3120b") -- Economist: logo is just ‘Economist’… There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.; color: red; TODO: white-on-red background
+ | u'' u "www.economist.com" = ("E", "text,sans", "#e3120b") -- Economist: logo is just ‘Economist’… There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.; color: red; TODO: white-on-red text background
  | u'' u "www.sciencedirect.com" = ("E", "text", "#eb6500") -- Elsevier/Sciencedirect.com: also an ‘E’; color: orange
  | u'' u "www.esquire.com" = ("ℰ", "text", "#ff3a30") -- color: orange
  | u'' u "www.harney.com" = ("H", "text", "#c9ad54") -- The Harney & Sons logo is too fancy to scale down reasonably; color: tan yellow
  | u'' u "www.hustwit.com" = ("H", "text,sans", "") -- design documentarian
  | u'' u "www.longecity.org" = ("⧖", "text", "") -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
  | u' u ".nature.com" = ("n", "text", "") -- Nature
- | u'' u "www.theverge.com" = ("▽", "text", "") -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;. color: ostensibly purple in the favicon but the site is wildly inconsistent, so skip
+ | u'' u "www.theverge.com" = ("▽", "text", "") -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;. color: none (ostensibly purple in the favicon but the site is wildly inconsistent, so skip)
  | u'' u "www.quora.com" = ("Q", "text", "#b92b27") -- surprisingly, no one's taken 'Q' yet; color: red
  | aU'' u ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' u "github.com/paul-buerkner/brms" = ("R", "text", "#1b61b1") -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org
- | u'' u "www.science.org" || u'' u "sciencemag.org" = ("S", "text", "#ca2015") -- Science is just typeset in red; color: red; TODO: white-on-red background
- | u'' u "slate.com" = ("S", "text,sans", "#2c0022") -- color: dark purple; TODO: white-on-purple background
+ | u'' u "www.science.org" || u'' u "sciencemag.org" = ("S", "text", "#ca2015") -- Science is just typeset in red; color: red; TODO: white-on-red text background
+ | u'' u "slate.com" = ("S", "text,sans", "#2c0022") -- color: dark purple; TODO: white-on-purple text background
  | u'' u "www.salon.com" = ("s", "text", "#ed2c1d") -- color: red
  | u'' u "www.technologyreview.com" = ("T", "text,sans", "") -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
  | aU'' u ["time.com", "healthland.time.com"] = ("T", "text", "#e90606") -- Time Magazine; color: red
  | aU'' u ["www.urth.net", "lists.urth.net", "www.wolfewiki.com"] = ("U", "text", "") -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
- | u' u "onlinelibrary.wiley.com" = ("W", "text,sans", "") -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com; TODO: white-on-black background
- | aU' u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = ("X", "text,overline", "#2a393d") -- Long Now Foundation projects; color: very dark graphite blue? TODO: white-on-blue background
+ | u' u "onlinelibrary.wiley.com" = ("W", "text,sans", "") -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com; TODO: white-on-black text background
+ | aU' u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = ("X", "text,overline", "#2a393d") -- Long Now Foundation projects; color: very dark graphite bluel; TODO: white-on-blue text background
  | u'' u "predictionbook.com" = ("?", "text,sans,bold", "#695173") -- PB logo is confusing. A purple question mark…? color: light purple
  | u'' u "beepb00p.xyz" = ("\129302", "text", "") -- ROBOT FACE U+1F916
  | u'' u "antilop.cc" = ("෴", "text", "") -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' u "forum.effectivealtruism.org" || u'' u "www.effectivealtruism.org" = ("EA", "text", "#06819a") -- color: blue-green from lightbulb
  | u'' u "boards.fireden.net" || u'' u "archive.foolz.us" || u' u "4channel.org" || u' u "boards.4chan.org"  = ("4CH", "text,sans", "#69ac46") -- color: light green
  | u'' u "www.kaggle.com" = ("k", "text,sans", "#20beff") -- color: blue-green
- | u'' u "www.discovermagazine.com" = ("D", "text", "") -- TODO: white-on-black background text
- | u'' u "www.mirror.co.uk" = ("M", "text,sans", "#e90e0e") -- color: red; TODO: white-on-red background text
+ | u'' u "www.discovermagazine.com" = ("D", "text", "") -- TODO: white-on-black text background text
+ | u'' u "www.mirror.co.uk" = ("M", "text,sans", "#e90e0e") -- color: red; TODO: white-on-red text background
  | aU'' u ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' u "www.reddit.com/r/TOUHOUMUSIC/" = ("☯", "text", "") -- NOTE: override Fandom catch-all
  | u'' u "www.reuters.com" = ("R", "text,sans", "#e56218") -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim; color: red
  | u'' u "www.theage.com.au" = ("A", "text", "") -- TODO: white-on-black text background
@@ -172,10 +172,10 @@ linkIconRulesSingle u
  | u'' u "variety.com" = ("𝓥", "text", "")
  | u'' u "theconversation.com" = ("🗨", "text", "#d8352a")
  | u'' u "patch.com" = ("P", "text,sans", "#005d8f") -- color: blue
- | u'' u "thegradient.pub" = ("∇", "text", "") -- TODO: white-on-black background
+ | u'' u "thegradient.pub" = ("∇", "text", "") -- TODO: white-on-black text background
  | u'' u "www.projectrho.com" = ("ρ", "text", "")
  | u'' u "harpers.org" = ("H", "text", "")
- | u'' u "www.thelancet.com" = ("L", "text", "#004582") -- color: blue; TODO: white-on-blue background
+ | u'' u "www.thelancet.com" = ("L", "text", "#004582") -- color: blue; TODO: white-on-blue text background
  | u' u "github.com/huggingface/" || u' u "medium.com/huggingface/" || u'' u "huggingface.co" = ("\129303", "text", "") -- "🤗" HUGGING FACE U+1F917
  | u'' u "www.pragmatic.ml" = ("𝕄", "text", "") -- Madison May, machine learning blog
  | u'' u "www.outsideonline.com" = ("𝕆", "text", "#ffd204") -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>; color: yellow
@@ -190,33 +190,33 @@ linkIconRulesSingle u
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
 linkIconRulesDouble u
- | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text", "#00c79f") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R; color: light green; TODO: SVG icon for background?
+ | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text", "#00c79f") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R; color: light green; TODO: color SVG icon for background?
  | u'' u "www.frontiersin.org" = ("FS", "text,sans", "") -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent; color: none, too busy
  | aU'' u ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = ("PG", "text", "#aa873b") -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.; color: mustard yellow
  | u'' u "guzey.com" = ("A.G.", "text,sans", "")
  | u' u "alignmentforum.org" || (u'' u "www.greaterwrong.com" && u' u "view=alignment-forum") = ("AF", "text,sans", "#3f51b5") -- color: royal blue
  | u'' u "boingboing.net" = ("bb", "text,mono", "#ff0202") -- color: bright red
- | u'' u "nymag.com" = ("𝒩𝒴", "text", "") -- color: none. It does use rubrication a little but not as part of the branding.
+ | u'' u "nymag.com" = ("𝒩𝒴", "text", "") -- color: none. (It does use rubrication a little but not as part of the branding.)
  | u'' u "thebrowser.com" = ("TB", "text", "#ff9900") -- color: giraffe yellow
  | u'' u "crookedtimber.org" = ("CT", "text", "")
  | u' u ".latimes.com" = ("𝔏A", "text", "")
  | u'' u "everything2.com" = ("E2", "text", "#38495e") -- color: very pale blue
  | u'' u "examine.com" = ("Eχ", "text,sans", "#5e3b76")
- | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "x.com/EvaMonkey/" = ("EG", "text", "#f71a00") -- Evangelion: we’ll split this into EGF-related and other NGE sites; color: none of their own, because the main site / wiki / forum all have different colors, so just copy the NGE one
- | u' u "mozilla.org" = ("FF", "text,sans", "#e66000") -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind. color: the swirly Firefox has several shades of orange/yellow; went with Spanish Orange, the darkest, because link-icons are so small which usually means colors look lighter
+ | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "x.com/EvaMonkey/" = ("EG", "text", "#f71a00") -- Evangelion: we’ll split this into EGF-related and other NGE sites; color: NGE orange (none of their own, because the main site / wiki / forum all have different colors, so just copy the NGE one)
+ | u' u "mozilla.org" = ("FF", "text,sans", "#e66000") -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind. color: orange-red (the swirly Firefox has several shades of orange/yellow; went with Spanish Orange, the darkest, because link-icons are so small which usually means colors look lighter)
  | u'' u "www.goodreads.com" = ("GR", "text,sans", "#8a5e4a") -- GoodReads: logo doesn’t make sense as a grayscale; color: light brown
- | u'' u "kk.org" = ("KK", "text,sans", "#f4eb00") -- Kevin Kelly; color: book covers like _Cool Tools_ or the 'KK' favicon seem to favor a bright yellow
+ | u'' u "kk.org" = ("KK", "text,sans", "#f4eb00") -- Kevin Kelly; color: yellow (book covers like _Cool Tools_ or the 'KK' favicon seem to favor a bright yellow)
  | aU'' u ["www.lesswrong.com", "sl4.org", "wiki.lesswrong.com", "www.greaterwrong.com"] = ("LW", "text", "#7faf83") -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com. Color: green.
- | aU'' u ["michaelnielsen.org", "quantum.country", "numinous.productions", "cognitivemedium.com", "neuralnetworksanddeeplearning.com"] = ("MN", "text", "") -- color: none; each project has a different color
+ | aU'' u ["michaelnielsen.org", "quantum.country", "numinous.productions", "cognitivemedium.com", "neuralnetworksanddeeplearning.com"] = ("MN", "text", "") -- color: none (each project has a different color)
  | u'' u "www.motherjones.com" = ("MJ", "text,sans", "")
- | u'' u "openreview.net" = ("OR", "text,sans", "#8c1b13") -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>; color: red; wonder if it's supposed to look like Arxiv?
- | u'' u "www.overcomingbias.com" || u' u "mason.gmu.edu/~rhanson/" = ("OB", "text", "#263f5d") -- OB logo too bad to use; current Substack theme seems to be a light royal blue, by extending the Odysseus-bound-to-mast water color
- | u'' u "www.theparisreview.org" = ("PR", "text", "") -- The Paris Review: not even going to try to make their weird bird logo work; color: none, does use rubrication sometimes but not particularly consistently
+ | u'' u "openreview.net" = ("OR", "text,sans", "#8c1b13") -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>; color: red (wonder if it's supposed to look like Arxiv?)
+ | u'' u "www.overcomingbias.com" || u' u "mason.gmu.edu/~rhanson/" = ("OB", "text", "#263f5d") -- OB logo too bad to use; color: light royal blue (current Substack theme seems to be a light royal blue, by extending the Odysseus-bound-to-mast water color)
+ | u'' u "www.theparisreview.org" = ("PR", "text", "") -- The Paris Review: not even going to try to make their weird bird logo work; color: none (does use rubrication sometimes but not particularly consistently)
  | u'' u "www.sciencedaily.com" = ("SD", "text,sans", "#004276") -- color: darker blue
  | u'' u "www.sciencenews.org" = ("SN", "text,sans", "#225483") -- <https://en.wikipedia.org/wiki/Science_News>; color: medium blue
- | u'' u "sethroberts.net" = ("SR", "text,sans", "") -- Logo is a sans 'S' on a red circle background; can't use 'S' because already used by Slate. color: none, no one would recognize it anymore
+ | u'' u "sethroberts.net" = ("SR", "text,sans", "") -- Logo is a sans 'S' on a red circle background; can't use 'S' because already used by Slate. color: none (no one would recognize it anymore so why bother)
  | u'' u "scholars-stage.org" = ("Ss", "text", "#3f1d0b") -- Avoid the unfortunate connotations of ‘SS’; color: brown
- | u'' u "tvtropes.org" = ("TV", "text", "#1c6486") -- TV Tropes: their lampshade icon is unrecognizable & hard to see small; color: very washed out blue, so switched to a brighter blue also on their homepage
+ | u'' u "tvtropes.org" = ("TV", "text", "#1c6486") -- TV Tropes: their lampshade icon is unrecognizable & hard to see small; color: bright blue (very washed out blue, so switched to a brighter blue also on their homepage)
  | u'' u "www.vanityfair.com" = ("VF", "text", "#e7131a") -- color: bright red
  | u'' u "yunnansourcing.com" || u'' u "yunnansourcing.us" = ("ys", "text", "#e99114") -- color: mustard yellow
  | u'' u "memteaimports.com" = ("MT", "text,sans", "#951d1f") -- color: dark copper red
@@ -229,40 +229,40 @@ linkIconRulesDouble u
  | u'' u "www.scientificamerican.com" = ("SA", "text", "#0376a1") -- color: medium blue
  | u'' u "www.stuff.co.nz" = ("NZ", "text,sans", "#d1a3ff") -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'… color: light purple
  | u'' u "chronopause.com" = ("M.D.", "text,sans", "") -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' u "vitalik.eth.limo" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("V.B.", "text,sans", "#337ab7") -- Vitalik Buterin, similarly; color: light blue, possibly from the Ethereum logo...?
+ | u'' u "vitalik.eth.limo" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("V.B.", "text,sans", "#337ab7") -- Vitalik Buterin, similarly; color: light blue (possibly from the Ethereum logo...?)
  | u'' u "unenumerated.blogspot.com" || u' u "szabo.best.vwh.net" || u' u "nick-szabo" = ("N.S.", "text,sans", "") -- Nick Szabo
  | u'' u "scottaaronson.blog" || u'' u "www.scottaaronson.com" = ("S.A.", "text,sans", "#4181b7") -- Scott Aaronson; color: light blue
  | u'' u "www.rifters.com" = ("P.W.", "text,sans", "#737500") -- Peter Watts; color: bright cyberpunk electronic yellow
  | u'' u "www.antipope.org" = ("C.S.", "text,sans", "#921712") -- Charles Stross; color: dark red
- | u'' u "www.ribbonfarm.com" = ("ℝ𝔽", "text,sans", "") -- color: none, too inconsistent over the years
- | u'' u "www.deviantart.com" = ("DA", "text,sans", "#00fe8c") -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would. color: the brightest lightest green part of the transition fades
+ | u'' u "www.ribbonfarm.com" = ("ℝ𝔽", "text,sans", "") -- color: none (too inconsistent over the years)
+ | u'' u "www.deviantart.com" = ("DA", "text,sans", "#00fe8c") -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would. color: light green (the brightest lightest green part of the transition fades)
  | u'' u "www.smithsonianmag.com" = ("SM", "text", "")
  | u'' u "scienceblogs.com" = ("Sᵇ", "text,sans,italic", "")
  | u'' u "www.dailydot.com" = ("D.", "text,sans", "#2a9461") -- color: medium green
  | u'' u "www.johndcook.com" = ("JC", "text,sans", "#1ab6f1") -- color: bright blue
  | u' u "royalsocietypublishing.org" = ("RS", "text", "#d31245") -- <https://en.wikipedia.org/wiki/Royal_Society>; color: pinkish-red
  | u'' u "www.sequentialtart.com" = ("ST", "text,sans", "#ff0000") -- color: bright comic red
- | u'' u "www.psychologytoday.com" = ("PT", "text,sans", "#477be4") -- color: bright blue; TODO: background?
+ | u'' u "www.psychologytoday.com" = ("PT", "text,sans", "#477be4") -- color: bright blue; TODO: white-on-blue text background
  | u'' u "www.independent.co.uk" = ("TI", "text", "") -- <https://en.wikipedia.org/wiki/File:The_Independent_news_logo.svg> swooping-hawk icon would be illegible as link icon
  | u'' u "www.fastcompany.com" = ("FC", "text", "")
  | u'' u "elifesciences.org" = ("eL", "text,sans", "")
  | u'' u "www.w3.org" = ("W3", "text,sans", "#005a9c") -- color: dark blue
- | u'' u "www.metafilter.com" || u'' u "ask.metafilter.com" = ("MF", "text,sans,italic", "#065a8f") -- color: dark blue; TODO: Green-white 'MF' on blue background square?
+ | u'' u "www.metafilter.com" || u'' u "ask.metafilter.com" = ("MF", "text,sans,italic", "#065a8f") -- color: dark blue; TODO: white-on-blue text background (or more elaborately, green-white 'MF' on blue background square?)
  | u'' u "qz.com" = ("QZ", "text,sans", "#105b8e") -- color: dark blue
  | u'' u "blog.23andme.com" || u'' u "23andme.com" = ("23", "text", "#a40e7b") -- color: dark purple
- | u'' u "www.ft.com" = ("FT", "text", "#e3b68e") -- color: tan, but too light to see, so manually darkened
+ | u'' u "www.ft.com" = ("FT", "text", "#e3b68e") -- color: tan (official tan too light to see, so manually darkened)
  | u'' u "techcrunch.com" = ("TC", "text,mono", "#0a8935") -- color: green
  | u' u "livejournal.com" = ("LJ", "text,sans", "#004359") -- color: dark blue
  | u'' u "www.newscientist.com" = ("NS", "text,sans", "")
  | u'' u "www.palladiummag.com" = ("Pd", "text,sans", "") -- "P" is their logo but that is too generic and collides, so take 'palladium is a catalyst' literally & use the element abbreviation
- | u'' u "www.gq.com" = ("GQ", "text,sans", "#c6a348") -- color: light mustard yellow from the 'Q' in 'GQ'
+ | u'' u "www.gq.com" = ("GQ", "text,sans", "#c6a348") -- color: light mustard yellow (from the 'Q' in 'GQ')
  | u'' u "foreignpolicy.com" = ("FP", "text", "#ed3725") -- color: bright red
  | u'' u "www.unqualified-reservations.org" = ("UR", "text", "")
- | u'' u "www.thenewatlantis.com" = ("NA", "text", "#2c6cbd") -- color: inconsistent, but predominantly some sort of medium blue
+ | u'' u "www.thenewatlantis.com" = ("NA", "text", "#2c6cbd") -- color: medium blue (issues are inconsistent, but predominantly some sort of medium blue)
  | aU'' u ["www.supermemo.com", "super-memory.com"] = ("SM", "text,sans", "#f7921e") -- color: dark yellow
- | u'' u "qwantz.com" = ("DC", "text,sans", "#40d53a") -- color: sampled a color from the iconic T-Rex MS Paint art
+ | u'' u "qwantz.com" = ("DC", "text,sans", "#40d53a") -- color: green (sampled a color from the iconic T-Rex MS Paint art)
  | u'' u "qualiacomputing.com" = ("QC", "text,sans", "")
- | u'' u "www.nngroup.com" = ("NN", "text,sans", "#600c20") -- color: the rubricated 'NN' is a bit too bright so went with a wine color. TODO: SVG icon for black-N+red-N version?
+ | u'' u "www.nngroup.com" = ("NN", "text,sans", "#600c20") -- color: wine-red (the rubricated 'NN' is a bit too bright so went with a wine color). TODO: color SVG icon for black-N+red-N version
  | u'' u "replicationindex.com" = ("RI", "text,sans", "#bf4520") -- color: orange
  | u' u ".yahoo.com" = ("Y!", "text,sans", "#5e21cf")
  | u'' u "quantifiedself.com" || u'' u "forum.quantifiedself.com" || u' u "www.reddit.com/r/QuantifiedSelf/" = ("QS", "text,sans", "#387cc0") -- color: light blue
@@ -271,59 +271,59 @@ linkIconRulesDouble u
  | aU' u ["www.unz.com/gnxp/", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "x.com/razibkhan"] = ("RK", "text,sans", "") -- Razib Khan
  | u'' u "jaymans.wordpress.com" = ("J👨🏾", "text,sans", "") -- JayMan
  | u'' u "www.rollingstone.com" = ("𝓡 𝐒", "text", "#d71921") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
- | u'' u "www.popsci.com" = ("PS", "text,sans", "") -- Popular Science magazine (no usable or recognizable logos); color: none, they are doing orange right now but doesn't seem historical
- | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: blue background for 'cb' white wordmark?
- | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none, like The Paris Review, seems to try to change color each issue
+ | u'' u "www.popsci.com" = ("PS", "text,sans", "") -- Popular Science magazine (no usable or recognizable logos); color: none (they are doing orange right now but doesn't seem historical)
+ | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: white-on-blue text background
+ | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none (like The Paris Review, NC seems to try to change color each issue)
  | otherwise = ("", "", "")
 
 -- Tri/triple TLAs
 linkIconRulesTriple "" = error "Config.LinkIcon.linkIconRulesTriple: passed empty string as the URL; this should never happen!"
 linkIconRulesTriple u
  | u'' u "andrewgelman.com" || u'' u "statmodeling.stat.columbia.edu" = ("▅▇▃", "text", "") -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
- | u' u "animenewsnetwork.com" = ("ANN", "text,tri", "#006598") -- color: blue; TODO: SVG the three-circle green-blue logo?
- | u'' u "www.catb.org" || u'' u "esr.ibiblio.org" = ("ESR", "text,tri,sans", "#0000ee") -- color: bright blue, used in weird favicon logo
- | u'' u "arstechnica.com" = ("ars", "text,tri,sans", "#ff4e00") -- Ars is an orange box, not usable; TODO: orange background / white 'ars'?
- | u' u ".bbc.com" || u' u ".bbc.co.uk" = ("BBC", "text,tri,sans", "") -- BBC: no usable logo; TODO: white on black 'BBC'?
- | u' u ".bmj.com" = ("bmj", "text,tri,sans", "#2a6ebb") -- British Medical Journal or just ‘bmj’; TODO: white on blue
- | u'' u "www.cdc.gov" = ("CDC", "text,tri", "#0057b7") -- TOOD: white on blue background
- | u'' u "boardgamegeek.com" = ("BGG", "text,tri,sans", "#ff5100") -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>; color: bright orange
+ | u' u "animenewsnetwork.com" = ("ANN", "text,tri", "#006598") -- color: blue; TODO: color SVG icon for the three-circle green-blue logo
+ | u'' u "www.catb.org" || u'' u "esr.ibiblio.org" = ("ESR", "text,tri,sans", "#0000ee") -- color: bright blue (used in weird favicon logo)
+ | u'' u "arstechnica.com" = ("ars", "text,tri,sans", "#ff4e00") -- Ars is an orange box, not usable; TODO: white-on-orange text background
+ | u' u ".bbc.com" || u' u ".bbc.co.uk" = ("BBC", "text,tri,sans", "") -- BBC: no usable logo; TODO: white-on-black text background
+ | u' u ".bmj.com" = ("bmj", "text,tri,sans", "#2a6ebb") -- British Medical Journal or just ‘bmj’; TODO: white-on-blue text background
+ | u'' u "www.cdc.gov" = ("CDC", "text,tri", "#0057b7") -- TOOD: white-on-blue text background
+ | u'' u "boardgamegeek.com" = ("BGG", "text,tri,sans", "#ff5100") -- no logo because puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>; color: bright orange
  | u'' u "thehub7dnl5nmcz5.onion" = ("Hub", "text,tri,sans", "")
  | u'' u "www.abc.net.au" || u'' u "abcnews.go.com" = ("ABC", "text,tri,sans", "#fdc605") -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>; color: bright yellow
  | u'' u "www.odt.co.nz" = ("ODT", "text,tri", "#1a65ad") -- color: blue
- | u'' u "knowyourmeme.com" = ("KYM", "text,tri", "#13133e") -- color: dark purple; TODO: white text on purple bg
- | u'' u "freakonomics.com" = ("FRK", "text,tri,sans", "#c25700") -- hybrid apple-orange icon (get it, "comparing apples & oranges", "") doesn't work as favicon or link; TODO: SVG color icon
- | u'' u "aiimpacts.org" = ("AII", "text,tri", "#2396ce") -- light blue; TODO: white-on-blue text
- | u'' u "scp-wiki.wikidot.com" = ("SCP", "text,tri,sans", "#823f3f") -- color: light red/brown
+ | u'' u "knowyourmeme.com" = ("KYM", "text,tri", "#13133e") -- color: dark purple; TODO: white-on-purple text background
+ | u'' u "freakonomics.com" = ("FRK", "text,tri,sans", "#c25700") -- hybrid apple-orange icon (get it, "comparing apples & oranges", "") doesn't work as favicon or link; TODO: color SVG icon
+ | u'' u "aiimpacts.org" = ("AII", "text,tri", "#2396ce") -- light blue; TODO: white-on-blue text background
+ | u'' u "scp-wiki.wikidot.com" = ("SCP", "text,tri,sans", "#823f3f") -- color: light red-brown
  | aU'' u ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' u "www.reddit.com/r/AIDungeon"  || u' u "www.patreon.com/AIDungeon" = ("AID", "text,tri,sans", "")
  | u'' u "nap.nationalacademies.org" = ("NAP", "text,tri", "#1d1646") -- color: dark purple-blue
  | u' u ".cnn.com" = ("CNN", "text,tri,sans", "#cc0000") -- color: bright red; TODO: color SVG 'CNN'-worm icon
- | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "#237bbd") -- NPR styles it in lowercase in their |n|p|r| logo; color: light-blue from 'r' in 'npr' logo; TODO: SVG color logo
+ | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "#237bbd") -- NPR styles it in lowercase in their |n|p|r| logo; color: light-blue from 'r' in 'npr' logo; TODO: color SVG icon logo
  | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "#3a2820") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute… color: dark brown (from background of theme)
- | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: Tux penguin feet
+ | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: yellow (from Tux penguin feet)
  | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("F.ai", "text,tri", "#3399f3") -- color: light blue
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "#ff1d46") -- color: bright red
  | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("CBS", "text,tri,sans", "")
- | u'' u "nypost.com" = ("NYP", "text,tri,sans,italic", "#c60800") -- color: bright dark red; TODO: white-on-red
+ | u'' u "nypost.com" = ("NYP", "text,tri,sans,italic", "#c60800") -- color: bright dark red; TODO: white-on-red text background
  | u'' u "www.justice.gov" = ("DoJ", "text,tri", "#162e51") -- US federal Department of Justice ; color: dark blue
  | u'' u "hpmor.com" || u' u "www.fanfiction.net/r/5782108/" || u' u "www.reddit.com/r/HPMOR/" = ("MoR", "text,tri,italic", "#ca9310") -- override FanFiction.net ; color: dark gold
  | u'' u "www.fanfiction.net" = ("FFN", "text,tri,sans", "#333399") -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with Firefox, so expand to "FFN". color: dark purple-blue
- | u'' u "myanimelist.net" = ("MAL", "text,tri,sans", "#2b498e") -- MAL: the blue of their logo doesn’t work, so just text. color: royal blue. TODO: white text on blue background
- | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", "#f71a00") -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange from the original classic splash logo; TODO: color SVG icon (the NERV leaf logo)
- | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue
+ | u'' u "myanimelist.net" = ("MAL", "text,tri,sans", "#2b498e") -- MAL: the blue of their logo doesn’t work, so just text. color: royal blue. TODO: white-on-blue text background
+ | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", "#f71a00") -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
+ | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue text background
  | u'' u "poniesatdawn.bandcamp.com" = ("P@D", "text,tri", "#27050e") -- color: dark brown
- | u'' u "slatestarscratchpad.tumblr.com" || u'' u "www.astralcodexten.com" || (u'' u "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' u "yvain" ||  u' u "slatestarcodex")) = ("SSC", "text,tri", "#5175c2") -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead; color: light blue; TODO: white-on-blue
- | u'' u "plato.stanford.edu" = ("SEP", "text,tri", "#8c1515") -- color: red; we avoid SEP's Rodin's "The Thinker" lgoo, as appropriate as it is, because it won't render at link-icon scale without major revision.
- | u'' u "www.vox.com" = ("Vox", "text,tri,italic", "#fff200") -- color: bright yellow; TODO: black-on-yellow background
+ | u'' u "slatestarscratchpad.tumblr.com" || u'' u "www.astralcodexten.com" || (u'' u "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' u "yvain" ||  u' u "slatestarcodex")) = ("SSC", "text,tri", "#5175c2") -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead; color: light blue; TODO: white-on-blue text background
+ | u'' u "plato.stanford.edu" = ("SEP", "text,tri", "#8c1515") -- no icon, we avoid SEP's Rodin's "The Thinker" lgoo, as appropriate as it is, because it won't render at link-icon scale without major revision. color: red;
+ | u'' u "www.vox.com" = ("Vox", "text,tri,italic", "#fff200") -- color: bright yellow; TODO: black-on-yellow text background
  | aU'' u ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = ("WSJ", "text,tri", "") -- The Wall Street Journal
  | u'' u "gameprogrammingpatterns.com" = ("GPP", "text,tri,sans", "#1487c1") -- color: medium blue
  | u'' u "www.metopera.org" = ("Met", "text,tri", "#9c9899") -- color: dark yellow
- | u'' u "www.schneier.com" = ("SOS", "text,tri,sans", "#6b0000") -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS"); color: dark red; TODO: white-on-red
- | u'' u "hbr.org" = ("HBR", "text,tri,sans", "") -- Harvard Business Review; TODO: white-on-black
+ | u'' u "www.schneier.com" = ("SOS", "text,tri,sans", "#6b0000") -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS"); color: dark red; TODO: white-on-red text background
+ | u'' u "hbr.org" = ("HBR", "text,tri,sans", "") -- Harvard Business Review; TODO: white-on-black text background
  | aU'' u ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = ("acm", "text,tri,sans", "") -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.
  | u' u "www.cs.utexas.edu/~EWD/" = ("EWD", "text,tri,sans", "") -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' u "iopscience.iop.org" = ("IOP", "text,tri,sans", "#cc0000") -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing; color: red
  | u'' u "80000hours.org" = ("80k", "text,tri,sans", "#2ebdd1") -- 80,000 Hours (Centre for Effective Altruism, FHI, Oxford)
- | u'' u "researchers.wls.wisc.edu" || u' u "www.ssc.wisc.edu/wlsresearch/" = ("WLS", "text,tri,sans", "#c5050c") -- Wisconsin Longitudinal Study; color: red; TODO: white-on-red
+ | u'' u "researchers.wls.wisc.edu" || u' u "www.ssc.wisc.edu/wlsresearch/" = ("WLS", "text,tri,sans", "#c5050c") -- Wisconsin Longitudinal Study; color: red; TODO: white-on-red text background
  | u' u "host.robots.ox.ac.uk/pascal/VOC" = ("VOC", "text,tri,sans", "") -- PASCAL VOC (Visual Object Classes) machine learning image dataset/competition
  | u'' u "www.tandfonline.com" = ("T&F", "text,tri,sans", "#0068b1") -- Taylor & Francis: their icon is a small white oil lamp on a blue background, but it's illegible as a favicon and just looks like a white blob on a blue square; since these need to be monochrome, that makes it useless. Plus I recognize 'Taylor & Francis' (sans serif, as usual for STEM publishers) more anyway, so 'T&F' is the natural tri-text icon. A possible Unicode alternative for the AMPERSAND if it is too big is 'U+FE60 ﹠ SMALL AMPERSAND'. color: blue
  | u' u "omega0.xyz/omega8008/" || aU' u ["/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "www-biba.inrialpes.fr/Jaynes/cc18i.pdf"] = ("ETJ", "text,tri,sans", "") -- E. T. Jaynes book/paper website
@@ -333,29 +333,29 @@ linkIconRulesTriple u
  | u'' u "www.lrb.co.uk" = ("LRB", "text,tri", "") -- London Review of Books <https://en.wikipedia.org/wiki/London_Review_of_Books>
  | u'' u "archiveofourown.org" = ("Ao3", "text,tri", "#9c0000") -- Archive of Our Own <https://archiveofourown.org/> <https://en.wikipedia.org/wiki/Archive_of_Our_Own>; color: red
  | u'' u "www.nlsinfo.org" = ("NLS", "text,tri,sans", "#0071bc") -- the National Longitudinal Surveys (BLS), eg. NLSY79 <https://en.wikipedia.org/wiki/National_Longitudinal_Surveys>
- | aU'' u ["www.fda.gov","fis.fda.gov","clinicaltrials.gov", "classic.clinicaltrials.gov"] = ("FDA", "text,tri,sans", "#0078b4") -- U.S. Food & Drug Administration; color: green-blue; TODO: white-on-blue
+ | aU'' u ["www.fda.gov","fis.fda.gov","clinicaltrials.gov", "classic.clinicaltrials.gov"] = ("FDA", "text,tri,sans", "#0078b4") -- U.S. Food & Drug Administration; color: green-blue; TODO: white-on-blue text background
  | u'' u "silkroadvb5piz3r.onion" || u'' u "silkroad5v7dywlc.onion" = ("SR1", "text,tri,sans", "#105a0a") -- color: dark green
- | aU'' u ["bls.gov", "data.bls.gov", "www.bls.gov"] = ("BLS", "text,tri,sans", "#173380") -- color: dark blue; the cute star+time-series logo would be illegible
+ | aU'' u ["bls.gov", "data.bls.gov", "www.bls.gov"] = ("BLS", "text,tri,sans", "#173380") -- no icon because the cute star+time-series logo would be illegible; color: dark blue
  | u'' u "ocw.mit.edu" = ("OCW", "text,tri,sans", "") -- OpenCourseWare: MIT MOOCs <https://en.wikipedia.org/wiki/OpenCourseWare>
- | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue
+ | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
 linkIconRulesQuad "" = error "Config.LinkIcon.linkIconRulesQuad: passed empty string as the URL; this should never happen!"
 linkIconRulesQuad u
- | aU'' u ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad", "#d71635") -- The Journal of the American Medical Association (JAMA); color: bright red; TODO: white-on-red
- | u'' u "www.cell.com" = ("CELL", "text,quad,sans", "#007dbc") -- Cell: their logo is unrecognizable (and dumb); color: blue; TODO: white-on-blue
+ | aU'' u ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad", "#d71635") -- The Journal of the American Medical Association (JAMA); color: bright red; TODO: white-on-red text background
+ | u'' u "www.cell.com" = ("CELL", "text,quad,sans", "#007dbc") -- Cell: their logo is unrecognizable (and dumb); color: blue; TODO: white-on-blue text background
  | u'' u "mlp.fandom.com" = ("MLPW", "text,quad,sans", "#abe9e8") -- NOTE: override Fandom catch-all; color: light blue
  | u'' u "www.fimfiction.net" = ("FIMF", "text,quad,mono", "#3b68af") -- color: dark blue
- | u'' u "www.nber.org" && (extension u /= ".pdf") || u'' u "ideas.repec.org" = ("NBER", "text,quad", "#075dba") -- IDEAS/RePEc doesn't seem to actually be run by or affiliated with NBER, but it's so close topically that I think readers can forgive it.; color: dark blue; TODO: white-on-blue
+ | u'' u "www.nber.org" && (extension u /= ".pdf") || u'' u "ideas.repec.org" = ("NBER", "text,quad", "#075dba") -- IDEAS/RePEc doesn't seem to actually be run by or affiliated with NBER, but it's so close topically that I think readers can forgive it.; color: dark blue; TODO: white-on-blue text background
  | u'' u "www.pnas.org" = ("PNAS", "text,quad", "#1f75b9") -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.] color: blue
- | u'' u "www.rand.org" = ("RAND", "text,quad,sans", "#751ddb") -- color: wine-red; TODO: white-on-red background
- | u' u ".sagepub.com" = ("SAGE", "text,quad,sans", "#046ff8") -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com; color: dark blue; TODO: white-on-blue
+ | u'' u "www.rand.org" = ("RAND", "text,quad,sans", "#751ddb") -- color: wine-red; TODO: white-on-red text background
+ | u' u ".sagepub.com" = ("SAGE", "text,quad,sans", "#046ff8") -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com; color: dark blue; TODO: white-on-blue text background
  | u'' u "publicdomainreview.org" = ("TPDR", "text,quad", "")
  | u' u "xkcd.com" = ("XKCD", "text,quad,sans", "") -- covers explainxkcd.com, what-if.xkcd.com…
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
- | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue background
+ | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue text background
  | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans", "") -- overrides IA
  | u' u "mitpress.mit.edu/" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
@@ -364,11 +364,11 @@ linkIconRulesQuad u
  | u'' u "www.mdpi.com" = ("MDPI", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
  | u'' u "mattlakeman.org" = ("MATT", "text,quad,sans", "")
  | u'' u "www.poetryfoundation.org" = ("POET", "text,quad,sans", "#ed1c24") -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad; color: red
- | u'' u "papers.ssrn.com" = ("SSRN", "text,quad", "#007398") -- color: dark blue; TODO: white-on-blue background
- | u'' u "www.vice.com" || u'' u "motherboard.vice.com" = ("VICE", "text,quad,italic", "") -- TODO: white-on-black background
+ | u'' u "papers.ssrn.com" = ("SSRN", "text,quad", "#007398") -- color: dark blue; TODO: white-on-blue text background
+ | u'' u "www.vice.com" || u'' u "motherboard.vice.com" = ("VICE", "text,quad,italic", "") -- TODO: white-on-black text background
  | aU'' u ["www.courtlistener.com", "archive.recapthelaw.org", "storage.courtlistener.com", "www.courtlistener.com", "www.pacer.uscourts.gov", "www.pacer.gov", "pcl.uscourts.gov"] = ("PACR", "text,quad", "")
- | u'' u "www.nybooks.com" = ("NYRB", "text,quad", "#990910") -- color: red; TODO: white-on-red background
- | u'' u "www.jstor.org" = ("JTOR", "text,quad", "#900000") -- quad looks better skipping the thin 'S'; color: red; TODO: white-on-red background
+ | u'' u "www.nybooks.com" = ("NYRB", "text,quad", "#990910") -- color: red; TODO: white-on-red text background
+ | u'' u "www.jstor.org" = ("JTOR", "text,quad", "#900000") -- quad looks better skipping the thin 'S'; color: red; TODO: white-on-red text background
  | u'' u "thisanimedoesnotexist.ai" = ("TADE", "text,quad,sans", "")
  | u'' u "www.thisfursonadoesnotexist.com" = ("TFDE", "text,quad,sans", "")
  | u'' u "www.thiswaifudoesnotexist.net" = ("TWDE", "text,quad,sans", "")
@@ -376,37 +376,37 @@ linkIconRulesQuad u
  | u'' u "pcdb.santafe.edu" = ("PCDB", "text,quad,sans", "#a57030") -- color: reddish brown
  | u'' u "vndb.org" = ("VNDB", "text,quad,sans", "")
  | u'' u "www.huffpost.com" = ("HUFF", "text,quad,sans", "#0dbe98") -- color: blue-green
- | u'' u "longreads.com" = ("Long", "text,quad", "#cc0000") -- logo: 'L' in a red circle; color: red; TODO: white-on-red background
+ | u'' u "longreads.com" = ("Long", "text,quad", "#cc0000") -- logo: 'L' in a red circle; color: red; TODO: white-on-red text background
  | u'' u "warontherocks.com" = ("WOT R", "text,quad,sans", "")
  | u'' u "krebsonsecurity.com" = ("Krbs", "text,quad,sans", "") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krbs', so abbreviate that
  | u'' u "www.nextplatform.com" = ("NEXT", "text,quad,sans", "#ff7200") -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable; color: orange
  | u'' u "www.vetta.org" = ("Legg", "text,quad,sans", "") -- Shane Legg (DeepMind)
- | u'' u "www.spiegel.de" = ("SPGL", "text,quad", "#e64415") -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead; color: orange; TODO: orange-on-white background
+ | u'' u "www.spiegel.de" = ("SPGL", "text,quad", "#e64415") -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead; color: orange; TODO: orange-on-white text background
  | u'' u "tasvideos.org" = ("TASV", "text,quad", "") -- TASVideos.org: tool-assisted game movies
  | u'' u "habr.com" = ("Habr", "text,quad,sans", "") -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
- | u'' u "www.teds.ac.uk" = ("TEDS", "text,quad,sans", "#45c1a7") -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (<https://www.teds.ac.uk/Content/Images/TEDSlogo.png>) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"; color: blue; link-icon of a... person? illegible
+ | u'' u "www.teds.ac.uk" = ("TEDS", "text,quad,sans", "#45c1a7") -- UK twin registry founded by Robert Plomin, heavily used in behavioral genetics & sociology/psychology; it has a clever little logo (<https://www.teds.ac.uk/Content/Images/TEDSlogo.png>) & a monochrome SVG version would work… but unfortunately no one ever uses it & it is always known as "Twins Early Development Study (TEDS)"; color: blue
  | u'' u "stability.ai" || u' u "#stability" || u' u "&org=stability" = ("SD", "text,sans", "")
- | u' u "stripe.com" = ("S", "text,sans", "#635bff") -- use color from Stripe logo: color, brown; TODO: white-on-brown background
- | u'' u "patrickcollison.com" = ("PC", "text,sans", "#635bff") -- use color from Stripe logo: color, brown; TODO: white-on-brown background
+ | u' u "stripe.com" = ("S", "text,sans", "#635bff") -- use color from Stripe logo: color, brown; TODO: white-on-brown text background
+ | u'' u "patrickcollison.com" = ("PC", "text,sans", "#635bff") -- use color from Stripe logo: color, brown; TODO: white-on-brown text background
  | u'' u "oeis.org" = ("OEIS", "text,quad,sans", "") -- On-Line Encyclopedia of Integer Sequences; replicate their existing quad icon.
  | u'' u "bldgblog.com" = ("BLDG", "text,quad,mono", "") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono", "#3498db") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...; color: blue from kalzumeus.com, echoed in Bits About Money. TODO: white-on-blue background
+ | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono", "#3498db") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...; color: blue from kalzumeus.com, echoed in Bits About Money. TODO: white-on-blue text background
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans", "") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' u "scale.com" = ("SCLE", "text,quad,mono", "") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,mono", "") -- Nuño Sempere
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,mono", "") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
- | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans", "") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon; TODO: color SVG link-icon
- | u'' u "www.scmp.com" = ("SCM", "text,tri", "#ffca05") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?); 'SCMP' unfortunately doesn't work as a quad, because the width of 'MP' is far larger than 'SC' and playing around with it, I can't get it to look good, so we settle for just the first three; color: yellow; TODO: yellow-black flag SVG icon
- | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black background
+ | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans", "") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon; TODO: color SVG icon
+ | u'' u "www.scmp.com" = ("SCM", "text,tri", "#ffca05") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?); 'SCMP' unfortunately doesn't work as a quad, because the width of 'MP' is far larger than 'SC' and playing around with it, I can't get it to look good, so we settle for just the first three; color: yellow; TODO: color SVG icon yellow-black flag color
+ | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black text background
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
- | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama' (TODO: should this be all lower/uppercase instead of mixed?)
+ | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
 linkIconRulesSVG "" = error "Config.LinkIcon.linkIconRulesSVG: passed empty string as the URL; this should never happen!"
 linkIconRulesSVG u
  | aU'' u ["texample.net", "ctan.org", "www.tug.org", "tug.org"] = ("tex", "svg", "") -- Properly turning the 'TeX' logotype in a link icon is hard. You can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable (it's not great on computer screens to begin with, and shrunk down to a link-icon, even worse); you can cheat in pure Unicode with 'TₑX' (LATIN SUBSCRIPT SMALL LETTER E U+2091;, there is no 'LARGE LETTER E' unfortunately) but this took winds up looking pretty bad in practice. So what I did was create my own SVG TeX link-icon in Inkscape, using Source Serif Pro bold letters, arranged by hand like the logotype, and then rescaled horizontally ~120% to make the strokes thick enough that they'd survive downscaling. *That* works.
- | aU'' u ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' u "amazon.co." = ("amazon", "svg", "#ffce53") -- icon: 'a'+swoosh-underline; color: yellow; TODO: switch to a SVG color icon with just the underline swoosh yellow?
+ | aU'' u ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' u "amazon.co." = ("amazon", "svg", "#ffce53") -- icon: 'a'+swoosh-underline; color: yellow; TODO: color SVG icon with just the underline swoosh yellow
  | u'' u "en.bitcoin.it" || u'' u "bitcointalk.org" || u'' u "www.blockchain.com" = ("bitcoin", "svg", "#ef8e19") -- <https://en.wikipedia.org/wiki/File:Bitcoin.svg>
  | u'' u "www.biorxiv.org" || u'' u "www.medrxiv.org" = ("chi-dna", "svg", "#bd2736") -- BioRxiv (custom icon: italic Chi with DNA cross-strands).; color: red
  | u'' u "distill.pub" = ("distillpub", "svg", "") -- Distill ML journal.
@@ -414,7 +414,7 @@ linkIconRulesSVG u
  | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg", "")
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg", "#ff6f00") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg", "") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' u "paulgraham.com" = ("pg", "text,mono", "#666699") -- Paul Graham, known by username 'pg' on HN; color: purple; TODO: white-on-purple background
+ | u'' u "paulgraham.com" = ("pg", "text,mono", "#666699") -- Paul Graham, known by username 'pg' on HN; color: purple; TODO: white-on-purple text background
  | u' u "ycombinator.com" || u' u "hn.algolia.com" = ("hacker-news", "svg", "#f26522") -- HN/YC (shared logo). primary user: news.ycombinator.com; color: orange
  | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg", "") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overriden by SICP
  | u'' u "mega.nz" = ("mega", "svg", "#dd1405") -- MegaUpload/Mega: filesharing (used for big files).; color: orange
@@ -442,7 +442,7 @@ linkIconRulesSVG u
  | aU'' u ["vimeo.com", "player.vimeo.com"] = ("file-video", "svg", "#17d5ff") -- color: green
  | u'' u "www.telegraph.co.uk" = ("the-telegraph", "svg", "") -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' u "www.openphilanthropy.org" = ("open-philanthropy", "svg", "")
- | u'' u "www.atlasobscura.com" = ("atlas-obscura", "svg", "#ad8f68") -- color: bronze?
+ | u'' u "www.atlasobscura.com" = ("atlas-obscura", "svg", "#ad8f68") -- color: orange-bronze
  | aU'' u ["blog.eleuther.ai", "www.eleuther.ai", "pile.eleuther.ai", "6b.eleuther.ai"] || u' u "arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/" = ("eleutherai", "svg", "")
  | u'' u "arankomatsuzaki.wordpress.com" = ("ak", "text,sans", "") -- known with the other ak on Twitter; put after EAI in the SVG section because the GPT-J announcement is an EAI project
  | u' u ".apple.com" = ("apple", "svg", "")
@@ -454,7 +454,7 @@ linkIconRulesSVG u
  | u'' u "www.connectedpapers.com" = ("connected-papers", "svg", "#74b7b8") -- color: green-blue
  | u' u "nasa.gov" = ("nasa", "svg", "#dc3329") -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>; color: red (from <https://commons.wikimedia.org/wiki/Category:NASA_%22worm%22_logotype#/media/File:NASA_Worm_logo.svg>)
  | aU'' u ["link.springer.com", "rd.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg", "")  -- (♘) WHITE CHESS KNIGHT as SVG
- | u'' u "www.metaculus.com" = ("metaculus", "svg", "#283441") -- color: very dark blue-black
+ | u'' u "www.metaculus.com" = ("metaculus", "svg", "#283441") -- color: dark blue-black
  | u'' u "wandb.ai" = ("wandb", "svg", "#ffcc33") -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon; color: yellow
  | aU'' u ["libgen.li", "libgen.org", "library.bz"] = ("raven", "svg", "") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
  | u'' u "www.hoover.org" = ("hoover-institution", "svg", "") -- <https://en.wikipedia.org/wiki/Hoover_Institution_Library_and_Archives> <https://en.wikipedia.org/wiki/Hoover_Tower> <https://en.wikipedia.org/wiki/New_Cathedral_of_Salamanca>
@@ -463,7 +463,7 @@ linkIconRulesSVG u
  | u'' u "retractionwatch.com" = ("magnifying-glass", "svg", "") -- Retraction Watch <https://en.wikipedia.org/wiki/Retraction_Watch> LEFT-POINTING HOUR GLASS
  | u'' u "quoteinvestigator.com" = ("magnifying-glass", "svg", "") -- basically the same Sherlock Holmes magnifying-glass idea
  | u'' u "www.yudkowsky.net" = ("yud", "svg", "") -- but of course: י HEBREW LETTER YUD 0x05D9; we use an SVG icon here for the same reason we use a math alef elsewhere instead of the Hebrew one (the RTL of Hebrew script will screw up some browsers, like Mac Firefox)
- | u'' u "nautil.us" = ("nautilus", "svg", "#ffce00") -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG)
+ | u'' u "nautil.us" = ("nautilus", "svg", "#ffce00") -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG); color: orange-bronze
  | u'' u "www.scholarpedia.org" = ("scholarpedia", "svg", "") -- Scholarpedia <https://en.wikipedia.org/wiki/Scholarpedia>; Adobe trace of their PNG favicon
  | u'' u "radiolab.org" = ("audio-waveform-lines", "svg", "#8c2ec5") -- Radiolab WNYC/NPR <https://en.wikipedia.org/wiki/Radiolab>; <https://fontawesome.com/icons/waveform-lines>/<https://www.svgrepo.com/svg/342965/audio-wave>; color: red
  | u'' u "maggieappleton.com" = ("maggie-appleton", "svg", "#04a4ba")  -- <https://x.com/Mappletons> Maggie Appleton, designer (Elicit/Ought), blogger about hypermedia/personal wikis/PKM; color: blue
@@ -473,7 +473,7 @@ linkIconRulesSVG u
 
  -- FINAL MATCHES:
  -- many orgs will use a 'medium.com' subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
- | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text", "") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M; TODO: white-on-black background
+ | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text", "") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M; TODO: white-on-black text background
  | u' u "reddit.com" = ("reddit", "svg", "#ff4500") -- www.reddit.com; color: orange
  | otherwise = ("", "", "")
 
