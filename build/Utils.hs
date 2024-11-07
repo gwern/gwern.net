@@ -413,7 +413,20 @@ replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
 -- specialize the `replace` family to deletion, as is the most common usecase:
 -- Delete a substring from a list
 delete :: String -> String -> String
+delete "" = error "Utils.delete: passed an empty string to delete? That makes no sense and should never happen."
 delete x = replace x ""
+
+-- Enable prefix & suffix string deletion for the common usecase of space-separated deletion.
+--
+-- If a string starts with a space, it is removed from the back (as a trailing suffix like "Title - Site name"); if it starts with a space, it is removed from the front (ie. "Site name - Title"); if it starts with neither, it is just removed anywhere it appears (equivalent to `delete`).
+deleteMixed :: String -> String -> String
+deleteMixed "" _ = error "Utils.deleteMixed: passed an empty string to delete? That makes no sense and should never happen."
+deleteMixed target str
+    | head target == ' ' = sed (target ++ "$") "" str
+    | last target == ' ' = sed ("^" ++ target) "" str
+    | otherwise = delete target str
+deleteMixedMany :: [String] -> (String -> String)
+deleteMixedMany xs s = foldr deleteMixed s xs
 
 -- Delete a substring from a Text
 deleteT :: T.Text -> T.Text -> T.Text

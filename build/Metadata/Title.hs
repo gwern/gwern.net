@@ -7,7 +7,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 
 import Metadata.Format (filterMeta, pageNumberParse, trimTitle, cleanAbstractsHTML)
-import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL, replaceMany, deleteMany)
+import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL, replaceMany, deleteMixedMany)
 import Config.Misc as CM (cd)
 import Config.Metadata.Title as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
 
@@ -49,7 +49,7 @@ htmlDownloadAndParseTitleClean "" = error "Metadata.Title.htmlDownloadAndParseTi
 htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Metadata.Title.htmlDownloadAndParseTitleClean: passed a non-URL argument, which should never happen: " ++ show u else
  do
   title <- htmlDownloadAndParseTitle u
-  let title' = trim $ unlines $ take 1 $ lines $ replaceMany C.stringReplace $ deleteMany C.stringDelete $
+  let title' = trim $ unlines $ take 1 $ lines $ replaceMany C.stringReplace $ deleteMixedMany C.stringDelete $
                  if any (`elem` C.separators) title
                  then reverse $ tail $ dropWhile (`notElem` C.separators) $ reverse title
                  else title
