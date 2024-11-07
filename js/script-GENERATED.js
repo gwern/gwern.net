@@ -15103,7 +15103,7 @@ function enableLinkIcon(link) {
 			};
 
 			doWhenSVGIconsLoaded(() => {
-				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/"(#[0-9A-Fa-f]+)"/g, 
+				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
 					(match, colorCode) => {
 						return `"${(transformColor(colorCode))}"`;
 					}));
