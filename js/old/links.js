@@ -739,7 +739,6 @@ Links.targetLinkTypes = [
     [ "plos",               "svg",                  /(.+\.)?plos.org$/                  ],
     [ "plos",               "svg",                  /(.+\.)?plosone.org$/               ],
     [ "plos",               "svg",                  /(.+\.)?plosbiology.org$/           ],
-    [ "plos",               "svg",                  /(.+\.)?plosmedicine.org$/          ],
 
     //  Reddit.
     //  primary user: old.reddit.com
