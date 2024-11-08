@@ -13,11 +13,6 @@
     --GW-image-checkerboard-888-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
     --GW-image-checkerboard-bfbfbf-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 
-    --GW-image-linear-dotted-000-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIEBCSGBQA7');
-    --GW-image-linear-dotted-888-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAIiIiP///wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
-    --GW-image-linear-dotted-fff-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAAP///wAAAAAAACH5BAkAAAIALAAAAAAEAAIAAAIETCSGBQA7');
-    --GW-image-linear-dotted-bbb-transparent-2x-gif: url('data:image/gif;base64,R0lGODdhBAACAJEAAAAAALu7u////wAAACH5BAkAAAMALAAAAAAEAAIAAAIETDaGBQA7');
-
     --GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
     --GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFj4+PiwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
@@ -1889,15 +1884,15 @@ a code {
     opacity: 0.75;
 }
 .icon-single-white-star-on-black-circle::before { background-position: center; }
-.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730840641#moon-solid'); }
-.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730840641#book-open-solid'); }
-.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1730840641#message-slash-solid'); }
-.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1730840641#magnifying-glass'); }
-.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730840641#gear-solid'); }
-.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1730840641#sun-solid'); }
-.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730840641#eye-slash-solid'); }
-.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1730840641#manicule-right'); }
-.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1730840641#manicule-left'); }
+.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730903408#moon-solid'); }
+.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730903408#book-open-solid'); }
+.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1730903408#message-slash-solid'); }
+.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1730903408#magnifying-glass'); }
+.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730903408#gear-solid'); }
+.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1730903408#sun-solid'); }
+.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730903408#eye-slash-solid'); }
+.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1730903408#manicule-right'); }
+.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1730903408#manicule-left'); }
 
 /*************/
 /* SIDENOTES */
