@@ -1,11 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.15470053837925 -1.25 2.30940107675850 2.25">
-    <defs>
-        <path id="bezierTriangle" d="M 0 1 C -1.15470053837925 1, -1.44337567297406 0.5, -0.866025403784439 -0.5 C -0.288675134594813 -1.5, 0.288675134594813 -1.5, 0.866025403784439 -0.5 C 1.44337567297406 0.5, 1.15470053837925 1, 0 1 z" fill="white" shape-rendering="geometric-precision" />
-        <circle id="circle" cx="0" cy="0" r="1" fill="black" shape-rendering="geometric-precision" />
-    </defs>
-    <use id="bT1" href="#bezierTriangle" />
-    <use id="c2" href="#circle" transform="scale(0.965243487740224)" />
-    <use id="bt3" href="#bezierTriangle" transform="scale(-0.74535599249993)" />
-    <use id="c4" href="#circle" transform="scale(0.719450017808709)" />
-    <use id="bT5" href="#bezierTriangle" transform="scale(0.555555555555556)" />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.15 -1 2.3 2"><defs><path id="eleutherai-bezierTriangle" d="M 0 1 C -1.155 1, -1.44 0.5, -0.866 -0.5 C -0.289 -1.5, 0.289 -1.5, 0.866 -0.5 C 1.443 0.5, 1.155 1, 0 1 z" fill="#fff"/><circle id="eleutherai-circle" cx="0" cy="0" r="1" fill="#000"/></defs><use id="bT1" href="#eleutherai-bezierTriangle"/><use id="c2" href="#eleutherai-circle" transform="scale(0.965)"/><use id="bt3" href="#eleutherai-bezierTriangle" transform="scale(-0.745)"/><use id="c4" href="#eleutherai-circle" transform="scale(0.720)"/><use id="bT5" href="#eleutherai-bezierTriangle" transform="scale(0.555)"/></svg>
