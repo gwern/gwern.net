@@ -146,7 +146,9 @@ tagsShort2LongRewrites =
    , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution")
    , ("fermi", "science/fermi-problem"), ("fermi-estimate", "science/fermi-problem"), ("fermi-calculation", "science/fermi-problem"), ("fermi-problems", "science/fermi-problem")
    , ("clock", "longevity/epigenetics"), ("aging-clock", "longevity/epigenetics"), ("epigenetic-clock", "longevity/epigenetics"), ("clocks", "longevity/epigenetics")
-   , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability"), ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")]
+   , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability")
+   , ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")
+   , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -345,6 +347,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/text-game", "text game")
   , ("fiction/humor", "humor")
   , ("fiction/criticism", "literary criticism")
+  , ("economics/advertising/adblock", "adblocking")
   , ("economics/advertising", "ads")
   , ("economics/experience-curve", "experience curves")
   , ("economics/georgism", "Georgism")

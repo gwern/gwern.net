@@ -57,6 +57,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;", "Patlabor Wiki", "Reddit"
      , "Reddit - Dive into anything", "why why why why why why why", "Exclusive", "Randomly updated", "Redirecting", "x.com", "Welcome to the Orion's Arm Universe Project", "Web Page Under Construction", "Organization not found", "Page not found - Rybka Forum", "APA Dictionary of Psychology", "0xPARC", "graydon2", "Vimeo / CAPTCHA Challenge", "Bulletin of the Atomic Scientists", "ORCID", "This page could not be found", "Are you a robot?", "Dario Amodei", "Nabeel S. Qureshi", "ScienceDirect", "smoothbrains.net", "home"]
 
+-- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
 stringDelete :: [String]
 stringDelete = [" - The Public Domain Review"
@@ -137,4 +138,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Epoch AI", " - by Scott Alexander", " - by Rohit Krishnan", " - by Sasha Chapin"
             , " - Casey Handmer's blog", " - Casey Handmer’s blog", "Zarf Updates: ", " - Derpibooru"
             , " - HTML: HyperText Markup Language", " - Joel on Software", "Neal Stephenson - "
-            , "- jreyesr’s blog", "Old Vintage Computing Research: ", "Flight From Perfection - ", "A Knight at the Opera: ", "Res Obscura: ", " • European Platform of Women Scientists", " - HoloWiki - A Holography FAQ", " - by Brian Potter", "—Free Online Library", "Ebony: ", " - A Collection of Unmitigated Pedantry", " - Dominic Cummings substack"]
+            , "- jreyesr’s blog", "Old Vintage Computing Research: ", "Flight From Perfection - ", "A Knight at the Opera: ", "Res Obscura: ", " • European Platform of Women Scientists", " - HoloWiki - A Holography FAQ", " - by Brian Potter", "—Free Online Library", "Ebony: ", " - A Collection of Unmitigated Pedantry", " - Dominic Cummings substack", "Code rant: "]

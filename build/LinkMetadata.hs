@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-06 22:32:33 gwern"
+When:  Time-stamp: "2024-11-07 10:24:24 gwern"
 License: CC-0
 -}
 
@@ -270,7 +270,7 @@ readLinkMetadataAndCheck = do
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc)) finalL
-             unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad)
+             unless (null datesBad) ((printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad))
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -297,7 +297,7 @@ readLinkMetadataAndCheck = do
 
              -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
              let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
-             unless (null badSeeAlsoColumnsUse) $ printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse)
+             unless (null badSeeAlsoColumnsUse) (printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse))
 
              -- ensure that link IDs are unique, and report ambiguous ones for fixing:
              let disambigs = LinkID.getDisambiguatedPairs final
