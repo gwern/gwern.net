@@ -302,7 +302,6 @@ linkIconRulesTriple u
  | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: yellow (from Tux penguin feet)
  | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("F.ai", "text,tri", "#3399f3") -- color: light blue
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "#ff1d46") -- color: bright red
- | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("CBS", "text,tri,sans", "")
  | u'' u "nypost.com" = ("NYP", "text,tri,sans,italic", "#c60800") -- color: bright dark red; TODO: white-on-red text background
  | u'' u "www.justice.gov" = ("DoJ", "text,tri", "#162e51") -- US federal Department of Justice ; color: dark blue
  | u'' u "hpmor.com" || u' u "www.fanfiction.net/r/5782108/" || u' u "www.reddit.com/r/HPMOR/" = ("MoR", "text,tri,italic", "#ca9310") -- override FanFiction.net ; color: dark gold
@@ -470,6 +469,7 @@ linkIconRulesSVG u
  | u'' u "www.emacswiki.org" || aU' u ["www.reddit.com/r/emacs/", "www.gnu.org/software/emacs"] = ("emacs", "svg", "#c04c39") -- color: red (from <https://en.wikipedia.org/wiki/File:Emacs-logo.svg>)
  | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg", "#024c83") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>; color: dark blue
  | u'' u "www.tiktok.com" = ("tiktok", "svg", "#65c3c9") -- color: green
+ | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("cbs", "svg", "") -- <https://commons.wikimedia.org/wiki/File:CBS_News_logo_(2020).svg>; color: none (individual CBS affiliates/stations seem to pick their own colors but the overall brand is just black)
 
  -- FINAL MATCHES:
  -- many orgs will use a 'medium.com' subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
@@ -1063,8 +1063,8 @@ linkIconTestUnitsText =
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans", "")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans", "")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans", "")
-         , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans", "")
-         , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "CBS", "text,tri,sans", "")
+         , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "cbs", "svg", "")
+         , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "cbs", "svg", "")
          , ("https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans", "")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans", "")
          , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans", "")
