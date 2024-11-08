@@ -2,6 +2,7 @@
 module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules, linkIconTypes) where
 
 import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, Text)
+
 import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`).
@@ -61,6 +62,23 @@ linkIconTypes = ["text", "svg"
                 , "mono", "italic", "bold", "overline"
                 ]
 
+-- Color hex code shortcuts:
+blueDM, blueFB, blueG, bluePatio11, blueYahoo, brownAnthropic, greenNV, orangeNGE, purpleHaskell, redAdobe, redR, redTufte, yellowMoR, yellowPG :: T.Text
+redAdobe = "#f40f02"
+redR     = "#1b61b1"
+redTufte = "#b1282b"
+yellowMoR = "#ca9310"
+yellowPG  = "#aa873b"
+brownAnthropic = "#d4a27f"
+orangeNGE = "#f71a00"
+greenNV = "#77ba00"
+blueDM      = "#4185f4"
+blueFB      = "#1877f2"
+blueG       = "#4285f4"
+bluePatio11 = "#3498db"
+blueYahoo   = "#669bb5"
+purpleHaskell = "#5e5086"
+
 -- Helper functions for URL matches:
 u', u'' :: T.Text -> T.Text -> Bool
 -- Loose check: simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/doc/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
@@ -95,25 +113,25 @@ linkIconRules u = let result = filter (/=("","","")) $ map (\f -> f u) [linkIcon
 linkIconRulesOverrides "" = error "Config.LinkIcon.linkIconRulesOverrides: passed empty string as the URL; this should never happen!"
 -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL. This must be matched first.
 linkIconRulesOverrides u
- | u' u "deepmind"  = ("deepmind", "svg", "#4185f4") -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
+ | u' u "deepmind"  = ("deepmind", "svg", blueDM) -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
  | u' u "schmidhuber" || u' u "people.idsia.ch/~juergen/" = ("SMDH", "text,quad,sans", "") -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
- | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", "#1877f2")
+ | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", blueFB)
  | u' u "sites.google.com/berkeley.edu" || aU'' u ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = ("BAIR", "text,quad,mono", "") -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
  | u' u "pandoc" && not (u' u "tufte") = ("PNDC", "text,quad,sans", "") -- general catch-all, overrides Google Groups (`pandoc-discuss`), with a further override for Tufte-related stuff (which get 'ET')
- | aU'' u ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' u ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = ("ET", "text", "#b1282b") -- override CRAN
- | u'' u "groups.google.com" = ("✉", "text", "#4285f4")
- | u'' u "scholar.google.com" || u'' u "research.com" = ("google-scholar", "svg", "#4285f4") -- Google Scholar.
- | u'' u "docs.google.com" = ("word-doc", "svg", "#4285f4")
+ | aU'' u ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' u ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = ("ET", "text", redTufte) -- override CRAN
+ | u'' u "groups.google.com" = ("✉", "text", blueG)
+ | u'' u "scholar.google.com" || u'' u "research.com" = ("google-scholar", "svg", blueG) -- Google Scholar.
+ | u'' u "docs.google.com" = ("word-doc", "svg", blueG)
  | u'' u "www.theinformation.com" = ("the-information", "svg", "#f32a52") -- <https://en.wikipedia.org/wiki/The_Information_(website)> <https://en.wikipedia.org/wiki/File:The_Information_logo.svg> <https://ti-assets.theinformation.com/assets/favicon_prod/safari-pinned-tab-bef60b8749b324326ffc2c49b9f5ab190b1ab3e10c5ecd33bbc710838bc84e72.svg> Some sort of Greek capital letter 'I'? Overrides Microsoft & other tech companies
  | u'' u "www.semafor.com" = ("SMFR", "text,quad", "#ffe1be") -- Semafor <https://www.semafor.com/> <https://en.wikipedia.org/wiki/Semafor_(website)>; somewhat like _The Information_; official logo is a boring serif wordmark (<https://en.wikipedia.org/wiki/File:Semafor_logo.png>), and the favicon is an interesting 'cut off' 'S'-silhouette-in-square <https://www.semafor.com/safari-pinned-tab-icon.svg> but they've done a bad enough job branding it no one would recognize it, so we use a quad-abbreviation of 'SEMAFOR'; color: salmon yellow
- | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg", "#4285f4") -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
+ | u' u "google" || u'' u "magenta.tensorflow.org" = ("alphabet", "svg", blueG) -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option. [the SVG has been renamed 'alphabet' instead of the expected 'google' because two default uBlock lists block the regexp 'icons/google.*' as it is usually abused for social-media spamming icons]
  | aU' u ["x.com/sigfpe/", "blog.sigfpe.com", "github.com/dpiponi"] = ("sgfp", "text,quad,mono", "") -- sigfpe/Dan Piponi: Haskell, math, computer graphics etc
- | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic", "#77ba00") -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable); color: green
+ | u' u "nvidia"  || aU'' u ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = ("n", "text,sans,italic", greenNV) -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable); color: green
  | aU'' u ["gptprompts.wikidot.com"] || aU' u ["openai.com", "#openai", "org=openai", "chatgpt.com"] = ("openai", "svg", "") -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | aU' u ["microsoft.com", "#microsoft", "org=microsoft", "github.com/microsoft/"] = ("MS", "text,sans,italic", "") -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS". color: none, because the MS window pane icon uses red/green/yellow/blue, none dominating, and I can't replicate that; TODO: color SVG icon
- | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg", "#d4a27f") -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media. color: Claude brown
+ | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg", brownAnthropic) -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media. color: Claude brown
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg", "#1d374e") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face; color: dark blue
- | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text", "#669bb5") -- override Yahoo! email; color: light blue
+ | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text", blueYahoo) -- override Yahoo! email; color: light blue
  | otherwise = ("","", "")
 
 linkIconRulesSingle "" = error "Config.LinkIcon.linkIconRulesSingle: passed empty string as the URL; this should never happen!"
@@ -127,7 +145,7 @@ linkIconRulesSingle u
  | u' u "carryiton.net/chain-letter/" = ("✉", "text", "") -- linked only for the archive, so this is an appropriate icon
  | u'' u "www.forbes.com" = ("F", "text", "#dc0000") -- red capital F serif; color: red
  | u'' u "fortune.com" = ("F", "text,sans", "#dc0000") -- red capital F *sans* (good god, could Forbes/Fortune be *any more* indistinguishable or boring or bland?)
- | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text", "#5e5086") -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA \120524 primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain; color: faded purple
+ | (u' u "haskell.org" && (extension u /= ".hs")) || u' u "haskellers.com" = ("𝛌", "text", purpleHaskell) -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA \120524 primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain; color: faded purple
  | u' u "cerebras" = ("C", "text,sans", "#f05a29") -- Cerebras: <https://www.cerebras.net/>, <#cerebras> affiliation; overrides Arxiv.org; the Cerebras logo is a odd set of 4 semi-concentric circles <https://cerebras.ai/wp-content/uploads/2022/03/cerebras-white-01.png> which is both unfamiliar/odd and looks terrible at link-icon resolution (like some sort of small animal like a chipmunk or gerbil)
  | u'' u "arxiv.org" || u'' u "proceedings.mlr.press" || u'' u "aclanthology.org" = ("𝛘", "text", "#b31b1b") --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny); I lump in 'ACL' & 'PMLR' ("Proceedings of Machine Learning Research", "") because many PMLR were just Arxiv preprints beforehand & it amounts to about the same thing, really. color: red
  | u' u ".bloomberg.com" || u'' u "www.businessweek.com" = ("𝐁", "text", "") -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B; TODO: white-on-black text background
@@ -144,7 +162,7 @@ linkIconRulesSingle u
  | u' u ".nature.com" = ("n", "text", "") -- Nature; color: none, website sometimes uses blue but not seriously
  | u'' u "www.theverge.com" = ("▽", "text", "#5200ff") -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;. color: purple
  | u'' u "www.quora.com" = ("Q", "text", "#b92b27") -- surprisingly, no one's taken 'Q' yet; color: red
- | aU'' u ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' u "github.com/paul-buerkner/brms" = ("R", "text", "#1b61b1") -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org
+ | aU'' u ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' u "github.com/paul-buerkner/brms" = ("R", "text", redR) -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org; color: red
  | u'' u "www.science.org" || u'' u "sciencemag.org" = ("S", "text", "#ca2015") -- Science is just typeset in red; color: red; TODO: white-on-red text background
  | u'' u "slate.com" = ("S", "text,sans", "#2c0022") -- color: dark purple; TODO: white-on-purple text background
  | u'' u "www.salon.com" = ("s", "text", "#ed2c1d") -- color: red
@@ -179,7 +197,7 @@ linkIconRulesSingle u
  | u' u "github.com/huggingface/" || u' u "medium.com/huggingface/" || u'' u "huggingface.co" = ("\129303", "text", "#ffcc4d") -- "🤗" HUGGING FACE U+1F917; color: emoji yellow
  | u'' u "www.pragmatic.ml" = ("𝕄", "text", "") -- Madison May, machine learning blog; color: none (too many)
  | u'' u "www.outsideonline.com" = ("𝕆", "text", "#ffd204") -- imitate the shadowing on Outside Online's 'O' <https://www.outsideonline.com/wp-content/uploads/2021/07/favicon-194x194-1.png>; color: yellow
- | u'' u "norvig.com" = ("N", "text,sans", "#4285f4") -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <https://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
+ | u'' u "norvig.com" = ("N", "text,sans", blueG) -- Google Director of Research <https://en.wikipedia.org/wiki/Peter_Norvig>; <https://norvig.com/favicon.ico> is actually instantly recognizable & well-chosen, but unfortunately, only works because of the *colors*... so we'll settle for a plain sans capital N.
  | u'' u "novelai.net" || u'' u "blog.novelai.net" = ("🖋", "text", "") -- LOWER LEFT FOUNTAIN PEN (U+1F58B); NovelAI logo is a fountain pen nib.
  | u'' u "www.thebeliever.net" = ("𝐁", "text", "") -- _The Believer_ magazine <https://en.wikipedia.org/wiki/The_Believer_(magazine)>, McSweeney's spinoff (formerly <https://believermag.com>): logo is a dropshadow serif capital B logo
  | u'' u "solar.lowtechmagazine.com" = ("☀", "text", "") -- Low Tech Magazine (U+2600 BLACK SUN WITH RAYS)
@@ -192,7 +210,7 @@ linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empt
 linkIconRulesDouble u
  | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text", "#00c79f") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R; color: light green; TODO: color SVG icon for background?
  | u'' u "www.frontiersin.org" = ("FS", "text,sans", "") -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent; color: none, too busy
- | aU'' u ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = ("PG", "text", "#aa873b") -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.; color: mustard yellow
+ | aU'' u ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = ("PG", "text", yellowPG) -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.; color: mustard yellow
  | u'' u "guzey.com" = ("A.G.", "text,sans", "")
  | u' u "alignmentforum.org" || (u'' u "www.greaterwrong.com" && u' u "view=alignment-forum") = ("AF", "text,sans", "#3f51b5") -- color: royal blue
  | u'' u "boingboing.net" = ("bb", "text,mono", "#ff0202") -- color: bright red
@@ -202,7 +220,7 @@ linkIconRulesDouble u
  | u' u ".latimes.com" = ("𝔏A", "text", "")
  | u'' u "everything2.com" = ("E2", "text", "#38495e") -- color: very pale blue
  | u'' u "examine.com" = ("Eχ", "text,sans", "#5e3b76")
- | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "x.com/EvaMonkey/" = ("EG", "text", "#f71a00") -- Evangelion: we’ll split this into EGF-related and other NGE sites; color: NGE orange (none of their own, because the main site / wiki / forum all have different colors, so just copy the NGE one)
+ | aU'' u ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com"] || u' u "x.com/EvaMonkey/" = ("EG", "text", orangeNGE) -- Evangelion: we’ll split this into EGF-related and other NGE sites; color: NGE orange (none of their own, because the main site / wiki / forum all have different colors, so just copy the NGE one)
  | u' u "mozilla.org" = ("FF", "text,sans", "#e66000") -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind. color: orange-red (the swirly Firefox has several shades of orange/yellow; went with Spanish Orange, the darkest, because link-icons are so small which usually means colors look lighter)
  | u'' u "www.goodreads.com" = ("GR", "text,sans", "#8a5e4a") -- GoodReads: logo doesn’t make sense as a grayscale; color: light brown
  | u'' u "kk.org" = ("KK", "text,sans", "#f4eb00") -- Kevin Kelly; color: yellow (book covers like _Cool Tools_ or the 'KK' favicon seem to favor a bright yellow)
@@ -304,10 +322,10 @@ linkIconRulesTriple u
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "#ff1d46") -- color: bright red
  | u'' u "nypost.com" = ("NYP", "text,tri,sans,italic", "#c60800") -- color: bright dark red; TODO: white-on-red text background
  | u'' u "www.justice.gov" = ("DoJ", "text,tri", "#162e51") -- US federal Department of Justice ; color: dark blue
- | u'' u "hpmor.com" || u' u "www.fanfiction.net/r/5782108/" || u' u "www.reddit.com/r/HPMOR/" = ("MoR", "text,tri,italic", "#ca9310") -- override FanFiction.net ; color: dark gold
+ | u'' u "hpmor.com" || u' u "www.fanfiction.net/r/5782108/" || u' u "www.reddit.com/r/HPMOR/" = ("MoR", "text,tri,italic", yellowMoR) -- override FanFiction.net ; color: dark gold
  | u'' u "www.fanfiction.net" = ("FFN", "text,tri,sans", "#333399") -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with Firefox, so expand to "FFN". color: dark purple-blue
  | u'' u "myanimelist.net" = ("MAL", "text,tri,sans", "#2b498e") -- MAL: the blue of their logo doesn’t work, so just text. color: royal blue. TODO: white-on-blue text background
- | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", "#f71a00") -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
+ | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", orangeNGE) -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
  | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue text background
  | u'' u "poniesatdawn.bandcamp.com" = ("P@D", "text,tri", "#27050e") -- color: dark brown
  | u'' u "slatestarscratchpad.tumblr.com" || u'' u "www.astralcodexten.com" || (u'' u "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' u "yvain" ||  u' u "slatestarcodex")) = ("SSC", "text,tri", "#5175c2") -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead; color: light blue; TODO: white-on-blue text background
@@ -389,7 +407,7 @@ linkIconRulesQuad u
  | u'' u "patrickcollison.com" = ("PC", "text,sans", "#635bff") -- use color from Stripe logo: color, brown; TODO: white-on-brown text background
  | u'' u "oeis.org" = ("OEIS", "text,quad,sans", "") -- On-Line Encyclopedia of Integer Sequences; replicate their existing quad icon.
  | u'' u "bldgblog.com" = ("BLDG", "text,quad,mono", "") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
- | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono", "#3498db") -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...; color: blue from kalzumeus.com, echoed in Bits About Money. TODO: white-on-blue text background
+ | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono", bluePatio11) -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...; color: blue from kalzumeus.com, echoed in Bits About Money. TODO: white-on-blue text background
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans", "") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
  | u'' u "scale.com" = ("SCLE", "text,quad,mono", "") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,mono", "") -- Nuño Sempere
@@ -483,10 +501,10 @@ linkIconRulesFiletypes u
  | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = ("archive", "svg", "")
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
- | iE u ["r", "R"] = ("code", "svg", "#1b61b1")
+ | iE u ["r", "R"] = ("code", "svg", redR)
  | iE u ["js"] = ("code", "svg", "#f6da19") -- color: yellow; the unofficial 2011 logo canonized by Ecmascript
  | iE u ["css"] = ("code", "svg", "#2465f1") -- color: blue <https://en.wikipedia.org/wiki/File:CSS3_logo_and_wordmark.svg>
- | iE u ["hs"] = ("code", "svg", "#5e5086")
+ | iE u ["hs"] = ("code", "svg", purpleHaskell)
  | iE u ["doc", "docx"] = ("word-doc", "svg", "#277dd4") -- Microsoft Office Word doc; color: green (<https://en.m.wikipedia.org/wiki/File:Microsoft_Office_Word_(2019%E2%80%93present).svg>)
  | iE u ["xls", "xlsx"] = ("spreadsheet", "svg", "#1ba566") -- Microsoft Excel spreadsheet file format; color: green (picked middle green from <https://commons.wikimedia.org/wiki/File:Microsoft_Office_Excel_(2019%E2%80%93present).svg>)
  | iE u ["ods"] = ("spreadsheet", "svg", "#0586ce") -- Apache OpenOffice ODS spreadsheet file format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Apache_OpenOffice_logo_and_wordmark_(2014).svg>)
@@ -504,7 +522,7 @@ linkIconRulesFiletypes u
  | iE u ["epub"] = ("EPUB", "text,quad,sans", "#87ba11") -- color: neon green <https://commons.wikimedia.org/wiki/File:Epub_logo.svg>
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
- | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", "#f40f02") -- color: red (Adobe)
+ | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe)
  | otherwise = ("", "", "")
 
 ------------------------------------------------------------------------------------------
@@ -549,30 +567,30 @@ linkIconTestUnitsText =
          , ("https://freakonomics.com/2007/05/what-do-you-have-to-say-about-ron-paul/", "FRK", "text,tri,sans", "#c25700")
          , ("https://nypost.com/2019/06/27/north-carolina-couple-paid-25k-to-clone-their-beloved-pet-cat/", "NYP", "text,tri,sans,italic", "#c60800")
          , ("https://thebrowser.com/", "TB", "text", "#ff9900")
-         , ("https://www.dummy-system.com/2013/04/01/intervista-megumi-hayashibara-evangelion-3-0/", "NGE", "text,tri", "#f71a00")
-         , ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text,tri", "#f71a00")
-         , ("https://fullfrontal.moe/interview-mahiro-maeda/", "NGE", "text,tri", "#f71a00")
-         , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE", "text,tri", "#f71a00")
-         , ("https://eva.onegeek.org/",  "NGE", "text,tri", "#f71a00")
-         , ("https://animekritik.wordpress.com/2011/05/12/evangelion-2-0-surnames-statements-and-makinami/", "NGE", "text,tri", "#f71a00")
-         , ("https://kanzaki.sub.jp/archives/000272.html", "NGE", "text,tri", "#f71a00")
-         , ("https://eva-fan.com/blog-entry-1198.html",  "NGE", "text,tri", "#f71a00")
-         , ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text,tri", "#f71a00")
-         , ("http://www.usagi.org/doi/seiyuu/tv/1997eva.html", "NGE", "text,tri", "#f71a00")
-         , ("https://evaotaku.com/html/programbooks.html",  "NGE", "text,tri", "#f71a00")
-         , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri", "#f71a00")
-         , ("https://www.cjas.org/~leng/daihist.htm", "NGE", "text,tri", "#f71a00")
-         , ("https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE", "text,tri", "#f71a00")
-         , ("http://www.evalegend.com/interview_anno96.php", "NGE", "text,tri", "#f71a00")
-         , ("http://www.gainax.co.jp/wp/",  "NGE", "text,tri", "#f71a00")
-         , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE", "text,tri", "#f71a00")
-         , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text", "#f71a00")
-         , ("https://forum.evageeks.org/index.php",  "EG","text", "#f71a00")
-         , ("https://x.com/EvaMonkey/", "EG", "text", "#f71a00")
-         , ("https://blogs.nvidia.com/blog/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic", "#77ba00")
-         , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic", "#77ba00")
-         , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic", "#77ba00")
-         , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic", "#77ba00")
+         , ("https://www.dummy-system.com/2013/04/01/intervista-megumi-hayashibara-evangelion-3-0/", "NGE", "text,tri", orangeNGE)
+         , ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text,tri", orangeNGE)
+         , ("https://fullfrontal.moe/interview-mahiro-maeda/", "NGE", "text,tri", orangeNGE)
+         , ("https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a",  "NGE", "text,tri", orangeNGE)
+         , ("https://eva.onegeek.org/",  "NGE", "text,tri", orangeNGE)
+         , ("https://animekritik.wordpress.com/2011/05/12/evangelion-2-0-surnames-statements-and-makinami/", "NGE", "text,tri", orangeNGE)
+         , ("https://kanzaki.sub.jp/archives/000272.html", "NGE", "text,tri", orangeNGE)
+         , ("https://eva-fan.com/blog-entry-1198.html",  "NGE", "text,tri", orangeNGE)
+         , ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text,tri", orangeNGE)
+         , ("http://www.usagi.org/doi/seiyuu/tv/1997eva.html", "NGE", "text,tri", orangeNGE)
+         , ("https://evaotaku.com/html/programbooks.html",  "NGE", "text,tri", orangeNGE)
+         , ("https://web.archive.org/web/20090713005058/http://homepage3.nifty.com/mana/ecom4.htm", "NGE", "text,tri", orangeNGE)
+         , ("https://www.cjas.org/~leng/daihist.htm", "NGE", "text,tri", orangeNGE)
+         , ("https://web.archive.org/web/20080127001226/http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE", "text,tri", orangeNGE)
+         , ("http://www.evalegend.com/interview_anno96.php", "NGE", "text,tri", orangeNGE)
+         , ("http://www.gainax.co.jp/wp/",  "NGE", "text,tri", orangeNGE)
+         , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE", "text,tri", orangeNGE)
+         , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text", orangeNGE)
+         , ("https://forum.evageeks.org/index.php",  "EG","text", orangeNGE)
+         , ("https://x.com/EvaMonkey/", "EG", "text", orangeNGE)
+         , ("https://blogs.nvidia.com/blog/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic", greenNV)
+         , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic", greenNV)
+         , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic", greenNV)
+         , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic", greenNV)
          , ("https://kk.org/books/out-of-control",  "KK","text,sans", "#f4eb00")
          , ("https://arstechnica.com/gadgets/2011/09/the-post-jobs-era-tim-cook-brings-philanthropy-back-to-apple/",  "ars","text,tri,sans", "#ff4e00")
          , ("https://nautil.us/mapping-the-human-exposome-236726/", "nautilus", "svg", "#ffce00")
@@ -580,10 +598,10 @@ linkIconTestUnitsText =
          , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg", "#ff6f00")
          , ("https://playground.tensorflow.org/", "tensorflow", "svg", "#ff6f00")
          , ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "NW", "text", "#f72210")
-         , ("https://hpmor.com/notes/progress-report-2013-11-01/", "MoR", "text,tri,italic", "#ca9310")
-         , ("https://www.fanfiction.net/r/5782108/5/1/", "MoR", "text,tri,italic", "#ca9310")
-         , ("https://hpmor.com/chapter/2", "MoR", "text,tri,italic", "#ca9310")
-         , ("https://www.reddit.com/r/HPMOR/", "MoR", "text,tri,italic", "#ca9310")
+         , ("https://hpmor.com/notes/progress-report-2013-11-01/", "MoR", "text,tri,italic", yellowMoR)
+         , ("https://www.fanfiction.net/r/5782108/5/1/", "MoR", "text,tri,italic", yellowMoR)
+         , ("https://hpmor.com/chapter/2", "MoR", "text,tri,italic", yellowMoR)
+         , ("https://www.reddit.com/r/HPMOR/", "MoR", "text,tri,italic", yellowMoR)
          , ("https://unsongbook.com/",  "\8501","text", "#b47810")
          , ("https://www.nybooks.com/articles/2020/01/16/alma-mahler-it-had-to-be-her/", "NYRB", "text,quad", "#990910")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans", "#bf4520")
@@ -614,10 +632,10 @@ linkIconTestUnitsText =
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri", "#162e51")
          , ("https://www.dailydot.com/unclick/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans", "#2a9461")
          , ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text", "#0376a1")
-         , ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R",  "code","svg", "#1b61b1")
-         , ("https://cran.r-project.org/web/packages/censReg/index.html",  "R","text", "#1b61b1")
-         , ("https://www.metafor-project.org/doku.php",  "R","text", "#1b61b1")
-         , ("https://github.com/paul-buerkner/brms#overview",  "R","text", "#1b61b1")
+         , ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R",  "code","svg", redR)
+         , ("https://cran.r-project.org/web/packages/censReg/index.html",  "R","text", redR)
+         , ("https://www.metafor-project.org/doku.php",  "R","text", redR)
+         , ("https://github.com/paul-buerkner/brms#overview",  "R","text", redR)
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg", "#b226b1")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans", "#0068b1")
          , ("https://gameprogrammingpatterns.com/singleton.html", "GPP", "text,tri,sans", "#1487c1")
@@ -626,12 +644,12 @@ linkIconTestUnitsText =
          , ("https://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans", "#1ab6f1")
          , ("https://iqtest.dk/main.swf",  "file-video","svg", "#490202")
          , ("https://boingboing.net/2011/02/03/cosmic-commodities-h.html", "bb", "text,mono", "#ff0202")
-         , ("/doc/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg", "#f40f02")
-         , ("https://pdfs.semanticscholar.org/00d3/6b267777b670abd1a3b98a21bf662245a7c4.pdf",  "pdf","svg", "#f40f02")
-         , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg", "#f40f02")
-         , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg", "#f40f02")
-         , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg", "#f40f02")
-         , ("/doc/ai/1962-bryson.pdf",  "pdf","svg", "#f40f02")
+         , ("/doc/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg", redAdobe)
+         , ("https://pdfs.semanticscholar.org/00d3/6b267777b670abd1a3b98a21bf662245a7c4.pdf",  "pdf","svg", redAdobe)
+         , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg", redAdobe)
+         , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
+         , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
+         , ("/doc/ai/1962-bryson.pdf",  "pdf","svg", redAdobe)
          , ("https://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans", "#921712")
          , ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans", "#2c0022")
          , ("https://news.ycombinator.com/item?id=10012625",  "hacker-news","svg", "#f26522")
@@ -645,10 +663,10 @@ linkIconTestUnitsText =
          , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg", "#1da1f2")
          , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg", "#1da1f2")
          , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg", "#1da1f2")
-         , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", "#1877f2")
-         , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", "#1877f2")
-         , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", "#1877f2")
-         , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", "#1877f2")
+         , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", blueFB)
+         , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", blueFB)
+         , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", blueFB)
+         , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", blueFB)
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans", "#8c1b13")
          , ("https://www.tinyletter.com/",  "\9993","text", "#e72223")
          , ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg", "#ff0033")
@@ -686,21 +704,21 @@ linkIconTestUnitsText =
          , ("/doc/iq/2014-tenijenhuis-supplement.doc",  "word-doc","svg", "#277dd4")
          , ("/doc/genetics/heritable/2015-mosing-supplement.docx",  "word-doc","svg", "#277dd4")
          , ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans", "#477be4")
-         , ("/static/img/icon/deepmind.svg",  "deepmind","svg", "#4185f4")
-         , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", "#4185f4")
-         , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg", "#4185f4")
-         , ("https://deepmind.google/discover/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/",  "deepmind","svg", "#4185f4")
-         , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", "#4285f4")
-         , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", "#4285f4")
-         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", "#4285f4")
-         , ("https://arxiv.org/pdf/2009.06732#org=google&page=6",  "alphabet","svg", "#4285f4")
-         , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg", "#4285f4")
-         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg", "#4285f4")
-         , ("https://about.google/",  "alphabet","svg", "#4285f4")
-         , ("/doc/personal/google-cse.xml",  "alphabet","svg", "#4285f4")
-         , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg", "#4285f4")
-         , ("https://norvig.com/experiment-design.html", "N", "text,sans", "#4285f4")
-         , ("https://groups.google.com/group/ankisrs/",  "\9993","text", "#4285f4")
+         , ("/static/img/icon/deepmind.svg",  "deepmind","svg", blueDM)
+         , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", blueDM)
+         , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg", blueDM)
+         , ("https://deepmind.google/discover/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/",  "deepmind","svg", blueDM)
+         , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", blueG)
+         , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", blueG)
+         , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", blueG)
+         , ("https://arxiv.org/pdf/2009.06732#org=google&page=6",  "alphabet","svg", blueG)
+         , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg", blueG)
+         , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg", blueG)
+         , ("https://about.google/",  "alphabet","svg", blueG)
+         , ("/doc/personal/google-cse.xml",  "alphabet","svg", blueG)
+         , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg", blueG)
+         , ("https://norvig.com/experiment-design.html", "N", "text,sans", blueG)
+         , ("https://groups.google.com/group/ankisrs/",  "\9993","text", blueG)
          , ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg", "#dd1405")
          , ("https://abcnews.go.com/Health/MedicalMysteries/story?id=3679532&page=1", "ABC", "text,tri,sans", "#fdc605")
          , ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,tri,sans", "#fdc605")
@@ -719,10 +737,10 @@ linkIconTestUnitsText =
          , ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text", "#d31245")
          , ("https://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text", "#d31245")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans", "#3f51b5")
-         , ("https://www.givewell.org/giving101", "GW", "text", "#669bb5")
-         , ("https://groups.yahoo.com/group/givewell/message/287", "GW", "text", "#669bb5")
-         , ("https://files.givewell.org/files/DWDA%202009/Interventions/Iodine/Bautista%20et%20al%201982.pdf", "GW", "text", "#669bb5")
-         , ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text", "#669bb5")
+         , ("https://www.givewell.org/giving101", "GW", "text", blueYahoo)
+         , ("https://groups.yahoo.com/group/givewell/message/287", "GW", "text", blueYahoo)
+         , ("https://files.givewell.org/files/DWDA%202009/Interventions/Iodine/Bautista%20et%20al%201982.pdf", "GW", "text", blueYahoo)
+         , ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text", blueYahoo)
          , ("https://radiolab.org/podcast/91725-words/transcript", "audio-waveform-lines", "svg", "#8c2ec5")
          , ("https://time.com/6337437/sam-altman-openai-fired-why-microsoft-musk/", "T", "text", "#e90606")
          , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685.full",  "chi-dna","svg", "#bd2736")
@@ -736,10 +754,10 @@ linkIconTestUnitsText =
          , ("/doc/cs/hardware/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg", "#1ba566")
          , ("https://www.sciencedaily.com/releases/2007/05/070525204143.htm",  "SD","text,sans", "#004276")
          , ("https://examine.com/supplements/bacopa-monnieri/", "Eχ", "text,sans", "#5e3b76")
-         , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg", "#5e5086")
-         , ("/static/build/hakyll.hs",  "code","svg", "#5e5086")
-         , ("https://www.haskell.org/",  "\120524","text", "#5e5086")
-         , ("https://web.archive.org/web/20110415182316/http://packdeps.haskellers.com/",  "\120524","text", "#5e5086")
+         , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg", purpleHaskell)
+         , ("/static/build/hakyll.hs",  "code","svg", purpleHaskell)
+         , ("https://www.haskell.org/",  "\120524","text", purpleHaskell)
+         , ("https://web.archive.org/web/20110415182316/http://packdeps.haskellers.com/",  "\120524","text", purpleHaskell)
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text", "#1c6486")
          , ("/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg", "#01c3f6")
          , ("https://www.quora.com/", "Q", "text", "#b92b27")
@@ -805,23 +823,23 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/0707.1051",  "\120536","text", "#b31b1b")
          , ("https://aclanthology.org/2021.naacl-main.97/",  "\120536","text", "#b31b1b")
          , ("https://proceedings.mlr.press/v37/xuc15.pdf",  "\120536","text", "#b31b1b")
-         , ("/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text", "#b1282b")
-         , ("https://www.edwardtufte.com/bboard/images/0000yO-774.gif", "ET", "text", "#b1282b")
-         , ("https://github.com/jez/tufte-pandoc-jekyll", "ET", "text", "#b1282b")
-         , ("https://github.com/clayh53/tufte-jekyll", "ET", "text", "#b1282b")
-         , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text", "#b1282b")
-         , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text", "#b1282b")
-         , ("https://github.com/edwardtufte/tufte-css", "ET", "text", "#b1282b")
-         , ("https://www.fadedpage.com/showbook.php?pid=20160325", "PG", "text", "#aa873b")
-         , ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text", "#aa873b")
-         , ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text", "#aa873b")
-         , ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text", "#aa873b")
+         , ("/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "ET", "text", redTufte)
+         , ("https://www.edwardtufte.com/bboard/images/0000yO-774.gif", "ET", "text", redTufte)
+         , ("https://github.com/jez/tufte-pandoc-jekyll", "ET", "text", redTufte)
+         , ("https://github.com/clayh53/tufte-jekyll", "ET", "text", redTufte)
+         , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text", redTufte)
+         , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text", redTufte)
+         , ("https://github.com/edwardtufte/tufte-css", "ET", "text", redTufte)
+         , ("https://www.fadedpage.com/showbook.php?pid=20160325", "PG", "text", yellowPG)
+         , ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text", yellowPG)
+         , ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text", yellowPG)
+         , ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text", yellowPG)
          , ("https://blog.23andme.com/articles/genes-scream-for-ice-cream", "23", "text", "#a40e7b")
          , ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,tri,sans", "#2a6ebb")
-         , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,mono", "#3498db")
-         , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,mono", "#3498db")
-         , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,mono", "#3498db")
-         , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,mono", "#3498db")
+         , ("https://x.com/patio11/status/1635413289449721856", "pt11", "text,quad,mono", bluePatio11)
+         , ("https://training.kalzumeus.com/newsletters/archive/saas_pricing", "pt11", "text,quad,mono", bluePatio11)
+         , ("https://www.bitsaboutmoney.com/archive/the-infrastructure-behind-atms/", "pt11", "text,quad,mono", bluePatio11)
+         , ("https://www.kalzumeus.com/2018/10/19/japanese-hometown-tax/", "pt11", "text,quad,mono", bluePatio11)
          , ("https://www.rand.org/pubs/monographs/MG1026.html",  "RAND","text,quad,sans", "#751ddb")
          , ("https://researchers.wls.wisc.edu/about/history/", "WLS", "text,tri,sans", "#c5050c")
          , ("https://waitbutwhy.com/whatsourproblem", "♔", "text", "#fd992c")
@@ -881,11 +899,11 @@ linkIconTestUnitsText =
          , ("https://academic.oup.com/ageing/article/36/5/507/40586", "OUP", "text,tri", "#011d3f")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri", "#011d3f")
          , ("https://scp-wiki.wikidot.com/antimemetics-division-hub", "SCP", "text,tri,sans", "#823f3f")
-         , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg", "#d4a27f")
-         , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg", "#d4a27f")
-         , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg", "#d4a27f")
-         , ("https://www.anthropic.com/news/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems", "anthropic", "svg", "#d4a27f")
-         , ("https://jack-clark.net/2022/10/31/import-ai-308-recursively-self-improving-lms-3-1tb-of-code-data-dall-e2-makes-alien-errors/", "anthropic", "svg", "#d4a27f")
+         , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg", brownAnthropic)
+         , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg", brownAnthropic)
+         , ("https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html#anthropic", "anthropic", "svg", brownAnthropic)
+         , ("https://www.anthropic.com/news/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems", "anthropic", "svg", brownAnthropic)
+         , ("https://jack-clark.net/2022/10/31/import-ai-308-recursively-self-improving-lms-3-1tb-of-code-data-dall-e2-makes-alien-errors/", "anthropic", "svg", brownAnthropic)
          , ("https://www.metafilter.com/183095/On-having-sufficient-complexity-to-allow-for-arbitrary-computation", "MF", "text,sans,italic", "#065a8f")
          , ("https://ask.metafilter.com/16136/Fog-Gun-Shower", "MF", "text,sans,italic", "#065a8f")
          , ("https://patch.com/california/davis/davis-pair-arrested-after-cops-intercept-3-000-suspected-ecstasy-pills-mail-serve", "P", "text,sans", "#005d8f")
