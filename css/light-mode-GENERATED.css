@@ -327,11 +327,6 @@
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif);
 
-    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
-    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
-    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
-    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
-
 	--GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-777-fff-2x-gif);
 	--GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-000-fff-2x-gif);
 }

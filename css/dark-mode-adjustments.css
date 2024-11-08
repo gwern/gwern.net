@@ -46,11 +46,6 @@
 
     --GW-popins-popin-title-bar-button-color: #bbb;
 
-    --GW-dotted-underline-background-image: var(--GW-image-linear-dotted-fff-transparent-2x-gif);
-    --GW-dotted-underline-hover-background-image: var(--GW-image-linear-dotted-bbb-transparent-2x-gif);
-    --GW-dotted-underline-inverted-background-image: var(--GW-image-linear-dotted-000-transparent-2x-gif);
-    --GW-dotted-underline-inverted-hover-background-image: var(--GW-image-linear-dotted-888-transparent-2x-gif);
-
     --GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
     --GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
 }

@@ -61,14 +61,8 @@
  */
 .markdownBody a.has-annotation,
 .markdownBody a.has-annotation-partial {
-    --link-underline-background-image: var(--GW-dotted-underline-background-image);
-
-    background-image: var(--link-underline-background-image);
+	background-image: linear-gradient(to right, var(--link-underline-gradient-line-color) 50%, var(--link-underline-background-color) 50%);
     background-size: 2px 1px;
-}
-.markdownBody a.has-annotation:hover,
-.markdownBody a.has-annotation-partial:hover {
-    --link-underline-background-image: var(--GW-dotted-underline-hover-background-image);
 }
 .markdownBody a.has-annotation.decorate-not {
     background-image: none;
@@ -76,15 +70,6 @@
 
 /*  Reversed link colors.
  */
-.markdownBody .colors-invert a.has-annotation,
-.markdownBody .colors-invert a.has-annotation-partial {
-    --link-underline-background-image: var(--GW-dotted-underline-inverted-background-image);
-}
-.markdownBody .colors-invert a.has-annotation:hover,
-.markdownBody .colors-invert a.has-annotation-partial:hover {
-    --link-underline-background-image: var(--GW-dotted-underline-inverted-hover-background-image);
-}
-
 .markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
