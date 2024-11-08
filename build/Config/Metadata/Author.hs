@@ -963,8 +963,13 @@ authorLinkDB = M.fromList $
     , ("Andrew D. Morris", "https://www.liverpool.ac.uk/people/andrew-morris")
     , ("Yoichiro Kamatani", "https://www.cbms.k.u-tokyo.ac.jp/en/labs/kamatani.yoichiro/")
     , ("Vedant Misra", "http://vedantmisra.com/")
-    , ("Valgerdur Steinthorsdottir", "https://scholar.google.com/citations?user=6Y8_8f4AAAAJ&hl=en&oi=ao")
+    , ("Valgerdur Steinthorsdottir", "https://scholar.google.com/citations?user=6Y8_8f4AAAAJ")
     , ("Ulrike Peters", "https://www.fredhutch.org/en/faculty-lab-directory/peters-ulrike.html")
+    , ("Yu Sun", "https://yueatsprograms.github.io/")
+    , ("Toshiko Tanaka", "https://scholar.google.com/citations?user=_MV1F6kAAAAJ&hl=en&oi=ao")
+    , ("Tim Salimans", "https://research.google/people/106222/")
+    , ("Stella Trompet", "https://scholar.google.com/citations?user=LQJFUR8AAAAJ&hl=en&oi=ao")
+    , ("Neil Houlsby", "https://neilhoulsby.github.io/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2170,7 +2175,7 @@ authorWpLinkDB =
     ,"Yong Liu", "Yong Rui", "Yong Tan", "Yong Zhao", "Yonggang Huang"
     ,"Yonhap News Agency", "Yoshihiro Kawaoka", "Yoshiki Kuroda", "Yoshio Miki", "Yoshiyuki Tomino"
     ,"Yoshua Bengio", "Yossi Matias", "Young-Tae Chang", "Yu (Jeffrey) Hu"
-    ,"Yu Gu", "Yu Hu", "Yu Shi", "Yu Song", "Yu Sun"
+    ,"Yu Gu", "Yu Hu", "Yu Shi", "Yu Song"
     ,"Yu Tian", "Yu Xie", "Yu Yamamoto", "Yuan Cao", "Yuan Chen"
     ,"Yuan Hao", "Yuan He", "Yuan Jiang", "Yuan Liang", "Yuan Xie"
     ,"Yuan Yao", "Yuan Yin", "Yuan-Tsong Chen", "Yudhanjaya Wijeratne", "Yue Li"

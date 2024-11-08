@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-04 22:23:55 gwern"
+# When:  Time-stamp: "2024-11-07 13:00:30 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -486,6 +486,8 @@ Why I still blog after 15 years
 ""
 - "Q&amp;A—Dominic Cummings substack"
 "Q&amp;A"
+- "https://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html Code rant: The Configuration Complexity Clock"
+"The Configuration Complexity Clock"
 
 Task:
 
