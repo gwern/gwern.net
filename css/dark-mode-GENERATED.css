@@ -597,6 +597,12 @@ div#masked-links-key-toggle-info-alert img {
 a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
+/*	... but *colored* versions of SVG linkicons (shown on hover) should *not*
+	be inverted.
+ */
+a[data-link-icon-color]:hover .link-icon-hook::after {
+	filter: none;
+}
 
 /*  Manual link-icon SVGs: Recently-modified, manicule/index, theme-toggle icons
  */
