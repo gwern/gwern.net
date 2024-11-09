@@ -43,6 +43,8 @@ Color = {
 				: Color.rgbaStringFromRGBA(transformedValueRGBA));
 	},
 
+	colorizeTransformMaxBaseLightness: 70,
+
 	/*	In L*a*b*, retain lightness (L*) but set color (a* and b*) from the
 		specified reference color.
 
@@ -50,6 +52,8 @@ Color = {
 	 */
 	colorValueTransform_colorize: (color, referenceColor, colorSpace) => {
 		if (colorSpace == Color.ColorSpace.Lab) {
+			let baseLightness = Math.min(referenceColor.lightness, Color.colorizeTransformMaxBaseLightness);
+			color.lightness = baseLightness + (100 - baseLightness) * (color.lightness / 100);
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 		}
@@ -15092,21 +15096,21 @@ function enableLinkIcon(link) {
 
 	//	Set CSS variable (link icon hover color, plus optional altered icon).
 	if (link.dataset.linkIconColor > "") {
-		link.style.setProperty("--link-icon-color-hover", link.dataset.linkIconColor);
+		let transformColor = (colorCode) => {
+			return Color.processColorValue(colorCode, [
+				[ "colorize", link.dataset.linkIconColor ]
+			]);
+		};
+
+		link.style.setProperty("--link-icon-color-hover", transformColor("#333"));
 
 		if (link.dataset.linkIconType.includes("svg")) {
-			let transformColor = (colorCode) => {
-				return Color.processColorValue(colorCode, [
-					[ "colorize", link.dataset.linkIconColor ]
-				]);
-			};
-
 			doWhenSVGIconsLoaded(() => {
 				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
 					(match, colorCode) => {
 						return `"${(transformColor(colorCode))}"`;
 					}));
-				svg.setAttribute("fill", link.dataset.linkIconColor);
+				svg.setAttribute("fill", transformColor("#000"));
 				link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
 			});
 		}

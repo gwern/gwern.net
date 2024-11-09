@@ -43,6 +43,8 @@ Color = {
 				: Color.rgbaStringFromRGBA(transformedValueRGBA));
 	},
 
+	colorizeTransformMaxBaseLightness: 70,
+
 	/*	In L*a*b*, retain lightness (L*) but set color (a* and b*) from the
 		specified reference color.
 
@@ -50,6 +52,8 @@ Color = {
 	 */
 	colorValueTransform_colorize: (color, referenceColor, colorSpace) => {
 		if (colorSpace == Color.ColorSpace.Lab) {
+			let baseLightness = Math.min(referenceColor.lightness, Color.colorizeTransformMaxBaseLightness);
+			color.lightness = baseLightness + (100 - baseLightness) * (color.lightness / 100);
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 		}
