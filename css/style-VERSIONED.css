@@ -2482,18 +2482,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5587,7 +5587,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5768,7 +5768,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6216,7 +6216,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7169,7 +7169,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#question');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7379,7 +7379,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7761,7 +7761,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1731098551#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1731124101#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7840,7 +7840,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1731098551#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1731124101#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -8412,7 +8412,7 @@ a[data-link-icon='▽'] .link-icon-hook::after { /* The Verge */
 a[data-link-icon='∇'] .link-icon-hook::after { /* The Gradient.pub */
     --link-icon-size: 0.85em;
 
-    opacity: 0.85;
+    opacity: 0.7;
 }
 
 a[data-link-icon='✉'] .link-icon-hook::after { /* ENVELOPE / letter / \9993 */
@@ -8756,14 +8756,11 @@ a[data-link-icon='nasa'] .link-icon-hook::after {
 }
 
 a[data-link-icon='nautilus'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.15em;
 
-    opacity: 0.7;
-}
-a[data-link-icon='nautilus']:hover .link-icon-hook::after {
-    opacity: 0.5;
+    opacity: 0.75;
 }
 
 a[data-link-icon='new-york-times'] .link-icon-hook::after {
@@ -8958,17 +8955,16 @@ a[data-link-icon='atlas-obscura'] .link-icon-hook::after { /* Darken & shift lef
 }
 
 a[data-link-icon='eleutherai'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 0.98em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.0em;
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
 
-    opacity: 0.95;
+    opacity: 0.85;
 }
 
 a[data-link-icon='apple'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 0.70em;
-    --link-icon-offset-y: 0em;
-    --link-icon-offset-x: 0.1em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.15em;
 
     opacity: 0.5;
 }
@@ -9009,14 +9005,9 @@ a[data-link-icon='alcor'] .link-icon-hook::after {
 }
 
 a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.2em;
+    --link-icon-size: 0.75em;
 
-    opacity: 0.75;
-}
-a[data-link-icon='cochrane-collaboration']:hover .link-icon-hook::after {
-    opacity: 0.45;
+    opacity: 0.7;
 }
 
 a[data-link-icon='connected-papers'] .link-icon-hook::after {
@@ -9028,11 +9019,8 @@ a[data-link-icon='connected-papers'] .link-icon-hook::after {
 }
 
 a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
-    --link-icon-size: 0.65em;
-    --link-icon-offset-y: 0.2em;
+    --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.1em;
-
-    opacity: 0.60;
 }
 
 a[data-link-icon='hoover-institution'] .link-icon-hook::after {
@@ -9079,19 +9067,16 @@ a[data-link-icon='stat-news'] .link-icon-hook::after {
 }
 
 a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0em;
-    --link-icon-offset-x: -0.1em;
+	--link-icon-size: 0.9em;
+	--link-icon-offset-y: 0.1em;
+	--link-icon-offset-x: 0.05em;
 
     opacity: 0.75;
 }
 
 a[data-link-icon='anthropic'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: -0em;
-
-    opacity: 0.6
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.1em;
 }
 
 a[data-link-icon='laion'] .link-icon-hook::after {
@@ -9109,10 +9094,8 @@ a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actu
 }
 
 a[data-link-icon='scholarpedia'] .link-icon-hook::after {
-    --link-icon-size: 0.80em;
-    --link-icon-offset-x: 0.05em;
-
-    opacity: 1.0;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em;
 }
 
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
