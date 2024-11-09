@@ -2086,7 +2086,7 @@ function enableLinkIcon(link) {
 			]);
 		};
 
-		link.style.setProperty("--link-icon-color-hover", transformColor("#333"));
+		link.style.setProperty("--link-icon-color-hover", transformColor("#000"));
 
 		if (link.dataset.linkIconType.includes("svg")) {
 			doWhenSVGIconsLoaded(() => {
