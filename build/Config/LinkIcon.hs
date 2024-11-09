@@ -428,7 +428,7 @@ linkIconRulesSVG u
  | u'' u "www.biorxiv.org" || u'' u "www.medrxiv.org" = ("chi-dna", "svg", "#bd2736") -- BioRxiv (custom icon: italic Chi with DNA cross-strands).; color: red
  | u'' u "distill.pub" = ("distillpub", "svg", "") -- Distill ML journal.
  | u'' u "www.dropbox.com" || u'' u "dl.dropboxusercontent.com" = ("dropbox", "svg", "#0061fe") -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com; color: blue
- | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg", "")
+ | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg", "#a06929") -- color: copper-orange (<https://www.erowid.org/general/about/about_article10.shtml>)
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg", "#ff6f00") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg", "") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' u "paulgraham.com" = ("pg", "text,mono", "#666699") -- Paul Graham, known by username 'pg' on HN; color: purple; TODO: white-on-purple text background
@@ -733,8 +733,7 @@ linkIconTestUnitsText =
          , ("https://econlolcats.tumblr.com/",  "tumblr","svg", "#001935")
          , ("https://techcrunch.com/2013/02/23/the-chinese-are-coming-the-chinese-are-coming/", "TC", "text,mono", "#0a8935")
          , ("https://osf.io/preprints/psyarxiv/gjh95/",   "ψ", "text", "#cf1d35")
-         , ("https://osf.io/dhx48/",                      "ψ", "text", "#cf1d35")
-         , ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text", "#d31245")
+         , ("https://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text", "#d31245")
          , ("https://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text", "#d31245")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans", "#3f51b5")
          , ("https://www.givewell.org/giving101", "GW", "text", blueYahoo)
@@ -946,8 +945,8 @@ linkIconTestUnitsText =
          , ("/doc/cs/linkrot/2009-08-20-b3ta-fujitsuhtml.mht",  "misc","svg", "")
          , ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg", "")
          , ("https://www.wired.com/story/lsd-microdosing-drugs-silicon-valley/", "wired","svg", "")
-         , ("https://www.erowid.org/",  "erowid","svg", "")
-         , ("https://www.drugsdata.org/results.php?start=0&search_field=all&s=modafinil", "erowid","svg", "")
+         , ("https://www.erowid.org/",  "erowid","svg", "#a06929")
+         , ("https://www.drugsdata.org/results.php?start=0&search_field=all&s=modafinil", "erowid","svg", "#a06929")
          , ("https://www.yudkowsky.net/rational/technical", "yud", "svg", "")
          , ("/static/nginx/twdne.conf",  "code","svg", "")
          , ("/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg", "")
@@ -1028,7 +1027,6 @@ linkIconTestUnitsText =
          , ("https://www.openphilanthropy.org/research/how-much-computational-power-does-it-take-to-match-the-human-brain/", "open-philanthropy", "svg", "")
          , ("https://www.lrb.co.uk/the-paper/v42/n18/james-lasdun/bats-on-the-ceiling", "LRB", "text,tri", "")
          , ("https://www.wsj.com/articles/SB10000872396390443696604577647870908169992",  "WSJ","text,tri", "")
-         , ("https://www.wsj.com/articles/SB10001424052702303380004579521482247869874",  "WSJ","text,tri", "")
          , ("https://www.pewresearch.org/social-trends/2012/02/16/the-rise-of-intermarriage/", "Pew", "text,tri", "")
          , ("https://blog.samaltman.com/value-is-created-by-doing", "sama", "text,quad,mono", "")
          , ("https://ourworldindata.org/grapher/burden-disease-from-each-mental-illness", "OWID", "text,quad,mono", "")
@@ -1160,144 +1158,3 @@ linkIconTestUnitsText =
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →
 -- Link ("",["icon-not"],[]) [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905","","")
-
-{- Statistical analysis of color patterns in R:
-
-library(tidyverse)
-library(gridExtra)  # For arranging multiple plots
-
-# Read the CSV data
-colors_df <- read.csv("rgb.csv")
-
-# Convert hex to RGB components
-colors_df <- colors_df %>%
-  mutate(
-    r = strtoi(substring(RGB, 2, 3), base=16),
-    g = strtoi(substring(RGB, 4, 5), base=16),
-    b = strtoi(substring(RGB, 6, 7), base=16)
-  )
-
-## Graph R vs G vs B separately
-# Create three different 2D projections
-plot_rg <- ggplot(colors_df, aes(x=r, y=g, size=n, color=RGB)) +
-  geom_point(alpha=0.6) +
-  scale_color_identity() +
-  scale_size_continuous(range = c(2, 10)) +
-  scale_x_continuous(limits = c(0, 255)) +
-  scale_y_continuous(limits = c(0, 255)) +
-  labs(
-    title = "Red vs Green",
-    x = "Red Value",
-    y = "Green Value",
-    size = "Frequency"
-  ) +
-  theme_minimal()
-
-plot_rb <- ggplot(colors_df, aes(x=r, y=b, size=n, color=RGB)) +
-  geom_point(alpha=0.6) +
-  scale_color_identity() +
-  scale_size_continuous(range = c(2, 10)) +
-  scale_x_continuous(limits = c(0, 255)) +
-  scale_y_continuous(limits = c(0, 255)) +
-  labs(
-    title = "Red vs Blue",
-    x = "Red Value",
-    y = "Blue Value",
-    size = "Frequency"
-  ) +
-  theme_minimal()
-
-plot_gb <- ggplot(colors_df, aes(x=g, y=b, size=n, color=RGB)) +
-  geom_point(alpha=0.6) +
-  scale_color_identity() +
-  scale_size_continuous(range = c(2, 10)) +
-  scale_x_continuous(limits = c(0, 255)) +
-  scale_y_continuous(limits = c(0, 255)) +
-  labs(
-    title = "Green vs Blue",
-    x = "Green Value",
-    y = "Blue Value",
-    size = "Frequency"
-  ) +
-  theme_minimal()
-
-# Arrange all three plots in a grid
-grid.arrange(plot_rg, plot_rb, plot_gb, ncol=2,
-             top="RGB Color Distribution (All 3 Dimensions)")
-
-# Additional analysis: Create parallel coordinates plot to show all dimensions at once
-library(GGally)
-
-# Normalize the RGB values for parallel coordinates
-colors_df_scaled <- colors_df %>%
-  mutate(across(c(r, g, b), ~scale(.), .names = "{col}_scaled"))
-
-ggparcoord(colors_df_scaled,
-           columns = c("r_scaled", "g_scaled", "b_scaled"),
-           scale = "globalminmax",
-           alphaLines = 0.3,
-           mapping = aes(size = n, color = RGB)) +
-  scale_color_identity() +
-  labs(title = "Parallel Coordinates Plot of RGB Values",
-       y = "Scaled Value") +
-  theme_minimal()
-
-# Summary statistics for each component
-color_summary <- colors_df %>%
-  summarise(
-    across(c(r, g, b), list(
-      mean = ~mean(.),
-      median = ~median(.),
-      sd = ~sd(.)
-    ))
-  )
-
-print(color_summary)
-
-## Color wheel representation:
-
-library(ggplot2)
-
-# Convert RGB to HSV (Hue, Saturation, Value)
-colors_df <- colors_df %>%
-  mutate(
-    hsv = rgb2hsv(r, g, b),
-    hue = hsv[1,],
-    saturation = hsv[2,],
-    value = hsv[3,]
-  )
-
-# Plot on polar coordinates
-ggplot(colors_df, aes(x = hue * 360, y = saturation, size = n, color = RGB)) +
-  geom_point(alpha = 0.6) +
-  coord_polar() +
-  scale_color_identity()
-
-## Small multiples with color channels:
-library(patchwork)
-
-p1 <- ggplot(colors_df, aes(x = r, weight = n)) +
-  geom_histogram(fill = "red", alpha = 0.5) +
-  labs(title = "Red Channel Distribution")
-
-p2 <- ggplot(colors_df, aes(x = g, weight = n)) +
-  geom_histogram(fill = "green", alpha = 0.5) +
-  labs(title = "Green Channel Distribution")
-
-p3 <- ggplot(colors_df, aes(x = b, weight = n)) +
-  geom_histogram(fill = "blue", alpha = 0.5) +
-  labs(title = "Blue Channel Distribution")
-
-p1 / p2 / p3
-
-## 3D volume scatterplot:
-# using rgl for static 3D visualization
-library(rgl)
-
-plot3d(colors_df$r, colors_df$g, colors_df$b,
-       col = colors_df$RGB,
-       size = colors_df$n/2,
-       xlab = "Red", ylab = "Green", zlab = "Blue",
-       type = "s",  # spheres
-       alpha = 0.7)
--}

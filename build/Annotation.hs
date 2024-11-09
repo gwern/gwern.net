@@ -36,7 +36,7 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
       Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
                            if title/="" then return (Right (l',(reformatTitle title,author,date',defaultCreatedToToday "",[],[],""))) else return mi
       Left Temporary -> return mi
-  where reformatTitle = typesetHtmlFieldPermanent False . replace " – " "—" . replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
+  where reformatTitle = typesetHtmlFieldPermanent True . replace " – " "—" . replace " - " "—" -- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 linkDispatcher _ x = error ("Annotation.linkDispatcher passed a non-Link Inline element: " ++ show x)
 
 linkDispatcherURL :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))

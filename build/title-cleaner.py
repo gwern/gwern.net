@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-07 13:00:30 gwern"
+# When:  Time-stamp: "2024-11-08 18:11:04 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -27,11 +27,14 @@ prompt = """
 Task: Clean website titles parsed from <title> tags.
 If a title input is useless or meaningless or an error, print out the empty string `""` instead of the original title.
 If the title can be fixed, remove the junk (spam, cruft, boilerplate) from the title.
+Convert inline Markdown to HTML, like '*foo*' → '<em>foo</em>'
 If the title looks good, then print out the original title.
 If you are unsure how to fix it, then simply print out the original title.
 
 Task examples:
 
+- "Anton Seder’s *The Animal in Decorative Art* (1896)"
+"Anton Seder’s <em>The Animal in Decorative Art</em> (1896)"
 - Input title to clean: "If I Sleep for an Hour, 30 People Will Die - The New York Times"
 If I Sleep for an Hour, 30 People Will Die
 - Input title to clean: "404"
@@ -488,6 +491,10 @@ Why I still blog after 15 years
 "Q&amp;A"
 - "https://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html Code rant: The Configuration Complexity Clock"
 "The Configuration Complexity Clock"
+- "Anton Seder's *The Animal in Decorative Art* (1896) - The Public Domain Review"
+"Anton Seder’s <em>The Animal in Decorative Art</em> (1896)"
+- "Review of *The Ignatz*"
+"Review of <em>The Ignatz</em>"
 
 Task:
 

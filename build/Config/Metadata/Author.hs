@@ -966,9 +966,9 @@ authorLinkDB = M.fromList $
     , ("Valgerdur Steinthorsdottir", "https://scholar.google.com/citations?user=6Y8_8f4AAAAJ")
     , ("Ulrike Peters", "https://www.fredhutch.org/en/faculty-lab-directory/peters-ulrike.html")
     , ("Yu Sun", "https://yueatsprograms.github.io/")
-    , ("Toshiko Tanaka", "https://scholar.google.com/citations?user=_MV1F6kAAAAJ&hl=en&oi=ao")
+    , ("Toshiko Tanaka", "https://scholar.google.com/citations?user=_MV1F6kAAAAJ")
     , ("Tim Salimans", "https://research.google/people/106222/")
-    , ("Stella Trompet", "https://scholar.google.com/citations?user=LQJFUR8AAAAJ&hl=en&oi=ao")
+    , ("Stella Trompet", "https://scholar.google.com/citations?user=LQJFUR8AAAAJ")
     , ("Neil Houlsby", "https://neilhoulsby.github.io/")
     ]
 

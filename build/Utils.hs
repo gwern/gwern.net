@@ -422,9 +422,15 @@ delete x = replace x ""
 deleteMixed :: String -> String -> String
 deleteMixed "" _ = error "Utils.deleteMixed: passed an empty string to delete? That makes no sense and should never happen."
 deleteMixed target str
-    | head target == ' ' = sed (target ++ "$") "" str
-    | last target == ' ' = sed ("^" ++ target) "" str
+    | head target == ' ' = if tail target `isSuffixOf` str
+                          then take (length str - length (tail target)) str
+                          else str
+    | last target == ' ' = if init target `isPrefixOf` str
+                          then drop (length (init target)) str
+                          else str
     | otherwise = delete target str
+
+-- | Apply multiple mixed deletions in sequence
 deleteMixedMany :: [String] -> (String -> String)
 deleteMixedMany xs s = foldr deleteMixed s xs
 
