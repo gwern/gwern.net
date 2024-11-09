@@ -493,10 +493,6 @@ section.collapse > .heading {
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start {
     display: none;
 }
-.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.start .icon,
-.collapse-inline.has-abstract.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon {
-    margin-right: -0.2em;
-}
 
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .icon svg {
     display: block;

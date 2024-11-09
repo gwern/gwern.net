@@ -1884,15 +1884,15 @@ a code {
     opacity: 0.75;
 }
 .icon-single-white-star-on-black-circle::before { background-position: center; }
-.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730903408#moon-solid'); }
-.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730903408#book-open-solid'); }
-.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1730903408#message-slash-solid'); }
-.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1730903408#magnifying-glass'); }
-.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1730903408#gear-solid'); }
-.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1730903408#sun-solid'); }
-.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1730903408#eye-slash-solid'); }
-.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1730903408#manicule-right'); }
-.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1730903408#manicule-left'); }
+.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731098551#moon-solid'); }
+.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731098551#book-open-solid'); }
+.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1731098551#message-slash-solid'); }
+.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1731098551#magnifying-glass'); }
+.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731098551#gear-solid'); }
+.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1731098551#sun-solid'); }
+.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731098551#eye-slash-solid'); }
+.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1731098551#manicule-right'); }
+.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1731098551#manicule-left'); }
 
 /*************/
 /* SIDENOTES */
