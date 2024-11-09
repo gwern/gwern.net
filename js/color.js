@@ -29,9 +29,9 @@ Color = {
 
 				let subjectColorLab = Color.labFromXYZ(Color.xyzFromRGB(transformedValueRGBA));
 
-				subjectColorLab = Color.colorValueTransform_colorize(subjectColorLab, referenceColorLab, Color.ColorSpace.Lab);
+				let transformedSubjectColorLab = Color.colorValueTransform_colorize(subjectColorLab, referenceColorLab, Color.ColorSpace.Lab);
 
-				transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromLab(subjectColorLab));
+				transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromLab(transformedSubjectColorLab));
 			}
 		});
 
@@ -83,7 +83,7 @@ Color = {
 	},
 
 	hexStringFromRGB: (rgb) => {
-		return ("#" + [ rgb.red, rgb.green, rgb.blue ].map(hexValue => Math.round(hexValue).toString(16)).join(""));
+		return ("#" + [ rgb.red, rgb.green, rgb.blue ].map(hexValue => Math.round(hexValue).toString(16).padStart(2, "0")).join(""));
 	},
 
 	rgbaStringFromRGBA: (rgba) => {
