@@ -17,7 +17,7 @@ if (file_exists($icon_file_path))
 
 $icon_file_paths = glob("{$icon_dir}/*.svg");
 
-$out = [ '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' ];
+$out = [ '<svg xmlns="http://www.w3.org/2000/svg">' ];
 
 $position = 0;
 foreach ($icon_file_paths as $path) {
