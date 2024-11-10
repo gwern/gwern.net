@@ -7,7 +7,26 @@ Color = {
 		RGB: "RGB",
 		HSV: "HSV",
 		XYZ: "XYZ",
-		Lab: "Lab"
+		Lab: "Lab",
+		YCC: "YCC"
+	},
+
+	ColorTransform: {
+		COLORIZE: "colorize"
+	},
+
+	ColorTransformSettings: {
+		"colorize": {
+			defaultColorSpace: "Lab",
+			"Lab": {
+				//	L (lightness)
+				maxBaseValue: 70
+			},
+			"YCC": {
+				//	Y (luma)
+				maxBaseValue: 0.7
+			}
+		}
 	},
 
 	processColorValue: (colorString, transforms, options) => {
@@ -23,15 +42,23 @@ Color = {
 		//	Apply transforms.
 		transforms.forEach(transform => {
 			let transformType = transform[0];
-			if (transformType == "colorize") {
+			if (transformType == Color.ColorTransform.COLORIZE) {
+				let colorSpace = transform[2] ?? Color.ColorTransformSettings[transformType].defaultColorSpace;
 				let referenceColorRGBA = Color.rgbaFromString(transform[1]);
-				let referenceColorLab = Color.labFromXYZ(Color.xyzFromRGB(referenceColorRGBA));
 
-				let subjectColorLab = Color.labFromXYZ(Color.xyzFromRGB(transformedValueRGBA));
+				if (colorSpace == Color.ColorSpace.Lab) {
+					let referenceColorLab = Color.labFromXYZ(Color.xyzFromRGB(referenceColorRGBA));
+					let subjectColorLab = Color.labFromXYZ(Color.xyzFromRGB(transformedValueRGBA));
+					let transformedSubjectColorLab = Color.colorValueTransform_colorize(subjectColorLab, referenceColorLab, Color.ColorSpace.Lab);
 
-				let transformedSubjectColorLab = Color.colorValueTransform_colorize(subjectColorLab, referenceColorLab, Color.ColorSpace.Lab);
+					transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromLab(transformedSubjectColorLab));
+				} else if (colorSpace == Color.ColorSpace.YCC) {
+					let referenceColorYCC = Color.yccFromRGB(referenceColorRGBA);
+					let subjectColorYCC = Color.yccFromRGB(transformedValueRGBA);
+					let transformedSubjectColorYCC = Color.colorValueTransform_colorize(subjectColorYCC, referenceColorYCC, Color.ColorSpace.YCC);
 
-				transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromLab(transformedSubjectColorLab));
+					transformedValueRGBA = Color.rgbFromYCC(transformedSubjectColorYCC);
+				}
 			}
 		});
 
@@ -43,19 +70,36 @@ Color = {
 				: Color.rgbaStringFromRGBA(transformedValueRGBA));
 	},
 
-	colorizeTransformMaxBaseLightness: 70,
+	colorizeTransformLabMaxBaseLightness: 70,
+
+	colorizeTransformYCCMaxBaseLuma: 0.5,
 
 	/*	In L*a*b*, retain lightness (L*) but set color (a* and b*) from the
 		specified reference color.
 
+		In YCoCg, retain luma (Y) but set chroma (Co and Cg) from the specified
+		reference color.
+
 		In any other color space, has no effect.
 	 */
 	colorValueTransform_colorize: (color, referenceColor, colorSpace) => {
+		if ([ Color.ColorSpace.Lab, Color.ColorSpace.YCC ].includes(colorSpace) == false)
+			return color;
+
+		let maxBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].maxBaseValue;
+
 		if (colorSpace == Color.ColorSpace.Lab) {
-			let baseLightness = Math.min(referenceColor.lightness, Color.colorizeTransformMaxBaseLightness);
+			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
+
 			color.lightness = baseLightness + (100 - baseLightness) * (color.lightness / 100);
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
+		} else if (colorSpace == Color.ColorSpace.YCC) {
+			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
+
+			color.Y  = baseLuma + (1 - baseLuma) * color.Y;
+			color.Co = referenceColor.Co;
+			color.Cg = referenceColor.Cg;
 		}
 
 		return color;
@@ -95,6 +139,27 @@ Color = {
 				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
 				+ ", " + Math.round(rgba.alpha).toString()
 				+ ")");
+	},
+
+	//	https://en.wikipedia.org/wiki/YCoCg
+	yccFromRGB: (rgb) => {
+		let red   = rgb.red   / 255.0;
+		let green = rgb.green / 255.0;
+		let blue  = rgb.blue  / 255.0;
+
+		return {
+			Y:  red *  0.25 + green * 0.5 + blue *  0.25,
+			Co: red *  0.5                + blue * -0.5,
+			Cg: red * -0.25 + green * 0.5 + blue * -0.25
+		}
+	},
+
+	rgbFromYCC: (ycc) => {
+		return {
+			red:   Math.max(0, Math.min(1, ycc.Y + ycc.Co - ycc.Cg)) * 255.0,
+			green: Math.max(0, Math.min(1, ycc.Y          + ycc.Cg)) * 255.0,
+			blue:  Math.max(0, Math.min(1, ycc.Y - ycc.Co - ycc.Cg)) * 255.0
+		}
 	},
 
 	rgbFromXYZ: (xyz) => {

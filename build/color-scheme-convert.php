@@ -255,9 +255,9 @@ function RGBFromYCC($ycc_components) {
 	$G = ( 1 * $Y) + ( 0 * $Co) + ( 1 * $Cg);
 	$B = ( 1 * $Y) + (-1 * $Co) + (-1 * $Cg);
 	
-	$R = min($R, 255.0);
-	$G = min($G, 255.0);
-	$B = min($B, 255.0);
+	$R = max(0.0, min(255.0, $R));
+	$G = max(0.0, min(255.0, $G));
+	$B = max(0.0, min(255.0, $B));
 
 	debug_log("  →  RGB ".PCC([ $R, $G, $B ]));
 	return [ $R, $G, $B ];
