@@ -491,14 +491,15 @@ linkIconRulesSVG u
 
  -- FINAL MATCHES:
  -- many orgs will use a 'medium.com' subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
- | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text", "") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M; TODO: white-on-black text background
+ | u'' u "medium.com" || u'' u "towardsdatascience.com" = ("𝐌", "text", "") -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M; color: none (Medium once tried a green logo c. 2015 but seems to have quickly abandoned it); TODO: white-on-black text background
  | u' u "reddit.com" = ("reddit", "svg", "#ff4500") -- www.reddit.com; color: orange
  | otherwise = ("", "", "")
 
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
 linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passed empty string as the URL; this should never happen!"
 linkIconRulesFiletypes u
- | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = ("archive", "svg", "")
+ | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt"] = ("archive", "svg", "")
+ | iE u ["maff"] = ("archive", "svg", "#e66000") -- Mozilla Archive File Format; color: Firefox orange
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
  | iE u ["r", "R"] = ("code", "svg", redR)
@@ -519,6 +520,7 @@ linkIconRulesFiletypes u
  | iE u ["mkv"] = ("file-video", "svg", "#0067ad") -- Matroska video format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Matroska_Logo.svg>)
  | iE u ["swf"] = ("file-video", "svg", "#490202") -- color: red-purple (<https://en.wikipedia.org/wiki/File:Flash_Player_34_SWF_icon.png>)
  | iE u ["ebt", "mdb", "mht", "ttf"] = ("misc", "svg", "")
+ | iE u ["mht"] = ("misc", "svg", "") -- TODO: Microsoft
  | iE u ["epub"] = ("EPUB", "text,quad,sans", "#87ba11") -- color: neon green <https://commons.wikimedia.org/wiki/File:Epub_logo.svg>
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
@@ -960,7 +962,7 @@ linkIconTestUnitsText =
          , ("/doc/rotten.com/library/bio/hackers/robert-morris/morris.bmp",  "image","svg", "")
          , ("https://apps.apple.com/us/app/better-brain-lite/id307920888", "apple", "svg", "")
          , ("https://machinelearning.apple.com/research/hey-siri", "apple", "svg", "")
-         , ("/doc/darknet-market/usareshipper-profile.maff", "archive","svg", "")
+         , ("/doc/darknet-market/usareshipper-profile.maff", "archive","svg", "#e66000")
          , ("/doc/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg", "")
          , ("/doc/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg", "")
          , ("/doc/psychology/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg", "")

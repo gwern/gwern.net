@@ -2867,4 +2867,6 @@ linkIDOverrides =
        ,("https://onlinelibrary.wiley.com/doi/full/10.1111/jsr.12312","monica-et-al-2015-1"),("/doc/zeo/2015-dellamonica.pdf","monica-et-al-2015-2")
        , ("https://plato.stanford.edu/entries/death/#DepDef", "sep-2021-death-deprivation")
        , ("https://plato.stanford.edu/entries/death/#SymArg", "sep-2021-death-symmetry")
+       , ("https://predictionbook.com/predictions/6479", "mor-prediction-future-harry")
+       , ("https://web.archive.org/web/20110716221953/http://eva.onegeek.org/pipermail/oldeva/2001-September/040370.html", "cardass-criticism")
       ]

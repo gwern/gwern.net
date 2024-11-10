@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-08 09:31:08 gwern"
+When:  Time-stamp: "2024-11-09 11:03:04 gwern"
 License: CC-0
 -}
 
@@ -270,7 +270,7 @@ readLinkMetadataAndCheck = do
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc)) finalL
-             unless (null datesBad) ((printRed "Malformed date (not 'YYYY[-MM[-DD]]'): ") >> printGreen (show datesBad))
+             unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): " >> printGreen (show datesBad))
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,_,abst) -> t=="" && length abst > 100) final
