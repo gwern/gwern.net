@@ -2081,9 +2081,10 @@ function enableLinkIcon(link) {
 	//	Set CSS variable (link icon hover color, plus optional altered icon).
 	if (link.dataset.linkIconColor > "") {
 		let transformColor = (colorCode) => {
-			return Color.processColorValue(colorCode, [
-				[ "colorize", link.dataset.linkIconColor ]
-			]);
+			return Color.processColorValue(colorCode, [ {
+				type: Color.ColorTransform.COLORIZE,
+				referenceColor: link.dataset.linkIconColor
+			} ]);
 		};
 
 		link.style.setProperty("--link-icon-color-hover", transformColor("#000"));
