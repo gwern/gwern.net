@@ -92,7 +92,8 @@ Color = {
 
 	rgbaStringFromRGBA: (rgba) => {
 		return (  "rgba(" 
-				+ [ rgba.red, rgba.green, rgba.blue, rgba.alpha ].map(value => Math.round(value).toString()).join(", ") 
+				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
+				+ ", " + Math.round(rgba.alpha).toString()
 				+ ")");
 	},
 

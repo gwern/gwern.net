@@ -421,12 +421,10 @@ function newElement(tagName, attributes, properties) {
 	properties = Object.assign({ }, properties);
 
     let element = document.createElement(tagName);
-    for (const attrName in attributes)
-        if (attributes.hasOwnProperty(attrName))
-            element.setAttribute(attrName, attributes[attrName]);
-    for (const propName in properties)
-        if (properties.hasOwnProperty(propName))
-            element[propName] = properties[propName];
+    for (let [ attrName, attrValue ] of Object.entries(attributes))
+		element.setAttribute(attrName, attrValue);
+    for (let [ propName, propValue ] of Object.entries(properties))
+		element[propName] = propValue;
     return element;
 }
 
