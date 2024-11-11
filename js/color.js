@@ -351,7 +351,7 @@ Color = {
 		return {
 			hue:        hue,
 			saturation: saturation,
-			lightness:  lightness
+			value:      value
 		};
 	}
 };
