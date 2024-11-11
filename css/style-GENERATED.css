@@ -2945,10 +2945,10 @@ pre .line {
     box-sizing: border-box;
 }
 pre .line:hover {
-    background-color: var(--GW-code-popframe-line-highlight-background-color);
+    background-color: var(--GW-popframes-code-popframe-line-highlight-background-color);
     box-shadow:
-        0  1px 0 0 var(--GW-code-popframe-line-highlight-border-color),
-        0 -1px 0 0 var(--GW-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color);
 }
 
 
@@ -4941,10 +4941,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     box-sizing: border-box;
 }
 .popframe-body.local-code-file pre .line:hover {
-    background-color: var(--GW-code-popframe-line-highlight-background-color);
+    background-color: var(--GW-popframes-code-popframe-line-highlight-background-color);
     box-shadow:
-        0  1px 0 0 var(--GW-code-popframe-line-highlight-border-color),
-        0 -1px 0 0 var(--GW-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color);
 }
 .popframe-body.local-code-file pre .line::before {
     content: counter(code-line);
@@ -4954,13 +4954,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     left: 0;
     top: 0;
     text-align: right;
-    color: var(--GW-code-popframe-line-number-color);
+    color: var(--GW-popframes-code-popframe-line-number-color);
     font-size: 0.8em;
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
     padding: 0.25em 0.5em 0 0;
-    border-right: 1px solid var(--GW-code-popframe-line-number-divider-color);
+    border-right: 1px solid var(--GW-popframes-code-popframe-line-number-divider-color);
 }
 
 /*  “Loading failed” message.
@@ -4976,7 +4976,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 
 .popframe.object .popframe-content-view {
-    --background-color: var(--GW-popups-object-popup-background-color);
+    --background-color: var(--GW-popframes-object-popframe-background-color);
 
     padding: 0;
 }
@@ -4992,10 +4992,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popframe-body.object iframe {
     border: unset;
     max-height: unset;
-}
-
-.popframe-body.object iframe {
-    background-color: var(--GW-popframes-iframe-background-color);
 }
 
 /*  Don’t show when loading failed.
@@ -5200,7 +5196,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     z-index: 1;
 
     /*  Styling. */
-    --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+    --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-popup-box-shadow-color);
 
     border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: var(--popups-popup-box-shadow);
@@ -5487,7 +5483,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup.focused {
     --GW-popups-popup-border-color: var(--GW-popups-popup-border-focused-color);
-    --GW-popups-box-shadow-color: var(--GW-popups-box-shadow-focused-color);
+    --GW-popups-popup-box-shadow-color: var(--GW-popups-popup-box-shadow-focused-color);
 
     --GW-popups-popup-title-bar-button-color: var(--GW-popups-popup-title-bar-button-focused-color);
     --GW-popups-popup-title-bar-button-color-hover: var(--GW-popups-popup-title-bar-button-focused-color-hover);
@@ -5911,7 +5907,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         Still, maybe CSSWG will come to their senses someday?
             —SA 2023-09-29
      */
-/*  filter: drop-shadow(0px 0px 12px var(--GW-popins-box-shadow-color)); */
+/*  filter: drop-shadow(0px 0px 12px var(--GW-popins-popin-box-shadow-color)); */
 }
 
 .markdownBody .popin-ancestor {

@@ -213,10 +213,12 @@
 
 	/*	Pop-frames (popups or popins).
 	 */
-    --GW-code-popframe-line-highlight-background-color: #181700;
-    --GW-code-popframe-line-highlight-border-color: #494949;
-    --GW-code-popframe-line-number-color: #7c7c7c;
-    --GW-code-popframe-line-number-divider-color: #5c5c5c;
+    --GW-popframes-object-popframe-background-color: #000;
+
+    --GW-popframes-code-popframe-line-highlight-background-color: #181700;
+    --GW-popframes-code-popframe-line-highlight-border-color: #494949;
+    --GW-popframes-code-popframe-line-number-color: #7c7c7c;
+    --GW-popframes-code-popframe-line-number-divider-color: #5c5c5c;
 
     --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
     --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
@@ -235,12 +237,10 @@
      */
     --GW-popups-popup-background-color: var(--GW-body-background-color);
 
-    --GW-popups-object-popup-background-color: #000;
-
     --GW-popups-popup-border-color: #5c5c5c;
-    --GW-popups-box-shadow-color: #5c5c5c;
+    --GW-popups-popup-box-shadow-color: #5c5c5c;
     --GW-popups-popup-border-focused-color: #7c7c7c;
-    --GW-popups-box-shadow-focused-color: #7c7c7c;
+    --GW-popups-popup-box-shadow-focused-color: #7c7c7c;
 
     --GW-popups-popup-title-bar-background-color: #000;
     --GW-popups-popup-title-bar-button-color: #6c6c6c;
@@ -261,13 +261,17 @@
     /*  Popins.
      */
     --GW-popins-popin-background-color: var(--GW-body-background-color);
+
     --GW-popins-popin-border-color: #7c7c7c;
     --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.4);
-    --GW-popins-box-shadow-color: #7c7c7c;
+    --GW-popins-popin-box-shadow-color: #7c7c7c;
+
     --GW-popins-popin-title-bar-background-color: #000;
     --GW-popins-popin-title-bar-button-color: #a6a6a6;
+
     --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
     --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
+
     --GW-popins-popin-stack-counter-text-color: #000;
     --GW-popins-popin-stack-counter-background-color: #6c6c6c;
 
