@@ -6,6 +6,7 @@ Color = {
 	ColorSpace: {
 		RGB:   "RGB",
 		HSV:   "HSV",
+		HSL:   "HSL",
 		XYZ:   "XYZ",
 		Lab:   "Lab",
 		YCC:   "YCC",
@@ -30,6 +31,10 @@ Color = {
 			"Oklab": {
 				//	L (lightness)
 				maxBaseValue: 0.75
+			},
+			"HSL": {
+				//	L (lightness)
+				maxBaseValue: 0.50
 			}
 		}
 	},
@@ -68,6 +73,12 @@ Color = {
 					let transformedSubjectColorOklab = Color.colorValueTransform_colorize(subjectColorOklab, referenceColorOklab, Color.ColorSpace.Oklab);
 
 					transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromOklab(transformedSubjectColorOklab));
+				} else if (colorSpace == Color.ColorSpace.HSL) {
+					let subjectColorHSL = Color.hslFromRGB(transformedValueRGBA);
+					let referenceColorHSL = Color.hslFromRGB(referenceColorRGBA);
+					let transformedSubjectColorHSL = Color.colorValueTransform_colorize(subjectColorHSL, referenceColorHSL, Color.ColorSpace.HSL);
+
+					transformedValueRGBA = Color.rgbFromHSL(transformedSubjectColorHSL);
 				}
 			}
 		});
@@ -80,22 +91,22 @@ Color = {
 				: Color.rgbaStringFromRGBA(transformedValueRGBA));
 	},
 
-	colorizeTransformLabMaxBaseLightness: 70,
-
-	colorizeTransformYCCMaxBaseLuma: 0.5,
-
-	/*	In L*a*b*, retain lightness (L*) but set color (a* and b*) from the
-		specified reference color.
+	/*	In L*a*b* or Oklab, retain lightness (L*) but set color (a* and b*) 
+		from the specified reference color.
 
 		In YCoCg, retain luma (Y) but set chroma (Co and Cg) from the specified
 		reference color.
+
+		In HSL, retain lightness (L) but set saturation (S) and hue (H) from
+		the specified reference color.
 
 		In any other color space, has no effect.
 	 */
 	colorValueTransform_colorize: (color, referenceColor, colorSpace) => {
 		if ([ Color.ColorSpace.Lab,
 			  Color.ColorSpace.YCC,
-			  Color.ColorSpace.Oklab
+			  Color.ColorSpace.Oklab,
+			  Color.ColorSpace.HSL
 			  ].includes(colorSpace) == false)
 			return color;
 
@@ -119,6 +130,13 @@ Color = {
 			color.L = baseLightness + (1 - baseLightness) * color.L;
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
+		} else if (colorSpace == Color.ColorSpace.HSL) {
+			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
+
+			color.lightness = baseLightness + (1 - baseLightness) * Math.pow(color.lightness, 0.5);
+// 			color.lightness = Math.pow(baseLightness + (1 - baseLightness) * color.lightness, 0.5);
+			color.hue = referenceColor.hue;
+			color.saturation = referenceColor.saturation;
 		}
 
 		return color;
@@ -291,6 +309,71 @@ Color = {
 		}
 	},
 
+	rgbFromHSL: (hsl) => {
+		let red, green, blue;
+		if (hsl.saturation != 0) {
+			function colorChannelFromHue(p, q, t) {
+				if (t < 0) t += 1;
+				if (t > 1) t -= 1;
+
+				if (t < 1.0/6.0) return p + (q - p) * 6.0 * t;
+				if (t < 1.0/2.0) return q;
+				if (t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+
+				return p;
+			}
+
+			let q = hsl.lightness < 0.5
+					? hsl.lightness * (1.0 + hsl.saturation)
+					: hsl.lightness + hsl.saturation - hsl.lightness * hsl.saturation;
+			let p = 2.0 * hsl.lightness - q;
+
+			red   = colorChannelFromHue(p, q, hsl.hue + 1.0/3.0);
+			green = colorChannelFromHue(p, q, hsl.hue);
+			blue  = colorChannelFromHue(p, q, hsl.hue - 1.0/3.0);
+		} else {
+			red = green = blue = hsl.lightness;
+		}
+
+		return {
+			red:   red   * 255.0,
+			green: green * 255.0,
+			blue:  blue  * 255.0
+		};
+	},
+
+	hslFromRGB: (rgb) => {
+		let red   = rgb.red   / 255.0;
+		let green = rgb.green / 255.0;
+		let blue  = rgb.blue  / 255.0;
+
+		let minValue = Math.min(red, green, blue);
+		let maxValue = Math.max(red, green, blue);
+		let valueDelta = maxValue - minValue;
+
+		let hue = 0;
+		let saturation = 0;
+		let lightness = (maxValue + minValue) / 2;
+
+		if (valueDelta != 0) {
+			saturation = lightness > 0.5
+						 ? valueDelta / (2 - (maxValue + minValue))
+						 : valueDelta / (maxValue + minValue);
+
+			     if (red   == maxValue) hue = (green - blue)  / valueDelta + (green < blue ? 6.0 : 0.0);
+			else if (green == maxValue) hue = (blue  - red)   / valueDelta + 2.0;
+			else if (blue  == maxValue) hue = (red   - green) / valueDelta + 4.0;
+
+			hue /= 6.0;
+		}
+	
+		return {
+			hue:        hue,
+			saturation: saturation,
+			lightness:  lightness
+		};
+	},
+
 	rgbFromHSV: (hsv) => {
 		let red, greed, blue;
 		if (hsv.saturation != 0) {
@@ -329,9 +412,9 @@ Color = {
 		let maxValue = Math.max(red, green, blue);
 		let valueDelta = maxValue - minValue;
 
-		let value = maxValue;
 		let hue = 0;
 		let saturation = 0;
+		let value = maxValue;
 
 		if (valueDelta != 0) {
 			saturation = valueDelta / maxValue;
