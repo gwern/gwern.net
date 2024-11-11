@@ -1485,7 +1485,10 @@ Content = {
                     //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
                     contentDocument = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
                         additionalClasses: "youtube",
-                        additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen`
+                        additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" 
+                        					   allow="autoplay; fullscreen" 
+                        					   sandbox="allow-scripts allow-same-origin allow-presentation" 
+                        					   allowfullscreen`
                     }));
                 } else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
                     let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
