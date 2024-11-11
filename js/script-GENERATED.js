@@ -7260,26 +7260,24 @@ Content = {
                 let contentDocument = null;
 
                 if (Content.contentTypes.remoteVideo.isYoutubeLink(link)) {
-                    let srcdocStyles =
-                          `<style>`
-                        + `* { padding: 0; margin: 0; overflow: hidden; } `
-                        + `html, body { height: 100%; } `
-                        + `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } `
-                        + `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }`
-                        + `</style>`;
-
                     let videoId = Content.contentTypes.remoteVideo.youtubeId(link);
                     let videoEmbedURL = URLFromString(`https://www.youtube.com/embed/${videoId}`);
-                    if (link.search > "")
+                    if (link.search > "") {
                         videoEmbedURL.search = link.search;
-                    let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                    let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-                    let srcdocHTML = `<a href='${videoEmbedURL.href}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+
+						videoEmbedURL.deleteQueryVariable("v");
+
+                        let startTime = videoEmbedURL.getQueryVariable("t");
+                        if (startTime) {
+	                        videoEmbedURL.setQueryVariable("start", startTime.slice(0, -1));
+	                        videoEmbedURL.deleteQueryVariable("t");
+	                    }
+                    }
 
                     //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
                     contentDocument = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
                         additionalClasses: "youtube",
-                        additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen`
+                        additionalAttributes: `sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen`
                     }));
                 } else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
                     let videoId = Content.contentTypes.remoteVideo.vimeoId(link);
