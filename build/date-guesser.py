@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2024-11-11 16:09:45 gwern"
+# When:  Time-stamp: "2024-11-12 18:58:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -12,26 +12,168 @@
 #
 # Many strings, like page titles or abstracts or URLs, contain a clear date. But they come in far too many formats to feasibly write regexps to extract without a ton of labor and risking inconsistency from overlapping matches.
 # This is a good use-case for LLMs. We can provide a variety of date inputs with the known date, and it uses syntax+semantics to extract dates in general.
+#
+# The returned date will be from today or earlier, and it will be in 'YYYY[-MM[-DD]]' format. We instruct the LLM to be conservative, and when in doubt, return no guessed date and let a human manually review & fix missing dates (rather than risk returning a plausible but wrong date).
 
 import sys
 from openai import OpenAI
-client = OpenAI()
+from datetime import datetime
+import re
 
-if len(sys.argv) == 1:
-    target = sys.stdin.read().strip()
-else:
-    target = sys.argv[1]
+def validate_date_format(date_str):
+    """
+    Validate that the date string matches YYYY[-MM[-DD]] format.
+    Returns True if valid, False if invalid.
+    """
+    patterns = [
+        r'^\d{4}$',                     # YYYY
+        r'^\d{4}-(?:0[1-9]|1[0-2])$',   # YYYY-MM
+        r'^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$'  # YYYY-MM-DD
+    ]
 
-prompt = """
+    return any(re.match(pattern, date_str) for pattern in patterns)
+
+def validate_date_not_future(date_str):
+    """
+    Validate that the date is not in the future and is a valid calendar date
+    (including proper handling of leap years).
+    Returns True if date is valid and not future, False otherwise.
+    """
+    today = datetime.now()
+
+    try:
+        # Parse the date string based on its format
+        if len(date_str) == 4:  # YYYY
+            date = datetime.strptime(date_str, '%Y')
+            return date.year <= today.year
+        elif len(date_str) == 7:  # YYYY-MM
+            date = datetime.strptime(date_str, '%Y-%m')
+            return date.year < today.year or (date.year == today.year and date.month <= today.month)
+        elif len(date_str) == 10:  # YYYY-MM-DD
+            date = datetime.strptime(date_str, '%Y-%m-%d')
+            return date <= today
+        return False
+    except ValueError:
+        return False
+
+def main():
+    client = OpenAI()
+
+    if len(sys.argv) == 1:
+        target = sys.stdin.read().strip()
+    else:
+        target = sys.argv[1]
+
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    prompt = """
 Task: Guess the date mentioned in the input.
 The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023'; if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
-Dates are valid only between 1000AD and 2100AD; any dates outside that date range are probably mistakes, and do not print those.
-(Note also that all surviving web pages were created after 1990AD, and web page dates pre-2010AD are increasingly unlikely.)
+Dates are valid only between 1000AD and """ + current_date + """; any dates outside that date range are probably mistakes, and do not print those.
+(Note also that the World Wide Web was invented in 1989, so web pages cannot predate 1990AD. Web page dates before 2000AD are rare, and dates before 2010AD should be treated with extra scrutiny unless from an archival source.)
 If there is more than one valid date, print only the first one.
 Do not make up dates; if you are unsure, print only the empty string "".
 
 Task examples:
 
+"Published: 02-29-2024 | https://example.com/leap-year-article"
+""  # Invalid: 2024 is not a leap year
+- "Date: 04/31/2024: Article about calendars"
+""  # Invalid: April has 30 days
+- "Article from Sep 31, 2023 about date formats"
+""  # Invalid: September has 30 days
+- "Updated 2024.13.01 with new information"
+""  # Invalid month 13
+- "Version: 2024.00.01"
+""  # Invalid month 0
+- "Created on 2024-04-00"
+""  # Invalid day 0
+- "Last modified: 31/12/2023 23:59:59 UTC"
+2023-12-31  # Should extract just the date portion
+- "Posted: Yesterday at 3pm"
+""  # Relative dates should be ignored, as who knows what they are *actually* relative to?
+- "Updated: 2 days ago"
+""  # Relative dates should be ignored
+- "EST Release Date: 12/13/23"
+2023-12-13  # Should handle American date format
+- "Published Date: 13/12/23"
+2023-12-13  # Should handle European date format if unambiguous
+- "From our 2023-13-12 edition"
+""  # Invalid: month 13
+- "Article from Feb 30th, 2023"
+""  # Invalid: February never has 30 days
+- "Created: 2024.02.29"
+""  # Invalid: 2024 is not a leap year
+- "Date of record: 1999-11-31"
+""  # Invalid: November has 30 days
+- "TimeStamp:20240229123456"
+""  # Invalid: not a leap year
+- "YYYYMMDD: 20241301"
+""  # Invalid month 13
+- "Released between 2023Q4 and 2024Q1"
+""  # Too ambiguous
+- "Copyright (c) 2020-2024"
+2020  # Take earliest year when given a range
+- "Volume 23, Issue 45 (Winter 2023-2024)"
+2023  # Take earliest year when given a range
+- "Academic Year 2023/24"
+2023  # Take earliest year when given a range
+- "Originally written in 2022, updated for 2024"
+2022  # Take original/earliest date
+- "Written 2024/04/31: Edited 2024/05/01"
+""  # Invalid first date (April has 30 days)
+- "Looking back at the year 2000 problem (Y2K)"
+""  # Don't extract Y2K as it's a topic, not a date
+- "A paper from arXiv:2401.12345"
+2024-01  # Extract date from arXiv ID
+- "DOI: 10.1234/journal.2024.01.0123"
+2024-01  # Extract date from DOI when unambiguous
+- "Posted on 29/02/2023 about leap years"
+""  # Invalid: 2023 wasn't a leap year
+- "Article 123456789 from 2024-W01"
+2024  # ISO week dates should return just the year
+- "Publication: 2024. Journal of Examples"
+2024  # Handle trailing period after year
+- "From the 1990's collection"
+""  # Don't extract dates from decades
+- "Temperature was 2023.5 degrees"
+""  # Don't extract decimal numbers as dates
+- "Score was 2024:1"
+""  # Don't extract scores/ratios as dates
+- "Published at 2024hrs on Jan 1"
+""  # Don't extract 24-hour time as year
+- "Build version 2024.01.alpha"
+2024-01  # Software versions can contain valid dates
+- "Model: RTX 2080 Ti"
+""  # Don't extract product numbers as dates
+- "ISBN: 1-234567-890-2024"
+""  # Don't extract years from ISBNs
+- "Highway 2024 South"
+""  # Don't extract road numbers as dates
+- "Room 2024B, Building 3"
+""  # Don't extract room numbers as dates
+- "Postal code 2024AB"
+""  # Don't extract postal codes as dates
+- "In the year 2525, if man is still alive"
+""  # Song lyric about future: not a publication date
+- "Article accepted 2024-02-30, published 2024-03-01"
+2024-03-01  # First date invalid, use second valid date
+- "File: IMG_20241301_123456.jpg"
+""  # Invalid date in filename (month 13)
+- "Updated 24-01-15"
+2024-01-15  # Assume 2-digit years >= 24 are 2024+
+- "Updated 95-01-15"
+1995-01-15  # Assume 2-digit years < 24 are 1900s
+- "Patent №2024-123456"
+""  # Don't extract patent numbers as dates
+- "SKU: 20240123-ABC"
+""  # Don't extract SKU/product codes as dates
+- "Contact: +1 (202) 555-2024"
+""  # Don't extract phone numbers as dates
+- "Sample #2024-01-A5"
+2024-01  # Laboratory sample IDs can contain valid dates
+- "hex color #202420"
+""  # Don't extract hex colors as dates
 - "In 1492, Columbus sailed the ocean blue; he returned in 1499."
 1492
 - "1724256502"
@@ -308,17 +450,38 @@ Task examples:
 2024-10-29
 - "Stem cell transplantation extends the reproductive life span of naturally aging cynomolgus monkeys https://www.nature.com/articles/s41421-024-00726-4"
 ""
+- "The History of Speech Recognition to the Year 2030 https://awni.github.io/future-speech/"
+""
 
 Task:
 
 - """ + target + "\n"
 
-completion = client.chat.completions.create(
-  model="gpt-4o-mini", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
-  messages=[
-    {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
-    {"role": "user", "content": prompt }
-  ]
-)
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
+            {"role": "user", "content": prompt}
+        ]
+    )
 
-print(completion.choices[0].message.content)
+    date_str = completion.choices[0].message.content.strip()
+
+    # Handle empty string case (both with and without quotes)
+    if date_str in ['""', "''", ""]:
+        print('""')
+        return
+
+    # Validate the returned date
+    if not validate_date_format(date_str):
+        print(f"Error: Invalid date format. Got: {date_str}")
+        sys.exit(1)
+    if not validate_date_not_future(date_str):
+        print(f"Error: Future or invalid date detected. Got: {date_str}")
+        sys.exit(1)
+
+    print(date_str)
+
+if __name__ == "__main__":
+    main()
+
