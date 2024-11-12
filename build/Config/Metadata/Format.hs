@@ -1790,6 +1790,7 @@ htmlRewriteFixed =
          , ("₂", "<sub>2</sub>")
          , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
          , ("‐", "-")
+         , ("\8208", "-") -- remove HYPHEN (yes, really. "-" is "HYPHEN-MINUS")
          , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
          , ("FROH", "<em>F<sub>ROH</sub></em>")
          , (" Ne ", " <em>N<sub>e</sub></em> ")

@@ -983,6 +983,7 @@ authorLinkDB = M.fromList $
     , ("Jianxin Shi", "https://dceg.cancer.gov/about/staff-directory/shi-jianxin")
     , ("J. Wouter Jukema", "https://www.universiteitleiden.nl/en/staffmembers/johan-jukema#tab-2")
     , ("Ilya Loshchilov", "http://www.loshchilov.com/")
+    , ("Stuart Hall", "https://x.com/stuartkhall")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

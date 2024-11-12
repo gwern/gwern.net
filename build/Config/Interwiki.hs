@@ -1423,6 +1423,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Don't_repeat_yourself", "Don%27t_repeat_yourself")
           , ("Donald_E._Knuth", "Donald_Knuth")
           , ("Donald_J._Trump", "Donald_Trump")
+          , ("Trump", "Donald_Trump")
           , ("Donor_insemination", "Insemination")
           , ("Doogie_mice", "Long-term_potentiation#Spatial_memory")
           , ("Doomsday_Argument", "Doomsday_argument")

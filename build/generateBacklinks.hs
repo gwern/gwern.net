@@ -44,12 +44,13 @@ main = do -- we read arguments from stdin using `getContents` in main'
   createDirectoryIfMissing False "metadata/annotation/backlink/"
   priorBacklinksN <- fmap length $ listDirectory "metadata/annotation/backlink/"
   -- for uninteresting reasons probably due to a bad architecture, when the existing set of backlinks is deleted for a clean start, apparently you have to run generateBacklinks.hs twice...? So if we appear to be at a clean start, we run twice:
-  if priorBacklinksN > 0 then main' else main' >> main'
+  if priorBacklinksN > 0 then main' else (putStrLn ("Running main' twice due to clean start") >> main' >> main')
 
 main' :: IO ()
 main' = do
   bldb <- readBacklinksDB
   md <- readLinkMetadata
+  putStrLn "Read databases."
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".md" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.md` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
@@ -58,13 +59,17 @@ main' = do
         M.keys bldb ++ concatMap snd (concat $ M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
                              unless exist $ printRed ("Backlinks: files annotation error: file does not exist? " ++ f))
+  putStrLn "Finished checking that all targets/callers are valid & files exist."
 
   -- we want sort-by-embedding of all backlink sets (instead of sorting by date or path, which seem kinda dumb):
   edb <- readEmbeddings
   sortDB <- readListSortedMagic
 
   -- if all are valid, write out:
-  _ <- M.traverseWithKey (writeOutCallers md edb sortDB) bldb
+  _ <- M.traverseWithKey (writeOutCallers md edb sortDB) bldb -- traverseWithKey may cause a memory leak here
+  putStrLn "Finished writeOutcallers."
+
+  -- parse all arguments & update backlink database:
   fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) Prelude.getContents
   -- eg ["2012-election.md","2014-spirulina.md","3-grenades.md","404.md","abortion.md","about.md","ab-test-indent.md","ab-test.md"]
 
@@ -74,6 +79,7 @@ main' = do
   links2 <- Par.mapM (parseFileForLinks False) html
 
   let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey (parseAnnotationForLinks . T.pack) $ M.filterWithKey (\u _ -> not (isPagePath $ T.pack u)) md
+  putStrLn ("Total target files to parse for backlinks: " ++ show (length links3))
 
   let linksdb = M.fromListWith (++) $ map (\(a,b) -> (truncateAnchors a,[(a,[b])])) $ nubOrd $ concat $ links1++links2++links3
   let bldb' = linksdb `M.union` bldb

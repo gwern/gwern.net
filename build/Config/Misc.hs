@@ -66,7 +66,7 @@ sectionizeMinN = 3
 
 -- generateBacklinks.hs:
 backlinkBlackList :: T.Text -> Bool
--- backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."
+backlinkBlackList "" = error "generateBacklinks.hs (Config.Misc): backlinkBlackList: Called with an empty string! This should never happen."
 backlinkBlackList e
   | anyInfixT f ["/backlink/", "/link-bibliography/", "/similar/", "/private"] = True
   | anyPrefixT f ["$", "#", "!", "mailto:", "irc://", "\8383", "/doc/www/", "https://example.com"] = True
