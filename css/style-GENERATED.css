@@ -6590,11 +6590,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar.vertical .widget button,
 #page-toolbar.vertical .widget a {
     position: relative;
-}
-#page-toolbar.vertical .widget button {
     height: var(--toolbar-button-size);
 }
-#page-toolbar.vertical .widget button .icon {
+#page-toolbar.vertical .widget button .icon,
+#page-toolbar.vertical .widget a .icon {
     padding: 4px;
 }
 #page-toolbar.vertical .widget button .label,
@@ -7700,18 +7699,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /* SEARCH WIDGET */
 /*****************/
 
-#gcse-search a {
+#page-toolbar #gcse-search a {
     display: block;
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
-#gcse-search a .icon {
+#page-toolbar #gcse-search a .icon {
 	padding: 5px;
 	width: 100%;
 	height: 100%;
 	display: flex;
 	box-sizing: border-box;
 }
-#gcse-search a svg {
+#page-toolbar #gcse-search a svg {
     display: block;
 }
 
