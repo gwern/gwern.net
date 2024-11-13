@@ -7704,6 +7704,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: block;
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
+#gcse-search a .icon {
+	padding: 5px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	box-sizing: border-box;
+}
 #gcse-search a svg {
     display: block;
 }

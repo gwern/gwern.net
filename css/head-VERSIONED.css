@@ -1845,54 +1845,91 @@ a code {
  */
 .has-recently-modified-icon .recently-modified-icon-hook,
 .icon-single-white-star-on-black-circle,
-.icon-moon-solid, .icon-book-open-solid,
-.icon-message-slash-solid, .icon-magnifying-glass,
-.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid,
-.icon-manicule-left, .icon-manicule-right {
+.icon-moon-solid,
+.icon-book-open-solid,
+.icon-message-slash-solid,
+.icon-magnifying-glass,
+.icon-gear-solid,
+.icon-sun-solid,
+.icon-eye-slash-solid,
+.icon-manicule-left,
+.icon-manicule-right {
     position: relative;
-    background-color: var(--link-underline-background-color); }
+    top: 0.05em;
+    background-color: var(--link-underline-background-color);
+	padding-left: calc(var(--icon-width) + 0.2em);
+}
 
 .has-recently-modified-icon .recently-modified-icon-hook,
-.icon-single-white-star-on-black-circle { padding-left: 0.85em; }
+.icon-single-white-star-on-black-circle {
+    --icon-opacity: 0.75;
+    --icon-width: 0.65em;
+    --icon-height: 1em;
+}
+.icon-moon-solid,
+.icon-gear-solid {
+	--icon-opacity: 0.7;
+    --icon-width: 0.9em;
+    --icon-height: 1em;
+}
+.icon-book-open-solid,
+.icon-message-slash-solid,
+.icon-eye-slash-solid,
+.icon-manicule-left,
+.icon-manicule-right {
+	--icon-opacity: 0.7;
+    --icon-width: 0.9em;
+    --icon-height: 0.75em;
+}
+.icon-sun-solid {
+	--icon-opacity: 0.75;
+    --icon-width: 1em;
+    --icon-height: 1em;
+}
+.icon-magnifying-glass {
+	--icon-opacity: 0.9;
+    --icon-width: 0.9em;
+    --icon-height: 1em;
+}
 
-.icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
-.icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid,
-.icon-manicule-left, .icon-manicule-right { margin: 0.1em;
-                                            padding-left: 0.8em;
-                                            opacity: 70%; }
-.icon-magnifying-glass { padding-left: 1em;
-                         opacity: 90%; }
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
-.icon-moon-solid::before, .icon-book-open-solid::before, .icon-message-slash-solid::before,
-.icon-magnifying-glass::before, .icon-gear-solid::before, .icon-sun-solid::before,
+.icon-moon-solid::before,
+.icon-book-open-solid::before,
+.icon-message-slash-solid::before,
+.icon-magnifying-glass::before,
+.icon-gear-solid::before,
+.icon-sun-solid::before,
 .icon-eye-slash-solid::before,
-.icon-manicule-right::before, .icon-manicule-left::before {
+.icon-manicule-right::before,
+.icon-manicule-left::before {
     content: "";
     background-repeat: no-repeat;
-    background-position: center left;
     position: absolute;
-    top: 0.05em;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    opacity: var(--icon-opacity);
+    background-position: center;
+    background-size: var(--icon-width) var(--icon-height);
 }
+.has-recently-modified-icon .recently-modified-icon-hook::before {
+    background-position: center left;
+}
+
 .has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before {
-    background-image: var(--GW-image-single-white-star-on-black-circle-svg);
-    background-size: 0.65em 100%;
-    opacity: 0.75;
-}
-.icon-single-white-star-on-black-circle::before { background-position: center; }
-.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731124101#moon-solid'); }
-.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731124101#book-open-solid'); }
-.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1731124101#message-slash-solid'); }
-.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1731124101#magnifying-glass'); }
-.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731124101#gear-solid'); }
-.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1731124101#sun-solid'); }
-.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731124101#eye-slash-solid'); }
-.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1731124101#manicule-right'); }
-.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1731124101#manicule-left'); }
+.icon-single-white-star-on-black-circle::before { background-image: var(--GW-image-single-white-star-on-black-circle-svg); }
+.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731466932#moon-solid'); }
+.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731466932#book-open-solid'); }
+.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1731466932#message-slash-solid'); }
+.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1731466932#magnifying-glass'); }
+.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1731466932#gear-solid'); }
+.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1731466932#sun-solid'); }
+.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1731466932#eye-slash-solid'); }
+.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1731466932#manicule-right'); }
+.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1731466932#manicule-left'); }
+
 
 /*************/
 /* SIDENOTES */
