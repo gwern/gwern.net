@@ -381,14 +381,12 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
 generateItem :: Metadata -> Bool -> String -> [Block]
 generateItem md linkTagsP p2 = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
-                                  Just ("",_,_,_,_,_,_) -> []
-                                  Just (_,_,_,_,_,_,"") -> []
-                                  Just (t,_,_,_,_,tags,_) ->
-                                    [Para -- NOTE: we set .backlink-not because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
-                                      [Link ("", ["link-annotated", "id-not", "backlink-not"],
-                                             -- link-tags are particularly useful when reviewing single-shot reccomendations while writing annotations
-                                              if null tags || not linkTagsP then [] else [("link-tags", T.pack $ unwords tags) ]
-                                            ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
+                                  Just ("",_,_,_,_,_, _) -> []
+                                  Just (_, _,_,_,_,_,"") -> []
+                                  Just (t, _,_,_,_,_, _) ->
+                                    [Para -- NOTE: we set '.backlink-not' because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
+                                      [Link ("", ["link-annotated", "id-not", "backlink-not"],[])
+                                        [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
 
 -----------------------------------
