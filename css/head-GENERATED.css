@@ -141,6 +141,7 @@ main {
  */
 #sidebar a.logo {
     display: flex;
+    align-items: center;
     margin: 1px 0;
 }
 #sidebar a.logo .logo-image {
@@ -178,10 +179,31 @@ main {
      */
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
-        flex: 1 1 33%;
+    }
+
+    #sidebar .sidebar-links a[href="/about"],
+    #sidebar .sidebar-links a.site {
+        order: -3;
+        flex: 1 1 20%;
+    }
+    #sidebar .sidebar-links a[href="/me"],
+    #sidebar .sidebar-links a.me {
+        order: -1;
+        flex: 1 1 20%;
+    }
+    #sidebar .sidebar-links a[href="/changelog"],
+    #sidebar .sidebar-links a.new-essays {
+        order: 1;
+        flex: 1 1 35%;
+    }
+    #sidebar .sidebar-links a[href="/doc-newest-index"],
+    #sidebar .sidebar-links a.new-links {
+        order: 2;
+        flex: 1 1 35%;
     }
     #sidebar .sidebar-links a.patreon {
-        display: none;
+        order: -2;
+        flex: 1 1 20%;
     }
 }
 
@@ -206,6 +228,11 @@ main {
         font-weight: 600;
     }
 
+	@media all and (max-width: 779px) {
+		#sidebar .sidebar-links .mobile-not {
+			display: none;
+		}
+	}
     @media all and (max-width: 1179px) {
         /*  Logo.
          */
@@ -2034,12 +2061,19 @@ body.page-index #markdownBody {
 /*  Nav bar.
  */
 
-/*  No index self-link. */
+/*  No index self-link.
+ */
 body.page-index #sidebar a.logo {
     pointer-events: none;
 }
 
-/*  Special nav link styling on /index. */
+/*  Special nav link styling on /index.
+ */
+@media all and (max-width: 649px) {
+	body.page-index #sidebar .sidebar-links a {
+		flex: 1 1 35%;
+	}
+}
 @media all and (min-width: 650px) {
     body.page-index #sidebar a {
         color: var(--GW-nav-header-link-hover-color);
@@ -2047,18 +2081,20 @@ body.page-index #sidebar a.logo {
     body.page-index #sidebar a:hover {
         color: var(--GW-nav-header-link-color);
     }
-}
-@media all and (min-width: 1180px) {
-    body.page-index #sidebar a.logo {
-        opacity: 1.0;
-    }
+
+	@media all and (min-width: 1180px) {
+		body.page-index #sidebar a.logo {
+			opacity: 1.0;
+		}
+	}
 }
 
 /*****************/
 /*  Column layout.
  */
 
-/* Suppress bonus section in single/double-column layout */
+/*	Suppress bonus section in single/double-column layout.
+ */
 body.page-index #markdownBody #notable {
     display: none;
 }
