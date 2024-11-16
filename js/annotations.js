@@ -184,7 +184,7 @@ Annotations = { ...Annotations,
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL.href, "missing annotation");
+				GWServerLogError(sourceURL.href + `--${event.target.status}`, "missing annotation");
 			}
 		});
 

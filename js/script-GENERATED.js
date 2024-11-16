@@ -5537,7 +5537,7 @@ Annotations = { ...Annotations,
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL.href, "missing annotation");
+				GWServerLogError(sourceURL.href + `--${event.target.status}`, "missing annotation");
 			}
 		});
 
@@ -5940,7 +5940,7 @@ Content = {
                 	let httpContentType = event.target.getResponseHeader("Content-Type")?.match(/(.+?)(?:;|$)/)[1];
                 	if (permittedContentTypes?.includes(httpContentType) == false) {
                         //  Send request to record failure in server logs.
-                        GWServerLogError(link.href + `--bad-content-type`, "bad content type");
+                        GWServerLogError(link.href + `--bad-content-type` + `--${httpContentType}`, "bad content type");
 
                         return;
                 	}
@@ -5960,7 +5960,7 @@ Content = {
                     });
 
                     //  Send request to record failure in server logs.
-                    GWServerLogError(link.href + `--missing-content`, "missing content");
+                    GWServerLogError(link.href + `--missing-content` + `--${event.target.status}`, "missing content");
                 },
 				headers: Content.contentTypeForLink(link).additionalAPIRequestHeaders
             });
@@ -9644,8 +9644,8 @@ Transclude = {
 				Transclude.setLinkStateLoadingFailed(includeLink);
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(includeLink.href + `--transclude-template-fill-failed`,
-								 "failed transclude template fill");
+				GWServerLogError(includeLink.href + `--include-template-fill-failed`,
+								 "failed include template fill");
 			}
 		};
 		dataProvider.waitForDataLoad(includeLink, (link) => {
