@@ -127,7 +127,7 @@ maxDateSecond = 2562 -- the latest serious AD year I see on Gwern.net currently 
 dateDurationSingle :: Int -> T.Text -> Inline
 dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed an empty string year to update, with current year " ++ show todayYear
 dateDurationSingle todayYear oldYear
-  | todayYear < 1000            = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
+  | todayYear < 1501            = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
   | otherwise = let oldYearInt = read (T.unpack oldYear) :: Int
                     yearsSince  = todayYear - oldYearInt
                     yearsSinceT = T.pack $ formatIntWithCommas yearsSince
@@ -137,7 +137,7 @@ dateDurationSingle todayYear oldYear
                                                    Subscript [Span ("", [], [("title", oldYear`T.append`" was "`T.append`yearsSinceT`T.append`" years ago.")]) [Str (yearsSinceT`T.append`"ya")]]
                                                   ]
 
--- match hyphen/EN-DASH-separated comma-less years from 1000--2999, or full dates 1000-01-01--2999-12-31:
+-- match hyphen/EN-DASH-separated comma-less years from 1501--2999, or full dates 1501-01-01--2999-12-31:
 -- attempt to exclude any currency amounts (not guaranteed to work)
 -- Tested in `Config.Typography.dateRangeDurationTestCases`
 dateRangeRegex, dateFullRangeRegex, singleYearRegex :: Regex

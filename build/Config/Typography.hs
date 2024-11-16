@@ -176,6 +176,9 @@ dateRangeDurationTestCases = [
   , ( 2019, Str "(28) a good book costs $1542--1600 to print in the medieval era"
     , Str "(28) a good book costs $1542--1600 to print in the medieval era"
     )
+  , ( 2019, Str "(28.5) a good book costs $1,542--1,600 to print in the medieval era"
+    , Str "(28.5) a good book costs $1,542--1,600 to print in the medieval era"
+    )
   , (2024, Str "(29) It is now the 2000s. But as a date range, does that mean 2000, 2009, or maybe a mean date like 2004? And if that means any of those, what does 1900s mean?"
     , Span ("",[],[]) [Span ("",[],[]) [Span ("",[],[]) [Str "(29) It is now the 2000s. But as a date range, does that mean ",Span ("",["date-range"],[]) [Str "2000",Subscript [Span ("",[],[("title","2000 was 24 years ago.")]) [Str "24ya"]]],Str ", "],Span ("",["date-range"],[]) [Str "2009",Subscript [Span ("",[],[("title","2009 was 15 years ago.")]) [Str "15ya"]]],Str ", or maybe a mean date like "],Span ("",["date-range"],[]) [Str "2004",Subscript [Span ("",[],[("title","2004 was 20 years ago.")]) [Str "20ya"]]],Str "? And if that means any of those, what does 1900s mean?"]
     )
