@@ -136,7 +136,7 @@ Content = {
                 	let httpContentType = event.target.getResponseHeader("Content-Type")?.match(/(.+?)(?:;|$)/)[1];
                 	if (permittedContentTypes?.includes(httpContentType) == false) {
                         //  Send request to record failure in server logs.
-                        GWServerLogError(link.href + `--bad-content-type`, "bad content type");
+                        GWServerLogError(link.href + `--bad-content-type` + `--${httpContentType}`, "bad content type");
 
                         return;
                 	}
@@ -156,7 +156,7 @@ Content = {
                     });
 
                     //  Send request to record failure in server logs.
-                    GWServerLogError(link.href + `--missing-content`, "missing content");
+                    GWServerLogError(link.href + `--missing-content` + `--${event.target.status}`, "missing content");
                 },
 				headers: Content.contentTypeForLink(link).additionalAPIRequestHeaders
             });

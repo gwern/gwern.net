@@ -160,23 +160,11 @@ Annotations = { ...Annotations,
 				/*	Construct and cache a reference data object, then fire the
 					appropriate event.
 				 */
-				let referenceData = Annotations.referenceDataFromParsedAPIResponse(responseDocument, link);
-				if (referenceData) {
-					Annotations.cacheReferenceDataForLink(referenceData, link);
+				Annotations.cacheReferenceDataForLink(Annotations.referenceDataFromParsedAPIResponse(responseDocument, link), link);
 
-					GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", {
-						link: link
-					});
-				} else {
-					Annotations.cacheReferenceDataForLink(Annotations.loadingFailedString, link);
-
-					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", {
-						link: link
-					});
-
-					//	Send request to record failure in server logs.
-					GWServerLogError(sourceURL.href + `--could-not-process`, "problematic annotation");
-				}
+				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", {
+					link: link
+				});
 			},
 			onFailure: (event) => {
 				Annotations.cacheReferenceDataForLink(Annotations.loadingFailedString, link);
@@ -184,7 +172,7 @@ Annotations = { ...Annotations,
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { link: link });
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(sourceURL.href, "missing annotation");
+				GWServerLogError(sourceURL.href + `--${event.target.status}`, "missing annotation");
 			}
 		});
 

@@ -1950,8 +1950,8 @@ Transclude = {
 				Transclude.setLinkStateLoadingFailed(includeLink);
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(includeLink.href + `--transclude-template-fill-failed`,
-								 "failed transclude template fill");
+				GWServerLogError(includeLink.href + `--include-template-fill-failed`,
+								 "failed include template fill");
 			}
 		};
 		dataProvider.waitForDataLoad(includeLink, (link) => {
