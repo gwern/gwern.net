@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2024-11-12 18:58:51 gwern"
+# When:  Time-stamp: "2024-11-15 20:38:41 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -74,44 +74,59 @@ Dates are valid only between 1000AD and """ + current_date + """; any dates outs
 If there is more than one valid date, print only the first one.
 Do not make up dates; if you are unsure, print only the empty string "".
 
-Task examples:
+Task examples (with explanations in '#' comments):
 
 "Published: 02-29-2024 | https://example.com/leap-year-article"
-""  # Invalid: 2024 is not a leap year
+""
+# Invalid: 2024 is not a leap year
 - "Date: 04/31/2024: Article about calendars"
-""  # Invalid: April has 30 days
+""
+# Invalid: April has 30 days
 - "Article from Sep 31, 2023 about date formats"
-""  # Invalid: September has 30 days
+""
+# Invalid: September has 30 days
 - "Updated 2024.13.01 with new information"
-""  # Invalid month 13
+""
+# Invalid month 13
 - "Version: 2024.00.01"
-""  # Invalid month 0
+""
+# Invalid month 0
 - "Created on 2024-04-00"
-""  # Invalid day 0
+""
+# Invalid day 0
 - "Last modified: 31/12/2023 23:59:59 UTC"
 2023-12-31  # Should extract just the date portion
 - "Posted: Yesterday at 3pm"
-""  # Relative dates should be ignored, as who knows what they are *actually* relative to?
+""
+# Relative dates should be ignored, as who knows what they are *actually* relative to?
 - "Updated: 2 days ago"
-""  # Relative dates should be ignored
+""
+# Relative dates should be ignored
 - "EST Release Date: 12/13/23"
 2023-12-13  # Should handle American date format
 - "Published Date: 13/12/23"
 2023-12-13  # Should handle European date format if unambiguous
 - "From our 2023-13-12 edition"
-""  # Invalid: month 13
+""
+# Invalid: month 13
 - "Article from Feb 30th, 2023"
-""  # Invalid: February never has 30 days
+""
+# Invalid: February never has 30 days
 - "Created: 2024.02.29"
-""  # Invalid: 2024 is not a leap year
+""
+# Invalid: 2024 is not a leap year
 - "Date of record: 1999-11-31"
-""  # Invalid: November has 30 days
+""
+# Invalid: November has 30 days
 - "TimeStamp:20240229123456"
-""  # Invalid: not a leap year
+""
+# Invalid: not a leap year
 - "YYYYMMDD: 20241301"
-""  # Invalid month 13
+""
+# Invalid month 13
 - "Released between 2023Q4 and 2024Q1"
-""  # Too ambiguous
+""
+# Too ambiguous
 - "Copyright (c) 2020-2024"
 2020  # Take earliest year when given a range
 - "Volume 23, Issue 45 (Winter 2023-2024)"
@@ -121,59 +136,77 @@ Task examples:
 - "Originally written in 2022, updated for 2024"
 2022  # Take original/earliest date
 - "Written 2024/04/31: Edited 2024/05/01"
-""  # Invalid first date (April has 30 days)
+""
+# Invalid first date (April has 30 days)
 - "Looking back at the year 2000 problem (Y2K)"
-""  # Don't extract Y2K as it's a topic, not a date
+""
+# Don't extract Y2K as it's a topic, not a date
 - "A paper from arXiv:2401.12345"
 2024-01  # Extract date from arXiv ID
 - "DOI: 10.1234/journal.2024.01.0123"
 2024-01  # Extract date from DOI when unambiguous
 - "Posted on 29/02/2023 about leap years"
-""  # Invalid: 2023 wasn't a leap year
+""
+# Invalid: 2023 wasn't a leap year
 - "Article 123456789 from 2024-W01"
 2024  # ISO week dates should return just the year
 - "Publication: 2024. Journal of Examples"
 2024  # Handle trailing period after year
 - "From the 1990's collection"
-""  # Don't extract dates from decades
+""
+# Don't extract dates from decades
 - "Temperature was 2023.5 degrees"
-""  # Don't extract decimal numbers as dates
+""
+# Don't extract decimal numbers as dates
 - "Score was 2024:1"
-""  # Don't extract scores/ratios as dates
+""
+# Don't extract scores/ratios as dates
 - "Published at 2024hrs on Jan 1"
-""  # Don't extract 24-hour time as year
+""
+# Don't extract 24-hour time as year
 - "Build version 2024.01.alpha"
 2024-01  # Software versions can contain valid dates
 - "Model: RTX 2080 Ti"
-""  # Don't extract product numbers as dates
+""
+# Don't extract product numbers as dates
 - "ISBN: 1-234567-890-2024"
-""  # Don't extract years from ISBNs
+""
+# Don't extract years from ISBNs
 - "Highway 2024 South"
-""  # Don't extract road numbers as dates
+""
+# Don't extract road numbers as dates
 - "Room 2024B, Building 3"
-""  # Don't extract room numbers as dates
+""
+# Don't extract room numbers as dates
 - "Postal code 2024AB"
-""  # Don't extract postal codes as dates
+""
+# Don't extract postal codes as dates
 - "In the year 2525, if man is still alive"
-""  # Song lyric about future: not a publication date
+""
+# Song lyric about future: not a publication date
 - "Article accepted 2024-02-30, published 2024-03-01"
 2024-03-01  # First date invalid, use second valid date
 - "File: IMG_20241301_123456.jpg"
-""  # Invalid date in filename (month 13)
+""
+# Invalid date in filename (month 13)
 - "Updated 24-01-15"
 2024-01-15  # Assume 2-digit years >= 24 are 2024+
 - "Updated 95-01-15"
 1995-01-15  # Assume 2-digit years < 24 are 1900s
 - "Patent №2024-123456"
-""  # Don't extract patent numbers as dates
+""
+# Don't extract patent numbers as dates
 - "SKU: 20240123-ABC"
-""  # Don't extract SKU/product codes as dates
+""
+# Don't extract SKU/product codes as dates
 - "Contact: +1 (202) 555-2024"
-""  # Don't extract phone numbers as dates
+""
+# Don't extract phone numbers as dates
 - "Sample #2024-01-A5"
 2024-01  # Laboratory sample IDs can contain valid dates
 - "hex color #202420"
-""  # Don't extract hex colors as dates
+""
+# Don't extract hex colors as dates
 - "In 1492, Columbus sailed the ocean blue; he returned in 1499."
 1492
 - "1724256502"
@@ -451,6 +484,8 @@ Task examples:
 - "Stem cell transplantation extends the reproductive life span of naturally aging cynomolgus monkeys https://www.nature.com/articles/s41421-024-00726-4"
 ""
 - "The History of Speech Recognition to the Year 2030 https://awni.github.io/future-speech/"
+""
+- "https://www.nature.com/articles/s41598-024-76900-1"
 ""
 
 Task:

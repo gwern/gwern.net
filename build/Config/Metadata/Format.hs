@@ -153,7 +153,7 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner"
                           , "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science"
                           , "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer"
-                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter"]
+                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer"]
 
 filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"
@@ -1789,8 +1789,7 @@ htmlRewriteFixed =
          , ("²", "<sup>2</sup>")
          , ("₂", "<sub>2</sub>")
          , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
-         , ("‐", "-")
-         , ("\8208", "-") -- remove HYPHEN (yes, really. "-" is "HYPHEN-MINUS")
+         , ("\8208", "-") -- remove "‐" HYPHEN (yes, really. "-" is "HYPHEN-MINUS")
          , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
          , ("FROH", "<em>F<sub>ROH</sub></em>")
          , (" Ne ", " <em>N<sub>e</sub></em> ")

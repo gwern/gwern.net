@@ -522,6 +522,11 @@ canonicals = M.fromList
   , ("Johan W. Jukema", "J. Wouter Jukema")
   , ("J. W. Jukema", "J. Wouter Jukema")
   , ("Anno Hideaki", "Hideaki Anno")
+  , ("RichardMCNgo", "Richard Ngo")
+  , ("giffmana", "Lucas Beyer")
+  , ("Alexander Tabarrok", "Alex Tabarrok")
+  , ("andrew_n_carr", "Andrew N. Carr")
+  , ("patrickc", "Patrick Collison")
   ]
 
 -- tests: unique
@@ -984,6 +989,9 @@ authorLinkDB = M.fromList $
     , ("J. Wouter Jukema", "https://www.universiteitleiden.nl/en/staffmembers/johan-jukema#tab-2")
     , ("Ilya Loshchilov", "http://www.loshchilov.com/")
     , ("Stuart Hall", "https://x.com/stuartkhall")
+    , ("Richard Ngo", "https://80000hours.org/podcast/episodes/richard-ngo-large-language-models/")
+    , ("Ethan W. Roland", "https://www.ethan-w-roland.com/")
+    , ("Andrew N. Carr", "https://x.com/andrew_n_carr")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

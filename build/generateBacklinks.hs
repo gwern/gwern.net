@@ -71,7 +71,7 @@ main' = do
 
   -- parse all arguments & update backlink database:
   fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) Prelude.getContents
-  -- eg ["2012-election.md","2014-spirulina.md","3-grenades.md","404.md","abortion.md","about.md","ab-test-indent.md","ab-test.md"]
+  -- eg. ["2012-election.md","2014-spirulina.md","3-grenades.md","404.md","abortion.md","about.md","ab-test-indent.md","ab-test.md"]
 
   let markdown = filter (".md" `isSuffixOf`) fs
   links1 <- Par.mapM (parseFileForLinks True) markdown

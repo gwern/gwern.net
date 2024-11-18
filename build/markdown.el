@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-11-04 09:16:39 gwern"
+;;; When:  Time-stamp: "2024-11-17 09:38:54 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1452,6 +1452,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (replace-all "clinically significant" "clinically-significant")
        (replace-all "statistically different" "statistically-significantly different")
        (replace-all "statistical difference" "statistically-significant difference")
+       (replace-all "type I error rate" "false positive rate")
+       (replace-all "type II error rate" "false negative rate")
        (replace-all "genome-wide significant" "genome-wide statistically-significant")
        (replace-all "genome-wide significance" "genome-wide statistical-significance")
        (funcall-interactively #'query-replace-regexp " significantly" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significantly\") (?2 \" importantly\") (?3 \" largely\") (?4 \" substantially\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (second choice))" t) nil begin end)

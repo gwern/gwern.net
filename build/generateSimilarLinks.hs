@@ -34,7 +34,7 @@ main = do Config.Misc.cd
           printGreen "Read databases."
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = take maxEmbedAtOnce $ sort $ missingEmbeddings md edb
+          let todo = take maxEmbedAtOnce $ reverse $ sort $ missingEmbeddings md edb
           let todoLinks = map fst todo -- just the paths
           edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
                      do

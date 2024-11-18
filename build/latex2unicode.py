@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2024-10-21 21:10:00 gwern"
+# When:  Time-stamp: "2024-11-12 17:30:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -18,7 +18,14 @@
 # $ echo 'a + b = c^2' | python3 latex2unicode.py
 # <em>a</em> + <em>b</em> = <em>c</em><sup>2</sup>
 #
-# Note: this is intended only for using clean TeX and compiling to something usable in HTML/Markdown. For converting from an image or screenshot to TeX, see tools like <https://github.com/lukas-blecher/LaTeX-OCR> or <https://github.com/VikParuchuri/texify> or <https://mathpix.com/snipping-tool> (or prompting a VLM like Claude-3 or GPT-4o-V with an image & request)
+# Bonus feature: LLMs are smart enough to generalize, so free-form natural language inputs may also work:
+#
+# $ echo 'x times 2 but raised to 1/3rds' | latex2unicode.py
+# <em>x</em> × 2<sup>1⁄3</sup>
+# $ echo 'asymptotically square root n' | latex2unicode.py
+# 𝒪(√<em>n</em>)
+#
+# NOTE: this is intended only for using clean TeX and compiling to something usable in HTML/Markdown. For converting from an image or screenshot to TeX, see tools like <https://github.com/lukas-blecher/LaTeX-OCR> or <https://github.com/VikParuchuri/texify> or <https://mathpix.com/snipping-tool> (or prompting a VLM like Claude-3 or GPT-4o-V with an image & request)
 
 import sys
 from openai import OpenAI

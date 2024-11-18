@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-11 16:10:22 gwern"
+# When:  Time-stamp: "2024-11-15 12:30:04 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -499,6 +499,8 @@ Why I still blog after 15 years
 Katri Räikkönen
 - "Sampling with SQL—Tom Moertel’s Blog"
 "Sampling with SQL"
+- "The Dunning-Kruger Effect is Autocorrelation—Economics from the Top Down https://economicsfromthetopdown.com/2022/04/08/the-dunning-kruger-effect-is-autocorrelation/"
+"The Dunning-Kruger Effect is Autocorrelation"
 
 Task:
 

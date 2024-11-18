@@ -772,6 +772,9 @@ goodDomainsSimple =
     , "dynomight.net"
     , "sander.ai"
     , "reactormag.com"
+    , "docs.midjourney.com"
+    , "www.chiark.greenend.org.uk"
+    , "acoup.blog"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
@@ -2363,6 +2366,8 @@ badDomainsSimple = [ "2chan.us"
    , "medicalxpress.com"
    , "phys.org"
    , "www.bartleby.com"
+   , "ki.se"
+   , "pmc.ncbi.nlm.nih.gov"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -3089,6 +3094,9 @@ goodLinks =
             , "https://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VCC/2013/70.html"
             , "https://dynomight.net/automated/"
             , "https://sander.ai/2020/09/01/typicality.html"
+            , "https://docs.midjourney.com/docs/chaos"
+            , "https://www.chiark.greenend.org.uk/~martinh/poems/complete_housman.html"
+            , "https://acoup.blog/2020/06/19/collections-the-battle-of-helms-deep-part-viii-the-mind-of-saruman/"
             ]
 
 badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
@@ -4610,5 +4618,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://medicalxpress.com/news/2011-08-vitamin-pills-undermine.html"
             , "https://phys.org/news/2019-12-mouse-pups-born-eggs-derived.html"
             , "https://www.bartleby.com/lit-hub/poetry-of-byron/greece-iv/"
+            , "https://ki.se/en/people/anders-hamsten"
+            , "https://pmc.ncbi.nlm.nih.gov/articles/PMC10587091/"
             ]
 

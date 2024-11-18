@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-10-26 12:36:36 gwern"
+# When:  Time-stamp: "2024-11-12 18:34:05 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -481,6 +481,10 @@ It is well known that dogs are capable of following human verbal instructions. H
 In this study, we used a switched stimuli task to examine whether cats rapidly form picture-word association, which is a fundamental ability for word learning. We presented cats with two meaningless picture-word combinations, in the habituation phase. Then, on half of the trials we switched the combination (switched condition), but the other half of the trials remained as before (non-switched condition). If cats rapidly form picture-word association, they were expected to look at the monitor for longer in the switched condition, reflecting detection of the change. We used human speech as stimuli in Exp.1, and mechanical sounds (electronic sounds) in Exp.2.
 Cats expressed detection of the switched combination in Exp.1, where human speech and objects were paired. However, in Exp.2 where non-social sounds and objects were paired, there was no statistical difference between switched and non-switched conditions, although there was a main effect of condition when the data from the two experiments were pooled.
 These results demonstrate that cats can rapidly form picture-word association. Further research should investigate whether domestication has played a role in this ability.
+- Input: <abstract>The decade from 2010 to 2020 saw remarkable improvements in automatic speech recognition. Many people now use speech recognition on a daily basis, for example to perform voice search queries, send text messages, and interact with voice assistants like Amazon Alexa and Siri by Apple. Before 2010 most people rarely used speech recognition. Given the remarkable changes in the state of speech recognition over the previous decade, what can we expect over the coming decade? I attempt to forecast the state of speech recognition research and applications by the year 2030. While the changes to general speech recognition accuracy will not be as dramatic as in the previous decade, I suggest we have an exciting decade of progress in speech technology ahead of us.</abstract> →
+The decade from 2010 to 2020 saw remarkable improvements in automatic speech recognition. Many people now use speech recognition on a daily basis, for example to perform voice search queries, send text messages, and interact with voice assistants like Amazon Alexa and Siri by Apple. Before 2010 most people rarely used speech recognition.
+Given the remarkable changes in the state of speech recognition over the previous decade, what can we expect over the coming decade? I attempt to forecast the state of speech recognition research and applications by the year 2030.
+While the changes to general speech recognition accuracy will not be as dramatic as in the previous decade, I suggest we have an exciting decade of progress in speech technology ahead of us.
 
 (Reminder: your task is to split into multiple logical paragraphs by topic.)
 
