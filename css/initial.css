@@ -2047,8 +2047,7 @@ a code {
     more compact & classy.
  */
 body.page-index header,
-body.page-index #TOC,
-body.page-index #sidebar a.patreon {
+body.page-index #TOC {
     display: none;
 }
 
@@ -2069,11 +2068,6 @@ body.page-index #sidebar a.logo {
 
 /*  Special nav link styling on /index.
  */
-@media all and (max-width: 649px) {
-	body.page-index #sidebar .sidebar-links a {
-		flex: 1 1 35%;
-	}
-}
 @media all and (min-width: 650px) {
     body.page-index #sidebar a {
         color: var(--GW-nav-header-link-hover-color);
