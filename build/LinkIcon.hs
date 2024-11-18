@@ -164,11 +164,13 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
 --
 -- TODO: does not test more complex behavior like suppression of redundant link-icons
 linkIconTest :: [(T.Text,T.Text,T.Text,T.Text)]
-linkIconTest = filter (\(url, li, lit, litc) -> linkIcon (Link nullAttr [] (url,""))
+linkIconTest = filter (\(url, li, lit, litc) ->
+                         if not (all (`elem` C.linkIconTypes) (T.splitOn "," lit)) then error ("LinkIcon.linkIconTest: the type string contains unknown kinds of formatting commands. Original: " ++ show lit)
+                         else
+                         linkIcon (Link nullAttr [] (url,""))
                                           /=
                                           Link ("",[], ([("link-icon",li), ("link-icon-type", lit)]++if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) [] (url,"")
-                                          || not (all (`elem` C.linkIconTypes) (T.splitOn "," lit))
-                                                   )
+                      )
                C.linkIconTestUnitsText
 
 -- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format.

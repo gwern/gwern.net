@@ -51,7 +51,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
  , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com"
  , "www.cs.cmu.edu", "minimaxir.com", "dynomight.net", "www.spencergreenberg.com", "www.ed.ac.uk"
- , "www.researchgate.net"]
+ , "www.researchgate.net", "www.chiark.greenend.org.uk", "www.rug.nl", "figshare.com"]
 ------------------------------------------------------------------------------------------
 
 -- all legal types of link-icon types displays
@@ -204,6 +204,7 @@ linkIconRulesSingle u
  | u'' u "www.nobelprize.org" = ("🏅", "text", "#cc9b40") -- Nobel Prize, SPORTS MEDAL; color: copper-gold
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
+ | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -326,7 +327,7 @@ linkIconRulesTriple u
  | u'' u "www.fanfiction.net" = ("FFN", "text,tri,sans", "#333399") -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with Firefox, so expand to "FFN". color: dark purple-blue
  | u'' u "myanimelist.net" = ("MAL", "text,tri,sans", "#2b498e") -- MAL: the blue of their logo doesn’t work, so just text. color: royal blue. TODO: white-on-blue text background
  | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", orangeNGE) -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
- | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue text background
+ | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" || u' u "www.robots.ox.ac.uk" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue text background
  | u'' u "poniesatdawn.bandcamp.com" = ("P@D", "text,tri", "#27050e") -- color: dark brown
  | u'' u "slatestarscratchpad.tumblr.com" || u'' u "www.astralcodexten.com" || (u'' u "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' u "yvain" ||  u' u "slatestarcodex")) = ("SSC", "text,tri", "#5175c2") -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead; color: light blue; TODO: white-on-blue text background
  | u'' u "plato.stanford.edu" = ("SEP", "text,tri", "#8c1515") -- no icon, we avoid SEP's Rodin's "The Thinker" lgoo, as appropriate as it is, because it won't render at link-icon scale without major revision. color: red;
@@ -355,6 +356,7 @@ linkIconRulesTriple u
  | aU'' u ["bls.gov", "data.bls.gov", "www.bls.gov"] = ("BLS", "text,tri,sans", "#173380") -- no icon because the cute star+time-series logo would be illegible; color: dark blue
  | u'' u "ocw.mit.edu" = ("OCW", "text,tri,sans", "") -- OpenCourseWare: MIT MOOCs <https://en.wikipedia.org/wiki/OpenCourseWare>
  | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
+ | aU'' u ["worksinprogress.co", "www.worksinprogress.news", "books.worksinprogress.co"] = ("WiP", "text,tri,mono", "") -- Works in Progress; color: none (monochrome website with occasional per-issue color theme highlights); icon: the mustached-man is unusable at favicon or link-icon scale and not particularly recognizable either IMO.
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
@@ -375,7 +377,7 @@ linkIconRulesQuad u
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue text background
  | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans", "") -- overrides IA
- | u' u "mitpress.mit.edu/" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
+ | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono", "")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono", "")
  | u'' u "www.mdpi.com" = ("MDPI", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
@@ -417,6 +419,7 @@ linkIconRulesQuad u
  | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black text background
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
+ | u' u "a16z" = ("a16z", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z; color: orange; TODO: white-on-orange text background; may need to reword the logo to 'az16' maybe?
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -433,11 +436,11 @@ linkIconRulesSVG u
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg", "") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' u "paulgraham.com" = ("pg", "text,mono", "#666699") -- Paul Graham, known by username 'pg' on HN; color: purple; TODO: white-on-purple text background
  | u' u "ycombinator.com" || u' u "hn.algolia.com" = ("hacker-news", "svg", "#f26522") -- HN/YC (shared logo). primary user: news.ycombinator.com; color: orange
- | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg", "") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overriden by SICP
+ | aU' u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today", "babel.hathitrust.org"] = ("internet-archive", "svg", "") -- HathiTrust <https://en.wikipedia.org/wiki/HathiTrust> is confusingly nebulous but its cute elephant logo is unrecognizable and I regard it as basically a wrapper around Google Books+Internet Archive, so I think it's less confusing to put it under the IA logo. Note: overridden by SICP
  | u'' u "mega.nz" = ("mega", "svg", "#dd1405") -- MegaUpload/Mega: filesharing (used for big files).; color: orange
  | u'' u "intelligence.org" = ("miri", "svg", "#234e80") -- MIRI/intelligence.org. color: blue
  | u' u ".nytimes.com" = ("new-york-times", "svg", "") -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
- | aU'' u ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov"] = ("nlm-ncbi", "svg", "#20558a") -- NCBI/Pubmed: simplification of their logo (<https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg>). primary user: ncbi.nlm.nih.gov; color: blue-green
+ | aU'' u ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov", "pmc.ncbi.nlm.nih.gov"] = ("nlm-ncbi", "svg", "#20558a") -- NCBI/Pubmed: simplification of their logo (<https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg>). primary user: ncbi.nlm.nih.gov; color: blue-green
  | u'' u "www.patreon.com" = ("patreon", "svg", "#ffffff") -- Patreon. (Used the old one (<https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg>) because I don’t like the new one.); color: red
  | aU' u ["plos.org", "plosone.org"] = ("plos", "svg", "") -- PLOS ONE in all their domain permutations… primary user: journals.plos.org; no consistent overall color
  | aU' u ["overflow.net", "overflow.com", "stackexchange.com"] = ("stack-exchange", "svg", "#f48024") -- The *Exchange/*Overflow family of websites. Color: orange. (The individual sites have different colors, but orange is the one I always think of.)
@@ -488,6 +491,7 @@ linkIconRulesSVG u
  | u'' u "www.chicagotribune.com" = ("chicago-tribune", "svg", "#024c83") -- fraktur capital 'C', letter-mark extracted & made black from <https://en.wikipedia.org/wiki/File:Chicago_Tribune_Logo.svg>; color: dark blue
  | u'' u "www.tiktok.com" = ("tiktok", "svg", "#65c3c9") -- color: green
  | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("cbs", "svg", "") -- <https://commons.wikimedia.org/wiki/File:CBS_News_logo_(2020).svg>; color: none (individual CBS affiliates/stations seem to pick their own colors but the overall brand is just black)
+ | u' u "midjourney.com" = ("midjourney", "svg", "") -- <https://en.wikipedia.org/wiki/File:Midjourney_Emblem.svg>; color: none
 
  -- FINAL MATCHES:
  -- many orgs will use a 'medium.com' subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
@@ -812,6 +816,7 @@ linkIconTestUnitsText =
          , ("https://www.goodreads.com/api",  "GR","text,sans", "#8a5e4a")
          , ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text", "#fa005a")
          , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg", "#20558a")
+         , ("https://pmc.ncbi.nlm.nih.gov/articles/PMC10714284/",  "nlm-ncbi","svg", "#20558a")
          , ("https://forum.effectivealtruism.org/posts/nSot23sAjoZRgaEwa/2016-ai-risk-literature-review-and-charity-comparison", "EA", "text", "#06819a")
          , ("https://www.effectivealtruism.org/articles/prospecting-for-gold-owen-cotton-barratt#heavy-tailed-distributions", "EA", "text", "#06819a")
          , ("https://maggieappleton.com/bidirectionals", "maggie-appleton", "svg", "#04a4ba")
@@ -899,6 +904,7 @@ linkIconTestUnitsText =
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri", "#011d3f")
          , ("https://academic.oup.com/ageing/article/36/5/507/40586", "OUP", "text,tri", "#011d3f")
          , ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text,tri", "#011d3f")
+         , ("https://www.robots.ox.ac.uk/~vgg/data/fgvc-aircraft/", "OUP", "text,tri", "#011d3f")
          , ("https://scp-wiki.wikidot.com/antimemetics-division-hub", "SCP", "text,tri,sans", "#823f3f")
          , ("https://x.com/jackclarkSF/status/1571125410108407808", "anthropic", "svg", brownAnthropic)
          , ("https://arxiv.org/abs/2207.05221#anthropic", "anthropic", "svg", brownAnthropic)
@@ -1043,6 +1049,7 @@ linkIconTestUnitsText =
          , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", "BAIR", "text,quad,mono", "")
          , ("https://sites.google.com/berkeley.edu/decision-transformer", "BAIR", "text,quad,mono", "")
          , ("https://mitpress.mit.edu/9780262536226/", "MIT", "text,tri,mono", "")
+         , ("https://people.csail.mit.edu/mrub/VisualMic/", "MIT", "text,tri,mono", "")
          -- Arxiv overrides:
          , ("https://vndb.org/c582", "VNDB", "text,quad,sans", "")
          , ("https://www.cnbc.com/2017/11/15/microsoft-and-github-unveil-pair-programming-tools.html", "CNBC", "text,quad,sans", "")
@@ -1155,6 +1162,13 @@ linkIconTestUnitsText =
          , ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text", "")
          , ("https://variety.com/2014/film/news/tokyo-festival-hideaki-anno-warns-of-trouble-ahead-for-japanese-animation-1201339991/", "𝓥", "text", "")
          , ("https://nymag.com/intelligencer/2018/07/how-fortnite-became-the-most-popular-video-game-on-earth.html", "𝒩𝒴", "text", "")
+         , ("https://worksinprogress.co/issue/getting-materials-out-of-the-lab/", "WiP", "text,tri,mono", "")
+         , ("https://www.worksinprogress.news/p/cheap-ornament-and-status-games#%C2%A7did-rich-people-actually-lead-the-flight-from-premodernist-styles", "WiP", "text,tri,mono", "")
+         , ("https://books.worksinprogress.co/book/maintenance-of-everything/communities-of-practice/the-soul-of-maintaining-a-new-machine/1", "WiP", "text,tri,mono", "")
+         , ("http://messybeast.com/cats-meat-man.htm", "🐾", "text", "#fafa02")
+         , ("https://a16z.com/author/scott-kupor/", "a16z", "text,quad,sans", "#ed8c00")
+         , ("https://docs.midjourney.com/docs/weird", "midjourney", "svg", "")
+         , ("https://www.midjourney.com/", "midjourney", "svg", "")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
