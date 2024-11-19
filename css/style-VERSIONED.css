@@ -2482,18 +2482,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4517,35 +4517,41 @@ ol.link-bibliography-list-compact > li::before {
 }
 
 #footer-decoration-container .footer-logo {
+    display: block;
+    height: 30px;
     position: relative;
+	background-image: linear-gradient(to right, 
+									  var(--GW-bottom-ornament-line-color) 50%, 
+									  var(--GW-body-background-color) 50%);
+    background-size: 2px 1px;
+    background-repeat: repeat-x;
+    background-position: 0 50%;
     opacity: 0.3;
     pointer-events: none;
 }
 #footer-decoration-container .footer-logo:hover {
     opacity: 1.0;
 }
-#footer-decoration-container .footer-logo::before {
-    content: "";
-    display: block;
-    position: absolute;
-    bottom: 15px;
-    height: 1px;
-    border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
-    width: 100%;
-}
+#footer-decoration-container .footer-logo::before,
 #footer-decoration-container .footer-logo::after {
     content: "";
-    background-color: var(--GW-body-background-color);
-    background-image: url('/static/img/logo/logo-smooth.svg');
-    display: block;
-    position: relative;
+    position: absolute;
+    height: 100%;
     width: 22px;
-    height: 30px;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding: 0 10px 0 12px;
+}
+#footer-decoration-container .footer-logo::before {
+    background-color: var(--GW-body-background-color);
+}
+#footer-decoration-container .footer-logo::after {
+    background-image: url('/static/img/logo/logo-smooth.svg');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    margin: auto;
-    padding: 0 10px 0 10px;
     z-index: 1;
     pointer-events: auto;
 }
@@ -5583,7 +5589,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5764,7 +5770,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6212,7 +6218,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7164,7 +7170,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#question');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7374,7 +7380,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7763,7 +7769,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1732034286#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1732045380#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7842,7 +7848,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732034286#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1732045380#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
