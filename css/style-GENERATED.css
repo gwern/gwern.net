@@ -8597,6 +8597,22 @@ a[data-link-icon='sgfp']a[data-link-icon-type*=quad][data-link-icon-type*=mono] 
 /*= Graphical per-domain link icons =*/
 /*=---------------------------------=*/
 
+a[data-link-icon='alcor'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='alphabet'] .link-icon-hook::after {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
+
+    opacity: 0.6;
+}
+
 a[data-link-icon='amazon'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
@@ -8606,6 +8622,43 @@ a[data-link-icon='amazon'] .link-icon-hook::after {
 }
 a[data-link-icon='amazon']:hover .link-icon-hook::after {
     opacity: 0.4;
+}
+
+a[data-link-icon='anthropic'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.1em;
+}
+
+a[data-link-icon='apple'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.5;
+}
+
+a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
+    --link-icon-size: 0.85em;
+    --link-icon-offset-y: 0.20em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='atlas-obscura'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.85;
+}
+
+a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.1em;
+}
+
+a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.35em;
 }
 
 a[data-link-icon='bitcoin'] .link-icon-hook::after {
@@ -8625,6 +8678,35 @@ a[data-link-icon='chi-dna'] .link-icon-hook::after {
 }
 a[data-link-icon='chi-dna']:hover .link-icon-hook::after {
     opacity: 0.6;
+}
+
+a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+
+    opacity: 0.7;
+}
+
+a[data-link-icon='connected-papers'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='creative-commons'] .link-icon-hook::after {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.8;
 }
 
 a[data-link-icon='deepmind'] .link-icon-hook::after {
@@ -8662,6 +8744,18 @@ a[data-link-icon='econlib'] .link-icon-hook::after { /* torch */
     opacity: 0.70;
 }
 
+a[data-link-icon='eleutherai'] .link-icon-hook::after {
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+
+    opacity: 0.85;
+}
+
+a[data-link-icon='emacs'] .link-icon-hook::after {
+    opacity: 0.65;
+}
+
 a[data-link-icon='erowid'] .link-icon-hook::after {
     --link-icon-size: 0.95em;
     --link-icon-offset-x: 0.1em;
@@ -8692,14 +8786,6 @@ a[data-link-icon='github'] .link-icon-hook::after {
     opacity: 0.65;
 }
 
-a[data-link-icon='alphabet'] .link-icon-hook::after {
-    --link-icon-size: 0.60em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.3em;
-
-    opacity: 0.6;
-}
-
 a[data-link-icon='google-scholar'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
@@ -8722,6 +8808,14 @@ a[data-link-icon='hacker-news']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
+a[data-link-icon='hoover-institution'] .link-icon-hook::after {
+    --link-icon-size: 0.5em;
+    --link-icon-offset-y: 0.0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
 a[data-link-icon='internet-archive'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.15em;
@@ -8733,12 +8827,38 @@ a[data-link-icon='internet-archive']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
+a[data-link-icon='laion'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.65;
+}
+
+a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
+	--link-icon-size: 0.9em;
+	--link-icon-offset-y: 0.1em;
+	--link-icon-offset-x: 0.05em;
+
+    opacity: 0.75;
+}
+
 a[data-link-icon='mega'] .link-icon-hook::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.50;
+}
+
+a[data-link-icon='metaculus'] .link-icon-hook::after {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.65;
+}
+a[data-link-icon='metaculus']:hover .link-icon-hook::after {
+    opacity: 0.45;
 }
 
 a[data-link-icon='miri'] .link-icon-hook::after {
@@ -8798,6 +8918,14 @@ a[data-link-icon='openai']:hover .link-icon-hook::after {
     opacity: 0.4;
 }
 
+a[data-link-icon='open-philanthropy'] .link-icon-hook::after { /* Darken & shift left/up */
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
+
+    opacity: 0.95;
+}
+
 a[data-link-icon='patreon'] .link-icon-hook::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.10em;
@@ -8813,12 +8941,33 @@ a[data-link-icon='plos'] .link-icon-hook::after {
     opacity: 0.80;
 }
 
+a[data-link-icon='quanta'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.9;
+}
+a[data-link-icon='quanta']:hover .link-icon-hook::after {
+    opacity: 0.5;
+}
+
+a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.1em;
+}
+
 a[data-link-icon='reddit'] .link-icon-hook::after {
     --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.2em;
 
     opacity: 0.65;
+}
+
+a[data-link-icon='scholarpedia'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em;
 }
 
 a[data-link-icon='springerlink'] .link-icon-hook::after {
@@ -8840,6 +8989,14 @@ a[data-link-icon='stack-exchange'] .link-icon-hook::after {
     opacity: 0.55;
 }
 
+a[data-link-icon='stat-news'] .link-icon-hook::after {
+    --link-icon-size: 0.85em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 1;
+}
+
 a[data-link-icon='substack'] .link-icon-hook::after {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.2em;
@@ -8847,6 +9004,28 @@ a[data-link-icon='substack'] .link-icon-hook::after {
 
     opacity: 0.55;
 }
+
+a[data-link-icon='tensorflow'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 0.6;
+}
+
+a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actually uses Source Serif) */
+    --link-icon-size: 1.10em;
+    --link-icon-offset-x: 0.05em;
+
+    opacity: 0.85;
+}
+
+a[data-link-icon='tiktok'] .link-icon-hook::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+}
+
 a[data-link-icon='the-guardian'] .link-icon-hook::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
@@ -8864,6 +9043,22 @@ a[data-link-icon='the-new-yorker'] .link-icon-hook::after {
 }
 a[data-link-icon='the-new-yorker']:hover .link-icon-hook::after {
     opacity: 0.45;
+}
+
+a[data-link-icon='the-pirate-bay'] .link-icon-hook::after {
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.2em;
+
+    opacity: 0.75;
+}
+
+a[data-link-icon='the-telegraph'] .link-icon-hook::after {
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.2em;
+
+    opacity: 0.75;
 }
 
 a[data-link-icon='tumblr'] .link-icon-hook::after {
@@ -8901,6 +9096,14 @@ a[data-link-icon='video']:hover .link-icon-hook::after {
     opacity: 0.2;
 }
 
+a[data-link-icon='wandb'] .link-icon-hook::after {
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.65;
+}
+
 a[data-link-icon='washington-post'] .link-icon-hook::after {
     --link-icon-size: 0.85em;
     --link-icon-offset-x: 0.2em;
@@ -8932,212 +9135,10 @@ a[data-link-icon='yud'] .link-icon-hook::after {
     --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='the-telegraph'] .link-icon-hook::after { /* Darken & shift left */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='open-philanthropy'] .link-icon-hook::after { /* Darken & shift left/up */
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.95;
-}
-
-a[data-link-icon='atlas-obscura'] .link-icon-hook::after { /* Darken & shift left/up */
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.85;
-}
-
-a[data-link-icon='eleutherai'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.85;
-}
-
-a[data-link-icon='apple'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.5;
-}
-
-a[data-link-icon='quanta'] .link-icon-hook::after { /* Darken, enlarge, & shift left/up */
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.9;
-}
-a[data-link-icon='quanta']:hover .link-icon-hook::after {
-    opacity: 0.5;
-}
-
-a[data-link-icon='creative-commons'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.8;
-}
-
-a[data-link-icon='tensorflow'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.6;
-}
-
-a[data-link-icon='alcor'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.25em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-
-    opacity: 0.7;
-}
-
-a[data-link-icon='connected-papers'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
-    --link-icon-size: 0.7em;
-    --link-icon-offset-x: 0.1em;
-}
-
-a[data-link-icon='hoover-institution'] .link-icon-hook::after {
-    --link-icon-size: 0.5em;
-    --link-icon-offset-y: 0.0em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='wandb'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='the-pirate-bay'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.3em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='metaculus'] .link-icon-hook::after {
-    --link-icon-size: 0.55em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.65;
-}
-a[data-link-icon='metaculus']:hover .link-icon-hook::after {
-    opacity: 0.45;
-}
-
-a[data-link-icon='stat-news'] .link-icon-hook::after {
-    --link-icon-size: 0.85em;
-    --link-icon-offset-y: 0em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 1;
-}
-
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
-	--link-icon-size: 0.9em;
-	--link-icon-offset-y: 0.1em;
-	--link-icon-offset-x: 0.05em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='anthropic'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.1em;
-}
-
-a[data-link-icon='laion'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actually uses Source Serif) */
-    --link-icon-size: 1.10em;
-    --link-icon-offset-x: 0.05em;
-
-    opacity: 0.85;
-}
-
-a[data-link-icon='scholarpedia'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
-}
-
 a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
     --link-icon-size: 0.9em;
 
     opacity: 0.80;
-}
-
-a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.1em;
-}
-
-a[data-link-icon='emacs'] .link-icon-hook::after {
-    opacity: 0.65;
-}
-
-a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.20em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='tiktok'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.15em;
-}
-
-a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.35em;
-}
-
-a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
-    --link-icon-size: 0.85em;
-    --link-icon-offset-y: 0.20em;
-
-    opacity: 0.65;
 }
 
 /*=------------------=*/
