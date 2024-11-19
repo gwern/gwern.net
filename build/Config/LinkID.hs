@@ -2871,4 +2871,6 @@ linkIDOverrides =
        , ("https://web.archive.org/web/20110716221953/http://eva.onegeek.org/pipermail/oldeva/2001-September/040370.html", "cardass-criticism")
        , ("https://awni.github.io/future-speech/","hannun-2021-1"),("https://arxiv.org/abs/2108.00084","hannun-2021-2")
        ,("https://arxiv.org/abs/2411.07191","yu-et-al-2024-1"),("https://arxiv.org/abs/2403.14148#nvidia","yu-et-al-2024-2")
+       , ("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359000","gwern-2024-diminishingreturns"),("https://qchu.substack.com/p/core-dump","gwern-2024-semanticderealization")
+      ,("https://turntrout.com/design","turntrout-2024-sitedesign")
       ]

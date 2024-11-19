@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-10-20 20:50:46 gwern"
+# When:  Time-stamp: "2024-11-18 16:17:59 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -117,6 +117,9 @@ David A. Fishbain, Robert Cutler, Hubert L. Rosomoff, Renee Steele Rosomoff
 
 <text>Patricia A Fleming 1,*, Heather M Crawford 1, Clare H Auckland 1, Michael C Calver 1</text> →
 Patricia A. Fleming, Heather M. Crawford, Clare H. Auckland, Michael C. Calver
+
+<text>Authors: Milton Packer, M.D. https://orcid.org/0000-0003-1828-2387, Michael R. Zile, M.D., Christopher M. Kramer, M.D., Seth J. Baum, M.D., Sheldon E. Litwin, M.D., Venu Menon, M.D., Junbo Ge, M.D., Govinda J. Weerakkody, Ph.D., Yang Ou, Ph.D., Mathijs C. Bunck, M.D., Karla C. Hurt, B.S.N., Masahiro Murakami, M.D., and Barry A. Borlaug</text> →
+Milton Packer, Michael R. Zile, Christopher M. Kramer, Seth J. Baum, Sheldon E. Litwin, Venu Menon, Junbo Ge, Govinda J. Weerakkody, Yang Ou, Mathijs C. Bunck, Karla C. Hurt, Masahiro Murakami, Barry A. Borlaug
 
 Input:
 <text>{target}</text> →

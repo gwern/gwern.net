@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-11-17 09:38:54 gwern"
+;;; When:  Time-stamp: "2024-11-18 16:41:30 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -108,7 +108,8 @@
 (defun interpunct  () (interactive (insert-char ?· 1)))
 
 (defun replace-all (original replacement)
-  "Regexp search-and-replace all instances of ORIGINAL to REPLACEMENT: define a local equivalent of `replace-string'
+  "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.
+This defines a local equivalent of `replace-string'
 which won't throw annoying errors about only interactive use: exact string replacement (case-sensitive)."
   (save-excursion
     (let ((case-fold-search nil))

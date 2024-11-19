@@ -56,7 +56,7 @@ singleShotRecommendations html =
      let (_,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
      hitsSorted <- sortSimilars edb sortDB (head hits) hits
-     if null hitsSorted then return "" else return (generateMatches md bdb True True "" html hitsSorted :: T.Text)
+     if null hitsSorted then return "" else return (generateMatches md bdb True "" html hitsSorted :: T.Text)
 
 type Embedding  = (String, -- URL/path
                     Integer, -- Age: date created -- ModifiedJulianDay, eg. 2019-11-22 = 58810. Enables expiring
@@ -305,14 +305,14 @@ writeOutMatch md bdb (p,matches) =
     Just ( _,_,_,_,_,_,  "")  -> return ()
     Just ("",_,_,_,_,_,   _)  -> return ()
     Just ( _,_,_,_,_,_,abst)  -> do
-          let similarLinksHtmlFragment = generateMatches md bdb False False p abst matches
+          let similarLinksHtmlFragment = generateMatches md bdb False p abst matches
           let f = take 274 $ "metadata/annotation/similar/" ++ urlEncode p ++ ".html"
           writeUpdatedFile "similar" f similarLinksHtmlFragment
           putStrLn $ "Wrote: " ++ p ++ " (" ++ f ++ ")"
 
-generateMatches :: Metadata -> Backlinks -> Bool -> Bool -> String -> String -> [String] -> T.Text
-generateMatches _  _   _         _          _ _    []      = ""
-generateMatches md bdb linkTagsP singleShot p abst matches =
+generateMatches :: Metadata -> Backlinks -> Bool -> String -> String -> [String] -> T.Text
+generateMatches _  _   _          _ _    []      = ""
+generateMatches md bdb singleShot p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let p' = T.pack p
              alreadyLinkedAbstract  = extractLinks False $ T.pack abst
@@ -321,7 +321,7 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
              alreadyLinked = [p'] ++ alreadyLinkedAbstract ++ alreadyLinkedBody ++ alreadyLinkedBacklinks
              matchesPruned = filter (\p2 -> T.pack p2 `notElem` alreadyLinked) matches
 
-             similarItems = filter (not . null) $ map (generateItem md linkTagsP) matchesPruned
+             similarItems = filter (not . null) $ map (generateItem md) matchesPruned
              googleScholar = case M.lookup p md of
                Nothing             -> []
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
@@ -378,16 +378,16 @@ generateMatches md bdb linkTagsP singleShot p abst matches =
                                         else "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
 
-generateItem :: Metadata -> Bool -> String -> [Block]
-generateItem md linkTagsP p2 = case M.lookup p2 md of
-                                  Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
-                                  Just ("",_,_,_,_,_, _) -> []
-                                  Just (_, _,_,_,_,_,"") -> []
-                                  Just (t, _,_,_,_,_, _) ->
-                                    [Para -- NOTE: we set '.backlink-not' because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
-                                      [Link ("", ["link-annotated", "id-not", "backlink-not"],[])
-                                        [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
-                                    ]
+generateItem :: Metadata -> String -> [Block]
+generateItem md p2 = case M.lookup p2 md of
+                        Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
+                        Just ("",_,_,_,_,_, _) -> []
+                        Just (_, _,_,_,_,_,"") -> []
+                        Just (t, _,_,_,_,_, _) ->
+                          [Para -- NOTE: we set '.backlink-not' because similar-links suggestions, even curated ones, can be quite tangential & distant, so we don't want to clutter up backlinks with them.
+                            [Link ("", ["link-annotated", "id-not", "backlink-not"],[])
+                              [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
+                          ]
 
 -----------------------------------
 -- 'sort by magic': a way to sort by loose 'topic' or 'cluster' using embeddings. Instead of being forced to create 1D lists of items by sorting solely on simple properties like date or alphabetical order, we can instead 'sort' by embedding, where we pick a (possibly arbitrary, but a good starting point might be the newest/oldest item) 'seed' item, and then look up *its* nearest-neighbor, and so on. This produces a list which essentially constructs clusters in a linearized fashion. See /design#tags

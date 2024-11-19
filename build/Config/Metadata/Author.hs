@@ -992,6 +992,10 @@ authorLinkDB = M.fromList $
     , ("Richard Ngo", "https://80000hours.org/podcast/episodes/richard-ngo-large-language-models/")
     , ("Ethan W. Roland", "https://www.ethan-w-roland.com/")
     , ("Andrew N. Carr", "https://x.com/andrew_n_carr")
+    , ("Kyunghyun Cho", "https://www.kyunghyuncho.me/")
+    , ("Dzmitry Bahdanau", "https://rizar.github.io/")
+    , ("Janus", "https://cyborgism.wiki/hypha/janus")
+    , ("Helena Schmidt", "https://forschung.medunigraz.at/fodok/suchen.person_uebersicht?sprache_in=de&menue_id_in=101&id_in=90775539")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

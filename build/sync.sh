@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-17 21:07:52 gwern"
+# When:  Time-stamp: "2024-11-18 15:54:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1428,12 +1428,12 @@ else
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
-    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gf 'PNG image data' | cut --delimiter=':' --fields=1)
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gf -e 'PNG image data' -e 'GIF image data' | cut --delimiter=':' --fields=1)
      if [ -n "$CORRUPT" ]; then
-         echo "Found JPGs with PNG data: $CORRUPT"
-         echo "attempting to convert the PNG ones into JPG…"
+         echo "Found JPGs with PNG/GIF data: $CORRUPT"
+         echo "attempting to convert the PNG/GIF ones into JPG…"
          for FILE in $CORRUPT; do
-             if file "$FILE" | grep --fixed-strings --silent 'PNG image data'; then
+             if file "$FILE" | grep --fixed-strings --silent -e 'PNG image data' -e 'GIF image data'; then
                  echo "Converting $FILE"
                  TMP=$(mktemp /tmp/XXXX.jpg)
                  convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
@@ -1448,16 +1448,16 @@ else
     λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
          if [ -n "$CORRUPT" ]; then
              echo "Found broken PNGs: $CORRUPT"
-             echo "attempting to convert the JPG ones into PNG…"
+             echo "attempting to convert the JPG/GIF ones into PNG…"
              for FILE in $CORRUPT; do
-                 if file "$FILE" | grep --fixed-strings --silent 'JPEG image data'; then
+                 if file "$FILE" | grep --fixed-strings --silent -e 'JPEG image data' -e 'GIF image data'; then
                      echo "Converting $FILE"
                      TMP=$(mktemp /tmp/XXXX.png)
                      convert "$FILE" "$TMP" && mv "$TMP" "$FILE" && identify "$FILE"
                  fi
              done
          fi; }
-    wrap λ "Corrupted PNGs (attempted to repair JPG ones)" &
+    wrap λ "Corrupted PNGs (attempted to repair JPG/GIF ones)" &
 
     λ(){ find ./ -name "*.svg" -mtime -31 -print0 | xargs --null --max-procs="$N" -I {} sh -c \
           'xmllint --noout "{}" 2>/dev/null && identify "{}" >/dev/null 2>&1 || echo "{}"'; }
@@ -1548,7 +1548,7 @@ else
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }
     wrap λ "Refactor out pages?" &
 
-    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-args=1000 grep --fixed-strings --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | ge '^ +[4-9][0-9][0-9][0-9]+ +'; }
+    λ() { find ./metadata/annotation/similar/ -type f -name "*.html" | xargs --max-args=1000 grep --fixed-strings --no-filename -e '<a href="' -- | sort | uniq --count | sort --numeric-sort | ge '^ +[4-9][0-9][0-9][0-9]+ +' | gfv '/design#similar-links'; }
     wrap λ "Similar-links: overused links (>999) indicate pathological lookups; blacklist links as necessary." &
 
     λ(){ ghci -istatic/build/ ./static/build/XOfTheDay.hs -e 'sitePrioritize' | \

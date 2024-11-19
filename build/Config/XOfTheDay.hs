@@ -494,4 +494,5 @@ siteBlackList = [
           , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu"
           , "linkinghub.elsevier.com", "fonts.google.com", "www.ed.ac.uk"
           , "3quarksdaily.com", "research.com", "dynomight.net", "www.mercatus.org"
-          , "reactormag.com","pure.au.dk","news.sankakucomplex.com", "ilovetypography.com"]
+          , "reactormag.com","pure.au.dk","news.sankakucomplex.com", "ilovetypography.com"
+          , "pmc.ncbi.nlm.nih.gov","www.chiark.greenend.org.uk","docs.midjourney.com","www.snopes.com","news.mit.edu","ki.se"]
