@@ -53,7 +53,7 @@
 
     /*  Collapse blocks.
         */
-	--GW-abstract-collapse-blockquote-hover-color: #eee;
+	--GW-collapse-abstract-blockquote-hover-color: #eee;
 	--GW-collapse-disclosure-button-color: #eee;
 	--GW-collapse-disclosure-button-hover-color: #ddd;
 	--GW-collapse-in-blockquote-disclosure-button-color: #ddd;
@@ -62,6 +62,9 @@
 	--GW-collapse-disclosure-button-text-hover-color: #fff;
 	--GW-collapse-in-blockquote-disclosure-button-text-color: #999;
 	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #888;
+
+	/*	Inline collapses.
+	 */
 	--GW-collapse-inline-disclosure-button-text-color: #555;
 	--GW-collapse-inline-disclosure-button-text-hover-color: #999;
 

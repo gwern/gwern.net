@@ -1696,7 +1696,7 @@ section.collapse > .heading {
     border-color: var(--background-color);
 }
 .collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
-    --background-color: var(--GW-abstract-collapse-blockquote-hover-color);
+    --background-color: var(--GW-collapse-abstract-blockquote-hover-color);
 }
 
 /*  Non-blockquoted collapse summary.
