@@ -53,7 +53,7 @@
 
     /*  Collapse blocks.
         */
-	--GW-abstract-collapse-blockquote-hover-color: #333;
+	--GW-collapse-abstract-blockquote-hover-color: #333;
 	--GW-collapse-disclosure-button-color: #333;
 	--GW-collapse-disclosure-button-hover-color: #494949;
 	--GW-collapse-in-blockquote-disclosure-button-color: #494949;
@@ -62,6 +62,9 @@
 	--GW-collapse-disclosure-button-text-hover-color: #000;
 	--GW-collapse-in-blockquote-disclosure-button-text-color: #8b8b8b;
 	--GW-collapse-in-blockquote-disclosure-button-text-hover-color: #999;
+
+	/*	Inline collapses.
+	 */
 	--GW-collapse-inline-disclosure-button-text-color: #c1c1c1;
 	--GW-collapse-inline-disclosure-button-text-hover-color: #8b8b8b;
 
@@ -328,11 +331,16 @@
 	--GW-x-of-the-day-border-color: #5c5c5c;
 }
 :root {
-    /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
+    /*  Adjust background color to prevent pixels from turning off (contrary to 
+    	popular belief, pixels turning off saves trivial energy, like <1% in 
+    	measurements, and causes nasty scrolling/update jank due to delay in 
+    	pixels turning back on), and improve contrast with the white.
      */
     --GW-body-background-color: #161616;
 
-    /*  Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
+    /*  Dial back from pure white to keep contrast from being *too* high & 
+    	‘stark’ (#fff bg / #000 text seems to work in light mode, but not in 
+    	dark mode, perhaps because of differences in lighting environment?)
      */
     --GW-body-text-color: #f1f1f1;
 
@@ -341,10 +349,6 @@
         it in the way we want.)
      */
     --GW-syntax-highlight-color-control-flow: #cce1c8;
-
-    /*  Variable for SVGs to use (like for the —𝔊— footers on the index page)
-     */
-    --GW-body-background-color-inverted: #e9e9e9;
 
     /*  Reader mode.
      */
@@ -423,11 +427,10 @@ figure img[src$=".svg"]:not(.invert):not(.invert-auto) {
 
     Implementation: Modifying the ‘fill’ does not work so well when we call an
     SVG as a ‘background-image’ (like for the  footers on the index page), so we
-    do variable+invert tricks to get a white copy of the logo as a hack.
+    invert to get a white copy of the logo as a hack.
  */
 #footer-decoration-container a.footer-logo::after {
     filter: invert(1);
-    background-color: var(--GW-body-background-color-inverted);
 }
 
 /*	The ornaments at the corners of the “X of the day” box must be inverted.

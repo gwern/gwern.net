@@ -2031,6 +2031,18 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
     });
 });
 
+/***********************************************************/
+/*	Rewrite footer logo link to also link to #top on /index.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (eventInfo) => {
+    GWLog("rewriteIndexFooterLogoLinkHref", "rewrite.js", 1);
+
+    eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
+        footerLogo.href = "#top";
+    });
+}, "rewrite", (info) => (   info.container == document.body
+                         && /\/(index)?$/.test(location.pathname)));
+
 
 /*******************/
 /* FLOATING HEADER */
