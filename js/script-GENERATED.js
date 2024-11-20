@@ -39,7 +39,7 @@ Color = {
 			},
 			"HSL": {
 				//	L (lightness)
-				maxBaseValue: 0.50
+				maxBaseValue: 0.80
 			}
 		}
 	},
@@ -80,7 +80,7 @@ Color = {
 	/*	In L*a*b* or Oklab, retain lightness (L*) but set color (a* and b*) 
 		from the specified reference color.
 
-		In Oklch, retain lightness (L) but chroma (C) and hue (h°) from the
+		In Oklch, retain lightness (L) but set chroma (C) and hue (h°) from the
 		specified reference color.
 
 		In YCoCg, retain luma (Y) but set chroma (Co and Cg) from the specified
@@ -103,23 +103,23 @@ Color = {
 		let maxBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].maxBaseValue;
 
 		if (colorSpace == Color.ColorSpace.Lab) {
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
-
-			color.L = baseLightness + (1 - baseLightness) * color.L;
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
-		} else if (colorSpace == Color.ColorSpace.YCC) {
-			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
 
-			color.Y  = baseLuma + (1 - baseLuma) * color.Y;
+			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			color.L = baseLightness + (1 - baseLightness) * color.L;
+		} else if (colorSpace == Color.ColorSpace.YCC) {
 			color.Co = referenceColor.Co;
 			color.Cg = referenceColor.Cg;
-		} else if (colorSpace == Color.ColorSpace.Oklab) {
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
 
-			color.L = baseLightness + (1 - baseLightness) * color.L;
+			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
+			color.Y  = baseLuma + (1 - baseLuma) * color.Y;
+		} else if (colorSpace == Color.ColorSpace.Oklab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
+
+			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			color.L = baseLightness + (1 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.Oklch) {
 			color.C = referenceColor.C;
 			color.h = referenceColor.h;
@@ -132,12 +132,14 @@ Color = {
 			if (color.L > maxLightness)
 				color.C *= (1.0 - color.L) / (1.0 - maxLightness);
 		} else if (colorSpace == Color.ColorSpace.HSL) {
-			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
-
-			color.lightness = baseLightness + (1 - baseLightness) * Math.pow(color.lightness, 0.5);
-// 			color.lightness = Math.pow(baseLightness + (1 - baseLightness) * color.lightness, 0.5);
 			color.hue = referenceColor.hue;
 			color.saturation = referenceColor.saturation;
+
+			//	Gamma correction.
+// 			color.lightness = Math.pow(color.lightness, 0.5);
+
+			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
+			color.lightness = baseLightness + (1 - baseLightness) * color.lightness;
 		}
 
 		return color;
