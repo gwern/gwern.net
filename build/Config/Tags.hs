@@ -148,7 +148,8 @@ tagsShort2LongRewrites =
    , ("clock", "longevity/epigenetics"), ("aging-clock", "longevity/epigenetics"), ("epigenetic-clock", "longevity/epigenetics"), ("clocks", "longevity/epigenetics")
    , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability")
    , ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")
-   , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")]
+   , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")
+   , ("order-statistics", "statistics/order")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++

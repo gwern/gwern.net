@@ -61,7 +61,7 @@
  */
 .markdownBody a.has-annotation,
 .markdownBody a.has-annotation-partial {
-	background-image: linear-gradient(to right, var(--link-underline-gradient-line-color) 50%, var(--link-underline-background-color) 50%);
+    background-image: linear-gradient(to right, var(--link-underline-gradient-line-color) 50%, var(--link-underline-background-color) 50%);
     background-size: 2px 1px;
 }
 .markdownBody a.has-annotation.decorate-not {
@@ -122,7 +122,7 @@
 /*=================*/
 
 a[data-link-icon][data-link-icon-color]:hover {
-	--link-underline-gradient-line-color: var(--link-icon-color-hover);
+    --link-underline-gradient-line-color: var(--link-icon-color-hover);
 }
 
 /*******************/
@@ -145,10 +145,10 @@ a[data-link-icon-type='svg'] .link-icon-hook::after {
     opacity: 0.55;
 }
 a[data-link-icon-type='svg']:hover .link-icon-hook::after {
-	opacity: 0.3;
+    opacity: 0.3;
 }
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
-	background-image: var(--link-icon-url-hover, var(--link-icon-url));
+    background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }
 
@@ -181,8 +181,8 @@ a[data-link-icon-type*='text'] .link-icon-hook::after {
 }
 
 a[data-link-icon-type*='text'][data-link-icon-color]:hover .link-icon-hook::after {
-	color: var(--link-icon-color-hover, currentColor);
-	opacity: 1.0;
+    color: var(--link-icon-color-hover, currentColor);
+    opacity: 1.0;
 }
 
 a[data-link-icon-type*='sans'] .link-icon-hook::after {
