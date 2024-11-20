@@ -10,7 +10,8 @@ Color = {
 		XYZ:   "XYZ",
 		Lab:   "Lab",
 		YCC:   "YCC",
-		Oklab: "Oklab"
+		Oklab: "Oklab",
+		Oklch: "Oklch"
 	},
 
 	ColorTransform: {
@@ -19,7 +20,7 @@ Color = {
 
 	ColorTransformSettings: {
 		"colorize": {
-			defaultColorSpace: "YCC",
+			defaultColorSpace: "Oklch",
 			"Lab": {
 				//	L (lightness)
 				maxBaseValue: 0.70
@@ -31,6 +32,10 @@ Color = {
 			"Oklab": {
 				//	L (lightness)
 				maxBaseValue: 0.75
+			},
+			"Oklch": {
+				//	L (lightness)
+				maxBaseValue: 0.77
 			},
 			"HSL": {
 				//	L (lightness)
@@ -52,34 +57,15 @@ Color = {
 		//	Apply transforms.
 		transforms.forEach(transform => {
 			if (transform.type == Color.ColorTransform.COLORIZE) {
-				let colorSpace = transform.colorSpace ?? Color.ColorTransformSettings[transform.type].defaultColorSpace;
+				let workingColorSpace = (   transform.colorSpace 
+										 ?? Color.ColorTransformSettings[transform.type].defaultColorSpace);
 				let referenceColorRGBA = Color.rgbaFromString(transform.referenceColor);
-
-				if (colorSpace == Color.ColorSpace.Lab) {
-					let subjectColorLab = Color.labFromXYZ(Color.xyzFromRGB(transformedValueRGBA));
-					let referenceColorLab = Color.labFromXYZ(Color.xyzFromRGB(referenceColorRGBA));
-					let transformedSubjectColorLab = Color.colorValueTransform_colorize(subjectColorLab, referenceColorLab, Color.ColorSpace.Lab);
-
-					transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromLab(transformedSubjectColorLab));
-				} else if (colorSpace == Color.ColorSpace.YCC) {
-					let subjectColorYCC = Color.yccFromRGB(transformedValueRGBA);
-					let referenceColorYCC = Color.yccFromRGB(referenceColorRGBA);
-					let transformedSubjectColorYCC = Color.colorValueTransform_colorize(subjectColorYCC, referenceColorYCC, Color.ColorSpace.YCC);
-
-					transformedValueRGBA = Color.rgbFromYCC(transformedSubjectColorYCC);
-				} else if (colorSpace == Color.ColorSpace.Oklab) {
-					let subjectColorOklab = Color.oklabFromXYZ(Color.xyzFromRGB(transformedValueRGBA));
-					let referenceColorOklab = Color.oklabFromXYZ(Color.xyzFromRGB(referenceColorRGBA));
-					let transformedSubjectColorOklab = Color.colorValueTransform_colorize(subjectColorOklab, referenceColorOklab, Color.ColorSpace.Oklab);
-
-					transformedValueRGBA = Color.rgbFromXYZ(Color.xyzFromOklab(transformedSubjectColorOklab));
-				} else if (colorSpace == Color.ColorSpace.HSL) {
-					let subjectColorHSL = Color.hslFromRGB(transformedValueRGBA);
-					let referenceColorHSL = Color.hslFromRGB(referenceColorRGBA);
-					let transformedSubjectColorHSL = Color.colorValueTransform_colorize(subjectColorHSL, referenceColorHSL, Color.ColorSpace.HSL);
-
-					transformedValueRGBA = Color.rgbFromHSL(transformedSubjectColorHSL);
-				}
+				let subjectColorInWorkingColorSpace = Color.fromRGB(transformedValueRGBA, workingColorSpace);
+				let referenceColorInWorkingColorSpace = Color.fromRGB(referenceColorRGBA, workingColorSpace);
+				let transformedSubjectColorInWorkingColorSpace = Color.colorValueTransform_colorize(subjectColorInWorkingColorSpace,
+																									referenceColorInWorkingColorSpace,
+																									workingColorSpace);
+				transformedValueRGBA = Color.rgbFrom(transformedSubjectColorInWorkingColorSpace, workingColorSpace);
 			}
 		});
 
@@ -94,6 +80,9 @@ Color = {
 	/*	In L*a*b* or Oklab, retain lightness (L*) but set color (a* and b*) 
 		from the specified reference color.
 
+		In Oklch, retain lightness (L) but chroma (C) and hue (h°) from the
+		specified reference color.
+
 		In YCoCg, retain luma (Y) but set chroma (Co and Cg) from the specified
 		reference color.
 
@@ -106,6 +95,7 @@ Color = {
 		if ([ Color.ColorSpace.Lab,
 			  Color.ColorSpace.YCC,
 			  Color.ColorSpace.Oklab,
+			  Color.ColorSpace.Oklch,
 			  Color.ColorSpace.HSL
 			  ].includes(colorSpace) == false)
 			return color;
@@ -130,6 +120,17 @@ Color = {
 			color.L = baseLightness + (1 - baseLightness) * color.L;
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
+		} else if (colorSpace == Color.ColorSpace.Oklch) {
+			color.C = referenceColor.C;
+			color.h = referenceColor.h;
+
+			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			color.L = baseLightness + (1 - baseLightness) * color.L;
+
+			//	Gamut correction.
+			let maxLightness = Color.oklchFromRGB(Color.rgbFromOklch({ L: 1.0, C: color.C, h: color.h })).L;
+			if (color.L > maxLightness)
+				color.C *= (1.0 - color.L) / (1.0 - maxLightness);
 		} else if (colorSpace == Color.ColorSpace.HSL) {
 			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
 
@@ -176,6 +177,88 @@ Color = {
 				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
 				+ ", " + Math.round(rgba.alpha).toString()
 				+ ")");
+	},
+
+	//	Main convenience method (from RGB).
+	fromRGB: (rgb, targetColorSpace) => {
+		switch (targetColorSpace) {
+		case Color.ColorSpace.HSV:
+			return Color.hsvFromRGB(rgb);
+		case Color.ColorSpace.HSL:
+			return Color.hslFromRGB(rgb);
+		case Color.ColorSpace.Lab:
+			return Color.labFromRGB(rgb);
+		case Color.ColorSpace.YCC:
+			return Color.yccFromRGB(rgb);
+		case Color.ColorSpace.Oklab:
+			return Color.oklabFromRGB(rgb);
+		case Color.ColorSpace.Oklch:
+			return Color.oklchFromRGB(rgb);
+		}
+	},
+
+	//	Main convenience method (to RGB).
+	rgbFrom: (color, sourceColorSpace) => {
+		switch (sourceColorSpace) {
+		case Color.ColorSpace.HSV:
+			return Color.rgbFromHSV(color);
+		case Color.ColorSpace.HSL:
+			return Color.rgbFromHSL(color);
+		case Color.ColorSpace.Lab:
+			return Color.rgbFromLab(color);
+		case Color.ColorSpace.YCC:
+			return Color.rgbFromYCC(color);
+		case Color.ColorSpace.Oklab:
+			return Color.rgbFromOklab(color);
+		case Color.ColorSpace.Oklch:
+			return Color.rgbFromOklch(color);
+		}
+	},
+
+	//	Convenience method.
+	labFromRGB: (rgb) => {
+		return Color.labFromXYZ(Color.xyzFromRGB(rgb));
+	},
+
+	//	Convenience method.
+	rgbFromLab: (lab) => {
+		return Color.rgbFromXYZ(Color.xyzFromLab(lab));
+	},
+
+	//	Convenience method.
+	oklabFromRGB: (rgb) => {
+		return Color.oklabFromXYZ(Color.xyzFromRGB(rgb));
+	},
+
+	//	Convenience method.
+	rgbFromOklab: (oklab) => {
+		return Color.rgbFromXYZ(Color.xyzFromOklab(oklab));
+	},
+
+	//	Convenience method.
+	oklchFromRGB: (rgb) => {
+		return Color.oklchFromOklab(Color.oklabFromXYZ(Color.xyzFromRGB(rgb)));
+	},
+
+	//	Convenience method.
+	rgbFromOklch: (oklch) => {
+		return Color.rgbFromXYZ(Color.xyzFromOklab(Color.oklabFromOklch(oklch)));
+	},
+
+	oklchFromOklab: (oklab) => {
+		return {
+			L: oklab.L,
+			C: Math.sqrt(Math.pow(oklab.a, 2) + Math.pow(oklab.b, 2)),
+			h: Math.atan2(oklab.b, oklab.a)
+		};
+	},
+
+	oklabFromOklch: (oklch) => {
+		return {
+			L: oklch.L,
+			a: oklch.C * Math.cos(oklch.h),
+			b: oklch.C * Math.sin(oklch.h)
+		};
 	},
 
 	oklabFromXYZ: (xyz) => {
