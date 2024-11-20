@@ -131,7 +131,7 @@ addIcon x _ = x
 -- remove any existing icon metadata from a Link, and add `.icon-not` to ensure it can't show up again
 -- should any later passes try to add icons again.
 removeIcon :: Inline -> Inline
-removeIcon x@Link{} = addClass "icon-not" $ removeKey "link-icon" $ removeKey "link-icon-type" x
+removeIcon x@Link{} = addClass "icon-not" $ removeKey "link-icon-color" $ removeKey "link-icon" $ removeKey "link-icon-type" x
 removeIcon x        = x
 
 -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted

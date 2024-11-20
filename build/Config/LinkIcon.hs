@@ -326,7 +326,7 @@ linkIconRulesTriple u
  | u'' u "hpmor.com" || u' u "www.fanfiction.net/r/5782108/" || u' u "www.reddit.com/r/HPMOR/" = ("MoR", "text,tri,italic", yellowMoR) -- override FanFiction.net ; color: dark gold
  | u'' u "www.fanfiction.net" = ("FFN", "text,tri,sans", "#333399") -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with Firefox, so expand to "FFN". color: dark purple-blue
  | u'' u "myanimelist.net" = ("MAL", "text,tri,sans", "#2b498e") -- MAL: the blue of their logo doesn’t work, so just text. color: royal blue. TODO: white-on-blue text background
- | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = ("NGE", "text,tri", orangeNGE) -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
+ | aU' u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/", "evacommentary"] = ("NGE", "text,tri", orangeNGE) -- Primary user: forum.evageeks.org wiki.evageeks.org ; color: dark orange (from the original classic splash logo); TODO: color SVG icon (the NERV leaf logo)
  | u'' u "academic.oup.com" || u' u ".nutrition.org" || u' u ".oxfordjournals.org" || u' u "www.robots.ox.ac.uk" = ("OUP", "text,tri", "#011d3f") -- Oxford Academic Journals / OUP; color: very dark blue; TODO: white-on-blue text background
  | u'' u "poniesatdawn.bandcamp.com" = ("P@D", "text,tri", "#27050e") -- color: dark brown
  | u'' u "slatestarscratchpad.tumblr.com" || u'' u "www.astralcodexten.com" || (u'' u "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' u "yvain" ||  u' u "slatestarcodex")) = ("SSC", "text,tri", "#5175c2") -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead; color: light blue; TODO: white-on-blue text background
@@ -375,8 +375,8 @@ linkIconRulesQuad u
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue text background
- | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALs SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
- | u' u "mitpress.mit.edu/sites/default/files/sicp/" = ("SI CP", "text,quad,sans", "") -- overrides IA
+ | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALS SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
+ | u' u "mitpress.mit.edu/sites/default/files/sicp/" || u' u "mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/" = ("SI CP", "text,quad,sans", "") -- overrides IA
  | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono", "")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono", "")
@@ -591,6 +591,7 @@ linkIconTestUnitsText =
          , ("http://www.gainax.co.jp/wp/",  "NGE", "text,tri", orangeNGE)
          , ("https://www.khara.co.jp/hideakianno/personal-biography/",  "NGE", "text,tri", orangeNGE)
          , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php",  "EG","text", orangeNGE)
+         , ("https://web.archive.org/web/20151106005148/http://www.evacommentary.org/appendix/character-names.html","NGE", "text,tri", orangeNGE)
          , ("https://forum.evageeks.org/index.php",  "EG","text", orangeNGE)
          , ("https://x.com/EvaMonkey/", "EG", "text", orangeNGE)
          , ("https://blogs.nvidia.com/blog/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic", greenNV)
@@ -668,7 +669,9 @@ linkIconTestUnitsText =
          , ("https://www.astralcodexten.com/p/know-your-amphetamines",  "SSC","text,tri", "#5175c2")
          , ("https://x.com/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg", "#1da1f2")
          , ("/doc/reinforcement-learning/openai/2023-11-22-karaswisher-twitter-onsamaltman.html","twitter","svg", "#1da1f2")
-         , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg", "#1da1f2")
+         , ("https://developer.x.com/en/doc/twitter-api/v1/rules-and-filtering/search-operators","twitter","svg", "#1da1f2")
+         , ("https://x.com/DingchangLin/status/1448809886477860865", "twitter","svg", "#1da1f2")
+         , ("https://x.com/quasimondo/status/1064230996793614338",  "twitter","svg", "#1da1f2")
          , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", blueFB)
          , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", blueFB)
          , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", blueFB)
@@ -797,6 +800,7 @@ linkIconTestUnitsText =
          , ("https://www.cerebras.net/press-release/cerebras-announces-third-generation-wafer-scale-engine", "C", "text,sans", "#f05a29")
          , ("https://arxiv.org/abs/2309.10818#cerebras", "C", "text,sans", "#f05a29")
          , ("https://www.emacswiki.org/emacs/MarkdownMode", "emacs", "svg", "#c04c39")
+         , ("https://www.gnu.org/software/emacs/manual/html_node/emacs/Keyboard-Macro-Counter.html", "emacs", "svg", "#c04c39")
          , ("https://www.reddit.com/r/emacs/comments/1530yh8/kalman_reti_the_last_symbolics_developer_speaks/", "emacs", "svg", "#c04c39")
          , ("https://blottyparchment.livejournal.com/7541.html?thread=233845", "LJ", "text,sans", "#004359")
          , ("https://www.statnews.com/2021/11/09/largest-psilocybin-trial-finds-psychedelic-effective-treating-serious-depression/", "stat-news", "svg", "#008299")
@@ -1066,8 +1070,10 @@ linkIconTestUnitsText =
          , ("https://people.idsia.ch/~juergen/creativity.html", "SMDH", "text,quad,sans", "")
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans", "")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans", "")
+         , ("https://people.idsia.ch/~juergen/metalearning.html", "SMDH", "text,quad,sans", "")
          , ("https://www.mdpi.com/2220-9964/8/5/232", "MDPI","text,quad,sans", "")
          , ("https://web.archive.org/web/20211105092005/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans", "")
+         , ("https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/sicp.html", "SI CP", "text,quad,sans", "")
          , ("https://habr.com/ru/articles/516190/", "Habr", "text,quad,sans", "")
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOT R", "text,quad,sans", "")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Krbs", "text,quad,sans", "")
@@ -1086,6 +1092,7 @@ linkIconTestUnitsText =
          , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", "ETJ", "text,tri,sans", "")
          , ("/doc/statistics/bayes/1988-jaynes-maximumentropyandbayesianmethods.pdf", "ETJ", "text,tri,sans", "")
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans", "")
+         , ("https://omega0.xyz/omega8008/ETJ-PDF/cc5d.pdf", "ETJ", "text,tri,sans", "")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans", "")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans", "")
          , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "cbs", "svg", "")
@@ -1143,6 +1150,7 @@ linkIconTestUnitsText =
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text", "")
          , ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text", "")
          , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text", "")
+         , ("https://carryiton.net/chain-letter/evolution.html", "✉", "text", "")
          , ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text", "")
          , ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text", "")
          , ("https://quantum.country/qcvc", "MN", "text", "")
