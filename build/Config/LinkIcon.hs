@@ -1167,6 +1167,7 @@ linkIconTestUnitsText =
          , ("https://books.worksinprogress.co/book/maintenance-of-everything/communities-of-practice/the-soul-of-maintaining-a-new-machine/1", "WiP", "text,tri,mono", "")
          , ("http://messybeast.com/cats-meat-man.htm", "🐾", "text", "#fafa02")
          , ("https://a16z.com/author/scott-kupor/", "a16z", "text,quad,sans", "#ed8c00")
+         , ("https://a16z.com/politics-and-the-future/", "a16z", "text,quad,sans", "#ed8c00")
          , ("https://docs.midjourney.com/docs/weird", "midjourney", "svg", "")
          , ("https://www.midjourney.com/", "midjourney", "svg", "")
         ]

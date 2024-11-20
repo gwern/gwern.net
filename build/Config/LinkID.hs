@@ -2857,7 +2857,7 @@ linkIDOverrides =
        ,("https://onlinelibrary.wiley.com/doi/10.1111/add.16679","qeadan-et-al-2024-1"),("/doc/psychiatry/alcoholism/2024-qeadan.pdf","qeadan-et-al-2024-2")
        ,("https://arxiv.org/abs/2410.13893","sehwag-et-al-2024-1"),("https://arxiv.org/abs/2407.15811","sehwag-et-al-2024-2")
        ,("https://slatestarcodex.com/2014/04/28/the-control-group-is-out-of-control/","alexander-2014-1"),("https://slatestarcodex.com/2014/04/16/do-you-believe-me-doc/","alexander-2014-2")
-       ,("/static/build/text2epositive.py","gwern-2024-epositive"),("/doc/genetics/selection/natural/2024-10-28-gwern-meme-carcinization-bookofjobsatantofuturamarobotdevilevolution.jpg","gwern-2024-carcinization")
+       ,("/static/build/text2epositive.py","gwern-2024-epositive-script"),("https://www.lesswrong.com/posts/W8CxEFCnYNdrHkuoB/abs-e-or-speak-only-in-the-positive?commentId=Ga4DbTCdmYh5jRM4B#Ga4DbTCdmYh5jRM4B","gwern-2024-epositive"), ("/doc/genetics/selection/natural/2024-10-28-gwern-meme-carcinization-bookofjobsatantofuturamarobotdevilevolution.jpg","gwern-2024-carcinization")
        ,("https://krebsonsecurity.com/2024/10/the-global-surveillance-free-for-all-in-mobile-ad-data/","krebs-2024-mobiletracking"),("https://krebsonsecurity.com/2024/10/a-single-cloud-compromise-can-feed-an-army-of-ai-sex-bots/","krebs-2024-jailbreaks")
        ,("https://archive.org/details/cu31924092592785/page/10/mode/1up","mayhew-1851-ratcatcher"),("/doc/cat/biology/1851-mayhew-londonlabourandthelondonpoor-v1-thecatsmeatman.pdf","mayhew-1851-catsmeantman")
        , ("https://arxiv.org/abs/2404.12388#adobe","xu-et-al-2024-1")
@@ -2871,6 +2871,6 @@ linkIDOverrides =
        , ("https://web.archive.org/web/20110716221953/http://eva.onegeek.org/pipermail/oldeva/2001-September/040370.html", "cardass-criticism")
        , ("https://awni.github.io/future-speech/","hannun-2021-1"),("https://arxiv.org/abs/2108.00084","hannun-2021-2")
        ,("https://arxiv.org/abs/2411.07191","yu-et-al-2024-1"),("https://arxiv.org/abs/2403.14148#nvidia","yu-et-al-2024-2")
-       , ("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359000","gwern-2024-diminishingreturns"),("https://qchu.substack.com/p/core-dump","gwern-2024-semanticderealization")
+       , ("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359000","gwern-2024-diminishingreturns"), ("https://qchu.substack.com/p/core-dump","gwern-2024-semanticderealization"), ("https://www.lesswrong.com/posts/Nq2BtFidsnhfLuNAx/announcing-turntrout-com-my-new-digital-home#vJAsuKGLMmuWCb45h", "gwern-2024-turntroutcritique")
       ,("https://turntrout.com/design","turntrout-2024-sitedesign")
       ]

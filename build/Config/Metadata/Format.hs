@@ -1733,6 +1733,7 @@ htmlRewriteFixed =
          , ("schizohrenia", "schizophrenia")
          , ("quantitive", "quantitative")
          , ("non-institutionalised", "non-institutionalized")
+         , (" datacentre", " datacenter")
          , ("nonadherence", "non-adherence")
          , ("Langrangians", "Lagrangians")
          , ("regularisation", "regularization")
