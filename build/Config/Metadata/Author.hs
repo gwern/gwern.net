@@ -25,17 +25,17 @@ authorCollapseTestCases =
   , ("a, b", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b"]])
   , ("a, b, c", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
   , ("a, b, c, d", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Str ", ",Str "d"]])
-  , ("a, b, c, d, e", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
-  , ("a, b, c, d, e, f",[Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
-  , ("a, b, c, d, e, f, g", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
+  , ("a, b, c, d, e", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e"]]])
+  , ("a, b, c, d, e, f", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f"]]])
+  , ("a, b, c, d, e, f, g", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Str "g"]]])
 
   -- hash disambiguation rendering:
   , ("b#disambiguation", [Space,Span ("",["author","cite-author"],[]) [Str "b"]])
 
   -- test with link rewrites enabled:
-  , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
-  , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author","collapse"],[]) [Span ("",["abstract-collapse"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"],Span ("",[],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
-         ]
+  , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
+  , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
+     ]
 
 -- infix rewrites
 -- Testing: unique keys, test keys for regexp validity
@@ -527,6 +527,11 @@ canonicals = M.fromList
   , ("Alexander Tabarrok", "Alex Tabarrok")
   , ("andrew_n_carr", "Andrew N. Carr")
   , ("patrickc", "Patrick Collison")
+  , ("Elisabeth Widén", "Elisabeth Widen")
+  , ("Eco de Geus", "Eco J. C. de Geus")
+  , ("Eco J. de Geus", "Eco J. C. de Geus")
+  , ("Eco C. de Geus", "Eco J. C. de Geus")
+  , ("Eco J C de Geus", "Eco J. C. de Geus")
   ]
 
 -- tests: unique
@@ -538,7 +543,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -996,6 +1001,10 @@ authorLinkDB = M.fromList $
     , ("Dzmitry Bahdanau", "https://rizar.github.io/")
     , ("Janus", "https://cyborgism.wiki/hypha/janus")
     , ("Helena Schmidt", "https://forschung.medunigraz.at/fodok/suchen.person_uebersicht?sprache_in=de&menue_id_in=101&id_in=90775539")
+    , ("Elisabeth Widen", "https://projects.au.dk/nordic-embl-partnership/show-news/artikel/elisabeth-widen-group-leader-fimm")
+    , ("Eli Ayumi Stahl", "https://scholar.google.com/citations?user=EP728cwAAAAJ&hl=en&oi=ao")
+    , ("Eco J. C. de Geus", "https://loop.frontiersin.org/people/163383/bio")
+    , ("Charles Kooperberg", "https://www.fredhutch.org/en/faculty-lab-directory/kooperberg-charles.html")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

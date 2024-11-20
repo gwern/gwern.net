@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-11-10 11:33:44 gwern"
+When:  Time-stamp: "2024-11-20 12:01:12 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -175,10 +175,10 @@ authorCollapse aut
         -- just 1 author hidden—make it worth the reader's while to bother to uncollapse it!)
                                                     else let authorsInitial = take 5 authors
                                                              authorsRest = drop 5 authors
-                                                         in Span ("", ["author", "collapse"], [])
-                                                            [Span ("", ["abstract-collapse"], []) authorsInitial
-                                                            , -- ellipsis will be handled by the span collapse JS code
-                                                             Span nullAttr authorsRest]
+                                                         in Span ("", ["author"], [])
+                                                            (authorsInitial ++
+                                                            -- ellipsis to indicate the hidden authors will be handled by the span collapse JS code:
+                                                             [Span ("",["collapse"],[]) authorsRest])
   in [Space, authorSpan]
 
 -- authorsCanonicalizeT :: T.Text -> T.Text
