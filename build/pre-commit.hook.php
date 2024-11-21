@@ -11,9 +11,6 @@ $force = @$argv[1] == "--force";
 function process_source_files($source_file_paths, $script_file_name) {
 	global $force, $build_dir, $updated_files;
 
-	if (count($source_file_paths) == 0)
-		return;
-
 	$file_paths_string = implode(" ", $source_file_paths);
 	if ($force || (`git diff-index --cached HEAD -- {$file_paths_string} {$build_dir}/{$script_file_name}`)) {
 		require_once("{$build_dir}/{$script_file_name}");
