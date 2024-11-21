@@ -107,7 +107,7 @@ function CVT($value, $color_space) {
 			$value[0] = 1.0 - $value[0];
 			$value[0] = pow(max(0.0, $value[0]), $gamma);
 
-			debug_log("  →  {$color_space} ".PCC($value));
+			debug_log("  →  {$color_space} ".PCC($value)."  [CVT · lightness invert · {$color_space}]");
 		} else if (in_array($color_space, [ "Oklab", "Oklch" ])) {
 			$temp_value = $value;
 			if ($color_space == "Oklch")
@@ -125,7 +125,7 @@ function CVT($value, $color_space) {
 			// Use Ok-space color values, to prevent hue distortion.
 			$value[0] = $temp_value[0];
 
-			debug_log("  →  {$color_space} ".PCC($value));
+			debug_log("  →  {$color_space} ".PCC($value)."  [CVT · lightness invert · {$color_space}]");
 		}
 	}
 
@@ -144,40 +144,61 @@ function CVT($value, $color_space) {
 			default:
 				break;
 		}
+
+		debug_log("  →  {$color_space} ".PCC($value)."  [CVT · hue invert · {$color_space}]");
 	}
 
+	// Colorization.
 	if ($mode & 0x00FC) {
-		$reference_color_hsv = [ 0.0, 1.0, 1.0 ];
-			   if ($mode & 0x0004) {
-			$reference_color_hsv[0] =   0.0 / 360.0;
-		} else if ($mode & 0x0008) {
-			$reference_color_hsv[0] =  60.0 / 360.0;
-		} else if ($mode & 0x0010) {
-			$reference_color_hsv[0] = 120.0 / 360.0;
-		} else if ($mode & 0x0020) {
-			$reference_color_hsv[0] = 180.0 / 360.0;
-		} else if ($mode & 0x0040) {
-			$reference_color_hsv[0] = 240.0 / 360.0;
-		} else if ($mode & 0x0080) {
-			$reference_color_hsv[0] = 300.0 / 360.0;
-		}
-
 		if ($color_space == "Oklch") {
-			if ($value[1] == 0.0) {
-				$reference_color_oklch = OklchFromRGB(RGBFromHSV($reference_color_hsv));
-				$max_lightness = OklchFromRGB(RGBFromOklch([
-					1.0,
-					$reference_color_oklch[1],
-					$reference_color_oklch[2]
-				]))[0];
+			if (round($value[1], 2) == 0.0) {
+				$reference_color_oklch = [ 1.0, 1.0, 0.0 ];
+					   if ($mode & 0x0004) {
+					$reference_color_oklch[1] = 0.258;
+					$reference_color_oklch[2] = (  29.2 / 180.0) * M_PI;
+				} else if ($mode & 0x0008) {
+					$reference_color_oklch[1] = 0.211;
+					$reference_color_oklch[2] = ( 109.8 / 180.0) * M_PI;
+				} else if ($mode & 0x0010) {
+					$reference_color_oklch[1] = 0.295;
+					$reference_color_oklch[2] = ( 142.5 / 180.0) * M_PI;
+				} else if ($mode & 0x0020) {
+					$reference_color_oklch[1] = 0.155;
+					$reference_color_oklch[2] = (-165.2 / 180.0) * M_PI;
+				} else if ($mode & 0x0040) {
+					$reference_color_oklch[1] = 0.313;
+					$reference_color_oklch[2] = ( -95.9 / 180.0) * M_PI;
+				} else if ($mode & 0x0080) {
+					$reference_color_oklch[1] = 0.322;
+					$reference_color_oklch[2] = ( -31.6 / 180.0) * M_PI;
+				}
+
+				$max_lightness = OklchFromRGB(RGBFromOklch($reference_color_oklch))[0];
 
 				$value[1] = $reference_color_oklch[1];
 				$value[2] = $reference_color_oklch[2];
-
+				
 				if ($value[0] > $max_lightness)
 					$value[1] *= (1.0 - $value[0]) / (1.0 - $max_lightness);
+
+				debug_log("  →  {$color_space} ".PCC($value)."  [CVT · colorize · {$color_space}]");
 			}
 		} else if (in_array($color_space, [ "Lab", "YCC" ])) {
+			$reference_color_hsv = [ 0.0, 1.0, 1.0 ];
+				   if ($mode & 0x0004) {
+				$reference_color_hsv[0] =   0.0 / 360.0;
+			} else if ($mode & 0x0008) {
+				$reference_color_hsv[0] =  60.0 / 360.0;
+			} else if ($mode & 0x0010) {
+				$reference_color_hsv[0] = 120.0 / 360.0;
+			} else if ($mode & 0x0020) {
+				$reference_color_hsv[0] = 180.0 / 360.0;
+			} else if ($mode & 0x0040) {
+				$reference_color_hsv[0] = 240.0 / 360.0;
+			} else if ($mode & 0x0080) {
+				$reference_color_hsv[0] = 300.0 / 360.0;
+			}
+
 			$hsv_value = [ ];
 
 			switch ($color_space) {
@@ -199,10 +220,10 @@ function CVT($value, $color_space) {
 					$value = YCCFromRGB(RGBFromHSV($hsv_value));
 					break;
 			}
+
+			debug_log("  →  {$color_space} ".PCC($value)."  [CVT · colorize · {$color_space}]");
 		}
 	}
-
-	debug_log("  →  {$color_space} ".PCC($value));
 
 	return $value;
 }
@@ -329,7 +350,7 @@ function OklchFromOklab($oklab_components) {
 	$var_C = sqrt(pow($val_a, 2) + pow($val_b, 2));
 	$var_h = atan2($val_b, $val_a);
 
-	debug_log("  →  Oklch ".PCC([ $var_L, $var_C, $var_h ]));
+	debug_log("  →  Oklch ".PCC([ $var_L, $var_C, $var_h ])."  [OklchFromOklab]");
 	return [ $var_L, $var_C, $var_h ];
 }
 
@@ -340,7 +361,7 @@ function OklabFromOklch($oklch_components) {
 	$var_a = $val_C * cos($val_h);
 	$var_b = $val_C * sin($val_h);
 
-	debug_log("  →  Oklab ".PCC([ $var_L, $var_a, $var_b ]));
+	debug_log("  →  Oklab ".PCC([ $var_L, $var_a, $var_b ])."  [OklabFromOklch]");
 	return [ $var_L, $var_a, $var_b ];
 }
 
@@ -355,7 +376,7 @@ function OklabFromXYZ($xyz_components) {
 	$var_a = $var_l *  1.9779984951 + $var_m * -2.4285922050 + $var_s *  0.4505937099;
 	$var_b = $var_l *  0.0259040371 + $var_m *  0.7827717662 + $var_s * -0.8086757660;
 
-	debug_log("  →  Oklab ".PCC([ $var_L, $var_a, $var_b ]));
+	debug_log("  →  Oklab ".PCC([ $var_L, $var_a, $var_b ])."  [OklabFromXYZ]");
 	return [ $var_L, $var_a, $var_b ];
 }
 
@@ -370,7 +391,7 @@ function XYZFromOklab($oklab_components) {
 	$var_Y = $var_l * -0.0405801784 + $var_m *  1.1122568696 + $var_s * -0.0716766787;
 	$var_Z = $var_l * -0.0763812845 + $var_m * -0.4214819784 + $var_s *  1.5861632204;
 
-	debug_log("  →  XYZ ".PCC([ $var_X, $var_Y, $var_Z ]));
+	debug_log("  →  XYZ ".PCC([ $var_X, $var_Y, $var_Z ])."  [XYZFromOklab]");
 	return [ $var_X, $var_Y, $var_Z ];
 }
 
@@ -384,7 +405,7 @@ function YCCFromRGB($rgb_components) {
 	$var_Co = $val_R *  0.50                 + $val_B * -0.50;
 	$var_Cg = $val_R * -0.25 + $val_G * 0.50 + $val_B * -0.25;
 
-	debug_log("  →  YCC ".PCC([ $var_Y, $var_Co, $var_Cg ]));
+	debug_log("  →  YCC ".PCC([ $var_Y, $var_Co, $var_Cg ])."  [YCCFromRGB]");
 	return [ $var_Y, $var_Co, $var_Cg ];
 }
 
@@ -395,7 +416,7 @@ function RGBFromYCC($ycc_components) {
 	$var_G = max(0.0, min(1.0, $val_Y           + $val_Cg)) * 255.0;
 	$var_B = max(0.0, min(1.0, $val_Y - $val_Co - $val_Cg)) * 255.0;
 
-	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ]));
+	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ])."  [RGBFromYCC]");
 	return [ $var_R, $var_G, $var_B ];
 }
 
@@ -424,7 +445,7 @@ function HSLFromRGB($rgb_components) {
 		$var_H /= 6.0;
 	}
 
-	debug_log("  →  HSL ".PCC([ $var_H, $var_S, $var_L ]));
+	debug_log("  →  HSL ".PCC([ $var_H, $var_S, $var_L ])."  [HSLFromRGB]");
 	return [ $var_H, $var_S, $var_L ];
 }
 
@@ -463,7 +484,7 @@ function RGBFromHSL($hsl_components) {
 	$var_G *= 255.0;
 	$var_B *= 255.0;
 	
-	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ]));
+	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ])."  [RGBFromHSL]");
 	return [ $var_R, $var_G, $var_B ];
 }
 
@@ -495,7 +516,7 @@ function HSVFromRGB($rgb_components) {
     	else if ($var_H > 1.0) $var_H -= 1.0;
 	}
 	
-	debug_log("  →  HSV ".PCC([ $var_H, $var_S, $var_V ]));
+	debug_log("  →  HSV ".PCC([ $var_H, $var_S, $var_V ])."  [HSVFromRGB]");
 	return [ $var_H, $var_S, $var_V ];
 }
 
@@ -529,7 +550,7 @@ function RGBFromHSV($hsv_components) {
 	$var_G *= 255.0;
 	$var_B *= 255.0;
 	
-	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ]));
+	debug_log("  →  RGB ".PCC([ $var_R, $var_G, $var_B ])."  [RGBFromHSV]");
 	return [ $var_R, $var_G, $var_B ];
 }
 
@@ -553,7 +574,7 @@ function XYZFromRGB($rgb_components) {
 	$var_Y = $val_R * 0.2126 + $val_G * 0.7152 + $val_B * 0.0722;
 	$var_Z = $val_R * 0.0193 + $val_G * 0.1192 + $val_B * 0.9505;
 	
-	debug_log("  →  XYZ ".PCC([ $var_X, $var_Y, $var_Z ]));
+	debug_log("  →  XYZ ".PCC([ $var_X, $var_Y, $var_Z ])."  [XYZFromRGB]");
 	return [ $var_X, $var_Y, $var_Z ];
 }
 
@@ -572,7 +593,7 @@ function RGBFromXYZ($xyz_components) {
 		$rgb_values[$i] = min(max($value, 0.0), 1.0) * 255.0;
 	}
 	
-	debug_log("  →  RGB ".PCC($rgb_values));
+	debug_log("  →  RGB ".PCC($rgb_values)."  [RGBFromXYZ]");
 	return $rgb_values;
 }
 
@@ -599,7 +620,7 @@ function LabFromXYZ($xyz_components) {
 	$var_a = 5.0 * ($val_X - $val_Y);
 	$var_b = 2.0 * ($val_Y - $val_Z);
 	
-	debug_log("  →  Lab ".PCC([ $var_L, $var_a, $var_b ]));
+	debug_log("  →  Lab ".PCC([ $var_L, $var_a, $var_b ])."  [LabFromXYZ]");
 	return [ $var_L, $var_a, $var_b ];
 }
 
@@ -622,7 +643,7 @@ function XYZFromLab($lab_components) {
 	$xyz_values[1] *= 1.00000;
 	$xyz_values[2] *= 1.08883;
 
-	debug_log("  →  XYZ ".PCC($xyz_values));
+	debug_log("  →  XYZ ".PCC($xyz_values)."  [XYZFromLab]");
 	return $xyz_values;
 }
 
