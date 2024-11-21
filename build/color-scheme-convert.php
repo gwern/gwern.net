@@ -31,26 +31,9 @@ $debug_enabled = false;
 
 ## Get command line arguments.
 $stylesheet = file_get_contents($argv[1]);
-
 $mode = @$argv[2] ?: 1;
 $working_color_space = @$argv[3] ?: "Lab";
-
-$gamma = @$argv[4];
-if ($gamma == null) {
-	switch ($working_color_space) {
-		case "Oklab":
-		case "Oklch":
-			$gamma = 0.36;
-			break;
-		case "Lab":
-		case "YCC":
-			$gamma = 0.55;
-			break;
-		default:
-			$gamma = 0.50;
-			break;
-	}
-}
+$gamma = @$argv[4] ?: 0.55;
 
 ## Process and print.
 $stylesheet = preg_replace_callback('/(#[0-9abcdef]+)([,; ])/i', 'ProcessColorValue', $stylesheet);
@@ -120,17 +103,29 @@ function CVT($value, $color_space) {
 
 	// Lightness inversion.
 	if ($mode & 0x0001) {
-		switch ($color_space) {
-			case "Lab":
-			case "YCC":
-			case "Oklab":
-			case "Oklch":
-				$value[0] = 1.0 - $value[0];
-				// Cut-rate gamma correction.
-				$value[0] = pow(max(0.0, $value[0]), $gamma);
-				break;
-			default:
-				break;
+		if (in_array($color_space, [ "Lab", "YCC" ])) {
+			$value[0] = 1.0 - $value[0];
+			$value[0] = pow(max(0.0, $value[0]), $gamma);
+
+			debug_log("  →  {$color_space} ".PCC($value));
+		} else if (in_array($color_space, [ "Oklab", "Oklch" ])) {
+			$temp_value = $value;
+			if ($color_space == "Oklch")
+				$temp_value = OklabFromOklch($temp_value);
+			$temp_value = LabFromXYZ(XYZFromOklab($temp_value));
+
+			// Invert in Lab.
+			$temp_value[0] = 1.0 - $temp_value[0];
+			$temp_value[0] = pow(max(0.0, $temp_value[0]), $gamma);
+
+			$temp_value = OklabFromXYZ(XYZFromLab($temp_value));
+			if ($color_space == "Oklch")
+				$temp_value = OklchFromOklab($temp_value);
+
+			// Use Ok-space color values, to prevent hue distortion.
+			$value[0] = $temp_value[0];
+
+			debug_log("  →  {$color_space} ".PCC($value));
 		}
 	}
 
@@ -227,10 +222,10 @@ function HexFromRGB($rgb_components) {
 
 ## PCC = "Print Color Components"
 function PCC($components) {
-	foreach ($components as $k => $v) {
-		$components[$k] = round($v, 4);
-	}
-	return "( " . implode(", ", $components) . " )";
+	$rounded_components = [ ];
+	foreach ($components as $k => $v)
+		$rounded_components[$k] = round($v, 4);
+	return "( " . implode(", ", $rounded_components) . " )";
 }
 
 /**************************/
