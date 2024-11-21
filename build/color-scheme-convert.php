@@ -147,45 +147,58 @@ function CVT($value, $color_space) {
 	}
 
 	if ($mode & 0x00FC) {
-		$hsv_value = [ ];
-		switch ($color_space) {
-			case "Lab":
-				$hsv_value = HSVFromRGB(RGBFromLab($value));
-				break;
-			case "YCC":
-				$hsv_value = HSVFromRGB(RGBFromYCC($value));
-				break;
-			default:
-				break;
-		}
-		if ($mode & 0x0004) {
-			$hsv_value[0] = 0.0 / 360.0;
-			$hsv_value[1] = 1.0;
+		$reference_color_hsv = [ 0.0, 1.0, 1.0 ];
+			   if ($mode & 0x0004) {
+			$reference_color_hsv[0] =   0.0 / 360.0;
 		} else if ($mode & 0x0008) {
-			$hsv_value[0] = 60.0 / 360.0;
-			$hsv_value[1] = 1.0;
+			$reference_color_hsv[0] =  60.0 / 360.0;
 		} else if ($mode & 0x0010) {
-			$hsv_value[0] = 120.0 / 360.0;
-			$hsv_value[1] = 1.0;
+			$reference_color_hsv[0] = 120.0 / 360.0;
 		} else if ($mode & 0x0020) {
-			$hsv_value[0] = 180.0 / 360.0;
-			$hsv_value[1] = 1.0;
+			$reference_color_hsv[0] = 180.0 / 360.0;
 		} else if ($mode & 0x0040) {
-			$hsv_value[0] = 240.0 / 360.0;
-			$hsv_value[1] = 1.0;
+			$reference_color_hsv[0] = 240.0 / 360.0;
 		} else if ($mode & 0x0080) {
-			$hsv_value[0] = 300.0 / 360.0;
-			$hsv_value[1] = 1.0;	
+			$reference_color_hsv[0] = 300.0 / 360.0;
 		}
-		switch ($color_space) {
-			case "Lab":
-				$value = LabFromRGB(RGBFromHSV($hsv_value));
-				break;
-			case "YCC":
-				$value = YCCFromRGB(RGBFromHSV($hsv_value));
-				break;
-			default:
-				break;
+
+		if ($color_space == "Oklch") {
+			if ($value[1] == 0.0) {
+				$reference_color_oklch = OklchFromRGB(RGBFromHSV($reference_color_hsv));
+				$max_lightness = OklchFromRGB(RGBFromOklch([
+					1.0,
+					$reference_color_oklch[1],
+					$reference_color_oklch[2]
+				]))[0];
+
+				$value[1] = $reference_color_oklch[1];
+				$value[2] = $reference_color_oklch[2];
+
+				if ($value[0] > $max_lightness)
+					$value[1] *= (1.0 - $value[0]) / (1.0 - $max_lightness);
+			}
+		} else if (in_array($color_space, [ "Lab", "YCC" ])) {
+			$hsv_value = [ ];
+
+			switch ($color_space) {
+				case "Lab":
+					$hsv_value = HSVFromRGB(RGBFromLab($value));
+					break;
+				case "YCC":
+					$hsv_value = HSVFromRGB(RGBFromYCC($value));
+					break;
+			}
+
+			$hsv_value[0] = $reference_color_hsv[0];
+
+			switch ($color_space) {
+				case "Lab":
+					$value = LabFromRGB(RGBFromHSV($hsv_value));
+					break;
+				case "YCC":
+					$value = YCCFromRGB(RGBFromHSV($hsv_value));
+					break;
+			}
 		}
 	}
 
