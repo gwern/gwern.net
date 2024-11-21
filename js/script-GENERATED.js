@@ -424,7 +424,7 @@ Color = {
 			let h = hsv.hue * 6.0;
 			if (h == 6.0)
 				h = 0.0;
-			let i = floor(h);
+			let i = Math.floor(h);
 			let value1 = hsv.value * (1.0 - hsv.saturation);
 			let value2 = hsv.value * (1.0 - hsv.saturation * (h - i));
 			let value3 = hsv.value * (1.0 - hsv.saturation * (1.0 - (h - i)));

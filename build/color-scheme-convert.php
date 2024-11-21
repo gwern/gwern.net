@@ -132,11 +132,14 @@ function CVT($value, $color_space) {
 	// Hue inversion.
 	if ($mode & 0x0002) {
 		switch ($color_space) {
+			case "YCC":
 			case "Lab":
+			case "Oklab":
 				$value[1] *= -1;
 				$value[2] *= -1;
 				break;
-			case "YCC":
+			case "Oklch":
+				$value[2] = fmod($value[2] + 2 * M_PI, 2 * M_PI) - M_PI;
 				break;
 			default:
 				break;
