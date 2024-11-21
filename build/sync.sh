@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-18 15:54:59 gwern"
+# When:  Time-stamp: "2024-11-20 10:56:31 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -281,7 +281,6 @@ else
 
     if [ "$SLOW" ]; then
 
-        bold "Updating X-of-the-day…"
         bold "Updating annotation-of-the-day…"
         ghci -istatic/build/ ./static/build/XOfTheDay.hs ./static/build/LinkMetadata.hs \
              -e 'do {md <- LinkMetadata.readLinkMetadata; aotd md; }' | \
@@ -618,7 +617,7 @@ else
             "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
             "css" "CSS" "d" "D" "diff" "Diff" "Haskell" "html" "HTML" "Javascript" "JavaScript"
             "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
-            "completion-status" "collapsible"
+            "completion-status" "collapsible" "me" "new-essays" "new-links" "site"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -1440,10 +1439,9 @@ else
              fi
          done
      fi; }
-    wrap λ "JPGs with PNG data" &
-
+    wrap λ "JPGs with PNG data"
     λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
-    wrap λ "Corrupted JPGs (were not PNGs and so not attempting to repair)" &
+    wrap λ "Remaining corrupted JPGs post-repair-attempts (were not PNGs and so not attempting to repair)" &
 
     λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
          if [ -n "$CORRUPT" ]; then
