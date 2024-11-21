@@ -56,13 +56,15 @@ process_source_files($font_css, 'build_versioned_font_css.php');
 
 ## Components of color (light/dark) inlined CSS.
 ## Build the inlined color CSS (for light and dark mode).
-$css_components = [
+$color_script_and_css_components = [
+	"{$build_dir}/color-scheme-convert.php",
+
 	"{$css_dir}/colors.css",
 	"{$css_dir}/light-mode-adjustments.css",
 	"{$css_dir}/dark-mode-adjustments.css"
 ];
 
-process_source_files($css_components, 'build_mode_css.php');
+process_source_files($color_script_and_css_components, 'build_mode_css.php');
 
 
 ## Icons.

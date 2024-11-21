@@ -107,25 +107,25 @@ Color = {
 			color.b = referenceColor.b;
 
 			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
-			color.L = baseLightness + (1 - baseLightness) * color.L;
+			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.YCC) {
 			color.Co = referenceColor.Co;
 			color.Cg = referenceColor.Cg;
 
 			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
-			color.Y  = baseLuma + (1 - baseLuma) * color.Y;
+			color.Y  = baseLuma + (1.0 - baseLuma) * color.Y;
 		} else if (colorSpace == Color.ColorSpace.Oklab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 
 			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
-			color.L = baseLightness + (1 - baseLightness) * color.L;
+			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.Oklch) {
 			color.C = referenceColor.C;
 			color.h = referenceColor.h;
 
 			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
-			color.L = baseLightness + (1 - baseLightness) * color.L;
+			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 
 			//	Gamut correction.
 			let maxLightness = Color.oklchFromRGB(Color.rgbFromOklch({ L: 1.0, C: color.C, h: color.h })).L;
@@ -139,7 +139,7 @@ Color = {
 // 			color.lightness = Math.pow(color.lightness, 0.5);
 
 			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
-			color.lightness = baseLightness + (1 - baseLightness) * color.lightness;
+			color.lightness = baseLightness + (1.0 - baseLightness) * color.lightness;
 		}
 
 		return color;
@@ -196,6 +196,10 @@ Color = {
 			return Color.oklabFromRGB(rgb);
 		case Color.ColorSpace.Oklch:
 			return Color.oklchFromRGB(rgb);
+		case Color.ColorSpace.RGB:
+			return rgb;
+		default:
+			return null;
 		}
 	},
 
@@ -214,6 +218,10 @@ Color = {
 			return Color.rgbFromOklab(color);
 		case Color.ColorSpace.Oklch:
 			return Color.rgbFromOklch(color);
+		case Color.ColorSpace.RGB:
+			return color;
+		default:
+			return null;
 		}
 	},
 
@@ -294,123 +302,70 @@ Color = {
 		let blue  = rgb.blue  / 255.0;
 
 		return {
-			Y:  red *  0.25 + green * 0.5 + blue *  0.25,
-			Co: red *  0.5                + blue * -0.5,
-			Cg: red * -0.25 + green * 0.5 + blue * -0.25
+			Y:  red *  0.25 + green * 0.50 + blue *  0.25,
+			Co: red *  0.50                + blue * -0.50,
+			Cg: red * -0.25 + green * 0.50 + blue * -0.25
 		}
 	},
 
 	rgbFromYCC: (ycc) => {
 		return {
-			red:   Math.max(0, Math.min(1, ycc.Y + ycc.Co - ycc.Cg)) * 255.0,
-			green: Math.max(0, Math.min(1, ycc.Y          + ycc.Cg)) * 255.0,
-			blue:  Math.max(0, Math.min(1, ycc.Y - ycc.Co - ycc.Cg)) * 255.0
+			red:   Math.max(0.0, Math.min(1.0, ycc.Y + ycc.Co - ycc.Cg)) * 255.0,
+			green: Math.max(0.0, Math.min(1.0, ycc.Y          + ycc.Cg)) * 255.0,
+			blue:  Math.max(0.0, Math.min(1.0, ycc.Y - ycc.Co - ycc.Cg)) * 255.0
 		}
 	},
 
-	rgbFromXYZ: (xyz) => {
-		let x = xyz.x;
-		let y = xyz.y;
-		let z = xyz.z;
+	hslFromRGB: (rgb) => {
+		let red   = rgb.red   / 255.0;
+		let green = rgb.green / 255.0;
+		let blue  = rgb.blue  / 255.0;
 
-		let r = x *  3.2406 + y * -1.5372 + z * -0.4986;
-		let g = x * -0.9689 + y *  1.8758 + z *  0.0415;
-		let b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+		let minValue = Math.min(red, green, blue);
+		let maxValue = Math.max(red, green, blue);
+		let maxDelta = maxValue - minValue;
 
-		let rgbValues = [ r, g, b ];
+		let hue = 0.0;
+		let saturation = 0.0;
+		let lightness = (maxValue + minValue) / 2.0;
 
-		for (let [ i, value ] of Object.entries(rgbValues)) {
-			value = value > 0.0031308
-					? (1.055 * Math.pow(value, (1.0/2.4)) - 0.055) 
-					: (12.92 * value);
-			rgbValues[i] = Math.min(Math.max(value, 0.0), 1.0) * 255.0;
+		if (maxDelta != 0.0) {
+			saturation = lightness > 0.5
+						 ? maxDelta / (2.0 - (maxValue + minValue))
+						 : maxDelta / (maxValue + minValue);
+
+			     if (red   == maxValue) hue = (green - blue)  / maxDelta + (green < blue ? 6.0 : 0.0);
+			else if (green == maxValue) hue = (blue  - red)   / maxDelta + 2.0;
+			else if (blue  == maxValue) hue = (red   - green) / maxDelta + 4.0;
+
+			hue /= 6.0;
 		}
-
+	
 		return {
-			red:   rgbValues[0],
-			green: rgbValues[1],
-			blue:  rgbValues[2],
+			hue:        hue,
+			saturation: saturation,
+			lightness:  lightness
 		};
-	},
-
-	xyzFromLab: (lab) => {
-		let y = (lab.L + 0.16) / 1.16;
-		let x = lab.a / 5.0 + y;
-		let z = y - lab.b / 2.0;
-
-		let xyzValues = [ x, y, z ];
-
-		for (let [ i, value ] of Object.entries(xyzValues)) {
-			xyzValues[i] = Math.pow(value, 3) > 0.008856 
-						   ? (Math.pow(value, 3)) 
-						   : ((value - 16.0/116.0) / 7.787);
-		}
-
-		return {
-			x: xyzValues[0] * 0.95047,
-			y: xyzValues[1] * 1.00000,
-			z: xyzValues[2] * 1.08883,
-		};
-	},
-
-	labFromXYZ: (xyz) => {
-		let xyzValues = [ xyz.x, xyz.y, xyz.z ];
-
-		xyzValues[0] /= 0.95047;
-		xyzValues[1] /= 1.00000;
-		xyzValues[2] /= 1.08883;
-
-		for (let [ i, value ] of Object.entries(xyzValues)) {
-			xyzValues[i] = value > 0.008856
-						   ? (Math.pow(value, (1.0/3.0))) 
-						   : ((7.787 * value) + (16.0/116.0));
-		}
-
-		let [ x, y, z ] = xyzValues;
-
-		return {
-			L: (1.16 * y) - 0.16,
-			a: 5.0 * (x - y),
-			b: 2.0 * (y - z)
-		};
-	},
-
-	xyzFromRGB: (rgb) => {
-		let rgbValues = [ rgb.red, rgb.green, rgb.blue ];
-
-		for (let [ i, value ] of Object.entries(rgbValues)) {
-			value /= 255.0;
-			rgbValues[i] = value > 0.04045 
-						   ? (Math.pow(((value + 0.055) / 1.055), 2.4)) 
-						   : (value / 12.92);
-		}
-
-		let [ red, green, blue ] = rgbValues;
-
-		return {
-			x: red * 0.4124 + green * 0.3576 + blue * 0.1805,
-			y: red * 0.2126 + green * 0.7152 + blue * 0.0722,
-			z: red * 0.0193 + green * 0.1192 + blue * 0.9505
-		}
 	},
 
 	rgbFromHSL: (hsl) => {
 		let red, green, blue;
-		if (hsl.saturation != 0) {
+
+		if (hsl.saturation != 0.0) {
 			function colorChannelFromHue(p, q, t) {
-				if (t < 0) t += 1;
-				if (t > 1) t -= 1;
+				if (t < 0.0) t += 1.0;
+				if (t > 1.0) t -= 1.0;
 
 				if (t < 1.0/6.0) return p + (q - p) * 6.0 * t;
 				if (t < 1.0/2.0) return q;
-				if (t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+				if (t < 2.0/3.0) return p + (q - p) * 6.0 * (2.0/3.0 - t);
 
 				return p;
 			}
 
 			let q = hsl.lightness < 0.5
 					? hsl.lightness * (1.0 + hsl.saturation)
-					: hsl.lightness + hsl.saturation - hsl.lightness * hsl.saturation;
+					: hsl.lightness + hsl.saturation - (hsl.lightness * hsl.saturation);
 			let p = 2.0 * hsl.lightness - q;
 
 			red   = colorChannelFromHue(p, q, hsl.hue + 1.0/3.0);
@@ -427,56 +382,61 @@ Color = {
 		};
 	},
 
-	hslFromRGB: (rgb) => {
+	hsvFromRGB: (rgb) => {
 		let red   = rgb.red   / 255.0;
 		let green = rgb.green / 255.0;
 		let blue  = rgb.blue  / 255.0;
 
 		let minValue = Math.min(red, green, blue);
 		let maxValue = Math.max(red, green, blue);
-		let valueDelta = maxValue - minValue;
+		let maxDelta = maxValue - minValue;
 
-		let hue = 0;
-		let saturation = 0;
-		let lightness = (maxValue + minValue) / 2;
+		let hue = 0.0;
+		let saturation = 0.0;
+		let value = maxValue;
 
-		if (valueDelta != 0) {
-			saturation = lightness > 0.5
-						 ? valueDelta / (2 - (maxValue + minValue))
-						 : valueDelta / (maxValue + minValue);
+		if (maxDelta != 0.0) {
+			saturation = maxDelta / maxValue;
 
-			     if (red   == maxValue) hue = (green - blue)  / valueDelta + (green < blue ? 6.0 : 0.0);
-			else if (green == maxValue) hue = (blue  - red)   / valueDelta + 2.0;
-			else if (blue  == maxValue) hue = (red   - green) / valueDelta + 4.0;
+			let deltaRed   = (((maxValue - red)   / 6.0) + (maxDelta / 2.0)) / maxDelta;
+			let deltaGreen = (((maxValue - green) / 6.0) + (maxDelta / 2.0)) / maxDelta;
+			let deltaBlue  = (((maxValue - blue)  / 6.0) + (maxDelta / 2.0)) / maxDelta;
 
-			hue /= 6.0;
+			     if (red   == maxValue) hue =             deltaBlue  - deltaGreen;
+			else if (green == maxValue) hue = (1.0/3.0) + deltaRed   - deltaBlue;
+			else if (blue  == maxValue) hue = (2.0/3.0) + deltaGreen - deltaRed;
+
+			     if (hue < 0.0) hue += 1.0;
+			else if (hue > 1.0) hue -= 1.0;
 		}
 	
 		return {
 			hue:        hue,
 			saturation: saturation,
-			lightness:  lightness
+			value:      value
 		};
 	},
 
 	rgbFromHSV: (hsv) => {
 		let red, greed, blue;
-		if (hsv.saturation != 0) {
+
+		if (hsv.saturation != 0.0) {
 			let h = hsv.hue * 6.0;
 			if (h == 6.0)
-				h = 0;
-			let value1 = hsv.value * (1 - hsv.saturation);
-			let value2 = hsv.value * (1 - hsv.saturation * (h - floor(h)));
-			let value3 = hsv.value * (1 - hsv.saturation * (1 - (h - floor(h))));
+				h = 0.0;
+			let i = floor(h);
+			let value1 = hsv.value * (1.0 - hsv.saturation);
+			let value2 = hsv.value * (1.0 - hsv.saturation * (h - i));
+			let value3 = hsv.value * (1.0 - hsv.saturation * (1.0 - (h - i)));
 		
 			red = green = blue = 0.0;
 
-			     if (i == 0) { red = hsv.value; green = value3;    blue = value1;    }
-			else if (i == 1) { red = value2;    green = hsv.value; blue = value1;    }
-			else if (i == 2) { red = value1;    green = hsv.value; blue = value3;    }
-			else if (i == 3) { red = value1;    green = value2;    blue = hsv.value; }
-			else if (i == 4) { red = value3;    green = value1;    blue = hsv.value; }
-			else             { red = hsv.value; green = value1;    blue = value2;    }
+			     if (i == 0.0) { red = hsv.value; green = value3;    blue = value1;    }
+			else if (i == 1.0) { red = value2;    green = hsv.value; blue = value1;    }
+			else if (i == 2.0) { red = value1;    green = hsv.value; blue = value3;    }
+			else if (i == 3.0) { red = value1;    green = value2;    blue = hsv.value; }
+			else if (i == 4.0) { red = value3;    green = value1;    blue = hsv.value; }
+			else               { red = hsv.value; green = value1;    blue = value2;    }
 		} else {
 			red = green = blue = hsv.value;
 		}
@@ -488,38 +448,89 @@ Color = {
 		};
 	},
 
-	hsvFromRGB: (rgb) => {
-		let red   = rgb.red   / 255.0;
-		let green = rgb.green / 255.0;
-		let blue  = rgb.blue  / 255.0;
+	xyzFromRGB: (rgb) => {
+		let rgbValues = [ rgb.red, rgb.green, rgb.blue ];
 
-		let minValue = Math.min(red, green, blue);
-		let maxValue = Math.max(red, green, blue);
-		let valueDelta = maxValue - minValue;
-
-		let hue = 0;
-		let saturation = 0;
-		let value = maxValue;
-
-		if (valueDelta != 0) {
-			saturation = valueDelta / maxValue;
-
-			let deltaRed   = (((maxValue - red)   / 6) + (valueDelta / 2)) / valueDelta;
-			let deltaGreen = (((maxValue - green) / 6) + (valueDelta / 2)) / valueDelta;
-			let deltaBlue  = (((maxValue - blue)  / 6) + (valueDelta / 2)) / valueDelta;
-
-			     if (red   == maxValue) hue =             deltaBlue  - deltaGreen;
-			else if (green == maxValue) hue = (1.0/3.0) + deltaRed   - deltaBlue;
-			else if (blue  == maxValue) hue = (2.0/3.0) + deltaGreen - deltaRed;
-
-			     if (hue < 0) hue += 1;
-			else if (hue > 1) hue -= 1;
+		for (let [ i, value ] of Object.entries(rgbValues)) {
+			value /= 255.0;
+			rgbValues[i] = value > 0.04045 
+						   ? Math.pow(((value + 0.055) / 1.055), 2.4)
+						   : value / 12.92;
 		}
-	
+
+		let [ red, green, blue ] = rgbValues;
+
 		return {
-			hue:        hue,
-			saturation: saturation,
-			value:      value
+			x: red * 0.4124 + green * 0.3576 + blue * 0.1805,
+			y: red * 0.2126 + green * 0.7152 + blue * 0.0722,
+			z: red * 0.0193 + green * 0.1192 + blue * 0.9505
+		}
+	},
+
+	rgbFromXYZ: (xyz) => {
+		let x = xyz.x;
+		let y = xyz.y;
+		let z = xyz.z;
+
+		let r = x *  3.2406 + y * -1.5372 + z * -0.4986;
+		let g = x * -0.9689 + y *  1.8758 + z *  0.0415;
+		let b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+
+		let rgbValues = [ r, g, b ];
+
+		for (let [ i, value ] of Object.entries(rgbValues)) {
+			value = value > 0.0031308
+					? 1.055 * Math.pow(value, (1.0/2.4)) - 0.055 
+					: 12.92 * value;
+			rgbValues[i] = Math.min(Math.max(value, 0.0), 1.0) * 255.0;
+		}
+
+		return {
+			red:   rgbValues[0],
+			green: rgbValues[1],
+			blue:  rgbValues[2],
+		};
+	},
+
+	labFromXYZ: (xyz) => {
+		let xyzValues = [ xyz.x, xyz.y, xyz.z ];
+
+		xyzValues[0] /= 0.95047;
+		xyzValues[1] /= 1.00000;
+		xyzValues[2] /= 1.08883;
+
+		for (let [ i, value ] of Object.entries(xyzValues)) {
+			xyzValues[i] = value > 0.008856
+						   ? Math.pow(value, (1.0/3.0))
+						   : (7.787 * value) + (0.16/1.16);
+		}
+
+		let [ x, y, z ] = xyzValues;
+
+		return {
+			L: (1.16 * y) - 0.16,
+			a: 5.0 * (x - y),
+			b: 2.0 * (y - z)
+		};
+	},
+
+	xyzFromLab: (lab) => {
+		let y = (lab.L + 0.16) / 1.16;
+		let x = lab.a / 5.0 + y;
+		let z = y - lab.b / 2.0;
+
+		let xyzValues = [ x, y, z ];
+
+		for (let [ i, value ] of Object.entries(xyzValues)) {
+			xyzValues[i] = Math.pow(value, 3) > 0.008856 
+						   ? Math.pow(value, 3) 
+						   : (value - 0.16/1.16) / 7.787;
+		}
+
+		return {
+			x: xyzValues[0] * 0.95047,
+			y: xyzValues[1] * 1.00000,
+			z: xyzValues[2] * 1.08883,
 		};
 	}
 };
