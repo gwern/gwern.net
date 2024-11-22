@@ -5720,7 +5720,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: initial;
 }
 
-#image-focus-overlay img {
+#image-focus-overlay .image-in-focus {
     margin: auto;
     position: absolute;
     top: 0;
@@ -5730,10 +5730,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     overflow: hidden;
     width: auto;
     height: auto;
+    max-height: unset;
     background-color: var(--SA-image-focus-image-background-color);
 }
 
-#image-focus-overlay img.loading {
+#image-focus-overlay .image-in-focus.loading {
     box-shadow: 0 0 0 1px var(--SA-image-focus-overlay-image-caption-separator-color) inset;
     background-color: transparent;
 }
@@ -5759,7 +5760,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-height: 20vh;
     animation: fa-spin 2s infinite linear;
 }
-#image-focus-overlay img.loading + .loading-spinner {
+#image-focus-overlay .image-in-focus.loading + .loading-spinner {
     visibility: visible;
 }
 

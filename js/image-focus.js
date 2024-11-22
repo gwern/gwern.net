@@ -309,12 +309,19 @@ ImageFocus = {
 			revealElement(ImageFocus.currentlyFocusedImage);
 
 		//  Create the focused version of the image.
-		ImageFocus.imageInFocus = newElement("IMG", {
-			src: ImageFocus.focusedImgSrcForImage(imageToFocus),
-			loading: "eager",
-			decoding: "sync",
-			style: ("filter: " + imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages)
-		});
+
+		let imageURL = URLFromString(ImageFocus.focusedImgSrcForImage(imageToFocus));
+		if (imageURL.pathname.endsWith(".pdf")) {
+			ImageFocus.imageInFocus = elementFromHTML(Content.objectHTMLForURL(imageURL));		
+		} else {
+			ImageFocus.imageInFocus = newElement("IMG", {
+				src: ImageFocus.focusedImgSrcForImage(imageToFocus),
+				loading: "eager",
+				decoding: "sync",
+				style: ("filter: " + imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages)
+			});
+		}
+		ImageFocus.imageInFocus.classList.add("image-in-focus");
 
 		//  Add the image to the overlay.
 		ImageFocus.overlay.insertBefore(ImageFocus.imageInFocus, ImageFocus.overlay.querySelector(".loading-spinner"));
@@ -373,8 +380,8 @@ ImageFocus = {
 			}
 
 			//	If the image hasn’t loaded yet, these will both be 0.
-			imageWidth = ImageFocus.imageInFocus.naturalWidth;
-			imageHeight = ImageFocus.imageInFocus.naturalHeight;
+			imageWidth = ImageFocus.imageInFocus.naturalWidth ?? 0;
+			imageHeight = ImageFocus.imageInFocus.naturalHeight ?? 0;
 
 			/*	If we don’t have the image’s actual dimensions yet (because we
 				are still waiting for it to load), we nevertheless try to size
@@ -404,6 +411,9 @@ ImageFocus = {
 		//	Set dimensions via CSS.
 		ImageFocus.imageInFocus.style.width = Math.round(imageWidth * shrinkRatio) + "px";
 		ImageFocus.imageInFocus.style.height = Math.round(imageHeight * shrinkRatio) + "px";
+		ImageFocus.imageInFocus.style.aspectRatio = "" + Math.round(imageWidth * shrinkRatio) 
+													   + " / " 
+													   + Math.round(imageHeight * shrinkRatio);
 
 		//  Remove modifications to position.
 		ImageFocus.imageInFocus.style.left = "";
