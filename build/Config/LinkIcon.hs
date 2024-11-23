@@ -419,7 +419,7 @@ linkIconRulesQuad u
  | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black text background
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
- | u' u "a16z" = ("a16z", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z; color: orange; TODO: white-on-orange text background; may need to reword the logo to 'az16' maybe?
+ | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1174,8 +1174,8 @@ linkIconTestUnitsText =
          , ("https://www.worksinprogress.news/p/cheap-ornament-and-status-games#%C2%A7did-rich-people-actually-lead-the-flight-from-premodernist-styles", "WiP", "text,tri,mono", "")
          , ("https://books.worksinprogress.co/book/maintenance-of-everything/communities-of-practice/the-soul-of-maintaining-a-new-machine/1", "WiP", "text,tri,mono", "")
          , ("http://messybeast.com/cats-meat-man.htm", "🐾", "text", "#fafa02")
-         , ("https://a16z.com/author/scott-kupor/", "a16z", "text,quad,sans", "#ed8c00")
-         , ("https://a16z.com/politics-and-the-future/", "a16z", "text,quad,sans", "#ed8c00")
+         , ("https://a16z.com/author/scott-kupor/", "az16", "text,quad,sans", "#ed8c00")
+         , ("https://a16z.com/politics-and-the-future/", "az16", "text,quad,sans", "#ed8c00")
          , ("https://docs.midjourney.com/docs/weird", "midjourney", "svg", "")
          , ("https://www.midjourney.com/", "midjourney", "svg", "")
         ]

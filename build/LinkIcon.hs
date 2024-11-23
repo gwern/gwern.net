@@ -93,13 +93,13 @@ linkIcon x = x
 -- be tedious to try to remember to annotate every instance with a `.icon-not`, so we check for that redundancy,
 -- and remove or skip the text link-icon.
 --
--- This doesn't apply to symbolic link-icons (eg. 'the NYT^icon^ reported today...' is probably not worth bothering trying to hide).
+-- This doesn't apply to symbolic link-icons (eg. 'the NYT^icon^ reported today...' is probably not worth bothering trying to hide). So even if the SVG filename is identical to the anchor text, we use the SVG anyway (because it is presumably stylized or different somehow from the literal text).
 removeIconDuplicate :: Inline -> Inline
 removeIconDuplicate x@(Link (_,_,kvs) text _) = let iconType = filter (\(k,v) -> k == "link-icon-type" && "text" `T.isPrefixOf` v) kvs
                                                 in if null iconType then x else
                                                      let iconText = head $ map snd $ filter (\(k,_) -> k == "link-icon") kvs
                                                          text' = inlinesToText text
-                                                     in if iconText /= text' then x else removeIcon x
+                                                     in if iconText /= text' && not (snd (head iconType) == "svg") then x else removeIcon x
 removeIconDuplicate x = x
 
 -- whether a Link has a link-icon set already; errors out if the attribute keys are set but have empty values (to help guard against that possible error)
@@ -167,7 +167,8 @@ linkIconTest :: [(T.Text,T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit, litc) ->
                          if not (all (`elem` C.linkIconTypes) (T.splitOn "," lit)) then error ("LinkIcon.linkIconTest: the type string contains unknown kinds of formatting commands. Original: " ++ show lit)
                          else
-                         linkIcon (Link nullAttr [] (url,""))
+                         (linkIcon . linkIcon . linkIcon . -- idempotent test: that it is correct even after multiple passes
+                           linkIcon) (Link nullAttr [] (url,""))
                                           /=
                                           Link ("",[], ([("link-icon",li), ("link-icon-type", lit)]++if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) [] (url,"")
                       )
