@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-20 10:56:31 gwern"
+# When:  Time-stamp: "2024-11-22 09:12:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -128,7 +128,9 @@ else
           s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
           s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
           s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
-          s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>'; s 'Cite-Author' 'cite-author'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
+          s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>';
+          s 'Cite-Author' 'cite-author'; s 'cite-author-Plural' 'cite-author-plural'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s 'Date-Range' 'date-range'; s 'Inflation-Adjusted' 'inflation-adjusted'; s 'Logotype-Latex-A' 'logotype-latex-a'; s 'Logotype-Latex-E' 'logotype-latex-e'; s 'SUbsup' 'subsup';
+          s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
           s '< a href' '<a href';

@@ -51,4 +51,4 @@ minTagAuto :: Int
 minTagAuto = 3
 
 randSeed :: Word64
-randSeed = 22
+randSeed = 23

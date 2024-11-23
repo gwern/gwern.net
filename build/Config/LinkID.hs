@@ -2874,4 +2874,5 @@ linkIDOverrides =
        , ("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359000","gwern-2024-diminishingreturns"), ("https://qchu.substack.com/p/core-dump","gwern-2024-semanticderealization"), ("https://www.lesswrong.com/posts/Nq2BtFidsnhfLuNAx/announcing-turntrout-com-my-new-digital-home#vJAsuKGLMmuWCb45h", "gwern-2024-turntroutcritique")
       ,("https://turntrout.com/design","turntrout-2024-sitedesign")
       ,("https://arxiv.org/abs/2411.10109","park-et-al-2024-1"),("https://arxiv.org/abs/2404.00018","park-et-al-2024-2")
+      , ("https://www.noemamag.com/are-we-accidentally-building-a-planetary-brain/","moynihan-2024-1"),("https://www.bbc.com/future/article/20240201-a-us-engineer-had-a-shocking-plan-to-improve-the-climate-burn-all-coal-on-earth","moynihan-2024-2")
       ]

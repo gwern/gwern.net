@@ -532,6 +532,11 @@ canonicals = M.fromList
   , ("Eco J. de Geus", "Eco J. C. de Geus")
   , ("Eco C. de Geus", "Eco J. C. de Geus")
   , ("Eco J C de Geus", "Eco J. C. de Geus")
+  , ("Carolina Medina Gomez", "Carolina Medina-Gomez")
+  , ("Brenda Penninx", "Brenda W. J. H. Penninx")
+  , ("Anne Justice", "Anne E. Justice")
+  , ("Raymond M. Smullyan", "Raymond Smullyan")
+  , ("Karén Simonyan", "Karen Simonyan")
   ]
 
 -- tests: unique
@@ -1002,9 +1007,21 @@ authorLinkDB = M.fromList $
     , ("Janus", "https://cyborgism.wiki/hypha/janus")
     , ("Helena Schmidt", "https://forschung.medunigraz.at/fodok/suchen.person_uebersicht?sprache_in=de&menue_id_in=101&id_in=90775539")
     , ("Elisabeth Widen", "https://projects.au.dk/nordic-embl-partnership/show-news/artikel/elisabeth-widen-group-leader-fimm")
-    , ("Eli Ayumi Stahl", "https://scholar.google.com/citations?user=EP728cwAAAAJ&hl=en&oi=ao")
+    , ("Eli Ayumi Stahl", "https://scholar.google.com/citations?user=EP728cwAAAAJ")
     , ("Eco J. C. de Geus", "https://loop.frontiersin.org/people/163383/bio")
     , ("Charles Kooperberg", "https://www.fredhutch.org/en/faculty-lab-directory/kooperberg-charles.html")
+    , ("Carolina Medina-Gomez", "https://www.erasmusmc.nl/en/research/researchers/medina-gomez-carolina#9cd7e534-984d-4144-80cd-ff74cf8d7e98")
+    , ("Brenda W. J. H. Penninx", "https://en.wikipedia.org/wiki/Brenda_Penninx")
+    , ("Anne E. Justice", "https://www.geisinger.edu/gchs/research/about-gchs-research/find-an-investigator/2018/04/04/13/27/anne-justice")
+    , ("Sven Oskarsson", "https://www.uu.se/en/contact-and-organisation/staff?query=N96-2049")
+    , ("Sam Greydanus", "https://greydanus.github.io/about_me/")
+    , ("Julian Schrittwieser", "https://www.furidamu.org/")
+    , ("Stacy Steinberg", "https://scholar.google.com/citations?user=ocNCQbkAAAAJ&hl=en&oi=ao")
+    , ("Sameer Singh", "https://scholar.google.com/citations?user=-hGZC54AAAAJ&hl=en&oi=ao")
+    , ("Ronald de Vlaming", "https://www.devlaming.eu/")
+    , ("Preetum Nakkiran", "https://preetum.nakkiran.org/")
+    , ("Karen Simonyan", "https://scholar.google.com/citations?user=L7lMQkQAAAAJ&hl=en")
+    , ("Lucas Baker", "https://stanfordirl.com/lucas-baker-bs11")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1621,7 +1638,7 @@ authorWpLinkDB =
     ,"Kaiming He", "Kaiping Zheng", "Kamal Gupta", "Kameshwar Prasad", "Kang Zhang"
     ,"Kang Zhao", "Kara Swisher", "Karan Goel", "Karanjeet Singh"
     ,"Karen A. Cerulo", "Karen C. Johnson", "Karen Carr", "Karen F. Berman", "Karen Hao"
-    ,"Karen Horney", "Karen L. Mohlke", "Karen Oegema", "Karen Simonyan", "Karestan C. Koenen"
+    ,"Karen Horney", "Karen L. Mohlke", "Karen Oegema", "Karestan C. Koenen"
     ,"Karestan Koenen", "Kari Stefansson", "Karim R. Lakhani", "Karin Broberg", "Karin Strauss"
     ,"Karl Friston", "Karl J. Friston", "Karl J. Holzinger", "Karl Pearson", "Karl Popper"
     ,"Karl Zilles", "Karla Miller", "Karsten M\252ller", "Karthik Muralidharan", "Karthik Raman"
@@ -1703,7 +1720,7 @@ authorWpLinkDB =
     ,"Louise Slade", "Louise Wilson", "Lowell Wood", "Lu Cheng", "Lu Hou"
     ,"Lu Sheng", "Lu Xie", "Lu Xu", "Lu Xun", "Lu Yu"
     ,"Lubomir Feldek", "Luca Biggio", "Luca Cardelli", "Luca Cecchetti", "Luca Maria Gambardella"
-    ,"Lucas Baker", "Lucas Chancel", "Luciano Floridi", "Lucy Blake", "Lucy Cooke"
+    , "Lucas Chancel", "Luciano Floridi", "Lucy Blake", "Lucy Cooke"
     ,"Lucy Harrison", "Lucy Jenkins", "Lucy van Dorp", "Ludger Woessmann", "Ludovic Auger"
     ,"Ludwig Schmidt", "Luis Ceze", "Luis Guzman", "Luis Villa", "Luis W. Alvarez"
     ,"Luke Bates", "Luke Hunter", "Luke Miller", "Luke O\8217Connor"
@@ -2240,4 +2257,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan"]
