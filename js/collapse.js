@@ -368,8 +368,22 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					&& collapseAbstract.firstElementChild?.tagName == "BLOCKQUOTE")
 					collapseAbstract.classList.add("abstract");
 			} else {
-				//	Mark those collapse blocks that have no abstracts.
-				collapseWrapper.classList.add("no-abstract");
+				if (collapseWrapper.classList.contains("collapse-inline")) {
+					/*	Add default abstract (just an ellipsis) to inline
+						collapses that have no abstract.
+					 */
+					collapseWrapper.insertBefore(collapseAbstract = newElement("span", {
+						class: "abstract-collapse-only"
+					}, {
+						innerHTML: " …"
+					}), collapseWrapper.firstChild);
+
+					//	Mark with a special class.
+					collapseWrapper.classList.add("collapse-inline-special");
+				} else {
+					//	Mark those collapse blocks that have no abstracts.
+					collapseWrapper.classList.add("no-abstract");
+				}
 			}
 
 			//	Designate “bare content” collapse blocks.
@@ -413,14 +427,17 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		if (collapseWrapper.classList.contains("collapse-inline")) {
 			//	Additional wrapper for inline collapses.
 			let collapseContentOuterWrapper = wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
-
+			
 			//	Button at start.
-			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }), collapseContentWrapper);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }),
+													 collapseContentOuterWrapper.firstChild);
 
 			//	Button at end.
-			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: false }), null);
+			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: false }),
+													 null);
 		} else {
-			collapseWrapper.insertBefore(newDisclosureButton({ block: true }), collapseContentWrapper);
+			collapseWrapper.insertBefore(newDisclosureButton({ block: true }),
+										 collapseContentWrapper);
 		}
 
 		//	Mark as expanded, if need be.
