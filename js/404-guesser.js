@@ -46,7 +46,7 @@
  * all internal URLs up-to-date and have an extremely large manually-curated suite of nginx redirect rules
  * to catch every possible 404 error (I would estimate <10 legitimate 404s per day);
  * the many ill-behaved bots/attackers/scrapers redirecting to or loading the 404 page usually
- * won't run the JS to download it (and if they do, downloading the sitemap.xml helps waste their bandwidth
+ * won’t run the JS to download it (and if they do, downloading the sitemap.xml helps waste their bandwidth
  * and functions as a self-DoS); and a legitimate user should be willing to spend 0.5MB
  * and a second or three to get a useful list of URLs to try which will likely be many seconds faster than
  * any alternative way of fixing their 404, like manually running a search in Google (≫0.5MB).
@@ -55,7 +55,7 @@
  * This seems like an unimportant edge-case: precisely because legitimate 404s are so rare,
  * it is unlikely a client will have hit 404 #1, cached, then sometime later hit 404 #2,
  * only where #2 is a brandnew file not in the cached sitemap.xml.
- * Indeed, >95% of Gwern.net 404s are to 'old' URLs, created years or decades before.
+ * Indeed, >95% of Gwern.net 404s are to ‘old’ URLs, created years or decades before.
  * (Which makes some sense: new URLs arrive slowly on Gwern.net, and tend to be harder to typo than
  * the old URLs were, and there is much more traffic to old URLs than new URLs.)
  *
@@ -73,8 +73,7 @@
  * It should work in all modern browsers, but may not function in older ones.
  */
 
-const baseDomain = 'https://gwern.net';
-const sitemapURL = baseDomain + '/sitemap.xml';
+const sitemapURL = location.origin + "/sitemap.xml";
 
 // Function to fetch the sitemap
 async function fetchSitemap() {
@@ -83,7 +82,7 @@ async function fetchSitemap() {
         const text = await response.text();
         return text;
     } catch (error) {
-        console.error('Error fetching sitemap:', error);
+        console.error("Error fetching sitemap:", error);
         return null;
     }
 }
@@ -135,7 +134,7 @@ function boundedLevenshteinDistance(a, b, maxDistance) {
 // Function to find similar URLs
 function findSimilarUrls(urls, targetUrl, n = 10,
                          maxDistance = 8) { // max distance chosen heuristically
-    const targetPath = new URL(targetUrl, baseDomain).pathname;
+    const targetPath = new URL(targetUrl, location.origin).pathname;
 
     // Quick filter based on length difference
     const potentialMatches = urls.filter(url =>
@@ -158,27 +157,21 @@ function findSimilarUrls(urls, targetUrl, n = 10,
         return true;
     }).slice(0, n);
 
-    return uniqueSimilarUrls.map(item => baseDomain + item.url);
+    return uniqueSimilarUrls.map(item => location.origin + item.url);
 }
 
 // Function to inject suggestions into the page
 function injectSuggestions(current, suggestions) {
-    const suggestionsHtml = suggestions.map(url => `<li><a class="link-live" href="${url}"><code>${url}</code></a></li>`).join('');
-    const suggestionsElement = document.createElement('section');
-    suggestionsElement.className = 'level1 block first-block';
-    suggestionsElement.innerHTML = `
+    let suggestionsHtml = suggestions.length > 0
+    					  ? suggestions.map(url => `<li><a class="link-live" href="${url}"><code>${url}</code></a></li>`).join("")
+    					  : "<li><strong>None found.</strong></li>";
+    let suggestionsElement = elementFromHTML(`<section class="level1">
         <h1 id="guessed-urls">Guessed URLs</h1>
         <p>Nearest URLs to your current one (<code>${current}</code>):</p>
-        <ul class="list-level-1">${suggestionsHtml}</ul>
-    `;
+        <ul>${suggestionsHtml}</ul>
+    </section>`);
 
-    const otherOptionsElement = document.getElementById('other-options');
-    if (otherOptionsElement) {
-        otherOptionsElement.parentNode.insertBefore(suggestionsElement, otherOptionsElement);
-    } else {
-        console.warn("Couldn't find the 'Other Options' section. Appending to the end of the body.");
-        document.body.appendChild(suggestionsElement);
-    }
+	document.querySelector("#markdownBody").insertBefore(suggestionsElement, document.querySelector("#other-options"));
 }
 
 // Main function
@@ -186,8 +179,8 @@ async function suggest404Alternatives() {
     const currentPath = window.location.pathname;
     // if we redirected to a 404 rather than received it as an error, then the current URL is useless
     // and can’t be guessed, so we skip the whole business, saving the bandwidth & injection:
-    if (currentPath.endsWith('/404')) {
-        console.log('Current page is a 404 page; unable to guess intended URL. Skipping suggestions.');
+    if (currentPath.endsWith("/404")) {
+        console.log("Current page is a 404 page; unable to guess intended URL. Skipping suggestions.");
         return;
     }
 
@@ -200,4 +193,4 @@ async function suggest404Alternatives() {
 }
 
 // Run the script when the page loads
-window.addEventListener('load', suggest404Alternatives);
+window.addEventListener("load", suggest404Alternatives);

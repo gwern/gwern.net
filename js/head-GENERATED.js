@@ -3133,6 +3133,8 @@ GW.layout = {
 		[ "body.page-index section",					 7, false ],
 		[ "body.page-index section li p + p",			 0, false ],
 
+		[ "body.page-404 section:first-of-type",		30, false ],
+
 		[ "section#see-also.first-block", 				 4, false ],
 
 		[ ".float.first-block",			 2, false ],
