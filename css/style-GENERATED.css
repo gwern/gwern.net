@@ -4687,9 +4687,9 @@ ol.link-bibliography-list-compact > li::before {
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
 
-/*=-------------=*/
+/*=------=*/
 /*= /404 =*/
-/*=-------------=*/
+/*=-------=*/
 
 body.page-404 figure .figure-inner-wrapper {
     padding: 0 1em;
@@ -4699,9 +4699,9 @@ body.page-404 figure figcaption {
     margin-top: 0.5em;
 }
 
-/*=----------------=*/
+/*=--------------=*/
 /*= /review/book =*/
-/*=----------------=*/
+/*=--------------=*/
 
 #markdownBody .book-review-meta {
     margin: -0.5em 0 1.5em 0;
@@ -4730,9 +4730,9 @@ body.page-404 figure figcaption {
     text-indent: -1.5em;
 }
 
-/*=---------------=*/
+/*=--------------=*/
 /*= /review/mead =*/
-/*=---------------=*/
+/*=--------------=*/
 
 /*  This is for the pictures of mead bottles next to the reviews.
     */
@@ -4753,9 +4753,9 @@ body.page-hafu .table-wrapper#hafu-list-table td:last-of-type {
     width: 50%;
 }
 
-/*=--------------=*/
+/*=-------------=*/
 /*= /dnm-arrest =*/
-/*=--------------=*/
+/*=-------------=*/
 
 body.page-dnm-arrest .table-wrapper#data-table td:nth-of-type(6),
 body.page-dnm-arrest .table-wrapper#data-table td:nth-of-type(12),
