@@ -2482,18 +2482,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5589,7 +5589,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5770,7 +5770,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6218,7 +6218,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7171,7 +7171,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#question');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7381,7 +7381,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7770,7 +7770,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1732320879#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1732408337#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7849,7 +7849,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732320879#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1732408337#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -8052,12 +8052,20 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /* POP-FRAME INDICATORS */
 /************************/
 
-/* If a link has an automatic or custom link annotation (eg. a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
-/* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
-/* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
-/* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
-.has-content.has-indicator-hook {
-    margin: 0 0.08em;
+/*	If a link has an automatic or custom link annotation (eg. a paper abstract, 
+	or excerpts), subtly mark it with a dog-ear/tag-like icon, so users don’t 
+	get frustrated hovering over links which have no useful annotation (which 
+	is an unfortunate number).
+
+	At some point, if enough links get annotated & annotation is the default, 
+	we might flip this to be a warning for non-annotated links.
+
+	We exclude it on the homepage because every linked page has a 
+	description/abstract, and the triangles everywhere add a lot of visual 
+	clutter.
+ */
+.markdownBody a.has-indicator-hook {
+    margin-left: 0.1em;
     position: relative;
     z-index: 1;
 
@@ -8072,15 +8080,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
  */
 }
 
-.has-content .indicator-hook {
+.markdownBody a.has-indicator-hook .indicator-hook {
     position: relative;
     padding-left: 0.3em;
 }
-.has-content:not(.has-indicator-hook) .indicator-hook {
+.markdownBody a:not(.has-indicator-hook) .indicator-hook {
     display: none;
 }
 
-.has-content .indicator-hook::before {
+.markdownBody a.has-indicator-hook .indicator-hook::before {
     content: " ";
     position: absolute;
     left: 0;
@@ -8111,17 +8119,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
  */
 .markdownBody a.has-annotation,
 .markdownBody a.has-annotation-partial {
-    background-image: linear-gradient(to right, var(--link-underline-gradient-line-color) 50%, var(--link-underline-background-color) 50%);
+    background-image: linear-gradient(to right, 
+    								  var(--link-underline-gradient-line-color) 50%, 
+    								  var(--link-underline-background-color) 50%);
     background-size: 2px 1px;
 }
 .markdownBody a.has-annotation.decorate-not {
     background-image: none;
-}
-
-/*  Reversed link colors.
- */
-.markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
-    filter: invert(1);
 }
 
 /**************/
@@ -8171,6 +8175,10 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /*= COMMON STYLES =*/
 /*=================*/
 
+.markdownBody a.has-icon {
+	margin-right: 0.1em;
+}
+
 a[data-link-icon][data-link-icon-color]:hover {
     --link-underline-gradient-line-color: var(--link-icon-color-hover);
 }
@@ -8178,51 +8186,64 @@ a[data-link-icon][data-link-icon-color]:hover {
 /*******************/
 /*  Graphical icons.
     */
-a[data-link-icon-type='svg'] .link-icon-hook::after {
+a[data-link-icon-type='svg'] {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.25em;
-
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.55;
+}
+a[data-link-icon-type='svg'] .link-icon-hook::after {
     content: "";
-    position: static;
+    position: relative;
+    bottom: var(--link-icon-offset-y);
     padding: 0 var(--link-icon-size) 0 0;
     margin: 0 0 0 var(--link-icon-offset-x);
     background-image: var(--link-icon-url);
     background-size: var(--link-icon-size);
     background-position-x: center;
-    background-position-y: var(--link-icon-offset-y);
+    background-position-y: 1ex;
     background-repeat: no-repeat;
-    opacity: 0.55;
+    opacity: var(--link-icon-opacity);
 }
 a[data-link-icon-type='svg']:hover .link-icon-hook::after {
-    opacity: 0.3;
+    opacity: calc(var(--link-icon-opacity) * 0.55);
 }
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }
 
+/*  Reversed link colors.
+ */
+.markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
+    filter: invert(1);
+}
+
 /*****************/
 /*  Textual icons.
     */
-a[data-link-icon-type*='text'] .link-icon-hook::after {
+a[data-link-icon-type*='text'] {
     --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.125em;
+    --link-icon-offset-x: 0.12em;
     --link-icon-offset-y: 0.25em;
-    --link-icon-font-serif: Noto Emoji, Quivira, var(--GW-serif-font-stack);
-    --link-icon-font-sans: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
-    --link-icon-font-mono: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
-
+    --link-icon-font: Noto Emoji, Quivira, var(--GW-serif-font-stack);
+    --link-icon-font-weight: 600;
+    --link-icon-font-style: normal;
+    --link-icon-text-decoration: none;
+    --link-icon-opacity: 0.83;
+}
+a[data-link-icon-type*='text'] .link-icon-hook::after {
     content: var(--link-icon);
     font-size: var(--link-icon-size);
-    font-weight: 600;
-    font-style: normal;
-    font-family: var(--link-icon-font-serif);
+    font-weight: var(--link-icon-font-weight);
+    font-style: var(--link-icon-font-style);
+    font-family: var(--link-icon-font);
+    text-decoration: var(--link-icon-text-decoration);
     margin: 0 0 0 var(--link-icon-offset-x);
     vertical-align: baseline;
     position: relative;
     bottom: var(--link-icon-offset-y);
-    opacity: 0.83;
+    opacity: var(--link-icon-opacity);
     padding: 0;
     background-image: none;
     background-size: unset;
@@ -8230,32 +8251,35 @@ a[data-link-icon-type*='text'] .link-icon-hook::after {
     overflow-wrap: normal;
 }
 
+a[data-link-icon-type*='sans'] {
+    --link-icon-font: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
+}
+
+a[data-link-icon-type*='mono'] {
+    --link-icon-opacity: 0.7;
+    --link-icon-font: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
+}
+
+a[data-link-icon-type*='bold'] {
+    --link-icon-font-weight: 700;
+}
+
+a[data-link-icon-type*='italic'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-font-style: italic;
+}
+
+a[data-link-icon-type*='overline'] {
+    --link-icon-offset-y: 0.20em;
+    --link-icon-text-decoration: overline;
+}
+
+/*	Colored textual link icons.
+ */
 a[data-link-icon-type*='text'][data-link-icon-color]:hover .link-icon-hook::after {
     color: var(--link-icon-color-hover, currentColor);
     opacity: 1.0;
-}
-
-a[data-link-icon-type*='sans'] .link-icon-hook::after {
-    font-family: var(--link-icon-font-sans);
-}
-a[data-link-icon-type*='mono'] .link-icon-hook::after {
-    font-family: var(--link-icon-font-mono);
-    opacity: 0.7;
-}
-a[data-link-icon-type*='bold'] .link-icon-hook::after {
-    font-weight: bold;
-    opacity: 0.83;
-}
-a[data-link-icon-type*='italic'] .link-icon-hook::after {
-    font-style: italic;
-
-    --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.10em;
-}
-a[data-link-icon-type*='overline'] .link-icon-hook::after {
-    text-decoration: overline;
-
-    --link-icon-offset-y: 0.2em;
 }
 
 /*===========================================*/
@@ -8266,57 +8290,44 @@ a[data-link-icon-type*='overline'] .link-icon-hook::after {
 /*= Within-page (anchor) links =*/
 /*=----------------------------=*/
 
-a[data-link-icon='¶'] .link-icon-hook::after {
+a[data-link-icon='¶'] {
     --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.45em;
-    --link-icon-offset-x: 0.2em;
-
-    font-weight: normal;
-    opacity: 0.7;
+    --link-icon-offset-x: 0.25em;
+    --link-icon-offset-y: 0.35em;
+    --link-icon-font-weight: 400;
+    --link-icon-opacity: 0.7;
 }
 
-a[data-link-icon='arrow-up'] .link-icon-hook::after,
-a[data-link-icon='arrow-down'] .link-icon-hook::after {
+a[data-link-icon='arrow-up'],
+a[data-link-icon='arrow-down'] {
     --link-icon-size: 0.65em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.8;
-}
-a[data-link-icon='arrow-up']:hover .link-icon-hook::after,
-a[data-link-icon='arrow-down']:hover .link-icon-hook::after {
-    opacity: 0.4;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.75;
 }
 
 /*=------------------------------=*/
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
-a[data-link-icon='𝔊'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.15em;
+a[data-link-icon='𝔊'] {
+    --link-icon-size: 0.90em;
     --link-icon-offset-x: 0.12em;
-
-    opacity: 0.75;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.75;
 }
 
-/*=----------------------------------------------------=*/
+/*=------------------------------------------=*/
 /*= Cross-directory links on tag index pages =*/
-/*=----------------------------------------------------=*/
+/*=------------------------------------------=*/
 
-a[data-link-icon='arrow-up-left'] .link-icon-hook::after,
-a[data-link-icon='arrow-down-right'] .link-icon-hook::after,
-a[data-link-icon='arrow-right'] .link-icon-hook::after {
+a[data-link-icon='arrow-up-left'],
+a[data-link-icon='arrow-down-right'],
+a[data-link-icon='arrow-right'] {
     --link-icon-size: 0.65em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.3em;
-
-    opacity: 0.8;
-}
-a[data-link-icon='arrow-up-left']:hover .link-icon-hook::after,
-a[data-link-icon='arrow-down-right']:hover .link-icon-hook::after,
-a[data-link-icon='arrow-right']:hover .link-icon-hook::after {
-    opacity: 0.4;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.8;
 }
 
 /*=-------------------------------=*/
@@ -8327,233 +8338,243 @@ a[data-link-icon='arrow-right']:hover .link-icon-hook::after {
 /*  Logotype icons.
     */
 
-a[data-link-icon='𝛘'] .link-icon-hook::after { /* Arxiv */
-    --link-icon-size: 0.7em;
+a[data-link-icon='𝛘'] { /* Arxiv */
+    --link-icon-size: 0.70em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.6em;
-
-    opacity: 0.7;
+    --link-icon-offset-y: 0.60em;
+    --link-icon-opacity: 0.7;
 }
 
-a[data-link-icon='❐'] .link-icon-hook::after { /* Booru */
-    --link-icon-size: 0.8em;
+a[data-link-icon='❐'] { /* Booru */
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='⧖'] .link-icon-hook::after { /* Longecity */
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.70;
+a[data-link-icon='⧖'] { /* Longecity */
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.10em;
+    --link-icon-opacity: 0.70;
 }
 
-a[data-link-icon='♡'] .link-icon-hook::after { /* Fandom/Wikia */
+a[data-link-icon='♡'] { /* Fandom/Wikia */
     --link-icon-offset-x: 0.05em;
-
-    opacity: 1.0;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-opacity: 1.0;
+}
+a[data-link-icon='♡'] .link-icon-hook::after {
     text-shadow: 0 0 0 currentcolor;
 }
 
-a[data-link-icon='MS'] .link-icon-hook::after {
+a[data-link-icon='MS'] {
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.35em;
 }
 
-a[data-link-icon='n'] .link-icon-hook::after { /* Nature */
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.3em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.85;
+a[data-link-icon='n'] { /* Nature */
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.85;
 }
 
-a[data-link-icon='s'] .link-icon-hook::after {
-    --link-icon-size: 1em;
+a[data-link-icon='s'] {
+    --link-icon-size: 1.00em;
 }
 
-a[data-link-icon='Ss'] .link-icon-hook::after {
+a[data-link-icon='Ss'] {
     --link-icon-offset-x: 0.15em;
 }
 
-a[data-link-icon='Vox'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.1em; /* shift left a bit */
+a[data-link-icon='Vox'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.10em;
 }
 
-a[data-link-icon='ψ'] .link-icon-hook::after {
-    --link-icon-offset-y: 0.4em;
-
-    opacity: 0.75;
+a[data-link-icon='ψ'] {
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.75;
 }
 
-a[data-link-icon='ℵ'] .link-icon-hook::after { /* Unsong ALEF */
-    --link-icon-size: 0.8em;
-
-    font-weight: normal;
-}
-
-a[data-link-icon='▅▇▃'] .link-icon-hook::after {
-    --link-icon-size: 0.5em;
-    --link-icon-offset-x: 0.25em;
-
-    margin-right: 0.15em;
-    opacity: 0.7;
-}
-
-a[data-link-icon='▲'] .link-icon-hook::after { /* Melting Asphalt (Kevin Simler) */
-    --link-icon-offset-x: 0;
-    --link-icon-offset-y: 0.25em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='𝔐'] .link-icon-hook::after {
-    --link-icon-size: 1em;
-    opacity: 0.95;
-}
-
-a[data-link-icon='▽'] .link-icon-hook::after { /* The Verge */
-    --link-icon-size: 0.9em;
-}
-
-a[data-link-icon='∇'] .link-icon-hook::after { /* The Gradient.pub */
+a[data-link-icon='ℵ'] { /* Unsong ALEF */
     --link-icon-size: 0.85em;
-
-    opacity: 0.7;
 }
 
-a[data-link-icon='✉'] .link-icon-hook::after { /* ENVELOPE / letter / \9993 */
-    --link-icon-size: 1.1em;
+a[data-link-icon='▅▇▃'] {
+    --link-icon-size: 0.50em;
+    --link-icon-offset-x: 0.25em;
+    --link-icon-opacity: 0.7;
+}
+a[data-link-icon='▅▇▃'] .link-icon-hook::after {
+    margin-right: 0.15em;
+}
+
+a[data-link-icon='▲'] { /* Melting Asphalt (Kevin Simler) */
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='▽'] { /* The Verge */
+    --link-icon-size: 0.90em;
+	--link-icon-offset-x: 0.10em;
+	--link-icon-offset-y: 0.15em;
+}
+
+a[data-link-icon='∇'] { /* The Gradient.pub */
+    --link-icon-size: 0.85em;
+    --link-icon-opacity: 0.7;
+}
+
+a[data-link-icon='✉'] { /* ENVELOPE / letter / \9993 */
+    --link-icon-size: 1.10em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.05em;
-
-    font-weight: bold;
-    opacity: 0.75;
+    --link-icon-opacity: 0.75;
+    --link-icon-font-weight: 700;
 }
 
-a[data-link-icon='M𝐑'] .link-icon-hook::after {
-    opacity: 0.75;
+a[data-link-icon='M𝐑'] {
+    --link-icon-opacity: 0.75;
 }
 
-a[data-link-icon='𝐁'] .link-icon-hook::after {
-    opacity: 0.77;
+a[data-link-icon='𝐁'] {
+    --link-icon-opacity: 0.77;
 }
 
-a[data-link-icon='𝐌'] .link-icon-hook::after {
-    opacity: 0.7;
+a[data-link-icon='𝐌'] {
+    --link-icon-opacity: 0.7;
 }
 
-a[data-link-icon='𝛌'] .link-icon-hook::after {
-    --link-icon-size: 1em;
-
-    opacity: 0.6;
+a[data-link-icon='𝛌'] {
+    --link-icon-size: 1.00em;
+    --link-icon-opacity: 0.6;
 }
 
-a[data-link-icon='𝛘'] .link-icon-hook::after {
-    --link-icon-offset-y: 0.4em;
-
-    opacity: 0.75;
+a[data-link-icon='𝛘'] {
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.75;
 }
 
-a[data-link-icon='෴'] .link-icon-hook::after { /* Moustache / antilop.cc */
-    --link-icon-offset-y: 0.5em;
+a[data-link-icon='෴'] { /* Moustache / antilop.cc */
+    --link-icon-offset-y: 0.50em;
 }
 
-a[data-link-icon='🤖'] .link-icon-hook::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
-    --link-icon-size: 0.8em;
+a[data-link-icon='🤖'] { /* ROBOT FACE U+1F916 beepb00p.xyz */
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.3em;
-
-    opacity: 0.75;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.75;
 }
 
-a[data-link-icon='GPP'] .link-icon-hook::after { /* Game Programming Patterns: shrink & elevate */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.6em;
+a[data-link-icon='GPP'] { /* Game Programming Patterns */
+    --link-icon-size: 0.60em;
+    --link-icon-offset-y: 0.60em;
 }
 
-a[data-link-icon='⛨'] .link-icon-hook::after { /* Cambridge */
-    --link-icon-size: 0.9em;
+a[data-link-icon='⛨'] { /* Cambridge */
+    --link-icon-size: 1.00em;
     --link-icon-offset-x: 0.10em; /* NOTE: this may be too much for Chrome, but the FF needs it */
-    --link-icon-offset-y: 0.10em;
-
-    font-weight: normal;
+    --link-icon-offset-y: 0.05em;
+    --link-icon-font-weight: 400;
 }
 
-a[data-link-icon='𝒩𝒴'] .link-icon-hook::after { /* nymag.com New York Magazine */
-    opacity: 0.7;
+a[data-link-icon='𝒩𝒴'] { /* nymag.com New York Magazine */
+    --link-icon-opacity: 0.7;
 }
 
-a[data-link-icon='𝕳'] .link-icon-hook::after { /* NZ Herald */
-    --link-icon-offset-y: 0.4em;
-
-    opacity: 0.7;
+a[data-link-icon='𝕳'] { /* NZ Herald */
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.7;
 }
 
-a[data-link-icon='𝔐'] .link-icon-hook::after { /* Daily Mail */
+a[data-link-icon='𝔐'] { /* Daily Mail */
     --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.5em;
 }
 
-a[data-link-icon='𝛌'] .link-icon-hook::after { /* Haskell */
-    --link-icon-size: 0.8em;
-}
-
-a[data-link-icon='𝓝'] .link-icon-hook::after { /* Nintil */
+a[data-link-icon='𝛌'] { /* Haskell */
     --link-icon-size: 0.85em;
-    opacity: 0.9;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.20em;
 }
 
-a[data-link-icon='𝓥'] .link-icon-hook::after { /* Variety */
+a[data-link-icon='𝓝'] { /* Nintil */
     --link-icon-size: 0.85em;
-    opacity: 0.9;
+    --link-icon-opacity: 0.9;
 }
 
-a[data-link-icon='ρ'] .link-icon-hook::after { /* Project Rho */
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0.5em;
+a[data-link-icon='𝓥'] { /* Variety */
+    --link-icon-size: 0.85em;
+    --link-icon-opacity: 0.9;
+}
+
+a[data-link-icon='ρ'] { /* Project Rho */
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.10em;
-
-    opacity: 0.75;
+    --link-icon-offset-y: 0.50em;
+    --link-icon-opacity: 0.75;
 }
 
-a[data-link-icon='ℰ'] .link-icon-hook::after { /* Esquire */
-    opacity: 0.9;
+a[data-link-icon='ℰ'] { /* Esquire */
     --link-icon-size: 0.8em;
+    --link-icon-opacity: 0.9;
 }
 
-a[data-link-icon='𝓡 𝐒'] .link-icon-hook::after { /* Rolling Stone */
-    opacity: 0.75;
-    --link-icon-size: 0.55em;
-}
-
-a[data-link-icon='≈'] .link-icon-hook::after { /* similar-links (ALMOST EQUAL TO) */
-    --link-icon-offset-y: 0em;
-    --link-icon-size: 0.95em;
-    opacity: 0.85;
-}
-
-a[data-link-icon='♔'] .link-icon-hook::after { /* WBW / Wait But Why */
-    --link-icon-size: 1em;
-    opacity: 0.75;
-}
-
-/****************************/
-/* Triple-letter 'tri' initials: too few for quad, but too big for
-   regular font size/offset. Common with TLA orgs. */
-a[data-link-icon-type*='tri'] .link-icon-hook::after {
+a[data-link-icon='𝓡 𝐒'] { /* Rolling Stone */
     --link-icon-size: 0.65em;
-    --link-icon-offset-y: 0.4em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.90;
+    --link-icon-opacity: 0.75;
 }
 
-/****************************/
-/*  Quad-letter 'quad' square icons.
-    */
+a[data-link-icon='≈'] { /* similar-links (ALMOST EQUAL TO) */
+    --link-icon-size: 0.95em;
+    --link-icon-offset-y: 0;
+    --link-icon-opacity: 0.85;
+}
+
+a[data-link-icon='♔'] { /* WBW / Wait But Why */
+    --link-icon-size: 1em;
+    --link-icon-opacity: 0.75;
+    --link-icon-offset-y: 0.20em;
+}
+
+a[data-link-icon='☀'] { /* Low Tech Magazine */
+    --link-icon-size: 0.90em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='🖋'] { /* NovelAI */
+	--link-icon-size: 0.65em;
+	--link-icon-offset-x: 0.20em;
+	--link-icon-offset-y: 0.35em;
+}
+
+a[data-link-icon='𝕆'] { /* Outside Online */
+	--link-icon-size: 0.85em;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.15em;
+}
+
+a[data-link-icon='☯'] { /* Touhou Wiki */
+	--link-icon-size: 0.85em;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.20em;
+}
+
+/**************************************************************************/
+/*	Triple-letter ‘tri’ initials: too few for quad, but too big for regular 
+	font size/offset. Common with TLA orgs.
+ */
+a[data-link-icon-type*='tri'] {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.90;
+}
+
+/***********************************/
+/*  Quad-letter ‘quad’ square icons.
+ */
 a[data-link-icon-type*='quad'] .link-icon-hook::after {
     text-indent: 0;
     overflow-wrap: break-word;
@@ -8581,8 +8602,8 @@ a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::aft
     line-height: 0.85;
 }
 
-a[data-link-icon='VICE'] .link-icon-hook::after {
-    --link-icon-offset-x: 0.1em; /* shift left a bit */
+a[data-link-icon='VICE'] {
+    --link-icon-offset-x: 0.10em;
 }
 
 a[data-link-icon='PNAS'] .link-icon-hook::after {
@@ -8596,7 +8617,7 @@ a[data-link-icon='NBER'] .link-icon-hook::after {
     width: 1.6em;
 }
 
-a[data-link-icon='sgfp']a[data-link-icon-type*=quad][data-link-icon-type*=mono] .link-icon-hook::after {
+a[data-link-icon-type*='quad'][data-link-icon-type*='mono'][data-link-icon='sgfp'] .link-icon-hook::after {
     line-height: 0.95; /* 'g' overlaps without more line-height */
 }
 
@@ -8604,569 +8625,451 @@ a[data-link-icon='sgfp']a[data-link-icon-type*=quad][data-link-icon-type*=mono] 
 /*= Graphical per-domain link icons =*/
 /*=---------------------------------=*/
 
-a[data-link-icon='alcor'] .link-icon-hook::after {
+a[data-link-icon='alcor'] {
     --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.25em;
     --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.65;
 }
 
-a[data-link-icon='alphabet'] .link-icon-hook::after {
+a[data-link-icon='alphabet'] {
     --link-icon-size: 0.60em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.3em;
-
-    opacity: 0.6;
+    --link-icon-opacity: 0.6;
 }
 
-a[data-link-icon='amazon'] .link-icon-hook::after {
+a[data-link-icon='amazon'] {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.65;
-}
-a[data-link-icon='amazon']:hover .link-icon-hook::after {
-    opacity: 0.4;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
 }
 
-a[data-link-icon='anthropic'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.1em;
+a[data-link-icon='anthropic'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.10em;
 }
 
-a[data-link-icon='apple'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.5;
+a[data-link-icon='apple'] {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.5;
 }
 
-a[data-link-icon='arrows-pointing-inwards-to-dot'] .link-icon-hook::after { /* bl backlinks 'implosion' */
+a[data-link-icon='arrows-pointing-inwards-to-dot'] { /* bl backlinks 'implosion' */
     --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.20em;
-
-    opacity: 0.65;
+    --link-icon-opacity: 0.65;
 }
 
-a[data-link-icon='atlas-obscura'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.05em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.85;
-}
-
-a[data-link-icon='audio-waveform-lines'] .link-icon-hook::after { /* Radiolab */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.1em;
-}
-
-a[data-link-icon='bibliography'] .link-icon-hook::after { /* lb link-bibliography 'table of contents' */
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.35em;
-}
-
-a[data-link-icon='bitcoin'] .link-icon-hook::after {
-    --link-icon-size: 0.55em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='chi-dna'] .link-icon-hook::after {
-    --link-icon-size: 0.58em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.25em;
-
-    opacity: 0.85;
-}
-a[data-link-icon='chi-dna']:hover .link-icon-hook::after {
-    opacity: 0.6;
-}
-
-a[data-link-icon='chicago-tribune'] .link-icon-hook::after { /* fraktur C */
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.20em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='cochrane-collaboration'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-
-    opacity: 0.7;
-}
-
-a[data-link-icon='connected-papers'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='creative-commons'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.8;
-}
-
-a[data-link-icon='deepmind'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.7;
-}
-a[data-link-icon='deepmind']:hover .link-icon-hook::after {
-    opacity: 0.5;
-}
-
-a[data-link-icon='distillpub'] .link-icon-hook::after {
-    --link-icon-size: 0.45em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.6;
-}
-
-a[data-link-icon='dropbox'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.55;
-}
-
-a[data-link-icon='econlib'] .link-icon-hook::after { /* torch */
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.70;
-}
-
-a[data-link-icon='eleutherai'] .link-icon-hook::after {
-    --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.85;
-}
-
-a[data-link-icon='emacs'] .link-icon-hook::after {
-    opacity: 0.65;
-}
-
-a[data-link-icon='erowid'] .link-icon-hook::after {
-    --link-icon-size: 0.95em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.9;
-}
-a[data-link-icon='erowid']:hover .link-icon-hook::after {
-    opacity: 0.7;
-}
-
-a[data-link-icon='facebook'] .link-icon-hook::after {
-    --link-icon-size: 0.5em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.6;
-}
-a[data-link-icon='facebook']:hover .link-icon-hook::after {
-    opacity: 0.35;
-}
-
-a[data-link-icon='github'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='google-scholar'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.4em;
-
-    opacity: 0.60;
-}
-a[data-link-icon='google-scholar']:hover .link-icon-hook::after {
-    opacity: 0.4;
-}
-
-a[data-link-icon='hacker-news'] .link-icon-hook::after { /* HN / YC / Y Combinator */
-    --link-icon-size: 0.7em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.60;
-}
-a[data-link-icon='hacker-news']:hover .link-icon-hook::after {
-    opacity: 0.2;
-}
-
-a[data-link-icon='hoover-institution'] .link-icon-hook::after {
-    --link-icon-size: 0.5em;
-    --link-icon-offset-y: 0.0em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='internet-archive'] .link-icon-hook::after {
-    --link-icon-size: 0.55em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.3em;
-
-    opacity: 0.6;
-}
-a[data-link-icon='internet-archive']:hover .link-icon-hook::after {
-    opacity: 0.4;
-}
-
-a[data-link-icon='laion'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='magnifying-glass'] .link-icon-hook::after { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
-	--link-icon-size: 0.9em;
-	--link-icon-offset-y: 0.1em;
-	--link-icon-offset-x: 0.05em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='mega'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.50;
-}
-
-a[data-link-icon='metaculus'] .link-icon-hook::after {
-    --link-icon-size: 0.55em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.65;
-}
-a[data-link-icon='metaculus']:hover .link-icon-hook::after {
-    opacity: 0.45;
-}
-
-a[data-link-icon='midjourney'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='miri'] .link-icon-hook::after {
-    --link-icon-size: 1.05em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='nasa'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='nautilus'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='new-york-times'] .link-icon-hook::after {
-    --link-icon-size: 0.65em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.6;
-}
-a[data-link-icon='new-york-times']:hover .link-icon-hook::after {
-    opacity: 0.4;
-}
-
-a[data-link-icon='nlm-ncbi'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.9;
-}
-a[data-link-icon='nlm-ncbi']:hover .link-icon-hook::after {
-    opacity: 0.5;
-}
-
-a[data-link-icon='openai'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.25em;
-
-    opacity: 0.7;
-}
-a[data-link-icon='openai']:hover .link-icon-hook::after {
-    opacity: 0.4;
-}
-
-a[data-link-icon='open-philanthropy'] .link-icon-hook::after { /* Darken & shift left/up */
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.95;
-}
-
-a[data-link-icon='patreon'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.65;
-}
-a[data-link-icon='plos'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.10em;
-
-    opacity: 0.80;
-}
-
-a[data-link-icon='quanta'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.9;
-}
-a[data-link-icon='quanta']:hover .link-icon-hook::after {
-    opacity: 0.5;
-}
-
-a[data-link-icon='raven'] .link-icon-hook::after { /* LibGen/Sci-Hub */
-    --link-icon-size: 0.7em;
-    --link-icon-offset-x: 0.1em;
-}
-
-a[data-link-icon='reddit'] .link-icon-hook::after {
+a[data-link-icon='atlas-obscura'] {
     --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.65;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.85;
 }
 
-a[data-link-icon='scholarpedia'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.1em;
+a[data-link-icon='audio-waveform-lines'] { /* Radiolab */
+    --link-icon-size: 0.60em;
+    --link-icon-offset-y: 0.30em;
 }
 
-a[data-link-icon='springerlink'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.1em;
-
-    opacity: 0.8;
-}
-a[data-link-icon='springerlink']:hover .link-icon-hook::after {
-    opacity: 0.5;
+a[data-link-icon='bibliography'] { /* lb link-bibliography 'table of contents' */
+    --link-icon-size: 0.60em;
+    --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='stack-exchange'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.25em;
-
-    opacity: 0.55;
-}
-
-a[data-link-icon='stat-news'] .link-icon-hook::after {
-    --link-icon-size: 0.85em;
-    --link-icon-offset-y: 0em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 1;
-}
-
-a[data-link-icon='substack'] .link-icon-hook::after {
+a[data-link-icon='bitcoin'] {
     --link-icon-size: 0.55em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.55;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
 }
 
-a[data-link-icon='tensorflow'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.2em;
-    --link-icon-offset-x: 0.1em;
-
-    opacity: 0.6;
+a[data-link-icon='cbs'] {
+	--link-icon-size: 0.70em;
+	--link-icon-offset-x: 0.10em;
+	--link-icon-offset-y: 0.20em;
+	--link-icon-opacity: 0.5;
 }
 
-a[data-link-icon='tex'] .link-icon-hook::after { /* CTAN etc; TeX logotype (actually uses Source Serif) */
+a[data-link-icon='chi-dna'] {
+    --link-icon-size: 0.58em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-opacity: 0.85;
+}
+
+a[data-link-icon='chicago-tribune'] { /* fraktur C */
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='cochrane-collaboration'] {
+    --link-icon-size: 0.75em;
+    --link-icon-opacity: 0.7;
+}
+
+a[data-link-icon='connected-papers'] {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='creative-commons'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.8;
+}
+
+a[data-link-icon='deepmind'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.7;
+}
+
+a[data-link-icon='distillpub'] {
+    --link-icon-size: 0.45em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='dropbox'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.55;
+}
+
+a[data-link-icon='econlib'] { /* torch */
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='eleutherai'] {
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.85;
+}
+
+a[data-link-icon='emacs'] {
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='erowid'] {
+    --link-icon-size: 0.95em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.9;
+}
+
+a[data-link-icon='facebook'] {
+    --link-icon-size: 0.50em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='github'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='google-scholar'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-opacity: 0.60;
+}
+
+a[data-link-icon='hacker-news'] { /* HN / YC / Y Combinator */
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.60;
+}
+
+a[data-link-icon='hoover-institution'] {
+    --link-icon-size: 0.50em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.45em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='internet-archive'] {
+    --link-icon-size: 0.55em;
+    --link-icon-opacity: 0.6;
+}
+
+a[data-link-icon='laion'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='maggie-appleton'] {
+	--link-icon-size: 0.70em;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.20em;
+	--link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='magnifying-glass'] { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
+	--link-icon-size: 0.75em;
+	--link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='mega'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.50;
+}
+
+a[data-link-icon='metaculus'] {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='midjourney'] {
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='miri'] {
+    --link-icon-size: 1.05em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='nasa'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='nautilus'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='new-york-times'] {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.6;
+}
+
+a[data-link-icon='nlm-ncbi'] {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.9;
+}
+
+a[data-link-icon='openai'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-opacity: 0.7;
+}
+
+a[data-link-icon='open-philanthropy'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.95;
+}
+
+a[data-link-icon='patreon'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='plos'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.10em;
+    --link-icon-opacity: 0.80;
+}
+
+a[data-link-icon='quanta'] {
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.9;
+}
+
+a[data-link-icon='raven'] { /* LibGen/Sci-Hub */
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.10em;
+}
+
+a[data-link-icon='reddit'] {
+    --link-icon-size: 0.80em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='scholarpedia'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+}
+
+a[data-link-icon='springerlink'] {
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='stack-exchange'] {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.55;
+}
+
+a[data-link-icon='stat-news'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.30em;
+    --link-icon-opacity: 1.0;
+}
+
+a[data-link-icon='substack'] {
+    --link-icon-size: 0.55em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.55;
+}
+
+a[data-link-icon='tensorflow'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.6;
+}
+
+a[data-link-icon='tex'] { /* CTAN etc; TeX logotype (actually uses Source Serif) */
     --link-icon-size: 1.10em;
     --link-icon-offset-x: 0.05em;
-
-    opacity: 0.85;
+    --link-icon-opacity: 0.85;
 }
 
-a[data-link-icon='tiktok'] .link-icon-hook::after {
+a[data-link-icon='tiktok'] {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.10em;
     --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='the-guardian'] .link-icon-hook::after {
-    --link-icon-size: 0.8em;
+a[data-link-icon='the-guardian'] {
+    --link-icon-size: 0.80em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
-
-    opacity: 0.55;
+    --link-icon-opacity: 0.55;
 }
 
-a[data-link-icon='the-new-yorker'] .link-icon-hook::after {
+a[data-link-icon='the-new-yorker'] {
     --link-icon-size: 0.65em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.15em;
-
-    opacity: 0.6
-}
-a[data-link-icon='the-new-yorker']:hover .link-icon-hook::after {
-    opacity: 0.45;
-}
-
-a[data-link-icon='the-pirate-bay'] .link-icon-hook::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-y: 0.3em;
-    --link-icon-offset-x: 0.2em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='the-telegraph'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.75;
-}
-
-a[data-link-icon='tumblr'] .link-icon-hook::after {
-    --link-icon-size: 0.47em;
-    --link-icon-offset-x: 0.25em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.52;
-}
-
-a[data-link-icon='twitter'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.5;
-}
-
-a[data-link-icon='upton-tea'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.25em;
-    --link-icon-offset-y: 0.45em;
-
-    opacity: 0.55;
-}
-
-a[data-link-icon='video'] .link-icon-hook::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.4em;
-
-    opacity: 0.55;
-}
-a[data-link-icon='video']:hover .link-icon-hook::after {
-    opacity: 0.2;
-}
-
-a[data-link-icon='wandb'] .link-icon-hook::after {
-    --link-icon-size: 0.7em;
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.15em;
-
-    opacity: 0.65;
-}
-
-a[data-link-icon='washington-post'] .link-icon-hook::after {
-    --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
-
-    opacity: 0.85;
-}
-a[data-link-icon='washington-post']:hover .link-icon-hook::after {
-    opacity: 0.55;
+    --link-icon-opacity: 0.65;
 }
 
-a[data-link-icon='wired'] .link-icon-hook::after {
+a[data-link-icon='the-pirate-bay'] {
+    --link-icon-size: 0.90em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='the-telegraph'] {
+    --link-icon-size: 0.60em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.75;
+}
+
+a[data-link-icon='tumblr'] {
+    --link-icon-size: 0.47em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.45;
+}
+
+a[data-link-icon='twitter'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='upton-tea'] {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
-
-    opacity: 0.55;
+    --link-icon-offset-y: 0.05em;
+    --link-icon-opacity: 0.55;
 }
 
-a[data-link-icon='youtube'] .link-icon-hook::after {
+a[data-link-icon='video'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.55;
+}
+
+a[data-link-icon='wandb'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.65;
+}
+
+a[data-link-icon='washington-post'] {
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.25em;
+    --link-icon-opacity: 0.85;
+}
+
+a[data-link-icon='wired'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.55;
+}
+
+a[data-link-icon='youtube'] {
     --link-icon-size: 0.88em;
     --link-icon-offset-x: 0.15em;
+    --link-icon-opacity: 0.5;
+}
+
+a[data-link-icon='yud'] {
     --link-icon-offset-y: 0.25em;
-
-    opacity: 0.5;
-}
-
-a[data-link-icon='yud'] .link-icon-hook::after {
-    --link-icon-offset-y: 0.15em;
-}
-
-a[data-link-icon='☀'] .link-icon-hook::after { /* Low Tech Magazine */
-    --link-icon-size: 0.9em;
-
-    opacity: 0.80;
 }
 
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
 
-a[data-link-icon='wikipedia'] .link-icon-hook::after {
-    --link-icon-size: 0.6em;
+a[data-link-icon='wikipedia'] {
+    --link-icon-size: 0.60em;
     --link-icon-offset-x: 0.12em;
-    --link-icon-offset-y: 0.50em;
-
-    opacity: 0.65;
-    margin-right: 0.05em;
-}
-a[data-link-icon='wikipedia']:hover .link-icon-hook::after {
-    opacity: 0.4;
+    --link-icon-offset-y: -0.05em;
+    --link-icon-opacity: 0.65;
 }

@@ -299,7 +299,7 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0, 0, 0, 0.6);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0, 0, 0, 0.8);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #bbb;

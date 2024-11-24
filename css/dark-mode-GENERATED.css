@@ -299,7 +299,7 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.8);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #6c6c6c;
@@ -343,10 +343,6 @@
     	dark mode, perhaps because of differences in lighting environment?)
      */
     --GW-body-text-color: #f1f1f1;
-
-    /*  Reader mode.
-     */
-    --GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
 
     /*  Wikipedia math images assume a white background; transparent images
         don’t look right if that assumption is violated.
