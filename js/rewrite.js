@@ -1981,7 +1981,9 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
 			return;
 
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = "\u{00B6}"; // ‘¶’ PILCROW SIGN
+        link.dataset.linkIcon = link.hash > ""
+        						? "\u{00B6}"   // ‘¶’ PILCROW SIGN
+        						: "\u{1D50A}"; // ‘𝔊’ MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
 
         /*  Directional navigation links on self-links: for each self-link like
             “see [later](#later-identifier)”, find the linked identifier,
@@ -2023,7 +2025,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
         link.dataset.linkIconType = "text";
         link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
                                 ? "\u{00B6}"   // ‘¶’
-                                : "\u{1D50A}"; // ‘𝔊’ MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
+                                : "\u{1D50A}"; // ‘𝔊’
     });
 }, "rewrite");
 
