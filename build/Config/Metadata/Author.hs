@@ -1016,12 +1016,16 @@ authorLinkDB = M.fromList $
     , ("Sven Oskarsson", "https://www.uu.se/en/contact-and-organisation/staff?query=N96-2049")
     , ("Sam Greydanus", "https://greydanus.github.io/about_me/")
     , ("Julian Schrittwieser", "https://www.furidamu.org/")
-    , ("Stacy Steinberg", "https://scholar.google.com/citations?user=ocNCQbkAAAAJ&hl=en&oi=ao")
-    , ("Sameer Singh", "https://scholar.google.com/citations?user=-hGZC54AAAAJ&hl=en&oi=ao")
+    , ("Stacy Steinberg", "https://scholar.google.com/citations?user=ocNCQbkAAAAJ")
+    , ("Sameer Singh", "https://scholar.google.com/citations?user=-hGZC54AAAAJ")
     , ("Ronald de Vlaming", "https://www.devlaming.eu/")
     , ("Preetum Nakkiran", "https://preetum.nakkiran.org/")
-    , ("Karen Simonyan", "https://scholar.google.com/citations?user=L7lMQkQAAAAJ&hl=en")
+    , ("Karen Simonyan", "https://scholar.google.com/citations?user=L7lMQkQAAAAJ")
     , ("Lucas Baker", "https://stanfordirl.com/lucas-baker-bs11")
+    , ("Max Lam", "https://www.bicomh.com/max-lam/")
+    , ("Maria Dimitriou", "https://scholar.google.com/citations?user=-8Rt-d0AAAAJ&hl=en&oi=ao")
+    , ("Niina Eklund", "https://fi.linkedin.com/in/niina-eklund-747934bb")
+    , ("Michiaki Kubo", "https://researchmap.jp/kubom")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

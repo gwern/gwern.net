@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-21 16:08:45 gwern"
+# When:  Time-stamp: "2024-11-23 17:48:49 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -503,6 +503,8 @@ Katri Räikkönen
 "The Dunning-Kruger Effect is Autocorrelation"
 - "https://www.theguardian.com/artanddesign/gallery/2024/nov/16/what-a-carve-up-playful-intricate-japanese-leaf-art-in-pictures What a carve up! Playful, intricate Japanese leaf art—in pictures | Art and design"What a carve up! Playful, intricate Japanese leaf art—in pictures"
 - "index.utf8"
+""
+- "Freudenthal - Link error"
 ""
 
 Task:

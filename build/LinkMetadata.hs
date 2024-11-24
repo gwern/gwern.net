@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-22 21:28:02 gwern"
+When:  Time-stamp: "2024-11-23 09:34:02 gwern"
 License: CC-0
 -}
 
@@ -261,7 +261,7 @@ readLinkMetadataAndCheck = do
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
 
-             let authorWhitelist = ["K. U.", "6510#HN"] :: [String]
+             let authorWhitelist = ["K. U.", "6510#HN", "N. K."] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors

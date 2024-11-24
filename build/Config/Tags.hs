@@ -584,7 +584,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/scaling", "AI scaling")
   , ("ai/nn/vae/mae", "masked autoencoder")
   , ("ai/nn/vae", "autoencoder NN")
-  , ("ai/nn/transformer", "Transformer NN")
+  , ("ai/nn/transformer", "Transformer")
   , ("ai/nn/fully-connected", "MLP NN")
   , ("ai/nn/dynamic-evaluation", "dynamic evaluation (NN)")
   , ("ai/nn/rnn", "RNN")
