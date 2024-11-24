@@ -57,16 +57,10 @@ import qualified Config.LinkIcon as C (prioritizeLinkIconMin, prioritizeLinkIcon
 -- In cases of local archive links, matches on the `/doc/www/$DOMAIN/$ARCHIVE.html` aren't necessarily *exactly*
 -- as powerful; local archives deliberately throw away sub-directory structure for simpler addresses, so 2 matches for
 -- 'foo.com/bar/*' and 'foo.com/quux/*' would collide when trying to match just '/doc/www/foo.com/$ARCHIVE.html'.
--- For this case, we detect & exploit the `data-original-URL` attribute which is around for just such problems,
+-- For this case, we detect & exploit the `data-url-original` attribute which is around for just such problems,
 -- and we run matches on the original URL, and everything should work as expected then.
---
--- TODO: the PDF checks are incomplete (and only look for ".pdf" essentially) but it would require IO or perhaps
--- a caching database to actually detect what MIME type a live URL returns, which is a PITA, and since I'm trying
--- to remove all weird non-standard PDFs and host locally all PDFs with clean names & extensions,
--- maybe that's a vestigial concern?
--- TODO: refactor into multiple functions, like 'linkIconOrg', 'linkIconQuad' etc, and then move into Config.LinkIcon:
 linkIcon :: Inline -> Inline
-linkIcon x@(Link (_,cl,_) _ (u, _))
+linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.icon-not}`
  -- class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind"
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
@@ -85,7 +79,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg", "")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg", "")
 
- | otherwise = removeIconDuplicate $ addIcon x $ C.linkIconRules u
+ | otherwise = removeIconDuplicate $ addIcon x $ C.linkIconRules originalURL
+ where originalURL :: T.Text -- NOTE: all rules are defined in terms of the original canonical URL, without local archives in mind. So to cooperate with LinkArchive, we must swap the target if LA swapped it first:
+       originalURL = case lookup "data-url-original" attributes of
+                       Nothing   -> u
+                       Just url -> url
 linkIcon x = x
 
 -- Periodically like newspapers are often referenced by their abbreviation, which may also be their text link-icon;
@@ -99,7 +97,7 @@ removeIconDuplicate x@(Link (_,_,kvs) text _) = let iconType = filter (\(k,v) ->
                                                 in if null iconType then x else
                                                      let iconText = head $ map snd $ filter (\(k,_) -> k == "link-icon") kvs
                                                          text' = inlinesToText text
-                                                     in if iconText /= text' && not (snd (head iconType) == "svg") then x else removeIcon x
+                                                     in if iconText /= text' && (snd (head iconType) /= "svg") then x else removeIcon x
 removeIconDuplicate x = x
 
 -- whether a Link has a link-icon set already; errors out if the attribute keys are set but have empty values (to help guard against that possible error)

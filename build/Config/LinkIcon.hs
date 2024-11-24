@@ -92,13 +92,13 @@ u'' ""  v  = error $ "Config.LinkIcon.u'': empty string passed as argument; url 
 u'' url "" = error $ "Config.LinkIcon.u'': empty string passed as argument; url was " ++ show url ++ ", domain was ''"
 u'' url v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v
             then error ("Config.LinkIcon: Overly strict prefix in infix matching (u''): " ++ show url ++ ":" ++ show v)
-            else isHostOrArchive v url
+            else Utils.isHostOrArchive v url
 
 iE :: T.Text -> [T.Text] -> Bool
 iE ""  args = error $ "Config.LinkIcon.iE: passed an empty string as the first argument; rest were: " ++ show args
-iE url args = elem (T.drop 1 $ extension url) args
+iE url args = T.drop 1 (extension url) `elem` args
 aU', aU'' :: T.Text -> [T.Text] -> Bool
-aU'  url = any (u' url)
+aU'  url = any (u'  url)
 aU'' url = any (u'' url)
 
 -- The URL matches:
@@ -528,7 +528,7 @@ linkIconRulesFiletypes u
  | iE u ["epub"] = ("EPUB", "text,quad,sans", "#87ba11") -- color: neon green <https://commons.wikimedia.org/wiki/File:Epub_logo.svg>
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
- | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe)
+ | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe); NOTE: we do not attempt to check for PDFs very thoroughly because we assume that there are no treacherous URLs or that they are covered by LinkArchive mirroring PDFs locally by default to a '/doc/www/.../$HASH.pdf' URL which will match this reliably.
  | otherwise = ("", "", "")
 
 ------------------------------------------------------------------------------------------
