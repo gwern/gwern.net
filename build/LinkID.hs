@@ -21,15 +21,15 @@ import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, si
 import Config.Misc (currentYear)
 import qualified Config.LinkID as C (linkIDOverrides)
 
--- Convert a URL/path to a 9-character URL-safe Base64 ID, using SHA-1.
+-- Convert a URL/path to a 8-character URL-safe Base64 ID, using SHA-1.
 -- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020".
 -- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
 --
--- Implementation: We use a Web Crypto browser-available hash (SHA-1, like LinkArchive), encoded into URL-safe Base64 (eg. 'https://example.com' → 'Mnw_2ofO'), which we truncate to a short length (9 characters) which is readable & will not bloat the HTML *too* much, but which is long enough that it should have near-zero collision probability over the expected scale of Gwern.net for the foreseeable future (<1m metadata-less URL paths).
+-- Implementation: We use a Web Crypto browser-available hash (SHA-1, like LinkArchive), encoded into URL-safe Base64 (eg. 'https://example.com' → 'Mnw_2ofO'), which we truncate to a short length (8 characters) which is readable & will not bloat the HTML *too* much, but which is long enough that it should have near-zero collision probability over the expected scale of Gwern.net for the foreseeable future (<1m metadata-less URL paths).
 -- Collisions are not necessarily *too* harmful, but if they happen, the author is expected to resolve them by either adding metadata to offending links or manually overriding link IDs in `Config.LinkID`.
 url2ID :: T.Text -> T.Text
 url2ID "" = error "LinkID.url2ID: passed empty string as a URL/path to hash into an ID, which should never happen."
-url2ID url = T.take 9 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
+url2ID url = T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
   where
     hash = SHA1.hash (TE.encodeUtf8 url)
 
