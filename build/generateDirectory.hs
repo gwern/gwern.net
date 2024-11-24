@@ -40,6 +40,7 @@ import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc,
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import Config.GenerateSimilar as CGS (minTagAuto)
+import Image (isImageFilename)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -138,7 +139,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
   let imageFirst = take 1 $ filter safeSVGNot $ -- SVGs break as page thumbnails in many previews, so we exclude them
-        concatMap (\(_,(_,_,_,_,_,_,abstract),_) -> extractImages $ toPandoc abstract) links
+        concatMap (\(p,(_,_,_,_,_,_,abstract),_) -> if isImageFilename p then [Image nullAttr [] (T.pack p,"")] else extractImages $ toPandoc abstract) $ sortByDateModified $ links ++ triplets
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
