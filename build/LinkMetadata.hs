@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-23 09:34:02 gwern"
+When:  Time-stamp: "2024-11-25 09:22:47 gwern"
 License: CC-0
 -}
 
@@ -577,9 +577,9 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
 -- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
-generateFileTransclusionBlock _ _ x@("",                     _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
+generateFileTransclusionBlock _  _            x@("",                _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
 -- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
-generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
+generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null generateFileTransclusionBlock' then [] else [Div ("", ["aux-links-transclude-file"], []) generateFileTransclusionBlock']
  where
    f'     = unsafePerformIO $ localizeLinkURL am f
    localP = isLocal $ T.pack f'
@@ -600,6 +600,7 @@ generateFileTransclusionBlock am alwaysLabelP (f, (tle,_,_,_,_,_,_)) = if null g
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
    dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title; doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
    generateFileTransclusionBlock'
+    | f' == "" = error $ "LinkMetadata.generateFileTransclusionBlock.generateFileTransclusionBlock': localized filepath (`f'`) was empty string; this should never happen! `(FilePath,MetadataItem)` input was: " ++ show x
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
     | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
       [Para [Link ("",["id-not", "include-content"],dataArguments) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)

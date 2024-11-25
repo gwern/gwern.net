@@ -19,7 +19,7 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (append, isSuffixOf, pack, takeWhile, unpack, Text, replace)
+import qualified Data.Text as T (isSuffixOf, pack, takeWhile, unpack, Text, replace)
 
 import Data.FileStore.Utils (runShellCommand)
 
@@ -31,10 +31,13 @@ import Utils (addClass, printRed, anySuffix, isLocal, kvLookup, delete)
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
 -- excludes ".psd"
 isImageFilename :: FilePath -> Bool
-isImageFilename i = anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
+isImageFilename "" = error "Image.isImageFilename: passed empty string as filepath!"
+isImageFilename i  = not ("http" `isPrefixOf` i) && -- we need to avoid doppelganger URLs like Wikimedia Commons where a '.jpg' or '.png' suffix is the HTML page *for* a file, but we also don't want to do IO to check arbitrary paths like 'doc/foo.jpg' for validity, so we just ignore anything starting with 'http' as that would have to be a hotlink and we avoid those to begin with
+                     anySuffix (takeWhile (/='#') i) [".bmp", ".gif", ".ico", ".jpg", ".png", ".svg", ".xcf"]
 
 isVideoFilename :: FilePath -> Bool
-isVideoFilename i = anySuffix (takeWhile (/='#') i) [".mp4", ".webm", ".avi"] -- we support only 2 types of video on Gwern.net at present
+isVideoFilename "" = error "Image.isVideoFilename: passed empty string as filepath!"
+isVideoFilename i  = not ("http" `isPrefixOf` i) && anySuffix (takeWhile (/='#') i) [".mp4", ".webm", ".avi"] -- we support only 2 types of video on Gwern.net at present
 
 -------------------------------------------
 -- Dark-mode
@@ -154,10 +157,10 @@ imageMagickDimensions f =
   in
     do exists <- doesFileExist f'
        if not exists then return ("","") else
-        do let f'' = if not (isVideoFilename f') then f' else f' ++ "-poster.jpg"
+        do let f'' = if isVideoFilename f' then f' ++ "-poster.jpg" else f'
            (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f'']
            case status of
-             ExitFailure exit -> error $ f ++ ":" ++ f'' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
+             ExitFailure exit -> error $ "Image.imageMagickDimensions: `identify` exited with a failure on `f`=" ++ f ++ " : `f''=`" ++ f'' ++ "; exit status: " ++ show exit ++ ": raw exit status: " ++ B8.unpack bs
              _             -> do let string = B8.unpack bs
                                  let dimensions = words $ head $ lines string
                                  case dimensions of
@@ -242,23 +245,26 @@ sizeAspectRatioKV width height = -- preserve aspect ratio when we have to shrink
 
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageLinkHeightWidthSet :: Inline -> IO Inline
+imageLinkHeightWidthSet x@(Link _ _ ("",_)) = error $ "Image.imageLinkHeightWidthSet: passed an Inline path with no URL set? Input was: " ++ show x
 imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
   let dimensionp = lookup "image-height" kvs in
     if isJust dimensionp then return x else
-                                                        let p' = T.unpack $ T.takeWhile (/='#') $ T.replace "https://gwern.net/" "/" p in
-                                                         if (isImageFilename p' || isVideoFilename p') &&
-                                                          isLocal (T.pack p') then
-                                                         do exists <- doesFileExist $ tail p'
-                                                            if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
-                                                              do (h,w) <- imageMagickDimensions p'
-                                                                 let aspectratio = map (\(a,b) -> (T.pack a, T.pack b)) $ take 1 $ sizeAspectRatioKV (read w::Int) (read h::Int)
-                                                                 let posterKV = if h/="" && not (isVideoFilename p') then []
-                                                                                else [("video-poster", p `T.append` "-poster.jpg")]
-                                                                 return (Link (htmlid, classes,
-                                                                               kvs++[("image-height",T.pack h),
-                                                                                     ("image-width", T.pack w)] ++ aspectratio ++ posterKV)
-                                                                         xs (p,t))
-                                                       else return x
+     let p' = T.unpack $ T.takeWhile (/='#') $ T.replace "https://gwern.net/" "/" p in
+      if p' == "" then return x -- if it was an empty string after the `takeWhile` but wasn't before, then `p` was an anchor self-link, presumably, and we skip it.
+      else
+        if (isImageFilename p' || isVideoFilename p') && isLocal (T.pack p') then
+        do exists <- doesFileExist $ tail p'
+           if not exists then printRed "imageLinkHeightWidthSet: " >> putStr (show x) >> printRed " does not exist?" >> return x else
+             do let p'' = if isVideoFilename p' then p' ++ "-poster.jpg" else p'
+                (h,w) <- imageMagickDimensions p''
+                let aspectratio = map (\(a,b) -> (T.pack a, T.pack b)) $ take 1 $ sizeAspectRatioKV (read w::Int) (read h::Int)
+                let posterKV = if h/="" && not (isVideoFilename p') then []
+                               else [("video-poster", T.pack p'')]
+                return (Link (htmlid, classes,
+                              kvs++[("image-height",T.pack h),
+                                    ("image-width", T.pack w)] ++ aspectratio ++ posterKV)
+                        xs (p,t))
+        else return x
 imageLinkHeightWidthSet x = return x
 
 -- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).

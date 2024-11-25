@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-07-04 20:37:25 gwern"
+When:  Time-stamp: "2024-11-25 09:18:43 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -152,9 +152,11 @@ localizeLink _ x = return x
 
 -- simplified `localizeLink`: simply return the value of `data-url-archive` if it would exist when a Link with a given URL is rewritten by `localizeLink`.
 localizeLinkURL :: ArchiveMetadata -> FilePath -> IO FilePath
+localizeLinkURL _   ""  = error "LinkArchive.localizeLinkURL: called on an empty URL! This should never happen."
 localizeLinkURL adb url = do (Link (_,_,kvs) _ _) <- localizeLink adb (Link nullAttr [] (T.pack url,""))
                              case lookup "data-url-archive" kvs of
                                Nothing   -> return url
+                               Just ""   -> error $ "LinkArchive.localizeLinkURL: data-url-archive lookup returned an empty string; this should never happen! Tried to look up URL: " ++ url ++ "; key-values were: " ++ show kvs
                                Just url' -> return $ T.unpack url'
 
 testLinkRewrites :: IO [(Inline, Inline)]
