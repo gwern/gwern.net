@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-23 20:01:33 gwern"
+# When:  Time-stamp: "2024-11-24 08:44:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -52,7 +52,7 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N=6
+    N=7
     SLOW="true"
     SKIP_DIRECTORIES=""
     TODAY=$(date '+%F')
@@ -211,7 +211,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N1 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \

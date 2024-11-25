@@ -537,6 +537,7 @@ canonicals = M.fromList
   , ("Anne Justice", "Anne E. Justice")
   , ("Raymond M. Smullyan", "Raymond Smullyan")
   , ("Karén Simonyan", "Karen Simonyan")
+  , ("Robin L. Carhart-Harris", "Robin Carhart-Harris")
   ]
 
 -- tests: unique
@@ -1023,7 +1024,7 @@ authorLinkDB = M.fromList $
     , ("Karen Simonyan", "https://scholar.google.com/citations?user=L7lMQkQAAAAJ")
     , ("Lucas Baker", "https://stanfordirl.com/lucas-baker-bs11")
     , ("Max Lam", "https://www.bicomh.com/max-lam/")
-    , ("Maria Dimitriou", "https://scholar.google.com/citations?user=-8Rt-d0AAAAJ&hl=en&oi=ao")
+    , ("Maria Dimitriou", "https://scholar.google.com/citations?user=-8Rt-d0AAAAJ")
     , ("Niina Eklund", "https://fi.linkedin.com/in/niina-eklund-747934bb")
     , ("Michiaki Kubo", "https://researchmap.jp/kubom")
     ]
