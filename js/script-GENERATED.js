@@ -5677,19 +5677,14 @@ Annotations = { ...Annotations,
 		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
 			titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
 
-		/*	If the title-link of the annotation does not contain link icon
-			metadata, we take that metadata from the annotated link itself,
-			if such are present.
+		/*	Import link icon data attributes from the annotated link itself 
+			(but do not replace ones already specified by the annotation 
+			 title-link).
 		 */
-		if (   titleLink.dataset.linkIcon == null
-			&& link.dataset.linkIcon != null) {
-			titleLinkDataAttributes.push(`data-link-icon-type="${(link.dataset.linkIconType)}"`)
-			titleLinkDataAttributes.push(`data-link-icon="${(link.dataset.linkIcon)}"`);
-		}
-		if (   titleLink.dataset.linkIconColor == null
-			&& link.dataset.linkIconColor != null) {
-			titleLinkDataAttributes.push(`data-link-icon-color="${(link.dataset.linkIconColor)}"`)
-		}
+		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
+			if (   attrName.startsWith("linkIcon")
+				&& titleLink.dataset[attrName] == null)
+				titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
 
 		//	Stringify data attributes.
 		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0
