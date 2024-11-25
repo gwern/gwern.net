@@ -199,40 +199,31 @@ Annotations = { ...Annotations,
 		//	Construct title link class.
 		let titleLinkClasses = [ "title-link" ];
 
-		//  Import link classes (excluding certain ones).
+		/*  Import link classes (excluding the ones that designate annotated 
+			links, lest we have infinite recursion of annotation popups).
+		 */
 		titleLinkClasses.push(...(Array.from(titleLink.classList).filter(titleLinkClass => [
 			"link-annotated",
 			"link-annotated-partial"
 		].includes(titleLinkClass) == false)));
 
 		//	Special handling for links with separate ‘HTML’ URLs.
-		if (   titleLink.dataset.urlHtml
-			&& titleLinkClasses.includes("link-live") == false)
+		if (titleLink.dataset.urlHtml)
 			titleLinkClasses.push("link-live");
 
-		//	Special data attributes for the title link.
-		let titleLinkDataAttributes = [
-			"urlHtml",
-			"urlArchive",
-			"urlOriginal",
-			"imageWidth",
-			"imageHeight",
-			"aspectRatio"
-		].map(attributeName =>
-			titleLink.dataset[attributeName]
-			? `data-${(attributeName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${titleLink.dataset[attributeName]}"`
-			: null
-		).filter(Boolean);
+		//	Data attributes for the title link.
+		let titleLinkDataAttributes = [ ];
+		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
+			titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
 
-		//	Link icon for the title link.
-		if (titleLink.dataset.linkIcon) {
-			titleLinkDataAttributes.push(`data-link-icon-type="${(titleLink.dataset.linkIconType)}"`);
-			titleLinkDataAttributes.push(`data-link-icon="${(titleLink.dataset.linkIcon)}"`);
-		} else if (   link
-				   && link.dataset.linkIcon) {
-			titleLinkDataAttributes.push(`data-link-icon-type="${(link.dataset.linkIconType)}"`)
-			titleLinkDataAttributes.push(`data-link-icon="${(link.dataset.linkIcon)}"`);
-		}
+		/*	Import link icon data attributes from the annotated link itself 
+			(but do not replace ones already specified by the annotation 
+			 title-link).
+		 */
+		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
+			if (   attrName.startsWith("linkIcon")
+				&& titleLink.dataset[attrName] == null)
+				titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
 
 		//	Stringify data attributes.
 		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0

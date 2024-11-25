@@ -2043,8 +2043,8 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
-        "body.page-index",
-        "body.page-404",
+        "body.page-index #markdownBody",
+        "body.page-404 #markdownBody",
         ".popframe-body.page-index",
         ".popframe-body.page-404",
 

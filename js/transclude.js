@@ -720,29 +720,9 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	}
 
 	if (link instanceof HTMLAnchorElement) {
-		//	Import certain data attributes.
-		[ "linkContentType", 
-		  "backlinkTargetUrl", 
-		  "urlArchive", 
-		  "urlHtml" 
-		  ].forEach(dataAttributeName => {
-			if (link.dataset[dataAttributeName])
-				includeLink.dataset[dataAttributeName] = link.dataset[dataAttributeName];
-		});
-		//  Import certain link classes.
-		/*  See corresponding note in annotations.js.
-			—SA 2024-02-16
-		 */
-		[ "link-live", 
-		  "link-page", 
-		  "link-dropcap", 
-		  "link-annotated", 
-		  "link-annotated-partial", 
-		  "content-transform-not" 
-		  ].forEach(targetClass => {
-			if (link.classList.contains(targetClass))
-				includeLink.classList.add(targetClass);
-		});
+		includeLink.classList.add(...(link.classList));
+		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
+			includeLink.dataset[attrName] = attrValue;
 	}
 
 	//	In case no include classes have been added yet...
@@ -1528,6 +1508,9 @@ Transclude = {
 				&& block.matches(Transclude.notBlockElementSelector) == false)
 				break;
 
+		if (block == null)
+			return null;
+
 		let blockContext = newDocument([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
 									   ? block.childNodes
 									   : block);
@@ -1536,6 +1519,7 @@ Transclude = {
 			contained within them, because if it were, then *that* section would
 			be the block context. So, any child sections are necessarily 
 			extraneous.)
+
 			(Do not do this if the section itself is the target element.)
 		 */
 		if (   block.tagName == "SECTION"
