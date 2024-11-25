@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# image-margin-checker.py: check an image for missing margin
+# image-margin-checker.py: check an image for missing margin [DEPRECATED]
 # Author: Gwern Branwen
 # Date: 2024-02-13
-# When:  Time-stamp: "2024-02-13 18:43:20 gwern"
+# When:  Time-stamp: "2024-11-24 17:54:30 gwern"
 # License: CC-0
 #
 # CLI tool to check whether an image is too-tightly cropped and needs greater padding/margin.
@@ -12,6 +12,8 @@
 #
 # Usage: $ imagine-margin-checker.py file1.jpg [file2.png] [...]
 # Output: "file : YES" or "file : NO" (or error message if neither)
+#
+# WARNING: this is not recommended for use as of early 2024. The results turned out to be bad when deployed at scale, and resulted in vastly too large margins. It's unclear if GPT-4-V or the prompt was bad. Regardless, it is not recommended to use as-is.
 #
 # Examples:
 #
@@ -24,7 +26,7 @@
 #
 # Uses OA API's GPT-4-V: <https://platform.openai.com/docs/guides/vision>;
 # requires "$OPENAI_API_KEY" set in environment for API access.
-# Cost: we use 'low' as the gestalt of margins should not require much visual detail; this means that each image costs '85 [GPT-4-turbo] tokens'; the prompt is ~1150 tokens, and the binary YES/NO = 1 token, 1150 total; GPT-4-turbo costs ~$0.01/1k, so each image should cost ¢1.2.
+# Cost: we use 'low' as the gestalt of margins should not require much visual detail; this means that each image costs '85 [GPT-4-turbo] tokens'; the prompt is ~1,150 tokens, and the binary YES/NO = 1 token, 1,150 total; GPT-4-turbo costs ~$0.01/1k, so each image should cost ¢1.2.
 
 import base64
 import io

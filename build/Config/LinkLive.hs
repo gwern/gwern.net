@@ -2368,6 +2368,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.bartleby.com"
    , "ki.se"
    , "pmc.ncbi.nlm.nih.gov"
+   , "manifold1.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -4620,5 +4621,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.bartleby.com/lit-hub/poetry-of-byron/greece-iv/"
             , "https://ki.se/en/people/anders-hamsten"
             , "https://pmc.ncbi.nlm.nih.gov/articles/PMC10587091/"
+            , "https://www.manifold1.com/"
             ]
 
