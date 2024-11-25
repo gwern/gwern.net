@@ -100,11 +100,14 @@ removeIconDuplicate x@(Link (_,_,kvs) text _) = let iconType = filter (\(k,v) ->
                                                      in if iconText /= text' && (snd (head iconType) /= "svg") then x else removeIcon x
 removeIconDuplicate x = x
 
--- whether a Link has a link-icon set already; errors out if the attribute keys are set but have empty values (to help guard against that possible error)
+-- whether a Link has a link-icon set already; errors out if the attribute keys are set but have empty values (to help guard against that possible error). We require either a link-icon + link-icon-type (+ optional link-icon-color), *or* a link-icon color (for cases where there is a reasonable on-hover color but not icon)
 hasIcon :: Inline -> Bool
 hasIcon (Link (_,_,ks) _ (_,_)) =
   case lookup "link-icon" ks of
-    Just "" -> error "LinkIcon.hasIcon: Empty `link-icon` attribute; this should never happen!"
+    Just "" -> case lookup "link-icon-color" ks of
+                 Just "" -> error "LinkIcon.hasIcon: Empty `link-icon` *and* `link-icon-color` attribute; this should never happen!"
+                 Just _  -> True
+                 Nothing -> error "LinkIcon.hasIcon: Empty `link-icon` *but* no `link-icon-color` attribute; this should never happen!"
     Just _  -> True
     Nothing -> case lookup "link-icon-type" ks of
                  Just "" -> error "LinkIcon.hasIcon: Empty `link-icon-type` attribute; this should never happen!"
@@ -122,7 +125,9 @@ addIcon :: Inline -> (T.Text, T.Text, T.Text) -> Inline
 addIcon x ("", "", "") = x
 addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType, iconColor)  =
   if hasIcon x then x else Link (idt,cl,
-                                  ([("link-icon",icon), ("link-icon-type",iconType)] ++ if T.null iconColor then [] else [("link-icon-color",T.toLower iconColor)]) ++
+                                  (if T.null icon       then [] else [("link-icon",      icon)] ++
+                                    if T.null iconType  then [] else [("link-icon-type", iconType)] ++
+                                    if T.null iconColor then [] else [("link-icon-color",T.toLower iconColor)]) ++ -- enforce lowercase (rather than mixed or uppercase) convention of RGB hex notation
                                   ks) a (b,c)
 addIcon x _ = x
 

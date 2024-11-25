@@ -19,9 +19,11 @@ overrideLinkIcons = [("/index#abstract", ("","",""))]
 prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
+-- TODO: icon+color: https://digital.library.unt.edu/ green hawk icon; https://www.animesuki.com/ + "forums.animesuki.com" teal geometric icon;  https://www.theregister.com/ vulture icon + red ; http://ascii.textfiles.com/ ASCII + green ; https://www.e-codices.unifr.ch/en (e) + yellow ; https://www.bartleby.com/ 'b' + dark blue ; https://darcs.net/ squid icon + green ; https://www.smh.com.au/ "S" + dark blue ; https://www.rrauction.com/ 'RR' + blue ; https://www.mangaupdates.com/ M+yellow ; https://www.instructables.com/ robot head emoji + yellow ; https://engineering.virginia.edu/department/computer-science IA-library icon + orange ; https://mujoco.org/ 'M' + blue ; https://www.artbreeder.com/ logo+light blue ...
+-- color-only: https://danluu.com/ (no icon, but color: default link blue is iconic at this point! #0000EE); https://www.thedailybeast.com/ red ; https://www.straighttalkonevidence.org/ dark blue ; https://blog.codinghorror.com/ light blue ; https://fonts.ilovetypography.com/ orange-red ; https://dataprivacylab.org/ blue ; https://www.thefreelibrary.com/ blue ; https://www.unitedpharmacies-uk.md/ light-blue; https://www.petforums.co.uk/ dark green ; https://wellcomecollection.org/ yellow ; https://www.acpjournals.org/journal/aim teal ; ...
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
-prioritizeLinkIconBlackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com"
- , "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com"
+prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
+                              , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com"
  , "www.thedailybeast.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com"
  , "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
  , "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org", "ilovetypography.com"
@@ -205,6 +207,7 @@ linkIconRulesSingle u
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
+ | u'' u "danluu.com" = ("", "", "#0000ee") --Dan Luu :no icon, but color: default link blue is iconic at this point!
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
