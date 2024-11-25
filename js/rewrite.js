@@ -2080,35 +2080,12 @@ function enableLinkIcon(link) {
             `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
     }
 
-	//	Set CSS variable (link icon hover color, plus optional altered icon).
-	if (link.dataset.linkIconColor > "") {
-		let transformColor = (colorCode) => {
-			return Color.processColorValue(colorCode, [ {
-				type: Color.ColorTransform.COLORIZE,
-				referenceColor: link.dataset.linkIconColor
-			} ]);
-		};
-
-		link.style.setProperty("--link-icon-color-hover", transformColor("#000"));
-
-		if (link.dataset.linkIconType.includes("svg")) {
-			doWhenSVGIconsLoaded(() => {
-				let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
-					(match, colorCode) => {
-						return `"${(transformColor(colorCode))}"`;
-					}));
-				svg.setAttribute("fill", transformColor("#000"));
-				link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
-			});
-		}
-	}
-
     //  Set class.
     link.classList.add("has-icon");
 }
 
-/****************************************************************************/
-/*  Disable display of a link’s link icon by removing requisite HTML and CSS.
+/*****************************************************************************/
+/*  Disables display of a link’s link icon by removing requisite HTML and CSS.
  */
 function disableLinkIcon(link) {
     if (link.classList.contains("has-icon") == false)
@@ -2149,6 +2126,64 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo)
     eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
         disableLinkIcon(link);
     });
+}, "rewrite");
+
+/***************************************************************************/
+/*  Adds HTML and CSS to a link, enabling colorization of the link icon (and
+	the link underlining) on hover. (Requires color.js to be loaded.)
+ */
+function enableLinkIconColor(link) {
+	if (   link.dataset.linkIconColor == null
+		|| link.dataset.linkIconColor == "")
+		return;
+
+	/*	The transformation colorizes a base color (the text color) to match a
+		reference color (the specified link icon color), while maintaining
+		relative perceptual lightness.
+	 */
+	let transformColor = (colorCode) => {
+		return Color.processColorValue(colorCode, [ {
+			type: Color.ColorTransform.COLORIZE,
+			referenceColor: link.dataset.linkIconColor
+		} ]);
+	};
+
+	//	Set CSS variable (link icon hover color).
+	link.style.setProperty("--link-icon-color-hover", transformColor("#000"));
+
+	/*	If the link has an SVG link icon, colorize the SVG, and set the colored
+		icon (via a data URI) as the link icon to display on hover.
+	 */
+	if (link.dataset.linkIconType?.includes("svg")) {
+		doWhenSVGIconsLoaded(() => {
+			let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+				(match, colorCode) => {
+					return `"${(transformColor(colorCode))}"`;
+				}));
+			svg.setAttribute("fill", transformColor("#000"));
+			link.style.setProperty("--link-icon-url-hover", `url("data:image/svg+xml;utf8,${encodeURIComponent(svg.outerHTML)}")`);
+		});
+	}
+}
+
+/******************************************/
+/*	Disables hover colorization for a link.
+ */
+function disableLinkIconColor(link) {
+	link.style.removeProperty("--link-icon-color-hover");
+	link.style.removeProperty("--link-icon-url-hover");
+}
+
+/*********************************************************************/
+/*	Enable link hover colorization, for those links which have a color 
+	specified via the data-link-icon-color attribute.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.setLinkHoverColors = (eventInfo) => {
+    GWLog("setLinkIconStates", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a[data-link-icon-color]").forEach(link => {
+		enableLinkIconColor(link);
+	});
 }, "rewrite");
 
 /**************************************************************************/

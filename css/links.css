@@ -78,6 +78,13 @@
     background-image: none;
 }
 
+/*	Colored (on hover) links.
+ */
+a[data-link-icon-color]:hover {
+    --link-underline-gradient-line-color: var(--link-icon-color-hover);
+}
+
+
 /**************/
 /* LINK ICONS */
 /**************/
@@ -129,10 +136,6 @@
 	margin-right: 0.1em;
 }
 
-a[data-link-icon][data-link-icon-color]:hover {
-    --link-underline-gradient-line-color: var(--link-icon-color-hover);
-}
-
 /*******************/
 /*  Graphical icons.
     */
@@ -158,12 +161,16 @@ a[data-link-icon-type='svg'] .link-icon-hook::after {
 a[data-link-icon-type='svg']:hover .link-icon-hook::after {
     opacity: calc(var(--link-icon-opacity) * 0.55);
 }
+
+/*	Colored graphical link icons.
+ */
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }
 
-/*  Reversed link colors.
+/*  When link colors are reversed relative to the rest of the page (e.g., in
+	some admonition types), a graphical link icon must also be inverted.
  */
 .markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
     filter: invert(1);
