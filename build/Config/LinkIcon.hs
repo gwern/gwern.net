@@ -62,6 +62,7 @@ linkIconTypes = ["text", "svg"
                 , "quad", "tri"
                 , "sans", "serif"
                 , "mono", "italic", "bold", "overline"
+                , "" -- allowed for color-only links
                 ]
 
 -- Color hex code shortcuts:
@@ -1181,6 +1182,7 @@ linkIconTestUnitsText =
          , ("https://a16z.com/politics-and-the-future/", "az16", "text,quad,sans", "#ed8c00")
          , ("https://docs.midjourney.com/docs/weird", "midjourney", "svg", "")
          , ("https://www.midjourney.com/", "midjourney", "svg", "")
+         , ("https://danluu.com/web-bloat/", "", "", "#0000ee")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

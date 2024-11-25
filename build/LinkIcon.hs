@@ -112,7 +112,10 @@ hasIcon (Link (_,_,ks) _ (_,_)) =
     Nothing -> case lookup "link-icon-type" ks of
                  Just "" -> error "LinkIcon.hasIcon: Empty `link-icon-type` attribute; this should never happen!"
                  Just _  -> True
-                 Nothing -> False
+                 Nothing -> case lookup "link-icon-color" ks of
+                   Nothing -> False
+                   Just "" -> error "LinkIcon.hasIcon: Empty `link-icon-color` string; this should never happen!"
+                   Just _ -> True
 hasIcon _ = True
 
 hasIconURL :: T.Text -> Bool
@@ -125,9 +128,9 @@ addIcon :: Inline -> (T.Text, T.Text, T.Text) -> Inline
 addIcon x ("", "", "") = x
 addIcon x@(Link (idt,cl,ks) a (b,c)) (icon, iconType, iconColor)  =
   if hasIcon x then x else Link (idt,cl,
-                                  (if T.null icon       then [] else [("link-icon",      icon)] ++
-                                    if T.null iconType  then [] else [("link-icon-type", iconType)] ++
-                                    if T.null iconColor then [] else [("link-icon-color",T.toLower iconColor)]) ++ -- enforce lowercase (rather than mixed or uppercase) convention of RGB hex notation
+                                  ((if T.null icon       then [] else [("link-icon",      icon)]) ++
+                                    (if T.null iconType  then [] else [("link-icon-type", iconType)]) ++
+                                    (if T.null iconColor then [] else [("link-icon-color",T.toLower iconColor)])) ++ -- enforce lowercase (rather than mixed or uppercase) convention of RGB hex notation
                                   ks) a (b,c)
 addIcon x _ = x
 
@@ -173,7 +176,10 @@ linkIconTest = filter (\(url, li, lit, litc) ->
                          (linkIcon . linkIcon . linkIcon . -- idempotent test: that it is correct even after multiple passes
                            linkIcon) (Link nullAttr [] (url,""))
                                           /=
-                                          Link ("",[], ([("link-icon",li), ("link-icon-type", lit)]++if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) [] (url,"")
+                                          Link ("",[], ((if T.null li then [] else [("link-icon",li)]) ++
+                                                        (if T.null lit then [] else [("link-icon-type", lit)]) ++
+                                                        (if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)]))
+                                               ) [] (url,"")
                       )
                C.linkIconTestUnitsText
 
