@@ -1080,7 +1080,8 @@ Content = {
             matches: (link) => {
                 return (   link.classList.contains("content-transform-not") == false
 						&& [ "x.com" ].includes(link.hostname)
-                        && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null);
+                        && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null
+                        && link.dataset.urlArchive != null);
             },
 
             isSliceable: false,
@@ -1095,14 +1096,7 @@ Content = {
                 if (link.dataset.urlArchive)
                     urls.push(URLFromString(link.dataset.urlArchive));
 
-                if (link.dataset.urlHtml)
-                    urls.push(URLFromString(link.dataset.urlHtml));
-
-                return urls.concat(Content.contentTypes.tweet.liveNitterHosts.map(nitterHost => {
-                    let nitterURL = URLFromString(link.href);
-                    nitterURL.hostname = nitterHost;
-                    return nitterURL;
-                }));
+				return urls;
             },
 
             contentFromResponse: (response, link, sourceURL) => {
