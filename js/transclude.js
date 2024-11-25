@@ -1528,6 +1528,9 @@ Transclude = {
 				&& block.matches(Transclude.notBlockElementSelector) == false)
 				break;
 
+		if (block == null)
+			return null;
+
 		let blockContext = newDocument([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
 									   ? block.childNodes
 									   : block);
@@ -1536,6 +1539,7 @@ Transclude = {
 			contained within them, because if it were, then *that* section would
 			be the block context. So, any child sections are necessarily 
 			extraneous.)
+
 			(Do not do this if the section itself is the target element.)
 		 */
 		if (   block.tagName == "SECTION"

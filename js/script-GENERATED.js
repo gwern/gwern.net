@@ -9318,6 +9318,9 @@ Transclude = {
 				&& block.matches(Transclude.notBlockElementSelector) == false)
 				break;
 
+		if (block == null)
+			return null;
+
 		let blockContext = newDocument([ "BLOCKQUOTE", "LI" ].includes(block.tagName)
 									   ? block.childNodes
 									   : block);
@@ -9326,6 +9329,7 @@ Transclude = {
 			contained within them, because if it were, then *that* section would
 			be the block context. So, any child sections are necessarily 
 			extraneous.)
+
 			(Do not do this if the section itself is the target element.)
 		 */
 		if (   block.tagName == "SECTION"
@@ -15360,8 +15364,8 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
             and routinely modified/expanded, so doing it ‘manually’ would risk
             occasional omissions or syntax errors.
          */
-        "body.page-index",
-        "body.page-404",
+        "body.page-index #markdownBody",
+        "body.page-404 #markdownBody",
         ".popframe-body.page-index",
         ".popframe-body.page-404",
 
