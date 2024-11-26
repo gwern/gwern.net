@@ -16,7 +16,7 @@ build/hakyll
 build/link-extractor
 build/link-suggester
 build/preprocess-markdown
-**/*.html
+**/*.*.html
 build/**/*.html
 css/**/*.html
 font/**/*.html
