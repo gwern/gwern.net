@@ -1,0 +1,57 @@
+<title>Gwern.net Search</title>
+<style>
+html {
+	font-size: 18px;
+}
+body {
+	margin: 0;
+	padding: 0.5em;
+}
+.searchform {
+	display: flex;
+	margin: 0;
+}
+.searchform input.search {
+	appearance: none;
+	border: none;
+	outline: 1px solid #ccc;
+	flex: 1 1 auto;
+	height: 2em;
+	padding: 0.25em 0.5em;
+	font-size: inherit;
+}
+.searchform:focus-within input.search {
+	outline: 2px solid #ccc;
+}
+.searchform input.search:focus {
+	outline: 2px solid #777;
+}
+.searchform button {
+	appearance: none;
+	border: none;
+	background-color: #e4e4e4;
+	height: 2em;
+	padding: 0.25em 0.5em;
+	flex: 0 0 5em;
+	margin: 0 0 0 0.5em;
+	outline: 1px solid #ccc;
+	cursor: pointer;
+	font-size: inherit;
+}
+.searchform:focus-within button {
+	outline: 2px solid #ccc;
+}
+.searchform button:hover {
+	background-color: #777;
+	color: #fff;
+}
+.searchform button:hover,
+.searchform button:focus {
+	outline: 2px solid #777;
+}
+</style>
+<form action="https://www.google.com/search" class="searchform" method="get" name="searchform" target="_blank">
+<input autocomplete="on" class="form-control search" name="q" placeholder="Search in gwern.net" required="required" type="text">
+<input name="sitesearch" type="hidden" value="gwern.net">
+<button class="button" type="submit">Search</button>
+</form>
