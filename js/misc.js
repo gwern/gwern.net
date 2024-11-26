@@ -1810,7 +1810,7 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /**********/
 
 GW.search = {
-    searchWidgetId: "gcse-search",
+    searchWidgetId: "google-search",
 
     keyCommandSpawnSearchWidgetFlashStayDuration: 3000,
 
@@ -1838,9 +1838,9 @@ GW.search = {
         //  Add search widget to page toolbar.
         GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}">`
                                                           + `<a
-                                                               class="search"
-                                                               href="/static/google-cse.html"
-                                                               aria-label="Search site with Google CSE"
+                                                               class="search no-footer-bar"
+                                                               href="/static/google-search.html"
+                                                               aria-label="Search site with Google Search"
                                                                data-link-content-type="local-document"
                                                                >`
                                                           + `<span class="icon">`
@@ -1863,37 +1863,21 @@ GW.search = {
 
             let iframe = popFrame.document.querySelector("iframe");
             iframe.addEventListener("load", (event) => {
-                let inputBox = iframe.contentDocument.querySelector("input");
+				let inputBox = iframe.contentDocument.querySelector("input.search");
 
                 //  Focus search box on load.
                 inputBox.focus();
 
-                let observer = new MutationObserver((mutationsList, observer) => {
-                    //  Pin popup if a search is done.
-                    GW.search.pinSearchPopup();
-
-                    //  Show/hide placeholder text as appropriate.
-                    if (iframe.contentWindow.location.hash.includes("gsc.q")) {
-                        Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "search-results");
-                        iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "none";
-                    } else {
-                        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, "search-results");
-                        iframe.contentDocument.querySelector(".search-results-placeholder").style.display = "";
-                    }
-                });
-
-                observer.observe(iframe.contentDocument.body, {
-                    subtree: true,
-                    childList: true,
-                    characterData: true
-                });
-
                 if (Extracts.popFrameProvider == Popups) {
-                    inputBox.addEventListener("blur", (event) => {
-                        inputBox.justLostFocus = true;
-                    });
+					//	Pin popup if text is entered.
+					inputBox.addEventListener("input", (event) => {
+						if (Popups.popupIsPinned(popFrame) == false)
+							Popups.pinPopup(popFrame);
+					});
+
+					//	Enable normal popup Esc-key behavior.
                     iframe.contentDocument.addEventListener("keyup", (event) => {
-                        let allowedKeys = [ "Escape", "Esc", "/" ];
+                        let allowedKeys = [ "Escape", "Esc" ];
                         if (allowedKeys.includes(event.key) == false)
                             return;
 
@@ -1902,18 +1886,11 @@ GW.search = {
                         switch(event.key) {
                             case "Escape":
                             case "Esc": {
-                                if (inputBox.justLostFocus) {
-                                    inputBox.justLostFocus = false;
-                                } else if (Popups.popupIsPinned(popFrame)) {
+                                if (Popups.popupIsPinned(popFrame)) {
                                     Popups.unpinPopup(popFrame);
                                 } else {
                                     Popups.despawnPopup(popFrame);
                                 }
-
-                                break;
-                            }
-                            case "/": {
-                                GW.search.pinSearchPopup({ popup: popFrame, focus: true });
 
                                 break;
                             }
@@ -1972,7 +1949,7 @@ GW.keyCommands.keyUp = (event) => {
     switch(event.key) {
         case "/": {
             //  Expand page toolbar and flash search widget.
-            GW.pageToolbar.toggleCollapseState(false);
+            GW.pageToolbar.toggleCollapseState(false, { temp: true });
             GW.pageToolbar.flashWidget(GW.search.searchWidgetId, {
                 flashStayDuration: GW.search.keyCommandSpawnSearchWidgetFlashStayDuration
             });

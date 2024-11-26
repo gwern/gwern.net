@@ -5219,13 +5219,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
     --popup-title-bar-button-size: calc(var(--popup-title-bar-height) - 1px);
-}
-.popup.has-title-bar.mini-title-bar {
-    --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
-}
-.popup.has-title-bar:not(.mini-title-bar) {
+
     min-width: var(--GW-popups-popup-with-full-title-bar-min-width);
     min-height: var(--GW-popups-popup-with-full-title-bar-min-height);
+}
+.popup.mini-title-bar {
+    --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
+
+	min-width: unset;
+	min-height: unset;
 }
 
 .popup .popframe-title-bar {
@@ -5245,7 +5247,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     z-index: 111;
 }
 
-.popup.has-title-bar.mini-title-bar .popframe-title-bar {
+.popup.mini-title-bar .popframe-title-bar {
     overflow: hidden;
 }
 .popup.grabbed .popframe-title-bar,
@@ -5856,6 +5858,19 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: var(--GW-popups-popup-max-height);
 }
 
+/*┌───────────────┐*/
+/*│ Search popup. │*/
+/*└───────────────┘*/
+
+.popup.search {
+	min-height: unset;
+	height: unset;
+}
+
+.popup-body.search iframe {
+	height: 3em;
+}
+
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
@@ -6366,6 +6381,19 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popin-body #page-metadata::after {
     width: calc(100% + 1em);
     margin: 1em -1em 1.125em 0;
+}
+
+/*┌───────────────┐*/
+/*│ Search popup. │*/
+/*└───────────────┘*/
+
+.popin.search {
+	min-height: unset;
+	height: unset;
+}
+
+.popin-body.search iframe {
+	height: 3rem;
 }
 
 /*=---------------=*/
@@ -7598,7 +7626,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar .extracts-mode-selector {
     order: 3;
 }
-#page-toolbar #gcse-search {
+#page-toolbar #google-search {
     order: 4;
 }
 
@@ -7706,18 +7734,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /* SEARCH WIDGET */
 /*****************/
 
-#page-toolbar #gcse-search a {
+#page-toolbar #google-search a {
     display: block;
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
-#page-toolbar #gcse-search a .icon {
+#page-toolbar #google-search a .icon {
 	padding: 5px;
 	width: 100%;
 	height: 100%;
 	display: flex;
 	box-sizing: border-box;
 }
-#page-toolbar #gcse-search a svg {
+#page-toolbar #google-search a svg {
     display: block;
 }
 

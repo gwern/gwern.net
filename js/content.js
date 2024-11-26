@@ -1563,7 +1563,7 @@ Content = {
                 //  Determine sandbox settings.
                 let embedURL = URLFromString(embedSrc);
                 if (embedURL.pathname.startsWith("/static/") == true) {
-                	additionalAttributes.push(`sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"`);
+                	additionalAttributes.push(`sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"`);
                 } else if (embedURL.pathname.endsWith(".pdf") == false) {
                     additionalAttributes.push(`sandbox="allow-same-origin" referrerpolicy="same-origin"`);
                 }

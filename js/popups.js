@@ -1374,6 +1374,9 @@ Popups = {
                 Popups.removeClassesFromPopFrame(popup, "restored");
             } else if (   Popups.popupIsPinned(popup)
                        || Popups.popupWasUnpinned(popup)) {
+				if (popup.viewportRect == null)
+					return;
+
                 provisionalPopupXPosition = popup.viewportRect.left;
                 provisionalPopupYPosition = popup.viewportRect.top;
 
