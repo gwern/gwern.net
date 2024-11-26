@@ -8495,7 +8495,19 @@ function synthesizeIncludeLink(link, attributes, properties) {
 	}
 
 	if (link instanceof HTMLAnchorElement) {
-		includeLink.classList.add(...(link.classList));
+		//	Import source link classes.
+		includeLink.classList.add(...(Array.from(link.classList).filter(linkClass => 
+			(   [ "link-annotated", 
+				  "link-annotated-partial",
+				  "has-annotation",
+				  "has-content",
+				  "has-icon",
+				  "has-indicator-hook"
+				  ].includes(linkClass) == false
+			 && linkClass.startsWith("include-") == false)
+		)));
+
+		//	Import source link data attributes.
 		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
 			includeLink.dataset[attrName] = attrValue;
 	}
