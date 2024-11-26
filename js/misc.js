@@ -1924,6 +1924,10 @@ GW.search = {
                 condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
             });
         }
+
+		//	Add DNS-prefetch tag.
+		//	See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
+		document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
     }
 };
 
