@@ -824,6 +824,9 @@ Popups = {
         popup.popupStack.remove(popup);
         Popups.detachPopupFromTarget(popup);
 
+		if (Popups.keepPopupAttachedOnPin(popup.spawningTarget))
+			Popups.attachPopupToTarget(popup, popup.spawningTarget);
+
         popup.titleBar.updateState();
     },
 
@@ -1302,14 +1305,19 @@ Popups = {
     },
 
     //  See also: extracts.js
-    preferSidePositioning: (target) => {
-        return (target.preferSidePositioning?.() ?? false);
+    preferPopupSidePositioning: (target) => {
+        return (target.preferPopupSidePositioning?.() ?? false);
     },
 
     //  See also: misc.js
     cancelPopupOnClick: (target) => {
         return (target.cancelPopupOnClick?.() ?? true);
     },
+
+	//	See also: misc.js
+	keepPopupAttachedOnPin: (target) => {
+		return (target.keepPopupAttachedOnPin?.() ?? false);
+	},
 
     /*  Returns current popup position. (Usable only after popup is positioned.)
      */
@@ -1398,7 +1406,7 @@ Popups = {
                     above or below.
                  */
                 let offToTheSide = (   Popups.containingPopFrame(target)
-                                    || Popups.preferSidePositioning(target))
+                                    || Popups.preferPopupSidePositioning(target))
                                    ? true
                                    : false;
 
@@ -2079,7 +2087,8 @@ Popups = {
 
         Popups.clearPopupTimers(event.target);
 
-        if (event.target.popup)
+        if (   event.target.popup != null
+        	&& Popups.popupIsPinned(event.target.popup) == false)
             Popups.setPopupFadeTimer(event.target);
     },
 

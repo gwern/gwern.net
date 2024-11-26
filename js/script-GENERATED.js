@@ -2353,21 +2353,18 @@ GW.search = {
     searchWidget: null,
     searchWidgetLink: null,
 
-    pinSearchPopup: (options) => {
-        options = Object.assign({
-            focus: false,
-            popup: GW.search.searchWidgetLink?.popup
-        }, options);
+    searchPopup: null,
 
-        if (options.popup) {
-            Popups.pinPopup(options.popup);
+    pinSearchPopup: () => {
+		if (GW.search.searchPopup == null)
+			return;
 
-            if (options.focus) {
-                requestAnimationFrame(() => {
-                    options.popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
-                });
-            }
-        }
+		if (Popups.popupIsPinned(GW.search.searchPopup) == false)
+			Popups.pinPopup(GW.search.searchPopup);
+
+		requestAnimationFrame(() => {
+			GW.search.searchPopup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
+		});
     },
 
     setup: () => {
@@ -2397,7 +2394,10 @@ GW.search = {
         let popFrameSpawnEventHandler = (eventInfo) => {
             let popFrame = (eventInfo.popup ?? eventInfo.popin);
 
-            let iframe = popFrame.document.querySelector("iframe");
+			if (Extracts.popFrameProvider == Popups)
+				GW.search.searchPopup = popFrame;
+
+			let iframe = popFrame.document.querySelector("iframe");
             iframe.addEventListener("load", (event) => {
 				let inputBox = iframe.contentDocument.querySelector("input.search");
 
@@ -2439,20 +2439,33 @@ GW.search = {
             });
         };
 
+		//	Event handler for popup despawn.
+		let popFrameDespawnEventHandler = (eventInfo) => {
+			let popFrame = (eventInfo.popup ?? eventInfo.popin);
+
+			if (Extracts.popFrameProvider == Popups)
+				GW.search.searchPopup = null;
+		};
+
         //  Configure pop-frame behavior.
         if (Extracts.popFrameProvider == Popups) {
             //  Configure popup positioning and click response.
-            GW.search.searchWidgetLink.preferSidePositioning = () => true;
+            GW.search.searchWidgetLink.preferPopupSidePositioning = () => true;
             GW.search.searchWidgetLink.cancelPopupOnClick = () => false;
+            GW.search.searchWidgetLink.keepPopupAttachedOnPin = () => true;
 
             //  Pin popup and focus search box if widget is clicked.
             GW.search.searchWidgetLink.addActivateEvent((event) => {
-                GW.search.pinSearchPopup({ focus: true });
+                GW.search.pinSearchPopup();
             });
 
             //  Add popup spawn event handler.
             GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
                 condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+            });
+            //	Add popup despawn event handler.
+            GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", popFrameDespawnEventHandler, {
+            	condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
             });
         } else {
             //  Add popin inject event handler.
@@ -2489,23 +2502,29 @@ GW.keyCommands.keyUp = (event) => {
     switch(event.key) {
         case "/": {
             //  Expand page toolbar and flash search widget.
-            GW.pageToolbar.toggleCollapseState(false, { temp: true });
+            GW.pageToolbar.toggleCollapseState(false, {
+            	temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
+            });
             GW.pageToolbar.flashWidget(GW.search.searchWidgetId, {
                 flashStayDuration: GW.search.keyCommandSpawnSearchWidgetFlashStayDuration
             });
 
-            //  When the popup spawns, pin it and focus the search box.
-            GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-                requestAnimationFrame(() => {
-                    GW.search.pinSearchPopup({ focus: true });
-                });
-            }, {
-                once: true,
-                condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
-            });
+			if (GW.search.searchPopup == null) {
+				//  When the popup spawns, pin it and focus the search box.
+				GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+					requestAnimationFrame(() => {
+						GW.search.pinSearchPopup();
+					});
+				}, {
+					once: true,
+					condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+				});
 
-            //  Spawn popup.
-            Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+				//  Spawn popup.
+				Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+			} else {
+				GW.search.pinSearchPopup();
+			}
 
             break;
         }
@@ -3451,6 +3470,9 @@ Popups = {
         popup.popupStack.remove(popup);
         Popups.detachPopupFromTarget(popup);
 
+		if (Popups.keepPopupAttachedOnPin(popup.spawningTarget))
+			Popups.attachPopupToTarget(popup, popup.spawningTarget);
+
         popup.titleBar.updateState();
     },
 
@@ -3929,14 +3951,19 @@ Popups = {
     },
 
     //  See also: extracts.js
-    preferSidePositioning: (target) => {
-        return (target.preferSidePositioning?.() ?? false);
+    preferPopupSidePositioning: (target) => {
+        return (target.preferPopupSidePositioning?.() ?? false);
     },
 
     //  See also: misc.js
     cancelPopupOnClick: (target) => {
         return (target.cancelPopupOnClick?.() ?? true);
     },
+
+	//	See also: misc.js
+	keepPopupAttachedOnPin: (target) => {
+		return (target.keepPopupAttachedOnPin?.() ?? false);
+	},
 
     /*  Returns current popup position. (Usable only after popup is positioned.)
      */
@@ -4025,7 +4052,7 @@ Popups = {
                     above or below.
                  */
                 let offToTheSide = (   Popups.containingPopFrame(target)
-                                    || Popups.preferSidePositioning(target))
+                                    || Popups.preferPopupSidePositioning(target))
                                    ? true
                                    : false;
 
@@ -4706,7 +4733,8 @@ Popups = {
 
         Popups.clearPopupTimers(event.target);
 
-        if (event.target.popup)
+        if (   event.target.popup != null
+        	&& Popups.popupIsPinned(event.target.popup) == false)
             Popups.setPopupFadeTimer(event.target);
     },
 
@@ -10972,7 +11000,7 @@ Extracts = {
         }
 
         //  For special positioning by Popups.js.
-        target.preferSidePositioning = () => {
+        target.preferPopupSidePositioning = () => {
             return (   target.closest("li") != null
                     && target.closest(".columns") == null);
         };

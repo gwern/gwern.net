@@ -844,7 +844,7 @@ Extracts = {
         }
 
         //  For special positioning by Popups.js.
-        target.preferSidePositioning = () => {
+        target.preferPopupSidePositioning = () => {
             return (   target.closest("li") != null
                     && target.closest(".columns") == null);
         };
