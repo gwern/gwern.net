@@ -51,6 +51,8 @@
     --GW-page-toolbar-fade-after-collapse-duration: 0.25s;
     --GW-page-toolbar-widget-flash-rise-duration: 1s;
     --GW-page-toolbar-widget-flash-fall-duration: 1s;
+    --GW-page-toolbar-widget-flash-filter: invert(0.7) brightness(1.5) contrast(1.5);
+    --GW-page-toolbar-widget-flash-filter-inverse: invert(0.7) brightness(1.33) contrast(1.33);
 }
 @supports (-moz-appearance: none) {
     :root {
@@ -5425,6 +5427,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     transform: scale(0.95);
 }
 
+#page-toolbar .widget a .icon {
+    color: var(--GW-page-toolbar-button-selected-icon-color);
+}
+
 /*  Icons-only toolbar mode.
  */
 #page-toolbar.button-labels-not .widget button .label,
@@ -5465,14 +5471,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow: var(--widget-box-shadow-double-outline);
     }
 }
+
 #page-toolbar.vertical .widget.flashing {
     box-shadow: var(--widget-box-shadow-double-outline);
+	background-color: var(--GW-page-toolbar-border-color);
     transition:
-        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-in,
+        background-color var(--GW-page-toolbar-widget-flash-rise-duration) ease-in;
 }
 #page-toolbar.vertical .widget.flashing-fade {
     transition:
-        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
+        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-out,
+        background-color var(--GW-page-toolbar-widget-flash-fall-duration) ease-out;
 }
 
 #page-toolbar.vertical .widget button,
@@ -6590,7 +6600,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #page-toolbar #google-search a {
     display: block;
-    color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 #page-toolbar #google-search a .icon {
 	padding: 5px;

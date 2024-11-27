@@ -1197,6 +1197,8 @@
     --GW-page-toolbar-fade-after-collapse-duration: 0.25s;
     --GW-page-toolbar-widget-flash-rise-duration: 1s;
     --GW-page-toolbar-widget-flash-fall-duration: 1s;
+    --GW-page-toolbar-widget-flash-filter: invert(0.7) brightness(1.5) contrast(1.5);
+    --GW-page-toolbar-widget-flash-filter-inverse: invert(0.7) brightness(1.33) contrast(1.33);
 }
 @supports (-moz-appearance: none) {
     :root {
@@ -2482,18 +2484,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5591,7 +5593,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5772,7 +5774,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6233,7 +6235,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -6571,6 +6573,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     transform: scale(0.95);
 }
 
+#page-toolbar .widget a .icon {
+    color: var(--GW-page-toolbar-button-selected-icon-color);
+}
+
 /*  Icons-only toolbar mode.
  */
 #page-toolbar.button-labels-not .widget button .label,
@@ -6611,14 +6617,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow: var(--widget-box-shadow-double-outline);
     }
 }
+
 #page-toolbar.vertical .widget.flashing {
     box-shadow: var(--widget-box-shadow-double-outline);
+	background-color: var(--GW-page-toolbar-border-color);
     transition:
-        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-out;
+        box-shadow var(--GW-page-toolbar-widget-flash-rise-duration) ease-in,
+        background-color var(--GW-page-toolbar-widget-flash-rise-duration) ease-in;
 }
 #page-toolbar.vertical .widget.flashing-fade {
     transition:
-        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
+        box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-out,
+        background-color var(--GW-page-toolbar-widget-flash-fall-duration) ease-out;
 }
 
 #page-toolbar.vertical .widget button,
@@ -7199,7 +7209,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#question');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7409,7 +7419,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7736,7 +7746,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #page-toolbar #google-search a {
     display: block;
-    color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 #page-toolbar #google-search a .icon {
 	padding: 5px;
@@ -7798,7 +7807,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1732501350#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7877,7 +7886,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732501350#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1732667047#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

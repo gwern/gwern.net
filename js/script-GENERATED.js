@@ -1686,7 +1686,7 @@ GW.pageToolbar = {
 
     hoverUncollapseDelay: 400,
     unhoverCollapseDelay: 2500,
-    demoCollapseDelay: 5000,
+    demoCollapseDelay: 9000,
 
     /*  These values must be synced with CSS. Do not modify them in isolation!
         (Listed variables that correspond to each parameter are in default.css.
