@@ -547,8 +547,11 @@ article {
     --text-alignment: left;
     --text-hyphenation: none;
 
-    border: 1px solid var(--GW-TOC-border-color);
-    background-color: var(--GW-TOC-background-color);
+	--background-color: var(--GW-TOC-background-color);
+	--border-color: var(--GW-TOC-border-color);
+
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
     font-family: var(--GW-sans-serif-font-stack);
     line-height: 1.25;
 }
@@ -570,15 +573,15 @@ article {
         float: left;
         max-width: 285px;
         box-shadow:
-            -1rem 0 0 0 var(--background-color),
-            2.25rem 0 0 0 var(--background-color);
+            -1rem 0 0 0 var(--GW-body-background-color),
+            2.25rem 0 0 0 var(--GW-body-background-color);
     }
 }
 @media all and (max-width: 900px) {
     /*  On mobile, we want the TOC to be inline.
      */
     #TOC {
-        margin: 3rem auto 0 auto;
+        margin: 2.75rem auto 2.5rem auto;
     }
 }
 
@@ -1881,6 +1884,8 @@ a code {
 .icon-eye-slash-solid,
 .icon-manicule-left,
 .icon-manicule-right {
+    --link-underline-background-color: var(--background-color);
+
     position: relative;
     top: 0.05em;
     background-color: var(--link-underline-background-color);
