@@ -1373,7 +1373,8 @@ GW.pageToolbar = {
     updateState: (event) => {
         if (   event
             && event.type == "scroll"
-            && GW.pageToolbar.toolbar.matches(":hover") == false) {
+            && (   GW.isMobile() 
+            	|| GW.pageToolbar.toolbar.matches(":hover") == false)) {
             //  Collapse on scroll.
             let thresholdScrollDistance = (0.2 * window.innerHeight);
             if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
@@ -1400,6 +1401,14 @@ GW.pageToolbar = {
             }
         }
     },
+
+	setPositionOffset: (offset) => {
+		if (GW.pageToolbar.toolbar == null)
+			return;
+
+		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-x", offset.x + "px");
+		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-y", offset.y + "px");
+	},
 
     setup: () => {
         GW.pageToolbar.toolbar = GW.pageToolbar.getToolbar();
@@ -1622,25 +1631,9 @@ GW.floatingHeader = {
 
     currentTrail: [ ],
 
-    /*  Scroll down enough to make whatever’s under the header visible.
-     */
-    adjustScrollTop: () => {
-        if (GW.isMobile() == false)
-            return;
-
-        if (GW.floatingHeader.header == null)
-            return;
-
-        let previousHash = GW.locationHash;
-        requestAnimationFrame(() => {
-            if (location.hash > "") {
-                if (previousHash == GW.locationHash)
-                    window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
-                else
-                    GW.floatingHeader.adjustScrollTop();
-            }
-        });
-    },
+	isHidden: () => {
+		return GW.floatingHeader.header?.classList.contains("hidden");
+	},
 
     /*  Show/hide the floating header, and update state, in response to
         scroll event.
@@ -1683,11 +1676,19 @@ GW.floatingHeader = {
             else
                 GW.floatingHeader.currentTrail = trail;
         }
+
+		/*	On mobile, update page toolbar position offset, so that the header
+			does not block the page toolbar toggle button.
+		 */
+		if (GW.isMobile()) {
+			GW.pageToolbar.setPositionOffset(new DOMPoint(0, GW.floatingHeader.isHidden() == false
+															 ? -1 * GW.floatingHeader.header.offsetHeight
+															 : 0));
+		}
     },
 
     getTrail: () => {
-        let headerOffset = GW.isMobile() ? GW.floatingHeader.header.offsetHeight : 10;
-        let element = document.elementFromPoint(window.innerWidth / 2, headerOffset + 10);
+        let element = document.elementFromPoint(window.innerWidth / 2, 20);
 
         if (   element.tagName == "SECTION"
             || element == GW.floatingHeader.markdownBody)
@@ -1749,9 +1750,6 @@ GW.floatingHeader = {
     },
 
     linkInChainClicked: (event) => {
-        if (event.target.hash == location.hash)
-            GW.floatingHeader.adjustScrollTop();
-
         if (Extracts.popFrameProvider == Popins)
             Popins.removeAllPopins();
     },
@@ -1765,10 +1763,18 @@ GW.floatingHeader = {
             return;
 
         //  Inject header.
-        GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden">`
-                                                + `<div class="link-chain"></div>`
-                                                + `<div class="scroll-indicator"></div>`
-                                                + `</div>`);
+        if (GW.isMobile()) {
+			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-bottom">`
+													+ `<div class="scroll-indicator"></div>`
+													+ `<div class="link-chain"></div>`
+													+ `</div>`);
+        
+        } else {
+			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-top">`
+													+ `<div class="link-chain"></div>`
+													+ `<div class="scroll-indicator"></div>`
+													+ `</div>`);
+        }
 
         //  Designate desktop version of header.
         if (GW.isMobile() == false)
@@ -1796,9 +1802,6 @@ GW.floatingHeader = {
             defer: true,
             ifDeferCallWhenAdd: true
         });
-
-        //  Adjust initial scroll offset.
-        doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);
     }
 };
 
@@ -2094,10 +2097,6 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
         //  Clean location hash.
         cleanLocationHash();
-
-        //  Compensate for floating header.
-        if (GW.floatingHeader)
-            GW.floatingHeader.adjustScrollTop();
 
         //  If hash really changed, update saved hash and fire event.
         if (GW.locationHash != location.hash) {
