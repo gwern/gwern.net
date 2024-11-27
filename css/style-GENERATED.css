@@ -6681,10 +6681,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar.mobile {
     --toolbar-button-size: 46px;
 
+	--toolbar-offset-x: 0px;
+	--toolbar-offset-y: 0px;
+
     flex-flow: column-reverse;
     width: var(--toolbar-button-size);
-    bottom: 0.5em;
-    right: 0.5em;
+    bottom: calc(0.5em - var(--toolbar-offset-y));
+    right:  calc(0.5em - var(--toolbar-offset-x));
 }
 
 #page-toolbar.mobile .widgets {
@@ -7448,7 +7451,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #floating-header {
     position: absolute;
     left: 0;
-    top: 0;
+    bottom: 0;
     width: 100%;
     background-color: var(--GW-body-background-color);
     box-sizing: border-box;
@@ -7458,7 +7461,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #floating-header.hidden {
-    top: -2.5em;
+    bottom: -2.5em;
 }
 #floating-header.hidden .link-chain .link.page-title {
     display: none;
@@ -7526,7 +7529,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         pointer-events: none;
         left: unset;
         right: calc(50% + (var(--GW-body-max-width) / 2) + 64px);
+        bottom: unset;
+        top: 0;
     }
+	#floating-header.hidden {
+		bottom: unset;
+		top: -2.5em;
+	}
     #floating-header > * {
         pointer-events: auto;
     }
