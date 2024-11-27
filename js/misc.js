@@ -1373,7 +1373,8 @@ GW.pageToolbar = {
     updateState: (event) => {
         if (   event
             && event.type == "scroll"
-            && GW.pageToolbar.toolbar.matches(":hover") == false) {
+            && (   GW.isMobile() 
+            	|| GW.pageToolbar.toolbar.matches(":hover") == false)) {
             //  Collapse on scroll.
             let thresholdScrollDistance = (0.2 * window.innerHeight);
             if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
