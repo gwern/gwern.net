@@ -2880,4 +2880,5 @@ linkIDOverrides =
       ,("https://www.youtube.com/watch?v=6pp0kdfFzM0","creber-et-al-2016-1"),("https://creberbrown.bandcamp.com/album/Getting-Stronger","creber-et-al-2016-2")
       , ("https://www.sciencedirect.com/science/article/pii/S1053811924000697","dong-et-al-2024-1"),("https://arxiv.org/abs/2411.13676","dong-et-al-2024-2")
       ,("https://arxiv.org/abs/2310.01505","patterson-et-al-2023-1"),("https://arxiv.org/abs/2304.01315","patterson-et-al-2023-2")
+      ,("https://arxiv.org/abs/2411.16679","yang-et-al-2024-1"),("https://arxiv.org/abs/2406.11431","yang-et-al-2024-2")
       ]

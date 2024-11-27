@@ -248,6 +248,7 @@ canonicals = M.fromList
   , ("gwernbranwen", "Gwern")
   , ("gwern.branwen", "Gwern")
   , ("Gwern Branwen", "Gwern")
+  , ("Branwen", "Gwern")
   , ("Donald E. Knuth", "Donald Knuth")
   , ("Knuth", "Donald Knuth")
   , ("Don Knuth", "Donald Knuth")
@@ -538,6 +539,7 @@ canonicals = M.fromList
   , ("Raymond M. Smullyan", "Raymond Smullyan")
   , ("Karén Simonyan", "Karen Simonyan")
   , ("Robin L. Carhart-Harris", "Robin Carhart-Harris")
+  , ("austinc3301", "Agus")
   ]
 
 -- tests: unique
@@ -1027,6 +1029,7 @@ authorLinkDB = M.fromList $
     , ("Maria Dimitriou", "https://scholar.google.com/citations?user=-8Rt-d0AAAAJ")
     , ("Niina Eklund", "https://fi.linkedin.com/in/niina-eklund-747934bb")
     , ("Michiaki Kubo", "https://researchmap.jp/kubom")
+    , ("Agus", "https://x.com/austinc3301")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2262,4 +2265,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener"]

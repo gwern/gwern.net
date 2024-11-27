@@ -50,7 +50,7 @@ lateNight = do
   timezone <- getCurrentTimeZone
   let localTime = utcToLocalTime timezone now
       hour = todHour $ localTimeOfDay localTime
-  return $ hour < 9
+  return $ hour < 8
 
 -- for Columns.hs:
 listLengthMaxN :: Int

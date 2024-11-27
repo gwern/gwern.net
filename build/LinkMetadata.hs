@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-11-25 09:22:47 gwern"
+When:  Time-stamp: "2024-11-26 17:59:08 gwern"
 License: CC-0
 -}
 
@@ -99,6 +99,10 @@ addPageLink x = x
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,dateModified,kvs,tags,abst)) ->
 -- >  do { abst' <- Paragraph.processParagraphizer md path abst;
 -- >       return (path,(title,author,date,dateModified,kvs,tags, abst')) } )
+--
+-- To add 'Gwern' as an author to all local files which have no author & have "-gwern-" in the filename:
+--
+-- > walkAndUpdateLinkMetadata True (\x@(u, (t,aut,d,dc,misc,tags,abst)) -> if (head u == '/' && "-gwern-" `isInfixOf` u && aut == "") then return (u,(t,"Gwern",d,dc,misc,tags,abst)) else return x)
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"
@@ -642,7 +646,7 @@ fileTranscludesTest md am =
     , (simpleTestF "/doc/cs/algorithm/1990-galil.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "A linear-time algorithm for concave one-dimensional dynamic programming"] ("/doc/cs/algorithm/1990-galil.pdf","")]]]])
     , (simpleTestT "/doc/economics/2010-mankiw.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "The Optimal Taxation of Height: A Case Study of Utilitarian Income Redistribution"] ("/doc/economics/2010-mankiw.pdf","")]]]])
     , (simpleTestEmpty "https://arxiv.org/abs/1505.03118", [])
-    , (simpleTestT "https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [RawInline (Text.Pandoc.Format "HTML") "If You Don\8217t Change the UI, Nobody Notices: I saw a screenshot a few days ago that made me think Windows 7 Beta might actually be worth checking out."] ("https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/","")]]]])
+    , (simpleTestT "https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon-color","#57a3e8")]) [RawInline (Text.Pandoc.Format "HTML") "If You Don\8217t Change the UI, Nobody Notices: I saw a screenshot a few days ago that made me think Windows 7 Beta might actually be worth checking out."] ("https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/","")]]]])
     , (simpleTestT "https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","H"),("link-icon-type","text")]) [RawInline (Text.Pandoc.Format "HTML") "Night Shifts: Can technology shape our dreams?"] ("https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/","")]]]])
     , (simpleTestEmpty "https://news.ycombinator.com/item?id=31274155", [])
     , (simpleTestEmpty "https://founders.archives.gov/documents/Jefferson/03-06-02-0322", [])

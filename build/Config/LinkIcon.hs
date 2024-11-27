@@ -20,15 +20,14 @@ prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
 -- TODO: icon+color: https://digital.library.unt.edu/ green hawk icon; https://www.animesuki.com/ + "forums.animesuki.com" teal geometric icon;  https://www.theregister.com/ vulture icon + red ; http://ascii.textfiles.com/ ASCII + green ; https://www.e-codices.unifr.ch/en (e) + yellow ; https://www.bartleby.com/ 'b' + dark blue ; https://darcs.net/ squid icon + green ; https://www.smh.com.au/ "S" + dark blue ; https://www.rrauction.com/ 'RR' + blue ; https://www.mangaupdates.com/ M+yellow ; https://www.instructables.com/ robot head emoji + yellow ; https://engineering.virginia.edu/department/computer-science IA-library icon + orange ; https://mujoco.org/ 'M' + blue ; https://www.artbreeder.com/ logo+light blue ...
--- color-only: https://danluu.com/ (no icon, but color: default link blue is iconic at this point! #0000EE); https://www.thedailybeast.com/ red ; https://www.straighttalkonevidence.org/ dark blue ; https://blog.codinghorror.com/ light blue ; https://fonts.ilovetypography.com/ orange-red ; https://dataprivacylab.org/ blue ; https://www.thefreelibrary.com/ blue ; https://www.unitedpharmacies-uk.md/ light-blue; https://www.petforums.co.uk/ dark green ; https://wellcomecollection.org/ yellow ; https://www.acpjournals.org/journal/aim teal ; ...
+-- color-only:
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
                               , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com"
- , "www.thedailybeast.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com"
- , "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
- , "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org", "ilovetypography.com"
- , "cognitivefun.net", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md"
- , "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net"
+ , "www.joelonsoftware.com"
+ , "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
+ , "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org"
+ , "cognitivefun.net", "www.e-codices.unifr.ch", "www.bartleby.com", "darcs.net"
  , "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com"
  , "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net"
  , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com"
@@ -47,7 +46,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "
  , "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu"
  , "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org"
  , "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"
- , "www.acpjournals.org", "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com"
+ , "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com"
  , "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"
  , "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
@@ -106,11 +105,11 @@ aU'' url = any (u'' url)
 
 -- The URL matches:
 linkIconRules, linkIconRulesOverrides, linkIconRulesSingle, linkIconRulesDouble, linkIconRulesTriple, linkIconRulesQuad,
-  linkIconRulesSVG, linkIconRulesFiletypes :: T.Text -> (T.Text, T.Text, T.Text)
+  linkIconRulesSVG, linkIconRulesFiletypes, linkIconRulesColors :: T.Text -> (T.Text, T.Text, T.Text)
 -- run all the rules in order, and take the first one that returns a non-empty tuple (because it matched):
 linkIconRules "" = error "Config.LinkIcon: linkIconRules: passed an empty URL; this should be impossible!"
 linkIconRules u = let result = filter (/=("","","")) $ map (\f -> f u) [linkIconRulesOverrides, linkIconRulesSingle, linkIconRulesDouble,
-                                                                linkIconRulesTriple, linkIconRulesQuad, linkIconRulesSVG, linkIconRulesFiletypes]
+                                                                linkIconRulesTriple, linkIconRulesQuad, linkIconRulesSVG, linkIconRulesFiletypes, linkIconRulesColors]
                                in if null result then ("","","") else head result
 
 linkIconRulesOverrides "" = error "Config.LinkIcon.linkIconRulesOverrides: passed empty string as the URL; this should never happen!"
@@ -208,7 +207,6 @@ linkIconRulesSingle u
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
- | u'' u "danluu.com" = ("", "", "#0000ee") --Dan Luu :no icon, but color: default link blue is iconic at this point!
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -533,6 +531,22 @@ linkIconRulesFiletypes u
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
  | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe); NOTE: we do not attempt to check for PDFs very thoroughly because we assume that there are no treacherous URLs or that they are covered by LinkArchive mirroring PDFs locally by default to a '/doc/www/.../$HASH.pdf' URL which will match this reliably.
+ | otherwise = ("", "", "")
+
+-- lowest priority: color-only hover links
+linkIconRulesColors "" = error "Config.LinkIcon.linkIconRulesColors: passed empty string as the URL; this should never happen!"
+linkIconRulesColors u
+ | u'' u "danluu.com" = ("", "", "#0000ee") -- Dan Luu: no icon, but color: default link blue is iconic at this point!
+ | u'' u "www.thedailybeast.com" = ("","", "#ea0606") -- red
+ | u'' u "www.straighttalkonevidence.org" = ("", "", "#102659") -- dark blue
+ | u'' u "blog.codinghorror.com" || u'' u "www.codinghorror.com" = ("","", "#57a3e8") -- light blue
+ | u'' u "fonts.ilovetypography.com" || u'' u "ilovetypography.com" = ("", "", "#e05f4c") -- orange-red
+ | u'' u "dataprivacylab.org" = ("", "", "#3366cc") --  blue
+ | u'' u "www.thefreelibrary.com" = ("", "", "#064c82") -- blue
+ | u'' u "www.unitedpharmacies-uk.md" = ("", "", "#27c1da") -- light-blue
+ | u'' u "www.petforums.co.uk" = ("", "", "#295b52") -- dark green
+ | u'' u "wellcomecollection.org" = ("", "", "#ffce3c") -- yellow
+ | u'' u "www.acpjournals.org" = ("", "", "#007377") -- teal
  | otherwise = ("", "", "")
 
 ------------------------------------------------------------------------------------------
@@ -1183,6 +1197,17 @@ linkIconTestUnitsText =
          , ("https://docs.midjourney.com/docs/weird", "midjourney", "svg", "")
          , ("https://www.midjourney.com/", "midjourney", "svg", "")
          , ("https://danluu.com/web-bloat/", "", "", "#0000ee")
+         , ("https://www.thedailybeast.com/vegan-youtube-is-imploding-as-stars-like-rawvana-bonny-rebecca-and-stella-rae-change-diets", "","", "#ea0606")
+         , ("https://www.straighttalkonevidence.org/2017/09/22/disappointing-findings-on-conditional-cash-transfers-as-a-tool-to-break-the-poverty-cycle-in-the-united-states/", "", "", "#102659")
+         , ("https://blog.codinghorror.com/the-large-display-paradox/", "","", "#57a3e8")
+         , ("http://www.codinghorror.com/blog/archives/001076.html", "","", "#57a3e8")
+         , ("https://ilovetypography.com/2009/12/08/graphic-masterpieces-of-yakov-g-chernikhov-the-collection-of-dmitry-y-chernikhov/", "", "", "#e05f4c")
+         , ("https://dataprivacylab.org/projects/identifiability/pharma1.html", "", "", "#3366cc")
+         , ("https://www.thefreelibrary.com/E+unibus+pluram%3A+television+and+U.S.+fiction.-a013952319", "", "", "#064c82")
+         , ("https://www.unitedpharmacies-uk.md/Modavigil-Modafinil-100mg-30-Tablets-p-759.html", "", "", "#27c1da")
+         , ("https://www.petforums.co.uk/threads/do-any-of-your-cats.225353/#post-1061870480", "", "", "#295b52")
+         , ("https://wellcomecollection.org/articles/XV_E7BEAACIAo9Vz", "", "", "#ffce3c")
+         , ("https://www.acpjournals.org/doi/10.7326/0003-4819-152-11-201006010-00232?articleid=745807", "", "", "#007377")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

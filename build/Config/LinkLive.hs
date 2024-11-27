@@ -2368,7 +2368,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.bartleby.com"
    , "ki.se"
    , "pmc.ncbi.nlm.nih.gov"
-   , "manifold1.com"
+   , "www.manifold1.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
