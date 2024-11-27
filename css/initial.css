@@ -581,7 +581,7 @@ article {
     /*  On mobile, we want the TOC to be inline.
      */
     #TOC {
-        margin: 3rem auto 0 auto;
+        margin: 2.75rem auto 2.5rem auto;
     }
 }
 
