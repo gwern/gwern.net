@@ -2166,26 +2166,6 @@ GW.floatingHeader = {
 
     currentTrail: [ ],
 
-    /*  Scroll down enough to make whatever’s under the header visible.
-     */
-    adjustScrollTop: () => {
-        if (GW.isMobile() == false)
-            return;
-
-        if (GW.floatingHeader.header == null)
-            return;
-
-        let previousHash = GW.locationHash;
-        requestAnimationFrame(() => {
-            if (location.hash > "") {
-                if (previousHash == GW.locationHash)
-                    window.scrollBy(0, -1 * GW.floatingHeader.header.offsetHeight);
-                else
-                    GW.floatingHeader.adjustScrollTop();
-            }
-        });
-    },
-
 	isHidden: () => {
 		return GW.floatingHeader.header?.classList.contains("hidden");
 	},
@@ -2243,8 +2223,7 @@ GW.floatingHeader = {
     },
 
     getTrail: () => {
-        let headerOffset = GW.isMobile() ? 0 : 10;
-        let element = document.elementFromPoint(window.innerWidth / 2, headerOffset + 10);
+        let element = document.elementFromPoint(window.innerWidth / 2, 20);
 
         if (   element.tagName == "SECTION"
             || element == GW.floatingHeader.markdownBody)
@@ -2306,9 +2285,6 @@ GW.floatingHeader = {
     },
 
     linkInChainClicked: (event) => {
-        if (event.target.hash == location.hash)
-            GW.floatingHeader.adjustScrollTop();
-
         if (Extracts.popFrameProvider == Popins)
             Popins.removeAllPopins();
     },
@@ -2361,9 +2337,6 @@ GW.floatingHeader = {
             defer: true,
             ifDeferCallWhenAdd: true
         });
-
-        //  Adjust initial scroll offset.
-        doWhenPageLayoutComplete(GW.floatingHeader.adjustScrollTop);
     }
 };
 
@@ -2659,10 +2632,6 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
         //  Clean location hash.
         cleanLocationHash();
-
-        //  Compensate for floating header.
-        if (GW.floatingHeader)
-            GW.floatingHeader.adjustScrollTop();
 
         //  If hash really changed, update saved hash and fire event.
         if (GW.locationHash != location.hash) {
