@@ -14867,8 +14867,8 @@ function setTOCCollapseState(collapsed = false) {
 /*******************************************************/
 /*  Add the collapse toggle button to the main page TOC.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectTOCMinimizeButton = (eventInfo) => {
-    GWLog("injectTOCMinimizeButton", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.injectTOCCollapseToggleButton = (eventInfo) => {
+    GWLog("injectTOCCollapseToggleButton", "rewrite.js", 1);
 
     let TOC = document.querySelector("#TOC");
     if (TOC == null)
@@ -14978,6 +14978,44 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
     updateTOCVisibility(TOC);
 }, "rewrite", (info) => (   info.container == document.body
                          && /\/(index)?$/.test(location.pathname)));
+
+/***************************************************************************/
+/*  Add recently-modified link icons in page TOC, to indicate recently added
+	page sections.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPageTOC = (eventInfo) => {
+    GWLog("addRecentlyModifiedDecorationsToPageTOC", "rewrite.js", 1);
+
+	let TOC = document.querySelector("#TOC");
+	if (TOC == null)
+		return;
+
+	/*	Create document fragment with synthetic include-link for annotation
+		of the current page.
+	 */
+    let annotationDoc = newDocument(synthesizeIncludeLink(location.pathname, { class: "link-annotated include-annotation" }));
+	let annotationIncludeLink = annotationDoc.firstElementChild;
+
+	/*	Copy `link-modified-recently` class from entries in annotation TOC
+		to corresponding entries in main page TOC.
+	 */
+    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+    	annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
+    		TOC.querySelector("#" + recentlyModifiedTOCLink.id).classList.add("link-modified-recently");
+    	});
+    	GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
+    }, {
+    	once: true,
+    	condition: (info) => (info.document == annotationDoc)
+    });
+
+	//	Trigger annotation load.
+    Transclude.triggerTranscludesInContainer(annotationDoc, {
+		source: "addRecentlyModifiedDecorationsToPageTOC",
+		container: annotationDoc,
+		document: annotationDoc
+	});
+}, "rewrite", (info) => (info.container == document.body));
 
 /*******************************************************************************/
 /*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
