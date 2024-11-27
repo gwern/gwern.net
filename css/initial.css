@@ -573,8 +573,8 @@ article {
         float: left;
         max-width: 285px;
         box-shadow:
-            -1rem 0 0 0 var(--background-color),
-            2.25rem 0 0 0 var(--background-color);
+            -1rem 0 0 0 var(--GW-body-background-color),
+            2.25rem 0 0 0 var(--GW-body-background-color);
     }
 }
 @media all and (max-width: 900px) {
