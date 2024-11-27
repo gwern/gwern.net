@@ -605,9 +605,16 @@ a[data-link-icon-color]:hover .link-icon-hook::after {
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before,
-.manicule, .icon-manicule-right, .icon-manicule-left,
-.icon-moon-solid, .icon-book-open-solid, .icon-message-slash-solid,
-.icon-magnifying-glass, .icon-gear-solid, .icon-sun-solid, .icon-eye-slash-solid {
+.manicule svg,
+.icon-manicule-right::before,
+.icon-manicule-left::before,
+.icon-moon-solid::before,
+.icon-book-open-solid::before,
+.icon-message-slash-solid::before,
+.icon-magnifying-glass::before,
+.icon-gear-solid::before,
+.icon-sun-solid::before,
+.icon-eye-slash-solid::before {
     filter: invert(1);
 }
 
