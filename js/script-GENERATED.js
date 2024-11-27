@@ -2189,37 +2189,64 @@ GW.floatingHeader = {
 
         //  Update breadcrumb display.
         let trail = GW.floatingHeader.getTrail();
-        if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
-            || maxChainLength < GW.floatingHeader.maxChainLength) {
-            GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
-
-            let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
-            GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
-            let index = 0;
-            chainLinks.forEach(link => {
-                link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
-                let span = wrapElement(link, "span.link", { moveClasses: true });
-                span.style.setProperty("--link-index", index++);
-            });
-
-            if (GW.isMobile() == false)
-                Extracts.addTargetsWithin(GW.floatingHeader.linkChain);
-
-            //  Constrain header height.
-            if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
-                && maxChainLength > 1)
-                GW.floatingHeader.updateState(event, maxChainLength - 1);
-            else
-                GW.floatingHeader.currentTrail = trail;
-        }
-
-		/*	On mobile, update page toolbar position offset, so that the header
-			does not block the page toolbar toggle button.
-		 */
 		if (GW.isMobile()) {
+			/*	We must update the display if either the current position in the
+				page has changed (i.e., we’ve scrolled), or if we are having to
+				re-compute the state due to having to reduce the header height
+				from what it would be if we were displaying the entire current
+				trail (i.e. if this is a recursive call).
+			 */
+			if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
+				|| maxChainLength < GW.floatingHeader.maxChainLength) {
+				GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
+
+				let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
+				GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
+				chainLinks.forEach(link => {
+					let span = wrapElement(link, "span.link", { moveClasses: true });
+
+					//	Enable special link click behavior.
+					link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
+				});
+
+				//  Constrain header height.
+				if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
+					&& maxChainLength > 1) {
+					GW.floatingHeader.updateState(event, maxChainLength - 1);
+					return;
+				}
+
+				//	Update current trail.
+				GW.floatingHeader.currentTrail = trail;
+			}
+ 
+			/*	Update page toolbar position offset, so that the header does not
+				block the page toolbar toggle button.
+			 */
 			GW.pageToolbar.setPositionOffset(new DOMPoint(0, GW.floatingHeader.isHidden() == false
 															 ? -1 * GW.floatingHeader.header.offsetHeight
 															 : 0));
+		} else {
+        	/*	We must update the display if the current position in the page
+        		has changed (i.e., we’ve scrolled).
+        	 */
+			if (trail.join("/") != GW.floatingHeader.currentTrail.join("/")) {
+				let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
+				GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
+				let index = 0;
+				chainLinks.forEach(link => {
+					let span = wrapElement(link, "span.link", { moveClasses: true });
+
+					//	Enable layout based on nesting level.
+					span.style.setProperty("--link-index", index++);
+				});
+
+				//	Chain links should spawn section popups.
+				Extracts.addTargetsWithin(GW.floatingHeader.linkChain);
+
+				//	Update current trail.
+				GW.floatingHeader.currentTrail = trail;
+			}
 		}
     },
 
