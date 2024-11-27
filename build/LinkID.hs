@@ -2,6 +2,7 @@
 
 module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID) where
 
+import Control.Monad (replicateM)
 import Data.Char (isAlphaNum, isPunctuation, toLower)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf, sortOn)
 import Data.Maybe (fromJust, mapMaybe)
@@ -96,7 +97,7 @@ authorsToCite url author date =
              -- handle cases like '/doc/statistics/peer-review/1975-johnson.pdf' vs '/doc/statistics/peer-review/1975-johnson-2.pdf'
              suffix' = (let suffix = sedMany [("^/doc/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
                           -- eg. "/doc/economics/2019-brynjolfsson-3.pdf" → "Brynjolfsson et al 2019c"
-                           if suffix == url then "" else [['a'..'z'] !! ((read suffix :: Int) - 1)]  ) ++ extension
+                           if suffix == url then "" else acronymGenerator !! (((read suffix :: Int) - 1)`max`0) ) ++ extension
 
            in
            if authorCount >= 3 then
@@ -106,6 +107,9 @@ authorsToCite url author date =
                                  firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
+  where -- lazily generate all alphabetical concatenations in order: 'a'...'aa'...'zz'...'aaa' etc; this ensures we never run out of suffixes
+     acronymGenerator :: [String]
+     acronymGenerator = (concatMap (flip replicateM ['a'..'z']) [1..])
 citeToID :: String -> String
 citeToID = filter (\c -> c/='.' && c/='\'' && c/='’'&& c/='('&&c/=')') . map toLower . replace " " "-" . replace " & " "-"
 
