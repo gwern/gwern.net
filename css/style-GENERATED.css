@@ -1199,6 +1199,8 @@
     --GW-page-toolbar-widget-flash-fall-duration: 1s;
     --GW-page-toolbar-widget-flash-filter: invert(0.7) brightness(1.5) contrast(1.5);
     --GW-page-toolbar-widget-flash-filter-inverse: invert(0.7) brightness(1.33) contrast(1.33);
+
+	--GW-floating-header-scroll-indicator-thickness: 3px;
 }
 @supports (-moz-appearance: none) {
     :root {
@@ -7453,6 +7455,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     left: 0;
     bottom: 0;
     width: 100%;
+    min-height: calc(3rem + var(--GW-floating-header-scroll-indicator-thickness));
     background-color: var(--GW-body-background-color);
     box-sizing: border-box;
     box-shadow: 0 2px 6px var(--GW-floating-header-box-shadow-color);
@@ -7468,7 +7471,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #floating-header .link-chain {
-    padding: 3px 6px 4px 6px;
+    padding: 3px 6px 6px 6px;
     font-size: calc(1rem * 8/9);
     text-align: center;
 }
@@ -7497,7 +7500,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #floating-header .scroll-indicator {
-    height: 3px;
+    height: var(--GW-floating-header-scroll-indicator-thickness);
     margin: 0 -8px;
     background-image: linear-gradient(var(--GW-floating-header-scroll-indicator-color),
                                       var(--GW-floating-header-scroll-indicator-color));
@@ -7519,6 +7522,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     #floating-header {
         width: calc(50vw - (var(--GW-body-max-width) / 2 + 64px));
         max-width: var(--GW-sidenotes-max-width);
+        min-height: unset;
         box-shadow:
             0 0  0 1px var(--GW-body-background-color),
             0 0  3px var(--GW-body-background-color),
@@ -7543,7 +7547,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         margin: 0;
     }
     #floating-header .link-chain {
-        padding: 7px 10px 8px 10px
+        padding: 7px 10px 8px 10px;
     }
     #floating-header .link-chain .link {
         display: block;

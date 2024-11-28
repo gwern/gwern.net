@@ -1620,9 +1620,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (e
 GW.floatingHeader = {
     minimumYOffset: 0,
 
-    maxChainLength: GW.isMobile() ? 3 : 6,
+    maxChainLength: 6,
 
-    maxHeaderHeight: GW.isMobile() ? 60 : 360,
+	//	Mobile only.
+    maxHeaderHeight: 60,
 
     chainLinkClasses: {
         "…": "ellipsis",
