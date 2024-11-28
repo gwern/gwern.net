@@ -1062,6 +1062,7 @@ section.level1:nth-of-type(n+4) {
  */
 
 .heading {
+	display: flow-root;
     margin: 0;
     position: relative;
     line-height: 1;
@@ -1952,15 +1953,15 @@ a code {
 
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .icon-single-white-star-on-black-circle::before { background-image: var(--GW-image-single-white-star-on-black-circle-svg); }
-.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1732667047#moon-solid'); }
-.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1732667047#book-open-solid'); }
-.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1732667047#message-slash-solid'); }
-.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1732667047#magnifying-glass'); }
-.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1732667047#gear-solid'); }
-.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1732667047#sun-solid'); }
-.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1732667047#eye-slash-solid'); }
-.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1732667047#manicule-right'); }
-.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1732667047#manicule-left'); }
+.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1732770909#moon-solid'); }
+.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1732770909#book-open-solid'); }
+.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1732770909#message-slash-solid'); }
+.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1732770909#magnifying-glass'); }
+.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1732770909#gear-solid'); }
+.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1732770909#sun-solid'); }
+.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1732770909#eye-slash-solid'); }
+.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1732770909#manicule-right'); }
+.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1732770909#manicule-left'); }
 
 
 /*************/
@@ -2707,6 +2708,14 @@ body.reader-mode-active .date-range sub {
     display: none;
 }
 
+/*	Link icons in reader mode just don’t work well, sadly.
+		—SA 2024-11-27
+ */
+body.reader-mode-active .markdownBody a .link-icon-hook {
+    display: none;
+}
+
+
 /*	Preserve the positioning of related elements by hiding visibility, instead 
 	of deleting entirely.
  */
@@ -2729,40 +2738,23 @@ body.reader-mode-active #TOC ul li {
 
 /*  Links.
  */
-body.reader-mode-active .markdownBody a.has-indicator-hook,
-body.reader-mode-active .markdownBody a.has-icon {
+body.reader-mode-active .markdownBody a.has-indicator-hook {
 	margin: 0;
     position: relative;
     z-index: 111;
 }
 
-body.reader-mode-active.masked-links-hidden .markdownBody a .indicator-hook,
-body.reader-mode-active.masked-links-hidden .markdownBody a .link-icon-hook {
-    visibility: hidden;
-}
-
-body.reader-mode-active .markdownBody a .indicator-hook,
-body.reader-mode-active .markdownBody a .link-icon-hook {
-	box-shadow: inherit;
+body.reader-mode-active .markdownBody a .indicator-hook {
 	background-image: inherit;
 	background-size: inherit;
 	background-repeat: inherit;
 	background-position: inherit;
     background-color: var(--link-underline-background-color);
-}
-
-body.reader-mode-active .markdownBody a .indicator-hook {
+    box-shadow: -2px 0 0 0 var(--link-underline-background-color);
 	margin-left: -0.3em;
 }
-
-body.reader-mode-active .markdownBody a .link-icon-hook {
-	padding-right: 0.05em;
-}
-body.reader-mode-active .markdownBody a[data-link-icon-type='svg'] .link-icon-hook {
-	margin-right: calc(-1 * (var(--link-icon-size) + var(--link-icon-offset-x) + 0.05em));
-}
-body.reader-mode-active .markdownBody a[data-link-icon-type*='text'] .link-icon-hook {
-	margin-right: calc(-1 * (1.4ch + var(--link-icon-offset-x) + 0.05em));
+body.reader-mode-active.masked-links-hidden .markdownBody a .indicator-hook {
+    visibility: hidden;
 }
 
 body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open),

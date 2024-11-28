@@ -1830,6 +1830,17 @@ GW.floatingHeader = {
             defer: true,
             ifDeferCallWhenAdd: true
         });
+
+		//	Ensure that popin positioning takes header height into account.
+		if (GW.isMobile()) {
+			if (window["Popins"] == null) {
+				GW.notificationCenter.addHandlerForEvent("Popins.didLoad", (info) => {
+					Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+				}, { once: true });
+			} else {
+				Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+			}
+		}
     }
 };
 

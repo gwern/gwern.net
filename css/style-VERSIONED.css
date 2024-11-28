@@ -1237,6 +1237,13 @@ button {
 /* SECTIONS */
 /************/
 
+.heading {
+	pointer-events: none;
+}
+.heading > * {
+	pointer-events: auto;
+}
+
 /*=----------------------------=*/
 /*= Section heading self-links =*/
 /*=----------------------------=*/
@@ -1283,7 +1290,7 @@ section.level3 > .heading a::after,
 section.level4 > .heading a::after,
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
-    right: -1.5em;
+    right: -2.75em;
 }
 section.level3 > .heading a::after,
 section.level4 > .heading a::after {
@@ -1292,6 +1299,97 @@ section.level4 > .heading a::after {
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
     bottom: 0.3em;
+}
+
+/*=-----------------------------------=*/
+/*= Section heading copy link buttons =*/
+/*=-----------------------------------=*/
+
+.heading .copy-section-link-button {
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	color: var(--GW-body-link-color);
+	transform: rotateZ(-45deg);
+	opacity: 0;
+}
+
+@media all and (hover: hover) {
+	.heading .copy-section-link-button::after {
+		content: "";
+		position: absolute;
+		left: -0.1em;
+		right: -0.1em;
+		top: -0.1em;
+		bottom: -0.1em;
+		display: none;
+	}
+	.heading .copy-section-link-button:hover::after {
+		display: initial;
+	}
+}
+
+.heading .copy-section-link-button:hover {
+	color: var(--GW-body-link-hover-color);
+}
+.heading .copy-section-link-button:hover,
+.heading:hover .copy-section-link-button {
+	opacity: 1;
+}
+
+.heading .copy-section-link-button:active {
+	transform: rotateZ(45deg);
+	transition:
+		transform 0.05s ease;
+}
+.heading .copy-section-link-button.clicked {
+	transform: rotateZ(135deg);
+	transition:
+		transform 0.15s ease;
+}
+.heading .copy-section-link-button:focus {
+	outline: none;
+}
+
+@media all and (max-width: 649px) {
+	section > .heading .copy-section-link-button {
+		position: relative;
+		padding: 0.15em;
+		margin-left: 0.25em;
+		display: none;
+	}
+	section > .heading:hover .copy-section-link-button {
+		display: inline-flex;
+	}
+	section.level1 > .heading .copy-section-link-button {
+		top: 2px;
+	}
+}
+@media all and (min-width: 650px) {
+	section.level1 > .heading .copy-section-link-button {
+		position: absolute;
+		padding: 0.22em;
+		right: -1em;
+		top: 3px;
+	}
+	section.level2 > .heading .copy-section-link-button,
+	section.level3 > .heading .copy-section-link-button,
+	section.level4 > .heading .copy-section-link-button,
+	section.level5 > .heading .copy-section-link-button,
+	section.level6 > .heading .copy-section-link-button {
+		position: relative;
+		padding: 0.15em;
+		margin-left: 0.25em;
+	}
+	section.level2 > .heading .copy-section-link-button {
+		top: 1px;
+	}
+	section.level3 > .heading .copy-section-link-button,
+	section.level4 > .heading .copy-section-link-button,
+	section.level5 > .heading .copy-section-link-button,
+	section.level6 > .heading .copy-section-link-button {
+		top: 0
+	}
 }
 
 /**********************************************************/
@@ -2486,18 +2584,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4865,6 +4963,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-height: calc(var(--popframe-scroll-view-height) - 2em);
 }
 
+.popframe-body .heading .copy-section-link-button {
+	display: none;
+}
+
 /*=-----------------=*/
 /*= POP-FRAME TYPES =*/
 /*=-----------------=*/
@@ -5595,7 +5697,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5776,7 +5878,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6237,7 +6339,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7214,7 +7316,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#question');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7424,7 +7526,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7464,7 +7566,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #floating-header.hidden {
-    bottom: -2.5em;
+    bottom: calc(-1 * (3rem + var(--GW-floating-header-scroll-indicator-thickness)));
 }
 #floating-header.hidden .link-chain .link.page-title {
     display: none;
@@ -7820,7 +7922,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1732667047#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -7899,7 +8001,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732667047#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1732770909#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

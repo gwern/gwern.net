@@ -185,8 +185,8 @@ Array.prototype.π = function (strings) {
         return null;
 
     let product = [ ];
-    for (lhs of this) {
-        for (rhs of strings) {
+    for (let lhs of this) {
+        for (let rhs of strings) {
             product.push(`${lhs}${rhs}`);
         }
     }
@@ -202,7 +202,7 @@ function _π(...args) {
         return [ ];
 
     let product = [ "" ];
-    for (arg of args)
+    for (let arg of args)
         product = product.π(arg);
 
     return product;

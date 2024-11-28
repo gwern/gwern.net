@@ -2366,6 +2366,17 @@ GW.floatingHeader = {
             defer: true,
             ifDeferCallWhenAdd: true
         });
+
+		//	Ensure that popin positioning takes header height into account.
+		if (GW.isMobile()) {
+			if (window["Popins"] == null) {
+				GW.notificationCenter.addHandlerForEvent("Popins.didLoad", (info) => {
+					Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+				}, { once: true });
+			} else {
+				Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+			}
+		}
     }
 };
 
@@ -4873,6 +4884,13 @@ GW.notificationCenter.fireEvent("Popups.didLoad");
  */
 
 Popins = {
+	/*****************/
+	/*	Configuration.
+		*/
+
+	windowTopPopinPositionMargin: 0.0,
+	windowBottomPopinPositionMargin: 0.0,
+
 	/******************/
 	/*	Implementation.
 		*/
@@ -5322,10 +5340,14 @@ Popins = {
 			let windowScrollOffsetForThisPopin = parseInt(popin.dataset.windowScrollOffset ?? '0');
 
 			let scrollWindowBy = 0;
-			if (popinViewportRect.bottom > window.innerHeight) {
-				scrollWindowBy = Math.round((window.innerHeight * 0.05) + popinViewportRect.bottom - window.innerHeight);
-			} else if (popinViewportRect.top < 0) {
-				scrollWindowBy = Math.round((window.innerHeight * -0.1) + popinViewportRect.top);
+			if (popinViewportRect.bottom > window.innerHeight - Popins.windowBottomPopinPositionMargin) {
+				scrollWindowBy = Math.round(  window.innerHeight * -0.95 
+											+ Popins.windowBottomPopinPositionMargin 
+											+ popinViewportRect.bottom);
+			} else if (popinViewportRect.top < 0 + Popins.windowTopPopinPositionMargin) {
+				scrollWindowBy = Math.round(  window.innerHeight * -0.10 
+											- Popins.windowTopPopinPositionMargin 
+											+ popinViewportRect.top);
 			}
 
 			if (scrollWindowBy > 0) {
@@ -14300,6 +14322,48 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
         }, { once: true });
     });
 }, "eventListeners");
+
+
+/************/
+/* HEADINGS */
+/************/
+
+/**********************************************************************/
+/*	On main page, inject into section headings buttons that copy to the 
+	clipboard the link to that section.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = (eventInfo) => {
+    GWLog("injectCopySectionLinkButtons", "rewrite.js", 1);
+
+	let sectionHeadingSelector = _π("section", " > ", [ "h1", "h2", "h3", "h4", "h5", "h6" ], ":first-child").join(", ");
+
+	eventInfo.container.querySelectorAll(sectionHeadingSelector).forEach(heading => {
+		if (heading.querySelector(".copy-section-link-button") != null)
+			return;
+
+		let button = heading.appendChild(newElement("BUTTON", {
+			type: "button",
+			class: "copy-section-link-button",
+			title: "Copy section link to clipboard"
+		}, {
+			innerHTML: GW.svg("link-simple-solid")	
+		}));
+
+		button.addEventListener("mouseup", (event) => {
+			button.classList.add("clicked");
+		});
+		button.addActivateEvent((event) => {
+			copyTextToClipboard(heading.querySelector("a").href);
+
+			if (button.clickTimer)
+				clearTimeout(button.clickTimer);
+
+			button.clickTimer = setTimeout(() => {
+				button.classList.remove("clicked");
+			}, 150);
+		});
+	});
+}, ">rewrite", (info) => (info.container == document.body));
 
 
 /***********/
