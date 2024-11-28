@@ -6420,7 +6420,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 #floating-header.hidden {
-    bottom: -2.5em;
+    bottom: calc(-1 * (3rem + var(--GW-floating-header-scroll-indicator-thickness)));
 }
 #floating-header.hidden .link-chain .link.page-title {
     display: none;
