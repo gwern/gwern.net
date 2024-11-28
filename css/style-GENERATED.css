@@ -1237,6 +1237,13 @@ button {
 /* SECTIONS */
 /************/
 
+.heading {
+	pointer-events: none;
+}
+.heading > * {
+	pointer-events: auto;
+}
+
 /*=----------------------------=*/
 /*= Section heading self-links =*/
 /*=----------------------------=*/
@@ -1283,7 +1290,7 @@ section.level3 > .heading a::after,
 section.level4 > .heading a::after,
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
-    right: -1.5em;
+    right: -2.75em;
 }
 section.level3 > .heading a::after,
 section.level4 > .heading a::after {
@@ -1292,6 +1299,97 @@ section.level4 > .heading a::after {
 section.level5 > .heading a::after,
 section.level6 > .heading a::after {
     bottom: 0.3em;
+}
+
+/*=-----------------------------------=*/
+/*= Section heading copy link buttons =*/
+/*=-----------------------------------=*/
+
+.heading .copy-section-link-button {
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	color: var(--GW-body-link-color);
+	transform: rotateZ(-45deg);
+	opacity: 0;
+}
+
+@media all and (hover: hover) {
+	.heading .copy-section-link-button::after {
+		content: "";
+		position: absolute;
+		left: -0.1em;
+		right: -0.1em;
+		top: -0.1em;
+		bottom: -0.1em;
+		display: none;
+	}
+	.heading .copy-section-link-button:hover::after {
+		display: initial;
+	}
+}
+
+.heading .copy-section-link-button:hover {
+	color: var(--GW-body-link-hover-color);
+}
+.heading .copy-section-link-button:hover,
+.heading:hover .copy-section-link-button {
+	opacity: 1;
+}
+
+.heading .copy-section-link-button:active {
+	transform: rotateZ(45deg);
+	transition:
+		transform 0.05s ease;
+}
+.heading .copy-section-link-button.clicked {
+	transform: rotateZ(135deg);
+	transition:
+		transform 0.15s ease;
+}
+.heading .copy-section-link-button:focus {
+	outline: none;
+}
+
+@media all and (max-width: 649px) {
+	section > .heading .copy-section-link-button {
+		position: relative;
+		padding: 0.15em;
+		margin-left: 0.25em;
+		display: none;
+	}
+	section > .heading:hover .copy-section-link-button {
+		display: inline-flex;
+	}
+	section.level1 > .heading .copy-section-link-button {
+		top: 2px;
+	}
+}
+@media all and (min-width: 650px) {
+	section.level1 > .heading .copy-section-link-button {
+		position: absolute;
+		padding: 0.22em;
+		right: -1em;
+		top: 3px;
+	}
+	section.level2 > .heading .copy-section-link-button,
+	section.level3 > .heading .copy-section-link-button,
+	section.level4 > .heading .copy-section-link-button,
+	section.level5 > .heading .copy-section-link-button,
+	section.level6 > .heading .copy-section-link-button {
+		position: relative;
+		padding: 0.15em;
+		margin-left: 0.25em;
+	}
+	section.level2 > .heading .copy-section-link-button {
+		top: 1px;
+	}
+	section.level3 > .heading .copy-section-link-button,
+	section.level4 > .heading .copy-section-link-button,
+	section.level5 > .heading .copy-section-link-button,
+	section.level6 > .heading .copy-section-link-button {
+		top: 0
+	}
 }
 
 /**********************************************************/
@@ -4863,6 +4961,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popframe-body:not(.object) iframe {
     max-height: calc(var(--popframe-scroll-view-height) - 2em);
+}
+
+.popframe-body .heading .copy-section-link-button {
+	display: none;
 }
 
 /*=-----------------=*/

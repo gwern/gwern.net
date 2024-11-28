@@ -1062,6 +1062,7 @@ section.level1:nth-of-type(n+4) {
  */
 
 .heading {
+	display: flow-root;
     margin: 0;
     position: relative;
     line-height: 1;

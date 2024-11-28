@@ -965,6 +965,48 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 }, "eventListeners");
 
 
+/************/
+/* HEADINGS */
+/************/
+
+/**********************************************************************/
+/*	On main page, inject into section headings buttons that copy to the 
+	clipboard the link to that section.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = (eventInfo) => {
+    GWLog("injectCopySectionLinkButtons", "rewrite.js", 1);
+
+	let sectionHeadingSelector = _π("section", " > ", [ "h1", "h2", "h3", "h4", "h5", "h6" ], ":first-child").join(", ");
+
+	eventInfo.container.querySelectorAll(sectionHeadingSelector).forEach(heading => {
+		if (heading.querySelector(".copy-section-link-button") != null)
+			return;
+
+		let button = heading.appendChild(newElement("BUTTON", {
+			type: "button",
+			class: "copy-section-link-button",
+			title: "Copy section link to clipboard"
+		}, {
+			innerHTML: GW.svg("link-simple-solid")	
+		}));
+
+		button.addEventListener("mouseup", (event) => {
+			button.classList.add("clicked");
+		});
+		button.addActivateEvent((event) => {
+			copyTextToClipboard(heading.querySelector("a").href);
+
+			if (button.clickTimer)
+				clearTimeout(button.clickTimer);
+
+			button.clickTimer = setTimeout(() => {
+				button.classList.remove("clicked");
+			}, 150);
+		});
+	});
+}, ">rewrite", (info) => (info.container == document.body));
+
+
 /***********/
 /* COLUMNS */
 /***********/
