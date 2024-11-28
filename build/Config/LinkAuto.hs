@@ -898,7 +898,7 @@ custom = [
         , ("[Ss]adis(m|tic|t|ts)", "https://en.wikipedia.org/wiki/Sadistic_personality_disorder")
         , ("[Ss]caling [Hh]ypothesis", "/scaling-hypothesis")
         , ("[Ss]caling [Ll]aws?", "/note/scaling")
-        , ("[Ss]chizoid", "https://en.wikipedia.org/wiki/Schizoid_personality_disorder")
+        , ("([Ss]chizoid|[Ss]chizoid personality)", "https://en.wikipedia.org/wiki/Schizoid_personality_disorder")
         , ("[Ss]ecurity[ -]through[ -]obscurity", "https://en.wikipedia.org/wiki/Security_through_obscurity")
         , ("[Ss]elegiline", "https://en.wikipedia.org/wiki/Selegiline")
         , ("([Ss]emaglutide|Wegovy|Ozempic|Rybelsus)", "https://en.wikipedia.org/wiki/Semaglutide")

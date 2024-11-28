@@ -540,6 +540,8 @@ canonicals = M.fromList
   , ("Karén Simonyan", "Karen Simonyan")
   , ("Robin L. Carhart-Harris", "Robin Carhart-Harris")
   , ("austinc3301", "Agus")
+  , ("M. Kumari", "Meena Kumari")
+  , ("KE Markon", "Kristian E. Markon")
   ]
 
 -- tests: unique
@@ -1030,6 +1032,10 @@ authorLinkDB = M.fromList $
     , ("Niina Eklund", "https://fi.linkedin.com/in/niina-eklund-747934bb")
     , ("Michiaki Kubo", "https://researchmap.jp/kubom")
     , ("Agus", "https://x.com/austinc3301")
+    , ("Meena Kumari", "https://scholar.google.com/citations?user=sl2zlcYAAAAJ&hl=en&oi=ao")
+    , ("Laura J. Scott", "https://sph.umich.edu/faculty-profiles/scott-laura.html")
+    , ("Kristian E. Markon", "https://cla.umn.edu/psychology/news-events/story/kristian-markon-elevated-research-associate-professor")
+    , ("Jean-Baptiste Pingault", "https://profiles.ucl.ac.uk/42083")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
