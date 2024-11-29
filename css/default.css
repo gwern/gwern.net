@@ -246,6 +246,23 @@ section.level6 > .heading a::after {
 	}
 }
 
+/*	Special positioning on /index.
+ */
+body.page-index section.level1 > .heading .copy-section-link-button {
+	position: relative;
+	right: -0.2em;
+}
+@media all and (max-width: 649px) {
+	body.page-index section.level1 > .heading .copy-section-link-button {
+		top: 1px;
+	}
+}
+@media all and (min-width: 650px) {
+	body.page-index section.level1 > .heading .copy-section-link-button {
+		top: 0;
+	}
+}
+
 /**********************************************************/
 /*  Highlighted sections. (Due to extract popups, usually.)
  */
@@ -3192,6 +3209,10 @@ blockquote .TOC,
 .wikipedia-entry .wp-footnote-back {
     padding: 0 0.25em;
     margin: 0 0.5em 0 0;
+}
+
+.wikipedia-entry .heading {
+	pointer-events: auto;
 }
 
 /*=--------=*/

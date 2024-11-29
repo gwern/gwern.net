@@ -592,7 +592,7 @@ Extracts = {
                 && link.pathname == target.pathname
                 && link.hash > ""
                 && extraCondition(link)) {
-                link.onclick = () => { return false; };
+                link.onclick = (event) => { return (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey); };
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget)

@@ -3689,7 +3689,7 @@ Popups = {
             "zoom": "[f]: Maximize this popup to fill the screen",
             "restore": "[r]: Restore this popup to normal size and position",
             "pin": "[c]: Pin this popup to the screen (hold [⌥/Alt] to pin all)",
-            "unpin": "[c]: Un-pin (if pinned) this popup from the screen (hold [⌥/Alt] to pin all)",
+            "unpin": "[c]: Un-pin (if pinned) this popup from the screen (hold [⌥/Alt] to un-pin all)",
             "options": "Show options", // NOTE: feature & button currently disabled, and no keybinding
             "zoom-top-left": "[q]: Place this popup in the top-left quarter of the screen",
             "zoom-top": "[w]: Place this popup on the top half of the screen",
@@ -6726,6 +6726,7 @@ Content = {
 				".ambox",
 				".unicode.haudio",
 		// 		"span[typeof='mw:File']",
+				"link"
 			],
 
 			/*  CSS properties to preserve when stripping inline styles.
@@ -10799,7 +10800,7 @@ Extracts = {
                 && link.pathname == target.pathname
                 && link.hash > ""
                 && extraCondition(link)) {
-                link.onclick = () => { return false; };
+                link.onclick = (event) => { return (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey); };
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget)

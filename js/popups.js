@@ -1005,7 +1005,7 @@ Popups = {
             "zoom": "[f]: Maximize this popup to fill the screen",
             "restore": "[r]: Restore this popup to normal size and position",
             "pin": "[c]: Pin this popup to the screen (hold [⌥/Alt] to pin all)",
-            "unpin": "[c]: Un-pin (if pinned) this popup from the screen (hold [⌥/Alt] to pin all)",
+            "unpin": "[c]: Un-pin (if pinned) this popup from the screen (hold [⌥/Alt] to un-pin all)",
             "options": "Show options", // NOTE: feature & button currently disabled, and no keybinding
             "zoom-top-left": "[q]: Place this popup in the top-left quarter of the screen",
             "zoom-top": "[w]: Place this popup on the top half of the screen",

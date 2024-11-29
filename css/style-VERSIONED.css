@@ -1392,6 +1392,23 @@ section.level6 > .heading a::after {
 	}
 }
 
+/*	Special positioning on /index.
+ */
+body.page-index section.level1 > .heading .copy-section-link-button {
+	position: relative;
+	right: -0.2em;
+}
+@media all and (max-width: 649px) {
+	body.page-index section.level1 > .heading .copy-section-link-button {
+		top: 1px;
+	}
+}
+@media all and (min-width: 650px) {
+	body.page-index section.level1 > .heading .copy-section-link-button {
+		top: 0;
+	}
+}
+
 /**********************************************************/
 /*  Highlighted sections. (Due to extract popups, usually.)
  */
@@ -2584,18 +2601,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -4340,6 +4357,10 @@ blockquote .TOC,
     margin: 0 0.5em 0 0;
 }
 
+.wikipedia-entry .heading {
+	pointer-events: auto;
+}
+
 /*=--------=*/
 /*= TWEETS =*/
 /*=--------=*/
@@ -5697,7 +5718,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5878,7 +5899,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6339,7 +6360,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7316,7 +7337,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#question');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7526,7 +7547,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7922,7 +7943,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1732770909#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1732828956#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -8001,7 +8022,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1732770909#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1732828956#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
