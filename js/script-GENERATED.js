@@ -9874,12 +9874,50 @@ Transclude = {
     //  Called by: "beforeprint" listener (rewrite.js)
     triggerTranscludesInContainer: (container, eventInfo) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-        	if (eventInfo)
-        		includeLink.eventInfo = eventInfo;
-
-            Transclude.transclude(includeLink, true);
+        	Transclude.triggerTransclude(includeLink, eventInfo);
         });
     },
+
+
+	/*	Available option fields (all optional):
+	
+		doWhenDidLoad
+		doWhenDidLoadOptions
+		doWhenDidInject
+		doWhenDidInjectOptions
+	 */
+	triggerTransclude: (includeLink, eventInfo, options) => {
+		options = Object.assign({
+			doWhenDidLoad: null,
+			doWhenDidInject: null
+		}, options);
+
+		if (eventInfo)
+			includeLink.eventInfo = eventInfo;
+
+		//	If a load and/or inject handler is provided, add them.
+		if (   options.doWhenDidLoad != null
+			|| options.doWhenDidInject != null) {
+			let handlerOptions = {
+				once: true,
+				condition: (info) => (info.includeLink == includeLink)
+			};
+
+			if (options.doWhenDidLoad != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+					options.doWhenDidLoad(info);
+				}, Object.assign(handlerOptions, options.doWhenDidLoadOptions));
+			}
+
+			if (options.doWhenDidInject != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+					options.doWhenDidInject(info);
+				}, Object.assign(handlerOptions, options.doWhenDidInjectOptions));
+			}
+		}
+
+		Transclude.transclude(includeLink, true);
+	},
 
     /********************/
     /*  Loading spinners.
@@ -15095,24 +15133,21 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
     let annotationDoc = newDocument(synthesizeIncludeLink(location.pathname, { class: "link-annotated include-annotation" }));
 	let annotationIncludeLink = annotationDoc.firstElementChild;
 
-	/*	Copy `link-modified-recently` class from entries in annotation TOC
-		to corresponding entries in main page TOC.
-	 */
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-    	annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
-    		TOC.querySelector("#" + recentlyModifiedTOCLink.id).classList.add("link-modified-recently");
-    	});
-    	GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
-    }, {
-    	once: true,
-    	condition: (info) => (info.document == annotationDoc)
-    });
-
-	//	Trigger annotation load.
-    Transclude.triggerTranscludesInContainer(annotationDoc, {
+	//	Trigger include-link.
+	Transclude.triggerTransclude(annotationIncludeLink, {
 		source: "addRecentlyModifiedDecorationsToPageTOC",
 		container: annotationDoc,
 		document: annotationDoc
+	}, {
+		doWhenDidInject: (info) => {
+			/*	Copy `link-modified-recently` class from entries in annotation 
+				TOC to corresponding entries in main page TOC.
+			 */
+			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
+				TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id)).classList.add("link-modified-recently");
+			});
+			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
+		}
 	});
 }, "rewrite", (info) => (info.container == document.body));
 

@@ -2008,12 +2008,50 @@ Transclude = {
     //  Called by: "beforeprint" listener (rewrite.js)
     triggerTranscludesInContainer: (container, eventInfo) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-        	if (eventInfo)
-        		includeLink.eventInfo = eventInfo;
-
-            Transclude.transclude(includeLink, true);
+        	Transclude.triggerTransclude(includeLink, eventInfo);
         });
     },
+
+
+	/*	Available option fields (all optional):
+	
+		doWhenDidLoad
+		doWhenDidLoadOptions
+		doWhenDidInject
+		doWhenDidInjectOptions
+	 */
+	triggerTransclude: (includeLink, eventInfo, options) => {
+		options = Object.assign({
+			doWhenDidLoad: null,
+			doWhenDidInject: null
+		}, options);
+
+		if (eventInfo)
+			includeLink.eventInfo = eventInfo;
+
+		//	If a load and/or inject handler is provided, add them.
+		if (   options.doWhenDidLoad != null
+			|| options.doWhenDidInject != null) {
+			let handlerOptions = {
+				once: true,
+				condition: (info) => (info.includeLink == includeLink)
+			};
+
+			if (options.doWhenDidLoad != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+					options.doWhenDidLoad(info);
+				}, Object.assign(handlerOptions, options.doWhenDidLoadOptions));
+			}
+
+			if (options.doWhenDidInject != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+					options.doWhenDidInject(info);
+				}, Object.assign(handlerOptions, options.doWhenDidInjectOptions));
+			}
+		}
+
+		Transclude.transclude(includeLink, true);
+	},
 
     /********************/
     /*  Loading spinners.
