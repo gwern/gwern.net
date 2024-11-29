@@ -4357,6 +4357,10 @@ blockquote .TOC,
     margin: 0 0.5em 0 0;
 }
 
+.wikipedia-entry .heading {
+	pointer-events: auto;
+}
+
 /*=--------=*/
 /*= TWEETS =*/
 /*=--------=*/

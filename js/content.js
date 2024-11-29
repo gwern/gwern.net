@@ -772,6 +772,7 @@ Content = {
 				".ambox",
 				".unicode.haudio",
 		// 		"span[typeof='mw:File']",
+				"link"
 			],
 
 			/*  CSS properties to preserve when stripping inline styles.

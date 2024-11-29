@@ -1114,7 +1114,6 @@ section.level2 > .heading {
 /*  H3.
  */
 section.level3 > .heading {
-    text-transform: capitalize;
     font-size: 1.35em;
     font-weight: bold;
 }
@@ -1122,21 +1121,18 @@ section.level3 > .heading {
 /*  H4.
  */
 section.level4 > .heading {
-    text-transform: capitalize;
     font-size: 1.2em;
 }
 
 /*  H5.
  */
 section.level5 > .heading {
-    text-transform: capitalize;
     font-size: 1.1em;
 }
 
 /*  H6.
  */
 section.level6 > .heading {
-    text-transform: capitalize;
     font-size: 1.1em;
     font-weight: normal;
     font-style: italic;

@@ -6726,6 +6726,7 @@ Content = {
 				".ambox",
 				".unicode.haudio",
 		// 		"span[typeof='mw:File']",
+				"link"
 			],
 
 			/*  CSS properties to preserve when stripping inline styles.
@@ -10799,7 +10800,7 @@ Extracts = {
                 && link.pathname == target.pathname
                 && link.hash > ""
                 && extraCondition(link)) {
-                link.onclick = () => { return false; };
+                link.onclick = (event) => { return (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey); };
                 link.addActivateEvent((event) => {
                     let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget)
