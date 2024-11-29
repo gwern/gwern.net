@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-27 22:01:48 gwern"
+# When:  Time-stamp: "2024-11-28 09:29:48 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -793,7 +793,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
     λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"' | gfv -e ' secs,' -e ' bytes' -e 'it :: ()'; }
