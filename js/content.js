@@ -624,7 +624,7 @@ Content = {
 				let contentTypeClass = "wikipedia-entry";
 
 				//	Intermediate values.
-				let secondaryTitleLinksHTML;
+				let secondaryTitleLinksHTML = "";
 
 				//	Whole page, one section, or intro+TOC.
 				if (wholePage) {
@@ -651,7 +651,6 @@ Content = {
 						targetHeading.remove();
 
 						//	Unwrap or delete links, but save them for inclusion in the template.
-						secondaryTitleLinksHTML = "";
 						//	First link is the section title itself.
 						targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
 							//  Process link, save HTML, unwrap.
