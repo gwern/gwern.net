@@ -174,7 +174,7 @@ Extracts = { ...Extracts,
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
 			popFrameTitleText:      popFrameTitleText
-		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		});
     },
 
 	//	Called by: Extracts.preparePopup_LOCAL_PAGE
