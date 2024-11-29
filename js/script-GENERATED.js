@@ -5887,9 +5887,6 @@ Annotations = { ...Annotations,
 				fileIncludes:             fileIncludesHTML
 			},
 			template:                       "annotation-blockquote-inside",
-			linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-			whichTab:                       (GW.isMobile() ? "current" : "new"),
-			tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 			popFrameTemplate:               "annotation-blockquote-not",
 			popFrameTitleText:              popFrameTitleText,
 			popFrameTitleLinkHref:          titleLinkHref
@@ -6492,15 +6489,6 @@ Content = {
 			},
 
 			referenceDataFromContent: (wikipediaEntryContent, articleLink) => {
-				//	Article link.
-				let titleLinkHref = articleLink.href;
-
-				//	We use the mobile URL for popping up the live-link.
-				let titleLinkHrefForEmbedding = modifiedURL(articleLink, {
-					hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
-				}).href;
-				let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
-
 				//	Do not show the whole page, by default.
 				let wholePage = false;
 
@@ -6512,12 +6500,87 @@ Content = {
 					GWServerLogError(Content.contentTypes.wikipediaEntry.sourceURLsForLink(articleLink).first.href + `--disambiguation-error`, "disambiguation page");
 				}
 
-				let pageTitleElementHTML = unescapeHTML(wikipediaEntryContent.document.querySelector("title").innerHTML);
-				let entryContentHTML, titleHTML, fullTitleHTML, secondaryTitleLinksHTML;
+				//	Function to build table of contents for article or section.
+				let buildArticleTOC = (sections, baseArticle) => {
+					if (   sections == null
+						|| sections.length == 0)
+						return "";
+
+					let tocHTML = `<div class="TOC columns">`;
+					let headingLevel = 0;
+					for (let i = 0; i < sections.length; i++) {
+						let section = sections[i];
+						let headingElement = section.firstElementChild;
+						let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
+						if (newHeadingLevel > headingLevel)
+							tocHTML += `<ul>`;
+
+						if (   i > 0
+							&& newHeadingLevel <= headingLevel)
+							tocHTML += `</li>`;
+
+						if (newHeadingLevel < headingLevel)
+							tocHTML += `</ul>`;
+
+						//	Get heading, parse as HTML, and unwrap links.
+						let heading = headingElement.cloneNode(true);
+						heading.querySelectorAll("a").forEach(unwrap);
+
+						/*	Construct TOC entry. (We must encode the heading
+							id, because the anchor might contain quotes.)
+						 */
+						let tocLinkHref = modifiedURL(articleLink, { hash: fixedEncodeURIComponent(headingElement.id) }).href;
+						tocHTML += `<li><a href="${tocLinkHref}">${(heading.innerHTML)}</a>`;
+
+						headingLevel = newHeadingLevel;
+					}
+					tocHTML += `</li></ul></div>`;
+
+					return tocHTML;
+				};
+
+				//	Function to render a title link component link.
+				let renderTitleLinkHTML = (titleLinkHref, titleLinkInnerHTML, contentTransform = false) => {
+					//	We use the mobile URL for popping up the live-link.
+					let titleLinkHrefForEmbedding = modifiedURL(URLFromString(titleLinkHref), {
+						hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
+					}).href;
+					let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+
+					//	Link icon.
+					let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="wikipedia"`;
+
+					//	Transformed or live.
+					let titleLinkClass = `title-link ${(contentTransform ? "content-transform" : "link-live content-transform-not")}`;
+
+					//	Template fill context.
+					let tfc = Transclude.standardTemplateFillContext;
+
+					return `<a
+							 class="${titleLinkClass}"
+							 title="Open ${titleLinkHref} in ${tfc.whichTab} ${tfc.tabOrWindow}"
+							 href="${titleLinkHref}"
+							 target="${tfc.linkTarget}>"
+							 ${titleLinkDataAttributes}
+							 ${titleLinkIconMetadata}
+							 >${titleLinkInnerHTML}</a>`;
+				};
+
+				//	Page title.
+				let pageTitleHTML = unescapeHTML(wikipediaEntryContent.document.querySelector("title").innerHTML);
+
+				//	Template fields.
+				let titleLineHTML, entryContentHTML, thumbnailFigureHTML;
+				let popFrameTitleText, popFrameTitleLinkHref;
+				let contentTypeClass = "wikipedia-entry";
+
+				//	Intermediate values.
+				let secondaryTitleLinksHTML = "";
+
+				//	Whole page, one section, or intro+TOC.
 				if (wholePage) {
+					titleLineHTML = renderTitleLinkHTML(articleLink.href, pageTitleHTML);
 					entryContentHTML = wikipediaEntryContent.document.innerHTML;
-					titleHTML = pageTitleElementHTML;
-					fullTitleHTML = pageTitleElementHTML;
 				} else if (articleLink.hash > "") {
 					let targetElement = wikipediaEntryContent.document.querySelector(selectorFromHash(articleLink.hash));
 
@@ -6525,10 +6588,8 @@ Content = {
 						does not exist.
 					 */
 					if (targetElement == null) {
-						titleHTML = titleLinkHref;
-						fullTitleHTML = titleLinkHref;
-
 						//	No entry content, because the target was not found.
+						titleLineHTML = renderTitleLinkHTML(articleLink.href, pageTitleHTML);
 					} else if (/H[0-9]/.test(targetElement.tagName)) {
 						//	The target is a section heading.
 						let targetHeading = targetElement;
@@ -6540,11 +6601,7 @@ Content = {
 						targetHeading = targetSection.firstElementChild;
 						targetHeading.remove();
 
-						//	Content sans heading.
-						entryContentHTML = targetSection.innerHTML;
-
 						//	Unwrap or delete links, but save them for inclusion in the template.
-						secondaryTitleLinksHTML = "";
 						//	First link is the section title itself.
 						targetHeading.querySelectorAll("a:first-of-type").forEach(link => {
 							//  Process link, save HTML, unwrap.
@@ -6564,55 +6621,36 @@ Content = {
 						if (secondaryTitleLinksHTML > "")
 							secondaryTitleLinksHTML = ` (${secondaryTitleLinksHTML})`;
 
-						//	Cleaned section title.
-						titleHTML = targetHeading.innerHTML;
-						fullTitleHTML = `${titleHTML} (${pageTitleElementHTML})`;
+						/*	Full article link (transformed), plus live section
+							link with cleaned title text. (We will attach the
+							secondary title links, if any, later.)
+						 */
+						titleLineHTML = renderTitleLinkHTML(modifiedURL(articleLink, { hash: "" }).href, pageTitleHTML, true)
+									  + " &#x00a7; " // ‘§’
+									  + renderTitleLinkHTML(articleLink.href, targetHeading.innerHTML);
+
+						/*	Content sans heading, with TOC (if there are any
+							subsections).
+						 */
+						let entryContentDoc = newDocument(targetSection.innerHTML);
+						entryContentDoc.insertBefore(newDocument(buildArticleTOC(entryContentDoc.querySelectorAll("section"))), 
+													 entryContentDoc.querySelector("section"));
+						entryContentHTML = entryContentDoc.innerHTML;
+
+						//	Designate content type.
+						contentTypeClass += " wikipedia-section";
 					} else {
 						//	The target is something else.
+						titleLineHTML = renderTitleLinkHTML(articleLink.href, `${articleLink.hash} (${pageTitleHTML})`);
 						entryContentHTML = Transclude.blockContext(targetElement, articleLink).innerHTML;
-						titleHTML = articleLink.hash;
 					}
 				} else {
-					entryContentHTML = wikipediaEntryContent.document.querySelector("[data-mw-section-id='0']").innerHTML;
-					titleHTML = pageTitleElementHTML;
-					fullTitleHTML = pageTitleElementHTML;
-
-					//	Build TOC.
-					let sections = Array.from(wikipediaEntryContent.document.querySelectorAll("section")).slice(1);
-					if (   sections
-						&& sections.length > 0) {
-						entryContentHTML += `<div class="TOC columns">`;
-						let headingLevel = 0;
-						for (let i = 0; i < sections.length; i++) {
-							let section = sections[i];
-							let headingElement = section.firstElementChild;
-							let newHeadingLevel = parseInt(headingElement.tagName.slice(1));
-							if (newHeadingLevel > headingLevel)
-								entryContentHTML += `<ul>`;
-
-							if (   i > 0
-								&& newHeadingLevel <= headingLevel)
-								entryContentHTML += `</li>`;
-
-							if (newHeadingLevel < headingLevel)
-								entryContentHTML += `</ul>`;
-
-							//	We must encode, because the anchor might contain quotes.
-							let urlEncodedAnchor = fixedEncodeURIComponent(headingElement.id);
-
-							//	Get heading, parse as HTML, and unwrap links.
-							let heading = headingElement.cloneNode(true);
-							heading.querySelectorAll("a").forEach(unwrap);
-
-							//	Construct TOC entry.
-							entryContentHTML += `<li><a href='${articleLink}#${urlEncodedAnchor}'>${(heading.innerHTML)}</a>`;
-
-							headingLevel = newHeadingLevel;
-						}
-						entryContentHTML += `</li></ul></div>`;
-					}
+					titleLineHTML = renderTitleLinkHTML(articleLink.href, pageTitleHTML);
+					entryContentHTML = wikipediaEntryContent.document.querySelector("[data-mw-section-id='0']").innerHTML
+									 + buildArticleTOC(Array.from(wikipediaEntryContent.document.querySelectorAll("section")).slice(1));
 				}
 
+				//	Document fragment, for entry content post-processing.
 				let contentDocument = newDocument(entryContentHTML);
 
 				//	Post-process entry content.
@@ -6621,8 +6659,7 @@ Content = {
 				//	Request image inversion judgments from invertornot.
 				requestImageInversionDataForImagesInContainer(contentDocument);
 
-				//	Pull out initial figure.
-				let thumbnailFigureHTML = null;
+				//	Pull out initial figure (thumbnail).
 				if (GW.mediaQueries.mobileWidth.matches == false) {
 					let initialFigure = contentDocument.querySelector("figure.float-right:first-child");
 					if (initialFigure) {
@@ -6631,35 +6668,27 @@ Content = {
 					}
 				}
 
+				//	Entry content, after processing.
 				entryContentHTML = contentDocument.innerHTML;
 
-				//	Pop-frame title text. Mark sections with ‘§’ symbol.
-				let popFrameTitleHTML = (articleLink.hash > ""
-										 ? (fullTitleHTML
-											? `${pageTitleElementHTML} &#x00a7; ${titleHTML}`
-											: `${titleHTML} (${pageTitleElementHTML})`)
-										 : titleHTML);
-				let popFrameTitleText = newElement("SPAN", null, { innerHTML: popFrameTitleHTML }).textContent;
+				//	Pop-frame title text and link.
+				popFrameTitleText = newElement("SPAN", null, { innerHTML: titleLineHTML }).textContent;
+				popFrameTitleLinkHref = articleLink.href;
+
+				//	Attach secondary links (if any) to title line.
+				titleLineHTML += secondaryTitleLinksHTML;
 
 				return {
 					content: {
-						title:                    fullTitleHTML,
-						titleLinkHref:            titleLinkHref,
-						titleLinkClass:           `title-link link-live content-transform-not`,
-						titleLinkIconMetadata:    `data-link-icon-type="svg" data-link-icon="wikipedia"`,
-						titleLinkDataAttributes:  titleLinkDataAttributes,
-						secondaryTitleLinksHTML:  secondaryTitleLinksHTML,
-						entryContent: 		      entryContentHTML,
-						thumbnailFigure:          thumbnailFigureHTML
+						titleLine:                  titleLineHTML,
+						entryContent:               entryContentHTML,
+						thumbnailFigure:            thumbnailFigureHTML
 					},
-					contentTypeClass:               "wikipedia-entry",
-					template:                       "wikipedia-entry-blockquote-inside",
-					linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-					whichTab:                       (GW.isMobile() ? "current" : "new"),
-					tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
-					popFrameTemplate:               "wikipedia-entry-blockquote-not",
+					contentTypeClass:               contentTypeClass,
 					popFrameTitleText:              popFrameTitleText,
-					popFrameTitleLinkHref:          titleLinkHref,
+					popFrameTitleLinkHref:          popFrameTitleLinkHref,
+					template:                       "wikipedia-entry-blockquote-inside",
+					popFrameTemplate:               "wikipedia-entry-blockquote-not",
 					annotationFileIncludeTemplate:  "wikipedia-entry-blockquote-title-not"
 				};
 			},
@@ -6726,7 +6755,8 @@ Content = {
 				".ambox",
 				".unicode.haudio",
 		// 		"span[typeof='mw:File']",
-				"link"
+				"link",
+				"span[typeof='mw:FallbackId']"
 			],
 
 			/*  CSS properties to preserve when stripping inline styles.
@@ -7141,9 +7171,6 @@ Content = {
                     },
                     contentTypeClass:       "tweet",
                     template:               "tweet-blockquote-outside",
-                    linkTarget:             (GW.isMobile() ? "_self" : "_blank"),
-                    whichTab:               (GW.isMobile() ? "current" : "new"),
-                    tabOrWindow:            (GW.isMobile() ? "tab" : "window"),
 					popFrameTemplate:       "tweet-blockquote-not",
                     popFrameTitleText:      popFrameTitleText,
                     popFrameTitleLinkHref:  tweetLinkURL.href,
@@ -8457,13 +8484,15 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
 
+	/*	Integrate standard fill context.
+	 */
+	context = Object.assign({ }, Transclude.standardTemplateFillContext, context);
+
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
 	 */
 	let valueFunction = (fieldName) => {
-		return (context && context[fieldName]
-				? context[fieldName]
-				: (data ? data[fieldName] : null));
+		return (context[fieldName] ?? data[fieldName]);
 	};
 
 	//	Line continuations.
@@ -9303,6 +9332,12 @@ Transclude = {
 		return fillTemplate(Transclude.templates[templateName], data, context, options);
 	},
 
+	standardTemplateFillContext: {
+		linkTarget:   (GW.isMobile() ? "_self" : "_blank"),
+		whichTab:     (GW.isMobile() ? "current" : "new"),
+		tabOrWindow:  (GW.isMobile() ? "tab" : "window"),
+	},
+
     /********************************/
     /*  Retrieved content processing.
      */
@@ -9759,7 +9794,7 @@ Transclude = {
 			let content = null;
 			if (template) {
 				//	Template fill context.
-				let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
+				let context = Object.assign({ }, Transclude.standardTemplateFillContext, referenceData, templateDataFromHTML(includeLink));
 
 				//	Template fill options.
 				let options = {
@@ -10164,16 +10199,7 @@ Transclude.templates = {
 	<div class="data-field tweet-content"><{tweetContent}></div>
 </blockquote>`,
 	"wikipedia-entry-blockquote-inside": `<div class="content-transform <{contentTypeClass}>">
-	<p class="data-field title">
-		<a 
-		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{titleLinkHref}>"
-		   target="<{linkTarget}>"
-		   <{titleLinkDataAttributes}>
-		   <{titleLinkIconMetadata}>
-			   ><{title}></a>:
-	</p>
+	<p class="data-field title"><{titleLine}>:</p>
 	<blockquote class="data-field entry-content">
 		<[IF thumbnailFigure]>
 		<{thumbnailFigure}>
@@ -10185,16 +10211,7 @@ Transclude.templates = {
 	<[IF thumbnailFigure]>
 	<{thumbnailFigure}>
 	<[IFEND]>
-	<p class="data-field title">
-		<a 
-		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{titleLinkHref}>"
-		   target="<{linkTarget}>"
-		   <{titleLinkDataAttributes}>
-		   <{titleLinkIconMetadata}>
-			   ><{title}></a>
-	</p>
+	<p class="data-field title"><{titleLine}></p>
 	<div class="data-field entry-content"><{entryContent}></div>
 </div>`,
 	"wikipedia-entry-blockquote-title-not": `<div class="content-transform <{contentTypeClass}>">
@@ -10659,21 +10676,8 @@ Extracts = {
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
 			popFrameTitleText:      titleText
-		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		});
     },
-
-	getStandardPopFrameTitleTemplateFillContext: () => {
-        /*  Because tab-handling is bad on mobile, readers expect the original
-            remote URL to open up in-tab, as readers will be single-threaded;
-            on desktop, we can open up in a tab for poweruser-browsing of
-            tab-explosions.
-         */
-		return {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
-		};
-	},
 
     /*  Returns the contents of the title element for a pop-frame.
      */
@@ -11171,7 +11175,7 @@ Extracts = { ...Extracts,
 		let target = popFrame.spawningTarget;
 		let referenceData = Annotations.referenceDataForLink(target);
 		return (referenceData
-				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext())
+				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData)
 				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 
@@ -11570,7 +11574,7 @@ Extracts = { ...Extracts,
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
 			popFrameTitleText:      popFrameTitleText
-		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		});
     },
 
 	//	Called by: Extracts.preparePopup_LOCAL_PAGE

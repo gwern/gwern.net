@@ -49,7 +49,7 @@ Extracts = { ...Extracts,
 		let target = popFrame.spawningTarget;
 		let referenceData = Annotations.referenceDataForLink(target);
 		return (referenceData
-				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData, Extracts.getStandardPopFrameTitleTemplateFillContext())
+				? Transclude.fillTemplateNamed("pop-frame-title-standard", referenceData)
 				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 

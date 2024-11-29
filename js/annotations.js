@@ -365,9 +365,6 @@ Annotations = { ...Annotations,
 				fileIncludes:             fileIncludesHTML
 			},
 			template:                       "annotation-blockquote-inside",
-			linkTarget:                     (GW.isMobile() ? "_self" : "_blank"),
-			whichTab:                       (GW.isMobile() ? "current" : "new"),
-			tabOrWindow:                    (GW.isMobile() ? "tab" : "window"),
 			popFrameTemplate:               "annotation-blockquote-not",
 			popFrameTitleText:              popFrameTitleText,
 			popFrameTitleLinkHref:          titleLinkHref

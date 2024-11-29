@@ -451,21 +451,8 @@ Extracts = {
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
 			popFrameTitleText:      titleText
-		}, Extracts.getStandardPopFrameTitleTemplateFillContext());
+		});
     },
-
-	getStandardPopFrameTitleTemplateFillContext: () => {
-        /*  Because tab-handling is bad on mobile, readers expect the original
-            remote URL to open up in-tab, as readers will be single-threaded;
-            on desktop, we can open up in a tab for poweruser-browsing of
-            tab-explosions.
-         */
-		return {
-			linkTarget:   ((Extracts.popFrameProvider == Popins) ? "_self" : "_blank"),
-			whichTab:     ((Extracts.popFrameProvider == Popins) ? "current" : "new"),
-			tabOrWindow:  ((Extracts.popFrameProvider == Popins) ? "tab" : "window")
-		};
-	},
 
     /*  Returns the contents of the title element for a pop-frame.
      */

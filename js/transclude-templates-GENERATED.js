@@ -120,16 +120,7 @@ Transclude.templates = {
 	<div class="data-field tweet-content"><{tweetContent}></div>
 </blockquote>`,
 	"wikipedia-entry-blockquote-inside": `<div class="content-transform <{contentTypeClass}>">
-	<p class="data-field title">
-		<a 
-		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{titleLinkHref}>"
-		   target="<{linkTarget}>"
-		   <{titleLinkDataAttributes}>
-		   <{titleLinkIconMetadata}>
-			   ><{title}></a>:
-	</p>
+	<p class="data-field title"><{titleLine}>:</p>
 	<blockquote class="data-field entry-content">
 		<[IF thumbnailFigure]>
 		<{thumbnailFigure}>
@@ -141,16 +132,7 @@ Transclude.templates = {
 	<[IF thumbnailFigure]>
 	<{thumbnailFigure}>
 	<[IFEND]>
-	<p class="data-field title">
-		<a 
-		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{titleLinkHref}>"
-		   target="<{linkTarget}>"
-		   <{titleLinkDataAttributes}>
-		   <{titleLinkIconMetadata}>
-			   ><{title}></a>
-	</p>
+	<p class="data-field title"><{titleLine}></p>
 	<div class="data-field entry-content"><{entryContent}></div>
 </div>`,
 	"wikipedia-entry-blockquote-title-not": `<div class="content-transform <{contentTypeClass}>">

@@ -3215,6 +3215,12 @@ blockquote .TOC,
 	pointer-events: auto;
 }
 
+.wikipedia-entry.wikipedia-section .TOC {
+	clear: none;
+	width: unset;
+	display: flow-root;
+}
+
 /*=--------=*/
 /*= TWEETS =*/
 /*=--------=*/

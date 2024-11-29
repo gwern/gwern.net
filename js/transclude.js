@@ -618,13 +618,15 @@ function fillTemplate(template, data = null, context = null, options = { }) {
 		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
 
+	/*	Integrate standard fill context.
+	 */
+	context = Object.assign({ }, Transclude.standardTemplateFillContext, context);
+
 	/*	Data variables specified in the provided context argument (if any)
 		take precedence over the reference data.
 	 */
 	let valueFunction = (fieldName) => {
-		return (context && context[fieldName]
-				? context[fieldName]
-				: (data ? data[fieldName] : null));
+		return (context[fieldName] ?? data[fieldName]);
 	};
 
 	//	Line continuations.
@@ -1464,6 +1466,12 @@ Transclude = {
 		return fillTemplate(Transclude.templates[templateName], data, context, options);
 	},
 
+	standardTemplateFillContext: {
+		linkTarget:   (GW.isMobile() ? "_self" : "_blank"),
+		whichTab:     (GW.isMobile() ? "current" : "new"),
+		tabOrWindow:  (GW.isMobile() ? "tab" : "window"),
+	},
+
     /********************************/
     /*  Retrieved content processing.
      */
@@ -1920,7 +1928,7 @@ Transclude = {
 			let content = null;
 			if (template) {
 				//	Template fill context.
-				let context = Object.assign({ }, referenceData, templateDataFromHTML(includeLink));
+				let context = Object.assign({ }, Transclude.standardTemplateFillContext, referenceData, templateDataFromHTML(includeLink));
 
 				//	Template fill options.
 				let options = {
