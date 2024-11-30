@@ -4018,7 +4018,6 @@ Popups = {
         options = Object.assign({
             spawnPoint: null,
             tight: false,
-            immediately: false,
             reset: false
         }, options);
 
@@ -4140,7 +4139,7 @@ Popups = {
                         //  The popup does not fit above or below!
                         if (options.tight != true) {
                             //  Let’s try and pack it in more tightly...
-                            Popups.positionPopup(popup, { tight: true, immediately: true });
+                            Popups.positionPopup(popup, { tight: true });
                             return;
                         } else {
                             /*  ... or, failing that, we will have to put it off to
@@ -4205,24 +4204,13 @@ Popups = {
 
             //  Cache the viewport rect.
             popup.viewportRect = popup.getBoundingClientRect();
-
-            /*  Disabling this; it doesn’t seem necessary, and makes the search
-                popup behave incorrectly. Revisit after some time to confirm.
-                    —SA 2024-04-27
-             */
-//          document.activeElement.blur();
         };
 
-        //  Either position immediately, or let “naive” layout complete first.
-        if (options.immediately == true) {
-            computePosition();
-        } else {
-            if (   options.reset
-                && Popups.popupIsPinned(popup) == false)
-                Popups.clearPopupViewportRect(popup);
+		if (   options.reset
+			&& Popups.popupIsPinned(popup) == false)
+			Popups.clearPopupViewportRect(popup);
 
-            requestAnimationFrame(computePosition);
-        }
+		computePosition();
     },
 
     clearPopupViewportRect: (popup) => {
