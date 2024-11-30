@@ -2042,17 +2042,12 @@ a code {
 /*= /index =*/
 /*=--------=*/
 
-/*  On the index page, we hide article-related formatting, begging, to make it
+/*  On the index page, we hide article-related formatting, to make it
     more compact & classy.
  */
 body.page-index header,
 body.page-index #TOC {
     display: none;
-}
-
-body.page-index article,
-body.page-index #markdownBody {
-    margin-top: 0;
 }
 
 /***********/
