@@ -3034,6 +3034,11 @@ a.footnote-back {
 #footer {
     margin-top: 2.5rem;
 }
+@media all and (max-width: 649px) {
+	#footer {
+		margin-top: 2.25rem;
+	}
+}
 
 #footer > p:first-child {
     text-align: center;
@@ -3495,8 +3500,13 @@ ol.link-bibliography-list-compact > li::before {
 /*********************/
 
 #footer-decoration-container {
-    margin: 1.5rem 0 1rem 0;
+    margin: 2rem 0 0 0;
     line-height: 0;
+}
+@media all and (max-width: 649px) {
+	#footer-decoration-container {
+		margin: 1.5rem 0 0 0;
+	}
 }
 
 #footer-decoration-container .footer-logo {
@@ -3569,7 +3579,7 @@ ol.link-bibliography-list-compact > li::before {
 
 @media all and (min-width: 650px) {
     #navigation {
-        margin: 2.5em 0 0 0;
+        margin: 2.5rem 0 0 0;
         justify-content: space-between;
     }
     #navigation #navigation-right,
@@ -3585,7 +3595,7 @@ ol.link-bibliography-list-compact > li::before {
 }
 @media all and (max-width: 649px) {
     #navigation {
-        margin: 3em 0 0 0;
+        margin: 3rem 0 0 0;
         justify-content: center;
     }
     #navigation #navigation-right,
@@ -6556,6 +6566,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
      */
     body.page-index #floating-header {
         display: none;
+    }
+
+	/*  Back-to-top link on home page.
+	 */
+    body.page-index #back-to-top {
+        left: calc((100% - 1430px - 50px)/2);
+        right: unset;
     }
 }
 

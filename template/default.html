@@ -1,191 +1,169 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
+<head>
+  <meta charset="utf-8">
 
-    <!-- SSI: CSS+JS inline for speed -->
-    <!-- INLINED-HEAD-BEGIN -->
-    <!--#include virtual="/static/include/inlined-head.html" -->
-    <!-- INLINED-HEAD-END -->
+  <!-- SSI: CSS+JS inline for speed -->
+  <!-- INLINED-HEAD-BEGIN -->
+  <!--#include virtual="/static/include/inlined-head.html" -->
+  <!-- INLINED-HEAD-END -->
 
-    $if(index)$
-    <!-- Google Webmaster requires this tag, but only on the index/homepage -->
-    <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk" />
-    $endif$
-    <!-- Hint at necessary third-party domains -->
-    <link rel="preconnect" href="https://www.googletagmanager.com">
+  $if(index)$
+  <!-- Google Webmaster requires this tag, but only on the index/homepage -->
+  <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk" />
+  $endif$
+  <!-- Hint at necessary third-party domains -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
 
-    <meta name="title" content="$title-escaped$">
-    <meta name="citation_title" content="$title-escaped$">
-    <meta name="og:title" content="$title-escaped$">
-    <meta name="twitter:title" content="$title-escaped$">
-    <meta name="generator" content="https://github.com/gwern/gwern.net/">
-    <meta name="creator" content="gwern.net">
-    $if(author)$
-    <meta name="author" content="$author$">
-    <meta name="citation_author" content="$author$">
-    $else$
-    <meta name="author" content="Gwern Branwen">
-    <meta name="citation_author" content="Gwern Branwen">
-    $endif$
-    <meta name="contact" content="https://gwern.net/me#contact">
-    <link rel="index" title="Gwern.net homepage" href="https://gwern.net/index">
-    <link href="https://gwern.substack.com/feed" type="application/rss+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net newsletters with additions and links.">
+  <meta name="title" content="$title-escaped$">
+  <meta name="citation_title" content="$title-escaped$">
+  <meta name="og:title" content="$title-escaped$">
+  <meta name="twitter:title" content="$title-escaped$">
+  <meta name="generator" content="https://github.com/gwern/gwern.net/">
+  <meta name="creator" content="gwern.net">
+  $if(author)$
+  <meta name="author" content="$author$">
+  <meta name="citation_author" content="$author$">
+  $else$
+  <meta name="author" content="Gwern Branwen">
+  <meta name="citation_author" content="Gwern Branwen">
+  $endif$
+  <meta name="contact" content="https://gwern.net/me#contact">
+  <link rel="index" title="Gwern.net homepage" href="https://gwern.net/index">
+  <link href="https://gwern.substack.com/feed" type="application/rss+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net newsletters with additions and links.">
 
-    <meta name="twitter:creator" content="gwern">
-    <meta name="twitter:site" content="gwern.net">
-    <meta name="og:site" content="gwern.net">
-    <meta name="og:type" content="article">
-    $if(description-escaped)$<meta name="description" content="$description-escaped$">
-    <meta name="og:description" content="$description-escaped$">$endif$
-    $if(thumbnail)$<meta property="og:image" content="https://gwern.net$thumbnail$">
-    $if(thumbnail-text)$<meta property="og:image:alt" content="$thumbnail-text$">$endif$
-    $else$<meta property="og:image" content="https://gwern.net/static/img/logo/logo-whitebg-large-border.png">
-    <meta property="og:image:alt" content="Default thumbnail text: the Gwern.net site logo, a logotype of a large blackletter fraktur capital letter 'G' on a white background.">$endif$
-    <meta property="og:image:height" content="$thumbnail-height$">
-    <meta property="og:image:width" content="$thumbnail-width$">
-    <meta property="gwern:thumbnail:css-classes" content="$thumbnail-css$">
-    $if(tags-plain)$<meta name="keywords" content="$tags-plain$">$endif$
-    <meta name="dc.date.issued" content="$created$">
-    $if(error404)$<meta name="robots" content="noindex, nofollow, nosnippet, nocache, noarchive">$endif$
-    <meta name="citation_publication_date" content="$created$">
-    <meta name="dcterms.modified" content="$modified$">
-    <link rel="schema.dcterms" href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">
-    <meta name="dcterms.rights" content="CC PD-0">
-    <meta name="dc.rights" content="https://creativecommons.org/publicdomain/zero/1.0/">
-    <link rel="canonical" href="https://gwern.net$url$">
-    <meta name="citation_fulltext_html_url" content="https://gwern.net$url$">
-    <meta name="og:url" content="https://gwern.net$url$">
-    <link rel="alternate" type="text/markdown" href="https://gwern.net$url$.md" title="Markdown source of ‘$title-plain$’ page">
-    <meta name="page-body-classes" content="page-$safe-url$ $css-extension$">
-    <meta name="citation_fulltext_world_readable" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light dark">
+  <meta name="twitter:creator" content="gwern">
+  <meta name="twitter:site" content="gwern.net">
+  <meta name="og:site" content="gwern.net">
+  <meta name="og:type" content="article">
+  $if(description-escaped)$<meta name="description" content="$description-escaped$">
+  <meta name="og:description" content="$description-escaped$">$endif$
+  $if(thumbnail)$<meta property="og:image" content="https://gwern.net$thumbnail$">
+  $if(thumbnail-text)$<meta property="og:image:alt" content="$thumbnail-text$">$endif$
+  $else$<meta property="og:image" content="https://gwern.net/static/img/logo/logo-whitebg-large-border.png">
+  <meta property="og:image:alt" content="Default thumbnail text: the Gwern.net site logo, a logotype of a large blackletter fraktur capital letter 'G' on a white background.">$endif$
+  <meta property="og:image:height" content="$thumbnail-height$">
+  <meta property="og:image:width" content="$thumbnail-width$">
+  <meta property="gwern:thumbnail:css-classes" content="$thumbnail-css$">
+  $if(tags-plain)$<meta name="keywords" content="$tags-plain$">$endif$
+  <meta name="dc.date.issued" content="$created$">
+  $if(error404)$<meta name="robots" content="noindex, nofollow, nosnippet, nocache, noarchive">$endif$
+  <meta name="citation_publication_date" content="$created$">
+  <meta name="dcterms.modified" content="$modified$">
+  <link rel="schema.dcterms" href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">
+  <meta name="dcterms.rights" content="CC PD-0">
+  <meta name="dc.rights" content="https://creativecommons.org/publicdomain/zero/1.0/">
+  <link rel="canonical" href="https://gwern.net$url$">
+  <meta name="citation_fulltext_html_url" content="https://gwern.net$url$">
+  <meta name="og:url" content="https://gwern.net$url$">
+  <link rel="alternate" type="text/markdown" href="https://gwern.net$url$.md" title="Markdown source of ‘$title-plain$’ page">
+  <meta name="page-body-classes" content="page-$safe-url$ $css-extension$">
+  <meta name="citation_fulltext_world_readable" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
 
-    $if(author)$
-    <title>$title-plain$, by $author$ · Gwern.net</title>
-    $else$
-    <title>$title-plain$ · Gwern.net</title>
-    $endif$
+  $if(author)$
+  <title>$title-plain$, by $author$ · Gwern.net</title>
+  $else$
+  <title>$title-plain$ · Gwern.net</title>
+  $endif$
 
-    <link id="favicon" rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png">
-    <link id="favicon-dark" rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small-dark.png" media="all and (prefers-color-scheme: dark)">
-    <link id="favicon-apple-touch" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
-    <link id="favicon-apple-touch-dark" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch-dark.png" media="all and (prefers-color-scheme: dark)">
+  <link id="favicon" rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png">
+  <link id="favicon-dark" rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small-dark.png" media="all and (prefers-color-scheme: dark)">
+  <link id="favicon-apple-touch" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
+  <link id="favicon-apple-touch-dark" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch-dark.png" media="all and (prefers-color-scheme: dark)">
 
-    <!-- CSS for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. --> <noscript> <style>#markdownBody #noscript-warning-header { position: fixed; /* sticky */
-                                         top: 6px; /* at top */
-                                         width: 58%;
-                                         z-index: 99; /* Make sure it is on top */
-                                         background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
-                                         border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
-                                         border-width: 6px 6px 6px 6px;
-                                         border-style: double; }
-                      #markdownBody #noscript-warning-header p { margin: 10px; }
-                      nav#sidebar { padding-top: 160px; } /* avoid overlap with page header */</style>
-    </noscript>
-  </head>
+  <!-- CSS for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. --> 
+  <noscript>
+    <style>
+      #markdownBody #noscript-warning-header {
+    	  position: fixed; /* sticky */
+    	  top: 6px; /* at top */
+    	  width: 58%;
+    	  z-index: 99; /* Make sure it is on top */
+    	  background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
+    	  border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
+    	  border-width: 6px 6px 6px 6px;
+    	  border-style: double;
+      }
+      #markdownBody #noscript-warning-header p { margin: 10px; }
+      nav#sidebar { padding-top: 160px; } /* avoid overlap with page header */
+    </style>
+  </noscript>
+</head>
 
-  <!-- Skip fancy css like dropcaps on index pages -->
-  $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css-extension$">$endif$
+<!-- Skip fancy css like dropcaps on index pages -->
+$if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css-extension$">$endif$
 
-    <!-- SSI: Inlined asset links -->
-    <!-- INLINED-ASSET-LINKS-BEGIN-->
-    <!--#include virtual="/static/include/inlined-asset-links.html" -->
-    <!-- INLINED-ASSET-LINKS-END -->
+  <!-- SSI: Inlined asset links -->
+  <!-- INLINED-ASSET-LINKS-BEGIN-->
+  <!--#include virtual="/static/include/inlined-asset-links.html" -->
+  <!-- INLINED-ASSET-LINKS-END -->
 
+  <main>
     <a id="skip-to-content-link" href="#markdownBody">Skip to main content</a>
 
-    <main>
-      <nav id="sidebar">
-        <a class="logo" rel="home me contents" href="/index" title="Homepage: categorized list of articles index">
-          <svg class="logo-image" viewBox="0 0 64 75"><use href="/static/img/logo/logo-smooth.svg#logo" /></svg>
-        </a>
-        <div class="sidebar-links">
-        <a class="site   link-page link-annotated" href="/about"                title="Site ideals, source, content, traffic, examples, license" rel="author"><span class="mobile-not">About </span>Site</a>
-        <a class="me   link-page link-annotated" href="/me"                   title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on" rel="author"><span class="mobile-not">About </span>Me</a>
-        <a class="new-essays   link-page link-annotated" href="/changelog"            title="Changelog of what’s new or updated">New Essays</a>
-        <a class="new-links   link-page"   href="/doc/newest/index"     title="Most recent link annotations">New Links</a>
-        <a class="patreon" href="https://www.patreon.com/gwern" title="Link to Patreon donation profile to support my writing" rel="me">Patreon</a>
-        </div>
-      </nav>
+    <!-- SSI: Sidebar -->
+    <!-- SIDEBAR-BEGIN-->
+    <!--#include virtual="/static/include/sidebar.html" -->
+    <!-- SIDEBAR-END -->
+
+    <article> 
 
       <header>
         <h1>$title$</h1>
       </header>
 
-      <article> $if(index)$ $else$
-        <div class="markdownBody" id="page-metadata">
-          $if(tagsHTML)$ $tagsHTML$ $endif$
-          $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
-          <div class="page-metadata-fields">
-              $if(author)$<span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
-              $if(date-range-HTML)$<span class="page-date-range">$date-range-HTML$</span>$endif$
-              <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
-              <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
-              <span class="page-importance"><a href="/about#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
-              $if(backlinks-yes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
-              $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
-              $if(linkbib-yes)$<span class="link-bibliography"><a href="#link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
-          </div>
+      $if(index)$ $else$
+      <div class="markdownBody" id="page-metadata">
+        $if(tagsHTML)$ $tagsHTML$ $endif$
+        $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
+        <div class="page-metadata-fields">
+            $if(author)$<span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
+            $if(date-range-HTML)$<span class="page-date-range">$date-range-HTML$</span>$endif$
+            <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
+            <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
+            <span class="page-importance"><a href="/about#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
+            $if(backlinks-yes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
+            $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
+            $if(linkbib-yes)$<span class="link-bibliography"><a href="#link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
         </div>
-        $endif$
-
-        $body$
-
-        $if(index)$ $else$
-        <noscript><div id="noscript-warning-footer" class="admonition error" title="Warning to NoScript Users"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the bibliography require JS enabled to load.]</p></div></noscript>
-        $if(backlinks-yes)$<section id="backlinks-section" class="level1">
-          <h1><a href="#backlinks-section" title="Link to section: § 'Backlinks'">Backlinks</a></h1>
-          <a id="backlinks" href="/metadata/annotation/backlink/$escaped-url$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict collapsible" data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">[Backlinks (what links here)]</a>
-        </section>$endif$
-        $if(similars-yes)$<section id="similars-section" class="level1">
-          <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
-          <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict collapsible" data-link-icon="≈" data-link-icon-type="text">[Similar links by topic]</a>
-          </section>$endif$
-        $if(linkbib-yes)$<section id="link-bibliography-section" class="level1 collapse">
-          <h1 class="collapse"><a href="#link-bibliography-section" title="Link to section: § 'Bibliography'">Bibliography</a></h1> <!-- NOTE: In theory, '.collapse' on a '<h1>' is redundant with the '<section>'; but added to parallel Pandoc-generated headers which set all attributes/classes on both. -->
-          <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escaped-url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-even-when-collapsed link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg">[Bibliography of links/references used in page]</a>$endif$
-        </section>$endif$
-        </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
-
-        <nav id="navigation">
-          <svg id="navigation-left" ><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg>
-          <a id="navigation-center" class="link-page-not" title="Return to top of current page" href="#top"
-            ><svg><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#center" /></svg></a>
-          <svg id="navigation-right"><use href="/static/img/ornament/sequential-nav-icons-arabesque.svg#direction" /></svg>
-        </nav>
-
-        <div class="markdownBody" id="footer">
-          <p id="footer-anonymous-feedback">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7uqL7B_l1HFIfXc8D_nZyumaOv58msK7jhl4XzQjWODWKdA/viewform" title="Google Docs web form for submitting anonymized feedback to Gwern Branwen">[&hairsp;Send Anonymous Feedback&hairsp;]</a>
-          </p>
-
-          <div id="x-of-the-day">
-            <p><a id="qotd" class="include include-spinner-not" href="/metadata/today-quote.html">[Quote Of The Day]</a></p>
-
-            <p><a id="sotd" class="include include-spinner-not" href="/metadata/today-site.html">[Site Of The Day]</a></p>
-
-            <p><a id="atod" class="include include-spinner-not" href="/metadata/today-annotation.html">[Annotation Of The Day]</a></p>
-          </div>
-
-          <p><a id="psa-adblock" class="include adsense include-spinner-not" href="/metadata/psa-adblock.html">[adblock public service announcement]</a></p>
-        </div>
-
-      </article>
-
-      <div id="footer-decoration-container">
-        <a rel="home me contents" title="Gwern.net homepage" class="footer-logo" href="/index">​</a>
       </div>
-    </main>
+      $endif$
 
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-18912926-1');
-    </script>
-    $if(error404)$<script src="/static/js/404-guesser.js" defer></script>$endif$
-  </body>
+      $body$
+
+      $if(index)$ $else$
+      <noscript><div id="noscript-warning-footer" class="admonition error" title="Warning to NoScript Users"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the bibliography require JS enabled to load.]</p></div></noscript>
+      $if(backlinks-yes)$<section id="backlinks-section" class="level1">
+        <h1><a href="#backlinks-section" title="Link to section: § 'Backlinks'">Backlinks</a></h1>
+        <a id="backlinks" href="/metadata/annotation/backlink/$escaped-url$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict collapsible" data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">[Backlinks (what links here)]</a>
+      </section>$endif$
+      $if(similars-yes)$<section id="similars-section" class="level1">
+        <h1><a href="#similars-section" title="Link to section: § 'Similar Links'">Similar Links</a></h1>
+        <a id="similars" href="/metadata/annotation/similar/$escaped-url$" title="Similar links for this link (by text embedding). Lazily-transcluded version at footer of page for easier scrolling." class="similars include-strict collapsible" data-link-icon="≈" data-link-icon-type="text">[Similar links by topic]</a>
+        </section>$endif$
+      $if(linkbib-yes)$<section id="link-bibliography-section" class="level1 collapse">
+        <h1 class="collapse"><a href="#link-bibliography-section" title="Link to section: § 'Bibliography'">Bibliography</a></h1> <!-- NOTE: In theory, '.collapse' on a '<h1>' is redundant with the '<section>'; but added to parallel Pandoc-generated headers which set all attributes/classes on both. -->
+        <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escaped-url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-even-when-collapsed link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg">[Bibliography of links/references used in page]</a>$endif$
+      </section>$endif$
+      </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
+
+    </article>
+
+    <!-- SSI: Footer -->
+    <!-- FOOTER-BEGIN-->
+    <!--#include virtual="/static/include/footer.html" -->
+    <!-- FOOTER-END -->
+
+  </main>
+  <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-18912926-1');
+  </script>
+  $if(error404)$<script src="/static/js/404-guesser.js" defer></script>$endif$
+</body>
 </html>

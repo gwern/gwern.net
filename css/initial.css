@@ -38,7 +38,7 @@
     :root {
         --GW-body-text-font-size: 18px;
 
-        --GW-body-side-padding: 15px;
+        --GW-body-side-padding: 16px;
     }
 }
 
@@ -93,29 +93,35 @@ svg {
 /* LAYOUT */
 /**********/
 
-html {
-    padding: 0;
-    margin: 0;
-}
-
+html,
 body {
-    max-width: var(--GW-body-max-width);
-    padding: 0 var(--GW-body-side-padding);
-    margin: 0 auto;
+    margin: 0;
+    padding: 0;
 }
 
 main {
     position: relative;
+	min-height: 100vh;
+    max-width: var(--GW-body-max-width);
+    margin: 0 auto;
+    padding: 1rem 
+    		 var(--GW-body-side-padding) 
+    		 1rem 
+    		 var(--GW-body-side-padding);
+	display: flex;
+	flex-flow: column;
 }
-@media all and (min-width: 650px) {
-    main {
-        min-height: 100vh;
-        display: flex;
-        flex-flow: column;
-    }
-    article {
-        flex: 1 1 auto;
-    }
+@media all and (max-width: 649px) {
+	main {
+		padding: 1rem 
+				 var(--GW-body-side-padding) 
+				 4.25rem 
+				 var(--GW-body-side-padding);
+	}
+}
+
+article {
+	flex: 1 1 auto;
 }
 
 
@@ -124,14 +130,13 @@ main {
 /***********/
 
 #sidebar {
+	position: relative;
     display: flex;
-    justify-content: center;
 }
 
 /*  Sidebar links (including logo).
  */
 #sidebar a {
-    display: block;
     border: 1px dotted currentColor;
     text-align: center;
     margin: 1px 0 1px 2px;
@@ -162,13 +167,14 @@ main {
 }
 
 @media all and (max-width: 649px) {
-    #sidebar {
-        margin-top: 1em;
-    }
+	#sidebar {
+		margin-right: -1px;
+	}
 
     /*  Logo.
      */
     #sidebar a.logo {
+    	margin: 1px 0 1px -1px;
         padding: 0.5em 0.375em;
     }
     #sidebar a.logo .logo-image {
@@ -208,10 +214,6 @@ main {
 }
 
 @media all and (min-width: 650px) {
-    #sidebar {
-        margin-top: 0.5em;
-    }
-
     /*  Sidebar links (including logo).
      */
     #sidebar a {
@@ -2199,14 +2201,6 @@ body.page-index #markdownBody section ul ul {
     */
     body.page-index div[class^='horizontal-rule'] {
         display: none;
-    }
-}
-
-/*  Back-to-top link on home page.
-    */
-@media all and (min-width: 1761px) {
-    body.page-index #back-to-top {
-        left: calc((100% - 1430px - 50px)/2);
     }
 }
 
