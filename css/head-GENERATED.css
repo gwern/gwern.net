@@ -1682,11 +1682,8 @@ figure.width-full {
 #markdownBody .marginnote.sidenote:hover {
     box-shadow: none;
 }
-/*  Make links in margin notes (somewhat unusual but should be supported simply
-    because that’s what one would expect) clickable/hover-able.
- */
 #markdownBody .marginnote.sidenote::after {
-    z-index: -1;
+    display: none;
 }
 
 /*  Margin notes within admonitions need special layout.

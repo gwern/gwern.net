@@ -4018,7 +4018,6 @@ Popups = {
         options = Object.assign({
             spawnPoint: null,
             tight: false,
-            immediately: false,
             reset: false
         }, options);
 
@@ -4140,7 +4139,7 @@ Popups = {
                         //  The popup does not fit above or below!
                         if (options.tight != true) {
                             //  Let’s try and pack it in more tightly...
-                            Popups.positionPopup(popup, { tight: true, immediately: true });
+                            Popups.positionPopup(popup, { tight: true });
                             return;
                         } else {
                             /*  ... or, failing that, we will have to put it off to
@@ -4205,24 +4204,13 @@ Popups = {
 
             //  Cache the viewport rect.
             popup.viewportRect = popup.getBoundingClientRect();
-
-            /*  Disabling this; it doesn’t seem necessary, and makes the search
-                popup behave incorrectly. Revisit after some time to confirm.
-                    —SA 2024-04-27
-             */
-//          document.activeElement.blur();
         };
 
-        //  Either position immediately, or let “naive” layout complete first.
-        if (options.immediately == true) {
-            computePosition();
-        } else {
-            if (   options.reset
-                && Popups.popupIsPinned(popup) == false)
-                Popups.clearPopupViewportRect(popup);
+		if (   options.reset
+			&& Popups.popupIsPinned(popup) == false)
+			Popups.clearPopupViewportRect(popup);
 
-            requestAnimationFrame(computePosition);
-        }
+		computePosition();
     },
 
     clearPopupViewportRect: (popup) => {
@@ -9874,12 +9862,50 @@ Transclude = {
     //  Called by: "beforeprint" listener (rewrite.js)
     triggerTranscludesInContainer: (container, eventInfo) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-        	if (eventInfo)
-        		includeLink.eventInfo = eventInfo;
-
-            Transclude.transclude(includeLink, true);
+        	Transclude.triggerTransclude(includeLink, eventInfo);
         });
     },
+
+
+	/*	Available option fields (all optional):
+	
+		doWhenDidLoad
+		doWhenDidLoadOptions
+		doWhenDidInject
+		doWhenDidInjectOptions
+	 */
+	triggerTransclude: (includeLink, eventInfo, options) => {
+		options = Object.assign({
+			doWhenDidLoad: null,
+			doWhenDidInject: null
+		}, options);
+
+		if (eventInfo)
+			includeLink.eventInfo = eventInfo;
+
+		//	If a load and/or inject handler is provided, add them.
+		if (   options.doWhenDidLoad != null
+			|| options.doWhenDidInject != null) {
+			let handlerOptions = {
+				once: true,
+				condition: (info) => (info.includeLink == includeLink)
+			};
+
+			if (options.doWhenDidLoad != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", (info) => {
+					options.doWhenDidLoad(info);
+				}, Object.assign(handlerOptions, options.doWhenDidLoadOptions));
+			}
+
+			if (options.doWhenDidInject != null) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+					options.doWhenDidInject(info);
+				}, Object.assign(handlerOptions, options.doWhenDidInjectOptions));
+			}
+		}
+
+		Transclude.transclude(includeLink, true);
+	},
 
     /********************/
     /*  Loading spinners.
@@ -15095,24 +15121,21 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
     let annotationDoc = newDocument(synthesizeIncludeLink(location.pathname, { class: "link-annotated include-annotation" }));
 	let annotationIncludeLink = annotationDoc.firstElementChild;
 
-	/*	Copy `link-modified-recently` class from entries in annotation TOC
-		to corresponding entries in main page TOC.
-	 */
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-    	annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
-    		TOC.querySelector("#" + recentlyModifiedTOCLink.id).classList.add("link-modified-recently");
-    	});
-    	GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
-    }, {
-    	once: true,
-    	condition: (info) => (info.document == annotationDoc)
-    });
-
-	//	Trigger annotation load.
-    Transclude.triggerTranscludesInContainer(annotationDoc, {
+	//	Trigger include-link.
+	Transclude.triggerTransclude(annotationIncludeLink, {
 		source: "addRecentlyModifiedDecorationsToPageTOC",
 		container: annotationDoc,
 		document: annotationDoc
+	}, {
+		doWhenDidInject: (info) => {
+			/*	Copy `link-modified-recently` class from entries in annotation 
+				TOC to corresponding entries in main page TOC.
+			 */
+			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
+				TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id)).classList.add("link-modified-recently");
+			});
+			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
+		}
 	});
 }, "rewrite", (info) => (info.container == document.body));
 

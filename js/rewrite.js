@@ -1729,24 +1729,21 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
     let annotationDoc = newDocument(synthesizeIncludeLink(location.pathname, { class: "link-annotated include-annotation" }));
 	let annotationIncludeLink = annotationDoc.firstElementChild;
 
-	/*	Copy `link-modified-recently` class from entries in annotation TOC
-		to corresponding entries in main page TOC.
-	 */
-    GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
-    	annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
-    		TOC.querySelector("#" + recentlyModifiedTOCLink.id).classList.add("link-modified-recently");
-    	});
-    	GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
-    }, {
-    	once: true,
-    	condition: (info) => (info.document == annotationDoc)
-    });
-
-	//	Trigger annotation load.
-    Transclude.triggerTranscludesInContainer(annotationDoc, {
+	//	Trigger include-link.
+	Transclude.triggerTransclude(annotationIncludeLink, {
 		source: "addRecentlyModifiedDecorationsToPageTOC",
 		container: annotationDoc,
 		document: annotationDoc
+	}, {
+		doWhenDidInject: (info) => {
+			/*	Copy `link-modified-recently` class from entries in annotation 
+				TOC to corresponding entries in main page TOC.
+			 */
+			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
+				TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id)).classList.add("link-modified-recently");
+			});
+			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
+		}
 	});
 }, "rewrite", (info) => (info.container == document.body));
 
