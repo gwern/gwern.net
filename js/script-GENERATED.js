@@ -2698,7 +2698,7 @@ Popups = {
     /*  Config.
      */
     popupContainerID: "popup-container",
-    popupContainerParentSelector: "html",
+    popupContainerParentSelector: "body",
     popupContainerZIndex: "10000",
 
     popupBreathingRoomX: 12.0,
