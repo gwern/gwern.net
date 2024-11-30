@@ -19,11 +19,11 @@ overrideLinkIcons = [("/index#abstract", ("","",""))]
 prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
--- TODO: icon+color: https://digital.library.unt.edu/ green hawk icon; https://www.animesuki.com/ + "forums.animesuki.com" teal geometric icon;  https://www.theregister.com/ vulture icon + red ; http://ascii.textfiles.com/ ASCII + green ; https://www.e-codices.unifr.ch/en (e) + yellow ; https://www.bartleby.com/ 'b' + dark blue ; https://darcs.net/ squid icon + green ; https://www.smh.com.au/ "S" + dark blue ; https://www.rrauction.com/ 'RR' + blue ; https://www.mangaupdates.com/ M+yellow ; https://www.instructables.com/ robot head emoji + yellow ; https://engineering.virginia.edu/department/computer-science IA-library icon + orange ; https://mujoco.org/ 'M' + blue ; https://www.artbreeder.com/ logo+light blue ...
+-- TODO: icon+color: http://ascii.textfiles.com/ ASCII + green ; https://www.e-codices.unifr.ch/en (e) + yellow ; https://www.bartleby.com/ 'b' + dark blue ; https://darcs.net/ squid icon + green ; https://www.smh.com.au/ "S" + dark blue ; https://www.rrauction.com/ 'RR' + blue ; https://www.mangaupdates.com/ M+yellow ; https://www.instructables.com/ robot head emoji + yellow ; https://engineering.virginia.edu/department/computer-science IA-library icon + orange ; https://mujoco.org/ 'M' + blue ; https://www.artbreeder.com/ logo+light blue ...
 -- color-only:
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
-                              , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com"
+                              , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
  , "www.joelonsoftware.com"
  , "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
  , "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org"
@@ -47,7 +47,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "
  , "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org"
  , "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"
  , "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com"
- , "mattmahoney.net", "dataverse.harvard.edu", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"
+ , "mattmahoney.net", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"
  , "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
  , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com"
@@ -181,7 +181,7 @@ linkIconRulesSingle u
  | u'' u "www.kaggle.com" = ("k", "text,sans", "#20beff") -- color: blue-green
  | u'' u "www.discovermagazine.com" = ("D", "text", "") -- TODO: white-on-black text background text
  | u'' u "www.mirror.co.uk" = ("M", "text,sans", "#e90e0e") -- color: red; TODO: white-on-red text background
- | aU'' u ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' u "www.reddit.com/r/TOUHOUMUSIC/" = ("☯", "text", "") -- NOTE: override Fandom catch-all; color: none, surprisingly there is no official Touhou logo or icon or color, not even Reimu's miko red
+ | aU'' u ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' u "www.reddit.com/r/TOUHOUMUSIC/" = ("☯", "text", "#e44031") -- NOTE: override Fandom catch-all; color: surprisingly, AFAICT, there is no official Touhou logo or icon or color, not even Reimu's miko red; so we'll just pick an arbitrary bright red
  | u'' u "www.reuters.com" = ("R", "text,sans", "#e56218") -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim; color: red
  | u'' u "www.theage.com.au" = ("A", "text", "") -- TODO: white-on-black text background
  | u'' u "www.candyjapan.com"  = ("🍬", "text", "#e0423e") -- color: red
@@ -207,6 +207,8 @@ linkIconRulesSingle u
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
+  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("□̅", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
+  | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -338,7 +340,8 @@ linkIconRulesTriple u
  | u'' u "gameprogrammingpatterns.com" = ("GPP", "text,tri,sans", "#1487c1") -- color: medium blue
  | u'' u "www.metopera.org" = ("Met", "text,tri", "#9c9899") -- color: dark yellow
  | u'' u "www.schneier.com" = ("SOS", "text,tri,sans", "#6b0000") -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS"); color: dark red; TODO: white-on-red text background
- | u'' u "hbr.org" = ("HBR", "text,tri,sans", "") -- Harvard Business Review; TODO: white-on-black text background
+ | u'' u "hbr.org" = ("HBR", "text,tri,sans", "#a51c30") -- Harvard Business Review (official Harvard crimson: <https://seas.harvard.edu/office-communications/brand-style-guide/color-palette>); TODO: white-on-black text background?
+ | u' u "harvard.edu" = ("H", "text", "#a51c30") -- Harvard catch-all; <https://en.wikipedia.org/wiki/File:Harvard_University_coat_of_arms.svg> is too complex without a custom shield-H icon?
  | aU'' u ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = ("acm", "text,tri,sans", "#3795c4") -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.; color: blue (chosen from bottom of SVG logo)
  | u' u "www.cs.utexas.edu/~EWD/" = ("EWD", "text,tri,sans", "") -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' u "iopscience.iop.org" = ("IOP", "text,tri,sans", "#cc0000") -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing; color: red
@@ -359,6 +362,7 @@ linkIconRulesTriple u
  | u'' u "ocw.mit.edu" = ("OCW", "text,tri,sans", "") -- OpenCourseWare: MIT MOOCs <https://en.wikipedia.org/wiki/OpenCourseWare>
  | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
  | aU'' u ["worksinprogress.co", "www.worksinprogress.news", "books.worksinprogress.co"] = ("WiP", "text,tri,mono", "") -- Works in Progress; color: none (monochrome website with occasional per-issue color theme highlights); icon: the mustached-man is unusable at favicon or link-icon scale and not particularly recognizable either IMO.
+ | u'' u "digital.library.unt.edu" = ("UNT", "text,tri", "#00863c") -- University of North Texas library; logo is a <https://en.wikipedia.org/wiki/North_Texas_Mean_Green> green hawk icon, which is cool and would work as a link-icon, but I doubt even sports fans would understand it out of context compared to just the 'UNT' acronym; color: green (black outline)
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
@@ -401,7 +405,7 @@ linkIconRulesQuad u
  | u'' u "warontherocks.com" = ("WOT R", "text,quad,sans", "")
  | u'' u "krebsonsecurity.com" = ("Krbs", "text,quad,sans", "") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krbs', so abbreviate that
  | u'' u "www.nextplatform.com" = ("NEXT", "text,quad,sans", "#ff7200") -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable; color: orange
- | u'' u "www.vetta.org" = ("Legg", "text,quad,sans", "") -- Shane Legg (DeepMind)
+ | u'' u "www.vetta.org" = ("Legg", "text,quad,sans", blueDM) -- Shane Legg (DeepMind)
  | u'' u "www.spiegel.de" = ("SPGL", "text,quad", "#e64415") -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead; color: orange; TODO: orange-on-white text background
  | u'' u "tasvideos.org" = ("TASV", "text,quad", "") -- TASVideos.org: tool-assisted game movies
  | u'' u "habr.com" = ("Habr", "text,quad,sans", "") -- Russian tech collaborative blog <https://en.wikipedia.org/wiki/Habr>
@@ -1081,7 +1085,7 @@ linkIconTestUnitsText =
          , ("https://www.thisfursonadoesnotexist.com/", "TFDE", "text,quad,sans", "")
          , ("https://thisponydoesnotexist.net/", "TPDE", "text,quad,sans", "")
          , ("https://www.thiswaifudoesnotexist.net/", "TWDE", "text,quad,sans", "")
-         , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans", "")
+         , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans", blueDM)
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans", "")
          , ("/doc/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans", "")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans", "")
@@ -1112,7 +1116,8 @@ linkIconTestUnitsText =
          , ("https://omega0.xyz/omega8008/JaynesBookPdf.html", "ETJ", "text,tri,sans", "")
          , ("https://omega0.xyz/omega8008/ETJ-PDF/cc5d.pdf", "ETJ", "text,tri,sans", "")
          , ("https://thelastpsychiatrist.com/2011/01/why_chinese_mothers_are_not_su.html", "TLP", "text,tri,sans", "")
-         , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans", "")
+         , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans", "#a51c30")
+         , ("https://dataverse.harvard.edu/dataset.%C3%97html?persistentId=doi:10.7910/DVN/MVDWCS", "H", "text", "#a51c30")
          , ("https://www.cbsnews.com/colorado/news/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "cbs", "svg", "")
          , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "cbs", "svg", "")
          , ("https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans", "")
@@ -1154,7 +1159,7 @@ linkIconTestUnitsText =
          , ("https://www.thebeliever.net/mithradites-of-fond-du-lac/", "𝐁", "text", "")
          , ("https://blog.novelai.net/novelai-improvements-on-stable-diffusion-e10d38db82ac", "🖋", "text", "")
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text", "")
-         , ("https://touhou.fandom.com/wiki/Category:Music", "☯", "text", "")
+         , ("https://touhou.fandom.com/wiki/Category:Music", "☯", "text", "#e44031")
          , ("https://newcriterion.com/article/a-good-list/", "NC", "text", "")
          , ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text", "")
          , ("https://www.discovermagazine.com/mind/the-brain-a-body-fit-for-a-freaky-big-brain", "D", "text", "")
@@ -1162,14 +1167,14 @@ linkIconTestUnitsText =
          , ("https://harpers.org/archive/1954/12/the-jet-propelled-couch/?single=1", "H", "text", "")
          , ("https://www.nzherald.co.nz/nz/drug-mail-or-mule-risks-the-same/QHX3IGRINL7AN5QZR3JRSOQ3NA/", "𝕳", "text", "")
          , ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text", "")
-         , ("https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text", "")
-         , ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text", "")
+         , ("https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text", "#e44031")
+         , ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text", "#e44031")
          , ("/metadata/annotation/similar/https%3A%2F%2Fgithub.com%2Fnyu-mll%2Fpretraining-learning-curves%2Fblob%2Fmain%2FWhen%2520Do%2520You%2520Need%2520Billions%2520of%2520Words%2520of%2520Pretraining%2520Data.pdf.html", "≈", "text", "")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text", "")
          , ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text", "")
          , ("https://carryiton.net/chain-letter/bibliography.htm", "✉", "text", "")
          , ("https://carryiton.net/chain-letter/evolution.html", "✉", "text", "")
-         , ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text", "")
+         , ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text", "#e44031")
          , ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text", "")
          , ("https://quantum.country/qcvc", "MN", "text", "")
          , ("http://neuralnetworksanddeeplearning.com/chap6.html", "MN", "text", "")
@@ -1208,6 +1213,9 @@ linkIconTestUnitsText =
          , ("https://www.petforums.co.uk/threads/do-any-of-your-cats.225353/#post-1061870480", "", "", "#295b52")
          , ("https://wellcomecollection.org/articles/XV_E7BEAACIAo9Vz", "", "", "#ffce3c")
          , ("https://www.acpjournals.org/doi/10.7326/0003-4819-152-11-201006010-00232?articleid=745807", "", "", "#007377")
+         , ("https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext", "UNT", "text,tri", "#00863c")
+         , ("https://forums.animesuki.com/showpost.php?p=3996631&postcount=387", "□̅", "text", "#008080")
+         , ("https://www.theregister.com/2019/01/29/how_i_caught_silk_road_mastermind/?page=2", "𓅐", "text", "#ff0000")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

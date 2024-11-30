@@ -1046,7 +1046,7 @@ authorLinkDB = M.fromList $
     , ("Kristian E. Markon", "https://cla.umn.edu/psychology/news-events/story/kristian-markon-elevated-research-associate-professor")
     , ("Jean-Baptiste Pingault", "https://profiles.ucl.ac.uk/42083")
     , ("Jason Wei", "https://www.jasonwei.net/")
-    , ("Esben Agerbo", "https://scholar.google.com/citations?user=tAJK3AQAAAAJ&hl=en&oi=ao")
+    , ("Esben Agerbo", "https://scholar.google.com/citations?user=tAJK3AQAAAAJ")
     , ("Erwin Böttinger", "https://hpims.org/team/erwin-bottinger/")
     ]
 
