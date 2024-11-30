@@ -581,6 +581,9 @@ Extracts = {
                 && extraCondition(link)) {
                 link.onclick = (event) => { return (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey); };
                 link.addActivateEvent((event) => {
+					if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+						return;
+
                     let hashTarget = targetElementInDocument(link, popFrame.document);
                     if (hashTarget)
                         revealElement(hashTarget);
