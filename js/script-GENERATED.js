@@ -23,22 +23,27 @@ Color = {
 			defaultColorSpace: "Oklch",
 			"Lab": {
 				//	L (lightness)
+				minBaseValue: 0.00,
 				maxBaseValue: 0.70
 			},
 			"YCC": {
 				//	Y (luma)
+				minBaseValue: 0.48,
 				maxBaseValue: 0.50
 			},
 			"Oklab": {
 				//	L (lightness)
-				maxBaseValue: 0.75
+				minBaseValue: 0.62,
+				maxBaseValue: 0.77
 			},
 			"Oklch": {
 				//	L (lightness)
+				minBaseValue: 0.62,
 				maxBaseValue: 0.77
 			},
 			"HSL": {
 				//	L (lightness)
+				minBaseValue: 0.50,
 				maxBaseValue: 0.80
 			}
 		}
@@ -100,31 +105,32 @@ Color = {
 			  ].includes(colorSpace) == false)
 			return color;
 
+		let minBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].minBaseValue;
 		let maxBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].maxBaseValue;
 
 		if (colorSpace == Color.ColorSpace.Lab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.YCC) {
 			color.Co = referenceColor.Co;
 			color.Cg = referenceColor.Cg;
 
-			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
+			let baseLuma = Math.max(Math.min(referenceColor.Y, maxBaseValue), minBaseValue);
 			color.Y  = baseLuma + (1.0 - baseLuma) * color.Y;
 		} else if (colorSpace == Color.ColorSpace.Oklab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.Oklch) {
 			color.C = referenceColor.C;
 			color.h = referenceColor.h;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 
 			//	Gamut correction.
@@ -138,7 +144,7 @@ Color = {
 			//	Gamma correction.
 // 			color.lightness = Math.pow(color.lightness, 0.5);
 
-			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.lightness, maxBaseValue), minBaseValue);
 			color.lightness = baseLightness + (1.0 - baseLightness) * color.lightness;
 		}
 
