@@ -255,6 +255,8 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
                     invert: (imageInfo.invert == 1)
                 };
             });
+
+			GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable");
         },
         onFailure: (event) => {
             console.log(event);

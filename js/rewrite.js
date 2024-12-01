@@ -449,6 +449,21 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionJudgments = 
 			image.addEventListener("load", (event) => {
 				applyImageInversionJudgment(image);
 			}, { once: true });
+
+			/*	If we still don’t have an inversion judgment for this image, 
+				then add another listener to wait for additional image inversion
+				judgments to become available in the future; maybe there’s still
+				hope for this image after all.
+			 */
+			if (inversionJudgmentHasBeenAppliedToImage(image) == false) {
+				GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
+					applyImageInversionJudgment(image);
+					if (inversionJudgmentHasBeenAppliedToImage(image)) {
+						GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
+						image.inversionJudgmentAvailabilityHandler = null;
+					}
+				});
+			}
 		}
     });
 }, "rewrite");
