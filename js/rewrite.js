@@ -1556,7 +1556,9 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
 
     eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
         /*  Remove any file embed links that lack a valid content type (e.g.,
-            foreign-site links that have not been whitelisted for embedding).
+            foreign-site links that have not been whitelisted for embedding; or
+            a PDF embed, on a mobile client, which is considered invalid because
+            mobile browsers do not support PDF embedding).
          */
         Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
             if (Content.contentTypeForLink(includeLink) == null)
