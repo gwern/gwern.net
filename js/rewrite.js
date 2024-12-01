@@ -429,6 +429,29 @@ addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventI
     requestImageInversionDataForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
+/******************************************************************************/
+/*	Returns true if the given image’s inversion status has been set (i.e., if 
+	it has one of the classes [ "invert", "invert-auto", "invert-not" ]), false
+	otherwise.
+ */
+function imageHasBeenJudgedForInversion(image) {
+	return (image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == true);
+}
+
+/****************************************************************************/
+/*	Applies available (i.e., requested and received from the invertOrNot API)
+	image inversion judgment data to the given image. If no such data is 
+	available for the given image, does nothing. Likewise does nothing for 
+	images which already have their inversion status specified.
+ */
+function applyImageInversionJudgment(image) {
+	if (imageHasBeenJudgedForInversion(image))
+		return;
+
+	if (GW.invertOrNot[image.src] != null)
+		image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
+}
+
 /****************************************************************************/
 /*  Apply image inversion data to images in the loaded content, if available.
  */
@@ -436,9 +459,19 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (even
     GWLog("applyImageInversionData", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (   image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == false
-            && GW.invertOrNot[image.src] != null)
-            image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
+        applyImageInversionJudgment(image);
+
+		/*	If no inversion judgment could be applied, but the image is not 
+			loaded yet, add listener to attempt to apply inversion judgments 
+			again when the image loads, in the hopes that we’ve gotten a 
+			response from the invertOrNot API by then.
+		 */
+		if (   imageHasBeenJudgedForInversion(image) == false
+			&& image.naturalWidth * image.naturalHeight == 0) {
+			image.addEventListener("load", (event) => {
+				applyImageInversionJudgment(image);
+			}, { once: true });
+		}
     });
 }, "rewrite");
 
@@ -615,7 +648,7 @@ addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData
             //  Ensure proper interaction with image-focus.
             if (image.classList.contains("focusable"))
                 ImageFocus.designateSmallImageIfNeeded(image);
-        });
+        }, { once: true });
     });
 }, "eventListeners");
 
@@ -949,7 +982,7 @@ addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) 
     eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
         embed.addEventListener("load", (event) => {
             embed.classList.remove("loaded-not");
-        });
+        }, { once: true });
     });
 }, "eventListeners");
 
@@ -1456,7 +1489,7 @@ addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAn
                 embed.addEventListener("load", (event) => {
                     if (isOnScreen(embed))
                         scrollElementIntoView(embed);
-                });
+                }, { once: true });
 
             //  Designate now-last collapse for styling.
             let previousBlock = previousBlockOf(embed);
