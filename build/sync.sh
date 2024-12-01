@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-30 16:09:21 gwern"
+# When:  Time-stamp: "2024-12-01 15:23:17 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -68,12 +68,7 @@ else
     done
     export SLOW SKIP_DIRECTORIES N
 
-    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; # quickly summarize pending changes
-        bold "Checking metadata…"
-        pkill checkMetadata || true
-        rm ~/METADATA.txt &> /dev/null || true
-        TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >> "$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
-    fi &
+    if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi # quickly summarize pending changes
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
     (cd ./static/ && git status && timeout 5m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
@@ -162,6 +157,11 @@ else
     cd ../../
 
   if [ "$SLOW" ]; then
+    bold "Checking metadata…"
+    pkill checkMetadata || true
+    rm ~/METADATA.txt &> /dev/null || true
+    TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >> "$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
+
     bold "Checking embeddings database…"
     ghci -istatic/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
@@ -1312,7 +1312,7 @@ else
   if [ "$SLOW" ]; then
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ./* -type d | gev -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/') | gfv -e 'bytes each' -e 'trimfill.png' | gev -e 'doc/www/.*/.*\.woff2'; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ./* -type d | gev -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/') | gfv -e 'bytes each' -e 'trimfill.png' -e 'logarithmicspiralsunflower-schematic' | gev -e 'doc/www/.*/.*\.woff2'; }
     wrap λ "Duplicate file check"
 
     λ(){ find ./ -type f | gfv -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.md' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'static/font/dropcap/' -e 'static/img/ornament/' -e '2024-11-22-gwern-midjourneyv6-logarithmicspiralsunflower-schematic' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | gev -e '^ +1 ' | sort --numeric-sort; }
@@ -1370,9 +1370,9 @@ else
                                                 -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
                                                 -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                                                 -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
-                                                -e '7f81f4ef122b83724448beb1f585025dbc8505d0' \
+                                                -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' \
              | parallel --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
-    wrap λ "Corrupted filetype HTMLs" &
+    wrap λ "Corrupted filetype: HTML" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
     λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e './doc/www/' -e './404' -e './static/template/default.html' -e 'lucky-luciano' | parallel gf --files-with-matches 'noindex'; }
