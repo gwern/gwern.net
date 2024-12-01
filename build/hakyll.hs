@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-11-30 22:05:59 gwern"
+When: Time-stamp: "2024-12-01 14:47:07 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -38,7 +38,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
-import Image (invertImageInline, imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
+import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
@@ -327,7 +327,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
-     walkM (imageLinkHeightWidthSet <=< invertImageInline md) pbth
+     walkM imageLinkHeightWidthSet pbth
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
