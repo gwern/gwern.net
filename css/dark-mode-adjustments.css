@@ -23,6 +23,12 @@
     --GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);
 }
 
+.dark-mode-invert,
+.dark-mode-invert::before,
+.dark-mode-invert::after {
+	filter: var(--dark-mode-invert-filter, none);
+}
+
 /*  Audio elements don’t change color in dark mode, so their hover styles need
     adjusted.
  */
@@ -38,28 +44,6 @@
     .markdownBody figure audio {
         border-color: var(--GW-figure-outline-color);
     }
-}
-
-/*  Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
-    similar to the arabesque navbar.
-
-    Footers help denote “this is the end”, and avoid the somewhat lame effect of
-    just having the anonymous feedback link at the end of the page and ending
-    there with nothing else.
-
-    Implementation: Modifying the ‘fill’ does not work so well when we call an
-    SVG as a ‘background-image’ (like for the  footers on the index page), so we
-    invert to get a white copy of the logo as a hack.
- */
-#footer-decoration-container a.footer-logo::after {
-    filter: invert(1);
-}
-
-/*	The ornaments at the corners of the “X of the day” box must be inverted.
- */
-#x-of-the-day::before,
-#x-of-the-day::after {
-	filter: invert(1);
 }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
@@ -123,12 +107,6 @@ table th.tablesorter-headerAsc {
 }
 table th.tablesorter-headerDesc {
     background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
-}
-
-/*  Image backdrop.
- */
-figure .image-wrapper.dark-mode-invert-before::before {
-    filter: invert(1);
 }
 
 /*  Images that are marked as '.invert' by the server are inverted,
@@ -211,28 +189,10 @@ img.invert-auto:hover {
     opacity: 0.4;
 }
 
-/*  Include-link loading spinner.
- */
-a.include-loading.include-spinner::after {
-    filter: invert(1);
-}
-
 /*  Masked links key toggle info alert panel.
  */
 div#masked-links-key-toggle-info-alert img {
     filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
-}
-
-/*  All SVG linkicons have to be inverted.
- */
-a[data-link-icon-type*='svg'] .link-icon-hook::after {
-    filter: invert(1);
-}
-/*	... but *colored* versions of SVG linkicons (shown on hover) should *not*
-	be inverted.
- */
-a[data-link-icon-color]:hover .link-icon-hook::after {
-	filter: none;
 }
 
 /*  Manual link-icon SVGs: Recently-modified, manicule/index, theme-toggle icons
@@ -249,12 +209,6 @@ a[data-link-icon-color]:hover .link-icon-hook::after {
 .icon-gear-solid::before,
 .icon-sun-solid::before,
 .icon-eye-slash-solid::before {
-    filter: invert(1);
-}
-
-/*  Math in Wikipedia pop-frames.
- */
-.wikipedia-entry .wikipedia-math-wrapper img {
     filter: invert(1);
 }
 

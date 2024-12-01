@@ -685,7 +685,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
 		let wrapper = mediaElement.closest(".image-wrapper");
 		if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
-			wrapper.classList.add("dark-mode-invert-before");
+			wrapper.classList.add("dark-mode-invert");
 	});
 }, ">rewrite");
 
@@ -2163,7 +2163,7 @@ function enableLinkIcon(link) {
         return;
 
     //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
 
     //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {

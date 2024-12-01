@@ -2086,6 +2086,10 @@ Transclude = {
         	&& link.textContent > "")
             link.classList.add("icon-not");
 
+		//	Designate dark mode inversion.
+		if (link.classList.contains("include-spinner"))
+			link.classList.add("dark-mode-invert");
+
 		//	Disable normal link functionality.
         link.onclick = () => { return false; };
 

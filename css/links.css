@@ -146,6 +146,8 @@ a[data-link-icon-type='svg'] {
     --link-icon-opacity: 0.55;
 }
 a[data-link-icon-type='svg'] .link-icon-hook::after {
+	--dark-mode-invert-filter: invert(1);
+
     content: "";
     position: relative;
     bottom: var(--link-icon-offset-y);
@@ -165,6 +167,8 @@ a[data-link-icon-type='svg']:hover .link-icon-hook::after {
 /*	Colored graphical link icons.
  */
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
+	--dark-mode-invert-filter: none;
+
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }
