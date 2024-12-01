@@ -23,22 +23,27 @@ Color = {
 			defaultColorSpace: "Oklch",
 			"Lab": {
 				//	L (lightness)
+				minBaseValue: 0.00,
 				maxBaseValue: 0.70
 			},
 			"YCC": {
 				//	Y (luma)
+				minBaseValue: 0.48,
 				maxBaseValue: 0.50
 			},
 			"Oklab": {
 				//	L (lightness)
-				maxBaseValue: 0.75
+				minBaseValue: 0.62,
+				maxBaseValue: 0.77
 			},
 			"Oklch": {
 				//	L (lightness)
+				minBaseValue: 0.62,
 				maxBaseValue: 0.77
 			},
 			"HSL": {
 				//	L (lightness)
+				minBaseValue: 0.50,
 				maxBaseValue: 0.80
 			}
 		}
@@ -100,31 +105,32 @@ Color = {
 			  ].includes(colorSpace) == false)
 			return color;
 
+		let minBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].minBaseValue;
 		let maxBaseValue = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE][colorSpace].maxBaseValue;
 
 		if (colorSpace == Color.ColorSpace.Lab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.YCC) {
 			color.Co = referenceColor.Co;
 			color.Cg = referenceColor.Cg;
 
-			let baseLuma = Math.min(referenceColor.Y, maxBaseValue);
+			let baseLuma = Math.max(Math.min(referenceColor.Y, maxBaseValue), minBaseValue);
 			color.Y  = baseLuma + (1.0 - baseLuma) * color.Y;
 		} else if (colorSpace == Color.ColorSpace.Oklab) {
 			color.a = referenceColor.a;
 			color.b = referenceColor.b;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 		} else if (colorSpace == Color.ColorSpace.Oklch) {
 			color.C = referenceColor.C;
 			color.h = referenceColor.h;
 
-			let baseLightness = Math.min(referenceColor.L, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 
 			//	Gamut correction.
@@ -138,7 +144,7 @@ Color = {
 			//	Gamma correction.
 // 			color.lightness = Math.pow(color.lightness, 0.5);
 
-			let baseLightness = Math.min(referenceColor.lightness, maxBaseValue);
+			let baseLightness = Math.max(Math.min(referenceColor.lightness, maxBaseValue), minBaseValue);
 			color.lightness = baseLightness + (1.0 - baseLightness) * color.lightness;
 		}
 
@@ -2636,12 +2642,6 @@ function cleanLocationHash() {
     }
 }
 
-function realignHash() {
-    requestIdleCallback(() => {
-        location.hash = GW.locationHash;
-    });
-}
-
 GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
@@ -2659,10 +2659,6 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
 
     //  Save hash, for change tracking.
     GW.locationHash = location.hash;
-
-    //  Correct for Firefox hash / scroll position bug.
-    if (GW.isFirefox())
-        realignHash();
 
     /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
         back-to-top link).
@@ -7015,7 +7011,7 @@ Content = {
 				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-wrapper.wikipedia-math-block-wrapper", { root: contentDocument });
 				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-wrapper.wikipedia-math-inline-wrapper", { root: contentDocument });
 				contentDocument.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
-					mathImage.classList.add("drop-filter-on-hover-not");
+					mathImage.classList.add("dark-mode-invert", "drop-filter-on-hover-not");
 				});
 
 				//	Move infoboxes out of the way.
@@ -9939,6 +9935,10 @@ Transclude = {
         if (   link.classList.contains("include-spinner")
         	&& link.textContent > "")
             link.classList.add("icon-not");
+
+		//	Designate dark mode inversion.
+		if (link.classList.contains("include-spinner"))
+			link.classList.add("dark-mode-invert");
 
 		//	Disable normal link functionality.
         link.onclick = () => { return false; };
@@ -14045,15 +14045,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
-        let caption = figure.querySelector("figcaption");
-
-        if (   media   == null
-            || caption == null)
+        if (media == null)
             return;
 
-        //  Create an inner wrapper for the figure contents.
-        let outerWrapper = newElement("SPAN", { "class": "figure-outer-wrapper" });
-        figure.appendChild(outerWrapper);
+        //  Create a wrapper for the figure contents (media plus caption).
+        let outerWrapper = figure.appendChild(newElement("SPAN", { "class": "figure-outer-wrapper" }));
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
@@ -14065,12 +14061,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
             outerWrapper.appendChild(mediaBlock);
         });
 
-        //  Wrap the caption in the wrapper span.
-        let captionWrapper = newElement("SPAN", { "class": "caption-wrapper" });
-        captionWrapper.appendChild(caption);
-
-        //  Re-insert the wrapped caption into the figure.
-        outerWrapper.appendChild(captionWrapper);
+        //  Wrap the caption (if any) in a caption wrapper.
+        let caption = figure.querySelector("figcaption");
+        if (caption)
+	        outerWrapper.appendChild(newElement("SPAN", { "class": "caption-wrapper" })).appendChild(caption);
     });
 }, "rewrite");
 
@@ -14086,7 +14080,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
 		let wrapper = mediaElement.closest(".image-wrapper");
 		if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
-			wrapper.classList.add("dark-mode-invert-before");
+			wrapper.classList.add("dark-mode-invert");
 	});
 }, ">rewrite");
 
@@ -15564,7 +15558,7 @@ function enableLinkIcon(link) {
         return;
 
     //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
 
     //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {

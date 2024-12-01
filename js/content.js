@@ -1076,7 +1076,7 @@ Content = {
 				wrapAll(".mwe-math-fallback-image-display", "div.wikipedia-math-wrapper.wikipedia-math-block-wrapper", { root: contentDocument });
 				wrapAll(".mwe-math-fallback-image-inline", "span.wikipedia-math-wrapper.wikipedia-math-inline-wrapper", { root: contentDocument });
 				contentDocument.querySelectorAll(".wikipedia-math-wrapper img").forEach(mathImage => {
-					mathImage.classList.add("drop-filter-on-hover-not");
+					mathImage.classList.add("dark-mode-invert", "drop-filter-on-hover-not");
 				});
 
 				//	Move infoboxes out of the way.

@@ -2329,6 +2329,8 @@ figure .image-wrapper {
 }
 
 figure .image-wrapper::before {
+	--dark-mode-invert-filter: invert(1);
+
 	content: "";
 	position: absolute;
 	left: 0;
@@ -4338,7 +4340,14 @@ blockquote .TOC,
     text-align: center;
 }
 
-/*  Special case for inline math in Wikipedia pop-frames.
+/*  Special case for math in Wikipedia pop-frames.
+ */
+.wikipedia-entry .wikipedia-math-wrapper img {
+	--dark-mode-invert-filter: invert(1);
+
+    display: block;
+}
+/*	Inline math.
  */
 .wikipedia-entry .wikipedia-math-inline-wrapper {
     display: inline-block;
@@ -4346,16 +4355,12 @@ blockquote .TOC,
     position: relative;
     bottom: -0.35em;
 }
-.wikipedia-entry .wikipedia-math-inline-wrapper img {
-    display: block;
-}
-/*  Ditto, but block math.
+/*  Block math.
  */
 .wikipedia-entry .wikipedia-math-block-wrapper {
     margin: 1em 0;
 }
 .wikipedia-entry .wikipedia-math-block-wrapper img {
-    display: block;
     margin: auto;
 }
 
@@ -4535,6 +4540,8 @@ ol.link-bibliography-list-compact > li::before {
 
 #x-of-the-day::before,
 #x-of-the-day::after {
+	--dark-mode-invert-filter: invert(1);
+
     content: "";
     position: absolute;
     left: 0.5rem;
@@ -4659,6 +4666,13 @@ ol.link-bibliography-list-compact > li::before {
 /* BOTTOM DECORATION */
 /*********************/
 
+/*  Create a ‘footer’ at the bottom of pages which looks like ‘—————𝔊—————’,
+    similar to the arabesque navbar.
+
+    Footers help denote “this is the end”, and avoid the somewhat lame effect of
+    just having the anonymous feedback link at the end of the page and ending
+    there with nothing else.
+ */
 #footer-decoration-container {
     margin: 2rem 0 0 0;
     line-height: 0;
@@ -4701,6 +4715,8 @@ ol.link-bibliography-list-compact > li::before {
     background-color: var(--GW-body-background-color);
 }
 #footer-decoration-container .footer-logo::after {
+	--dark-mode-invert-filter: invert(1);
+
     background-image: url('/static/img/logo/logo-smooth.svg');
     background-size: contain;
     background-position: center;
@@ -7981,6 +7997,8 @@ a.include-loading.include-spinner {
 /*  Loading spinner.
  */
 a.include-loading.include-spinner::after {
+	--dark-mode-invert-filter: invert(1);
+
     display: inline-block;
     animation: fa-spin 2s infinite linear;
     position: relative;
@@ -8399,6 +8417,8 @@ a[data-link-icon-type='svg'] {
     --link-icon-opacity: 0.55;
 }
 a[data-link-icon-type='svg'] .link-icon-hook::after {
+	--dark-mode-invert-filter: invert(1);
+
     content: "";
     position: relative;
     bottom: var(--link-icon-offset-y);
@@ -8418,6 +8438,8 @@ a[data-link-icon-type='svg']:hover .link-icon-hook::after {
 /*	Colored graphical link icons.
  */
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
+	--dark-mode-invert-filter: none;
+
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }

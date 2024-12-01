@@ -650,15 +650,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
 
     eventInfo.container.querySelectorAll("figure").forEach(figure => {
         let media = figure.querySelector(mediaSelector);
-        let caption = figure.querySelector("figcaption");
-
-        if (   media   == null
-            || caption == null)
+        if (media == null)
             return;
 
-        //  Create an inner wrapper for the figure contents.
-        let outerWrapper = newElement("SPAN", { "class": "figure-outer-wrapper" });
-        figure.appendChild(outerWrapper);
+        //  Create a wrapper for the figure contents (media plus caption).
+        let outerWrapper = figure.appendChild(newElement("SPAN", { "class": "figure-outer-wrapper" }));
 
         //  Re-insert the (possibly wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
@@ -670,12 +666,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
             outerWrapper.appendChild(mediaBlock);
         });
 
-        //  Wrap the caption in the wrapper span.
-        let captionWrapper = newElement("SPAN", { "class": "caption-wrapper" });
-        captionWrapper.appendChild(caption);
-
-        //  Re-insert the wrapped caption into the figure.
-        outerWrapper.appendChild(captionWrapper);
+        //  Wrap the caption (if any) in a caption wrapper.
+        let caption = figure.querySelector("figcaption");
+        if (caption)
+	        outerWrapper.appendChild(newElement("SPAN", { "class": "caption-wrapper" })).appendChild(caption);
     });
 }, "rewrite");
 
@@ -691,7 +685,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
 		let wrapper = mediaElement.closest(".image-wrapper");
 		if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
-			wrapper.classList.add("dark-mode-invert-before");
+			wrapper.classList.add("dark-mode-invert");
 	});
 }, ">rewrite");
 
@@ -2169,7 +2163,7 @@ function enableLinkIcon(link) {
         return;
 
     //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook" }, { innerHTML: "\u{2060}" }));
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
 
     //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {
