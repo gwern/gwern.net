@@ -258,11 +258,9 @@ imageLinkHeightWidthSet x@(Link (htmlid, classes, kvs) xs (p,t)) =
              do let p'' = if isVideoFilename p' then p' ++ "-poster.jpg" else p'
                 (h,w) <- imageMagickDimensions p''
                 let aspectratio = map (\(a,b) -> (T.pack a, T.pack b)) $ take 1 $ sizeAspectRatioKV (read w::Int) (read h::Int)
-                let posterKV = if h/="" && not (isVideoFilename p') then []
-                               else [("video-poster", T.pack p'')]
                 return (Link (htmlid, classes,
                               kvs++[("image-height",T.pack h),
-                                    ("image-width", T.pack w)] ++ aspectratio ++ posterKV)
+                                    ("image-width", T.pack w)] ++ aspectratio)
                         xs (p,t))
         else return x
 imageLinkHeightWidthSet x = return x
