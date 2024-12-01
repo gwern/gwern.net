@@ -813,12 +813,17 @@ addContentInjectHandler(GW.contentInjectHandlers.lazyLoadVideoPosters = (eventIn
     GWLog("lazyLoadVideoPosters", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("video:not([poster])").forEach(video => {
-        lazyLoadObserver(() => {
-            video.poster = video.dataset.videoPoster;
-        }, video, {
-            root: scrollContainerOf(video),
-            rootMargin: "100%"
-        });
+    	let videoURL = URLFromString(video.querySelector("source").src);
+    	if (videoURL.hostname == location.hostname)
+    		video.dataset.videoPoster = videoURL.pathname + "-poster.jpg";
+    	if (video.dataset.videoPoster > "") {
+			lazyLoadObserver(() => {
+				video.poster = video.dataset.videoPoster;
+			}, video, {
+				root: scrollContainerOf(video),
+				rootMargin: "100%"
+			});
+		}
     });
 }, "eventListeners");
 
