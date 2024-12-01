@@ -149,7 +149,8 @@ tagsShort2LongRewrites =
    , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability")
    , ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")
    , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")
-   , ("order-statistics", "statistics/order")]
+   , ("order-statistics", "statistics/order")
+   , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -240,6 +241,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/science-fiction/time-travel", "time-travel")
   , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
   , ("fiction/science-fiction", "Sci-Fi")
+  , ("fiction/fantasy", "fantasy")
   , ("fiction/humor/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
   , ("fiction/humor/dinosaur-comics", "<em>Dinosaur Comics</em>")
   , ("existential-risk/nuclear/hofstadter", "nuclear war (Hofstadter)")
@@ -345,7 +347,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("cat/psychology/drug/valerian", "Valerian (cat)")
   , ("cat/psychology/drug", "cat drugs")
   , ("cat/psychology", "cat psychology")
-  , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s “Delage”")
+  , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s “Delage” ")
   , ("fiction/gene-wolfe", "Gene Wolfe")
   , ("fiction/text-game", "text game")
   , ("fiction/humor", "humor")

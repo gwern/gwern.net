@@ -30,9 +30,11 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "
  , "cognitivefun.net", "www.e-codices.unifr.ch", "www.bartleby.com", "darcs.net"
  , "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com"
  , "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net"
- , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com"
+ , "www.artbreeder.com"
+ -- TODO:
+ , "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com"
  , "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io"
- , "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de"
+ , "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de"
  , "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com"
  , "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au"
  , "repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com"
@@ -207,7 +209,7 @@ linkIconRulesSingle u
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
-  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("□̅", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
+  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("̅□", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
   | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
  | otherwise = ("", "", "")
 
@@ -363,6 +365,7 @@ linkIconRulesTriple u
  | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
  | aU'' u ["worksinprogress.co", "www.worksinprogress.news", "books.worksinprogress.co"] = ("WiP", "text,tri,mono", "") -- Works in Progress; color: none (monochrome website with occasional per-issue color theme highlights); icon: the mustached-man is unusable at favicon or link-icon scale and not particularly recognizable either IMO.
  | u'' u "digital.library.unt.edu" = ("UNT", "text,tri", "#00863c") -- University of North Texas library; logo is a <https://en.wikipedia.org/wiki/North_Texas_Mean_Green> green hawk icon, which is cool and would work as a link-icon, but I doubt even sports fans would understand it out of context compared to just the 'UNT' acronym; color: green (black outline)
+ | u'' u "infoproc.blogspot.com" || u'' u "www.manifold1.com" = ("Hsu", "text,sans", "") -- Steve Hsu's "Information Processing" blog (defunct) & "Manifold" podcast; no known recognizable icon ('brain network' icon of Manifold is not recognizable, wouldn't work as a link-icon, and overlaps too much with Connected Papers etc); color: none
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
@@ -1214,8 +1217,10 @@ linkIconTestUnitsText =
          , ("https://wellcomecollection.org/articles/XV_E7BEAACIAo9Vz", "", "", "#ffce3c")
          , ("https://www.acpjournals.org/doi/10.7326/0003-4819-152-11-201006010-00232?articleid=745807", "", "", "#007377")
          , ("https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext", "UNT", "text,tri", "#00863c")
-         , ("https://forums.animesuki.com/showpost.php?p=3996631&postcount=387", "□̅", "text", "#008080")
+         , ("https://forums.animesuki.com/showpost.php?p=3996631&postcount=387", "̅□", "text", "#008080")
          , ("https://www.theregister.com/2019/01/29/how_i_caught_silk_road_mastermind/?page=2", "𓅐", "text", "#ff0000")
+         , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,sans", "")
+         , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,sans", "")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

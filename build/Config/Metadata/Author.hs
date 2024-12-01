@@ -562,7 +562,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1048,6 +1048,11 @@ authorLinkDB = M.fromList $
     , ("Jason Wei", "https://www.jasonwei.net/")
     , ("Esben Agerbo", "https://scholar.google.com/citations?user=tAJK3AQAAAAJ")
     , ("Erwin Böttinger", "https://hpims.org/team/erwin-bottinger/")
+    , ("Robert Karlsson", "https://ki.se/en/people/robert-karlsson")
+    , ("Eric Tang", "https://erictang000.github.io/")
+    , ("Aravind Rajeswaran", "https://aravindr93.github.io/")
+    , ("Anne Uriu Jackson", "https://research.com/u/anne-u-jackson")
+    , ("Andrew Tym Hattersley", "https://en.wikipedia.org/wiki/Andrew_Hattersley")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

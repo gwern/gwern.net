@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-11-28 09:29:48 gwern"
+# When:  Time-stamp: "2024-11-30 16:09:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -843,7 +843,7 @@ else
     λ(){ gec -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
             -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
-            -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aei]' -e '</[0-9]+' \
+            -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e '</[0-9]+' \
             -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -e '#googl$' -e "#googl$'" -e 'gwtag' -e ' <p><strong>[A-Z][A-Z][A-Z]+</strong>' \
             -e '&org=.*&org=' -e '[0-9]⁄[0-9]\.[0-9]' -e '[0-9]\.[0-9]⁄[0-9]' -e '\[[Kk]eywords\?: ' \
             -e ' 19[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e ' 20[0-9][0-9]–[1-9][0-9]–[0-9][0-9]' -e "''.*''" \
