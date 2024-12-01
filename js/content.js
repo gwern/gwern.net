@@ -714,7 +714,7 @@ Content = {
 				Content.contentTypes.wikipediaEntry.postProcessEntryContent(contentDocument, articleLink);
 
 				//	Request image inversion judgments from invertornot.
-				requestImageInversionDataForImagesInContainer(contentDocument);
+				requestImageInversionJudgmentsForImagesInContainer(contentDocument);
 
 				//	Pull out initial figure (thumbnail).
 				if (GW.mediaQueries.mobileWidth.matches == false) {
@@ -1205,7 +1205,7 @@ Content = {
                 let tweetContentHTML = tweetContent.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
 				//	Request image inversion judgments from invertOrNot.
-				requestImageInversionDataForImagesInContainer(newDocument(tweetContentHTML));
+				requestImageInversionJudgmentsForImagesInContainer(newDocument(tweetContentHTML));
 
                 //  Attached media (video or images).
                 tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetContent.document);

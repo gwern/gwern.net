@@ -414,59 +414,37 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 }, "eventListeners");
 
 /*******************************************************************************/
-/*  Request image inversion data for images in the loaded content. (We omit
+/*  Request image inversion judgments for images in the loaded content. (We omit
     from this load handler those GW.contentDidLoad events which are fired when
     we construct templated content from already extracted reference data, as by
     then it is already too late; there is no time to send an invertOrNot API
-    request and receive a response. Instead, requesting inversion data for
+    request and receive a response. Instead, requesting inversion judgments for
     images in templated content is handled by the data source object for that
     content (either Content, in content.js, or Annotations, in annotations.js).)
  */
-addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
-    GWLog("requestImageInversionData", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (eventInfo) => {
+    GWLog("requestImageInversionJudgments", "rewrite.js", 1);
 
-    //  Request image inversion judgments from invertornot.
-    requestImageInversionDataForImagesInContainer(eventInfo.container);
+    //  Request image inversion judgments from invertOrNot.
+    requestImageInversionJudgmentsForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
-/******************************************************************************/
-/*	Returns true if the given image’s inversion status has been set (i.e., if 
-	it has one of the classes [ "invert", "invert-auto", "invert-not" ]), false
-	otherwise.
+/*************************************************************************/
+/*  Apply image inversion judgments (received from the invertOrNot API) to 
+	images in the loaded content, if available.
  */
-function imageHasBeenJudgedForInversion(image) {
-	return (image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == true);
-}
-
-/****************************************************************************/
-/*	Applies available (i.e., requested and received from the invertOrNot API)
-	image inversion judgment data to the given image. If no such data is 
-	available for the given image, does nothing. Likewise does nothing for 
-	images which already have their inversion status specified.
- */
-function applyImageInversionJudgment(image) {
-	if (imageHasBeenJudgedForInversion(image))
-		return;
-
-	if (GW.invertOrNot[image.src] != null)
-		image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
-}
-
-/****************************************************************************/
-/*  Apply image inversion data to images in the loaded content, if available.
- */
-addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (eventInfo) => {
-    GWLog("applyImageInversionData", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionJudgments = (eventInfo) => {
+    GWLog("applyImageInversionJudgments", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
         applyImageInversionJudgment(image);
 
-		/*	If no inversion judgment could be applied, but the image is not 
+		/*	If no inversion judgment has been applied, but the image is not 
 			loaded yet, add listener to attempt to apply inversion judgments 
 			again when the image loads, in the hopes that we’ve gotten a 
 			response from the invertOrNot API by then.
 		 */
-		if (   imageHasBeenJudgedForInversion(image) == false
+		if (   inversionJudgmentHasBeenAppliedToImage(image) == false
 			&& image.naturalWidth * image.naturalHeight == 0) {
 			image.addEventListener("load", (event) => {
 				applyImageInversionJudgment(image);
