@@ -1525,7 +1525,7 @@ figure {
 /*  Figure contents.
  */
 
-.figure-inner-wrapper {
+.figure-outer-wrapper {
     display: flex;
     flex-flow: column;
     margin: auto;
@@ -1536,6 +1536,7 @@ figure {
 figure img,
 figure video,
 figure svg {
+	position: relative;
     display: block;
     max-height: calc(100vh - 8rem);
     max-width: 100%;
@@ -1546,10 +1547,6 @@ figure svg {
     /*  This is to prevent overflow of image alt-text in Chrome.
      */
     overflow: hidden;
-}
-
-figure img {
-    background-color: var(--background-color);
 }
 
 figure img,

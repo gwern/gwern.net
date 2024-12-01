@@ -1174,6 +1174,24 @@ ol.has-floats > li {
 /*  Additional figure styles.
  */
 
+figure .image-wrapper {
+    position: relative;
+    display: block;
+    margin: auto;
+    width: fit-content;
+    max-width: 100%;
+}
+
+figure .image-wrapper::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--background-color);
+}
+
 /*  Figures in sidenotes should take up the full width of the sidenote.
     */
 #markdownBody .sidenote figure {
@@ -3088,10 +3106,6 @@ blockquote .TOC,
     clear: both;
 }
 
-.wikipedia-entry figure.float .image-wrapper {
-    max-width: 100%;
-}
-
 .wikipedia-entry .image-row-wrapper {
     display: flex;
 }
@@ -3684,7 +3698,7 @@ ol.link-bibliography-list-compact > li::before {
 /*= /404 =*/
 /*=-------=*/
 
-body.page-404 figure .figure-inner-wrapper {
+body.page-404 figure .figure-outer-wrapper {
     padding: 0 1em;
 }
 
@@ -6390,12 +6404,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*= Tooltip =*/
 /*=---------=*/
 
-.image-wrapper {
-    position: relative;
-    display: block;
-    margin: auto;
-    max-width: 100%;
-}
 .image-wrapper.focusable::after {
     content: "Click to enlarge";
     display: block;
@@ -6430,7 +6438,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     box-sizing: border-box;
     border-radius: 0;
 }
-.image-wrapper,
 .image-wrapper::after {
     width: fit-content;
 }
@@ -6935,7 +6942,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         position: relative;
         top: 2px;
     }
-    .figure-inner-wrapper {
+    .figure-outer-wrapper {
         margin: -2px auto 2px auto;
     }
 
