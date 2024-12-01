@@ -203,4 +203,10 @@ dateRangeDurationTestCases = [
   , (2028, Str "We sampled ~1000 ZIP codes."
     , Str "We sampled ~1000 ZIP codes."
     )
+  , (2029, Str "The malformed date range 1998–1998."
+    , Span ("",[],[]) [Str "The malformed date range ",Span ("",["date-range"],[("title","The date range 1998\8211\&1998 lasted, ending 31 years ago.")]) [Str "1998",Str "\8211",Str "1998",Subscript [Span ("",[],[("title","1998 was 31 years ago.")]) [Str "31ya"]]],Str "."]
+    )
+  , (2030, Str "The malformed date range 1900-1900."
+    , Span ("",[],[]) [Str "The malformed date range ",Span ("",["date-range"],[("title","The date range 1900\8211\&1900 lasted, ending 130 years ago.")]) [Str "1900",Str "\8211",Str "1900",Subscript [Span ("",[],[("title","1900 was 130 years ago.")]) [Str "130ya"]]],Str "."]
+    )
   ]

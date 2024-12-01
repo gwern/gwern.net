@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-10-18 20:50:45 gwern"
+When: Time-stamp: "2024-11-30 22:05:59 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -292,8 +292,9 @@ dateRangeHTMLField d = field d $ \item -> do
  metadataMaybe1 <- getMetadataField (itemIdentifier item) "created"
  metadataMaybe2 <- getMetadataField (itemIdentifier item) "modified"
  case (metadataMaybe1, metadataMaybe2) of
-   (Just created, Just modified) -> let range = dateRangeDuration currentYear (Str $ T.pack $ created ++ "–" ++ modified) in
-                                      return (toHTML range)
+   (Just created, Just modified) -> let dateString = Str $ T.pack $ if created == modified then created else (created ++ "–" ++ modified)
+                                        range = dateRangeDuration currentYear dateString
+                                    in return (toHTML range)
    (_,_) -> noResult "missing created and/or modified field, so could not adjust the date range subscript."
 
 descField :: Bool -> String -> String -> Context String
