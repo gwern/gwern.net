@@ -236,7 +236,12 @@ Content = {
 		return Content.referenceDataForLink(link)?.shouldLocalize ?? false;
 	},
 
-    objectHTMLForURL: (url, options = { }) => {
+    objectHTMLForURL: (url, options) => {
+		options = Object.assign({
+			additionalClasses: null,
+			additionalAttributes: null
+		}, options);
+
         if (typeof url == "string")
             url = URLFromString(url);
 
@@ -253,11 +258,14 @@ Content = {
         let src = url.pathname.endsWith(".pdf")
                   ? url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none"
                   : url.href;
-        let cssClass = "loaded-not"
-                     + (url.pathname.endsWith(".pdf")
-                        ? " pdf"
-                        : "");
-                     + (options.additionalClasses ?? "")
+
+        let cssClass = [ "loaded-not" ];
+        if (url.pathname.endsWith(".pdf"))
+        	cssClass.push("pdf");
+        if (options.additionalClasses)
+        	cssClass.push(options.additionalClasses);
+        cssClass = cssClass.join(" ");
+
         return `<iframe
                     src="${src}"
                     frameborder="0"
