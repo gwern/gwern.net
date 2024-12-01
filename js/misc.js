@@ -195,18 +195,45 @@ function randomAsset(assetPathnamePattern) {
 GW.invertOrNot = { };
 GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/url";
 
-/*******************************************************************/
-/*  Returns true if the given image should be inverted in dark mode.
+/******************************************************************************/
+/*	Returns true if the given image’s inversion status has been set (i.e., if 
+	it has one of the classes [ "invert", "invert-auto", "invert-not", 
+	"invert-not-auto" ]), false otherwise.
  */
-function shouldInvertImageInDarkMode(image) {
-    return (GW.invertOrNot[image.src].invert == true);
+function inversionJudgmentHasBeenAppliedToImage(image) {
+	return (image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not", "invert-not-auto" ]) == true);
+}
+
+/****************************************************************************/
+/*  Returns true if the given image should be inverted in dark mode (i.e.,
+	the invertOrNot API has judged this image to be invertible), false if the
+	image should not be inverted (i.e., the invertOrNot API has judged this
+	image to be non-invertible, null if no judgment is available.
+ */
+function inversionJudgmentForImage(image) {
+    return (GW.invertOrNot[image.src]?.invert ?? null);
+}
+
+/****************************************************************************/
+/*	Applies available (i.e., requested and received from the invertOrNot API)
+	image inversion judgment data to the given image. If no such data is 
+	available for the given image, does nothing. Likewise does nothing for 
+	images which already have their inversion status specified.
+ */
+function applyImageInversionJudgment(image) {
+	if (inversionJudgmentHasBeenAppliedToImage(image))
+		return;
+
+	let inversionJudgment = inversionJudgmentForImage(image);
+	if (inversionJudgment != null)
+		image.classList.add(inversionJudgment == true ? "invert-auto" : "invert-not-auto");
 }
 
 /*****************************************************************************/
 /*  Sends request to InvertOrNot for judgments about whether the images in the
     given container ought to be inverted.
  */
-function requestImageInversionDataForImagesInContainer(container) {
+function requestImageInversionJudgmentsForImagesInContainer(container) {
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image =>
         (   URLFromString(image.src).pathname.match(/\.(png|jpe?g$)/i)
          && GW.invertOrNot[image.src] == null)
@@ -228,6 +255,8 @@ function requestImageInversionDataForImagesInContainer(container) {
                     invert: (imageInfo.invert == 1)
                 };
             });
+
+			GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable");
         },
         onFailure: (event) => {
             console.log(event);

@@ -236,7 +236,12 @@ Content = {
 		return Content.referenceDataForLink(link)?.shouldLocalize ?? false;
 	},
 
-    objectHTMLForURL: (url, options = { }) => {
+    objectHTMLForURL: (url, options) => {
+		options = Object.assign({
+			additionalClasses: null,
+			additionalAttributes: null
+		}, options);
+
         if (typeof url == "string")
             url = URLFromString(url);
 
@@ -253,11 +258,14 @@ Content = {
         let src = url.pathname.endsWith(".pdf")
                   ? url.href + (url.hash ? "&" : "#") + "view=FitH&pagemode=none"
                   : url.href;
-        let cssClass = "loaded-not"
-                     + (url.pathname.endsWith(".pdf")
-                        ? " pdf"
-                        : "");
-                     + (options.additionalClasses ?? "")
+
+        let cssClass = [ "loaded-not" ];
+        if (url.pathname.endsWith(".pdf"))
+        	cssClass.push("pdf");
+        if (options.additionalClasses)
+        	cssClass.push(options.additionalClasses);
+        cssClass = cssClass.join(" ");
+
         return `<iframe
                     src="${src}"
                     frameborder="0"
@@ -706,7 +714,7 @@ Content = {
 				Content.contentTypes.wikipediaEntry.postProcessEntryContent(contentDocument, articleLink);
 
 				//	Request image inversion judgments from invertornot.
-				requestImageInversionDataForImagesInContainer(contentDocument);
+				requestImageInversionJudgmentsForImagesInContainer(contentDocument);
 
 				//	Pull out initial figure (thumbnail).
 				if (GW.mediaQueries.mobileWidth.matches == false) {
@@ -1197,7 +1205,7 @@ Content = {
                 let tweetContentHTML = tweetContent.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
 				//	Request image inversion judgments from invertOrNot.
-				requestImageInversionDataForImagesInContainer(newDocument(tweetContentHTML));
+				requestImageInversionJudgmentsForImagesInContainer(newDocument(tweetContentHTML));
 
                 //  Attached media (video or images).
                 tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetContent.document);

@@ -112,7 +112,7 @@ table th.tablesorter-headerDesc {
 /*  Images that are marked as '.invert' by the server are inverted,
     hue-rotated, and desaturated. Other (non-invertible) images are merely
     desaturated. Hovering over an image restores it to its original state.
-    Hierarchy: ‘.invert-not’: no inversion or grayscale;
+    Hierarchy: ‘.invert-not’/‘.invert-not-auto’: no inversion or grayscale;
     ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);
     none: grayscaled (ungrayscaled on hover).
  */
@@ -166,12 +166,15 @@ img.invert-auto:hover {
     transition: none;
 }
 
-/*  For images which have been manually marked up with ‘.invert-not’, we
-    avoid any filtering at all. If they are manually marked up (artwork,
-    diagrams with multiple subtly-different colors matched to a legend/caption),
-    the color is important and shouldn’t be faded out by default.
+/*  For images which have been marked up (manually or automatically) with 
+	‘.invert-not’, we avoid any filtering at all. If they are manually marked up
+	(artwork, diagrams with multiple subtly-different colors matched to a 
+	legend/caption), the color is important and shouldn’t be faded out by 
+	default. (Or invertOrNot has judged the image to be non-invertible, which
+	presumably means something like the above also.)
  */
-#markdownBody img.invert-not {
+#markdownBody img.invert-not,
+#markdownBody img.invert-not-auto {
     filter: none;
 }
 

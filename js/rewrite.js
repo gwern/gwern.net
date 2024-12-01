@@ -414,31 +414,57 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 }, "eventListeners");
 
 /*******************************************************************************/
-/*  Request image inversion data for images in the loaded content. (We omit
+/*  Request image inversion judgments for images in the loaded content. (We omit
     from this load handler those GW.contentDidLoad events which are fired when
     we construct templated content from already extracted reference data, as by
     then it is already too late; there is no time to send an invertOrNot API
-    request and receive a response. Instead, requesting inversion data for
+    request and receive a response. Instead, requesting inversion judgments for
     images in templated content is handled by the data source object for that
     content (either Content, in content.js, or Annotations, in annotations.js).)
  */
-addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionData = (eventInfo) => {
-    GWLog("requestImageInversionData", "rewrite.js", 1);
+addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (eventInfo) => {
+    GWLog("requestImageInversionJudgments", "rewrite.js", 1);
 
-    //  Request image inversion judgments from invertornot.
-    requestImageInversionDataForImagesInContainer(eventInfo.container);
+    //  Request image inversion judgments from invertOrNot.
+    requestImageInversionJudgmentsForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
-/****************************************************************************/
-/*  Apply image inversion data to images in the loaded content, if available.
+/*************************************************************************/
+/*  Apply image inversion judgments (received from the invertOrNot API) to 
+	images in the loaded content, if available.
  */
-addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionData = (eventInfo) => {
-    GWLog("applyImageInversionData", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionJudgments = (eventInfo) => {
+    GWLog("applyImageInversionJudgments", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (   image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not" ]) == false
-            && GW.invertOrNot[image.src] != null)
-            image.classList.add(GW.invertOrNot[image.src].invert ? "invert-auto" : "invert-not");
+        applyImageInversionJudgment(image);
+
+		/*	If no inversion judgment has been applied, but the image is not 
+			loaded yet, add listener to attempt to apply inversion judgments 
+			again when the image loads, in the hopes that we’ve gotten a 
+			response from the invertOrNot API by then.
+		 */
+		if (   inversionJudgmentHasBeenAppliedToImage(image) == false
+			&& image.naturalWidth * image.naturalHeight == 0) {
+			image.addEventListener("load", (event) => {
+				applyImageInversionJudgment(image);
+			}, { once: true });
+
+			/*	If we still don’t have an inversion judgment for this image, 
+				then add another listener to wait for additional image inversion
+				judgments to become available in the future; maybe there’s still
+				hope for this image after all.
+			 */
+			if (inversionJudgmentHasBeenAppliedToImage(image) == false) {
+				GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
+					applyImageInversionJudgment(image);
+					if (inversionJudgmentHasBeenAppliedToImage(image)) {
+						GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
+						image.inversionJudgmentAvailabilityHandler = null;
+					}
+				});
+			}
+		}
     });
 }, "rewrite");
 
@@ -615,7 +641,7 @@ addContentInjectHandler(GW.contentInjectHandlers.setImageDimensionsFromImageData
             //  Ensure proper interaction with image-focus.
             if (image.classList.contains("focusable"))
                 ImageFocus.designateSmallImageIfNeeded(image);
-        });
+        }, { once: true });
     });
 }, "eventListeners");
 
@@ -949,7 +975,7 @@ addContentInjectHandler(GW.contentInjectHandlers.markLoadedEmbeds = (eventInfo) 
     eventInfo.container.querySelectorAll("iframe.loaded-not").forEach(embed => {
         embed.addEventListener("load", (event) => {
             embed.classList.remove("loaded-not");
-        });
+        }, { once: true });
     });
 }, "eventListeners");
 
@@ -1456,7 +1482,7 @@ addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAn
                 embed.addEventListener("load", (event) => {
                     if (isOnScreen(embed))
                         scrollElementIntoView(embed);
-                });
+                }, { once: true });
 
             //  Designate now-last collapse for styling.
             let previousBlock = previousBlockOf(embed);
@@ -1556,7 +1582,9 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
 
     eventInfo.container.querySelectorAll(".aux-links-transclude-file").forEach(fileAppendBlock => {
         /*  Remove any file embed links that lack a valid content type (e.g.,
-            foreign-site links that have not been whitelisted for embedding).
+            foreign-site links that have not been whitelisted for embedding; or
+            a PDF embed, on a mobile client, which is considered invalid because
+            mobile browsers do not support PDF embedding).
          */
         Transclude.allIncludeLinksInContainer(fileAppendBlock).forEach(includeLink => {
             if (Content.contentTypeForLink(includeLink) == null)
