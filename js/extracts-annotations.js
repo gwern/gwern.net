@@ -53,6 +53,12 @@ Extracts = { ...Extracts,
 				: Extracts.standardPopFrameTitleElementForTarget(target));
     },
 
+    //  Called by: extracts.js (as `preparePopFrame_${targetTypeName}`)
+	preparePopFrame_ANNOTATION: (popFrame) => {
+		//	Base location is URL of the annotation itself.
+		popFrame.document.baseLocation = Annotations.sourceURLForLink(popFrame.spawningTarget);
+	},
+
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_ANNOTATION: (popup) => {
         /*  Do not spawn annotation popup if the annotation is already visible
@@ -70,6 +76,8 @@ Extracts = { ...Extracts,
                 return null;
             }
         }
+
+		Extracts.preparePopFrame_ANNOTATION(popup);
 
         return popup;
     },
@@ -154,6 +162,12 @@ Extracts = { ...Extracts,
 
 		return Extracts.titleForPopFrame_ANNOTATION(popFrame);
     },
+
+    //  Called by: extracts.js (as `preparePopFrame_${targetTypeName}`)
+	preparePopFrame_ANNOTATION_PARTIAL: (popFrame) => {
+		//	Remove the base location.
+		return Extracts.preparePopFrame_ANNOTATION(popFrame);
+	},
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     preparePopup_ANNOTATION_PARTIAL: (popup) => {

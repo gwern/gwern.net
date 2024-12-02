@@ -221,12 +221,6 @@ function baseLocationForDocument(doc) {
 		return null;
 	} else if (doc == document) {
         return URLFromString(location.href);
-    } else if (   doc.body instanceof Element
-               && doc.body.classList.contains("popframe-body")) {
-        let spawningTarget = (Extracts.popFrameProvider == Popups
-                              ? doc.body.popup.spawningTarget
-                              : doc.body.popin.spawningTarget);
-        return URLFromString(spawningTarget.href);
     } else if (doc.baseLocation) {
         return URLFromString(doc.baseLocation.href);
     } else {

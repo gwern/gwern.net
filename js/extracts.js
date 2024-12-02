@@ -626,6 +626,9 @@ Extracts = {
         //  Add ‘markdownBody’ class.
         popFrame.body.classList.add("markdownBody");
 
+		//	Set base location for the pop-frame document.
+		popFrame.document.baseLocation = URLFromString(popFrame.spawningTarget.href);
+
         //  Special handling for certain pop-frame types.
         let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
         let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
