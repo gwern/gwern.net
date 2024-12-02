@@ -194,6 +194,7 @@ isValidCssHexColor color = case T.unpack color of
                          error $ "LinkIcon.isValidCssHexColor: hex value was length-8; does this have 2 opacity values at the end, and is RGBA? Convert to RGB if so. Original input was: " ++ show color
                        else
                          error $ "LinkIcon.isValidCssHexColor: hex value was proper length, but contained non-hexadecimal characters? Original input was: " ++ show color
-                     else color
+                     else if color `elem` ["#ffffff", "#000000"] then error $ "LinkIcon.isValidCssHexColor: failed blacklist check of colors which are usually invalid as link-icon colors. Double-check this! Input was: " ++ show color
+                             else color
     _  -> error $ "LinkIcon.isValidCssHexColor: input CSS hex color failed hex check; did not start with a hash? Original input was: " ++ show color
 

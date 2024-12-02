@@ -209,8 +209,9 @@ linkIconRulesSingle u
  | u'' u "waitbutwhy.com" = ("♔", "text", "#fd992c") -- Wait But Why: longform blog: logo is a playing card king (black, king of clubs?); approximate it with a "♔" WHITE CHESS KING (BLACK CHESS KING looks like a blob at link-icon size). If that doesn't work, a 'WBW' tri-text icon is feasible. color: orange
  | u'' u "senseis.xmp.net" = ("❍", "text", "") -- Sensei's Library (Go wiki); Unicode: SHADOWED WHITE CIRCLE U+274D; we can't use a solid black/white circle to represent a Go stone, because then how would it look in dark-mode vs light-mode? However, a 'shadowed' circle' ought to be legible in both. (The official icon is some horrible cartoon character, and the wordmark is 'SL' with 2 red lines, which is unfamiliar and hard to replicate well, while a 'Go stone' lets me lump in other Go websites as need be.)
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
-  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("̅□", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
-  | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
+ | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("̅□", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
+ | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
+ | u'' u "ki.se" = ("☤", "text", "#830154") -- Karolinska Institute <https://en.wikipedia.org/wiki/Karolinska_Institute>; we skip openarchive.ki.se because it's just PDFs; icon: complex <https://en.wikipedia.org/wiki/File:Karolinska_Institutet_seal.svg>, but the caduceus seems recognizable; color: purple
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -275,7 +276,7 @@ linkIconRulesDouble u
  | u'' u "www.metafilter.com" || u'' u "ask.metafilter.com" = ("MF", "text,sans,italic", "#065a8f") -- color: dark blue; TODO: white-on-blue text background (or more elaborately, green-white 'MF' on blue background square?)
  | u'' u "qz.com" = ("QZ", "text,sans", "#105b8e") -- color: dark blue
  | u'' u "blog.23andme.com" || u'' u "23andme.com" = ("23", "text", "#a40e7b") -- color: dark purple
- | u'' u "www.ft.com" = ("FT", "text", "#e3b68e") -- color: tan (official tan too light to see, so manually darkened)
+ | u'' u "www.ft.com" = ("FT", "text", "#e3b68e") -- Financial Times; color: tan (official tan too light to see, so manually darkened)
  | u'' u "techcrunch.com" = ("TC", "text,mono", "#0a8935") -- color: green
  | u' u "livejournal.com" = ("LJ", "text,sans", "#004359") -- color: dark blue
  | u'' u "www.newscientist.com" = ("NS", "text,sans", "")
@@ -429,6 +430,7 @@ linkIconRulesQuad u
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
+ | u'' u "www.dwarkeshpatel.com" = ("Dwkh", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -450,7 +452,7 @@ linkIconRulesSVG u
  | u'' u "intelligence.org" = ("miri", "svg", "#234e80") -- MIRI/intelligence.org. color: blue
  | u' u ".nytimes.com" = ("new-york-times", "svg", "") -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
  | aU'' u ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov", "pmc.ncbi.nlm.nih.gov"] = ("nlm-ncbi", "svg", "#20558a") -- NCBI/Pubmed: simplification of their logo (<https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg>). primary user: ncbi.nlm.nih.gov; color: blue-green
- | u'' u "www.patreon.com" = ("patreon", "svg", "#ffffff") -- Patreon. (Used the old one (<https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg>) because I don’t like the new one.); color: red
+ | u'' u "www.patreon.com" = ("patreon", "svg", "#f76159") -- Patreon. (Used the old one (<https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg>) because I don’t like the new one.); color: red-orange
  | aU' u ["plos.org", "plosone.org"] = ("plos", "svg", "") -- PLOS ONE in all their domain permutations… primary user: journals.plos.org; no consistent overall color
  | aU' u ["overflow.net", "overflow.com", "stackexchange.com"] = ("stack-exchange", "svg", "#f48024") -- The *Exchange/*Overflow family of websites. Color: orange. (The individual sites have different colors, but orange is the one I always think of.)
  | u' u "substack.com" = ("substack", "svg", "#ff6719") -- gwern.substack.com; color: orange
@@ -471,7 +473,7 @@ linkIconRulesSVG u
  | aU'' u ["vimeo.com", "player.vimeo.com"] = ("file-video", "svg", "#17d5ff") -- color: green
  | u'' u "www.telegraph.co.uk" = ("the-telegraph", "svg", "") -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' u "www.openphilanthropy.org" = ("open-philanthropy", "svg", "")
- | u'' u "www.atlasobscura.com" = ("atlas-obscura", "svg", "#ad8f68") -- color: orange-bronze
+ | u'' u "www.atlasobscura.com" = ("atlas-obscura", "svg", "#ad8f68") -- Atlas Obscura; color: orange-bronze
  | aU'' u ["blog.eleuther.ai", "www.eleuther.ai", "pile.eleuther.ai", "6b.eleuther.ai"] || u' u "arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/" = ("eleutherai", "svg", "")
  | u'' u "arankomatsuzaki.wordpress.com" = ("ak", "text,sans", "") -- known with the other ak on Twitter; put after EAI in the SVG section because the GPT-J announcement is an EAI project
  | u' u ".apple.com" = ("apple", "svg", "")
@@ -957,7 +959,7 @@ linkIconTestUnitsText =
          , ("https://patrickcollison.com/labs", "PC", "text,sans", "#635bff")
          , ("https://press.stripe.com/the-art-of-doing-science-and-engineering", "S", "text,sans", "#635bff")
          , ("https://www.kaggle.com/datasets/ultrajack/modern-renaissance-poetry", "k", "text,sans", "#20beff")
-         , ("https://www.patreon.com/gwern",  "patreon","svg", "#ffffff")
+         , ("https://www.patreon.com/gwern",  "patreon","svg", "#f76159")
          , ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg", "")
          , ("https://commons.wikimedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg", "")
          , ("https://www.mediawiki.org/wiki/Multilingual_MediaWiki", "wikipedia","svg", "")
@@ -1221,6 +1223,8 @@ linkIconTestUnitsText =
          , ("https://www.theregister.com/2019/01/29/how_i_caught_silk_road_mastermind/?page=2", "𓅐", "text", "#ff0000")
          , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,sans", "")
          , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,sans", "")
+         , ("https://ki.se/en/people/paul-lichtenstein", "☤", "text", "#830154")
+         , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

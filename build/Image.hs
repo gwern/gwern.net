@@ -46,6 +46,8 @@ isVideoFilename i  = not ("http" `isPrefixOf` i) && anySuffix (takeWhile (/='#')
 -- image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check
 -- every image for color, and set an 'invert-auto' HTML class on the ones which are low. We can
 -- manually specify a 'invert' class on images which don't pass the heuristic but should.
+--
+-- TODO: the long-term plan is to remove the ImageMagick heuristic in favor of Invertornot.com, but to cache the ION calls in the LinkMetadata DB inside the 'miscellaneous' field; then all images without a manual .invert/.invert-not simply get a lookup or local ION call. This removes as much work from runtime browsers as possible and reduces load on ION, as well as robustness for when ION inevitably goes offline someday. (We cannot remove ION completely from the runtime, because we still need it for dynamic sources like Wikipedia. But most images are static.)
 invertImageInline :: Metadata -> Inline -> IO Inline
 invertImageInline _ x@(Image _ _ ("",_)) = error $ "Image.invertImageInline called with a malformed image with no filename; this should never happen. Argument: " ++ show x
 invertImageInline md x@(Image (htmlid, classes, kvs) xs (p,t)) =

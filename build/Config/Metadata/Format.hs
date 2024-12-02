@@ -1867,6 +1867,7 @@ htmlRewriteFixed =
          , ("\8236", "") -- POP DIRECTIONAL FORMATTING
          , ("\8234", "") -- LEFT-TO-RIGHT EMBEDDING
          , ("\160", " ") -- NO BREAK SPACE
+         , ("�", "") -- REPLACEMENT CHARACTER
          ]
 
 -- regexps we need to run *before* we run the bulk of the fixed-string

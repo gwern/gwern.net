@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-12-01 15:23:17 gwern"
+# When:  Time-stamp: "2024-12-01 16:02:44 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -156,7 +156,7 @@ else
     ## anyway
     cd ../../
 
-  if [ "$SLOW" ]; then
+  if [ "$SLOW" ]; then # run *after* recompiling 'checkMetadata' to ensure that we have the latest config (ie. blacklists, overrides, new rules etc.) for the lints
     bold "Checking metadata…"
     pkill checkMetadata || true
     rm ~/METADATA.txt &> /dev/null || true

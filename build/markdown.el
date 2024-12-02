@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-11-18 16:41:30 gwern"
+;;; When:  Time-stamp: "2024-12-01 09:54:53 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1443,6 +1443,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (replace-all ":  " ": ")
        (replace-all " ► " "\n- ")
        (replace-all "\n► " "\n- ")
+       (replace-all " yr\\." " years.")
        (replace-all "Previous article in issueNext article in issue" "")
        (replace-all "Previous article in issue\nNext article in issue" "")
        (replace-all "\nAbstract\n" "\n")

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-11-29 17:45:42 gwern"
+# When:  Time-stamp: "2024-12-01 10:08:12 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -508,6 +508,8 @@ Katri Räikkönen
 ""
 - https://jenn.site/2024/11/you-are-pablo-neruda-it-is-dawn-at-isla-negra-in-1968-matilde-is-asleep-in-your-bed-write-what-comes/ The Neruda Factory—Jenneral HQ"
 "The Neruda Factory"
+- "Eric Tang �"
+"Eric Tang"
 
 Task:
 
