@@ -29,39 +29,6 @@
 	filter: var(--dark-mode-invert-filter, none);
 }
 
-/*  Audio elements don’t change color in dark mode, so their hover styles need
-    adjusted.
- */
-.markdownBody figure audio:hover {
-    border-color: var(--GW-figure-outline-color);
-    box-shadow:
-        0 0 4px 0 currentColor inset,
-        0 0 4px 0 currentColor;
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-appearance: none) {
-    .markdownBody figure audio {
-        border-color: var(--GW-figure-outline-color);
-    }
-}
-
-/*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
- */
-hr::after,
-div.horizontal-rule-nth-0 hr::after {
-    opacity: 1;
-    filter: invert(1) drop-shadow(0 0 0 currentColor);
-}
-div.horizontal-rule-nth-1 hr::after {
-    opacity: 0.75;
-    filter: invert(1);
-}
-div.horizontal-rule-nth-2 hr::after {
-    opacity: 0.85;
-    filter: invert(1);
-}
-
 /*  Admonition icons.
  */
 div.admonition.tip::before {
@@ -81,18 +48,6 @@ div.admonition.error::before {
  */
 div.admonition.warning a[data-link-icon-type='svg'] .link-icon-hook::after,
 div.admonition.error a[data-link-icon-type='svg'] .link-icon-hook::after {
-    filter: none;
-}
-
-/*  List bullets are SVGs and have to be inverted.
- */
-ul > li::before {
-    filter: invert(1);
-}
-
-/*  Exclusion for TOC entries.
- */
-.TOC ul > li::before {
     filter: none;
 }
 

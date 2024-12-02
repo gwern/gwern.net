@@ -2176,37 +2176,41 @@ hr {
     second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc
     are a sun.
  */
-hr::after,
-.horizontal-rule-nth-0 hr::after {
-    /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
-        */
-    --icon-size: 40px;
-
+hr::after {
     content: "";
     margin: auto;
     box-sizing: border-box;
     width: 40px;
     height: var(--icon-size);
-    background-image: url('/static/img/ornament/sun-verginasun-black.svg');
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
     background-size: var(--icon-size);
-    opacity: 0.80;
+}
+hr::after,
+.horizontal-rule-nth-0 hr::after {
+    /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
+        */
+    --icon-size: 40px;
+	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
+
+    background-image: url('/static/img/ornament/sun-verginasun-black.svg');
+    opacity: 0.85;
 }
 .horizontal-rule-nth-1 hr::after {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
-        NOTE: alternative moon icon is /static/img/icon/japanesecrest-oookashippouofoookatadasuke-sun.svg
-        modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
+        NOTE: alternative moon icon is https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
         - while nice, it lacks the intense moire effect of the Vergina Sun
      */
     --icon-size: 28px;
+	--dark-mode-invert-filter: invert(1);
 
     background-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.85;
 }
 .horizontal-rule-nth-2 hr::after {
     --icon-size: 38px;
+	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 
     background-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
     opacity: 0.90;
@@ -2359,6 +2363,12 @@ img::before {
     text-align: center;
     box-sizing: border-box;
     height: 100%;
+}
+
+/*	Audio elements.
+ */
+audio {
+	--dark-mode-invert-filter: invert(1) brightness(1.5) contrast(1.5);
 }
 
 

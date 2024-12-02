@@ -1366,6 +1366,8 @@ li {
 /*=-----------------------=*/
 
 ul > li::before {
+	--dark-mode-invert-filter: invert(1);
+
     content: var(--list-bullet);
     position: absolute;
     z-index: 1;
