@@ -106,7 +106,7 @@ main {
     margin: 0 auto;
     padding: 1rem 
     		 var(--GW-body-side-padding) 
-    		 1rem 
+    		 1.25rem 
     		 var(--GW-body-side-padding);
 	display: flex;
 	flex-flow: column;
