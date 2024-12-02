@@ -39,12 +39,14 @@ Color = {
 			"Oklch": {
 				//	L (lightness)
 				minBaseValue: 0.62,
-				maxBaseValue: 0.77
+				maxBaseValue: 0.77,
+				chromaBoostFactor: 1.0 // can go above 1.0; values above ~2.5 not recommended
 			},
 			"HSL": {
 				//	L (lightness)
 				minBaseValue: 0.50,
-				maxBaseValue: 0.80
+				maxBaseValue: 0.80,
+				saturationBoostFactor: 0.25 // max is 1.0
 			}
 		}
 	},
@@ -133,6 +135,11 @@ Color = {
 			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 
+			//	Saturate.
+			let maxChroma = Color.oklchFromRGB(Color.rgbFromOklch({ L: color.L, C: 1.0, h: color.h })).C;
+			let chromaBoost = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["Oklch"].chromaBoostFactor * maxChroma * (1.0 - color.L);
+			color.C = Math.min(maxChroma, color.C + chromaBoost);
+
 			//	Gamut correction.
 			let maxLightness = Color.oklchFromRGB(Color.rgbFromOklch({ L: 1.0, C: color.C, h: color.h })).L;
 			if (color.L > maxLightness)
@@ -146,6 +153,10 @@ Color = {
 
 			let baseLightness = Math.max(Math.min(referenceColor.lightness, maxBaseValue), minBaseValue);
 			color.lightness = baseLightness + (1.0 - baseLightness) * color.lightness;
+
+			//	Saturate.
+			let saturationBoost = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["HSL"].saturationBoostFactor;
+			color.saturation = Math.min(1.0, color.saturation + saturationBoost);
 		}
 
 		return color;
@@ -183,7 +194,7 @@ Color = {
 	rgbaStringFromRGBA: (rgba) => {
 		return (  "rgba(" 
 				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
-				+ ", " + Math.round(rgba.alpha).toString()
+				+ ", " + Math.round(rgba.alpha ?? 1.0).toString()
 				+ ")");
 	},
 
