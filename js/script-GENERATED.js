@@ -39,12 +39,16 @@ Color = {
 			"Oklch": {
 				//	L (lightness)
 				minBaseValue: 0.62,
-				maxBaseValue: 0.77
+				maxBaseValue: 0.77,
+				chromaBoostFactor: 0.75, // values above 1.0 possible... but not recommended
+				antiClusteringFactor: 0.75 // [ 0.0, 1.0 ]
 			},
 			"HSL": {
 				//	L (lightness)
-				minBaseValue: 0.50,
-				maxBaseValue: 0.80
+				minBaseValue: 0.65,
+				maxBaseValue: 0.77,
+				saturationBoostFactor: 0.50, // [ 0.0, 1.0 ]
+				antiClusteringFactor: 0.25 // [ 0.0, 1.0 ]
 			}
 		}
 	},
@@ -133,6 +137,12 @@ Color = {
 			let baseLightness = Math.max(Math.min(referenceColor.L, maxBaseValue), minBaseValue);
 			color.L = baseLightness + (1.0 - baseLightness) * color.L;
 
+			//	Saturate.
+			let maxChroma = Color.oklchFromRGB(Color.rgbFromOklch({ L: color.L, C: 1.0, h: color.h })).C;
+			let chromaBoostFactor = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["Oklch"].chromaBoostFactor;
+			let antiClusteringFactor = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["Oklch"].antiClusteringFactor;
+			color.C += chromaBoostFactor * (maxChroma - color.C) * (1.0 - color.L * antiClusteringFactor);
+
 			//	Gamut correction.
 			let maxLightness = Color.oklchFromRGB(Color.rgbFromOklch({ L: 1.0, C: color.C, h: color.h })).L;
 			if (color.L > maxLightness)
@@ -146,6 +156,11 @@ Color = {
 
 			let baseLightness = Math.max(Math.min(referenceColor.lightness, maxBaseValue), minBaseValue);
 			color.lightness = baseLightness + (1.0 - baseLightness) * color.lightness;
+
+			//	Saturate.
+			let saturationBoostFactor = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["HSL"].saturationBoostFactor;
+			let antiClusteringFactor = Color.ColorTransformSettings[Color.ColorTransform.COLORIZE]["HSL"].antiClusteringFactor;
+			color.saturation += saturationBoostFactor * (1.0 - color.saturation) * (1.0 - color.lightness * antiClusteringFactor);
 		}
 
 		return color;
@@ -183,7 +198,7 @@ Color = {
 	rgbaStringFromRGBA: (rgba) => {
 		return (  "rgba(" 
 				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
-				+ ", " + Math.round(rgba.alpha).toString()
+				+ ", " + Math.round(rgba.alpha ?? 1.0).toString()
 				+ ")");
 	},
 
@@ -13642,6 +13657,18 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
     });
 }, ">rewrite");
 
+/*************************************************************/
+/*	Add certain style classes to certain lists and list items.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateListStyles = (eventInfo) => {
+    GWLog("designateListStyles", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("ul > li").forEach(listItem => {
+		if (listItem.closest(".TOC") == null)
+			listItem.classList.add("dark-mode-invert");
+	});
+}, ">rewrite");
+
 /*****************************************************************/
 /*  Wrap text nodes and inline elements in list items in <p> tags.
  */
@@ -14120,7 +14147,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
                               ?? mediaElement.closest(".image-wrapper")
                               ?? mediaElement);
             if (mediaBlock == mediaElement)
-            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper");
+            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
             outerWrapper.appendChild(mediaBlock);
         });
 
@@ -14141,9 +14168,13 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
     let mediaSelector = _π("figure", " ", [ "img", "audio", "video" ]).join(", ");
 
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
-		let wrapper = mediaElement.closest(".image-wrapper");
-		if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
-			wrapper.classList.add("dark-mode-invert");
+		if (mediaElement.matches("audio")) {
+			mediaElement.classList.add("dark-mode-invert");		
+		} else {
+			let wrapper = mediaElement.closest(".image-wrapper");
+			if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
+				wrapper.classList.add("dark-mode-invert");
+		}
 	});
 }, ">rewrite");
 
@@ -16021,6 +16052,17 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
             sup.classList.add("ordinal");
     });
 }, "rewrite");
+
+/*************************************************/
+/*	Add certain style classes to horizontal rules.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateHorizontalRuleStyles = (eventInfo) => {
+    GWLog("designateHorizontalRuleStyles", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("hr").forEach(hr => {
+		hr.classList.add("dark-mode-invert");
+	});
+}, ">rewrite");
 
 
 /************/
