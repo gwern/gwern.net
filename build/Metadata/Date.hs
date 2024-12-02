@@ -79,8 +79,10 @@ dateRangeDurationRaw todayYear x s =
      dateMatch = if yearMatch /= [] then yearMatch else fullDateMatch
  in if '$' `T.elem` s then x else -- HACK: patch over the regexps not doing a full job of excluding comma-less currencies
   case singleYearMatch of
-   [[_original,before,year,after]] -> Span nullAttr [dateRangeDurationRaw todayYear (Str before) before,
-                                                     dateDurationSingle todayYear year,
+   [[_original,before,year,after]] -> let oldYearInt = read (T.unpack year) :: Int
+                                          in if oldYearInt < minDateFirst then x else
+                                          Span nullAttr [dateRangeDurationRaw todayYear (Str before) before,
+                                                     dateDurationSingle todayYear oldYearInt,
                                                      dateRangeDurationRaw todayYear (Str after) after]
    _ -> case dateMatch of
          [] -> x
@@ -88,7 +90,8 @@ dateRangeDurationRaw todayYear x s =
            let dateFirstS  = take 4 $ T.unpack dateFirst -- 'YYYY-MM-DD' → 'YYYY'
                dateSecondS = take 4 $ T.unpack dateSecond
                dateLongP     = T.length dateFirst > 4 && T.length dateSecond > 4 -- is full date-pair?
-               dateRangeDays = formatIntWithCommas $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg. '170' days
+               dateRangeDaysInt = calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg. '170' days
+               dateRangeDays = formatIntWithCommas dateRangeDaysInt -- eg '1,000 days'
                dateRangeDaysRounded = T.pack $ formatDaysInLargestUnit $ calculateDateSpan (T.unpack dateFirst) (T.unpack dateSecond) -- eg. '9' → "9d" '170' -> "6m" (6 months)
                dateFirstInt  = read dateFirstS :: Int
                dateSecondInt = read dateSecondS :: Int
@@ -98,7 +101,7 @@ dateRangeDurationRaw todayYear x s =
                dateDurationT = T.pack $ show dateDuration
                description   = T.concat ["The date range ", dateFirst, "–", dateSecond, " lasted",
                                           if dateRangeInt == 0 then "" else " "`T.append`dateRangeT `T.append` if dateRangeInt == 1 then " year" else " years",
-                                          T.pack (if not dateLongP then "" else " (" ++ dateRangeDays ++ " days)"),
+                                          T.pack (if not dateLongP then "" else (if dateRangeDaysInt < 365 then (" " ++ dateRangeDays ++ " days") else (" (" ++ dateRangeDays ++ " days)"))),
                                          if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
                                         ]
                rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
@@ -125,17 +128,17 @@ minDuration = 11
 maxDateSecond = 2100 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk. But dates past 2100 AD are too rare to care about, and much more likely to be an ordinary number
 minDateFirst = 1501 -- too many ordinary numbers <1,500 which are not comma-separated
 
-dateDurationSingle :: Int -> T.Text -> Inline
-dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed an empty string year to update, with current year " ++ show todayYear
+dateDurationSingle :: Int -> Int -> Inline
+-- dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed an empty string year to update, with current year " ++ show todayYear
 dateDurationSingle todayYear oldYear
   | todayYear < minDateFirst    = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
-  | otherwise = let oldYearInt = read (T.unpack oldYear) :: Int
-                    yearsSince  = todayYear - oldYearInt
+  | otherwise = let oldYearT = T.pack $ show $ oldYear
+                    yearsSince  = todayYear - oldYear
                     yearsSinceT = T.pack $ formatIntWithCommas yearsSince
                 in
-                  if yearsSince < minDuration then Str oldYear else
-                    Span ("", ["date-range"], []) [Str oldYear,
-                                                   Subscript [Span ("", [], [("title", oldYear`T.append`" was "`T.append`yearsSinceT`T.append`" years ago.")]) [Str (yearsSinceT`T.append`"ya")]]
+                  if yearsSince < minDuration || oldYear < minDateFirst then Str oldYearT else
+                    Span ("", ["date-range"], []) [Str oldYearT,
+                                                   Subscript [Span ("", [], [("title", oldYearT`T.append`" was "`T.append`yearsSinceT`T.append`" years ago.")]) [Str (yearsSinceT`T.append`"ya")]]
                                                   ]
 
 -- match hyphen/EN-DASH-separated comma-less years from 1501--2999, or full dates 1501-01-01--2999-12-31:

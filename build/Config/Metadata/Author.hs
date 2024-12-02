@@ -1057,7 +1057,7 @@ authorLinkDB = M.fromList $
     , ("Andrea Santilli", "https://www.santilli.xyz/")
     , ("Anders Martin Dale", "https://en.wikipedia.org/wiki/Anders_Dale")
     , ("Alan R. Shuldiner", "https://www.medschool.umaryland.edu/profiles/shuldiner-alan/")
-    , ("Aditya A. Ramesh", "https://scholar.google.com/citations?user=60K82BkAAAAJ&hl=en&oi=ao")
+    , ("Aditya A. Ramesh", "https://scholar.google.com/citations?user=60K82BkAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
