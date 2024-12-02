@@ -1048,14 +1048,23 @@ Content = {
 						figure.appendChild(image);
 					});
 
-					figure.appendChild(newElement("FIGCAPTION", null, { "innerHTML": figureBlock.querySelector(".thumbcaption")?.innerHTML }));
+					let captionHTML = (   figureBlock.querySelector(".thumbcaption") 
+									   ?? figureBlock.closest(".gallerybox").querySelector(".gallerytext")
+									   )?.innerHTML;
+					if (captionHTML)
+						figure.appendChild(newElement("FIGCAPTION", null, { innerHTML: captionHTML }));
 
 					figureBlock.parentNode.insertBefore(figure, figureBlock);
+					figureBlock.parentNode.querySelector(".gallerytext")?.remove();
 					figureBlock.remove();
 				});
 
 				//	Float all figures right.
 				contentDocument.querySelectorAll("figure").forEach(figure => {
+					//	“Gallery” blocks are excepted.
+					if (figure.closest(".gallery"))
+						return;
+
 					figure.classList.add("float-right");
 				});
 
