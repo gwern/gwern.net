@@ -254,10 +254,10 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
                ".\"",
              thumbnail,
              thumbnailText,
-             "thumbnail-css: 'outline'", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
-             "created: '" ++ dateCreated ++ "'",
-             "modified: \'" ++ dateModified ++ "\'",
-             "status: 'in progress'",
+             "thumbnail-css: \"outline\"", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
+             "created: " ++ dateCreated,
+             "modified: " ++ dateModified,
+             "status: in progress",
              previous,
              next,
              "confidence: log",
