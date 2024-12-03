@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-12-01 14:47:07 gwern"
+When: Time-stamp: "2024-12-03 09:42:23 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -15,10 +15,10 @@ $ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev 
 Demo command (for the full script, with all static checks & generation & optimizations, see `sync.sh`):
 -}
 
-import Control.Monad (when, unless, (<=<))
+import Control.Monad (when, unless) -- (<=<)
 import Data.Char (toLower)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
-import qualified Data.Map.Strict as M (lookup)
+import qualified Data.Map.Strict as M (lookup) -- keys
 import Data.Maybe (fromMaybe)
 import System.Environment (getArgs, withArgs, lookupEnv)
 import Hakyll (compile, composeRoutes, constField, fromGlob,
@@ -30,7 +30,7 @@ import Hakyll (compile, composeRoutes, constField, fromGlob,
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
-                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta)
+                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta) -- unMeta
 import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
@@ -256,7 +256,7 @@ notNewsletterOrIndex :: String -> Bool
 notNewsletterOrIndex p = not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 pageIdentifierToPath :: Item a -> String
-pageIdentifierToPath i = "/" ++ (delete "." (delete ".md" (toFilePath $ itemIdentifier i)))
+pageIdentifierToPath i = "/" ++ (delete "." (delete ".md" (toFilePath (itemIdentifier i))))
 
 imageDimensionWidth :: String -> Context String
 imageDimensionWidth d = field d $ \item -> do
@@ -316,7 +316,8 @@ descField escape d d' = field d' $ \item -> do
 pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
-  do let indexp = indexp' == "true"
+  do
+     let indexp = indexp' == "true"
      let pw
            = if indexp then convertInterwikiLinks p else
                walk footnoteAnchorChecker $ convertInterwikiLinks $
@@ -328,6 +329,16 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
      walkM imageLinkHeightWidthSet pbth
+
+-- check that a Gwern.net Pandoc Markdown file has the mandatory metadata fields (title, created, status, confidence), and does not have any unknown fields:
+-- checkEssayPandocMetadata :: Pandoc -> IO ()
+-- checkEssayPandocMetadata (Pandoc meta _) = let fields = M.keys (unMeta meta)
+--                                                mandatoryFields = ["title", "created", "status", "confidence", "importance"]
+--                                                permittedFields = ["modified", "thumbnail", "thumbnail-text", "thumbnail-css", "description", "css-extension" ] ++ mandatoryFields
+--                                            in
+--                                              if not (all (`elem` fields) mandatoryFields) then error $ "hakyll.checkEssayPandocMetadata: mandatory fields were not present in essay Pandoc YAML metadata field? Meta was: " ++ show meta
+--                                              else if not (all (`elem` fields) permittedFields) then error $ "hakyll.checkEssayPandocMetadata: unknown fields were present in essay Pandoc YAML metadata field? Meta was: " ++ show meta
+--                                              else return ()
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
