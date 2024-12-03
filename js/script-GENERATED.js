@@ -11281,6 +11281,8 @@ Extracts = { ...Extracts,
 	preparePopFrame_ANNOTATION: (popFrame) => {
 		//	Base location is URL of the annotation itself.
 		popFrame.document.baseLocation = Annotations.sourceURLForLink(popFrame.spawningTarget);
+
+		return popFrame;
 	},
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -11301,9 +11303,7 @@ Extracts = { ...Extracts,
             }
         }
 
-		Extracts.preparePopFrame_ANNOTATION(popup);
-
-        return popup;
+		return Extracts.preparePopFrame_ANNOTATION(popup);
     },
 
 	//	Called by: Extracts.rewritePopFrameContent (as `updatePopFrame_${targetTypeName}`)
