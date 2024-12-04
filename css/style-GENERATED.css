@@ -5504,6 +5504,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
 }
+.popup .popframe-title-bar-button:disabled {
+	color: var(--GW-popups-popup-title-bar-button-color-disabled);
+	pointer-events: none;
+}
 .popup .popframe-title-bar-button + .popframe-title-bar-button {
     margin: 0 1px 0 0;
 }
@@ -5527,6 +5531,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-title-bar-button.zoom-button {
     padding: 5px;
+}
+
+.popup .popframe-title-bar-button.minimize-button {
+	padding: 3px 4px 4px 4px;
 }
 
 .popup button.extracts-disable-button {
@@ -5686,6 +5694,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
     --GW-popups-popup-title-bar-button-color: var(--GW-popups-popup-title-bar-button-focused-color);
     --GW-popups-popup-title-bar-button-color-hover: var(--GW-popups-popup-title-bar-button-focused-color-hover);
+    --GW-popups-popup-title-bar-button-color-disabled: var(--GW-popups-popup-title-bar-button-focused-color-disabled);
     --GW-popups-popup-title-color: var(--GW-popups-popup-title-focused-color);
     --GW-popups-popup-title-link-hover-color: var(--GW-popups-popup-title-link-hover-focused-color);
 
@@ -5753,6 +5762,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 .popup.collapsed .popframe-scroll-view ~ * {
     display: none !important;
+}
+
+/*┌───────────────────┐*/
+/*│ Minimized popups. │*/
+/*└───────────────────┘*/
+
+.popup.minimized .popframe-title-bar {
+	cursor: pointer;
+}
+
+.popup.minimized .popframe-title {
+	pointer-events: none;
 }
 
 /*┌───────────────────────────┐*/

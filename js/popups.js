@@ -25,6 +25,17 @@ Popups = {
     popupFadeoutDelay: 100,
     popupFadeoutDuration: 250,
 
+	minimizedPopupWidth: 480,
+	minimizedPopupsArrangements: {
+		vertical: {
+			minimizedPopupWidth: 480
+		},
+		horizontal: {
+			minimizedPopupMinWidth: 320,
+			minimizedPopupMaxWidth: 640
+		}
+	},
+
     /******************/
     /*  Implementation.
      */
@@ -41,6 +52,8 @@ Popups = {
     popupBeingResized: null,
 
     hoverEventsActive: true,
+
+	minimizedPopupsReservedRect: null,
 
     cleanup: () => {
         GWLog("Popups.cleanup", "popups.js", 1);
@@ -82,9 +95,11 @@ Popups = {
 
         //  Add window resize listener, to reposition pinned popups.
         addWindowResizeListener(Popups.repositionPopupsOnWindowResize = (event) => {
-            Popups.allSpawnedPopups().forEach(popup => {
+            Popups.allUnminimizedPopups().forEach(popup => {
                 Popups.setPopupViewportRect(popup, popup.viewportRect, { clampPositionToScreen: true });
             });
+
+			Popups.updateMinimizedPopupArrangement();
         }, {
             name: "repositionPopupsOnWindowResizeListener",
             defer: true
@@ -225,7 +240,11 @@ Popups = {
         if (Popups.popupContainer == null)
             return [ ];
 
-        return Array.from(Popups.popupContainer.children).filter(popup => (popup.classList.contains("fading") == false));
+        return Array.from(Popups.popupContainer.children).filter(
+        	(x) => (x.classList.contains("fading") == false)
+        ).sort(
+			(a, b) => (parseInt(a.style.zIndex) - parseInt(b.style.zIndex))
+		);
     },
 
     //  Called by: extracts.js
@@ -508,6 +527,15 @@ Popups = {
         //  Update z-indexes of all popups.
         Popups.updatePopupsZOrder();
 
+        //  Focus the front-most un-minimized popup.
+        Popups.focusPopup(Popups.frontmostPopup());
+
+		/*	If the de-spawned popup was minimized, update arrangement of
+			remaining minimized popups.
+		 */
+		if (Popups.popupIsMinimized(popup))
+			Popups.updateMinimizedPopupArrangement();
+
         //  Enable/disable main document scrolling.
         Popups.updatePageScrollState();
 
@@ -559,6 +587,207 @@ Popups = {
                 && popup.classList.contains("fading") == false);
     },
 
+	/**********************/
+	/*	Popup minimization.
+	 */
+
+	popupIsMinimized: (popup) => {
+		return popup.classList.contains("minimized");
+	},
+
+	/*	All minimized popups, in order of their position in the minimized
+		popups stack.
+	 */
+	allMinimizedPopups: () => {
+		return Popups.allSpawnedPopups().filter(
+			(x) => (Popups.popupIsMinimized(x) == true)
+		).sort(
+			(a, b) => (parseInt(a.style.zIndex) - parseInt(b.style.zIndex))
+		);
+	},
+
+	/*	All unminimized popups, in z-order (backmost to frontmost).
+	 */
+	allUnminimizedPopups: () => {
+		return Popups.allSpawnedPopups().filter(
+			(x) => (Popups.popupIsMinimized(x) == false)
+		).filter(
+			(x) => (x.style.zIndex > "")
+		).sort(
+			(a, b) => (parseInt(a.style.zIndex) - parseInt(b.style.zIndex))
+		);
+	},
+
+	minimizeOrUnminimizePopup: (popup) => {
+        GWLog("Popups.minimizeOrUnminimizePopup", "popups.js", 2);
+
+        if (Popups.popupIsMinimized(popup)) {
+            Popups.unminimizePopup(popup);
+        } else {
+            Popups.minimizePopup(popup);
+        }
+
+        //  Cache the viewport rect.
+        popup.viewportRect = popup.getBoundingClientRect();
+	},
+
+	minimizePopup: (popup) => {
+        GWLog("Popups.minimizePopup", "popups.js", 3);
+
+		if (Popups.popupIsMinimized(popup) == true)
+			return;
+
+		//	Save position.
+		Popups.savePopupPosition(popup);
+
+        //	Collapse popup, if need be; else save collapse state.
+        if (Popups.popupIsCollapsed(popup)) {
+        	popup.popupWasCollapsedBeforeMinimization = true;
+        } else {
+	        Popups.collapsePopup(popup, { updateTitleBarState: false });
+	    }
+
+		//	Unfocus popup.
+		Popups.unfocusPopup(popup);
+
+        //  Save and unset width, if need be.
+        if (popup.style.width) {
+            popup.dataset.previousWidth = popup.style.width;
+            popup.style.width = "";
+        }
+
+		//	Save mini-title-bar state, if need be.
+		if (popup.classList.contains("mini-title-bar")) {
+			popup.popupHadMiniTitleBar = true;
+			popup.classList.remove("mini-title-bar");
+		}
+
+		//	Set id number.
+		popup.dataset.minimizedPopupId = Popups.allMinimizedPopups().length + 1;
+
+        //  Update class.
+        Popups.addClassesToPopFrame(popup, "minimized");
+
+        //  Update title bar buttons states (if any).
+        if (popup.titleBar)
+            popup.titleBar.updateState();
+
+		//	Update minimized popup arrangement.
+		Popups.updateMinimizedPopupArrangement();
+
+        //  Focus the front-most un-minimized popup.
+        Popups.focusPopup(Popups.frontmostPopup());
+	},
+
+	unminimizePopup: (popup) => {
+        GWLog("Popups.unminimizePopup", "popups.js", 3);
+
+		if (Popups.popupIsMinimized(popup) == false)
+			return;
+
+        //  Update class.
+        Popups.removeClassesFromPopFrame(popup, "minimized");
+
+		//	Delete id number.
+		delete popup.dataset["minimizedPopupId"];
+
+		//	Restore mini-title-bar state, if need be.
+		if (popup.popupHadMiniTitleBar) {
+			popup.classList.add("mini-title-bar");
+			popup.popupHadMiniTitleBar = null;
+		}
+
+        //  Restore width and delete saved width, if need be.
+        if (popup.dataset.previousWidth) {
+			popup.style.width = popup.dataset.previousWidth;
+            delete popup.dataset["previousWidth"];
+        } else {
+        	popup.style.width = "";
+        }
+
+		//	Un-unset minimum width.
+		popup.style.minWidth = "";
+
+        //	Uncollapse popup, if need be; else clear saved collapse state.
+        if (popup.popupWasCollapsedBeforeMinimization) {
+        	popup.popupWasCollapsedBeforeMinimization = null;
+        } else {
+			Popups.uncollapsePopup(popup, { updateTitleBarState: false });
+		}
+
+		//	Restore popup position.
+		Popups.addClassesToPopFrame(popup, "restored");
+		Popups.positionPopup(popup);
+
+        //  Update title bar buttons states (if any).
+        if (popup.titleBar)
+            popup.titleBar.updateState();
+
+		//	Update minimized popup arrangement.
+		Popups.updateMinimizedPopupArrangement();
+	},
+
+	updateMinimizedPopupArrangement: () => {
+		let minimizedPopups = Popups.allMinimizedPopups();
+
+		//	Select arrangement for minimized popups.
+		let arrangement;
+		if (Popups.minimizedPopupsArrangements.vertical.minimizedPopupWidth > (window.innerWidth - document.querySelector("main").offsetWidth) * 0.5) {
+			arrangement = Popups.minimizedPopupsArrangements.horizontal;
+		} else if (window.innerHeight >= (window.innerWidth - Popups.minimizedPopupsArrangements.vertical.minimizedPopupWidth)) {
+			arrangement = Popups.minimizedPopupsArrangements.horizontal;
+		} else {
+			arrangement = Popups.minimizedPopupsArrangements.vertical;
+		}
+
+		//	Determine width of the widest minimized popup.
+		let maxPopupWidth = minimizedPopups.reduce((maxWidth, popup) => Math.max(maxWidth, popup.viewportRect.width), 0);
+
+		//	Arrange minimized popups.
+		let minimizedPopupWidth;
+		if (arrangement == Popups.minimizedPopupsArrangements.vertical) {
+			minimizedPopupWidth = Math.min(arrangement.minimizedPopupWidth, maxPopupWidth);
+		} else if (arrangement == Popups.minimizedPopupsArrangements.horizontal) {
+			maxPopupWidth = Math.min(maxPopupWidth, arrangement.minimizedPopupMaxWidth);
+			if (minimizedPopups.length <= Math.floor(window.innerWidth / maxPopupWidth)) {
+				minimizedPopupWidth = maxPopupWidth;
+			} else if (window.innerWidth > minimizedPopups.length * arrangement.minimizedPopupMinWidth) {
+				minimizedPopupWidth = Math.floor(window.innerWidth / minimizedPopups.length);
+			} else {
+				minimizedPopupWidth = Math.floor(window.innerWidth / Math.floor(window.innerWidth / arrangement.minimizedPopupMinWidth));
+			}
+		}
+		let xOffset = 0
+		let yOffset = 0;
+		for (let i = 0; i < minimizedPopups.length; i++) {
+			let popup = minimizedPopups[i];
+
+			popup.dataset.minimizedPopupId = i + 1;
+
+			let newPopupRect = new DOMRect(xOffset, window.innerHeight - (yOffset + popup.offsetHeight), 0, 0);
+			popup.style.width = minimizedPopupWidth + "px";
+			popup.style.minWidth = "unset";
+
+			if (arrangement == Popups.minimizedPopupsArrangements.vertical) {
+				yOffset += popup.offsetHeight;
+			} else if (arrangement == Popups.minimizedPopupsArrangements.horizontal) {
+				xOffset += minimizedPopupWidth;
+				if (xOffset + minimizedPopupWidth > window.innerWidth) {
+					xOffset = 0;
+					yOffset += popup.offsetHeight;
+				}
+			}
+
+			//	Set and cache the viewport rect.
+			Popups.setPopupViewportRect(popup, newPopupRect);
+			popup.viewportRect = popup.getBoundingClientRect();
+
+			//	Set z-index (skip focused popup, if any).
+			if (Popups.popupIsFocused(popup) == false)
+				popup.style.zIndex = popup.dataset.minimizedPopupId;
+		}
+	},
+
     /********************/
     /*  Popup collapsing.
      */
@@ -575,15 +804,19 @@ Popups = {
             Popups.collapsePopup(popup);
         }
 
-        //  Cache the viewport rect.
-        popup.viewportRect = popup.getBoundingClientRect();
+		//  Cache the viewport rect.
+		popup.viewportRect = popup.getBoundingClientRect();
     },
 
-    collapsePopup: (popup) => {
+    collapsePopup: (popup, options) => {
         GWLog("Popups.collapsePopup", "popups.js", 3);
 
-        //  Update class.
-        Popups.addClassesToPopFrame(popup, "collapsed");
+		if (Popups.popupIsCollapsed(popup) == true)
+			return;
+
+		options = Object.assign({
+			updateTitleBarState: true
+		}, options);
 
         //  Save and unset height, if need be.
         if (popup.style.height) {
@@ -594,26 +827,38 @@ Popups = {
         //  Pin popup.
         Popups.pinPopup(popup);
 
+        //  Update class.
+        Popups.addClassesToPopFrame(popup, "collapsed");
+
         //  Clear timers.
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (popup.titleBar)
+        if (   popup.titleBar 
+        	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
+
+		//	If this popup is minimized, update minimized popup arrangement.
+		if (Popups.popupIsMinimized(popup))
+			Popups.updateMinimizedPopupArrangement();
     },
 
-    uncollapsePopup: (popup) => {
+    uncollapsePopup: (popup, options) => {
         GWLog("Popups.uncollapsePopup", "popups.js", 3);
+
+		if (Popups.popupIsCollapsed(popup) == false)
+			return;
+
+		options = Object.assign({
+			updateTitleBarState: true
+		}, options);
 
         //  Update class.
         Popups.removeClassesFromPopFrame(popup, "collapsed");
 
-        //  Restore height, if need be.
+        //  Restore height and delete saved height, if need be.
         if (popup.dataset.previousHeight) {
-            if (Popups.popupIsPinned(popup) == true)
-                popup.style.height = popup.dataset.previousHeight;
-
-            //  Delete saved height.
+			popup.style.height = popup.dataset.previousHeight;
             delete popup.dataset["previousHeight"];
         }
 
@@ -621,8 +866,16 @@ Popups = {
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (popup.titleBar)
+        if (   popup.titleBar 
+        	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
+
+		//	Re-clamp popup to screen.
+		Popups.setPopupViewportRect(popup, new DOMRect(popup.viewportRect.x, popup.viewportRect.y, 0, 0), { clampPositionToScreen: true });
+
+		//	If this popup is minimized, update minimized popup arrangement.
+		if (Popups.popupIsMinimized(popup))
+			Popups.updateMinimizedPopupArrangement();
     },
 
     /********************************************************/
@@ -632,15 +885,17 @@ Popups = {
     /*  Popup tiling control keys.
      */
     popupTilingControlKeys: (localStorage.getItem("popup-tiling-control-keys") || ""),
+
     setPopupTilingControlKeys: (keystring) => {
         GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-        Popups.popupTilingControlKeys = keystring || "aswdqexzfrcv";
+        Popups.popupTilingControlKeys = keystring || "aswdqexzfrcvtgb";
         localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
     },
 
     popupIsResizeable: (popup) => {
-        return (   Popups.popupIsPinned(popup)
+        return (   Popups.popupIsPinned(popup) == true
+        		&& Popups.popupIsMinimized(popup) == false
                 && (   Popups.popupAllowsHorizontalResize(popup)
                     || Popups.popupAllowsVerticalResize(popup)));
     },
@@ -683,10 +938,8 @@ Popups = {
         GWLog("Popups.zoomPopup", "popups.js", 2);
 
         //  If popup isn’t already zoomed, save position.
-        if (Popups.popupIsZoomed(popup) == false) {
-            popup.dataset.previousXPosition = popup.viewportRect.left;
-            popup.dataset.previousYPosition = popup.viewportRect.top;
-        }
+        if (Popups.popupIsZoomed(popup) == false)
+            Popups.savePopupPosition(popup);
 
         //  If the popup is collapsed, expand it.
         if (Popups.popupIsCollapsed(popup))
@@ -819,12 +1072,15 @@ Popups = {
     pinPopup: (popup) => {
         GWLog("Popups.pinPopup", "popups.js", 2);
 
+		if (Popups.popupIsPinned(popup) == true)
+			return;
+
         popup.swapClasses([ "pinned", "unpinned" ], 0);
         Popups.positionPopup(popup);
         popup.popupStack.remove(popup);
         Popups.detachPopupFromTarget(popup);
 
-		if (Popups.keepPopupAttachedOnPin(popup.spawningTarget))
+		if (Popups.keepPopupAttachedOnPin(popup.spawningTarget) == true)
 			Popups.attachPopupToTarget(popup, popup.spawningTarget);
 
         popup.titleBar.updateState();
@@ -833,10 +1089,15 @@ Popups = {
     unpinPopup: (popup) => {
         GWLog("Popups.unpinPopup", "popups.js", 2);
 
+		if (Popups.popupIsPinned(popup) == false)
+			return;
+
         popup.swapClasses([ "pinned", "unpinned" ], 1);
         Popups.positionPopup(popup);
         popup.popupStack.push(popup);
-        Popups.attachPopupToTarget(popup);
+
+		if (Popups.keepPopupAttachedOnPin(popup.spawningTarget) == false)
+			Popups.attachPopupToTarget(popup);
 
         popup.titleBar.updateState();
     },
@@ -934,7 +1195,7 @@ Popups = {
         //  Create and inject the title bar element.
         popup.titleBar = newElement("DIV", {
             class: "popframe-title-bar",
-            title: "Drag popup by title bar to reposition; [v]: double-click title bar to collapse (hold [⌥/Alt] to collapse all)"
+            title: Popups.titleBarComponents.standardTooltip
         });
         popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
@@ -953,6 +1214,16 @@ Popups = {
 
         //  Add state-updating function.
         popup.titleBar.updateState = () => {
+			//	Update title bar tooltip.
+        	if (Popups.popupIsMinimized(popup)) {
+	        	popup.titleBar.title = Popups.titleBarComponents.minimizedTooltip;
+	        } else if (Popups.popupIsCollapsed(popup)) {
+	        	popup.titleBar.title = Popups.titleBarComponents.standardTooltip.replaceAll("collapse", "expand");
+	        } else {
+	        	popup.titleBar.title = Popups.titleBarComponents.standardTooltip;
+	        }
+
+			//	Update title bar button states.
             popup.titleBar.querySelectorAll("button").forEach(button => {
                 if (button.updateState)
                     button.updateState();
@@ -963,6 +1234,9 @@ Popups = {
         popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown);
         popup.titleBar.addEventListener("mouseup", Popups.popupTitleBarMouseUp);
 
+		//	Add click event listener for un-minimizing a minimized popup.
+		popup.titleBar.addEventListener("click", Popups.popupTitleBarClicked);
+
         //  Add double-click event listener for collapsing/uncollapsing the popup.
         popup.titleBar.addEventListener("dblclick", Popups.popupTitleBarDoubleClicked);
     },
@@ -970,6 +1244,9 @@ Popups = {
     /*  Elements and methods related to popup title bars.
      */
     titleBarComponents: {
+		standardTooltip: "Drag popup by title bar to reposition; [v]: double-click title bar to collapse (hold [⌥/Alt] to collapse all)",
+		minimizedTooltip: "Click to un-minimize (hold [⌥/Alt] to un-minimize all)",
+
         //  The standard positions for a popup to zoom to.
         popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
 
@@ -996,7 +1273,9 @@ Popups = {
             "zoom-right": "expand-arrows-right",
             "zoom-bottom-left": "expand-arrows-down-left",
             "zoom-bottom": "expand-arrows-down",
-            "zoom-bottom-right": "expand-arrows-down-right"
+            "zoom-bottom-right": "expand-arrows-down-right",
+            "minimize": "window-minimize",
+            "unminimize": "window-maximize-regular"
         },
 
         //  Tooltip text for various popup title bar icons.
@@ -1015,7 +1294,9 @@ Popups = {
             "zoom-full": "[f]: Maximize this popup to fill the screen",
             "zoom-bottom-left": "[z]: Place this popup in the bottom-left quarter of the screen",
             "zoom-bottom": "[s]: Place this popup on the bottom half of the screen",
-            "zoom-bottom-right": "[x]: Place this popup in the bottom-right quarter of the screen"
+            "zoom-bottom-right": "[x]: Place this popup in the bottom-right quarter of the screen",
+            "minimize": "[t]: Minimize this button to the bottom of the screen",
+            "unminimize": "[t]: Un-minimize this button, restoring it to its previous position"
         },
 
         //  A generic button, with no icon or tooltip text.
@@ -1094,6 +1375,8 @@ Popups = {
                         submenuButton.updateState();
                     });
                 }
+
+				button.disabled = (Popups.popupIsMinimized(popup));
             };
 
             button.enableSubmenu = () => {
@@ -1166,9 +1449,7 @@ Popups = {
 
                 if (event.altKey == true) {
                     let action = Popups.popupIsPinned(popup) ? "unpinPopup" : "pinPopup";
-                    Popups.allSpawnedPopups().forEach(popup => {
-                        Popups[action](popup);
-                    });
+                    Popups.allUnminimizedPopups().forEach(Popups[action]);
                 } else {
                     Popups.pinOrUnpinPopup(popup);
                 }
@@ -1181,10 +1462,50 @@ Popups = {
                 button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
                 button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
+
+				button.disabled = (Popups.popupIsMinimized(popup));
             };
 
             return button;
         },
+
+		//	Minimize button.
+		minimizeButton: () => {
+            let button = Popups.titleBarComponents.genericButton();
+            button.classList.add("minimize-button", "pin");
+
+            button.defaultHTML = Popups.titleBarComponents.getButtonIcon("minimize");
+            button.alternateHTML = Popups.titleBarComponents.getButtonIcon("unminimize");
+            button.innerHTML = button.defaultHTML;
+
+            button.defaultTitle = Popups.titleBarComponents.buttonTitles["minimize"];
+            button.alternateTitle = Popups.titleBarComponents.buttonTitles["unminimize"];
+            button.title = button.defaultTitle;
+
+            button.buttonAction = (event) => {
+                event.stopPropagation();
+
+                let popup = Popups.containingPopFrame(button);
+
+                if (event.altKey == true) {
+                    let action = Popups.popupIsMinimized(popup) ? "minimizePopup" : "pinPopup";
+                    Popups.allSpawnedPopups().forEach(Popups[action]);
+                } else {
+                    Popups.minimizeOrUnminimizePopup(popup);
+                }
+            };
+
+            button.updateState = () => {
+                let popup = Popups.containingPopFrame(button);
+
+                button.innerHTML = Popups.popupIsMinimized(popup) ? button.alternateHTML : button.defaultHTML;
+                button.title = Popups.popupIsMinimized(popup) ? button.alternateTitle : button.defaultTitle;
+
+                button.swapClasses([ "minimize", "unminimize" ], (Popups.popupIsMinimized(popup) ? 1 : 0));
+            };
+
+            return button;
+		},
 
         //  Options button (does nothing by default).
         optionsButton: () => {
@@ -1231,37 +1552,61 @@ Popups = {
     updatePopupsZOrder: () => {
         GWLog("Popups.updatePopupsZOrder", "popups.js", 3);
 
-        let allPopups = Popups.allSpawnedPopups();
-        allPopups.sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
-        for (let i = 0; i < allPopups.length; i++)
-            allPopups[i].style.zIndex = i + 1;
+		let focusedPopup = Popups.focusedPopup();
 
-        //  Focus the front-most popup.
-        Popups.focusPopup(Popups.frontmostPopup());
+		let zIndex = 0;
+		Popups.allSpawnedPopups().filter(x => (x != focusedPopup)).forEach(popup => { popup.style.zIndex = ++zIndex; });
+
+		if (focusedPopup != null)
+			focusedPopup.style.zIndex = ++zIndex;
     },
 
-    popupIsFrontmost: (popup) => {
-        return (parseInt(popup.style.zIndex) == Popups.allSpawnedPopups().length);
-    },
+    frontmostPopup: (options) => {
+		options = Object.assign({
+			includeMinimizedPopups: false
+		}, options);
 
-    frontmostPopup: () => {
-        let allPopups = Popups.allSpawnedPopups();
-        return allPopups.find(popup => parseInt(popup.style.zIndex) == allPopups.length);
+		return (options.includeMinimizedPopups
+				? Popups.allSpawnedPopups().last
+				: Popups.allUnminimizedPopups().last);
     },
 
     bringPopupToFront: (popup) => {
         GWLog("Popups.bringPopupToFront", "popups.js", 3);
 
-        //  If it’s already at the front, do nothing.
-        if (Popups.popupIsFrontmost(popup))
-            return;
+		//	Focus popup.
+		Popups.focusPopup(popup);
+
+		//  Update z-indexes of all popups.
+		Popups.updatePopupsZOrder();
+    },
+
+	backmostPopup: (options) => {
+		options = Object.assign({
+			includeMinimizedPopups: false
+		}, options);
+
+		return (options.includeMinimizedPopups
+				? Popups.allSpawnedPopups().first
+				: Popups.allUnminimizedPopups().first);
+	},
+
+	sendPopupToBack: (popup, options) => {
+        GWLog("Popups.sendPopupToBack", "popups.js", 3);
+
+		options = Object.assign({
+			includeMinimizedPopups: false
+		}, options);
 
         //  Set z-index.
-        popup.style.zIndex = (Popups.allSpawnedPopups().length + 1);
+        popup.style.zIndex = "0";
+
+        //  Focus the front-most popup.
+        Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: options.includeMinimizedPopups }));
 
         //  Update z-indexes of all popups.
         Popups.updatePopupsZOrder();
-    },
+	},
 
     /******************/
     /*  Popup focusing.
@@ -1279,14 +1624,16 @@ Popups = {
         GWLog("Popups.focusPopup", "popups.js", 3);
 
         //  Un-focus any focused popups.
-        Popups.allSpawnedPopups().forEach(spawnedPopup => {
-            Popups.removeClassesFromPopFrame(spawnedPopup, "focused");
-        });
+        Popups.allSpawnedPopups().forEach(Popups.unfocusPopup);
 
         //  Focus the given popup.
         if (popup)
             Popups.addClassesToPopFrame(popup, "focused");
     },
+
+	unfocusPopup: (popup) => {
+		Popups.removeClassesFromPopFrame(popup, "focused");
+	},
 
     /*********************/
     /*  Popup positioning.
@@ -1327,6 +1674,27 @@ Popups = {
             y: parseInt(popup.style.top)
         };
     },
+
+	savePopupPosition: (popup) => {
+		popup.dataset.previousXPosition = popup.viewportRect.left;
+		popup.dataset.previousYPosition = popup.viewportRect.top;
+	},
+
+	getSavedPopupPosition: (popup)	=> {
+		if (   popup.dataset.previousXPosition == null
+			|| popup.dataset.previousYPosition == null)
+			return null;
+
+		return {
+			x: parseFloat(popup.dataset.previousXPosition),
+			y: parseFloat(popup.dataset.previousYPosition)
+		};
+	},
+
+	clearSavedPopupPosition: (popup) => {
+		delete popup.dataset.previousXPosition;
+		delete popup.dataset.previousYPosition;
+	},
 
     positionPopup: (popup, options) => {
         GWLog("Popups.positionPopup", "popups.js", 2);
@@ -1371,12 +1739,11 @@ Popups = {
                 provisionalPopupXPosition = popup.zoomToX;
                 provisionalPopupYPosition = popup.zoomToY;
             } else if (Popups.popupWasRestored(popup)) {
-                provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
-                provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
+            	let savedPosition = Popups.getSavedPopupPosition(popup);
+                provisionalPopupXPosition = savedPosition.x;
+                provisionalPopupYPosition = savedPosition.y;
 
-                //  Clear saved position.
-                delete popup.dataset.previousXPosition;
-                delete popup.dataset.previousYPosition;
+                Popups.clearSavedPopupPosition(popup);
 
                 Popups.removeClassesFromPopFrame(popup, "restored");
             } else if (   Popups.popupIsPinned(popup)
@@ -1570,6 +1937,7 @@ Popups = {
 
         if (   rect.width > 0
             && rect.height > 0) {
+            console.trace("1");
             popup.style.maxWidth = "unset";
             popup.style.maxHeight = "unset";
 
@@ -1673,10 +2041,20 @@ Popups = {
         if (Popups.popupContainerIsVisible() == false)
             return;
 
-        Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
-            Popups.clearPopupTimers(popupInStack.spawningTarget);
-            Popups.setPopupFadeTimer(popupInStack.spawningTarget);
-        });
+        //  Get the containing popup.
+        let popup = Popups.containingPopFrame(event.target);
+
+		if (Popups.popupIsMinimized(popup)) {
+			Popups.unfocusPopup(popup);
+
+			//	Focus the front-most un-minimized popup.
+	        Popups.focusPopup(Popups.frontmostPopup());
+		} else {
+			Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
+				Popups.clearPopupTimers(popupInStack.spawningTarget);
+				Popups.setPopupFadeTimer(popupInStack.spawningTarget);
+			});
+		}
     },
 
     /*  The “user moved mouse back into popup” mouseenter event.
@@ -1685,9 +2063,16 @@ Popups = {
     popupMouseEnter: (event) => {
         GWLog("Popups.popupMouseEnter", "popups.js", 2);
 
-        Popups.getPopupAncestorStack(event.target).forEach(popupInStack => {
-            Popups.clearPopupTimers(popupInStack.spawningTarget);
-        });
+        //  Get the containing popup.
+        let popup = Popups.containingPopFrame(event.target);
+
+		if (Popups.popupIsMinimized(popup)) {
+			Popups.focusPopup(popup);
+		} else {
+			Popups.getPopupAncestorStack(popup).forEach(popupInStack => {
+				Popups.clearPopupTimers(popupInStack.spawningTarget);
+			});
+		}
     },
 
     /*  The “user clicked in body of popup” event.
@@ -1696,13 +2081,19 @@ Popups = {
     popupClicked: (event) => {
         GWLog("Popups.popupClicked", "popups.js", 2);
 
+        //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-        if (   Popups.popupIsFrontmost(popup) == false
-            && event.metaKey == false)
-            Popups.bringPopupToFront(popup);
+		//	If popup is minimized, do nothing.
+		if (Popups.popupIsMinimized(popup))
+			return;
 
+        //  Prevent other events from triggering.
         event.stopPropagation();
+
+		//	Bring popup to front (unless clicking with meta key).
+		if (event.metaKey == false)
+            Popups.bringPopupToFront(popup);
 
         Popups.clearPopupTimers(popup.spawningTarget);
     },
@@ -1712,9 +2103,6 @@ Popups = {
     //  Added by: Popups.injectPopup
     popupMouseDown: (event) => {
         GWLog("Popups.popupMouseDown", "popups.js", 2);
-
-        //  Prevent other events from triggering.
-        event.stopPropagation();
 
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
@@ -1727,6 +2115,9 @@ Popups = {
             || event.button != 0
             || Popups.popupIsResizeable(popup) == false)
             return;
+
+        //  Prevent other events from triggering.
+        event.stopPropagation();
 
         //  Bring the popup to the front.
         if (event.metaKey == false)
@@ -1749,11 +2140,8 @@ Popups = {
         Popups.addClassesToPopFrame(popup, "resizing");
 
         //  Save position, if need be.
-        if (   !("previousXPosition" in popup.dataset)
-            && !("previousYPosition" in popup.dataset)) {
-            popup.dataset.previousXPosition = popup.viewportRect.left;
-            popup.dataset.previousYPosition = popup.viewportRect.top;
-        }
+        if (Popups.getSavedPopupPosition(popup) == null)
+            Popups.savePopupPosition(popup);
 
         //  Point where the drag began.
         let dragStartMouseCoordX = event.clientX;
@@ -1882,11 +2270,15 @@ Popups = {
     popupTitleBarMouseDown: (event) => {
         GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
 
-        //  Prevent other events from triggering.
-        event.stopPropagation();
-
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
+
+		//	If the popup is minimized, do nothing.
+		if (Popups.popupIsMinimized(popup))
+			return;
+
+        //  Prevent other events from triggering.
+        event.stopPropagation();
 
         //  Bring the popup to the front.
         if (event.metaKey == false)
@@ -1909,7 +2301,11 @@ Popups = {
         //  Change cursor to “grabbing hand”.
         document.documentElement.style.cursor = "grabbing";
 
-        /*  If the mouse-down event is on the popup title (and the title
+         //  Save position, if need be.
+        if (Popups.getSavedPopupPosition(popup) == null)
+            Popups.savePopupPosition(popup);
+
+       /*  If the mouse-down event is on the popup title (and the title
             is a link).
          */
         popup.linkDragTarget = event.target.closest("a");
@@ -2016,8 +2412,35 @@ Popups = {
     popupTitleBarMouseUp: (event) => {
         GWLog("Popups.popupTitleBarMouseUp", "popups.js", 2);
 
-        Popups.containingPopFrame(event.target).classList.toggle("grabbed", false);
+        //  Get the containing popup.
+        let popup = Popups.containingPopFrame(event.target);
+
+        Popups.containingPopFrame(popup).classList.toggle("grabbed", false);
     },
+
+	/*	The popup title bar click event.
+	 */
+	//	Added by: Popups.addTitleBarToPopup
+	popupTitleBarClicked: (event) => {
+        GWLog("Popups.popupTitleBarClicked", "popups.js", 2);
+
+        //  Prevent other events from triggering.
+        event.stopPropagation();
+
+        let popup = Popups.containingPopFrame(event.target);
+	
+		if (Popups.popupIsMinimized(popup)) {
+			if (event.altKey == true) {
+				Popups.allMinimizedPopups().forEach(Popups.unminimizePopup);
+			} else {
+				Popups.unminimizePopup(popup);
+			}
+
+			//	Bring popup to front (unless clicking with meta key).
+			if (event.metaKey == false)
+				Popups.bringPopupToFront(popup);
+		}
+	},
 
     /*  The popup title bar double-click event.
      */
@@ -2025,19 +2448,21 @@ Popups = {
     popupTitleBarDoubleClicked: (event) => {
         GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
 
+        //  Prevent other events from triggering.
+        event.stopPropagation();
+
         let popup = Popups.containingPopFrame(event.target);
 
-        if (event.altKey == true) {
-            let expand = Popups.popupIsCollapsed(Popups.containingPopFrame(event.target));
-            Popups.allSpawnedPopups().forEach(popup => {
-                if (expand)
-                    Popups.uncollapsePopup(popup);
-                else
-                    Popups.collapsePopup(popup);
-            });
-        } else {
-            Popups.collapseOrUncollapsePopup(popup);
-        }
+		if (Popups.popupIsMinimized(popup)) {
+			return;
+		} else {
+			if (event.altKey == true) {
+				let expand = Popups.popupIsCollapsed(Popups.containingPopFrame(event.target));
+				Popups.allUnminimizedPopups().forEach(expand ? Popups.uncollapsePopup : Popups.collapsePopup);
+			} else {
+				Popups.collapseOrUncollapsePopup(popup);
+			}
+		}
     },
 
     /*  The target mouseenter event.
@@ -2115,59 +2540,133 @@ Popups = {
     //  Added by: Popups.setup
     keyUp: (event) => {
         GWLog("Popups.keyUp", "popups.js", 3);
-        let allowedKeys = [ "Escape", "Esc", ...(Popups.popupTilingControlKeys.split("")) ];
-        if (   allowedKeys.includes(event.key) == false
-            || Popups.allSpawnedPopups().length == 0)
+        let allowedKeys = [
+        	"Escape",
+        	"Esc",
+        	...(Popups.popupTilingControlKeys.split("")),
+        	Popups.popupTilingControlKeys.substr(13,1).toUpperCase(),
+        	Popups.popupTilingControlKeys.substr(14,1).toUpperCase()
+        ];
+        if (allowedKeys.includes(event.key) == false)
             return;
+
+		if (event.ctrlKey || event.metaKey)
+			return;
+
+		if (   Popups.popupContainerIsVisible() == false
+			|| Popups.allSpawnedPopups().length == 0)
+			return;
 
         event.preventDefault();
 
         switch(event.key) {
+            case Popups.popupTilingControlKeys.substr(13,1): {
+            		let unminimizedPopups = Popups.allUnminimizedPopups();
+            		if (unminimizedPopups.length == 0)
+            			break;
+
+					Popups.pinPopup(Popups.focusedPopup());
+					Popups.bringPopupToFront(Popups.backmostPopup());
+            	}
+            	break;
+            case Popups.popupTilingControlKeys.substr(14,1): {
+            		let unminimizedPopups = Popups.allUnminimizedPopups();
+            		if (unminimizedPopups.length == 0)
+            			break;
+
+					Popups.pinPopup(Popups.focusedPopup());
+					Popups.sendPopupToBack(Popups.focusedPopup());
+            	}
+            	break;
+            case Popups.popupTilingControlKeys.substr(13,1).toUpperCase(): {
+					let allPopups = Popups.allSpawnedPopups();
+					let focusedPopup = Popups.focusedPopup();
+
+					if (   focusedPopup != null
+						&& Popups.popupIsMinimized(focusedPopup) == false)
+						Popups.pinPopup(Popups.focusedPopup());
+
+					Popups.bringPopupToFront(Popups.backmostPopup({ includeMinimizedPopups: true }));
+            	}
+            	break;
+            case Popups.popupTilingControlKeys.substr(14,1).toUpperCase(): {
+					let allPopups = Popups.allSpawnedPopups();
+					let focusedPopup = Popups.focusedPopup();
+
+					if (   focusedPopup != null
+						&& Popups.popupIsMinimized(focusedPopup) == false)
+						Popups.pinPopup(Popups.focusedPopup());
+
+					Popups.sendPopupToBack(Popups.frontmostPopup({ includeMinimizedPopups: true }), { includeMinimizedPopups: true });
+            	}
+            	break;
+            default:
+                break;
+        }
+
+		let focusedPopup = Popups.focusedPopup();
+		if (focusedPopup == null)
+			return;
+
+        switch(event.key) {
             case "Escape":
             case "Esc":
-                if (   Popups.popupContainerIsVisible()
-                    && Popups.allSpawnedPopups().length > 0) {
-                    if (Popups.popupIsPinned(Popups.focusedPopup()))
-                        Popups.unpinPopup(Popups.focusedPopup());
-                    else
-                        Popups.despawnPopup(Popups.focusedPopup());
-                }
+            	if (Popups.popupIsMinimized(focusedPopup)) {
+            		Popups.despawnPopup(focusedPopup);
+            	} else if (Popups.popupIsPinned(focusedPopup)) {
+					Popups.unpinPopup(focusedPopup);
+				} else {
+					Popups.despawnPopup(focusedPopup);
+				}
                 break;
+            case Popups.popupTilingControlKeys.substr(12,1):
+            	Popups.minimizeOrUnminimizePopup(focusedPopup);
+            	if (Popups.popupIsMinimized(focusedPopup) == false)
+	            	Popups.bringPopupToFront(focusedPopup);
+            	break;
+            default:
+                break;
+        }
+
+		if (Popups.popupIsMinimized(focusedPopup))
+			return;
+
+        switch(event.key) {
             case Popups.popupTilingControlKeys.substr(0,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "left");
+                Popups.zoomPopup(focusedPopup, "left");
                 break;
             case Popups.popupTilingControlKeys.substr(1,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "bottom");
+                Popups.zoomPopup(focusedPopup, "bottom");
                 break;
             case Popups.popupTilingControlKeys.substr(2,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "top");
+                Popups.zoomPopup(focusedPopup, "top");
                 break;
             case Popups.popupTilingControlKeys.substr(3,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "right");
+                Popups.zoomPopup(focusedPopup, "right");
                 break;
             case Popups.popupTilingControlKeys.substr(4,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "top-left");
+                Popups.zoomPopup(focusedPopup, "top-left");
                 break;
             case Popups.popupTilingControlKeys.substr(5,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "top-right");
+                Popups.zoomPopup(focusedPopup, "top-right");
                 break;
             case Popups.popupTilingControlKeys.substr(6,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "bottom-right");
+                Popups.zoomPopup(focusedPopup, "bottom-right");
                 break;
             case Popups.popupTilingControlKeys.substr(7,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "bottom-left");
+                Popups.zoomPopup(focusedPopup, "bottom-left");
                 break;
             case Popups.popupTilingControlKeys.substr(8,1):
-                Popups.zoomPopup(Popups.focusedPopup(), "full");
+                Popups.zoomPopup(focusedPopup, "full");
                 break;
             case Popups.popupTilingControlKeys.substr(9,1):
-                Popups.restorePopup(Popups.focusedPopup());
+                Popups.restorePopup(focusedPopup);
                 break;
             case Popups.popupTilingControlKeys.substr(10,1):
-                Popups.pinOrUnpinPopup(Popups.focusedPopup());
+				Popups.pinOrUnpinPopup(focusedPopup);
                 break;
             case Popups.popupTilingControlKeys.substr(11,1):
-                Popups.collapseOrUncollapsePopup(Popups.focusedPopup());
+                Popups.collapseOrUncollapsePopup(focusedPopup);
                 break;
             default:
                 break;
