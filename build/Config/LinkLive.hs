@@ -213,8 +213,6 @@ goodDomainsSimple =
     , "iqcomparisonsite.com"
     , "isomerdesign.com"
     , "jakewestfall.org"
-    , "jama.jamanetwork.com"
-    , "jamanetwork.com"
     , "jamesyu.org"
     , "japansociety.org"
     , "jasoncrawford.org"
@@ -2370,6 +2368,7 @@ badDomainsSimple = [ "2chan.us"
    , "pmc.ncbi.nlm.nih.gov"
    , "www.manifold1.com"
    , "www.dwarkeshpatel.com"
+   , "jamanetwork.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -2563,10 +2562,6 @@ goodLinks =
             , "https://iqcomparisonsite.com/"
             , "https://isomerdesign.com/pihkal/read/tk/35"
             , "https://it.wikipedia.org/wiki/Gualtiero_Cannarsi"
-            , "https://jamanetwork.com/journals/jama/fullarticle/183580"
-            , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810"
-            , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414784"
-            , "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
             , "https://jamesyu.org/about/"
             , "https://japansociety.org/resources/content/2/0/5/4/documents/azuma_mcgray%20interview.pdf"
             , "https://jasoncrawford.org/"
@@ -4624,5 +4619,9 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://pmc.ncbi.nlm.nih.gov/articles/PMC10587091/"
             , "https://www.manifold1.com/"
             , "https://www.dwarkeshpatel.com/p/gwern-branwen"
+            , "https://jamanetwork.com/journals/jama/fullarticle/183580"
+            , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810"
+            , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414784"
+            , "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
             ]
 

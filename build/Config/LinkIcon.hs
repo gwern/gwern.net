@@ -19,17 +19,15 @@ overrideLinkIcons = [("/index#abstract", ("","",""))]
 prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
--- TODO: icon+color: http://ascii.textfiles.com/ ASCII + green ; https://www.e-codices.unifr.ch/en (e) + yellow ; https://www.bartleby.com/ 'b' + dark blue ; https://darcs.net/ squid icon + green ; https://www.smh.com.au/ "S" + dark blue ; https://www.rrauction.com/ 'RR' + blue ; https://www.mangaupdates.com/ M+yellow ; https://www.instructables.com/ robot head emoji + yellow ; https://engineering.virginia.edu/department/computer-science IA-library icon + orange ; https://mujoco.org/ 'M' + blue ; https://www.artbreeder.com/ logo+light blue ...
+-- TODO: icon+color:
 -- color-only:
+-- icon-only:
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
                               , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
- , "www.joelonsoftware.com"
- , "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
- , "ascii.textfiles.com", "blog.johantibell.com", "humanvarieties.org"
- , "cognitivefun.net", "www.e-codices.unifr.ch", "www.bartleby.com", "darcs.net"
- , "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com"
- , "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net"
+ , "www.joelonsoftware.com", "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
+ , "blog.johantibell.com", "humanvarieties.org", "cognitivefun.net", "annals.org", "www.replicatedtypo.com"
+ , "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "www.incompleteideas.net"
  , "www.artbreeder.com"
  -- TODO:
  , "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com"
@@ -212,6 +210,13 @@ linkIconRulesSingle u
  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("̅□", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
  | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
  | u'' u "ki.se" = ("☤", "text", "#830154") -- Karolinska Institute <https://en.wikipedia.org/wiki/Karolinska_Institute>; we skip openarchive.ki.se because it's just PDFs; icon: complex <https://en.wikipedia.org/wiki/File:Karolinska_Institutet_seal.svg>, but the caduceus seems recognizable; color: purple
+ | u'' u "www.e-codices.unifr.ch" = ("e", "text,sans", "#e7d7a5") -- e-codices - Virtual Manuscript Library of Switzerland; color: yellow; 'e' circular logo illegible so just an 'e'
+ | u'' u "www.bartleby.com" = ("b", "text", "#101269") -- Bartleby: no good logo, favicon is just a blue 'b' (sort weird serif)
+ | u'' u "www.smh.com.au" = ("S", "text", "#096dd2") -- The Sydney Morning Herald: should be a fancy fraktur S but the Unicode renders wrong, and none of the MATHEMATICAL * CAPITAL S Unicode points look right either, so we just use 'S'; color: dark blue
+ | u'' u "www.mangaupdates.com" = ("M", "text,sans", "#f8922b") -- Baka-Updates: 'M', color: yellow
+ | u'' u "www.instructables.com" = ("🤖", "text", "#fac62d") -- Autodesk Instructables: robot logo, color: yellow
+ | u'' u "mujoco.org" = ("M", "text,sans", "#0053d6") -- MuJoCo: advanced physics simulator used heavily in reinforcement learning research; logo just a 'M' on dark blue; color: white on blue
+ | u'' u "www.artbreeder.com" = ("✤", "text", "#8ccaff") -- Ganbreeder/Artbreeder: three-lobed icon hard to replicate, HEAVY FOUR BALLOON-SPOKED ✱ is closest I got; color: light-blue
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -300,6 +305,7 @@ linkIconRulesDouble u
  | u'' u "www.popsci.com" = ("PS", "text,sans", "") -- Popular Science magazine (no usable or recognizable logos); color: none (they are doing orange right now but doesn't seem historical)
  | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: white-on-blue text background
  | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none (like The Paris Review, NC seems to try to change color each issue)
+ | u'' u "www.rrauction.com" = ("RR", "text,sans", "#29648a") -- RR Auction; color: dark blue
  | otherwise = ("", "", "")
 
 -- Tri/triple TLAs
@@ -372,7 +378,7 @@ linkIconRulesTriple u
  -- Quad-letter (square) icons.
 linkIconRulesQuad "" = error "Config.LinkIcon.linkIconRulesQuad: passed empty string as the URL; this should never happen!"
 linkIconRulesQuad u
- | aU'' u ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad", "#d71635") -- The Journal of the American Medical Association (JAMA); color: bright red; TODO: white-on-red text background
+ | aU'' u ["jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad", "#d71635") -- The Journal of the American Medical Association (JAMA); color: bright red; TODO: white-on-red text background
  | u'' u "www.cell.com" = ("CELL", "text,quad,sans", "#007dbc") -- Cell: their logo is unrecognizable (and dumb); color: blue; TODO: white-on-blue text background
  | u'' u "mlp.fandom.com" = ("MLPW", "text,quad,sans", "#abe9e8") -- NOTE: override Fandom catch-all; color: light blue
  | u'' u "www.fimfiction.net" = ("FIMF", "text,quad,mono", "#3b68af") -- color: dark blue
@@ -431,6 +437,7 @@ linkIconRulesQuad u
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
  | u'' u "www.dwarkeshpatel.com" = ("Dwkh", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
+ | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -503,6 +510,8 @@ linkIconRulesSVG u
  | u'' u "www.tiktok.com" = ("tiktok", "svg", "#65c3c9") -- color: green
  | u' u ".cbslocal.com" || u'' u "www.cbsnews.com" = ("cbs", "svg", "") -- <https://commons.wikimedia.org/wiki/File:CBS_News_logo_(2020).svg>; color: none (individual CBS affiliates/stations seem to pick their own colors but the overall brand is just black)
  | u' u "midjourney.com" = ("midjourney", "svg", "") -- <https://en.wikipedia.org/wiki/File:Midjourney_Emblem.svg>; color: none
+ | u' u "darcs.net" = ("darcs", "svg", "#6ef701") -- Darcs DVCS: green squid/squirt/virus/blob/tentacle SVG from <https://www.svgrepo.com/svg/373545/darcs>
+ | u' u "virginia.edu" = ("internet-archive", "svg", "#e57200") -- Department of Computer Science, University of Virginia: library-like logo, so just reuse the IA icon; color: orange-gold
 
  -- FINAL MATCHES:
  -- many orgs will use a 'medium.com' subdomain, so we fall back here for Medium as the lowest-priority, and override case by case above:
@@ -1225,6 +1234,17 @@ linkIconTestUnitsText =
          , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,sans", "")
          , ("https://ki.se/en/people/paul-lichtenstein", "☤", "text", "#830154")
          , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
+         , ("https://ascii.textfiles.com/archives/2229", "ASCI", "text,quad,mono", "#006309")
+         , ("https://www.e-codices.unifr.ch/en/vad/0296/079r", "e", "text,sans", "#e7d7a5")
+         , ("https://www.bartleby.com/lit-hub/poetry-of-byron/greece-iv/", "b", "text", "#101269")
+         , ("https://bugs.darcs.net/issue346", "darcs", "svg", "#6ef701")
+         , ("https://www.smh.com.au/technology/underweb-anger-as-silk-road-seller-does-a-runner-20130226-2f36q.html", "S", "text", "#096dd2")
+         , ("https://www.rrauction.com/auctions/categories/318/", "RR", "text,sans", "#29648a")
+         , ("https://www.mangaupdates.com/series.html?id=2701", "M", "text,sans", "#f8922b")
+         , ("https://www.instructables.com/Solar-Powered-Raspberry-Pi/", "🤖", "text", "#fac62d")
+         , ("https://www.cs.virginia.edu/~robins/YouAndYourResearch.html", "internet-archive", "svg", "#e57200")
+         , ("https://mujoco.org/", "M", "text,sans", "#0053d6")
+         , ("https://www.artbreeder.com/browse", "✤", "text", "#8ccaff")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons

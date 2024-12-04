@@ -1058,6 +1058,7 @@ authorLinkDB = M.fromList $
     , ("Anders Martin Dale", "https://en.wikipedia.org/wiki/Anders_Dale")
     , ("Alan R. Shuldiner", "https://www.medschool.umaryland.edu/profiles/shuldiner-alan/")
     , ("Aditya A. Ramesh", "https://scholar.google.com/citations?user=60K82BkAAAAJ")
+    , ("Matt Sheehan", "https://carnegieendowment.org/people/matt-sheehan")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2293,4 +2294,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch"]

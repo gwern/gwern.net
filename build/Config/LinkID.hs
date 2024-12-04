@@ -2882,4 +2882,7 @@ linkIDOverrides =
   , ("https://www.lesswrong.com/posts/eZa37pZtxsQirE84d/please-do-not-use-ai-to-write-for-you?commentId=atnhgZqDZC8Mef6LM#atnhgZqDZC8Mef6LM", "gwern-2024-llmacceptableusepolicy")
   , ("https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KGBqiXrKq8x8qnsyH#KGBqiXrKq8x8qnsyH", "gwern-2024-virtualcomments")
   , ("/doc/fiction/humor/1970-lafferty.pdf", "lafferty-1970-infinitemonkeys")
+  , ("https://sashachapin.substack.com/p/my-mind-transformed-completely-and","chapin-2024-meditation-1"),("https://sashachapin.substack.com/p/how-my-day-is-going","chapin-2024-meditation-2")
+  ,("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359010","gwern-2024-chinadl"),("https://news.ycombinator.com/item?id=42291300","gwern-2024-tlon")
+  ,("https://www.science.org/content/article/gene-behind-orange-fur-cats-found-last","reardon-2024-orange"),("https://www.science.org/content/article/are-your-earliest-childhood-memories-still-lurking-your-mind-or-gone-forever","reardon-2024-childhoodamnesia")
       ]
