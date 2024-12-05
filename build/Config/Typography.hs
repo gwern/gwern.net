@@ -215,4 +215,7 @@ dateRangeDurationTestCases = [
   , (2032, Str "The date-range 2023-09-13–2023-12-31 was 110 days."
     , Span ("",[],[]) [Str "The date-range ",Span ("",["date-range"],[("title","The date range 2023-09-13\8211\&2023-12-31 lasted 110 days, ending 9 years ago.")]) [Str "2023-09-13",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "4m"]],Str "2023-12-31"],Str " was 110 days."]
     )
+  , (2033, Str "The date-range 1995-10-04–1996-03-27 was NGE."
+    , Span ("",[],[]) [Str "The date-range ",Span ("",["date-range"],[("title","The date range 1995-10-04\8211\&1996-03-27 lasted 176 days, ending 37 years ago.")]) [Str "1995-10-04",Span ("",["subsup"],[]) [Superscript [Str "\8211"],Subscript [Str "6m"]],Str "1996-03-27",Subscript [Span ("",[],[("title","1995-10-04 was 37 years ago.")]) [Str "37ya"]]],Str " was NGE."]
+    )
   ]

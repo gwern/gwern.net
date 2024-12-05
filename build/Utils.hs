@@ -551,13 +551,15 @@ calculateDateSpan start end =
 
 parseDate :: String -> Day
 parseDate dateStr
-  | length dateStr < 7 = error $ "Utils.parseDate: passed invalid date which is not YYYY-MM(-DD)? Was " ++ dateStr
+  | length dateStr < 4 || length dateStr > 10 = error $ "Utils.parseDate: passed invalid date which is not YYYY-MM(-DD)? Was " ++ dateStr
   | otherwise =
     case parseTimeM True defaultTimeLocale "%Y-%m-%d" dateStr of -- 'YYYY-MM-DD'
         Just date -> date
         Nothing -> case parseTimeM True defaultTimeLocale "%Y-%m" (take 7 dateStr) of -- retry as 'YYYY-MM-?'
             Just date -> date
-            Nothing -> error $ "Utils.parseDate: Invalid date format: " ++ dateStr
+            Nothing -> case parseTimeM True defaultTimeLocale "%Y" (take 4 dateStr) of -- retry as 'YYYY?'
+                         Just date -> date
+                         Nothing   -> error $ "Utils.parseDate: Invalid date format (could not be parsed as YYYY-MM-DD, YYYY-MM, or YYYY): " ++ dateStr
 
 
 calculateDays :: Day -> Day -> Int
