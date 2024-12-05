@@ -1886,7 +1886,7 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /**********/
 
 GW.search = {
-    searchWidgetId: "google-search",
+    searchWidgetId: "search-widget",
 
     keyCommandSpawnSearchWidgetFlashStayDuration: 3000,
 
@@ -1899,8 +1899,7 @@ GW.search = {
 		if (GW.search.searchPopup == null)
 			return;
 
-		if (Popups.popupIsPinned(GW.search.searchPopup) == false)
-			Popups.pinPopup(GW.search.searchPopup);
+		Popups.pinPopup(GW.search.searchPopup);
 
 		requestAnimationFrame(() => {
 			GW.search.searchPopup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
@@ -1909,7 +1908,7 @@ GW.search = {
 
     setup: () => {
         //  Add search widget to page toolbar.
-        GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}">`
+        GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}" class="link-widget">`
                                                           + `<a
                                                                class="search no-footer-bar"
                                                                href="/static/google-search.html"
@@ -2023,60 +2022,166 @@ GW.search = {
 doWhenPageLoaded(GW.search.setup);
 
 
+/********/
+/* HELP */
+/********/
+
+GW.help = {
+	helpWidgetId: "help-widget",
+
+    keyCommandSpawnHelpWidgetFlashStayDuration: 3000,
+
+    helpWidget: null,
+    helpWidgetLink: null,
+
+    helpPopup: null,
+
+    pinHelpPopup: () => {
+		if (GW.help.helpPopup == null)
+			return;
+
+		Popups.pinPopup(GW.help.helpPopup);
+    },
+
+	setup: () => {
+		GW.help.helpWidget = GW.pageToolbar.addWidget(  `<div id="${GW.help.helpWidgetId}" class="link-widget">`
+                                                      + `<a
+                                                           class="help no-footer-bar"
+                                                           href="/help"
+                                                           >`
+                                                      + `<span class="icon">`
+                                                      + GW.svg("question-solid")
+                                                      + `</span>`
+                                                      + `<span class="label">Help</span>`
+                                                      + `</a></div>`);
+
+        //  Disable normal link functionality.
+        GW.help.helpWidgetLink = GW.help.helpWidget.querySelector("a");
+        GW.help.helpWidgetLink.onclick = () => false;
+
+        //  Activate pop-frames.
+        Extracts.config.hooklessLinksContainersSelector += `, #${GW.help.helpWidgetId}`;
+        Extracts.addTargetsWithin(GW.help.helpWidget);
+
+        //  Configure pop-frame behavior.
+        if (Extracts.popFrameProvider == Popups) {
+            //  Configure popup positioning and click response.
+            GW.help.helpWidgetLink.preferPopupSidePositioning = () => true;
+            GW.help.helpWidgetLink.cancelPopupOnClick = () => false;
+            GW.help.helpWidgetLink.keepPopupAttachedOnPin = () => true;
+
+            //  Pin popup if widget is clicked.
+            GW.help.helpWidgetLink.addActivateEvent((event) => {
+                GW.help.pinHelpPopup();
+            });
+
+            //  Add popup spawn event handler.
+            GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				GW.help.helpPopup = info.popup;
+			}, {
+                condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+            });
+            //	Add popup despawn event handler.
+            GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
+				GW.help.helpPopup = null;
+			}, {
+            	condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+            });
+        }
+	}
+};
+
+doWhenPageLoaded(GW.help.setup);
+
+
 /****************/
 /* KEY COMMANDS */
 /****************/
 /*  Miscellaneous key commands.
  */
 
-GW.keyCommands = { };
+GW.keyCommands = {
+	keyDownFlagNames: [ "altKey", "ctrlKey", "metaKey", "shiftKey" ],
+	keyDownFlags: { },
+
+	keyDown: (event) => {
+		GWLog("GW.keyCommands.keyDown", "popups.js", 3);
+
+		GW.keyCommands.keyDownFlagNames.forEach(flag => { GW.keyCommands.keyDownFlags[flag] = event[flag]; });
+	}
+};
 
 GW.keyCommands.keyUp = (event) => {
     GWLog("GW.keyCommands.keyUp", "popups.js", 3);
-    let allowedKeys = [ "/" ];
+
+    let allowedKeys = [ "/", "?" ];
     if (allowedKeys.includes(event.key) == false)
         return;
 
     event.preventDefault();
 
     switch(event.key) {
-        case "/": {
-            //  Expand page toolbar and flash search widget.
-            GW.pageToolbar.toggleCollapseState(false, {
-            	temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
-            });
-            GW.pageToolbar.flashWidget(GW.search.searchWidgetId, {
-                flashStayDuration: GW.search.keyCommandSpawnSearchWidgetFlashStayDuration
-            });
+        case "/":
+        case "?": {
+			//  Expand page toolbar.
+			GW.pageToolbar.toggleCollapseState(false, {
+				temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
+			});
 
-			if (GW.search.searchPopup == null) {
-				//  When the popup spawns, pin it and focus the search box.
+			let widgetId, widgetLink, flashStayDuration, popup, pinPopupFunction;
+
+			if (   event.key == "/" 
+				&& event.shiftKey == false
+				&& GW.keyCommands.keyDownFlags.shiftKey == false) {
+				widgetId = GW.search.searchWidgetId;
+				widgetLink = GW.search.searchWidgetLink;
+				flashStayDuration = GW.search.keyCommandSpawnSearchWidgetFlashStayDuration;
+				popup = GW.search.searchPopup;
+				pinPopupFunction = GW.search.pinSearchPopup;
+			} else {
+				widgetId = GW.help.helpWidgetId;
+				widgetLink = GW.help.helpWidgetLink;
+				flashStayDuration = GW.help.keyCommandSpawnHelpWidgetFlashStayDuration;
+				popup = GW.help.helpPopup;
+				pinPopupFunction = GW.help.pinHelpPopup;
+			}
+
+			GW.pageToolbar.flashWidget(widgetId, {
+				flashStayDuration: flashStayDuration
+			});
+
+			if (popup == null) {
+				//  When the popup spawns, pin it.
 				GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 					requestAnimationFrame(() => {
-						GW.search.pinSearchPopup();
+						pinPopupFunction();
 					});
 				}, {
 					once: true,
-					condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+					condition: (info) => (info.popup.spawningTarget == widgetLink)
 				});
 
 				//  Spawn popup.
-				Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+				Popups.spawnPopup(document.querySelector(`#${widgetId} a`));
 			} else {
-				GW.search.pinSearchPopup();
+				pinPopupFunction();
 			}
 
-            break;
-        }
+			break;
+		}
         default: {
             break;
         }
     }
+
+	GW.keyCommands.keyDownFlagNames.forEach(flag => { GW.keyCommands.keyDownFlags[flag] = null; });
 };
 
 doWhenPageLoaded(() => {
-    if (Extracts.popFrameProvider == Popups)
+    if (Extracts.popFrameProvider == Popups) {
+        document.addEventListener("keydown", GW.keyCommands.keyDown);
         document.addEventListener("keyup", GW.keyCommands.keyUp);
+    }
 });
 
 

@@ -6711,8 +6711,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar .extracts-mode-selector {
     order: 3;
 }
-#page-toolbar #google-search {
+#page-toolbar #search-widget {
     order: 4;
+}
+#page-toolbar #help-widget {
+    order: 5;
 }
 
 #page-toolbar .mode-selector button .label {
@@ -6816,21 +6819,41 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 
 /*****************/
+/* LINKS WIDGETS */
+/*****************/
+/*	(e.g. Search, Help)
+ */
+
+#page-toolbar .link-widget a {
+    display: block;
+}
+#page-toolbar .link-widget a .icon {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+}
+#page-toolbar .link-widget a svg {
+    display: block;
+}
+
+
+/*****************/
 /* SEARCH WIDGET */
 /*****************/
 
-#page-toolbar #google-search a {
-    display: block;
-}
-#page-toolbar #google-search a .icon {
+#page-toolbar #search-widget a .icon {
 	padding: 5px;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	box-sizing: border-box;
 }
-#page-toolbar #google-search a svg {
-    display: block;
+
+
+/***************/
+/* HELP WIDGET */
+/***************/
+
+#page-toolbar #help-widget a .icon {
+	padding: 3px;
 }
 
 
