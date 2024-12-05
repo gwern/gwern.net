@@ -3256,8 +3256,8 @@ Popups = {
         //  Update z-indexes of all popups.
         Popups.updatePopupsZOrder();
 
-        //  Focus the front-most un-minimized popup.
-        Popups.focusPopup(Popups.frontmostPopup());
+        //  Focus the front-most popup (preferring un-minimized ones).
+        Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: true }));
 
 		/*	If the de-spawned popup was minimized, update arrangement of
 			remaining minimized popups.
@@ -3404,8 +3404,8 @@ Popups = {
 		//	Update minimized popup arrangement.
 		Popups.updateMinimizedPopupArrangement();
 
-        //  Focus the front-most un-minimized popup.
-        Popups.focusPopup(Popups.frontmostPopup());
+        //  Focus the front-most popup (preferring un-minimized ones).
+        Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: true }));
 	},
 
 	unminimizePopup: (popup) => {
@@ -4292,11 +4292,14 @@ Popups = {
 
     frontmostPopup: (options) => {
 		options = Object.assign({
-			includeMinimizedPopups: false
+			includeMinimizedPopups: false,
+			preferUnminimizedPopups: true
 		}, options);
 
 		return (options.includeMinimizedPopups
-				? Popups.allSpawnedPopups().last
+				? (options.preferUnminimizedPopups
+				   ? (Popups.allUnminimizedPopups().last ?? Popups.allMinimizedPopups().last)
+				   : Popups.allSpawnedPopups().last)
 				: Popups.allUnminimizedPopups().last);
     },
 
@@ -4331,7 +4334,10 @@ Popups = {
         popup.style.zIndex = "0";
 
         //  Focus the front-most popup.
-        Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: options.includeMinimizedPopups }));
+        Popups.focusPopup(Popups.frontmostPopup({
+        	includeMinimizedPopups: options.includeMinimizedPopups,
+        	preferUnminimizedPopups: false,
+        }));
 
         //  Update z-indexes of all popups.
         Popups.updatePopupsZOrder();
@@ -4777,7 +4783,7 @@ Popups = {
 			Popups.unfocusPopup(popup);
 
 			//	Focus the front-most un-minimized popup.
-	        Popups.focusPopup(Popups.frontmostPopup());
+	        Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: true }));
 		} else {
 			Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
 				Popups.clearPopupTimers(popupInStack.spawningTarget);
