@@ -266,6 +266,10 @@ Popups = {
         popup.body.classList.remove(...args);
     },
 
+	popFrameHasClass: (popup, className) => {
+		return popup.classList.contains(className);
+	},
+
     /****************************************/
     /*  Visibility of elements within popups.
      */
@@ -716,7 +720,7 @@ Popups = {
 		}
 
 		//	Restore popup position.
-		Popups.addClassesToPopFrame(popup, "restored");
+		Popups.addClassesToPopFrame(popup, "unminimized");
 		Popups.positionPopup(popup);
 
         //  Update title bar buttons states (if any).
@@ -922,10 +926,6 @@ Popups = {
         return (popup.classList.contains("zoomed") && popup.classList.contains("full"));
     },
 
-    popupWasRestored: (popup) => {
-        return popup.classList.contains("restored");
-    },
-
     popupIsPinned: (popup) => {
         return popup.classList.contains("pinned");
     },
@@ -1018,7 +1018,8 @@ Popups = {
                 break;
         }
 
-        //  Pin popup. (This also updates the popup’s position.)
+        //  Pin (or re-pin) popup. (This also updates the popup’s position.)
+        Popups.unpinPopup(popup);
         Popups.pinPopup(popup);
 
         //  Clear timers.
@@ -1672,34 +1673,36 @@ Popups = {
 		return (target.keepPopupAttachedOnPin?.() ?? false);
 	},
 
-    /*  Returns current popup position. (Usable only after popup is positioned.)
-     */
-    popupPosition: (popup) => {
-        return {
-            x: parseInt(popup.style.left),
-            y: parseInt(popup.style.top)
-        };
-    },
-
 	savePopupPosition: (popup) => {
+		if (   Popups.popupWasResized(popup) == false
+			&& Popups.popupIsZoomed(popup) == false) {
+			popup.dataset.originalXPosition = popup.viewportRect.left;
+			popup.dataset.originalYPosition = popup.viewportRect.top;
+		}
+
 		popup.dataset.previousXPosition = popup.viewportRect.left;
 		popup.dataset.previousYPosition = popup.viewportRect.top;
 	},
 
-	getSavedPopupPosition: (popup)	=> {
-		if (   popup.dataset.previousXPosition == null
-			|| popup.dataset.previousYPosition == null)
-			return null;
+	getSavedPopupPosition: (popup, options)	=> {
+		options = Object.assign({
+			original: false
+		}, options);
 
-		return {
-			x: parseFloat(popup.dataset.previousXPosition),
-			y: parseFloat(popup.dataset.previousYPosition)
+		let getPosition = (prefix) => {
+			if (   popup.dataset[prefix + "XPosition"] == null
+				|| popup.dataset[prefix + "YPosition"] == null)
+				return null;
+
+			return {
+				x: parseFloat(popup.dataset[prefix + "XPosition"]),
+				y: parseFloat(popup.dataset[prefix + "YPosition"])
+			};
 		};
-	},
 
-	clearSavedPopupPosition: (popup) => {
-		delete popup.dataset.previousXPosition;
-		delete popup.dataset.previousYPosition;
+		return (options.original
+				? getPosition("original")
+				: getPosition("previous"));
 	},
 
     positionPopup: (popup, options) => {
@@ -1744,14 +1747,18 @@ Popups = {
             if (Popups.popupIsZoomed(popup)) {
                 provisionalPopupXPosition = popup.zoomToX;
                 provisionalPopupYPosition = popup.zoomToY;
-            } else if (Popups.popupWasRestored(popup)) {
+            } else if (Popups.popFrameHasClass(popup, "restored")) {
+            	let savedPosition = Popups.getSavedPopupPosition(popup, { original: true });
+                provisionalPopupXPosition = savedPosition.x;
+                provisionalPopupYPosition = savedPosition.y;
+
+                Popups.removeClassesFromPopFrame(popup, "restored");
+            } else if (Popups.popFrameHasClass(popup, "unminimized")) {
             	let savedPosition = Popups.getSavedPopupPosition(popup);
                 provisionalPopupXPosition = savedPosition.x;
                 provisionalPopupYPosition = savedPosition.y;
 
-                Popups.clearSavedPopupPosition(popup);
-
-                Popups.removeClassesFromPopFrame(popup, "restored");
+                Popups.removeClassesFromPopFrame(popup, "unminimized");
             } else if (   Popups.popupIsPinned(popup)
                        || Popups.popupWasUnpinned(popup)) {
 				if (popup.viewportRect == null)
@@ -1943,7 +1950,6 @@ Popups = {
 
         if (   rect.width > 0
             && rect.height > 0) {
-            console.trace("1");
             popup.style.maxWidth = "unset";
             popup.style.maxHeight = "unset";
 
@@ -2145,9 +2151,8 @@ Popups = {
         //  Mark popup as currently being resized.
         Popups.addClassesToPopFrame(popup, "resizing");
 
-        //  Save position, if need be.
-        if (Popups.getSavedPopupPosition(popup) == null)
-            Popups.savePopupPosition(popup);
+        //  Save position.
+		Popups.savePopupPosition(popup);
 
         //  Point where the drag began.
         let dragStartMouseCoordX = event.clientX;
@@ -2159,7 +2164,7 @@ Popups = {
         /*  Add the mouse up event listener (to window, not the popup, because
             the drag might end anywhere, due to animation lag).
          */
-        window.addEventListener("mouseup", Popups.popupResizeMouseUp);
+        window.addEventListener("mouseup", Popups.popupResizeMouseUp, { once: true });
 
         //  Viewport width must account for vertical scroll bar.
         let viewportWidth = document.documentElement.offsetWidth;
@@ -2254,8 +2259,6 @@ Popups = {
         }
         Popups.popupBeingResized = null;
         Popups.hoverEventsActive = true;
-
-        window.removeEventListener("mouseup", Popups.popupResizeMouseUp);
     },
 
     /*  The popup mouseout event.
@@ -2270,7 +2273,7 @@ Popups = {
             document.documentElement.style.cursor = "";
     },
 
-    /*  The popup title bar mouseup event.
+    /*  The popup title bar mousedown event.
      */
     //  Added by: Popups.addTitleBarToPopup
     popupTitleBarMouseDown: (event) => {
@@ -2307,10 +2310,6 @@ Popups = {
         //  Change cursor to “grabbing hand”.
         document.documentElement.style.cursor = "grabbing";
 
-         //  Save position, if need be.
-        if (Popups.getSavedPopupPosition(popup) == null)
-            Popups.savePopupPosition(popup);
-
        /*  If the mouse-down event is on the popup title (and the title
             is a link).
          */
@@ -2332,7 +2331,7 @@ Popups = {
         newPopupViewportRect.height = 0;
 
         //  Add the drag-end mouseup listener.
-        window.addEventListener("mouseup", Popups.popupDragMouseUp);
+        window.addEventListener("mouseup", Popups.popupDragMouseUp, { once: true });
 
         //  We define the mousemove listener here to capture variables.
         window.onmousemove = (event) => {
@@ -2407,9 +2406,6 @@ Popups = {
         }
         Popups.popupBeingDragged = null;
         Popups.hoverEventsActive = true;
-
-        //  Remove the listener (ie. we only want this fired once).
-        window.removeEventListener("mouseup", Popups.popupDragMouseUp);
     },
 
     /*  The popup title bar mouseup event.
