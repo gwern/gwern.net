@@ -2615,16 +2615,6 @@ Popups = {
 			return;
 
         switch(event.key) {
-            case "Escape":
-            case "Esc":
-            	if (Popups.popupIsMinimized(focusedPopup)) {
-            		Popups.despawnPopup(focusedPopup);
-            	} else if (Popups.popupIsPinned(focusedPopup)) {
-					Popups.unpinPopup(focusedPopup);
-				} else {
-					Popups.despawnPopup(focusedPopup);
-				}
-                break;
             case Popups.popupTilingControlKeys.substr(12,1):
             	Popups.minimizeOrUnminimizePopup(focusedPopup);
             	if (Popups.popupIsMinimized(focusedPopup) == false)
@@ -2638,6 +2628,14 @@ Popups = {
 			return;
 
         switch(event.key) {
+            case "Escape":
+            case "Esc":
+            	if (Popups.popupIsPinned(focusedPopup)) {
+					Popups.unpinPopup(focusedPopup);
+				} else {
+					Popups.despawnPopup(focusedPopup);
+				}
+                break;
             case Popups.popupTilingControlKeys.substr(0,1):
                 Popups.zoomPopup(focusedPopup, "left");
                 break;
