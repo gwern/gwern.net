@@ -1161,6 +1161,7 @@
     --GW-popups-popup-max-width: 640px;
     --GW-popups-popup-max-height: 480px;
     --GW-popups-popup-with-footer-min-width: 480px;
+    --GW-popups-popup-with-footer-max-height: 540px;
     --GW-popups-popup-with-full-title-bar-min-width: 360px;
     --GW-popups-popup-with-full-title-bar-min-height: 120px;
     --GW-popups-annotation-popup-min-width: 480px;
@@ -5371,7 +5372,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup .popframe-scroll-view,
 .popup .popframe-content-view,
 .popup .popframe-title-bar,
-.popup .popframe-footer-bar {
+.popup .popframe-footer {
     box-sizing: border-box;
 }
 
@@ -5389,8 +5390,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
-    max-height: 100vh;
     min-height: calc(3 * var(--popup-title-bar-height) + 2 * var(--GW-popups-popup-border-width));
+    max-height: var(--GW-popups-popup-max-height);
     z-index: 1;
 
 	display: flex;
@@ -5410,8 +5411,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup {
     --popup-title-bar-height: 0px;
-
-	max-height: var(--GW-popups-popup-max-height);
 }
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
@@ -5430,6 +5429,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup .popframe-title-bar {
     --background-color: var(--GW-popups-popup-title-bar-background-color);
 
+	flex: 1 0 auto;
     height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--background-color);
@@ -5438,9 +5438,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: flex;
     flex-flow: row;
     align-items: center;
-    width: 100%;
     cursor: grab;
-    z-index: 111;
+    z-index: 1;
 }
 
 .popup.mini-title-bar .popframe-title-bar {
@@ -5474,10 +5473,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         drop-shadow(0 0 2px var(--background-color));
 }
 .popup.mini-title-bar .popframe-title {
-    visibility: hidden;
-    padding: 0;
-    flex: 0 1 100%;
-    line-height: 0;
+    display: none;
 }
 .popup .popframe-title-link,
 .popup .popframe-title span {
@@ -5551,6 +5547,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     display: none;
 }
 
+.popup.mini-title-bar .popframe-title-bar-button.minimize-button {
+	padding: 2px 1px;
+}
+
 /*  Sub-menus of buttons in the popup title bar.
     */
 
@@ -5593,8 +5593,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*└─────────────────────────────┘*/
 
 .popup.has-footer {
-    border-bottom-width: 0;
     min-width: var(--GW-popups-popup-with-footer-min-width);
+    max-height: var(--GW-popups-popup-with-footer-max-height);
 }
 
 /*┌──────────────────────────────┐*/
@@ -5604,22 +5604,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup .partial-annotation-append-container {
     background-color: var(--background-color);
     padding: var(--popups-popup-content-padding);
-    position: absolute;
-    top: 100%;
-    left: calc(-1 * var(--GW-popups-popup-border-width));
-    right: calc(-1 * var(--GW-popups-popup-border-width));
-    border-color: inherit;
-    border-style: inherit;
-    border-width:
-        0
-        var(--GW-popups-popup-border-width)
-        var(--GW-popups-popup-border-width)
-        var(--GW-popups-popup-border-width);
+    margin-top: 2px;
     box-shadow:
-        0 -3px 0 -2px var(--GW-popups-popup-border-color),
-        0 -4px 0 -2px var(--background-color),
-        0 -5px 0 -2px var(--GW-popups-popup-border-color),
-        var(--popups-popup-box-shadow);
+        0 0 0 1px var(--GW-popups-popup-border-color),
+        0 -1px 0 1px var(--background-color),
+        0 -2px 0 1px var(--GW-popups-popup-border-color);
+    position: relative;
+    z-index: 1;
 }
 
 /*┌────────────────────┐*/
@@ -5911,6 +5902,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: var(--GW-popups-popup-max-width);
     height: var(--GW-popups-popup-max-height);
 }
+.popup.local-code-file.has-footer {
+	height: var(--GW-popups-popup-with-footer-max-height);
+}
 
 .popframe.local-code-file .popframe-content-view {
     height: 100%;
@@ -5923,6 +5917,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.object {
     width: var(--GW-popups-popup-max-width);
     height: var(--GW-popups-popup-max-height);
+}
+.popup.object.has-footer {
+	height: var(--GW-popups-popup-with-footer-max-height);
 }
 
 .popup-body.object iframe {
@@ -6058,13 +6055,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.local-page.toc-section {
     max-height: 100vh;
-}
-
-/*  External page embeds popups.
-    */
-.popup.full-page {
-    width: var(--GW-popups-popup-max-width);
-    height: var(--GW-popups-popup-max-height);
 }
 
 /*┌───────────────┐*/
@@ -6325,7 +6315,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 /*┌─────────────────────────────┐*/
-/*│ Popup with appended footer. │*/
+/*│ Popin with appended footer. │*/
 /*└─────────────────────────────┘*/
 
 .popin.has-footer {

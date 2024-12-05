@@ -206,6 +206,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 		"class": [ "partial-annotation-append-container",
 				   "markdownBody",
 				   "popframe-body",
+				   "popframe-footer",
 				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
 				   ].join(" ")
 	});

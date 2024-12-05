@@ -1292,8 +1292,8 @@ Popups = {
             "zoom-bottom-left": "[z]: Place this popup in the bottom-left quarter of the screen",
             "zoom-bottom": "[s]: Place this popup on the bottom half of the screen",
             "zoom-bottom-right": "[x]: Place this popup in the bottom-right quarter of the screen",
-            "minimize": "[t]: Minimize this button to the bottom of the screen",
-            "unminimize": "[t]: Un-minimize this button, restoring it to its previous position"
+            "minimize": "[t]: Minimize this button to the bottom of the screen (hold [⌥/Alt] to minimize all)",
+            "unminimize": "[t]: Un-minimize this button, restoring it to its previous position (hold [⌥/Alt] to un-minimize all)"
         },
 
         //  A generic button, with no icon or tooltip text.
