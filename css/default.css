@@ -4240,11 +4240,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     --popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
     position: absolute;
+    
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
     max-height: 100vh;
     min-height: calc(3 * var(--popup-title-bar-height) + 2 * var(--GW-popups-popup-border-width));
     z-index: 1;
+
+	display: flex;
+	flex-flow: column;
 
     /*  Styling. */
     --popups-popup-box-shadow: 1px 2px 8px 0 var(--GW-popups-popup-box-shadow-color);
@@ -4260,6 +4264,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup {
     --popup-title-bar-height: 0px;
+
+	max-height: var(--GW-popups-popup-max-height);
 }
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
@@ -4278,7 +4284,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup .popframe-title-bar {
     --background-color: var(--GW-popups-popup-title-bar-background-color);
 
-    position: absolute;
     height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--background-color);
@@ -4476,11 +4481,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*└────────────────────┘*/
 
 .popup .popframe-scroll-view {
+	flex: 1 1 auto;
     overflow-y: auto;
     overscroll-behavior: none;
-    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
-    height: 100%;
-    margin-top: var(--popup-title-bar-height);
     position: relative;
 }
 
@@ -4564,11 +4567,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Zoomed / resized popups. │*/
 /*└──────────────────────────┘*/
 
-.popup.zoomed .popframe-scroll-view,
-.popup.resized .popframe-scroll-view {
-    max-height: calc(100% - var(--popup-title-bar-height));
-}
-
 .popup.zoomed .popframe-content-view,
 .popup.resized .popframe-content-view {
     max-width: 971px;
@@ -4612,7 +4610,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 .popup.collapsed .popframe-scroll-view {
     height: 0 !important;
-    margin-top: calc(var(--popup-title-bar-height) - 1px);
 }
 .popup.collapsed .popframe-scroll-view ~ * {
     display: none !important;
@@ -4913,8 +4910,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  Table of contents popups.
     */
-.popup.local-page.toc-section .popframe-scroll-view {
-    max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+.popup.local-page.toc-section {
+    max-height: 100vh;
 }
 
 /*  External page embeds popups.

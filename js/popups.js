@@ -930,10 +930,6 @@ Popups = {
         return popup.classList.contains("pinned");
     },
 
-    popupWasUnpinned: (popup) => {
-        return popup.classList.contains("unpinned");
-    },
-
     zoomPopup: (popup, place) => {
         GWLog("Popups.zoomPopup", "popups.js", 2);
 
@@ -1743,11 +1739,8 @@ Popups = {
             let provisionalPopupXPosition = 0.0;
             let provisionalPopupYPosition = 0.0;
 
-            //  Special cases for maximizing/restoring and pinning/unpinning.
-            if (Popups.popupIsZoomed(popup)) {
-                provisionalPopupXPosition = popup.zoomToX;
-                provisionalPopupYPosition = popup.zoomToY;
-            } else if (Popups.popFrameHasClass(popup, "restored")) {
+            //  Special cases.
+            if (Popups.popFrameHasClass(popup, "restored")) {
             	let savedPosition = Popups.getSavedPopupPosition(popup, { original: true });
                 provisionalPopupXPosition = savedPosition.x;
                 provisionalPopupYPosition = savedPosition.y;
@@ -1759,16 +1752,17 @@ Popups = {
                 provisionalPopupYPosition = savedPosition.y;
 
                 Popups.removeClassesFromPopFrame(popup, "unminimized");
-            } else if (   Popups.popupIsPinned(popup)
-                       || Popups.popupWasUnpinned(popup)) {
-				if (popup.viewportRect == null)
-					return;
-
+            } else if (Popups.popFrameHasClass(popup, "unpinned")) {
                 provisionalPopupXPosition = popup.viewportRect.left;
                 provisionalPopupYPosition = popup.viewportRect.top;
 
-                if (Popups.popupWasUnpinned(popup))
-                    Popups.removeClassesFromPopFrame(popup, "unpinned");
+				Popups.removeClassesFromPopFrame(popup, "unpinned");
+            } else if (Popups.popupIsZoomed(popup)) {
+                provisionalPopupXPosition = popup.zoomToX;
+                provisionalPopupYPosition = popup.zoomToY;
+            } else if (Popups.popupIsPinned(popup)) {
+                provisionalPopupXPosition = popup.viewportRect.left;
+                provisionalPopupYPosition = popup.viewportRect.top;
             } else {
                 //  Base case.
 
