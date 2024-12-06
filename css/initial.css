@@ -120,10 +120,6 @@ main {
 	}
 }
 
-article {
-	flex: 1 1 auto;
-}
-
 
 /***********/
 /* SIDEBAR */
@@ -277,20 +273,28 @@ article {
 }
 
 
+/*********************/
+/* ARTICLE CONTAINER */
+/*********************/
+
+article {
+    margin-top: 1.75rem;
+	flex: 1 1 auto;
+}
+
+
 /***************/
 /* PAGE HEADER */
 /***************/
 
 @media all and (max-width: 649px) {
     header {
-        padding: 0 1em;
-        margin-top: 1.75rem;
+        margin: 0 1rem 1.75rem 1rem;
     }
 }
 @media all and (min-width: 650px) {
     header {
-        padding: 0 2em;
-        margin-top: 2.125rem;
+        margin: 0.375rem 2rem 1.75rem 2rem;
     }
 }
 
@@ -314,15 +318,6 @@ header h1 {
  */
 header h1 em {
     font-variant-caps: normal;
-}
-
-
-/*********************/
-/* ARTICLE CONTAINER */
-/*********************/
-
-article {
-    margin-top: 1.75rem;
 }
 
 
