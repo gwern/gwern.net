@@ -5543,10 +5543,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     padding: 5px;
 }
 
-.popup .popframe-title-bar-button.minimize-button {
-	padding: 3px 4px 4px 4px;
-}
-
 .popup button.extracts-disable-button {
     padding: 3px;
 }
@@ -5554,10 +5550,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.mini-title-bar button.zoom-button,
 .popup.mini-title-bar button.extracts-disable-button {
     display: none;
-}
-
-.popup.mini-title-bar .popframe-title-bar-button.minimize-button {
-	padding: 2px 1px;
 }
 
 /*  Sub-menus of buttons in the popup title bar.

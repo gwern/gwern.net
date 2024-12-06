@@ -849,8 +849,8 @@ Extracts = {
 		return [
 			Popups.titleBarComponents.closeButton(),
 			Popups.titleBarComponents.zoomButton().enableSubmenu(),
-			Popups.titleBarComponents.pinButton(),
 			Popups.titleBarComponents.minimizeButton(),
+			Popups.titleBarComponents.pinButton(),
 			newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popupTitle.innerHTML }),
 			Extracts.disableExtractPopFramesPopFrameTitleBarButton()
 		];

@@ -1256,7 +1256,7 @@ Popups = {
             (Values are keys for GW.svg().)
          */
         buttonIcons: {
-            "close": "times-square-regular",
+            "close": "window-close",
             "zoom": "arrows-maximize-solid",
             "restore": "compress-solid",
             "pin": "thumbtack-regular",
@@ -1272,7 +1272,7 @@ Popups = {
             "zoom-bottom": "expand-arrows-down",
             "zoom-bottom-right": "expand-arrows-down-right",
             "minimize": "window-minimize",
-            "unminimize": "window-maximize-regular"
+            "unminimize": "window-maximize"
         },
 
         //  Tooltip text for various popup title bar icons.
