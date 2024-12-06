@@ -6025,7 +6025,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.audio {
     width: unset;
     height: unset;
-    min-height: var(--GW-popups-audio-popup-min-height);
+    min-height: unset;
+}
+.popup.audio.has-footer {
+	height: unset;
 }
 .popup.audio:not(.has-footer) {
     min-width: var(--GW-popups-audio-popup-min-width);
@@ -6034,8 +6037,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.audio .popframe-content-view {
     padding: 3px;
 }
-.popup.audio.has-footer .popframe-content-view {
-    padding-bottom: 6px;
+
+.popup-body.audio figure span {
+	width: 100%;
+}
+
+.popup.audio .popframe-loading-failed-message-view::before {
+    height: calc(var(--GW-popups-audio-popup-min-height) - var(--popup-title-bar-height) - 0.1em - 1px);
 }
 
 /*┌────────────────────────┐*/
