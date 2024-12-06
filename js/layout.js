@@ -349,17 +349,37 @@ function startDynamicLayoutInContainer(container) {
 	observer.observe(container, { subtree: true, childList: true });
 }
 
+/******************************************************************************/
+/*  Run the given function immediately if the <main> element has already been
+    created, or add a mutation observer to run it as soon as the <main> element
+    is created.
+ */
+function doWhenMainExists(f) {
+    if (document.querySelector("main")) {
+        f();
+    } else {
+        let observer = new MutationObserver((mutationsList, observer) => {
+            if (document.querySelector("main")) {
+                observer.disconnect();
+                f();
+            }
+        });
+
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+}
+
 /*************************************************/
 /*	Activate dynamic layout for the main document.
  */
-doWhenBodyExists(() => {
-	startDynamicLayoutInContainer(document.body);
+doWhenMainExists(() => {
+	startDynamicLayoutInContainer(document.querySelector("main"));
 
 	//	Add listener to redo layout when orientation changes.
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
 		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
 			GW.layout.layoutProcessors.forEach(processorSpec => {
-				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.body);
+				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.querySelector("main"));
 			});
 		});
 	});
@@ -718,10 +738,15 @@ function isBareWrapper(element) {
 /*	Returns assembled and appropriately prefixed selector from given parts.
  */
 function selectorizeForContainer(container) {
-	if (container instanceof DocumentFragment)
-		return (parts) => (parts);
-	else
-		return (parts) => (parts.map(part => (part == ".markdownBody" ? part : `.markdownBody ${part}`)).join(", "));
+	if (container instanceof DocumentFragment) {
+		return (parts) => (parts.join(", "));
+	} else {
+		return (parts) => (parts.map(
+			part => (part == ".markdownBody" 
+					 ? `.markdownBody` 
+					 : `.markdownBody ${part}`)
+		).join(", "));
+	}
 }
 
 /***************************************************************/
