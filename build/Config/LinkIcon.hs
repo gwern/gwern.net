@@ -154,7 +154,7 @@ linkIconRulesSingle u
  | u' u "theatlantic.com" = ("A", "text,italic", "#e7131a") -- The Atlantic: replicate sloping by italics
  | u'' u "www.dailymail.co.uk" = ("𝔐", "text", "#004db3") -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M; color: blue
  | aU'' u ["danbooru.donmai.us", "derpibooru.org", "safebooru.org"] = ("❐", "text", "#ba9570") -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE; color: brown
- | u'' u "www.edge.org" = ("E", "text,italic", "#414143") -- color: dark purple
+ | u'' u "www.edge.org" = ("E", "text,italic", "#61409c") -- color: dark purple
  | u'' u "www.economist.com" = ("E", "text,sans", "#e3120b") -- Economist: logo is just ‘Economist’… There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.; color: red; TODO: white-on-red text background
  | u'' u "www.sciencedirect.com" = ("E", "text", "#eb6500") -- Elsevier/Sciencedirect.com: also an ‘E’; color: orange
  | u'' u "www.esquire.com" = ("ℰ", "text", "#ff3a30") -- color: orange
@@ -172,7 +172,7 @@ linkIconRulesSingle u
  | aU'' u ["time.com", "healthland.time.com"] = ("T", "text", "#e90606") -- Time Magazine; color: red
  | aU'' u ["www.urth.net", "lists.urth.net", "www.wolfewiki.com"] = ("U", "text", "") -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u' u "onlinelibrary.wiley.com" = ("W", "text,sans", "") -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com; TODO: white-on-black text background
- | aU' u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = ("X", "text,overline", "#2a393d") -- Long Now Foundation projects; color: very dark graphite bluel; TODO: white-on-blue text background
+ | aU' u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = ("X", "text,overline", "#1d374e") -- Long Now Foundation projects; color: very dark graphite blue; TODO: white-on-blue text background
  | u'' u "predictionbook.com" = ("?", "text,sans,bold", "#695173") -- PB logo is confusing. A purple question mark…? color: light purple
  | u'' u "beepb00p.xyz" = ("\129302", "text", "") -- ROBOT FACE U+1F916
  | u'' u "antilop.cc" = ("෴", "text", "") -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
@@ -330,7 +330,7 @@ linkIconRulesTriple u
  | u'' u "nap.nationalacademies.org" = ("NAP", "text,tri", "#1d1646") -- color: dark purple-blue
  | u' u ".cnn.com" = ("CNN", "text,tri,sans", "#cc0000") -- color: bright red; TODO: color SVG 'CNN'-worm icon
  | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "#237bbd") -- NPR styles it in lowercase in their |n|p|r| logo; color: light-blue from 'r' in 'npr' logo; TODO: color SVG icon logo
- | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "#3a2820") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute… color: dark brown (from background of theme)
+ | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "#692a18") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute… color: dark brown (from background of theme)
  | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: yellow (from Tux penguin feet)
  | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("F.ai", "text,tri", "#3399f3") -- color: light blue
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "#ff1d46") -- color: bright red
@@ -347,7 +347,7 @@ linkIconRulesTriple u
  | u'' u "www.vox.com" = ("Vox", "text,tri,italic", "#fff200") -- color: bright yellow; TODO: black-on-yellow text background
  | aU'' u ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = ("WSJ", "text,tri", "") -- The Wall Street Journal
  | u'' u "gameprogrammingpatterns.com" = ("GPP", "text,tri,sans", "#1487c1") -- color: medium blue
- | u'' u "www.metopera.org" = ("Met", "text,tri", "#9c9899") -- color: dark yellow
+ | u'' u "www.metopera.org" = ("Met", "text,tri", "#f5c518") -- color: dark yellow
  | u'' u "www.schneier.com" = ("SOS", "text,tri,sans", "#6b0000") -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS"); color: dark red; TODO: white-on-red text background
  | u'' u "hbr.org" = ("HBR", "text,tri,sans", "#a51c30") -- Harvard Business Review (official Harvard crimson: <https://seas.harvard.edu/office-communications/brand-style-guide/color-palette>); TODO: white-on-black text background?
  | u' u "harvard.edu" = ("H", "text", "#a51c30") -- Harvard catch-all; <https://en.wikipedia.org/wiki/File:Harvard_University_coat_of_arms.svg> is too complex without a custom shield-H icon?
@@ -492,7 +492,7 @@ linkIconRulesSVG u
  | u'' u "www.connectedpapers.com" = ("connected-papers", "svg", "#74b7b8") -- color: green-blue
  | u' u "nasa.gov" = ("nasa", "svg", "#dc3329") -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>; color: red (from <https://commons.wikimedia.org/wiki/Category:NASA_%22worm%22_logotype#/media/File:NASA_Worm_logo.svg>)
  | aU'' u ["link.springer.com", "rd.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg", "")  -- (♘) WHITE CHESS KNIGHT as SVG
- | u'' u "www.metaculus.com" = ("metaculus", "svg", "#283441") -- color: dark blue-black
+ | u'' u "www.metaculus.com" = ("metaculus", "svg", "#001935") -- color: dark blue-black
  | u'' u "wandb.ai" = ("wandb", "svg", "#ffcc33") -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon; color: yellow
  | aU'' u ["libgen.li", "libgen.org", "library.bz"] = ("raven", "svg", "") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
  | u'' u "www.hoover.org" = ("hoover-institution", "svg", "") -- <https://en.wikipedia.org/wiki/Hoover_Institution_Library_and_Archives> <https://en.wikipedia.org/wiki/Hoover_Tower> <https://en.wikipedia.org/wiki/New_Cathedral_of_Salamanca>
@@ -648,7 +648,7 @@ linkIconTestUnitsText =
          , ("https://unsongbook.com/",  "\8501","text", "#b47810")
          , ("https://www.nybooks.com/articles/2020/01/16/alma-mahler-it-had-to-be-her/", "NYRB", "text,quad", "#990910")
          , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans", "#bf4520")
-         , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans", "#3a2820")
+         , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans", "#692a18")
          , ("https://www.nngroup.com/articles/aesthetic-usability-effect/", "NN", "text,sans", "#600c20")
          , ("https://pcdb.santafe.edu/", "PCDB", "text,quad,sans", "#a57030")
          , ("https://www.esquire.com/entertainment/a36439327/planet-hollywood-origin-story-history-interview/", "ℰ", "text", "#ff3a30")
@@ -670,7 +670,7 @@ linkIconTestUnitsText =
          , ("https://static.cambridge.org/binary/version/id/urn:cambridge.org:id:binary-alt:20181009171208-81978-mediumThumb-S0033291718001873_fig1g.jpg?pub-status=live", "⛨", "text", "#ce0101")
          , ("/doc/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,quad,sans", "#87ba11")
          , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡 𝐒", "text", "#d71921")
-         , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg", "#283441")
+         , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg", "#001935")
          , ("https://www.research.va.gov/", "VA", "text,sans", "#112e51")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri", "#162e51")
          , ("https://www.dailydot.com/unclick/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans", "#2a9461")
@@ -717,7 +717,7 @@ linkIconTestUnitsText =
          , ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg", "#ff0033")
          , ("https://www.youtube.com/watch?v=cG7v9eCq2u4&t=33m49s",  "youtube","svg", "#ff0033")
          , ("https://wandb.ai/wandb_fc/gradient-dissent/reports/What-could-make-AI-conscious-with-Wojciech-Zaremba-co-founder-of-OpenAI--Vmlldzo3NDk3MDI", "wandb", "svg", "#ffcc33")
-         , ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic", "#414143")
+         , ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic", "#61409c")
          , ("https://www.amazon.com/gp/product/B0050MYHBQ/",  "amazon","svg", "#ffce53")
          , ("https://www.amazon.co.jp/%E6%AE%8B%E9%85%B7%E3%81%AA%E5%A4%A9%E4%BD%BF%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB%E2%80%95%E6%96%B0%E4%B8%96%E7%B4%80%E3%82%A8%E3%83%B4%E3%82%A1%E3%83%B3%E3%82%B2%E3%83%AA%E3%82%AA%E3%83%B3JUNE%E8%AA%AD%E6%9C%AC-SUN%E3%83%BCMAGAZINE-MOOK-JUNE%E7%B7%A8%E9%9B%86%E9%83%A8/dp/490601125X",  "amazon","svg", "#ffce53")
          , ("https://predictionbook.com/",  "?","text,sans,bold", "#695173")
@@ -844,7 +844,7 @@ linkIconTestUnitsText =
          , ("https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,mono,quad", "#006699")
          , ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,mono,quad", "#006699")
          , ("https://paulgraham.com/hundred.html",  "pg","text,mono", "#666699")
-         , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "Met", "text,tri", "#9c9899")
+         , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "Met", "text,tri", "#f5c518")
          , ("https://www.pnas.org/doi/10.1073/pnas.0610941104",  "PNAS","text,quad", "#1f75b9")
          , ("https://www.tiktok.com/@dale_ebert/video/7301073510267407658", "tiktok", "svg", "#65c3c9")
          , ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,tri,sans", "#105a0a")
@@ -899,8 +899,8 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic", "")
          , ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic", "")
          , ("https://www.salon.com/2007/11/01/whistleblowers/",  "s","text", "#ed2c1d")
-         , ("https://longbets.org/",  "X","text,overline", "#2a393d")
-         , ("https://longnow.org/ideas/lenski-long-term-evolution-experiment/",  "X","text,overline", "#2a393d")
+         , ("https://longbets.org/",  "X","text,overline", "#1d374e")
+         , ("https://longnow.org/ideas/lenski-long-term-evolution-experiment/",  "X","text,overline", "#1d374e")
          , ("https://nintil.com/epigenetic-clocks", "𝓝", "text", "#c05b4d")
          , ("https://medium.com/huggingface/distilbert-8cf3380435b5", "\129303", "text", "#ffcc4d")
          , ("https://huggingface.co/spaces/teven-projects/calculator", "\129303", "text", "#ffcc4d")

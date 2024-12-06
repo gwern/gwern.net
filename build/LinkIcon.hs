@@ -2,7 +2,7 @@
 
 module LinkIcon (addIcon, linkIcon, linkIconTest, linkIconPrioritize) where
 
-import Data.Char (isHexDigit)
+import Data.Char (isDigit, isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
@@ -178,7 +178,7 @@ linkIconTest = filter (\(url, li, lit, litc) ->
                                           /=
                                           Link ("",[], ((if T.null li then [] else [("link-icon",li)]) ++
                                                         (if T.null lit then [] else [("link-icon-type", lit)]) ++
-                                                        (if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)]))
+                                                        (if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) -- note: we only call this in `linkIconTest` to avoid runtime overhead.
                                                ) [] (url,"")
                       )
                C.linkIconTestUnitsText
@@ -195,6 +195,23 @@ isValidCssHexColor color = case T.unpack color of
                        else
                          error $ "LinkIcon.isValidCssHexColor: hex value was proper length, but contained non-hexadecimal characters? Original input was: " ++ show color
                      else if color `elem` ["#ffffff", "#000000"] then error $ "LinkIcon.isValidCssHexColor: failed blacklist check of colors which are usually invalid as link-icon colors. Double-check this! Input was: " ++ show color
-                             else color
+                             else if not (isDistinctColor $ T.unpack color) then error $ "too gray: " ++ show color
+                                    else color
     _  -> error $ "LinkIcon.isValidCssHexColor: input CSS hex color failed hex check; did not start with a hash? Original input was: " ++ show color
 
+-- try to detect 'gray'/black/white colors, which have no distinct color as link-icon colors.
+-- To implement this, we try a threshold on the channel differences. If all three channels are very close to each other, it’s effectively a grayish color. For example, define a tolerance and check if the difference between the max and min channel values is small. If it’s below a certain threshold, consider it gray. This considers a color “distinct” only if the range between its darkest and brightest channel is greater than 30. You can adjust the threshold to taste.
+isDistinctColor :: String -> Bool
+isDistinctColor ['#', r1, r2, g1, g2, b1, b2] =
+  let hexVal c = if isDigit c
+                 then fromEnum c - fromEnum '0'
+                 else 10 + (fromEnum c - fromEnum 'a')
+      r = hexVal r1 * 16 + hexVal r2
+      g = hexVal g1 * 16 + hexVal g2
+      b = hexVal b1 * 16 + hexVal b2
+      mx = max r (max g b)
+      mn = min r (min g b)
+      diff = mx - mn
+      threshold = 30
+  in diff > threshold
+isDistinctColor _ = False
