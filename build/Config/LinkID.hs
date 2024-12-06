@@ -2885,4 +2885,5 @@ linkIDOverrides =
   , ("https://sashachapin.substack.com/p/my-mind-transformed-completely-and","chapin-2024-meditation-1"),("https://sashachapin.substack.com/p/how-my-day-is-going","chapin-2024-meditation-2")
   ,("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359010","gwern-2024-chinadl"),("https://news.ycombinator.com/item?id=42291300","gwern-2024-tlon")
   ,("https://www.science.org/content/article/gene-behind-orange-fur-cats-found-last","reardon-2024-orange"),("https://www.science.org/content/article/are-your-earliest-childhood-memories-still-lurking-your-mind-or-gone-forever","reardon-2024-childhoodamnesia")
+  ,("https://arxiv.org/abs/2412.00176","ren-et-al-2024-1"),("https://arxiv.org/abs/2407.21792","ren-et-al-2024-2")
       ]

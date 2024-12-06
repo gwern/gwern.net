@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-12-01 10:08:12 gwern"
+# When:  Time-stamp: "2024-12-05 10:29:41 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -510,6 +510,8 @@ Katri Räikkönen
 "The Neruda Factory"
 - "Eric Tang �"
 "Eric Tang"
+- "lamag.com https://lamag.com/books/harlan-ellison-last-words-dangerous-visions-sci-fi-writer-posthumous-comeback"
+""
 
 Task:
 

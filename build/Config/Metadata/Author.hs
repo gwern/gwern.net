@@ -268,7 +268,6 @@ canonicals = M.fromList
   , ("anon", "Anonymous")
   , ("anon.", "Anonymous")
   , ("23andMe Research Team", "23andMe")
-  , ("Noah A. Smith", "Noah Smith")
   , ("sarah_cone", "Sarah Cone")
   , ("R. Impagliazzo", "Russell Impagliazzo")
   , ("Gary L. Drescher", "Gary Drescher")
@@ -552,6 +551,11 @@ canonicals = M.fromList
   , ("JRR Tolkien", "J. R. R. Tolkien")
   , ("J R R Tolkien", "J. R. R. Tolkien")
   , ("Edward N. Luttwak", "Edward Luttwak")
+  , ("Yuhuai(Tony) Wu", "Yuhuai Wu")
+  , ("Yuhuai (Tony) Wu", "Yuhuai Wu")
+  , ("Tony Wu", "Yuhuai Wu")
+  , ("N. A. Smith", "Noah A. Smith")
+  , ("M.E. Thomas", "M. E. Thomas")
   ]
 
 -- tests: unique
@@ -903,7 +907,6 @@ authorLinkDB = M.fromList $
     , ("Ajay Jain", "https://ajayj.com/")
     , ("Zhili Zheng", "https://scholar.google.com/citations?user=mLFZunUAAAAJ")
     , ("Veronique Vitart", "https://www.ed.ac.uk/mrc-human-genetics-unit/research/vitart-group")
-    , ("N. A. Smith", "https://nasmith.github.io/")
     , ("Kannan Srinivasan", "https://www.analysisgroup.com/experts-and-consultants/affiliated-experts/kannan-srinivasan/")
     , ("Teresa Ferreira", "https://www.researchgate.net/profile/Teresa-Ferreira-7")
     , ("Stefania Bandinelli", "https://research.com/u/stefania-bandinelli")
@@ -1059,6 +1062,17 @@ authorLinkDB = M.fromList $
     , ("Alan R. Shuldiner", "https://www.medschool.umaryland.edu/profiles/shuldiner-alan/")
     , ("Aditya A. Ramesh", "https://scholar.google.com/citations?user=60K82BkAAAAJ")
     , ("Matt Sheehan", "https://carnegieendowment.org/people/matt-sheehan")
+    , ("Zhuang Liu", "https://liuzhuang13.github.io/")
+    , ("Yuhuai Wu", "https://yuhuaiwu.github.io/")
+    , ("Yizhong Wang", "https://homes.cs.washington.edu/~yizhongw/")
+    , ("Noah A. Smith", "https://nasmith.github.io/")
+    , ("Yamini Bansal", "https://scholar.google.com/citations?user=uj1OljkAAAAJ")
+    , ("M. E. Thomas", "http://www.sociopathworld.com/")
+    , ("Tripp Mickle", "https://www.nytimes.com/by/tripp-mickle")
+    , ("Thomas W. Winkler", "https://www.uni-regensburg.de/medizin/epidemiologie-praeventivmedizin/genetische-epidemiologie")
+    , ("Thomas Meitinger", "https://scholar.google.com/citations?user=3Nf1sXQAAAAJ&hl=en&oi=ao")
+    , ("Benjamin Todd", "https://benjamintodd.org/#about")
+    , ("Samuel Marks", "https://scholar.google.com/citations?user=fW7yK10AAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2067,7 +2081,7 @@ authorWpLinkDB =
     ,"Sam Gross", "Sam Kean", "Sam Kwong", "Sam Mercer", "Sam Peltzman"
     ,"Sam Ritter", "Samantha Watson", "Sami Haddadin", "Samir Arora", "Samir Saba"
     ,"Samuel A. Stouffer", "Samuel D. Gosling", "Samuel Ginn", "Samuel Gosling", "Samuel J. Holmes"
-    ,"Samuel L. Braunstein", "Samuel L. Smith", "Samuel Marks", "Samuel R. Buss", "Samuel S. Kortum"
+    ,"Samuel L. Braunstein", "Samuel L. Smith", "Samuel R. Buss", "Samuel S. Kortum"
     ,"Samuel S. Wineburg", "Samuel T. Cohen", "Samy Bengio", "Sana Amanat", "Sandeep Singh"
     ,"Sander Greenland", "Sander van der Linden", "Sandra Scarr", "Sandra Weintraub", "Sandu Popescu"
     ,"Sang-Won Park", "Sanghamitra Mohanty", "Sanja Fidler", "Sanjay Asthana", "Sanjay Ghemawat"
@@ -2294,4 +2308,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami"]
