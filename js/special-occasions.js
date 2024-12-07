@@ -60,13 +60,18 @@ function replacePageLogoWhenPossible(replaceLogo) {
 		appropriate mode should be specified.
 
 	identifier (string)
-		If there are one or more numbered logos image files (for randomization
+		If there are one or more numbered logo image files (for randomization
 		purposes), but we wish to select a specific one, we may provide a
 		numeric identifier string ("1", "14", etc.); the logo image file with
 		that numeric identifier in the file name will be selected.
 
 		NOTE: If this option field is specified, then the `randomize` field is
 		ignored.
+
+	link (URL)
+		Points the logo link to the specified URL. (If this field is not set,
+		the logo link retains its current target, whatever that may be. Note 
+		that by default, the logo link starts out pointing to /index.)
  */
 function injectSpecialPageLogo(logoType, options) {
 	options = Object.assign({
