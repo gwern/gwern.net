@@ -369,7 +369,7 @@ generateMatches md bdb singleShot p abst matches =
              preface = if singleShot then [] else [Para [Link ("",["icon-special"], []) [Strong [Str "Similar Links:"]] ("/design#similar-links", "")]]
              linkList = BulletList $ similarItems ++ googleScholar
 
-             pandoc = walk typographyTransform $ Pandoc nullMeta $ preface ++ [linkList]
+             pandoc = (if singleShot then id else walk typographyTransform) $ Pandoc nullMeta $ preface ++ [linkList]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
