@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-12-02 10:14:28 gwern"
+# When:  Time-stamp: "2024-12-06 15:54:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -589,7 +589,7 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "scrape-abstract-not"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "scrape-abstract-not"
             "abstract" "abstract-collapse" "admonition" "admonition-title" "book-review-meta"
             "book-review-review" "tip" "xml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
@@ -1467,7 +1467,8 @@ else
     λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | \
               xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off |
-              gfv -e ': ICC profile tag start not a multiple of 4'; }
+              gfv -e ': ICC profile tag start not a multiple of 4' | \
+              gfv -e '2024-12-04-gwern-claude36-secondlifesentence-sls-square-thumbnail-512px.png'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' \
