@@ -161,18 +161,20 @@ function versionedAssetURL(pathname) {
 
 /*****************************************************************************/
 /*  Return a random alternate asset pathname (not versioned), given a pathname
-    with ‘%R’ where a number should be, e.g.:
+    regular expression pattern (in string form, not a RegExp object), with 
+    ‘%R’ where a number should be, e.g.:
 
-        /static/img/logo/christmas/light/logo-christmas-light-%R-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
 
-    will return
+    will return files with pathnames like:
 
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.jpg
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.webp
+		/static/img/logo/christmas/light/logo-christmas-light-1.svg
 
-    (or -2, -3, etc., selecting randomly from available numbered alternates).
-
-	Alternatively, a valid regular expression pattern (in string form, not a 
-	RegExp object) may be provided.
+    (Or -2, -3, etc., selecting randomly from all available files matching the
+     given pattern.)
 
     Specified assets must be listed in the versioned asset database.
  */
