@@ -194,6 +194,7 @@ function versionedAssetURL(pathname) {
 		these conditions are not met, null is returned. (See the 
 		`sequenceCurrent` field, below, for details on this option.)
 
+	sequenceCurrent (integer)
 	sequenceCurrent (string)
 		If the `sequenceIndex` field is not set to a string value of either
 		“next” or “previous”, this field is ignored.
@@ -209,11 +210,18 @@ function versionedAssetURL(pathname) {
 		patterns is returned (wrapping around to the last value after the 
 		first).
 
-		If the value of this field does not match any of the asset pathnames
-		that match the provided pattern, and `sequenceIndex` is set to “next”
-		or “previous”, then this is treated as if `sequenceIndex` had been set
-		to 0 or -1, respectively (i.e., the first or the last pattern in the
-		set of matching patterns is returned).
+		If the value of this field is an integer, then it behaves the same as if
+		the value were set to the asset pathname at the index (in the array of
+		asset pathnames that match the provided pattern) equal to 
+		sequenceCurrent modulo the number of matching asset pathnames.
+
+		If the value of this field is not an integer, and it does not match any 
+		of the asset pathnames that match the provided pattern (including if it
+		is null), then, if `sequenceIndex` is set to “next”, it behaves as if 
+		`sequenceIndex` had been set to 0; and if `sequenceIndex` is set to 
+		“previous”, it behaves as if `sequenceIndex` had been set to -1 (i.e., 
+		the first or the last pattern in the set of matching patterns is 
+		returned).
  */
 function getAssetPathname(assetPathnamePattern, options) {
 	options = Object.assign({
@@ -238,7 +246,9 @@ function getAssetPathname(assetPathnamePattern, options) {
 		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
 			return null;
 
-		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
+		let currentIndex = typeof options.sequenceCurrent == "number"
+						   ? options.sequenceCurrent
+						   : matchingAssetPathnames.indexOf(options.sequenceCurrent);
 		if (currentIndex == -1) {
 			return (options.sequenceIndex == "next"
 					? matchingAssetPathnames.first

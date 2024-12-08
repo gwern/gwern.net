@@ -86,6 +86,12 @@ function replacePageLogoWhenPossible(replaceLogo) {
 
 		NOTE: If this field is set, then the `randomize` field is ignored.
 
+	sequenceCurrentIndex (integer)
+		If this field is set, then instead of using the actually currently set 
+		logo as the “currently set logo” (see the `sequenceIndex` option field),
+		uses the i’th one, where i is equal to sequenceCurrentIndex modulo the 
+		number of available logos of the specified type.
+
     randomize (boolean)
         If set to `true`, selects one of the multiple available logos of the
         specified type, from image files named according to a scheme that
@@ -106,6 +112,7 @@ function injectSpecialPageLogo(logoType, options) {
 		mode: null,
 		identifier: null,
 		sequenceIndex: null,
+		sequenceCurrentIndex: null,
 		randomize: false,
 		link: null
 	}, options);
@@ -128,11 +135,11 @@ function injectSpecialPageLogo(logoType, options) {
 	/*	File name pattern further depends on whether we have separate light
 		and dark logos of this sort.
 	 */
-	let logoPathname = `/static/img/logo/${logoType}/`
-					 + (options.mode
-					 	? `${options.mode}/logo-${logoType}-${options.mode}`
-					 	: `logo-${logoType}`)
-					 + `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
+	let logoPathnamePattern = `/static/img/logo/${logoType}/`
+							+ (options.mode
+							   ? `${options.mode}/logo-${logoType}-${options.mode}`
+							   : `logo-${logoType}`)
+							+ `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
 
     //  Temporarily brighten logo, then fade slowly after set duration.
     let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
@@ -162,28 +169,26 @@ function injectSpecialPageLogo(logoType, options) {
 		//	Get enclosing link, in case we have to modify it.
 		let logoLink = logoImage.closest("a");
 
-        //  Get new logo URL (random, if need be).
-		let logoImageURL = URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
-										 ?? logoImage.querySelector("img")?.src);
-		logoPathname = getAssetPathname(logoPathname, {
+        //  Get new logo URL (specified, random, or sequenced).
+        let sequenceCurrent = (   options.sequenceCurrentIndex 
+        					   ?? URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
+												?? logoImage.querySelector("img")?.src).pathname);
+		let logoPathname = getAssetPathname(logoPathnamePattern, {
 			sequenceIndex: options.sequenceIndex,
-			sequenceCurrent: logoImageURL.pathname
+			sequenceCurrent: sequenceCurrent
 		});
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
 		if (logoPathname.endsWith(".svg")) {
-			//	Create new <svg> element.
-			let svgContainer = elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL));
-
             //  Inject inline SVG.
-            logoImage.replaceWith(svgContainer);
+            logoImage.replaceWith(elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL)));
         } else {
             //  Create new image element and wrapper.
             let imageWrapper = newElement("SPAN", {
                 class: "logo-image"
             });
-            imageWrapper.append(newElement("IMG", {
+            imageWrapper.appendChild(newElement("IMG", {
                 class: "figure-not",
                 src: versionedLogoURL.pathname + versionedLogoURL.search
             }));
