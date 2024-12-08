@@ -25,6 +25,14 @@ function valMinMax(val, min, max) {
     return Math.max(Math.min(val, max), min);
 }
 
+/*************************/
+/*	Real modulo operation.
+	(See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder )
+ */
+function modulo(n, d) {
+	return (((n % d) + d) % d);
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */
@@ -2583,7 +2591,7 @@ function replacePageLogoWhenPossible(replaceLogo) {
         replaceLogo(logoImage);
     } else {
         let observer = new MutationObserver((mutationsList, observer) => {
-            if (   window.randomAsset
+            if (   window.getAssetPathname
             	&& window.versionedAssetURL
             	&& (logoImage = document.querySelector(logoSelector))) {
                 observer.disconnect();
@@ -2601,15 +2609,6 @@ function replacePageLogoWhenPossible(replaceLogo) {
 
     Available option fields:
 
-    randomize (boolean)
-        If set to `true`, selects one of the multiple available logos of the
-        specified type, from image files named according to a scheme that
-        includes a number in the name. Otherwise, selects the single,
-        deterministically named image file (which is named according to a
-        scheme determined by the type and mode option).
-
-		NOTE: This field is ignored if an identifier (see below) is given.
-
 	mode (string)
 		May be “light” or “dark”, or null. Affects the scheme that determines
 		the path and file name(s) expected for the logo image file(s). This
@@ -2623,8 +2622,45 @@ function replacePageLogoWhenPossible(replaceLogo) {
 		numeric identifier string ("1", "14", etc.); the logo image file with
 		that numeric identifier in the file name will be selected.
 
-		NOTE: If this option field is specified, then the `randomize` field is
-		ignored.
+		NOTE: If this field is set, then the `sequenceIndex` and `randomize`
+		fields are ignored.
+
+	sequenceIndex (integer)
+	sequenceIndex (string)
+		If this field is set to an integer value, then out of the available 
+		logos of the specified type, selects the i’th one, where i is equal to 
+		sequenceIndex modulo the number of available logos of the specified 
+		type.
+
+		If this field is set to a string value, then it must be either “next”
+		or “previous”.
+
+		If “next”, then the next logo out of the available logos of the 
+		specified type (after the currently set one) is set (wrapping around to 
+		the first logo after the last).
+
+		If “previous”, then the previous logo out of the available logos of the 
+		specified type (before the currently set one) is set (wrapping around to 
+		the last logo after the first).
+
+		If the currently set logo is not already one of the specified type, then 
+		the first logo out of the available logos of the specified type is set 
+		(if the value of this field is “next”), or else the last such logo (if 
+		the value of this field is “previous”).
+
+		NOTE: This field is ignored if the `identifier` option field is set.
+
+		NOTE: If this field is set, then the `randomize` field is ignored.
+
+    randomize (boolean)
+        If set to `true`, selects one of the multiple available logos of the
+        specified type, from image files named according to a scheme that
+        includes a number in the name. Otherwise, selects the single,
+        deterministically named image file (which is named according to a
+        scheme determined by the type and mode option).
+
+		NOTE: This field is ignored if either the `identifier` field or the 
+		`sequenceIndex` fields is set.
 
 	link (URL)
 		Points the logo link to the specified URL. (If this field is not set,
@@ -2634,8 +2670,9 @@ function replacePageLogoWhenPossible(replaceLogo) {
 function injectSpecialPageLogo(logoType, options) {
 	options = Object.assign({
 		mode: null,
-		randomize: false,
 		identifier: null,
+		sequenceIndex: null,
+		randomize: false,
 		link: null
 	}, options);
 
@@ -2645,7 +2682,8 @@ function injectSpecialPageLogo(logoType, options) {
     let logoIdentifierRegexpString = ``;
     if (options.identifier)
     	logoIdentifierRegexpString = `-${options.identifier}`;
-    else if (options.randomize)
+    else if (   options.sequenceIndex 
+    		 ?? options.randomize)
     	logoIdentifierRegexpString = `-%R`;
 
 	/*	Bitmap files come in several scales (for different pixel densities of
@@ -2683,15 +2721,20 @@ function injectSpecialPageLogo(logoType, options) {
         });
     };
 
-    /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
-        and so cannot be called prior to this.
+    /*  Note that getAssetPathname() and versionedAssetURL() are defined in 
+    	misc.js, and so cannot be called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
 		//	Get enclosing link, in case we have to modify it.
 		let logoLink = logoImage.closest("a");
 
         //  Get new logo URL (random, if need be).
-		logoPathname = randomAsset(logoPathname);
+		let logoImageURL = URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
+										 ?? logoImage.querySelector("img")?.src);
+		logoPathname = getAssetPathname(logoPathname, {
+			sequenceIndex: options.sequenceIndex,
+			sequenceCurrent: logoImageURL.pathname
+		});
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
@@ -2728,8 +2771,8 @@ function injectSpecialPageLogo(logoType, options) {
 /*	Reset the page logo to the default one.
  */
 function resetPageLogo() {
-    /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
-        and so cannot be called prior to this.
+    /*  Note that versionedAssetURL() is defined in misc.js, and so cannot be 
+    	called too early.
      */
     replacePageLogoWhenPossible(logoImage => {
 		//	Get enclosing link.

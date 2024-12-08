@@ -25,6 +25,14 @@ function valMinMax(val, min, max) {
     return Math.max(Math.min(val, max), min);
 }
 
+/*************************/
+/*	Real modulo operation.
+	(See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder )
+ */
+function modulo(n, d) {
+	return (((n % d) + d) % d);
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */

@@ -717,9 +717,9 @@ function versionedAssetURL(pathname) {
 }
 
 /*****************************************************************************/
-/*  Return a random alternate asset pathname (not versioned), given a pathname
-    regular expression pattern (in string form, not a RegExp object), with 
-    ‘%R’ where a number should be, e.g.:
+/*  Return an asset pathname (not versioned), given a pathname regular 
+	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
+	a number should be, e.g.:
 
         /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
 
@@ -730,20 +730,84 @@ function versionedAssetURL(pathname) {
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.webp
 		/static/img/logo/christmas/light/logo-christmas-light-1.svg
 
-    (Or -2, -3, etc., selecting randomly from all available files matching the
-     given pattern.)
+    (Or -2, -3, etc.)
 
     Specified assets must be listed in the versioned asset database.
+
+	By default, selects uniform-randomly from all available asset pathnames
+	matching the provided pattern. (But see option fields, below.)
+
+	Available option fields:
+
+	sequenceIndex (integer)
+	sequenceIndex (string)
+		If this field is set to an integer value, then, instead of returning a 
+		random asset pathname out of the asset pathnames matching the provided 
+		pattern, selects the i’th one, where i is equal to sequenceIndex modulo 
+		the number of matching asset pathnames.
+
+		If this field is set to a string value, then it must be either “next”
+		or “previous”, and the `sequenceCurrent` field must also be set; if 
+		these conditions are not met, null is returned. (See the 
+		`sequenceCurrent` field, below, for details on this option.)
+
+	sequenceCurrent (string)
+		If the `sequenceIndex` field is not set to a string value of either
+		“next” or “previous”, this field is ignored.
+
+		If `sequenceIndex` is set to “next”, and the value of this field is 
+		equal to a value of one of the asset pathnames that match the provided
+		pattern, then the next pattern in the set of matching patterns is
+		returned (wrapping around to the first value after the last one).
+
+		If `sequenceIndex` is set to “previous”, and the value of this field
+		is equal to a value of one of the asset pathnames that match the
+		provided pattern, then the previous pattern in the set of matching 
+		patterns is returned (wrapping around to the last value after the 
+		first).
+
+		If the value of this field does not match any of the asset pathnames
+		that match the provided pattern, and `sequenceIndex` is set to “next”
+		or “previous”, then this is treated as if `sequenceIndex` had been set
+		to 0 or -1, respectively (i.e., the first or the last pattern in the
+		set of matching patterns is returned).
  */
-function randomAsset(assetPathnamePattern) {
+function getAssetPathname(assetPathnamePattern, options) {
+	options = Object.assign({
+		sequenceIndex: null,
+		sequenceCurrent: null
+	}, options);
+
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
-    let alternateAssetPathnames = [ ];
+    let matchingAssetPathnames = [ ];
     for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
-            alternateAssetPathnames.push(versionedAssetPathname);
+            matchingAssetPathnames.push(versionedAssetPathname);
     }
 
-    return (alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1] ?? null);
+	if (matchingAssetPathnames.length == 0) {
+		return null;
+	} else if (options.sequenceIndex == null) {
+		return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
+	} else if (typeof options.sequenceIndex == "number") {
+		return matchingAssetPathnames[modulo(options.sequenceIndex, matchingAssetPathnames.length)];
+	} else if (typeof options.sequenceIndex == "string") {
+		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
+			return null;
+
+		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
+		if (currentIndex == -1) {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames.first
+					: matchingAssetPathnames.last);
+		} else {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames[modulo(currentIndex + 1, matchingAssetPathnames.length)]
+					: matchingAssetPathnames[modulo(currentIndex - 1, matchingAssetPathnames.length)]);
+		}
+	} else {
+		return null;
+	}
 }
 
 
@@ -1557,7 +1621,7 @@ function randomDropcapURL(dropcapType, letter) {
     let mode = DarkMode.computedMode();
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-    let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
+    let dropcapPathname = getAssetPathname(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
     if (dropcapPathname == null)
         return null;
 
