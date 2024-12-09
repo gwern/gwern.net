@@ -150,30 +150,30 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleText, popFrameTitleLinkHref;
+		let popFrameTitleHTML, popFrameTitleLinkHref;
 		if (referenceData == null) {
-			popFrameTitleText = "";
+			let popFrameTitleText = "";
 			if (target.pathname != location.pathname)
 				popFrameTitleText += target.pathname;
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
-			popFrameTitleText = `<code>${popFrameTitleText}</code>`;
+			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
 
 			popFrameTitleLinkHref = target.href;
 		} else {
-			popFrameTitleText = popFrame.classList.contains("full-page")
-								? referenceData.popFrameTitleTextShort
-								: referenceData.popFrameTitleText;
+			popFrameTitleHTML = popFrame.classList.contains("full-page")
+								? referenceData.popFrameTitleShort
+								: referenceData.popFrameTitle;
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
 		if (popFrame.classList.contains("backlinks")) {
-			popFrameTitleText += " (Backlinks)";
+			popFrameTitleHTML += " (Backlinks)";
 		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
-			popFrameTitleText:      popFrameTitleText
+			popFrameTitle:          popFrameTitleHTML
 		});
     },
 
@@ -500,9 +500,9 @@ Extracts = { ...Extracts,
     titleForPopFrame_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
         let footnoteNumber = target.querySelector("sup").textContent;
-        let popFrameTitleText = `Footnote #${footnoteNumber}`;
+        let popFrameTitleHTML = `Footnote #${footnoteNumber}`;
 
-        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleHTML);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -771,7 +771,7 @@ Extracts = { ...Extracts,
 			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
 
         //  Update pop-frame title.
-        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitleText);
+        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitle);
 	}
 };
 

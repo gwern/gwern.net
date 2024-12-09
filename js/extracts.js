@@ -440,17 +440,17 @@ Extracts = {
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     //  Called by: extracts-annotations.js
     //  Called by: extracts-content.js
-    standardPopFrameTitleElementForTarget: (target, titleText) => {
-        if (typeof titleText == "undefined") {
-            titleText = (target.hostname == location.hostname)
-                        ? target.pathname + target.hash
-                        : target.href;
-            titleText = `<code>${titleText}</code>`;
+    standardPopFrameTitleElementForTarget: (target, titleHTML) => {
+        if (typeof titleHTML == "undefined") {
+            let titleText = (target.hostname == location.hostname)
+            				? target.pathname + target.hash
+            				: target.href;
+            titleHTML = `<code>${titleText}</code>`;
     	}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
-			popFrameTitleText:      titleText
+			popFrameTitle:          titleHTML
 		});
     },
 
@@ -459,7 +459,7 @@ Extracts = {
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     //  Called by: Extracts.rewritePopinContent
-    titleForPopFrame: (popFrame, titleText) => {
+    titleForPopFrame: (popFrame, titleHTML) => {
         let target = popFrame.spawningTarget;
 
         //  Special handling for certain popup types.
@@ -468,20 +468,20 @@ Extracts = {
         let specialTitleFunction = (   Extracts[`titleForPop${suffix}_${targetTypeName}`]
         							?? Extracts[`titleForPopFrame_${targetTypeName}`]);
         if (specialTitleFunction)
-            return specialTitleFunction(popFrame, titleText);
+            return specialTitleFunction(popFrame, titleHTML);
         else
-            return Extracts.standardPopFrameTitleElementForTarget(target, titleText);
+            return Extracts.standardPopFrameTitleElementForTarget(target, titleHTML);
     },
 
 	//	Called by: Extracts.rewritePopinContent
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-	updatePopFrameTitle: (popFrame, titleText) => {
+	updatePopFrameTitle: (popFrame, titleHTML) => {
         GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
 
 		if (popFrame.titleBar) {
-			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		} else if (popFrame.titleBarContents) {
-			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		}
 	},
 

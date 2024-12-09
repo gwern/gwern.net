@@ -6621,10 +6621,10 @@ Annotations = { ...Annotations,
 				thumbnailFigure:          thumbnailFigureHTML,
 				fileIncludes:             fileIncludesHTML
 			},
-			template:                       "annotation-blockquote-inside",
-			popFrameTemplate:               "annotation-blockquote-not",
-			popFrameTitleText:              titleLink.cloneNode(true).trimQuotes().innerHTML,
-			popFrameTitleLinkHref:          titleLinkHref
+			template:                     "annotation-blockquote-inside",
+			popFrameTemplate:             "annotation-blockquote-not",
+			popFrameTitle:                titleLink.cloneNode(true).trimQuotes().innerHTML,
+			popFrameTitleLinkHref:        titleLinkHref
 		};
 	},
 
@@ -7314,7 +7314,7 @@ Content = {
 
 				//	Template fields.
 				let titleLineHTML, entryContentHTML, thumbnailFigureHTML;
-				let popFrameTitleText, popFrameTitleLinkHref;
+				let popFrameTitle, popFrameTitleLinkHref;
 				let contentTypeClass = "wikipedia-entry";
 
 				//	Intermediate values.
@@ -7415,7 +7415,7 @@ Content = {
 				entryContentHTML = contentDocument.innerHTML;
 
 				//	Pop-frame title text and link.
-				popFrameTitleText = newElement("SPAN", null, { innerHTML: titleLineHTML }).textContent;
+				popFrameTitle = newElement("SPAN", null, { innerHTML: titleLineHTML });
 				popFrameTitleLinkHref = articleLink.href;
 
 				//	Attach secondary links (if any) to title line.
@@ -7428,7 +7428,7 @@ Content = {
 						thumbnailFigure:            thumbnailFigureHTML
 					},
 					contentTypeClass:               contentTypeClass,
-					popFrameTitleText:              popFrameTitleText,
+					popFrameTitle:                  popFrameTitle.innerHTML,
 					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					template:                       "wikipedia-entry-blockquote-inside",
 					popFrameTemplate:               "wikipedia-entry-blockquote-not",
@@ -7924,7 +7924,7 @@ Content = {
                     contentTypeClass:       "tweet",
                     template:               "tweet-blockquote-outside",
 					popFrameTemplate:       "tweet-blockquote-not",
-                    popFrameTitleText:      popFrameTitleText,
+                    popFrameTitle:          popFrameTitleText,
                     popFrameTitleLinkHref:  tweetLinkURL.href,
                 };
             },
@@ -8604,8 +8604,8 @@ Content = {
                     pageBodyClasses:         pageContent.bodyClasses,
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
-                    popFrameTitleText:       popFrameTitleTextParts.join(" "),
-                    popFrameTitleTextShort:  popFrameTitleTextParts.first,
+                    popFrameTitle:           popFrameTitleTextParts.join(" "),
+                    popFrameTitleShort:      popFrameTitleTextParts.first,
                     shouldLocalize:          true
                 }
             },
@@ -10956,7 +10956,7 @@ Transclude.templates = {
 	href="<{popFrameTitleLinkHref}>"
 	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
-		><{popFrameTitleText}></a>`,
+		><{popFrameTitle}></a>`,
 	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
 		<a 
@@ -11464,17 +11464,17 @@ Extracts = {
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     //  Called by: extracts-annotations.js
     //  Called by: extracts-content.js
-    standardPopFrameTitleElementForTarget: (target, titleText) => {
-        if (typeof titleText == "undefined") {
-            titleText = (target.hostname == location.hostname)
-                        ? target.pathname + target.hash
-                        : target.href;
-            titleText = `<code>${titleText}</code>`;
+    standardPopFrameTitleElementForTarget: (target, titleHTML) => {
+        if (typeof titleHTML == "undefined") {
+            let titleText = (target.hostname == location.hostname)
+            				? target.pathname + target.hash
+            				: target.href;
+            titleHTML = `<code>${titleText}</code>`;
     	}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
-			popFrameTitleText:      titleText
+			popFrameTitle:          titleHTML
 		});
     },
 
@@ -11483,7 +11483,7 @@ Extracts = {
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     //  Called by: Extracts.rewritePopinContent
-    titleForPopFrame: (popFrame, titleText) => {
+    titleForPopFrame: (popFrame, titleHTML) => {
         let target = popFrame.spawningTarget;
 
         //  Special handling for certain popup types.
@@ -11492,20 +11492,20 @@ Extracts = {
         let specialTitleFunction = (   Extracts[`titleForPop${suffix}_${targetTypeName}`]
         							?? Extracts[`titleForPopFrame_${targetTypeName}`]);
         if (specialTitleFunction)
-            return specialTitleFunction(popFrame, titleText);
+            return specialTitleFunction(popFrame, titleHTML);
         else
-            return Extracts.standardPopFrameTitleElementForTarget(target, titleText);
+            return Extracts.standardPopFrameTitleElementForTarget(target, titleHTML);
     },
 
 	//	Called by: Extracts.rewritePopinContent
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-	updatePopFrameTitle: (popFrame, titleText) => {
+	updatePopFrameTitle: (popFrame, titleHTML) => {
         GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
 
 		if (popFrame.titleBar) {
-			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		} else if (popFrame.titleBarContents) {
-			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		}
 	},
 
@@ -12371,30 +12371,30 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleText, popFrameTitleLinkHref;
+		let popFrameTitleHTML, popFrameTitleLinkHref;
 		if (referenceData == null) {
-			popFrameTitleText = "";
+			let popFrameTitleText = "";
 			if (target.pathname != location.pathname)
 				popFrameTitleText += target.pathname;
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
-			popFrameTitleText = `<code>${popFrameTitleText}</code>`;
+			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
 
 			popFrameTitleLinkHref = target.href;
 		} else {
-			popFrameTitleText = popFrame.classList.contains("full-page")
-								? referenceData.popFrameTitleTextShort
-								: referenceData.popFrameTitleText;
+			popFrameTitleHTML = popFrame.classList.contains("full-page")
+								? referenceData.popFrameTitleShort
+								: referenceData.popFrameTitle;
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
 		if (popFrame.classList.contains("backlinks")) {
-			popFrameTitleText += " (Backlinks)";
+			popFrameTitleHTML += " (Backlinks)";
 		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
-			popFrameTitleText:      popFrameTitleText
+			popFrameTitle:          popFrameTitleHTML
 		});
     },
 
@@ -12721,9 +12721,9 @@ Extracts = { ...Extracts,
     titleForPopFrame_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
         let footnoteNumber = target.querySelector("sup").textContent;
-        let popFrameTitleText = `Footnote #${footnoteNumber}`;
+        let popFrameTitleHTML = `Footnote #${footnoteNumber}`;
 
-        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleHTML);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -12992,7 +12992,7 @@ Extracts = { ...Extracts,
 			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
 
         //  Update pop-frame title.
-        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitleText);
+        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitle);
 	}
 };
 

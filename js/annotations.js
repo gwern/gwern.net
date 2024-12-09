@@ -352,10 +352,10 @@ Annotations = { ...Annotations,
 				thumbnailFigure:          thumbnailFigureHTML,
 				fileIncludes:             fileIncludesHTML
 			},
-			template:                       "annotation-blockquote-inside",
-			popFrameTemplate:               "annotation-blockquote-not",
-			popFrameTitleText:              titleLink.cloneNode(true).trimQuotes().innerHTML,
-			popFrameTitleLinkHref:          titleLinkHref
+			template:                     "annotation-blockquote-inside",
+			popFrameTemplate:             "annotation-blockquote-not",
+			popFrameTitle:                titleLink.cloneNode(true).trimQuotes().innerHTML,
+			popFrameTitleLinkHref:        titleLinkHref
 		};
 	},
 

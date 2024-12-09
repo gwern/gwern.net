@@ -628,7 +628,7 @@ Content = {
 
 				//	Template fields.
 				let titleLineHTML, entryContentHTML, thumbnailFigureHTML;
-				let popFrameTitleText, popFrameTitleLinkHref;
+				let popFrameTitle, popFrameTitleLinkHref;
 				let contentTypeClass = "wikipedia-entry";
 
 				//	Intermediate values.
@@ -729,7 +729,7 @@ Content = {
 				entryContentHTML = contentDocument.innerHTML;
 
 				//	Pop-frame title text and link.
-				popFrameTitleText = newElement("SPAN", null, { innerHTML: titleLineHTML }).textContent;
+				popFrameTitle = newElement("SPAN", null, { innerHTML: titleLineHTML });
 				popFrameTitleLinkHref = articleLink.href;
 
 				//	Attach secondary links (if any) to title line.
@@ -742,7 +742,7 @@ Content = {
 						thumbnailFigure:            thumbnailFigureHTML
 					},
 					contentTypeClass:               contentTypeClass,
-					popFrameTitleText:              popFrameTitleText,
+					popFrameTitle:                  popFrameTitle.innerHTML,
 					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					template:                       "wikipedia-entry-blockquote-inside",
 					popFrameTemplate:               "wikipedia-entry-blockquote-not",
@@ -1238,7 +1238,7 @@ Content = {
                     contentTypeClass:       "tweet",
                     template:               "tweet-blockquote-outside",
 					popFrameTemplate:       "tweet-blockquote-not",
-                    popFrameTitleText:      popFrameTitleText,
+                    popFrameTitle:          popFrameTitleText,
                     popFrameTitleLinkHref:  tweetLinkURL.href,
                 };
             },
@@ -1918,8 +1918,8 @@ Content = {
                     pageBodyClasses:         pageContent.bodyClasses,
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
-                    popFrameTitleText:       popFrameTitleTextParts.join(" "),
-                    popFrameTitleTextShort:  popFrameTitleTextParts.first,
+                    popFrameTitle:           popFrameTitleTextParts.join(" "),
+                    popFrameTitleShort:      popFrameTitleTextParts.first,
                     shouldLocalize:          true
                 }
             },
