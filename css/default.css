@@ -5787,10 +5787,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
-#page-toolbar.mobile .widget button {
+#page-toolbar.mobile .widget button,
+#page-toolbar.mobile .widget a {
+    position: relative;
     height: var(--toolbar-button-size);
 }
-#page-toolbar.mobile .widget button .icon {
+#page-toolbar.mobile .widget button .icon,
+#page-toolbar.mobile .widget a .icon {
     padding: 7px;
 }
 
@@ -6764,6 +6767,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar.mobile .extracts-mode-selector button.select-mode-off .icon {
     padding: 4px;
 }
+#page-toolbar.mobile .dark-mode-selector button .icon {
+	padding: 6px;
+}
 
 /*************************/
 /*  Inline mode selectors.
@@ -6851,6 +6857,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar #search-widget a .icon {
 	padding: 5px;
 }
+#page-toolbar.mobile #search-widget a .icon {
+	padding: 6px;
+}
 
 
 /***************/
@@ -6859,6 +6868,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #page-toolbar #help-widget a .icon {
 	padding: 3px;
+}
+#page-toolbar.mobile #help-widget a .icon {
+	padding: 4px;
 }
 
 
