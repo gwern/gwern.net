@@ -297,6 +297,22 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
     this.classList.add(classes[whichToAdd]);
 };
 
+/***********************************************************************/
+/*  Trims opening/closing quotes from the element’s contents (preserving 
+	internal HTML structure).
+
+	Returns the now-modified element.
+ */
+Element.prototype.trimQuotes = function () {
+	let [ first, last ] = [ this.firstTextNode, this.lastTextNode ];
+	if (   /^['"‘“]/.test(first.textContent) == true
+		&& /['"’”]$/.test(last.textContent)  == true) {
+		first.textContent = first.textContent.slice(1);
+		last.textContent = last.textContent.slice(0, -1);
+	}
+	return this;
+};
+
 /******************************************************************************/
 /*  The first text node of a node or element (or null if an element contains no
     text nodes).

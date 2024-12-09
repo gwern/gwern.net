@@ -1450,6 +1450,17 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
 
+/**********************************************************/
+/*	Strip quotes from title-links in annotation pop-frames.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rewriteAnnotationTitleLinksInPopFrames = (eventInfo) => {
+    GWLog("rewriteAnnotationTitleLinksInPopFrames", "rewrite.js", 1);
+
+	eventInfo.container.querySelector(".data-field.title .title-link")?.trimQuotes();
+}, "rewrite", (info) => (   info.source == "transclude"
+						 && info.contentType == "annotation"
+						 && info.context == "popFrame"));
+
 /***************************************************************************/
 /*  Apply proper classes to inline file-include collapses, both on directory
     index pages and in annotations.
