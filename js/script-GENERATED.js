@@ -14881,9 +14881,13 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
             let mediaBlock = (   mediaElement.closest(".image-row-wrapper")
                               ?? mediaElement.closest(".image-wrapper")
                               ?? mediaElement);
-            if (mediaBlock == mediaElement)
-            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
             outerWrapper.appendChild(mediaBlock);
+
+			//	Ensure proper wrapping.
+            if (   mediaBlock == mediaElement
+            	|| (   mediaBlock.matches(".image-wrapper") == false
+            		&& mediaElement.closest(".image-wrapper") == null))
+            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
         });
 
         //  Wrap the caption (if any) in a caption wrapper.
