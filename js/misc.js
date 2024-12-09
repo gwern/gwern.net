@@ -2069,7 +2069,22 @@ GW.search = {
 
             //  Pin popup and focus search box if widget is clicked.
             GW.search.searchWidgetLink.addActivateEvent((event) => {
-                GW.search.pinSearchPopup();
+				if (GW.search.searchPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.search.pinSearchPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+				} else {
+					GW.search.pinSearchPopup();
+				}
             });
 
             //  Add popup spawn event handler.
@@ -2146,7 +2161,22 @@ GW.help = {
 
             //  Pin popup if widget is clicked.
             GW.help.helpWidgetLink.addActivateEvent((event) => {
-                GW.help.pinHelpPopup();
+				if (GW.help.helpPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.help.pinHelpPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.help.helpWidgetId} a`));
+				} else {
+					GW.help.pinHelpPopup();
+				}
             });
 
             //  Add popup spawn event handler.
