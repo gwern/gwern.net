@@ -9219,7 +9219,12 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			If true, a GW.contentDidLoad event is fired on the filled template.
  */
 //	(string, string|object, object, object) => DocumentFragment
-function fillTemplate(template, data = null, context = null, options = { }) {
+function fillTemplate(template, data = null, context = null, options) {
+	options = Object.assign({
+		preserveSurroundingWhitespaceInConditionals: false,
+		fireContentLoadEvent: false
+	}, options);
+
 	if (   template == null
 		|| template == "LOADING_FAILED")
 		return null;
