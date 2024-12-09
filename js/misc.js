@@ -186,15 +186,14 @@ function versionedAssetURL(pathname) {
 	sequenceIndex (string)
 		If this field is set to an integer value, then, instead of returning a 
 		random asset pathname out of the asset pathnames matching the provided 
-		pattern, selects the i’th one, where i is equal to sequenceIndex modulo 
-		the number of matching asset pathnames.
+		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1) 
+		modulo the number of matching asset pathnames.
 
 		If this field is set to a string value, then it must be either “next”
 		or “previous”, and the `sequenceCurrent` field must also be set; if 
 		these conditions are not met, null is returned. (See the 
 		`sequenceCurrent` field, below, for details on this option.)
 
-	sequenceCurrent (integer)
 	sequenceCurrent (string)
 		If the `sequenceIndex` field is not set to a string value of either
 		“next” or “previous”, this field is ignored.
@@ -210,18 +209,12 @@ function versionedAssetURL(pathname) {
 		patterns is returned (wrapping around to the last value after the 
 		first).
 
-		If the value of this field is an integer, then it behaves the same as if
-		the value were set to the asset pathname at the index (in the array of
-		asset pathnames that match the provided pattern) equal to 
-		sequenceCurrent modulo the number of matching asset pathnames.
-
-		If the value of this field is not an integer, and it does not match any 
-		of the asset pathnames that match the provided pattern (including if it
-		is null), then, if `sequenceIndex` is set to “next”, it behaves as if 
-		`sequenceIndex` had been set to 0; and if `sequenceIndex` is set to 
-		“previous”, it behaves as if `sequenceIndex` had been set to -1 (i.e., 
-		the first or the last pattern in the set of matching patterns is 
-		returned).
+		If the value of this field does not match any of the asset pathnames 
+		that match the provided pattern (including if it is null), then, if 
+		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had 
+		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves 
+		as if `sequenceIndex` had been set to 0 (i.e., the first or the last 
+		pattern in the set of matching patterns is returned).
  */
 function getAssetPathname(assetPathnamePattern, options) {
 	options = Object.assign({
@@ -241,14 +234,12 @@ function getAssetPathname(assetPathnamePattern, options) {
 	} else if (options.sequenceIndex == null) {
 		return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
 	} else if (typeof options.sequenceIndex == "number") {
-		return matchingAssetPathnames[modulo(options.sequenceIndex, matchingAssetPathnames.length)];
+		return matchingAssetPathnames[modulo(options.sequenceIndex - 1, matchingAssetPathnames.length)];
 	} else if (typeof options.sequenceIndex == "string") {
 		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
 			return null;
 
-		let currentIndex = typeof options.sequenceCurrent == "number"
-						   ? options.sequenceCurrent
-						   : matchingAssetPathnames.indexOf(options.sequenceCurrent);
+		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
 		if (currentIndex == -1) {
 			return (options.sequenceIndex == "next"
 					? matchingAssetPathnames.first
@@ -1197,7 +1188,7 @@ function getPageScrollPosition() {
 /*  Returns a saved (in local storage) integer, or 0 if nothing saved.
  */
 function getSavedCount(key) {
-    return parseInt(localStorage.getItem(key) || "0");
+    return parseInt(localStorage.getItem(key) ?? "0");
 }
 
 /*****************************************************************************/
@@ -1205,6 +1196,13 @@ function getSavedCount(key) {
  */
 function incrementSavedCount(key) {
     localStorage.setItem(key, getSavedCount(key) + 1);
+}
+
+/*****************************************************/
+/*	Reset (delete) a saved (in local storage) integer.
+ */
+function resetSavedCount(key) {
+	localStorage.removeItem(key);
 }
 
 
