@@ -2691,6 +2691,9 @@ body.reader-mode-active .markdownBody a .link-icon-hook {
     display: none;
 }
 
+body.reader-mode-active .markdownBody a .recently-modified-icon-hook {
+	display: none;
+}
 
 /*	Preserve the positioning of related elements by hiding visibility, instead 
 	of deleting entirely.
@@ -2787,6 +2790,15 @@ body.reader-mode-active .markdownBody p code {
 
 body.reader-mode-active .date-range .subsup {
     margin: 0;
+}
+
+/*	Anti-style zone.
+ */
+body.reader-mode-active .reader-mode-style-not * {
+	font-weight: inherit;
+	font-style: inherit;
+	font-variant: inherit;
+	color: inherit;
 }
 
 /*  Mobile layout adjustments.
