@@ -1336,15 +1336,27 @@ GW.pageToolbar = {
             return null;
 
         widget.classList.add("flashing");
-        if (options.showSelectedButtonLabel)
-            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+        if (options.showSelectedButtonLabel) {
+            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, 
+            		   GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
+        }
         setTimeout(() => {
             widget.swapClasses([ "flashing", "flashing-fade" ], 1);
             setTimeout(() => {
                 widget.classList.remove("flashing-fade");
             }, GW.pageToolbar.widgetFlashFallDuration);
-            if (options.showSelectedButtonLabel)
-                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, GW.pageToolbar.widgetFlashFallDuration * 0.5);
+            if (options.showSelectedButtonLabel) {
+                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, 
+                		   GW.pageToolbar.widgetFlashFallDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashFallDuration);
+            }
         }, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
     },
 
