@@ -78,7 +78,7 @@ Transclude.templates = {
 	href="<{popFrameTitleLinkHref}>"
 	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
-		><{popFrameTitleText}></a>`,
+		><{popFrameTitle}></a>`,
 	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
 		<a 

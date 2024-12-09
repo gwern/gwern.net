@@ -25,7 +25,8 @@ function replacePageLogoWhenPossible(replaceLogo) {
         replaceLogo(logoImage);
     } else {
         let observer = new MutationObserver((mutationsList, observer) => {
-            if (   window.randomAsset
+            if (   window.getSavedCount
+            	&& window.getAssetPathname
             	&& window.versionedAssetURL
             	&& (logoImage = document.querySelector(logoSelector))) {
                 observer.disconnect();
@@ -36,21 +37,12 @@ function replacePageLogoWhenPossible(replaceLogo) {
     }
 }
 
-/*****************************************************************************/
+/******************************************************************************/
 /*  Inject a special page logo image of a specific type (‘halloween’,
     ‘christmas’, etc.). Directory structure and file naming for the
     specified logo type must match existing holiday logos.
 
     Available option fields:
-
-    randomize (boolean)
-        If set to `true`, selects one of the multiple available logos of the
-        specified type, from image files named according to a scheme that
-        includes a number in the name. Otherwise, selects the single,
-        deterministically named image file (which is named according to a
-        scheme determined by the type and mode option).
-
-		NOTE: This field is ignored if an identifier (see below) is given.
 
 	mode (string)
 		May be “light” or “dark”, or null. Affects the scheme that determines
@@ -65,8 +57,56 @@ function replacePageLogoWhenPossible(replaceLogo) {
 		numeric identifier string ("1", "14", etc.); the logo image file with
 		that numeric identifier in the file name will be selected.
 
-		NOTE: If this option field is specified, then the `randomize` field is
-		ignored.
+		NOTE: If this field is set, then the `sequence` and `randomize` fields 
+		are ignored.
+
+    randomize (boolean)
+	sequence (string)
+		[must be one of “nextAfterSaved”, “previousBeforeSaved”, 
+		 “nextAfterCurrent”, or “previousBeforeCurrent”; any other value is 
+		 equivalent to a null value]
+
+		These two fields together define the sequencing behavior, over multiple 
+		invocations of this function (either within a single page load session 
+		or across multiple page loads), of the selection of a logo from multiple 
+		available logos of the specified type.
+
+		If neither `randomize` nor `sequence` are set, then only a single,
+		specific logo image file will match the generated pattern (it will be
+		an un-numbered file, if `identifier` is not set; or it will be a
+		specific numbered one, if `identifier` is set).
+
+		If `randomize` is set to true but `sequence` is not set, then a logo
+		image file will be selected at random out of the available logo image
+		files that match the specified criteria (type, mode, scale).	
+
+		If `sequence` is set to either “nextAfterCurrent” or 
+		“previousBeforeCurrent”, then the next logo image file after the 
+		currently set logo, or the previous logo image file before the currently
+		set logo (respectively) will be selected. If the currently set logo is
+		not one of the logo image files that match the specified criteria, then
+		the first or the last logo image files (respectively) out of the 
+		available matching ones will be selected. (The `randomize` field is
+		ignored in this case.)
+
+		If `sequence` is set to either “nextAfterSaved” or 
+		“previousBeforeSaved”, then the saved index of the previously selected
+		logo is retrieved from localStorage.
+
+		If there is no saved index, and `randomize` is set to true, then a
+		starting index is generated randomly, in the range [1,1E6].
+
+		Otherwise, if `sequence` is set to “nextAfterSaved”, the saved index
+		is incremented by 1 (or else set to 1, if there is no saved index yet);
+		if `sequence` is set to “previousBeforeSaved”, the saved index is 
+		decremented by 1 (or else set to 0, if there is no saved index yet).
+
+		(In either case, the new index is saved to localStorage.)
+
+		That logo image will be then be selected which is the i’th in the set
+		of logo image files that match the specified criteria, where i is equal
+		to the new sequence index modulo the number of matching logo image 
+		files.
 
 	link (URL)
 		Points the logo link to the specified URL. (If this field is not set,
@@ -76,33 +116,42 @@ function replacePageLogoWhenPossible(replaceLogo) {
 function injectSpecialPageLogo(logoType, options) {
 	options = Object.assign({
 		mode: null,
-		randomize: false,
 		identifier: null,
+		randomize: false,
+		sequence: null,
 		link: null
 	}, options);
 
-    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
+	let allowedSequenceModes = [
+		"nextAfterSaved",
+		"previousBeforeSaved",
+		"nextAfterCurrent",
+		"previousBeforeCurrent" 
+	];
 
 	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
     let logoIdentifierRegexpString = ``;
-    if (options.identifier)
+    if (options.identifier) {
     	logoIdentifierRegexpString = `-${options.identifier}`;
-    else if (options.randomize)
+    } else if (   options.randomize == true
+    		   || allowedSequenceModes.includes(options.sequence)) {
     	logoIdentifierRegexpString = `-%R`;
+    }
 
 	/*	Bitmap files come in several scales (for different pixel densities of
 		display); SVGs are singular.
 	 */
+    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
     let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))`;
 
 	/*	File name pattern further depends on whether we have separate light
 		and dark logos of this sort.
 	 */
-	let logoPathname = `/static/img/logo/${logoType}/`
-					 + (options.mode
-					 	? `${options.mode}/logo-${logoType}-${options.mode}`
-					 	: `logo-${logoType}`)
-					 + `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
+	let logoPathnamePattern = `/static/img/logo/${logoType}/`
+							+ (options.mode
+							   ? `${options.mode}/logo-${logoType}-${options.mode}`
+							   : `logo-${logoType}`)
+							+ `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
 
     //  Temporarily brighten logo, then fade slowly after set duration.
     let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
@@ -125,30 +174,62 @@ function injectSpecialPageLogo(logoType, options) {
         });
     };
 
-    /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
-        and so cannot be called prior to this.
+    /*  Note that getAssetPathname() and versionedAssetURL() are defined in 
+    	misc.js, and so cannot be called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
 		//	Get enclosing link, in case we have to modify it.
 		let logoLink = logoImage.closest("a");
 
-        //  Get new logo URL (random, if need be).
-		logoPathname = randomAsset(logoPathname);
+        //  Get new logo URL (specified, random, or sequenced).
+        let sequenceIndex, sequenceCurrent;
+        if (allowedSequenceModes.includes(options.sequence) == false) {
+        	sequenceIndex = null;
+        	sequenceCurrent = null;
+        } else if (options.sequence.endsWith("Current")) {
+        	for (let prefix of [ "next", "previous" ])
+        		if (options.sequence.startsWith(prefix))
+        			sequenceIndex = prefix;
+
+			sequenceCurrent = URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
+											?? logoImage.querySelector("img")?.src).pathname;
+        } else {
+        	let savedIndexKey = `logo-sequence-index-${logoType}`;
+        	let savedIndex = localStorage.getItem(savedIndexKey);
+        	if (   savedIndex == null
+        		&& options.randomize) {
+        		sequenceIndex = rollDie(1E6);
+        		localStorage.setItem(savedIndexKey, sequenceIndex);
+        	} else if (options.sequence.startsWith("next")) {
+        		sequenceIndex = savedIndex == null 
+        						? 1
+        						: parseInt(savedIndex) + 1;
+        		localStorage.setItem(savedIndexKey, sequenceIndex);
+        	} else {
+        		sequenceIndex = savedIndex == null 
+        						? 0
+        						: parseInt(savedIndex) - 1;
+        		localStorage.setItem(savedIndexKey, sequenceIndex);
+        	}
+
+        	sequenceCurrent = null;
+        }
+		let logoPathname = getAssetPathname(logoPathnamePattern, {
+			sequenceIndex: sequenceIndex,
+			sequenceCurrent: sequenceCurrent
+		});
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 
 		if (logoPathname.endsWith(".svg")) {
-			//	Create new <svg> element.
-			let svgContainer = elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL));
-
             //  Inject inline SVG.
-            logoImage.replaceWith(svgContainer);
+            logoImage.replaceWith(elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL)));
         } else {
             //  Create new image element and wrapper.
             let imageWrapper = newElement("SPAN", {
                 class: "logo-image"
             });
-            imageWrapper.append(newElement("IMG", {
+            imageWrapper.appendChild(newElement("IMG", {
                 class: "figure-not",
                 src: versionedLogoURL.pathname + versionedLogoURL.search
             }));
@@ -166,24 +247,31 @@ function injectSpecialPageLogo(logoType, options) {
     });
 }
 
+/*******************************************************************/
+/*	Resets the saved sequence index of the specified page logo type.
+
+	(See comment for injectSpecialPageLogo() for more information.)
+ */
+function resetPageLogoSequenceIndex(logoType) {
+	localStorage.removeItem(`logo-sequence-index-${logoType}`);
+}
+
 /******************************************/
 /*	Reset the page logo to the default one.
  */
 function resetPageLogo() {
-    /*  Note that randomAsset() and versionedAssetURL() are defined in misc.js,
-        and so cannot be called prior to this.
+    /*  Note that versionedAssetURL() is defined in misc.js, and so cannot be 
+    	called too early.
      */
     replacePageLogoWhenPossible(logoImage => {
 		//	Get enclosing link.
 		let logoLink = logoImage.closest("a");
 
+		//	Get versioned logo URL.
         let versionedLogoURL = versionedAssetURL("/static/img/logo/logo-smooth.svg");
 
-		//	Create new <svg> element.
-		let svgContainer = elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL));
-
 		//	Inject inline SVG.
-		logoImage.replaceWith(svgContainer);
+		logoImage.replaceWith(elementFromHTML(svgPageLogoContainerSourceForURL(versionedLogoURL)));
 
 		//	Point the logo link back to the index page.
 		logoLink.href = "/index";
@@ -217,16 +305,24 @@ GW.specialOccasions = [
         let newLogoLink = URLFromString("/dropcap#halloween");
         doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth",
            (mediaQuery) => {
-        	injectSpecialPageLogo("halloween", { mode: "dark", randomize: true, link: newLogoLink });
+        	injectSpecialPageLogo("halloween", {
+        		mode: "dark", 
+        		sequence: "previousBeforeSaved",
+        		link: newLogoLink
+        	});
         }, (mediaQuery) => {
-			injectSpecialPageLogo("halloween", { mode: "dark", identifier: "1", link: newLogoLink });
+			injectSpecialPageLogo("halloween", {
+				mode: "dark",
+				identifier: "1",
+				link: newLogoLink
+			});
         }, (mediaQuery) => {
         	resetPageLogo();
         });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
-
         cancelDoWhenMatchMedia("GW.setHalloweenPageLogoForViewportWidth");
+		resetPageLogoSequenceIndex("halloween");
       } ],
     [ "christmas", isItChristmas, () => {
         //  Different special styles for light and dark mode.
@@ -238,9 +334,20 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#christmas");
-        injectSpecialPageLogo("christmas", { mode: DarkMode.computedMode(), randomize: true, link: newLogoLink });
+        doWhenMatchMedia(matchMedia(""), "GW.setChristmasPageLogo",
+           (mediaQuery) => {
+			injectSpecialPageLogo("christmas", {
+				mode: DarkMode.computedMode(),
+				sequence: "previousBeforeSaved",
+				link: newLogoLink
+			});
+        }, null, (mediaQuery) => {        	
+			resetPageLogo();
+        });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
+        cancelDoWhenMatchMedia("GW.setChristmasPageLogo");
+		resetPageLogoSequenceIndex("christmas");
       } ],
     [ "april-fools", isItAprilFools, () => {
         document.body.classList.add("special-april-fools");

@@ -132,8 +132,38 @@ DarkMode = { ...DarkMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			//	Actually change the mode.
-			DarkMode.setMode(selectedMode);
+			//	Check if this is a click or an accesskey press.
+			if (event.pointerId == -1) {
+				button.blur();
+
+				let widgetFlashStayDuration = 1500;
+				let autoToggleDelay = 250;
+
+				//	Expand toolbar.
+				GW.pageToolbar.toggleCollapseState(false);
+
+				setTimeout(() => {
+					GW.pageToolbar.flashWidget("dark-mode-selector", {
+						flashStayDuration: widgetFlashStayDuration,
+						showSelectedButtonLabel: true,
+						highlightSelectedButtonLabelAfterDelay: autoToggleDelay
+					});
+					setTimeout(() => {
+						//	Actually change the mode.
+						DarkMode.setMode(selectedMode);
+
+						//	Collapse toolbar, after a delay.
+						GW.pageToolbar.toggleCollapseState(true, {
+															   delay: GW.pageToolbar.demoCollapseDelay
+																	+ widgetFlashStayDuration
+																	+ GW.pageToolbar.widgetFlashFallDuration
+														   });
+					}, GW.pageToolbar.widgetFlashRiseDuration + autoToggleDelay);
+				}, GW.pageToolbar.collapseDuration);
+			} else {
+				//	Actually change the mode.
+				DarkMode.setMode(selectedMode);
+			}
 		}, DarkMode, "modeSelectorInteractable");
 	},
 
@@ -186,6 +216,8 @@ DarkMode = { ...DarkMode,
 			button.classList.remove("active");
 			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
+
+			//	Remove “[This option is currently selected.]” note.
 			if (button.title.endsWith(DarkMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * DarkMode.selectedModeOptionNote.length));
 
@@ -194,12 +226,17 @@ DarkMode = { ...DarkMode,
 				let label = button.querySelector(".label");
 				label.innerHTML = label.dataset.unselectedLabel;
 			}
+
+			//	Clear accesskey.
+			button.accessKey = "";
 		});
 
 		//	Set the correct button to be selected.
 		modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
+
+			//	Append “[This option is currently selected.]” note.
 			button.title += DarkMode.selectedModeOptionNote;
 
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
@@ -208,6 +245,10 @@ DarkMode = { ...DarkMode,
 				label.innerHTML = label.dataset.selectedLabel;
 			}
 		});
+
+		//	Set accesskey.
+		let buttons = Array.from(modeSelector.querySelectorAll("button"));
+		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "d";
 
 		/*	Ensure the right button (light or dark) has the “currently active” 
 			indicator, if the current mode is ‘auto’.

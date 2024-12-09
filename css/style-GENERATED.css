@@ -6933,10 +6933,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
-#page-toolbar.mobile .widget button {
+#page-toolbar.mobile .widget button,
+#page-toolbar.mobile .widget a {
+    position: relative;
     height: var(--toolbar-button-size);
 }
-#page-toolbar.mobile .widget button .icon {
+#page-toolbar.mobile .widget button .icon,
+#page-toolbar.mobile .widget a .icon {
     padding: 7px;
 }
 
@@ -7910,6 +7913,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar.mobile .extracts-mode-selector button.select-mode-off .icon {
     padding: 4px;
 }
+#page-toolbar.mobile .dark-mode-selector button .icon {
+	padding: 6px;
+}
 
 /*************************/
 /*  Inline mode selectors.
@@ -7997,6 +8003,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar #search-widget a .icon {
 	padding: 5px;
 }
+#page-toolbar.mobile #search-widget a .icon {
+	padding: 7px;
+}
 
 
 /***************/
@@ -8005,6 +8014,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #page-toolbar #help-widget a .icon {
 	padding: 3px;
+}
+#page-toolbar.mobile #help-widget a .icon {
+	padding: 5px;
 }
 
 
@@ -8826,8 +8838,9 @@ a[data-link-icon='𝓡 𝐒'] { /* Rolling Stone */
 
 a[data-link-icon='≈'] { /* similar-links (ALMOST EQUAL TO) */
     --link-icon-size: 0.95em;
-    --link-icon-offset-y: 0;
-    --link-icon-opacity: 0.85;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0em;
+    --link-icon-opacity: 0.75;
 }
 
 a[data-link-icon='♔'] { /* WBW / Wait But Why */
@@ -8956,7 +8969,7 @@ a[data-link-icon='apple'] {
 
 a[data-link-icon='arrows-pointing-inwards-to-dot'] { /* bl backlinks 'implosion' */
     --link-icon-size: 0.85em;
-    --link-icon-offset-y: 0.20em;
+    --link-icon-offset-y: 0.25em;
     --link-icon-opacity: 0.65;
 }
 
@@ -8974,7 +8987,7 @@ a[data-link-icon='audio-waveform-lines'] { /* Radiolab */
 
 a[data-link-icon='bibliography'] { /* lb link-bibliography 'table of contents' */
     --link-icon-size: 0.60em;
-    --link-icon-offset-y: 0.15em;
+    --link-icon-offset-y: 0.10em;
 }
 
 a[data-link-icon='bitcoin'] {

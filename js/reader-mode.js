@@ -209,6 +209,8 @@ ReaderMode = { ...ReaderMode,
 			button.classList.remove("active");
 			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
+
+			//	Remove “[This option is currently selected.]” note.
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
 

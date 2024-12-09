@@ -160,31 +160,98 @@ function versionedAssetURL(pathname) {
 }
 
 /*****************************************************************************/
-/*  Return a random alternate asset pathname (not versioned), given a pathname
-    with ‘%R’ where a number should be, e.g.:
+/*  Return an asset pathname (not versioned), given a pathname regular 
+	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
+	a number should be, e.g.:
 
-        /static/img/logo/christmas/light/logo-christmas-light-%R-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
 
-    will return
+    will return files with pathnames like:
 
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.jpg
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.webp
+		/static/img/logo/christmas/light/logo-christmas-light-1.svg
 
-    (or -2, -3, etc., selecting randomly from available numbered alternates).
-
-	Alternatively, a valid regular expression pattern (in string form, not a 
-	RegExp object) may be provided.
+    (Or -2, -3, etc.)
 
     Specified assets must be listed in the versioned asset database.
+
+	By default, selects uniform-randomly from all available asset pathnames
+	matching the provided pattern. (But see option fields, below.)
+
+	Available option fields:
+
+	sequenceIndex (integer)
+	sequenceIndex (string)
+		If this field is set to an integer value, then, instead of returning a 
+		random asset pathname out of the asset pathnames matching the provided 
+		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1) 
+		modulo the number of matching asset pathnames.
+
+		If this field is set to a string value, then it must be either “next”
+		or “previous”, and the `sequenceCurrent` field must also be set; if 
+		these conditions are not met, null is returned. (See the 
+		`sequenceCurrent` field, below, for details on this option.)
+
+	sequenceCurrent (string)
+		If the `sequenceIndex` field is not set to a string value of either
+		“next” or “previous”, this field is ignored.
+
+		If `sequenceIndex` is set to “next”, and the value of this field is 
+		equal to a value of one of the asset pathnames that match the provided
+		pattern, then the next pattern in the set of matching patterns is
+		returned (wrapping around to the first value after the last one).
+
+		If `sequenceIndex` is set to “previous”, and the value of this field
+		is equal to a value of one of the asset pathnames that match the
+		provided pattern, then the previous pattern in the set of matching 
+		patterns is returned (wrapping around to the last value after the 
+		first).
+
+		If the value of this field does not match any of the asset pathnames 
+		that match the provided pattern (including if it is null), then, if 
+		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had 
+		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves 
+		as if `sequenceIndex` had been set to 0 (i.e., the first or the last 
+		pattern in the set of matching patterns is returned).
  */
-function randomAsset(assetPathnamePattern) {
+function getAssetPathname(assetPathnamePattern, options) {
+	options = Object.assign({
+		sequenceIndex: null,
+		sequenceCurrent: null
+	}, options);
+
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
-    let alternateAssetPathnames = [ ];
+    let matchingAssetPathnames = [ ];
     for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
-            alternateAssetPathnames.push(versionedAssetPathname);
+            matchingAssetPathnames.push(versionedAssetPathname);
     }
 
-    return (alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1] ?? null);
+	if (matchingAssetPathnames.length == 0) {
+		return null;
+	} else if (options.sequenceIndex == null) {
+		return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
+	} else if (typeof options.sequenceIndex == "number") {
+		return matchingAssetPathnames[modulo(options.sequenceIndex - 1, matchingAssetPathnames.length)];
+	} else if (typeof options.sequenceIndex == "string") {
+		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
+			return null;
+
+		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
+		if (currentIndex == -1) {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames.first
+					: matchingAssetPathnames.last);
+		} else {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames[modulo(currentIndex + 1, matchingAssetPathnames.length)]
+					: matchingAssetPathnames[modulo(currentIndex - 1, matchingAssetPathnames.length)]);
+		}
+	} else {
+		return null;
+	}
 }
 
 
@@ -998,7 +1065,7 @@ function randomDropcapURL(dropcapType, letter) {
     let mode = DarkMode.computedMode();
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-    let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
+    let dropcapPathname = getAssetPathname(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
     if (dropcapPathname == null)
         return null;
 
@@ -1121,7 +1188,7 @@ function getPageScrollPosition() {
 /*  Returns a saved (in local storage) integer, or 0 if nothing saved.
  */
 function getSavedCount(key) {
-    return parseInt(localStorage.getItem(key) || "0");
+    return parseInt(localStorage.getItem(key) ?? "0");
 }
 
 /*****************************************************************************/
@@ -1129,6 +1196,13 @@ function getSavedCount(key) {
  */
 function incrementSavedCount(key) {
     localStorage.setItem(key, getSavedCount(key) + 1);
+}
+
+/*****************************************************/
+/*	Reset (delete) a saved (in local storage) integer.
+ */
+function resetSavedCount(key) {
+	localStorage.removeItem(key);
 }
 
 
@@ -1262,15 +1336,27 @@ GW.pageToolbar = {
             return null;
 
         widget.classList.add("flashing");
-        if (options.showSelectedButtonLabel)
-            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+        if (options.showSelectedButtonLabel) {
+            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, 
+            		   GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
+        }
         setTimeout(() => {
             widget.swapClasses([ "flashing", "flashing-fade" ], 1);
             setTimeout(() => {
                 widget.classList.remove("flashing-fade");
             }, GW.pageToolbar.widgetFlashFallDuration);
-            if (options.showSelectedButtonLabel)
-                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, GW.pageToolbar.widgetFlashFallDuration * 0.5);
+            if (options.showSelectedButtonLabel) {
+                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, 
+                		   GW.pageToolbar.widgetFlashFallDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashFallDuration);
+            }
         }, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
     },
 
@@ -1995,7 +2081,22 @@ GW.search = {
 
             //  Pin popup and focus search box if widget is clicked.
             GW.search.searchWidgetLink.addActivateEvent((event) => {
-                GW.search.pinSearchPopup();
+				if (GW.search.searchPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.search.pinSearchPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+				} else {
+					GW.search.pinSearchPopup();
+				}
             });
 
             //  Add popup spawn event handler.
@@ -2072,7 +2173,22 @@ GW.help = {
 
             //  Pin popup if widget is clicked.
             GW.help.helpWidgetLink.addActivateEvent((event) => {
-                GW.help.pinHelpPopup();
+				if (GW.help.helpPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.help.pinHelpPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.help.helpWidgetId} a`));
+				} else {
+					GW.help.pinHelpPopup();
+				}
             });
 
             //  Add popup spawn event handler.

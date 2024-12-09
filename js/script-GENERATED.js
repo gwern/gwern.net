@@ -717,31 +717,98 @@ function versionedAssetURL(pathname) {
 }
 
 /*****************************************************************************/
-/*  Return a random alternate asset pathname (not versioned), given a pathname
-    with ‘%R’ where a number should be, e.g.:
+/*  Return an asset pathname (not versioned), given a pathname regular 
+	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
+	a number should be, e.g.:
 
-        /static/img/logo/christmas/light/logo-christmas-light-%R-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
 
-    will return
+    will return files with pathnames like:
 
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.jpg
+        /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.webp
+		/static/img/logo/christmas/light/logo-christmas-light-1.svg
 
-    (or -2, -3, etc., selecting randomly from available numbered alternates).
-
-	Alternatively, a valid regular expression pattern (in string form, not a 
-	RegExp object) may be provided.
+    (Or -2, -3, etc.)
 
     Specified assets must be listed in the versioned asset database.
+
+	By default, selects uniform-randomly from all available asset pathnames
+	matching the provided pattern. (But see option fields, below.)
+
+	Available option fields:
+
+	sequenceIndex (integer)
+	sequenceIndex (string)
+		If this field is set to an integer value, then, instead of returning a 
+		random asset pathname out of the asset pathnames matching the provided 
+		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1) 
+		modulo the number of matching asset pathnames.
+
+		If this field is set to a string value, then it must be either “next”
+		or “previous”, and the `sequenceCurrent` field must also be set; if 
+		these conditions are not met, null is returned. (See the 
+		`sequenceCurrent` field, below, for details on this option.)
+
+	sequenceCurrent (string)
+		If the `sequenceIndex` field is not set to a string value of either
+		“next” or “previous”, this field is ignored.
+
+		If `sequenceIndex` is set to “next”, and the value of this field is 
+		equal to a value of one of the asset pathnames that match the provided
+		pattern, then the next pattern in the set of matching patterns is
+		returned (wrapping around to the first value after the last one).
+
+		If `sequenceIndex` is set to “previous”, and the value of this field
+		is equal to a value of one of the asset pathnames that match the
+		provided pattern, then the previous pattern in the set of matching 
+		patterns is returned (wrapping around to the last value after the 
+		first).
+
+		If the value of this field does not match any of the asset pathnames 
+		that match the provided pattern (including if it is null), then, if 
+		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had 
+		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves 
+		as if `sequenceIndex` had been set to 0 (i.e., the first or the last 
+		pattern in the set of matching patterns is returned).
  */
-function randomAsset(assetPathnamePattern) {
+function getAssetPathname(assetPathnamePattern, options) {
+	options = Object.assign({
+		sequenceIndex: null,
+		sequenceCurrent: null
+	}, options);
+
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
-    let alternateAssetPathnames = [ ];
+    let matchingAssetPathnames = [ ];
     for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
-            alternateAssetPathnames.push(versionedAssetPathname);
+            matchingAssetPathnames.push(versionedAssetPathname);
     }
 
-    return (alternateAssetPathnames[rollDie(alternateAssetPathnames.length) - 1] ?? null);
+	if (matchingAssetPathnames.length == 0) {
+		return null;
+	} else if (options.sequenceIndex == null) {
+		return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
+	} else if (typeof options.sequenceIndex == "number") {
+		return matchingAssetPathnames[modulo(options.sequenceIndex - 1, matchingAssetPathnames.length)];
+	} else if (typeof options.sequenceIndex == "string") {
+		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
+			return null;
+
+		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
+		if (currentIndex == -1) {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames.first
+					: matchingAssetPathnames.last);
+		} else {
+			return (options.sequenceIndex == "next"
+					? matchingAssetPathnames[modulo(currentIndex + 1, matchingAssetPathnames.length)]
+					: matchingAssetPathnames[modulo(currentIndex - 1, matchingAssetPathnames.length)]);
+		}
+	} else {
+		return null;
+	}
 }
 
 
@@ -1555,7 +1622,7 @@ function randomDropcapURL(dropcapType, letter) {
     let mode = DarkMode.computedMode();
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-    let dropcapPathname = randomAsset(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
+    let dropcapPathname = getAssetPathname(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
     if (dropcapPathname == null)
         return null;
 
@@ -1678,7 +1745,7 @@ function getPageScrollPosition() {
 /*  Returns a saved (in local storage) integer, or 0 if nothing saved.
  */
 function getSavedCount(key) {
-    return parseInt(localStorage.getItem(key) || "0");
+    return parseInt(localStorage.getItem(key) ?? "0");
 }
 
 /*****************************************************************************/
@@ -1686,6 +1753,13 @@ function getSavedCount(key) {
  */
 function incrementSavedCount(key) {
     localStorage.setItem(key, getSavedCount(key) + 1);
+}
+
+/*****************************************************/
+/*	Reset (delete) a saved (in local storage) integer.
+ */
+function resetSavedCount(key) {
+	localStorage.removeItem(key);
 }
 
 
@@ -1819,15 +1893,27 @@ GW.pageToolbar = {
             return null;
 
         widget.classList.add("flashing");
-        if (options.showSelectedButtonLabel)
-            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+        if (options.showSelectedButtonLabel) {
+            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, 
+            		   GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
+        }
         setTimeout(() => {
             widget.swapClasses([ "flashing", "flashing-fade" ], 1);
             setTimeout(() => {
                 widget.classList.remove("flashing-fade");
             }, GW.pageToolbar.widgetFlashFallDuration);
-            if (options.showSelectedButtonLabel)
-                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, GW.pageToolbar.widgetFlashFallDuration * 0.5);
+            if (options.showSelectedButtonLabel) {
+                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, 
+                		   GW.pageToolbar.widgetFlashFallDuration * 0.5);
+
+			if (options.highlightSelectedButtonLabelAfterDelay != null)
+				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); }, 
+						   GW.pageToolbar.widgetFlashFallDuration);
+            }
         }, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
     },
 
@@ -2552,7 +2638,22 @@ GW.search = {
 
             //  Pin popup and focus search box if widget is clicked.
             GW.search.searchWidgetLink.addActivateEvent((event) => {
-                GW.search.pinSearchPopup();
+				if (GW.search.searchPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.search.pinSearchPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
+				} else {
+					GW.search.pinSearchPopup();
+				}
             });
 
             //  Add popup spawn event handler.
@@ -2629,7 +2730,22 @@ GW.help = {
 
             //  Pin popup if widget is clicked.
             GW.help.helpWidgetLink.addActivateEvent((event) => {
-                GW.help.pinHelpPopup();
+				if (GW.help.helpPopup == null) {
+					//  When the popup spawns, pin it.
+					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+						requestAnimationFrame(() => {
+							GW.help.pinHelpPopup();
+						});
+					}, {
+						once: true,
+						condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+					});
+
+					//  Spawn popup.
+					Popups.spawnPopup(document.querySelector(`#${GW.help.helpWidgetId} a`));
+				} else {
+					GW.help.pinHelpPopup();
+				}
             });
 
             //  Add popup spawn event handler.
@@ -6490,22 +6606,10 @@ Annotations = { ...Annotations,
 				fileIncludesHTML = fileIncludesElement.innerHTML;
 		}
 
-		//	Pop-frame title text.
-		let popFrameTitleLink = titleLink.cloneNode(true);
-		//	Trim quotes from both title usage: because it is positioned & bolded, the quotes add nothing
-        //  (but we leave alone the <em>s in some titles, as generated by the backend, because that is for book titles).
-		let [ first, last ] = [ popFrameTitleLink.firstTextNode, popFrameTitleLink.lastTextNode ];
-		if (   /^['"‘“]/.test(first.textContent) == true
-			&& /['"’”]$/.test(last.textContent)  == true) {
-			first.textContent = first.textContent.slice(1);
-			last.textContent = last.textContent.slice(0, -1);
-		}
-		let popFrameTitleText = popFrameTitleLink.innerHTML;
-
 		return {
 			document: response,
 			content: {
-				title:                    popFrameTitleText,
+				title:                    titleLink.innerHTML,
 				titleLinkHref:            titleLinkHref,
 				titleLinkClass:           titleLinkClasses.join(" "),
 				titleLinkDataAttributes:  titleLinkDataAttributes,
@@ -6517,10 +6621,10 @@ Annotations = { ...Annotations,
 				thumbnailFigure:          thumbnailFigureHTML,
 				fileIncludes:             fileIncludesHTML
 			},
-			template:                       "annotation-blockquote-inside",
-			popFrameTemplate:               "annotation-blockquote-not",
-			popFrameTitleText:              popFrameTitleText,
-			popFrameTitleLinkHref:          titleLinkHref
+			template:                     "annotation-blockquote-inside",
+			popFrameTemplate:             "annotation-blockquote-not",
+			popFrameTitle:                titleLink.cloneNode(true).trimQuotes().innerHTML,
+			popFrameTitleLinkHref:        titleLinkHref
 		};
 	},
 
@@ -7210,7 +7314,7 @@ Content = {
 
 				//	Template fields.
 				let titleLineHTML, entryContentHTML, thumbnailFigureHTML;
-				let popFrameTitleText, popFrameTitleLinkHref;
+				let popFrameTitle, popFrameTitleLinkHref;
 				let contentTypeClass = "wikipedia-entry";
 
 				//	Intermediate values.
@@ -7311,7 +7415,7 @@ Content = {
 				entryContentHTML = contentDocument.innerHTML;
 
 				//	Pop-frame title text and link.
-				popFrameTitleText = newElement("SPAN", null, { innerHTML: titleLineHTML }).textContent;
+				popFrameTitle = newElement("SPAN", null, { innerHTML: titleLineHTML });
 				popFrameTitleLinkHref = articleLink.href;
 
 				//	Attach secondary links (if any) to title line.
@@ -7324,7 +7428,7 @@ Content = {
 						thumbnailFigure:            thumbnailFigureHTML
 					},
 					contentTypeClass:               contentTypeClass,
-					popFrameTitleText:              popFrameTitleText,
+					popFrameTitle:                  popFrameTitle.innerHTML,
 					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					template:                       "wikipedia-entry-blockquote-inside",
 					popFrameTemplate:               "wikipedia-entry-blockquote-not",
@@ -7820,7 +7924,7 @@ Content = {
                     contentTypeClass:       "tweet",
                     template:               "tweet-blockquote-outside",
 					popFrameTemplate:       "tweet-blockquote-not",
-                    popFrameTitleText:      popFrameTitleText,
+                    popFrameTitle:          popFrameTitleText,
                     popFrameTitleLinkHref:  tweetLinkURL.href,
                 };
             },
@@ -8500,8 +8604,8 @@ Content = {
                     pageBodyClasses:         pageContent.bodyClasses,
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
                     popFrameTitleLinkHref:   link.href,
-                    popFrameTitleText:       popFrameTitleTextParts.join(" "),
-                    popFrameTitleTextShort:  popFrameTitleTextParts.first,
+                    popFrameTitle:           popFrameTitleTextParts.join(" "),
+                    popFrameTitleShort:      popFrameTitleTextParts.first,
                     shouldLocalize:          true
                 }
             },
@@ -9115,7 +9219,12 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			If true, a GW.contentDidLoad event is fired on the filled template.
  */
 //	(string, string|object, object, object) => DocumentFragment
-function fillTemplate(template, data = null, context = null, options = { }) {
+function fillTemplate(template, data = null, context = null, options) {
+	options = Object.assign({
+		preserveSurroundingWhitespaceInConditionals: false,
+		fireContentLoadEvent: false
+	}, options);
+
 	if (   template == null
 		|| template == "LOADING_FAILED")
 		return null;
@@ -10847,7 +10956,7 @@ Transclude.templates = {
 	href="<{popFrameTitleLinkHref}>"
 	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
-		><{popFrameTitleText}></a>`,
+		><{popFrameTitle}></a>`,
 	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
 		<a 
@@ -11355,17 +11464,17 @@ Extracts = {
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     //  Called by: extracts-annotations.js
     //  Called by: extracts-content.js
-    standardPopFrameTitleElementForTarget: (target, titleText) => {
-        if (typeof titleText == "undefined") {
-            titleText = (target.hostname == location.hostname)
-                        ? target.pathname + target.hash
-                        : target.href;
-            titleText = `<code>${titleText}</code>`;
+    standardPopFrameTitleElementForTarget: (target, titleHTML) => {
+        if (typeof titleHTML == "undefined") {
+            let titleText = (target.hostname == location.hostname)
+            				? target.pathname + target.hash
+            				: target.href;
+            titleHTML = `<code>${titleText}</code>`;
     	}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  target.href,
-			popFrameTitleText:      titleText
+			popFrameTitle:          titleHTML
 		});
     },
 
@@ -11374,7 +11483,7 @@ Extracts = {
     //  Called by: Extracts.preparePopup
     //  Called by: Extracts.preparePopin
     //  Called by: Extracts.rewritePopinContent
-    titleForPopFrame: (popFrame, titleText) => {
+    titleForPopFrame: (popFrame, titleHTML) => {
         let target = popFrame.spawningTarget;
 
         //  Special handling for certain popup types.
@@ -11383,20 +11492,20 @@ Extracts = {
         let specialTitleFunction = (   Extracts[`titleForPop${suffix}_${targetTypeName}`]
         							?? Extracts[`titleForPopFrame_${targetTypeName}`]);
         if (specialTitleFunction)
-            return specialTitleFunction(popFrame, titleText);
+            return specialTitleFunction(popFrame, titleHTML);
         else
-            return Extracts.standardPopFrameTitleElementForTarget(target, titleText);
+            return Extracts.standardPopFrameTitleElementForTarget(target, titleHTML);
     },
 
 	//	Called by: Extracts.rewritePopinContent
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-	updatePopFrameTitle: (popFrame, titleText) => {
+	updatePopFrameTitle: (popFrame, titleHTML) => {
         GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
 
 		if (popFrame.titleBar) {
-			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBar.querySelector(".popframe-title").replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		} else if (popFrame.titleBarContents) {
-			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleText));
+			popFrame.titleBarContents.find(x => x.classList.contains("popframe-title")).replaceChildren(Extracts.titleForPopFrame(popFrame, titleHTML));
 		}
 	},
 
@@ -12262,30 +12371,30 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleText, popFrameTitleLinkHref;
+		let popFrameTitleHTML, popFrameTitleLinkHref;
 		if (referenceData == null) {
-			popFrameTitleText = "";
+			let popFrameTitleText = "";
 			if (target.pathname != location.pathname)
 				popFrameTitleText += target.pathname;
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
-			popFrameTitleText = `<code>${popFrameTitleText}</code>`;
+			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
 
 			popFrameTitleLinkHref = target.href;
 		} else {
-			popFrameTitleText = popFrame.classList.contains("full-page")
-								? referenceData.popFrameTitleTextShort
-								: referenceData.popFrameTitleText;
+			popFrameTitleHTML = popFrame.classList.contains("full-page")
+								? referenceData.popFrameTitleShort
+								: referenceData.popFrameTitle;
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
 		if (popFrame.classList.contains("backlinks")) {
-			popFrameTitleText += " (Backlinks)";
+			popFrameTitleHTML += " (Backlinks)";
 		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
-			popFrameTitleText:      popFrameTitleText
+			popFrameTitle:          popFrameTitleHTML
 		});
     },
 
@@ -12612,9 +12721,9 @@ Extracts = { ...Extracts,
     titleForPopFrame_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
         let footnoteNumber = target.querySelector("sup").textContent;
-        let popFrameTitleText = `Footnote #${footnoteNumber}`;
+        let popFrameTitleHTML = `Footnote #${footnoteNumber}`;
 
-        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleHTML);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -12883,7 +12992,7 @@ Extracts = { ...Extracts,
 			Extracts.constrainLinkClickBehaviorInPopFrame(popFrame);
 
         //  Update pop-frame title.
-        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitleText);
+        Extracts.updatePopFrameTitle(popFrame, referenceData.popFrameTitle);
 	}
 };
 
@@ -13343,6 +13452,7 @@ Extracts = { ...Extracts,
 
 			button.classList.add("disabled");
 
+			//	Expand toolbar.
 			GW.pageToolbar.toggleCollapseState(false);
 
 			setTimeout(() => {
@@ -13350,23 +13460,17 @@ Extracts = { ...Extracts,
 
 				GW.pageToolbar.flashWidget("extracts-mode-selector", {
 					flashStayDuration: Extracts.popFramesDisableWidgetFlashStayDuration,
-					showSelectedButtonLabel: true
+					showSelectedButtonLabel: true,
+					highlightSelectedButtonLabelAfterDelay: Extracts.popFramesDisableAutoToggleDelay
 				});
 				setTimeout(() => {
+					//	Actually disable extract pop-frames.
 					Extracts.disableExtractPopFrames();
 
-					//	Temporarily highlight newly selected option.
-					GW.pageToolbar.getWidget("extracts-mode-selector").classList.add("highlight-selected-button-label");
-					setTimeout(() => {
-						GW.pageToolbar.getWidget("extracts-mode-selector").classList.remove("highlight-selected-button-label");
-					}, Extracts.popFramesDisableWidgetFlashStayDuration
-					 - Extracts.popFramesDisableAutoToggleDelay
-					 + GW.pageToolbar.widgetFlashFallDuration);
-
+					//	Collapse toolbar, after a delay.
 					GW.pageToolbar.toggleCollapseState(true, {
 														   delay: GW.pageToolbar.demoCollapseDelay
 																+ Extracts.popFramesDisableWidgetFlashStayDuration
-																- Extracts.popFramesDisableAutoToggleDelay
 																+ GW.pageToolbar.widgetFlashFallDuration
 													   });
 				}, GW.pageToolbar.widgetFlashRiseDuration + Extracts.popFramesDisableAutoToggleDelay);
@@ -14777,9 +14881,13 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
             let mediaBlock = (   mediaElement.closest(".image-row-wrapper")
                               ?? mediaElement.closest(".image-wrapper")
                               ?? mediaElement);
-            if (mediaBlock == mediaElement)
-            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
             outerWrapper.appendChild(mediaBlock);
+
+			//	Ensure proper wrapping.
+            if (   mediaBlock == mediaElement
+            	|| (   mediaBlock.matches(".image-wrapper") == false
+            		&& mediaElement.closest(".image-wrapper") == null))
+            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
         });
 
         //  Wrap the caption (if any) in a caption wrapper.
@@ -15527,6 +15635,17 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
+
+/**********************************************************/
+/*	Strip quotes from title-links in annotation pop-frames.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rewriteAnnotationTitleLinksInPopFrames = (eventInfo) => {
+    GWLog("rewriteAnnotationTitleLinksInPopFrames", "rewrite.js", 1);
+
+	eventInfo.container.querySelector(".data-field.title .title-link")?.trimQuotes();
+}, "rewrite", (info) => (   info.source == "transclude"
+						 && info.contentType == "annotation"
+						 && info.context == "popFrame"));
 
 /***************************************************************************/
 /*  Apply proper classes to inline file-include collapses, both on directory
@@ -20353,8 +20472,38 @@ DarkMode = { ...DarkMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			//	Actually change the mode.
-			DarkMode.setMode(selectedMode);
+			//	Check if this is a click or an accesskey press.
+			if (event.pointerId == -1) {
+				button.blur();
+
+				let widgetFlashStayDuration = 1500;
+				let autoToggleDelay = 250;
+
+				//	Expand toolbar.
+				GW.pageToolbar.toggleCollapseState(false);
+
+				setTimeout(() => {
+					GW.pageToolbar.flashWidget("dark-mode-selector", {
+						flashStayDuration: widgetFlashStayDuration,
+						showSelectedButtonLabel: true,
+						highlightSelectedButtonLabelAfterDelay: autoToggleDelay
+					});
+					setTimeout(() => {
+						//	Actually change the mode.
+						DarkMode.setMode(selectedMode);
+
+						//	Collapse toolbar, after a delay.
+						GW.pageToolbar.toggleCollapseState(true, {
+															   delay: GW.pageToolbar.demoCollapseDelay
+																	+ widgetFlashStayDuration
+																	+ GW.pageToolbar.widgetFlashFallDuration
+														   });
+					}, GW.pageToolbar.widgetFlashRiseDuration + autoToggleDelay);
+				}, GW.pageToolbar.collapseDuration);
+			} else {
+				//	Actually change the mode.
+				DarkMode.setMode(selectedMode);
+			}
 		}, DarkMode, "modeSelectorInteractable");
 	},
 
@@ -20407,6 +20556,8 @@ DarkMode = { ...DarkMode,
 			button.classList.remove("active");
 			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
+
+			//	Remove “[This option is currently selected.]” note.
 			if (button.title.endsWith(DarkMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * DarkMode.selectedModeOptionNote.length));
 
@@ -20415,12 +20566,17 @@ DarkMode = { ...DarkMode,
 				let label = button.querySelector(".label");
 				label.innerHTML = label.dataset.unselectedLabel;
 			}
+
+			//	Clear accesskey.
+			button.accessKey = "";
 		});
 
 		//	Set the correct button to be selected.
 		modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
 			button.swapClasses([ "selectable", "selected" ], 1);
 			button.disabled = true;
+
+			//	Append “[This option is currently selected.]” note.
 			button.title += DarkMode.selectedModeOptionNote;
 
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
@@ -20429,6 +20585,10 @@ DarkMode = { ...DarkMode,
 				label.innerHTML = label.dataset.selectedLabel;
 			}
 		});
+
+		//	Set accesskey.
+		let buttons = Array.from(modeSelector.querySelectorAll("button"));
+		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "d";
 
 		/*	Ensure the right button (light or dark) has the “currently active” 
 			indicator, if the current mode is ‘auto’.
@@ -20658,6 +20818,8 @@ ReaderMode = { ...ReaderMode,
 			button.classList.remove("active");
 			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
+
+			//	Remove “[This option is currently selected.]” note.
 			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
 

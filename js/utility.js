@@ -25,6 +25,14 @@ function valMinMax(val, min, max) {
     return Math.max(Math.min(val, max), min);
 }
 
+/*************************/
+/*	Real modulo operation.
+	(See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Remainder )
+ */
+function modulo(n, d) {
+	return (((n % d) + d) % d);
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */
@@ -287,6 +295,22 @@ Element.prototype.removeActivateEvent = function() {
 Element.prototype.swapClasses = function (classes, whichToAdd) {
     this.classList.remove(classes[1 - whichToAdd]);
     this.classList.add(classes[whichToAdd]);
+};
+
+/***********************************************************************/
+/*  Trims opening/closing quotes from the element’s contents (preserving 
+	internal HTML structure).
+
+	Returns the now-modified element.
+ */
+Element.prototype.trimQuotes = function () {
+	let [ first, last ] = [ this.firstTextNode, this.lastTextNode ];
+	if (   /^['"‘“]/.test(first.textContent) == true
+		&& /['"’”]$/.test(last.textContent)  == true) {
+		first.textContent = first.textContent.slice(1);
+		last.textContent = last.textContent.slice(0, -1);
+	}
+	return this;
 };
 
 /******************************************************************************/

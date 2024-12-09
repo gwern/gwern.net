@@ -164,6 +164,7 @@ Extracts = { ...Extracts,
 
 			button.classList.add("disabled");
 
+			//	Expand toolbar.
 			GW.pageToolbar.toggleCollapseState(false);
 
 			setTimeout(() => {
@@ -171,23 +172,17 @@ Extracts = { ...Extracts,
 
 				GW.pageToolbar.flashWidget("extracts-mode-selector", {
 					flashStayDuration: Extracts.popFramesDisableWidgetFlashStayDuration,
-					showSelectedButtonLabel: true
+					showSelectedButtonLabel: true,
+					highlightSelectedButtonLabelAfterDelay: Extracts.popFramesDisableAutoToggleDelay
 				});
 				setTimeout(() => {
+					//	Actually disable extract pop-frames.
 					Extracts.disableExtractPopFrames();
 
-					//	Temporarily highlight newly selected option.
-					GW.pageToolbar.getWidget("extracts-mode-selector").classList.add("highlight-selected-button-label");
-					setTimeout(() => {
-						GW.pageToolbar.getWidget("extracts-mode-selector").classList.remove("highlight-selected-button-label");
-					}, Extracts.popFramesDisableWidgetFlashStayDuration
-					 - Extracts.popFramesDisableAutoToggleDelay
-					 + GW.pageToolbar.widgetFlashFallDuration);
-
+					//	Collapse toolbar, after a delay.
 					GW.pageToolbar.toggleCollapseState(true, {
 														   delay: GW.pageToolbar.demoCollapseDelay
 																+ Extracts.popFramesDisableWidgetFlashStayDuration
-																- Extracts.popFramesDisableAutoToggleDelay
 																+ GW.pageToolbar.widgetFlashFallDuration
 													   });
 				}, GW.pageToolbar.widgetFlashRiseDuration + Extracts.popFramesDisableAutoToggleDelay);

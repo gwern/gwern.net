@@ -699,9 +699,13 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
             let mediaBlock = (   mediaElement.closest(".image-row-wrapper")
                               ?? mediaElement.closest(".image-wrapper")
                               ?? mediaElement);
-            if (mediaBlock == mediaElement)
-            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
             outerWrapper.appendChild(mediaBlock);
+
+			//	Ensure proper wrapping.
+            if (   mediaBlock == mediaElement
+            	|| (   mediaBlock.matches(".image-wrapper") == false
+            		&& mediaElement.closest(".image-wrapper") == null))
+            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
         });
 
         //  Wrap the caption (if any) in a caption wrapper.
@@ -1449,6 +1453,17 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
+
+/**********************************************************/
+/*	Strip quotes from title-links in annotation pop-frames.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rewriteAnnotationTitleLinksInPopFrames = (eventInfo) => {
+    GWLog("rewriteAnnotationTitleLinksInPopFrames", "rewrite.js", 1);
+
+	eventInfo.container.querySelector(".data-field.title .title-link")?.trimQuotes();
+}, "rewrite", (info) => (   info.source == "transclude"
+						 && info.contentType == "annotation"
+						 && info.context == "popFrame"));
 
 /***************************************************************************/
 /*  Apply proper classes to inline file-include collapses, both on directory
