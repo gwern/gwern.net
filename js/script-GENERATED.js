@@ -3089,7 +3089,7 @@ Popups = {
         	name: "enablePopupHoverEventsOnMousemoveListener"
         });
 
-        //  Enable default popup tiling control keys (aswdqexzfrcvtgb).
+        //  Enable default popup tiling control keys.
         Popups.setPopupTilingControlKeys();
 
         //  Fire event.
@@ -3850,7 +3850,7 @@ Popups = {
     setPopupTilingControlKeys: (keystring) => {
         GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-        Popups.popupTilingControlKeys = keystring || "aswdqexzfrcvtgb";
+        Popups.popupTilingControlKeys = keystring ?? "aswdqexzfrcvtgb";
         localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
     },
 
