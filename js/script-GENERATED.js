@@ -5637,7 +5637,8 @@ Popups = {
                 Popups.zoomPopup(focusedPopup, "full");
                 break;
             case Popups.popupTilingControlKeys.substr(9,1):
-                Popups.restorePopup(focusedPopup);
+            	if (Popups.popupIsZoomed(focusedPopup) || Popups.popupWasResized(focusedPopup))
+	                Popups.restorePopup(focusedPopup);
                 break;
             case Popups.popupTilingControlKeys.substr(10,1):
 				Popups.pinOrUnpinPopup(focusedPopup);
