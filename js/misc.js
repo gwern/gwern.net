@@ -1330,7 +1330,13 @@ GW.pageToolbar = {
         return GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
     },
 
-    flashWidget: (widgetID, options = { }) => {
+    flashWidget: (widgetID, options) => {
+		options = Object.assign({
+			flashStayDuration: null,
+			showSelectedButtonLabel: false,
+			highlightSelectedButtonLabelAfterDelay: null
+		}, options);
+
         let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
         if (widget == null)
             return null;
