@@ -688,10 +688,9 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.putSidenoteBack(sidenote);
 			});
 
-			sidenote.scrollListener = addScrollListener((event) => {
+			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
 			}, {
-				name: "Sidenotes.updateSidenoteHideMoreIndicatorVisibilityOnScrollListener",
 				target: sidenote.outerWrapper
 			});
 		});

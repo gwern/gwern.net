@@ -31,7 +31,6 @@ if (GW.collapse.hoverEventsEnabled) {
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
-			name: "disableCollapseHoverEventsOnScrollInPopupListener",
 			target: info.popup.scrollView
 		});
 	});

@@ -2327,11 +2327,74 @@ GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => 
 
 GW.eventListeners = { };
 
+/******************************************************************************/
 /*  Adds a named event listener to the page (or other target).
+
+	The purpose of this function is to dramatically improve the performance of
+	handler code attached to continuous UI events, such as scrolling (i.e., the 
+	“scroll” event, attached to any scroll container) or window resizing (i.e., 
+	the “resize” event, attached to the `window` object).
+
+	Because such events are fired at a rate independent of the actual current
+	animation frame rate, using the usual event listener system to attach 
+	handlers to events of this sort causes performance to suffer, as the 
+	handler is called much more often than necessary, leading to lag.
+
+	The solution is to add an event listener that fires only once (the next 
+	time the event is triggered); waits for the next animation frame; runs the 
+	requisite code; then adds itself as an event listener again. This has the
+	effect of running the handler code at most once per animation frame, no 
+	matter how much more often the event is fired.
+
+	This behavior is abstracted into an API which easily replaces the built-in 
+	addEventListener() API.
 
 	Available option fields:
 
+	name (string)
+		A string identifier for the event listener being added. If a name is
+		provided, then a reference to the event listener is retained, such that
+		the listener may later be removed (see the removeNamedEventListener()
+		function).
 
+		Provided names must be unique per event. (A listener “foo” for event 
+		“bar” attached to object `baz` will overwrite a listener “foo” for 
+		event “bar” attached to object `quux`.)
+
+	target (EventTarget)
+		The object (which must implement the EventTarget interface) to which 
+		the event listener is added. By default, this is the root document
+		(i.e., the `document` object).
+
+	defer (boolean)
+		If set to true, and the page has not yet finished loading, then the 
+		provided handler is not added immediately, but only on the next 
+		animation frame after the page has finished loading (using the 
+		doWhenPageLoaded() function). (If the page *has* finished loading, then
+		the handler is added on the immediately next animation frame.)
+
+		(This is useful for code that implements a UI behavior which should not 
+		 operate prior to the page having loaded and appropriate on-load setup 
+		 code having run.)
+
+	ifDeferCallWhenAdd (boolean)
+		If the `defer` option is enabled (set to true), this option controls 
+		whether the provided handler function is called immediately, just prior
+		to the event listener being added.
+
+		Essentially, setting this to `true` means that we are assuming that the 
+		event in question will have fired at least once between the beginning 
+		of the page load process and the deferred moment when we actually add 
+		the listener, and thus the handler code should be run.
+
+		NOTE: The invocation of the handler function (fn()) immediately prior 
+		to the event listener being added will *not* have any event object 
+		passed to it (because it’s not being triggered by a fired event, nor
+		called within a listener function that was triggered by a fired event).
+		The handler function must be able to handle the case of an undefined
+		`event` argument, if this option is used!
+
+		(This option has no effect if the `defer` option is not enabled.)
  */
 function addNamedEventListener(eventName, fn, options) {
 	options = Object.assign({
@@ -2408,9 +2471,9 @@ function removeScrollListener(name) {
 /*  Adds a resize event listener to the window.
  */
 function addWindowResizeListener(fn, options) {
-	options = Object.assign({
+	options = Object.assign({ }, options, {
 		target: window
-	}, options);
+	});
 
 	return addNamedEventListener("resize", fn, options);
 }
@@ -2548,8 +2611,9 @@ function doWhenBodyExists(f) {
 /* BROWSER EVENTS */
 /******************/
 
-/*  We know this is false here, because this script is inlined in the <head>
-    of the page; so the page body has not yet loaded when this code runs.
+/*  We know this is false here, because this script is loaded synchronously 
+	from a <script> element in the <head> of the page; so the page body has not 
+	yet loaded when this code runs.
  */
 GW.DOMContentLoaded = false;
 

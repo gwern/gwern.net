@@ -3083,7 +3083,6 @@ Popups = {
          */
         GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
             addScrollListener(Popups.disableHoverEventsOnScroll, {
-                name: "disablePopupHoverEventsOnScrollInPopupListener",
                 target: info.popup.scrollView
             });
         });
@@ -17328,7 +17327,6 @@ if (GW.collapse.hoverEventsEnabled) {
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
-			name: "disableCollapseHoverEventsOnScrollInPopupListener",
 			target: info.popup.scrollView
 		});
 	});
@@ -18917,10 +18915,9 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.putSidenoteBack(sidenote);
 			});
 
-			sidenote.scrollListener = addScrollListener((event) => {
+			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
 			}, {
-				name: "Sidenotes.updateSidenoteHideMoreIndicatorVisibilityOnScrollListener",
 				target: sidenote.outerWrapper
 			});
 		});

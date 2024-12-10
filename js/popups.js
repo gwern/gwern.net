@@ -127,7 +127,6 @@ Popups = {
          */
         GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
             addScrollListener(Popups.disableHoverEventsOnScroll, {
-                name: "disablePopupHoverEventsOnScrollInPopupListener",
                 target: info.popup.scrollView
             });
         });
