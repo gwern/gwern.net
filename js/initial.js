@@ -1053,6 +1053,9 @@ function addNamedEventListener(target, eventName, fn, options) {
 
     let wrapper = (event) => {
         requestAnimationFrame(() => {
+        	if (wrapper.removed == true)
+        		return;
+
             fn(event);
             target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
@@ -1083,6 +1086,7 @@ function removeNamedEventListener(eventName, name) {
     let listener = GW.eventListeners[eventName][name];
     if (listener) {
         listener.target.removeEventListener(eventName, listener.wrapper);
+        listener.wrapper.removed = true;
         GW.eventListeners[eventName][name] = null;
     }
 }
