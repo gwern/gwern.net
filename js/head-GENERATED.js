@@ -2327,16 +2327,73 @@ GW.notificationCenter.prefireProcessors["GW.contentDidInject"] = (eventInfo) => 
 
 GW.eventListeners = { };
 
+/******************************************************************************/
 /*  Adds a named event listener to the page (or other target).
+
+	The purpose of this function is to dramatically improve the performance of
+	handler code attached to continuous UI events, such as scrolling (i.e., the 
+	“scroll” event, attached to any scroll container) or window resizing (i.e., 
+	the “resize” event, attached to the `window` object).
+
+	Because such events are fired at a rate independent of the actual current
+	animation frame rate, using the usual event listener system to attach 
+	handlers to events of this sort causes performance to suffer, as the 
+	handler is called much more often than necessary, leading to lag.
+
+	The solution is to add an event listener that fires only once (the next 
+	time the event is triggered); waits for the next animation frame; runs the 
+	requisite code; then adds itself as an event listener again. This has the
+	effect of running the handler code at most once per animation frame, no 
+	matter how much more often the event is fired.
+
+	This behavior is abstracted into an API which easily replaces the built-in 
+	addEventListener() API.
 
 	Available option fields:
 
+	name (string)
+		A string identifier for the event listener being added. If a name is
+		provided, then a reference to the event listener is retained, such that
+		the listener may later be removed (see the removeNamedEventListener()
+		function).
 
+		Provided names must be unique per event. (A listener “foo” for event 
+		“bar” attached to object `baz` will overwrite a listener “foo” for 
+		event “bar” attached to object `quux`.)
+
+	defer (boolean)
+		If set to true, and the page has not yet finished loading, then the 
+		provided handler is not added immediately, but only on the next 
+		animation frame after the page has finished loading (using the 
+		doWhenPageLoaded() function). (If the page *has* finished loading, then
+		the handler is added on the immediately next animation frame.)
+
+		(This is useful for code that implements a UI behavior which should not 
+		 operate prior to the page having loaded and appropriate on-load setup 
+		 code having run.)
+
+	ifDeferCallWhenAdd (boolean)
+		If the `defer` option is enabled (set to true), this option controls 
+		whether the provided handler function is called immediately, just prior
+		to the event listener being added.
+
+		Essentially, setting this to `true` means that we are assuming that the 
+		event in question will have fired at least once between the beginning 
+		of the page load process and the deferred moment when we actually add 
+		the listener, and thus the handler code should be run.
+
+		NOTE: The invocation of the handler function (fn()) immediately prior 
+		to the event listener being added will *not* have any event object 
+		passed to it (because it’s not being triggered by a fired event, nor
+		called within a listener function that was triggered by a fired event).
+		The handler function must be able to handle the case of an undefined
+		`event` argument, if this option is used!
+
+		(This option has no effect if the `defer` option is not enabled.)
  */
-function addNamedEventListener(eventName, fn, options) {
+function addNamedEventListener(target, eventName, fn, options) {
 	options = Object.assign({
 		name: null,
-		target: document,
 		defer: false,
 		ifDeferCallWhenAdd: false
 	}, options);
@@ -2346,9 +2403,8 @@ function addNamedEventListener(eventName, fn, options) {
             requestAnimationFrame(() => {
                 if (options.ifDeferCallWhenAdd)
                     fn();
-                addNamedEventListener(eventName, fn, {
+                addNamedEventListener(target, eventName, fn, {
                 	name: options.name,
-                	target: options.target,
                 	defer: false
                 });
             });
@@ -2359,11 +2415,14 @@ function addNamedEventListener(eventName, fn, options) {
 
     let wrapper = (event) => {
         requestAnimationFrame(() => {
+        	if (wrapper.removed == true)
+        		return;
+
             fn(event);
-            options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
+            target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
     }
-    options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
+    target.addEventListener(eventName, wrapper, { once: true, passive: true });
 
     /*  Retain a reference to the event listener, if a name is provided.
      */
@@ -2373,7 +2432,7 @@ function addNamedEventListener(eventName, fn, options) {
 
         GW.eventListeners[eventName][options.name] = {
         	wrapper: wrapper,
-        	target: options.target
+        	target: target
         };
     }
 
@@ -2389,33 +2448,44 @@ function removeNamedEventListener(eventName, name) {
     let listener = GW.eventListeners[eventName][name];
     if (listener) {
         listener.target.removeEventListener(eventName, listener.wrapper);
+        listener.wrapper.removed = true;
         GW.eventListeners[eventName][name] = null;
     }
 }
 
-/*  Adds a scroll event listener to the page (or other target).
+/*  Adds a “scroll” event listener to the document (or other target).
  */
 function addScrollListener(fn, options) {
-	return addNamedEventListener("scroll", fn, options);
+	return addNamedEventListener((options.target ?? document), "scroll", fn, options);
 }
 
-/*  Removes a named scroll event listener from the page (or other target).
+/*  Removes a named “scroll” event listener from the document (or other 
+	target).
  */
 function removeScrollListener(name) {
 	removeNamedEventListener("scroll", name);
 }
 
-/*  Adds a resize event listener to the window.
+/*  Adds a “mousemove” event listener to the window (or other target).
  */
-function addWindowResizeListener(fn, options) {
-	options = Object.assign({
-		target: window
-	}, options);
-
-	return addNamedEventListener("resize", fn, options);
+function addMousemoveListener(fn, options) {
+	return addNamedEventListener((options.target ?? window), "mousemove", fn, options);
 }
 
-/*  Removes a named resize event listener from the window.
+/*  Removes a named “mousemove” event listener from the window (or other 
+	target).
+ */
+function removeMousemoveListener(name) {
+	removeNamedEventListener("mousemove", name);
+}
+
+/*  Adds a “resize” event listener to the window.
+ */
+function addWindowResizeListener(fn, options) {
+	return addNamedEventListener(window, "resize", fn, options);
+}
+
+/*  Removes a named “resize” event listener from the window.
  */
 function removeWindowResizeListener(name) {
 	removeNamedEventListener("resize", name);
@@ -2548,8 +2618,9 @@ function doWhenBodyExists(f) {
 /* BROWSER EVENTS */
 /******************/
 
-/*  We know this is false here, because this script is inlined in the <head>
-    of the page; so the page body has not yet loaded when this code runs.
+/*  We know this is false here, because this script is loaded synchronously 
+	from a <script> element in the <head> of the page; so the page body has not 
+	yet loaded when this code runs.
  */
 GW.DOMContentLoaded = false;
 

@@ -31,14 +31,15 @@ if (GW.collapse.hoverEventsEnabled) {
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
-			name: "disableCollapseHoverEventsOnScrollInPopupListener",
 			target: info.popup.scrollView
 		});
 	});
 
 	//	Enable on mousemove.
-	window.addEventListener("mousemove", GW.collapse.windowMouseMove = (event) => {
+	addMousemoveListener(GW.collapse.enableCollapseHoverEventsOnMousemove = (event) => {
 		GW.collapse.hoverEventsActive = true;
+	}, {
+		name: "enableCollapseHoverEventsOnMousemoveListener"
 	});
 }
 

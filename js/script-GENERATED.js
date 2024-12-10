@@ -3020,12 +3020,12 @@ Popups = {
 
         //  Remove Escape key event listener.
         document.removeEventListener("keyup", Popups.keyUp);
-        //  Remove mousemove listener.
-        window.removeEventListener("mousemove", Popups.windowMouseMove);
         //  Remove scroll listener.
-        removeScrollListener("updatePopupsEventStateScrollListener");
+        removeScrollListener("disablePopupHoverEventsOnScrollListener");
+        //  Remove mousemove listener.
+        removeMousemoveListener("enablePopupHoverEventsOnMousemoveListener")
         //  Remove popup-spawn event handler.
-        GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned);
+        GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisablePopupHoverEventsOnScrollListenerOnPopupSpawned);
 
         //  Fire event.
         GW.notificationCenter.fireEvent("Popups.cleanupDidComplete");
@@ -3064,15 +3064,8 @@ Popups = {
         //  Add Escape key event listener.
         document.addEventListener("keyup", Popups.keyUp);
 
-        //  Add mousemove listener, to enable hover on mouse move.
-        window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
-            if (   Popups.popupBeingDragged == null
-                && Popups.popupBeingResized == null)
-                Popups.hoverEventsActive = true;
-        });
-
         //  Add scroll listener, to disable hover on scroll.
-        addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
+        addScrollListener(Popups.disablePopupHoverEventsOnScroll = (event) => {
             Popups.hoverEventsActive = false;
         }, {
             name: "disablePopupHoverEventsOnScrollListener"
@@ -3081,14 +3074,22 @@ Popups = {
         /*  Add event handler to add scroll listener to spawned popups, to
             disable hover events when scrolling within a popup.
          */
-        GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-            addScrollListener(Popups.disableHoverEventsOnScroll, {
-                name: "disablePopupHoverEventsOnScrollInPopupListener",
+        GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisablePopupHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
+            addScrollListener(Popups.disablePopupHoverEventsOnScroll, {
                 target: info.popup.scrollView
             });
         });
 
-        //  Enable default popup tiling control keys (aswdqexzfrcv).
+        //  Add mousemove listener, to enable hover on mouse move.
+        addMousemoveListener(Popups.enablePopupHoverEventsOnMousemove = (event) => {
+            if (   Popups.popupBeingDragged == null
+                && Popups.popupBeingResized == null)
+                Popups.hoverEventsActive = true;
+        }, {
+        	name: "enablePopupHoverEventsOnMousemoveListener"
+        });
+
+        //  Enable default popup tiling control keys.
         Popups.setPopupTilingControlKeys();
 
         //  Fire event.
@@ -3408,11 +3409,12 @@ Popups = {
         popup.addEventListener("mousedown", Popups.popupMouseDown);
 
         //  We define the mousemove listener here in order to capture `popup`.
-        popup.addEventListener("mousemove", Popups.popupMouseMove = (event) => {
+        addMousemoveListener(Popups.popupMouseMove = (event) => {
             GWLog("Popups.popupMouseMove", "popups.js", 3);
 
             if (   event.target == popup
                 && Popups.popupBeingDragged == null
+                && Popups.popupBeingResized == null
                 && Popups.popupIsResizeable(popup)) {
                 //  Mouse position is relative to the popup’s coordinate system.
                 let edgeOrCorner = Popups.edgeOrCorner(popup, {
@@ -3423,7 +3425,7 @@ Popups = {
                 //  Set cursor.
                 document.documentElement.style.cursor = Popups.cursorForPopupBorder(edgeOrCorner);
             }
-        });
+        }, { target: popup });
     },
 
     //  Called by: Popups.spawnPopup
@@ -3849,7 +3851,7 @@ Popups = {
     setPopupTilingControlKeys: (keystring) => {
         GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-        Popups.popupTilingControlKeys = keystring || "aswdqexzfrcvtgb";
+        Popups.popupTilingControlKeys = keystring ?? "aswdqexzfrcvtgb";
         localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
     },
 
@@ -5069,19 +5071,20 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-        /*  Make sure we’re clicking on the popup (ie. its edge) and not
-            on any of the popup’s contained elements; that this is a
-            left-click; and that the popup is pinned or zoomed.
+        /*  Make sure that this is a left-click; that we’re clicking on the 
+        	popup (i.e. its edge) and not on any of the popup’s contained 
+        	elements; and that the popup is resizeable (i.e., that it is pinned 
+        	or zoomed, and not minimized).
          */
-        if (   event.target != popup
-            || event.button != 0
+        if (   event.button != 0
+            || event.target != popup
             || Popups.popupIsResizeable(popup) == false)
             return;
 
         //  Prevent other events from triggering.
         event.stopPropagation();
 
-        //  Bring the popup to the front.
+        //  Bring the popup to the front, if need be.
         if (event.metaKey == false)
             Popups.bringPopupToFront(popup);
 
@@ -5098,91 +5101,103 @@ Popups = {
         if (edgeOrCorner == "")
             return;
 
-        //  Mark popup as currently being resized.
-        Popups.addClassesToPopFrame(popup, "resizing");
+		//	Save resize direction.
+		popup.edgeOrCorner = edgeOrCorner;
+
+        /*  Deal with edge case where resize against screen edge ends up
+            with the mouse-up event happening in the popup body.
+         */
+        popup.removeEventListener("click", Popups.popupClicked);
 
         //  Save position.
 		Popups.savePopupPosition(popup);
 
-        //  Point where the drag began.
-        let dragStartMouseCoordX = event.clientX;
-        let dragStartMouseCoordY = event.clientY;
-
-        //  Popup initial rect.
-        let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
-
-        /*  Add the mouse up event listener (to window, not the popup, because
-            the drag might end anywhere, due to animation lag).
-         */
-        window.addEventListener("mouseup", Popups.popupResizeMouseUp, { once: true });
-
-        //  Viewport width must account for vertical scroll bar.
-        let viewportWidth = document.documentElement.offsetWidth;
-        let viewportHeight = window.innerHeight;
-
         //  Popup minimum width/height.
-        let popupMinWidth = parseFloat(getComputedStyle(popup).minWidth);
-        let popupMinHeight = parseFloat(getComputedStyle(popup).minHeight);
+        popup.popupMinWidth = parseFloat(getComputedStyle(popup).minWidth);
+        popup.popupMinHeight = parseFloat(getComputedStyle(popup).minHeight);
+
+        //  Point where the drag began.
+        popup.dragStartMouseCoordX = event.clientX;
+        popup.dragStartMouseCoordY = event.clientY;
+
+		//	Store reference to popup, for mouse event listeners.
+		Popups.popupBeingResized = popup;
 
         //  The mousemove event that triggers the continuous resizing.
-        window.onmousemove = (event) => {
-            Popups.popupBeingResized = popup;
+        addMousemoveListener(Popups.popupResizeMouseMove, { name: "popupResizeMousemoveListener" });
 
-            Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
-            Popups.addClassesToPopFrame(popup, "resized");
-
-            let deltaX = event.clientX - dragStartMouseCoordX;
-            let deltaY = event.clientY - dragStartMouseCoordY;
-
-            let resizeTop = () => {
-                newPopupViewportRect.y = valMinMax(popup.viewportRect.y + deltaY, 0, popup.viewportRect.bottom - popupMinHeight);
-                newPopupViewportRect.height = popup.viewportRect.bottom - newPopupViewportRect.y;
-            };
-            let resizeBottom = () => {
-                newPopupViewportRect.height = valMinMax(popup.viewportRect.height + deltaY, popupMinHeight, viewportHeight - popup.viewportRect.y);
-            };
-            let resizeLeft = () => {
-                newPopupViewportRect.x = valMinMax(popup.viewportRect.x + deltaX, 0, popup.viewportRect.right - popupMinWidth);
-                newPopupViewportRect.width = popup.viewportRect.right - newPopupViewportRect.x;
-            };
-            let resizeRight = () => {
-                newPopupViewportRect.width = valMinMax(popup.viewportRect.width + deltaX, popupMinWidth, viewportWidth - popup.viewportRect.x);
-            };
-
-            switch (edgeOrCorner) {
-                case "edge-top":
-                    resizeTop();
-                    break;
-                case "edge-bottom":
-                    resizeBottom();
-                    break;
-                case "edge-left":
-                    resizeLeft();
-                    break;
-                case "edge-right":
-                    resizeRight();
-                    break;
-                case "corner-top-left":
-                    resizeTop();
-                    resizeLeft();
-                    break;
-                case "corner-bottom-right":
-                    resizeBottom();
-                    resizeRight();
-                    break;
-                case "corner-top-right":
-                    resizeTop();
-                    resizeRight();
-                    break;
-                case "corner-bottom-left":
-                    resizeBottom();
-                    resizeLeft();
-                    break;
-            }
-
-            Popups.setPopupViewportRect(popup, newPopupViewportRect);
-        };
+        /*  Add the resize-end mouseup event listener (to window, not the popup,
+        	because the drag might end anywhere, due to animation lag).
+         */
+        window.addEventListener("mouseup", Popups.popupResizeMouseUp, { once: true });
     },
+
+	popupResizeMouseMove: (event) => {
+        GWLog("Popups.popupResizeMouseMove", "popups.js", 3);
+
+		let popup = Popups.popupBeingResized;
+
+		//	Update classes.
+		Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
+		Popups.addClassesToPopFrame(popup, "resizing", "resized");
+
+		//  Viewport width must account for vertical scroll bar.
+		let viewportWidth = document.documentElement.offsetWidth;
+		let viewportHeight = window.innerHeight;
+
+		let deltaX = event.clientX - popup.dragStartMouseCoordX;
+		let deltaY = event.clientY - popup.dragStartMouseCoordY;
+
+		let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
+
+		let resizeTop = () => {
+			newPopupViewportRect.y = valMinMax(popup.viewportRect.y + deltaY, 0, popup.viewportRect.bottom - popup.popupMinHeight);
+			newPopupViewportRect.height = popup.viewportRect.bottom - newPopupViewportRect.y;
+		};
+		let resizeBottom = () => {
+			newPopupViewportRect.height = valMinMax(popup.viewportRect.height + deltaY, popup.popupMinHeight, viewportHeight - popup.viewportRect.y);
+		};
+		let resizeLeft = () => {
+			newPopupViewportRect.x = valMinMax(popup.viewportRect.x + deltaX, 0, popup.viewportRect.right - popup.popupMinWidth);
+			newPopupViewportRect.width = popup.viewportRect.right - newPopupViewportRect.x;
+		};
+		let resizeRight = () => {
+			newPopupViewportRect.width = valMinMax(popup.viewportRect.width + deltaX, popup.popupMinWidth, viewportWidth - popup.viewportRect.x);
+		};
+
+		switch (popup.edgeOrCorner) {
+			case "edge-top":
+				resizeTop();
+				break;
+			case "edge-bottom":
+				resizeBottom();
+				break;
+			case "edge-left":
+				resizeLeft();
+				break;
+			case "edge-right":
+				resizeRight();
+				break;
+			case "corner-top-left":
+				resizeTop();
+				resizeLeft();
+				break;
+			case "corner-bottom-right":
+				resizeBottom();
+				resizeRight();
+				break;
+			case "corner-top-right":
+				resizeTop();
+				resizeRight();
+				break;
+			case "corner-bottom-left":
+				resizeBottom();
+				resizeLeft();
+				break;
+		}
+
+		Popups.setPopupViewportRect(popup, newPopupViewportRect);
+	},
 
     /*  The resize-end mouseup event.
      */
@@ -5190,9 +5205,11 @@ Popups = {
     popupResizeMouseUp: (event) => {
         GWLog("Popups.popupResizeMouseUp", "popups.js", 2);
 
+        //  Prevent other events from triggering.
         event.stopPropagation();
 
-        window.onmousemove = null;
+        //  Remove the mousemove handler.
+        removeMousemoveListener("popupResizeMousemoveListener");
 
         //  Reset cursor to normal.
         document.documentElement.style.cursor = "";
@@ -5204,11 +5221,27 @@ Popups = {
             if (Popups.popupWasResized(popup))
                 popup.titleBar.updateState();
 
+			//	Delete saved resize direction.
+			popup.edgeOrCorner = null;
+
+			//	Delete saved minimum dimensions.
+			popup.popupMinWidth = null;
+			popup.popupMinHeight = null;
+
+			//	Delete saved drag-start coordinates.
+			popup.dragStartMouseCoordX = null;
+			popup.dragStartMouseCoordY = null;
+
             //  Cache the viewport rect.
             popup.viewportRect = popup.getBoundingClientRect();
+
+            //  Ensure that the click listener isn’t fired at once.
+            requestAnimationFrame(() => {
+                popup.addEventListener("click", Popups.popupClicked);
+            });
         }
+
         Popups.popupBeingResized = null;
-        Popups.hoverEventsActive = true;
     },
 
     /*  The popup mouseout event.
@@ -5219,6 +5252,7 @@ Popups = {
 
         //  Reset cursor.
         if (   Popups.popupBeingDragged == null
+        	&& Popups.popupBeingResized == null
             && event.target.style.cursor == "")
             document.documentElement.style.cursor = "";
     },
@@ -5232,24 +5266,22 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-		//	If the popup is minimized, do nothing.
-		if (Popups.popupIsMinimized(popup))
+		/*	Make sure that this is a left-click; that we’re clicking on an 
+			empty part of the title bar or else on the title itself (but not on
+			a title bar button); and the the popup is draggable (i.e., that it 
+			is not minimized).
+		 */
+		if (   event.button != 0
+			|| Popups.popupIsMinimized(popup)
+			|| event.target.closest(".popframe-title-bar-button"))
 			return;
 
         //  Prevent other events from triggering.
         event.stopPropagation();
 
-        //  Bring the popup to the front.
+        //  Bring the popup to the front, if need be.
         if (event.metaKey == false)
             Popups.bringPopupToFront(popup);
-
-        //  We only want to do anything on left-clicks.
-        if (event.button != 0)
-            return;
-
-        //  Also do nothing if the click is on a title bar button.
-        if (event.target.closest(".popframe-title-bar-button"))
-            return;
 
         //  Prevent clicks from doing anything other than what we want.
         event.preventDefault();
@@ -5271,40 +5303,44 @@ Popups = {
         popup.removeEventListener("click", Popups.popupClicked);
 
         //  Point where the drag began.
-        let dragStartMouseCoordX = event.clientX;
-        let dragStartMouseCoordY = event.clientY;
+        popup.dragStartMouseCoordX = event.clientX;
+        popup.dragStartMouseCoordY = event.clientY;
 
-        //  Popup initial position.
-        let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
-        //  Do not change popup size.
-        newPopupViewportRect.width = 0;
-        newPopupViewportRect.height = 0;
+		//	Store reference to popup, for mouse event listeners.
+		Popups.popupBeingDragged = popup;
+
+		//	Add the drag mousemove listener.
+		addMousemoveListener(Popups.popupDragMouseMove, { name: "popupDragMousemoveListener" });
 
         //  Add the drag-end mouseup listener.
         window.addEventListener("mouseup", Popups.popupDragMouseUp, { once: true });
-
-        //  We define the mousemove listener here to capture variables.
-        window.onmousemove = (event) => {
-            if (Popups.popupBeingDragged == null)
-                Popups.pinPopup(popup);
-
-            Popups.popupBeingDragged = popup;
-
-            //  Mark popup as being dragged.
-            Popups.addClassesToPopFrame(popup, "dragging");
-
-            //  If dragging by the title, disable its normal click handler.
-            if (popup.linkDragTarget)
-                popup.linkDragTarget.onclick = (event) => { return false; };
-
-            //  Current drag vector relative to mouse starting position.
-            newPopupViewportRect.x = popup.viewportRect.x + (event.clientX - dragStartMouseCoordX);
-            newPopupViewportRect.y = popup.viewportRect.y + (event.clientY - dragStartMouseCoordY);
-
-            //  Set new viewport rect; clamp to screen.
-            Popups.setPopupViewportRect(popup, newPopupViewportRect, { clampPositionToScreen: true });
-        };
     },
+
+	/*	The mousemove event fired during popup drag-to-move.
+	 */
+	//	Added by: Popups.popupTitleBarMouseDown
+	popupDragMouseMove: (event) => {
+        GWLog("Popups.popupDragMouseMove", "popups.js", 3);
+
+		let popup = Popups.popupBeingDragged;
+
+		//	Pin the popup.
+		Popups.pinPopup(popup);
+
+		//  Update classes.
+		Popups.addClassesToPopFrame(popup, "dragging");
+
+		//  If dragging by the title, disable its normal click handler.
+		if (popup.linkDragTarget)
+			popup.linkDragTarget.onclick = (event) => { return false; };
+
+		//  Set new viewport rect; clamp to screen.
+		Popups.setPopupViewportRect(popup, 
+									new DOMRect(popup.viewportRect.x + (event.clientX - popup.dragStartMouseCoordX),
+												popup.viewportRect.y + (event.clientY - popup.dragStartMouseCoordY),
+												0, 0), 
+									{ clampPositionToScreen: true });
+	},
 
     /*  The mouseup event that ends a popup drag-to-move.
      */
@@ -5316,7 +5352,7 @@ Popups = {
         event.stopPropagation();
 
         //  Remove the mousemove handler.
-        window.onmousemove = null;
+        removeMousemoveListener("popupDragMousemoveListener");
 
         //  Reset cursor to normal.
         document.documentElement.style.cursor = "";
@@ -5333,6 +5369,10 @@ Popups = {
                 });
             }
 
+			//	Delete saved drag-start coordinates.
+			popup.dragStartMouseCoordX = null;
+			popup.dragStartMouseCoordY = null;
+
             //  Cache the viewport rect.
             popup.viewportRect = popup.getBoundingClientRect();
 
@@ -5340,22 +5380,9 @@ Popups = {
             requestAnimationFrame(() => {
                 popup.addEventListener("click", Popups.popupClicked);
             });
-
-            /*  If the drag of a non-pinned popup ended outside the
-                popup (possibly outside the viewport), treat this
-                as mousing out of the popup.
-             */
-            if (   (   event.target.closest == null
-                    || Popups.containingPopFrame(event.target) == null)
-                && Popups.popupIsPinned(popup) == false) {
-                Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
-                    Popups.clearPopupTimers(popupInStack.spawningTarget);
-                    Popups.setPopupFadeTimer(popupInStack.spawningTarget);
-                });
-            }
         }
+
         Popups.popupBeingDragged = null;
-        Popups.hoverEventsActive = true;
     },
 
     /*  The popup title bar mouseup event.
@@ -5610,7 +5637,8 @@ Popups = {
                 Popups.zoomPopup(focusedPopup, "full");
                 break;
             case Popups.popupTilingControlKeys.substr(9,1):
-                Popups.restorePopup(focusedPopup);
+            	if (Popups.popupIsZoomed(focusedPopup) || Popups.popupWasResized(focusedPopup))
+	                Popups.restorePopup(focusedPopup);
                 break;
             case Popups.popupTilingControlKeys.substr(10,1):
 				Popups.pinOrUnpinPopup(focusedPopup);
@@ -17328,14 +17356,15 @@ if (GW.collapse.hoverEventsEnabled) {
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
-			name: "disableCollapseHoverEventsOnScrollInPopupListener",
 			target: info.popup.scrollView
 		});
 	});
 
 	//	Enable on mousemove.
-	window.addEventListener("mousemove", GW.collapse.windowMouseMove = (event) => {
+	addMousemoveListener(GW.collapse.enableCollapseHoverEventsOnMousemove = (event) => {
 		GW.collapse.hoverEventsActive = true;
+	}, {
+		name: "enableCollapseHoverEventsOnMousemoveListener"
 	});
 }
 
@@ -18917,10 +18946,9 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.putSidenoteBack(sidenote);
 			});
 
-			sidenote.scrollListener = addScrollListener((event) => {
+			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
 			}, {
-				name: "Sidenotes.updateSidenoteHideMoreIndicatorVisibilityOnScrollListener",
 				target: sidenote.outerWrapper
 			});
 		});
@@ -19864,7 +19892,7 @@ ImageFocus = {
 
 		//  Moving mouse unhides image focus UI.
 		if (GW.isMobile() == false)
-			window.addEventListener("mousemove", ImageFocus.mouseMoved);
+			addMousemoveListener(ImageFocus.mouseMoved, { name: "ImageFocusMousemoveListener" });
 
 		//	Drag-end event; also, click to unfocus.
 		window.addEventListener("mouseup", ImageFocus.mouseUp);
@@ -19909,7 +19937,7 @@ ImageFocus = {
 		window.removeEventListener("wheel", ImageFocus.scrollEvent);
 		window.removeEventListener("mouseup", ImageFocus.mouseUp);
 		if (GW.isMobile() == false)
-			window.removeEventListener("mousemove", ImageFocus.mouseMoved);
+			removeMousemoveListener("ImageFocusMousemoveListener");
 
 		//  Hide overlay.
 		ImageFocus.overlay.classList.remove("engaged");
