@@ -482,7 +482,7 @@ ImageFocus = {
 
 		//  Moving mouse unhides image focus UI.
 		if (GW.isMobile() == false)
-			window.addEventListener("mousemove", ImageFocus.mouseMoved);
+			addMousemoveListener(ImageFocus.mouseMoved, { name: "ImageFocusMousemoveListener" });
 
 		//	Drag-end event; also, click to unfocus.
 		window.addEventListener("mouseup", ImageFocus.mouseUp);
@@ -527,7 +527,7 @@ ImageFocus = {
 		window.removeEventListener("wheel", ImageFocus.scrollEvent);
 		window.removeEventListener("mouseup", ImageFocus.mouseUp);
 		if (GW.isMobile() == false)
-			window.removeEventListener("mousemove", ImageFocus.mouseMoved);
+			removeMousemoveListener("ImageFocusMousemoveListener");
 
 		//  Hide overlay.
 		ImageFocus.overlay.classList.remove("engaged");

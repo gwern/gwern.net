@@ -3020,12 +3020,12 @@ Popups = {
 
         //  Remove Escape key event listener.
         document.removeEventListener("keyup", Popups.keyUp);
-        //  Remove mousemove listener.
-        window.removeEventListener("mousemove", Popups.windowMouseMove);
         //  Remove scroll listener.
-        removeScrollListener("updatePopupsEventStateScrollListener");
+        removeScrollListener("disablePopupHoverEventsOnScrollListener");
+        //  Remove mousemove listener.
+        removeMousemoveListener("enablePopupHoverEventsOnMousemoveListener")
         //  Remove popup-spawn event handler.
-        GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned);
+        GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Popups.addDisablePopupHoverEventsOnScrollListenerOnPopupSpawned);
 
         //  Fire event.
         GW.notificationCenter.fireEvent("Popups.cleanupDidComplete");
@@ -3064,15 +3064,8 @@ Popups = {
         //  Add Escape key event listener.
         document.addEventListener("keyup", Popups.keyUp);
 
-        //  Add mousemove listener, to enable hover on mouse move.
-        window.addEventListener("mousemove", Popups.windowMouseMove = (event) => {
-            if (   Popups.popupBeingDragged == null
-                && Popups.popupBeingResized == null)
-                Popups.hoverEventsActive = true;
-        });
-
         //  Add scroll listener, to disable hover on scroll.
-        addScrollListener(Popups.disableHoverEventsOnScroll = (event) => {
+        addScrollListener(Popups.disablePopupHoverEventsOnScroll = (event) => {
             Popups.hoverEventsActive = false;
         }, {
             name: "disablePopupHoverEventsOnScrollListener"
@@ -3081,13 +3074,22 @@ Popups = {
         /*  Add event handler to add scroll listener to spawned popups, to
             disable hover events when scrolling within a popup.
          */
-        GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
-            addScrollListener(Popups.disableHoverEventsOnScroll, {
+        GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Popups.addDisablePopupHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
+            addScrollListener(Popups.disablePopupHoverEventsOnScroll, {
                 target: info.popup.scrollView
             });
         });
 
-        //  Enable default popup tiling control keys (aswdqexzfrcv).
+        //  Add mousemove listener, to enable hover on mouse move.
+        addMousemoveListener(Popups.enablePopupHoverEventsOnMousemove = (event) => {
+            if (   Popups.popupBeingDragged == null
+                && Popups.popupBeingResized == null)
+                Popups.hoverEventsActive = true;
+        }, {
+        	name: "enablePopupHoverEventsOnMousemoveListener"
+        });
+
+        //  Enable default popup tiling control keys (aswdqexzfrcvtgb).
         Popups.setPopupTilingControlKeys();
 
         //  Fire event.
@@ -17332,8 +17334,10 @@ if (GW.collapse.hoverEventsEnabled) {
 	});
 
 	//	Enable on mousemove.
-	window.addEventListener("mousemove", GW.collapse.windowMouseMove = (event) => {
+	addMousemoveListener(GW.collapse.enableCollapseHoverEventsOnMousemove = (event) => {
 		GW.collapse.hoverEventsActive = true;
+	}, {
+		name: "enableCollapseHoverEventsOnMousemoveListener"
 	});
 }
 
@@ -19861,7 +19865,7 @@ ImageFocus = {
 
 		//  Moving mouse unhides image focus UI.
 		if (GW.isMobile() == false)
-			window.addEventListener("mousemove", ImageFocus.mouseMoved);
+			addMousemoveListener(ImageFocus.mouseMoved, { name: "ImageFocusMousemoveListener" });
 
 		//	Drag-end event; also, click to unfocus.
 		window.addEventListener("mouseup", ImageFocus.mouseUp);
@@ -19906,7 +19910,7 @@ ImageFocus = {
 		window.removeEventListener("wheel", ImageFocus.scrollEvent);
 		window.removeEventListener("mouseup", ImageFocus.mouseUp);
 		if (GW.isMobile() == false)
-			window.removeEventListener("mousemove", ImageFocus.mouseMoved);
+			removeMousemoveListener("ImageFocusMousemoveListener");
 
 		//  Hide overlay.
 		ImageFocus.overlay.classList.remove("engaged");

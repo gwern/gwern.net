@@ -36,8 +36,10 @@ if (GW.collapse.hoverEventsEnabled) {
 	});
 
 	//	Enable on mousemove.
-	window.addEventListener("mousemove", GW.collapse.windowMouseMove = (event) => {
+	addMousemoveListener(GW.collapse.enableCollapseHoverEventsOnMousemove = (event) => {
 		GW.collapse.hoverEventsActive = true;
+	}, {
+		name: "enableCollapseHoverEventsOnMousemoveListener"
 	});
 }
 

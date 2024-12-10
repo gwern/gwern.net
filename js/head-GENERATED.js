@@ -2361,11 +2361,6 @@ GW.eventListeners = { };
 		“bar” attached to object `baz` will overwrite a listener “foo” for 
 		event “bar” attached to object `quux`.)
 
-	target (EventTarget)
-		The object (which must implement the EventTarget interface) to which 
-		the event listener is added. By default, this is the root document
-		(i.e., the `document` object).
-
 	defer (boolean)
 		If set to true, and the page has not yet finished loading, then the 
 		provided handler is not added immediately, but only on the next 
@@ -2396,10 +2391,9 @@ GW.eventListeners = { };
 
 		(This option has no effect if the `defer` option is not enabled.)
  */
-function addNamedEventListener(eventName, fn, options) {
+function addNamedEventListener(target, eventName, fn, options) {
 	options = Object.assign({
 		name: null,
-		target: document,
 		defer: false,
 		ifDeferCallWhenAdd: false
 	}, options);
@@ -2409,9 +2403,8 @@ function addNamedEventListener(eventName, fn, options) {
             requestAnimationFrame(() => {
                 if (options.ifDeferCallWhenAdd)
                     fn();
-                addNamedEventListener(eventName, fn, {
+                addNamedEventListener(target, eventName, fn, {
                 	name: options.name,
-                	target: options.target,
                 	defer: false
                 });
             });
@@ -2423,10 +2416,10 @@ function addNamedEventListener(eventName, fn, options) {
     let wrapper = (event) => {
         requestAnimationFrame(() => {
             fn(event);
-            options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
+            target.addEventListener(eventName, wrapper, { once: true, passive: true });
         });
     }
-    options.target.addEventListener(eventName, wrapper, { once: true, passive: true });
+    target.addEventListener(eventName, wrapper, { once: true, passive: true });
 
     /*  Retain a reference to the event listener, if a name is provided.
      */
@@ -2436,7 +2429,7 @@ function addNamedEventListener(eventName, fn, options) {
 
         GW.eventListeners[eventName][options.name] = {
         	wrapper: wrapper,
-        	target: options.target
+        	target: target
         };
     }
 
@@ -2456,29 +2449,39 @@ function removeNamedEventListener(eventName, name) {
     }
 }
 
-/*  Adds a scroll event listener to the page (or other target).
+/*  Adds a “scroll” event listener to the document (or other target).
  */
 function addScrollListener(fn, options) {
-	return addNamedEventListener("scroll", fn, options);
+	return addNamedEventListener((options.target ?? document), "scroll", fn, options);
 }
 
-/*  Removes a named scroll event listener from the page (or other target).
+/*  Removes a named “scroll” event listener from the document (or other 
+	target).
  */
 function removeScrollListener(name) {
 	removeNamedEventListener("scroll", name);
 }
 
-/*  Adds a resize event listener to the window.
+/*  Adds a “mousemove” event listener to the window (or other target).
  */
-function addWindowResizeListener(fn, options) {
-	options = Object.assign({ }, options, {
-		target: window
-	});
-
-	return addNamedEventListener("resize", fn, options);
+function addMousemoveListener(fn, options) {
+	return addNamedEventListener((options.target ?? window), "mousemove", fn, options);
 }
 
-/*  Removes a named resize event listener from the window.
+/*  Removes a named “mousemove” event listener from the window (or other 
+	target).
+ */
+function removeMousemoveListener(name) {
+	removeNamedEventListener("mousemove", name);
+}
+
+/*  Adds a “resize” event listener to the window.
+ */
+function addWindowResizeListener(fn, options) {
+	return addNamedEventListener(window, "resize", fn, options);
+}
+
+/*  Removes a named “resize” event listener from the window.
  */
 function removeWindowResizeListener(name) {
 	removeNamedEventListener("resize", name);
