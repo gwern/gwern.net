@@ -3495,13 +3495,28 @@ GW.layout.currentPassBegin = 1;
 /**********************************************************************/
 /*	Registers a layout processor function, which will be applied to all
 	rendered content as part of the dynamic layout process.
+
+	Available option fields:
+
+	blockLayout (boolean)
+		If set to true (the default), then this will be treated as a block
+		layout processor (and block layout exclusions will be applied to it).
+		Otherwise, block layout exclusions will be ignored.
  */
-function addLayoutProcessor(name, processor) {
+function addLayoutProcessor(name, processor, options) {
+	options = Object.assign({
+		blockLayout: true
+	}, options);
+
 	//	Reference for easy direct calling.
 	GW.layout[name] = processor;
 
 	//	Add to layout processor list.
-	GW.layout.layoutProcessors.push({ name: name, processor: processor });
+	GW.layout.layoutProcessors.push({
+		name: name,
+		processor: processor,
+		options: options
+	});
 }
 
 /******************************************************************************/
@@ -3509,18 +3524,16 @@ function addLayoutProcessor(name, processor) {
 	container.
 
 	Fires didComplete event for each time a layout processor fires.
-
-	Optionally, specify a containing document different from the root document.
  */
-function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, options) {
-	options = Object.assign({
-		document: document
-	}, options);
+function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container) {
+	if (   processorSpec.options.blockLayout == true
+		&& blockContainer.closest(GW.layout.blockLayoutExclusionSelector) != null)
+		return;
 
 	processorSpec.processor(blockContainer);
 
 	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
-		document: options.document,
+		document: container.getRootNode(),
 		container: container,
 		processorName: processorSpec.name,
 		blockContainer: blockContainer
@@ -3531,9 +3544,7 @@ function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, con
 /*	Activates dynamic layout for the given container.
  */
 function startDynamicLayoutInContainer(container) {
-	let containingDocument = container.getRootNode();
-
-	let selectorize = selectorizeForContainer(container);
+	let selectorize = selectorizeForBlockContainer(container);
 
 	let observer = new MutationObserver((mutationsList, observer) => {
 		//	Construct list of all block containers affected by these mutations.
@@ -3545,8 +3556,7 @@ function startDynamicLayoutInContainer(container) {
 
 			//	Avoid adding a container twice, and apply exclusions.
 			if (   nearestBlockContainer
-				&& affectedBlockContainers.includes(nearestBlockContainer) == false
-				&& nearestBlockContainer.closest(GW.layout.blockLayoutExclusionSelector) == null)
+				&& affectedBlockContainers.includes(nearestBlockContainer) == false)
 				affectedBlockContainers.push(nearestBlockContainer);
 		}
 
@@ -3571,9 +3581,7 @@ function startDynamicLayoutInContainer(container) {
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {
 				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
 				GW.layout.layoutProcessors.forEach(processorSpec => {
-					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container, {
-						document: containingDocument
-					});
+					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container);
 				});
 			}
 
@@ -3942,8 +3950,9 @@ function isBareWrapper(element) {
 /**************************************************************************/
 /*	Returns assembled and appropriately prefixed selector from given parts.
  */
-function selectorizeForContainer(container) {
-	if (container instanceof DocumentFragment) {
+function selectorizeForBlockContainer(blockContainer) {
+	if (   blockContainer instanceof DocumentFragment
+		|| blockContainer.closest(".markdownBody") == null) {
 		return (parts) => (parts.join(", "));
 	} else {
 		return (parts) => (parts.map(
@@ -4103,14 +4112,14 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 	});
 }
 
-/*************************************************************************/
-/*	Apply block layout classes to appropriate elements in given container.
+/*******************************************************************************/
+/*	Apply block layout classes to appropriate elements in given block container.
  */
-addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
-	let selectorize = selectorizeForContainer(container);
+addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
+	let selectorize = selectorizeForBlockContainer(blockContainer);
 
 	//	Designate headings.
-	container.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
+	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
 	});
 
@@ -4120,17 +4129,17 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 		".float-right"
 	];
 	if (GW.mediaQueries.mobileWidth.matches == false) {
-		container.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
+		blockContainer.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
 			floatBlock.classList.add("float");
 		});
 	} else {
-		container.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
+		blockContainer.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
 			floatBlock.classList.remove("float");
 		});
 	}
 
 	//	Designate lists.
-	container.querySelectorAll(selectorize([
+	blockContainer.querySelectorAll(selectorize([
 		"ul",
 		"ol"
 	])).forEach(list => {
@@ -4138,15 +4147,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 
 	//	Designate float-containing lists.
-	container.querySelectorAll(".markdownBody li .float").forEach(floatBlock => {
+	blockContainer.querySelectorAll(".markdownBody li .float").forEach(floatBlock => {
 		let options = {
 			alsoBlockContainers: [ ".list" ],
 			cacheKey: "alsoBlockContainers_lists"
 		};
-		let container = blockContainerOf(floatBlock, options);
-		while (container?.matches(".list")) {
-			container.classList.add("has-floats");
-			container = blockContainerOf(container, options);
+		let ancestorBlockContainer = blockContainerOf(floatBlock, options);
+		while (ancestorBlockContainer?.matches(".list")) {
+			ancestorBlockContainer.classList.add("has-floats");
+			ancestorBlockContainer = blockContainerOf(ancestorBlockContainer, options);
 		}
 	});
 
@@ -4169,7 +4178,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 
 		return false;
 	};
-	container.querySelectorAll(".list").forEach(list => {
+	blockContainer.querySelectorAll(".list").forEach(list => {
 		let bigList = isBigList(list);
 
 		/*	If this is a sub-list, and any other sub-lists on the same level as
@@ -4177,12 +4186,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 			the designation of “bigness” is applied to *list levels within a
 			list tree*, not to individual lists).
 		 */
-		 let container = blockContainerOf(list, {
+		 let ancestorBlockContainer = blockContainerOf(list, {
 		 	alsoBlockContainers: [ "li" ],
 		 	cacheKey: "alsoBlockContainers_listItems"
 		 });
-		 if (container?.matches("li")) {
-		 	for (let listItem of container.parentElement.children) {
+		 if (ancestorBlockContainer?.matches("li")) {
+		 	for (let listItem of ancestorBlockContainer.parentElement.children) {
 				if (childBlocksOf(listItem, listItemChildBlocksOptions).findIndex(x => isBigList(x)) != -1) {
 					bigList = true;
 					break;
@@ -4194,7 +4203,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 
 	//	Disable triptychs on mobile layouts.
-	container.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+	blockContainer.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
 		/*	Why “aptych”? Because on mobile it is laid out in one column
 			instead of three, making it “un-folded”:
 			https://old.reddit.com/r/AncientGreek/comments/ypts2o/polyptychs_help_with_a_word/
@@ -4203,7 +4212,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 
 	//	Apply special block sequence classes.
-	container.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
+	blockContainer.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -4351,11 +4360,11 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 /**********************************************/
 /*	Apply block spacing in the given container.
  */
-addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
-	let selectorize = selectorizeForContainer(container);
+addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
+	let selectorize = selectorizeForBlockContainer(blockContainer);
 
 	//	Apply block spacing.
-	container.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
+	blockContainer.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -4370,7 +4379,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 	});
 
 	//	Triptychs require special treatment.
-	container.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+	blockContainer.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
 		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -4391,7 +4400,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 	});
 
 	//	Lists require special treatment.
-	container.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
+	blockContainer.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -4423,7 +4432,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 	});
 
 	//	Floats require special treatment on non-mobile layouts.
-	container.querySelectorAll(selectorize([ ".float" ])).forEach(floatBlock => {
+	blockContainer.querySelectorAll(selectorize([ ".float" ])).forEach(floatBlock => {
 		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -4453,19 +4462,18 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 /**********************************************/
 /*	Enable inline icons in the given container.
  */
-addLayoutProcessor("processInlineIconsInContainer", (container) => {
-	let selectorize = selectorizeForContainer(container);
+addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
+	let selectorize = selectorizeForBlockContainer(blockContainer);
 
-	container.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
-		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
-
+	blockContainer.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
 		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
 		if (iconName == null)
 			return;
 
+		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
 		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
 	});
-});
+}, { blockLayout: false });
 
 /****************************************************************************/
 /*	Apply block layout classes to the main document, prior to rewrites. (This
@@ -4685,7 +4693,7 @@ ReaderMode = {
 //  Activate saved mode, once the <body> element is loaded (and classes known).
 doWhenBodyExists(ReaderMode.setMode);
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1733725643",
+	"/static/img/icon/icons.svg": "1733961308",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",

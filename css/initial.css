@@ -401,6 +401,20 @@ header h1 em {
 #page-metadata .page-metadata-fields > span:last-child::after {
     display: none;
 }
+/*	Adjust icon spacing.
+ */
+#page-metadata .page-metadata-fields .page-status .progress-indicator-icon {
+	margin: 0 0.2em 0 0;
+}
+#page-metadata .page-metadata-fields .page-confidence .progress-indicator-icon {
+	margin: 0 0.1em 0 0;
+}
+/*	Adjust z-order of text elements.
+ */
+#page-metadata .page-metadata-fields a + span {
+	position: relative;
+	z-index: 1;
+}
 
 /*  Flex order.
  */
@@ -1866,6 +1880,10 @@ a code {
 .inline-icon {
     --link-underline-background-color: var(--background-color);
 
+	--icon-opacity: 1.00;
+	--icon-width: 1.00em;
+	--icon-height: 1.00em;
+
     position: relative;
     top: 0.05em;
     background-color: var(--link-underline-background-color);
@@ -1888,35 +1906,44 @@ a code {
     background-size: var(--icon-width) var(--icon-height);
 }
 
+.icon-circle-empty,
+.icon-circle-one-quarter,
+.icon-circle-half,
+.icon-circle-three-quarters,
+.icon-circle-full-check {
+    --icon-opacity: 0.55;
+    --icon-width: 0.90em;
+    --icon-height: 0.95em;
+}
 .icon-single-white-star-on-black-circle {
     --icon-opacity: 0.75;
     --icon-width: 0.65em;
-    --icon-height: 1em;
+    --icon-height: 1.00em;
 }
 .icon-moon-solid,
 .icon-gear-solid {
-	--icon-opacity: 0.7;
-    --icon-width: 0.9em;
-    --icon-height: 1em;
+	--icon-opacity: 0.70;
+    --icon-width: 0.90em;
+    --icon-height: 1.00em;
 }
 .icon-book-open-solid,
 .icon-message-slash-solid,
 .icon-eye-slash-solid,
 .icon-manicule-left,
 .icon-manicule-right {
-	--icon-opacity: 0.7;
-    --icon-width: 0.9em;
+	--icon-opacity: 0.70;
+    --icon-width: 0.90em;
     --icon-height: 0.75em;
 }
 .icon-sun-solid {
 	--icon-opacity: 0.75;
-    --icon-width: 1em;
-    --icon-height: 1em;
+    --icon-width: 1.00em;
+    --icon-height: 1.00em;
 }
 .icon-magnifying-glass {
-	--icon-opacity: 0.9;
-    --icon-width: 0.9em;
-    --icon-height: 1em;
+	--icon-opacity: 0.90;
+    --icon-width: 0.90em;
+    --icon-height: 1.00em;
 }
 
 /*  Recently-modified link icons.

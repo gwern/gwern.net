@@ -16841,6 +16841,46 @@ addContentInjectHandler(GW.contentInjectHandlers.designateHorizontalRuleStyles =
 	});
 }, ">rewrite");
 
+/**********************************************************/
+/*	Inject progress indicator icons into any element with a 
+	data-progress-percentage attribute.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) => {
+    GWLog("injectProgressIcons", "rewrite.js", 1);
+
+	let progressIcons = {
+		0: "circle-empty",
+		1: "circle-one-quarter",
+		2: "circle-half",
+		3: "circle-three-quarters",
+		4: "circle-full-check",
+	};
+
+	eventInfo.container.querySelectorAll("[data-progress-percentage]").forEach(progressIndicator => {
+		let progressPercent = parseInt(progressIndicator.dataset.progressPercentage);
+		let progressQuarters = Math.round(progressPercent / 25.0);
+		progressIndicator.insertBefore(newElement("SPAN", {
+			class: "progress-indicator-icon icon-" + progressIcons[progressQuarters]
+		}), progressIndicator.firstChild);
+	});
+}, "rewrite");
+
+/*********************************************************************/
+/*	Fix a minor appearance glitch in some fields in the page metadata.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rectifyPageMetadataFieldLinkAppearance = (eventInfo) => {
+    GWLog("rectifyPageMetadataFieldLinkAppearance", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("#page-metadata a").forEach(pageMetadataLink => {
+		let nextNode = pageMetadataLink.nextSibling;
+		if (   nextNode?.nodeType == Node.TEXT_NODE
+			&& nextNode?.nodeValue.startsWith(":")) {
+			nextNode.remove();
+			pageMetadataLink.parentElement.insertBefore(newElement("SPAN", null, { innerHTML: nextNode.nodeValue }), pageMetadataLink.nextSibling);
+		}
+	});
+}, "rewrite");
+
 
 /************/
 /* DROPCAPS */
