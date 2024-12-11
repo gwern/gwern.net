@@ -156,17 +156,17 @@ div#masked-links-key-toggle-info-alert img {
 /*  Manual link-icon SVGs: Recently-modified, manicule/index, theme-toggle icons
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before,
 .manicule svg,
-.icon-manicule-right::before,
-.icon-manicule-left::before,
+.icon-single-white-star-on-black-circle::before,
 .icon-moon-solid::before,
 .icon-book-open-solid::before,
 .icon-message-slash-solid::before,
 .icon-magnifying-glass::before,
 .icon-gear-solid::before,
 .icon-sun-solid::before,
-.icon-eye-slash-solid::before {
+.icon-eye-slash-solid::before,
+.icon-manicule-right::before,
+.icon-manicule-left::before {
     filter: invert(1);
 }
 
