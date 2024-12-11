@@ -2021,7 +2021,12 @@ GW.search = {
         Extracts.config.hooklessLinksContainersSelector += `, #${GW.search.searchWidgetId}`;
         Extracts.addTargetsWithin(GW.search.searchWidget);
 
-        //  Event handler for popup spawn / popin inject.
+ 		//	Function to set the proper mode (auto, light, dark) in the iframe.
+		let updateSearchIframeMode = (iframe) => {
+			iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
+		};
+
+		//  Event handler for popup spawn / popin inject.
         let popFrameSpawnEventHandler = (eventInfo) => {
             let popFrame = (eventInfo.popup ?? eventInfo.popin);
 
@@ -2030,6 +2035,14 @@ GW.search = {
 
 			let iframe = popFrame.document.querySelector("iframe");
             iframe.addEventListener("load", (event) => {
+
+				updateSearchIframeMode(iframe);
+
+				//	Add handler to update search pop-frame when switching modes.
+				GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
+					updateSearchIframeMode(iframe)
+				});
+
 				let inputBox = iframe.contentDocument.querySelector("input.search");
 
                 //  Focus search box on load.
@@ -2076,6 +2089,8 @@ GW.search = {
 
 			if (Extracts.popFrameProvider == Popups)
 				GW.search.searchPopup = null;
+
+			GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
 		};
 
         //  Configure pop-frame behavior.
@@ -2116,6 +2131,10 @@ GW.search = {
         } else {
             //  Add popin inject event handler.
             GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
+                condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
+            });
+			//	Add popin despawn event handler.
+			GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
                 condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
             });
         }

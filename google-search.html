@@ -1,11 +1,12 @@
 <title>Gwern.net Search</title>
-<style>
+<style id="search-styles">
 html {
 	font-size: 18px;
 }
 body {
 	margin: 0;
 	padding: 0.5em;
+	background-color: #fff;
 }
 .searchform {
 	display: flex;
@@ -14,6 +15,7 @@ body {
 .searchform input.search {
 	appearance: none;
 	border: none;
+	background-color: #fff;
 	outline: 1px solid #ccc;
 	flex: 1 1 auto;
 	height: 2em;
@@ -48,6 +50,36 @@ body {
 .searchform button:hover,
 .searchform button:focus {
 	outline: 2px solid #777;
+}
+</style>
+<style id="search-styles-dark" media="all and (prefers-color-scheme: dark)">
+body {
+	background-color: #161616;
+}
+.searchform input.search {
+	background-color: #161616;
+	outline: 1px solid #5c5c5c;
+}
+.searchform:focus-within input.search {
+	outline: 2px solid #5c5c5c;
+}
+.searchform input.search:focus {
+	outline: 2px solid #a6a6a6;
+}
+.searchform button {
+	background-color: #404040;
+	outline: 1px solid #5c5c5c;
+}
+.searchform:focus-within button {
+	outline: 2px solid #5c5c5c;
+}
+.searchform button:hover {
+	background-color: #a6a6a6;
+	color: #000;
+}
+.searchform button:hover,
+.searchform button:focus {
+	outline: 2px solid #a6a6a6;
 }
 </style>
 <form action="https://www.google.com/search" class="searchform" method="get" name="searchform" target="_blank">
