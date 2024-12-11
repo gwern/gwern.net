@@ -1048,7 +1048,8 @@ addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = 
 		let button = heading.appendChild(newElement("BUTTON", {
 			type: "button",
 			class: "copy-section-link-button",
-			title: "Copy section link to clipboard"
+			title: "Copy section link to clipboard",
+			tabindex: "-1"
 		}, {
 			innerHTML: GW.svg("link-simple-solid")	
 		}));

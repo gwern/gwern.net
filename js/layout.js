@@ -1049,7 +1049,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 				cacheKey: "alsoBlocks_lists_notWrappers_lists"
 			});
 			if (   strictNextBlock?.matches(".list, .columns")
-				&& block.textContent.trim().endsWith(":"))
+				&& block.textContent.trim().endsWith(":")
+				&& block.textContent.includes(".") == false)
 				listHeading = true;
 			block.classList.toggle("list-heading", listHeading);
 
