@@ -1068,7 +1068,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = 
 			}, 150);
 		});
 	});
-}, ">rewrite", (info) => (info.container == document.body));
+}, ">rewrite", (info) => (info.container == document.main));
 
 
 /***********/
@@ -1377,9 +1377,7 @@ function createFullWidthBlockLayoutStyles() {
     });
 }
 
-GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {
-    createFullWidthBlockLayoutStyles();
-});
+doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
 /************************************/
 /*  Set margins of full-width blocks.
@@ -1632,7 +1630,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
             fileAppendBlock.remove();
         }
     });
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 
@@ -1700,7 +1698,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCCollapseToggleButton = (ev
         setTOCCollapseState(TOC.classList.contains("collapsed") == false);
         localStorage.setItem("toc-collapsed", TOC.classList.contains("collapsed"));
     });
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /***************************************************************************/
 /*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links
@@ -1712,7 +1710,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
     unwrapAll(".TOC li a > span:not([class])", {
         root: eventInfo.container
     });
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /**************************************************************************/
 /*  Update main page TOC with any sections within the initially loaded page
@@ -1722,7 +1720,7 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
     updatePageTOC();
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /*************************************************/
 /*  Apply typography rectification to TOC entries.
@@ -1786,7 +1784,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
 
     //  Update visibility.
     updateTOCVisibility(TOC);
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 /***************************************************************************/
@@ -1822,7 +1820,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
 		}
 	});
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /*******************************************************************************/
 /*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
@@ -1909,7 +1907,7 @@ addContentInjectHandler(GW.contentInjectHandlers.markTargetedFootnote = (eventIn
     GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
         updateFootnoteTargeting();
     });
-}, "rewrite", (info) => info.container == document.body);
+}, "rewrite", (info) => info.container == document.main);
 
 /******************************/
 /*  Inject footnote self-links.

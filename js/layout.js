@@ -3,6 +3,8 @@
 /**********/
 
 GW.layout = {
+	initialPageLayoutComplete: false,
+
 	optionsCache: { },
 
 	blockContainersNeedingLayout: [ ],
@@ -250,47 +252,33 @@ GW.layout.currentPassBegin = 1;
 /*	Registers a layout processor function, which will be applied to all
 	rendered content as part of the dynamic layout process.
  */
-function addLayoutProcessor(name, processor, options = { }) {
+function addLayoutProcessor(name, processor) {
 	//	Reference for easy direct calling.
 	GW.layout[name] = processor;
 
 	//	Add to layout processor list.
-	GW.layout.layoutProcessors.push([ name, processor, options ]);
+	GW.layout.layoutProcessors.push({ name: name, processor: processor });
 }
 
 /******************************************************************************/
 /*	Applies given layout processor to given block container within the given
 	container.
 
-	If the layout processor’s options include a condition, tests the condition
-	against the block container and the base location, applying the processor
-	only if the test passes.
-
 	Fires didComplete event for each time a layout processor fires.
 
 	Optionally, specify a containing document different from the root document.
-
-	Optionally, specify a base location different from the root document’s.
-	(Useful for processing document fragments representing other pages or parts
-	 thereof.)
  */
-function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, containingDocument = document, baseLocation = location) {
-	let [ name, processor, options ] = processorSpec;
+function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container, options) {
+	options = Object.assign({
+		document: document
+	}, options);
 
-	let info = {
-		container: blockContainer,
-		baseLocation: baseLocation
-	};
-	if (options.condition?.(info) == false)
-		return;
-
-	processor(blockContainer);
+	processorSpec.processor(blockContainer);
 
 	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
-		document: containingDocument,
+		document: options.document,
 		container: container,
-		processorName: name,
-		processorOptions: options,
+		processorName: processorSpec.name,
 		blockContainer: blockContainer
 	});
 }
@@ -300,7 +288,6 @@ function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, con
  */
 function startDynamicLayoutInContainer(container) {
 	let containingDocument = container.getRootNode();
-	let baseDocumentLocation = baseLocationForDocument(containingDocument);
 
 	let selectorize = selectorizeForContainer(container);
 
@@ -340,50 +327,24 @@ function startDynamicLayoutInContainer(container) {
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {
 				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
 				GW.layout.layoutProcessors.forEach(processorSpec => {
-					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container, containingDocument, baseDocumentLocation);
+					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container, {
+						document: containingDocument
+					});
 				});
 			}
+
+			if (   GW.DOMContentLoaded == true
+				&& GW.layout.initialPageLayoutComplete == false) {
+				requestAnimationFrame(() => {
+					GW.layout.initialPageLayoutComplete = true;
+					GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
+				});
+			}			
 		});
 	});
 
 	observer.observe(container, { subtree: true, childList: true });
 }
-
-/******************************************************************************/
-/*  Run the given function immediately if the <main> element has already been
-    created, or add a mutation observer to run it as soon as the <main> element
-    is created.
- */
-function doWhenMainExists(f) {
-    if (document.querySelector("main")) {
-        f();
-    } else {
-        let observer = new MutationObserver((mutationsList, observer) => {
-            if (document.querySelector("main")) {
-                observer.disconnect();
-                f();
-            }
-        });
-
-        observer.observe(document.documentElement, { childList: true, subtree: true });
-    }
-}
-
-/*************************************************/
-/*	Activate dynamic layout for the main document.
- */
-doWhenMainExists(() => {
-	startDynamicLayoutInContainer(document.querySelector("main"));
-
-	//	Add listener to redo layout when orientation changes.
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
-		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
-			GW.layout.layoutProcessors.forEach(processorSpec => {
-				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.querySelector("main"));
-			});
-		});
-	});
-});
 
 /*****************************************************************************/
 /*	Process layout options object, so that it contains all the appropriate
@@ -1254,7 +1215,7 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocume
     GWLog("applyBlockLayoutClassesInMainDocument", "layout.js", 1);
 
 	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
-}, "<rewrite", (info) => (info.container == document.body));
+}, "<rewrite", (info) => (info.container == document.main));
 
 /****************************************************************************/
 /*	Apply block layout classes to a document fragment, to make them available
@@ -1274,3 +1235,32 @@ GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eve
 
 	GW.layout.applyBlockSpacingInContainer(eventInfo.collapseBlock);
 });
+
+/*************************************************/
+/*	Activate dynamic layout for the main document.
+ */
+doWhenMainExists(() => {
+	startDynamicLayoutInContainer(document.main);
+
+	//	Add listener to redo layout when orientation changes.
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
+		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
+			GW.layout.layoutProcessors.forEach(processorSpec => {
+				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
+			});
+		});
+	});
+});
+
+/******************************************************************************/
+/*  Run the given function immediately if initial page layout has completed, or
+	add an event handler to run it as soon as initial page layout completes.
+ */
+function doWhenPageLayoutComplete(f) {
+    if (GW.layout.initialPageLayoutComplete == true)
+        f();
+    else
+        GW.notificationCenter.addHandlerForEvent("Layout.initialPageLayoutDidComplete", (info) => {
+            f();
+        }, { once: true });
+}

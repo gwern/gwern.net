@@ -766,7 +766,7 @@ Extracts = {
 			let popinRect = popin.getBoundingClientRect();
 			if (GW.mediaQueries.mobileWidth.matches) {
 				//	Make popin take up entire content column width.
-				let bodyRect = document.body.getBoundingClientRect();
+				let bodyRect = document.main.getBoundingClientRect();
 				leftMargin = (bodyRect.left - popinRect.left);
 				rightMargin = (popinRect.right - bodyRect.right);
 			} else {

@@ -1735,7 +1735,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (e
     eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
         footerLogo.href = "#top";
     });
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 
@@ -2322,31 +2322,6 @@ doWhenPageLayoutComplete(() => {
 });
 
 
-/*****************/
-/* END OF LAYOUT */
-/*****************/
-
-/*  Run the given function immediately if page layout has completed, or add an
-    event handler to run it as soon as page layout completes.
- */
-function doWhenPageLayoutComplete(f) {
-    if (GW.pageLayoutComplete == true)
-        f();
-    else
-        GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
-            f();
-        }, { once: true });
-}
-
-doWhenPageLoaded(() => {
-    GW.notificationCenter.fireEvent("GW.pageLayoutWillComplete");
-    requestAnimationFrame(() => {
-        GW.pageLayoutComplete = true;
-        GW.notificationCenter.fireEvent("GW.pageLayoutDidComplete");
-    });
-});
-
-
 /**************************/
 /* LOCATION HASH HANDLING */
 /**************************/
@@ -2361,7 +2336,7 @@ function cleanLocationHash() {
     }
 }
 
-GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
+doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
@@ -2396,4 +2371,4 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
     });
 
     GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
-}, { once: true });
+});

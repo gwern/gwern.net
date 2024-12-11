@@ -2292,7 +2292,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (e
     eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
         footerLogo.href = "#top";
     });
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 
@@ -2879,31 +2879,6 @@ doWhenPageLayoutComplete(() => {
 });
 
 
-/*****************/
-/* END OF LAYOUT */
-/*****************/
-
-/*  Run the given function immediately if page layout has completed, or add an
-    event handler to run it as soon as page layout completes.
- */
-function doWhenPageLayoutComplete(f) {
-    if (GW.pageLayoutComplete == true)
-        f();
-    else
-        GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", (info) => {
-            f();
-        }, { once: true });
-}
-
-doWhenPageLoaded(() => {
-    GW.notificationCenter.fireEvent("GW.pageLayoutWillComplete");
-    requestAnimationFrame(() => {
-        GW.pageLayoutComplete = true;
-        GW.notificationCenter.fireEvent("GW.pageLayoutDidComplete");
-    });
-});
-
-
 /**************************/
 /* LOCATION HASH HANDLING */
 /**************************/
@@ -2918,7 +2893,7 @@ function cleanLocationHash() {
     }
 }
 
-GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayoutCompleteHashHandlingSetup = (info) => {
+doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
 
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
@@ -2953,7 +2928,7 @@ GW.notificationCenter.addHandlerForEvent("GW.pageLayoutDidComplete", GW.pageLayo
     });
 
     GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
-}, { once: true });
+});
 /*  Popup/floating footnotes to avoid readers needing to scroll to the end of
     the page to see any footnotes; see
     http://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
@@ -11824,7 +11799,7 @@ Extracts = {
 			let popinRect = popin.getBoundingClientRect();
 			if (GW.mediaQueries.mobileWidth.matches) {
 				//	Make popin take up entire content column width.
-				let bodyRect = document.body.getBoundingClientRect();
+				let bodyRect = document.main.getBoundingClientRect();
 				leftMargin = (bodyRect.left - popinRect.left);
 				rightMargin = (popinRect.right - bodyRect.right);
 			} else {
@@ -15284,7 +15259,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = 
 			}, 150);
 		});
 	});
-}, ">rewrite", (info) => (info.container == document.body));
+}, ">rewrite", (info) => (info.container == document.main));
 
 
 /***********/
@@ -15593,9 +15568,7 @@ function createFullWidthBlockLayoutStyles() {
     });
 }
 
-GW.notificationCenter.addHandlerForEvent("GW.pageLayoutWillComplete", (info) => {
-    createFullWidthBlockLayoutStyles();
-});
+doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
 /************************************/
 /*  Set margins of full-width blocks.
@@ -15848,7 +15821,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripInvalidFileAppends = (eventInf
             fileAppendBlock.remove();
         }
     });
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 
@@ -15916,7 +15889,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectTOCCollapseToggleButton = (ev
         setTOCCollapseState(TOC.classList.contains("collapsed") == false);
         localStorage.setItem("toc-collapsed", TOC.classList.contains("collapsed"));
     });
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /***************************************************************************/
 /*  Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links
@@ -15928,7 +15901,7 @@ addContentLoadHandler(GW.contentLoadHandlers.stripTOCLinkSpans = (eventInfo) => 
     unwrapAll(".TOC li a > span:not([class])", {
         root: eventInfo.container
     });
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /**************************************************************************/
 /*  Update main page TOC with any sections within the initially loaded page
@@ -15938,7 +15911,7 @@ addContentLoadHandler(GW.contentLoadHandlers.updateMainPageTOC = (eventInfo) => 
     GWLog("updateMainPageTOC", "rewrite.js", 1);
 
     updatePageTOC();
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /*************************************************/
 /*  Apply typography rectification to TOC entries.
@@ -16002,7 +15975,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
 
     //  Update visibility.
     updateTOCVisibility(TOC);
-}, "rewrite", (info) => (   info.container == document.body
+}, "rewrite", (info) => (   info.container == document.main
                          && /\/(index)?$/.test(location.pathname)));
 
 /***************************************************************************/
@@ -16038,7 +16011,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
 		}
 	});
-}, "rewrite", (info) => (info.container == document.body));
+}, "rewrite", (info) => (info.container == document.main));
 
 /*******************************************************************************/
 /*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
@@ -16125,7 +16098,7 @@ addContentInjectHandler(GW.contentInjectHandlers.markTargetedFootnote = (eventIn
     GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
         updateFootnoteTargeting();
     });
-}, "rewrite", (info) => info.container == document.body);
+}, "rewrite", (info) => info.container == document.main);
 
 /******************************/
 /*  Inject footnote self-links.
@@ -19041,7 +19014,7 @@ Sidenotes = { ...Sidenotes,
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				Sidenotes.setMarginNoteStyle(info);
 			});
-		}, "rewrite", (info) => info.container == document.body, true);
+		}, "rewrite", (info) => info.container == document.main, true);
 		addContentInjectHandler(Sidenotes.setMarginNoteStyle, ">rewrite");
 
 		/*	When an anchor link is clicked that sets the hash to its existing
@@ -19270,7 +19243,7 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container == document.body) {
+			if (eventInfo.container == document.main) {
 				Sidenotes.constructSidenotes();
 			} else {
 				Sidenotes.sidenotesNeedConstructing = true;

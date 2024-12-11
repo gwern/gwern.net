@@ -1251,6 +1251,31 @@ function doWhenBodyExists(f) {
     }
 }
 
+/*  Run the given function immediately if the <main> element has already been
+    created, or add a mutation observer to run it as soon as the <main> element
+    is created.
+ */
+function doWhenMainExists(f) {
+    if (document.querySelector("main")) {
+        f();
+    } else {
+        let observer = new MutationObserver((mutationsList, observer) => {
+            if (document.querySelector("main")) {
+                observer.disconnect();
+                f();
+            }
+        });
+
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    }
+}
+
+/*	Define convenient alias.
+ */
+doWhenMainExists(() => {
+	document.main = document.querySelector("main");
+});
+
 
 /******************/
 /* BROWSER EVENTS */
@@ -1269,13 +1294,13 @@ window.addEventListener("DOMContentLoaded", () => {
     let pageURL = URLFromString(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
-        container: document.body,
+        container: document.main,
         document: document,
         loadLocation: pageURL
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
-        container: document.body,
+        container: document.main,
         document: document,
         loadLocation: pageURL,
         flags: (  GW.contentDidInjectEventFlags.clickable

@@ -782,7 +782,7 @@ Sidenotes = { ...Sidenotes,
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				Sidenotes.setMarginNoteStyle(info);
 			});
-		}, "rewrite", (info) => info.container == document.body, true);
+		}, "rewrite", (info) => info.container == document.main, true);
 		addContentInjectHandler(Sidenotes.setMarginNoteStyle, ">rewrite");
 
 		/*	When an anchor link is clicked that sets the hash to its existing
@@ -1011,7 +1011,7 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container == document.body) {
+			if (eventInfo.container == document.main) {
 				Sidenotes.constructSidenotes();
 			} else {
 				Sidenotes.sidenotesNeedConstructing = true;
