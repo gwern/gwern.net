@@ -7926,6 +7926,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     position: relative;
     padding: 0.25em;
     bottom: -0.15em;
+    margin: -0.2em 0;
 }
 
 .mode-selector-inline button .icon {
