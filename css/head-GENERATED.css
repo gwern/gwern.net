@@ -1915,11 +1915,6 @@ a code {
     --icon-width: 0.90em;
     --icon-height: 0.95em;
 }
-.icon-single-white-star-on-black-circle {
-    --icon-opacity: 0.75;
-    --icon-width: 0.65em;
-    --icon-height: 1.00em;
-}
 .icon-moon-solid,
 .icon-gear-solid {
 	--icon-opacity: 0.70;
@@ -1944,6 +1939,16 @@ a code {
 	--icon-opacity: 0.90;
     --icon-width: 0.90em;
     --icon-height: 1.00em;
+}
+
+.icon-single-white-star-on-black-circle {
+    --icon-opacity: 0.75;
+    --icon-width: 0.65em;
+    --icon-height: 1.00em;
+
+	/*	This icon uses a special data-URI variable.
+	 */
+	--icon-url: var(--GW-image-single-white-star-on-black-circle-svg) !important;
 }
 
 /*  Recently-modified link icons.
