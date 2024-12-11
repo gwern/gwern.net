@@ -20386,8 +20386,8 @@ DarkMode = { ...DarkMode,
 	 */
 	modeOptions: [
 		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
-		[ "light", "Dark", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
-		[ "dark", "Light", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
+		[ "light", "Light", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
+		[ "dark", "Dark", "Dark Mode", "Dark Mode", "Dark mode at all times (inverted: white-on-black)", "moon-solid" ]
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
