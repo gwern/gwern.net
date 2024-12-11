@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-12-02 10:14:28 gwern"
+# When:  Time-stamp: "2024-12-10 16:53:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -317,7 +317,7 @@ else
     ## NOTE: we generate the sitemap *before* generating syntax-highlighted .html files of everything to avoid having to exclude those (which would be tricky because how do we know if any given 'foo.html' a standalone HTML file or merely a syntax-highlighted snippet?)
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' -e 'private/' | gev -e '/doc/.*/index' -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' -e '.hi$' -e '.o$' | \
+     find -L _site/doc/ _site/ _site/static/ -not -name "*.md" -type f | gfv -e 'doc/www/' -e 'metadata/' -e '.git' -e '404' -e '/static/template/default.html' -e 'lorem' -e 'private/' | gev -e 'static/.*\..*\.html$' -e 'doc/.*\..*\.html$' -e '.hi$' -e '.o$' | \
          xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
@@ -327,6 +327,7 @@ else
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
+    bold "Generating HTML previews of document types like MS Word…"
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     convert_to_html() {
@@ -589,7 +590,7 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "scrape-abstract-not"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "scrape-abstract-not"
             "abstract" "abstract-collapse" "admonition" "admonition-title" "book-review-meta"
             "book-review-review" "tip" "xml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
@@ -1467,7 +1468,8 @@ else
     λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | \
               xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off |
-              gfv -e ': ICC profile tag start not a multiple of 4'; }
+              gfv -e ': ICC profile tag start not a multiple of 4' | \
+              gfv -e '2024-12-04-gwern-claude36-secondlifesentence-sls-square-thumbnail-512px.png'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, converting with 'mogrify -background white -alpha remove -alpha off'…)" &
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' \

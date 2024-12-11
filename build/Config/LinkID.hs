@@ -2886,4 +2886,7 @@ linkIDOverrides =
   ,("https://www.econlib.org/the-importance-of-diminishing-returns/#comment-359010","gwern-2024-chinadl"),("https://news.ycombinator.com/item?id=42291300","gwern-2024-tlon")
   ,("https://www.science.org/content/article/gene-behind-orange-fur-cats-found-last","reardon-2024-orange"),("https://www.science.org/content/article/are-your-earliest-childhood-memories-still-lurking-your-mind-or-gone-forever","reardon-2024-childhoodamnesia")
   ,("https://arxiv.org/abs/2412.00176","ren-et-al-2024-1"),("https://arxiv.org/abs/2407.21792","ren-et-al-2024-2")
+  , ("https://www.lesswrong.com/posts/CoqFpaorNHsWxRzvz/what-comes-after-roam-s-renaissance?commentId=M3qHiKqx48KhWYv5Y#M3qHiKqx48KhWYv5Y", "gwern-2024-oamojo")
+  , ("https://www.lesswrong.com/posts/CoqFpaorNHsWxRzvz/what-comes-after-roam-s-renaissance?commentId=M3qHiKqx48KhWYv5Y#M3qHiKqx48KhWYv5Y", "gwern-2024-toolsforthoughtfailure")
+  , ("https://www.newyorker.com/magazine/2001/12/10/the-bench-burner","macfarquhar-2001-posner")
       ]
