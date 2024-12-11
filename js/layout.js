@@ -1215,7 +1215,9 @@ addLayoutProcessor("processInlineIconsInContainer", (container) => {
 	container.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
 		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
 
-		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-")).slice("icon-".length);
+		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
+		if (iconName == null)
+			return;
 
 		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
 	});
