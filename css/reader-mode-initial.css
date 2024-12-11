@@ -140,26 +140,10 @@ body.reader-mode-active .reader-mode-style-not * {
 /*  Mobile layout adjustments.
  */
 @media all and (max-width: 649px) {
-    body.reader-mode-active #sidebar {
-        position: relative;
-    }
-    body.reader-mode-active #sidebar a.logo {
-        margin: 0;
-        padding: 0;
-    }
-    body.reader-mode-active #sidebar a.logo .logo-image {
-        width: 1.5rem;
-        background-color: var(--GW-body-background-color);
-        padding: 0 10px 0 11px;
-    }
-    body.reader-mode-active #sidebar a.logo::before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 0;
-        border-bottom: 1px dotted var(--GW-bottom-ornament-line-color);
-        left: 0;
-        top: 50%;
-        z-index: -1;
-    }
+	body.reader-mode-active #sidebar {
+		display: none;
+	}
+	body.reader-mode-active article {
+		margin-top: 0;
+	}
 }
