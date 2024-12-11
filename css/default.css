@@ -6778,12 +6778,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .mode-selector-inline {
     display: inline-flex;
     position: relative;
-    padding: 0.25em 0.5em;
+    padding: 0.25em;
     bottom: -0.15em;
 }
 
 .mode-selector-inline button .icon {
     width: 1.125em;
+    height: 1em;
     display: flex;
     opacity: 0.4;
 }
