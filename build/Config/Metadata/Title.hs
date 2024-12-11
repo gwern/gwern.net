@@ -4,7 +4,7 @@ separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA"]
+badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]

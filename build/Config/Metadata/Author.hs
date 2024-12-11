@@ -560,6 +560,7 @@ canonicals = M.fromList
   , ("Nicholas J. Patterson", "Nick Patterson")
   , ("Nicholas Patterson", "Nick Patterson")
   , ("Satu Mannisto", "Satu Männistö")
+  , ("Melissa García", "Melissa E. Garcia")
   ]
 
 -- tests: unique
@@ -571,7 +572,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1079,8 +1080,12 @@ authorLinkDB = M.fromList $
     , ("Samuel Marks", "https://scholar.google.com/citations?user=fW7yK10AAAAJ")
     , ("Nick Patterson", "https://en.wikipedia.org/wiki/Nick_Patterson_(scientist)")
     , ("Sonja I. Berndt", "https://en.wikipedia.org/wiki/Sonja_Berndt")
-    , ("Satu Männistö", "https://scholar.google.com/citations?user=BaGYiQQAAAAJ&hl=en&oi=ao")
+    , ("Satu Männistö", "https://scholar.google.com/citations?user=BaGYiQQAAAAJ")
     , ("Peter R. Schofield", "https://neura.edu.au/researchers/prof-peter-schofield")
+    , ("Nicholas A. Furlotte", "https://scholar.google.com/citations?user=Q0EQvCEAAAAJ&hl=en&oi=ao")
+    , ("Melissa E. Garcia", "https://www.researchgate.net/profile/Melissa-Garcia-43")
+    , ("Mary F. Feitosa", "https://scholar.google.com/citations?user=OpNQ188AAAAJ&hl=en&oi=ao")
+    , ("Maciej Trzaskowski", "https://scholar.google.com/citations?user=PcnCBM8AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
