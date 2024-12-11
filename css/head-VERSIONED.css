@@ -1859,21 +1859,11 @@ a code {
     font-variant-caps: normal;
 }
 
-/*  Inline SVG icons: recently-modified link icons, and theme-toggle SVG icons.
-    (These need to be in `initial.css` because they are used in the opening paragraphs of /index.)
-    NOTE: SVG icons need to also be inverted in `dark-mode-adjustments.css` (to avoid invisibility).
+/*  Inline SVG icons.
+    (These need to be in `initial.css` because some of them are used in the 
+     opening paragraphs of /index.)
  */
-.has-recently-modified-icon .recently-modified-icon-hook,
-.icon-single-white-star-on-black-circle,
-.icon-moon-solid,
-.icon-book-open-solid,
-.icon-message-slash-solid,
-.icon-magnifying-glass,
-.icon-gear-solid,
-.icon-sun-solid,
-.icon-eye-slash-solid,
-.icon-manicule-left,
-.icon-manicule-right {
+.inline-icon {
     --link-underline-background-color: var(--background-color);
 
     position: relative;
@@ -1882,7 +1872,22 @@ a code {
 	padding-left: calc(var(--icon-width) + 0.2em);
 }
 
-.has-recently-modified-icon .recently-modified-icon-hook,
+.inline-icon::before {
+	--dark-mode-invert-filter: invert(1);
+
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: var(--icon-opacity);
+    background-image: var(--icon-url);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: var(--icon-width) var(--icon-height);
+}
+
 .icon-single-white-star-on-black-circle {
     --icon-opacity: 0.75;
     --icon-width: 0.65em;
@@ -1914,43 +1919,38 @@ a code {
     --icon-height: 1em;
 }
 
-.has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before,
-.icon-moon-solid::before,
-.icon-book-open-solid::before,
-.icon-message-slash-solid::before,
-.icon-magnifying-glass::before,
-.icon-gear-solid::before,
-.icon-sun-solid::before,
-.icon-eye-slash-solid::before,
-.icon-manicule-right::before,
-.icon-manicule-left::before {
+/*  Recently-modified link icons.
+    (These need to be in `initial.css` because they are used on /index.)
+    NOTE: These also need to be inverted in `dark-mode-adjustments.css` (to avoid invisibility).
+ */
+.has-recently-modified-icon .recently-modified-icon-hook {
+    --link-underline-background-color: var(--background-color);
+
+    --icon-opacity: 0.75;
+    --icon-width: 0.65em;
+    --icon-height: 1em;
+
+    position: relative;
+    top: 0.05em;
+    background-color: var(--link-underline-background-color);
+	padding-left: calc(var(--icon-width) + 0.2em);
+}
+.has-recently-modified-icon .recently-modified-icon-hook::before {
     content: "";
-    background-repeat: no-repeat;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     opacity: var(--icon-opacity);
+    background-image: var(--GW-image-single-white-star-on-black-circle-svg);
+    background-repeat: no-repeat;
     background-position: center;
     background-size: var(--icon-width) var(--icon-height);
 }
 .has-recently-modified-icon .recently-modified-icon-hook::before {
     background-position: center left;
 }
-
-.has-recently-modified-icon .recently-modified-icon-hook::before,
-.icon-single-white-star-on-black-circle::before { background-image: var(--GW-image-single-white-star-on-black-circle-svg); }
-.icon-moon-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1733725643#moon-solid'); }
-.icon-book-open-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1733725643#book-open-solid'); }
-.icon-message-slash-solid::before { background-image: url('/static/img/icon/icons.svg?v=1733725643#message-slash-solid'); }
-.icon-magnifying-glass::before    { background-image: url('/static/img/icon/icons.svg?v=1733725643#magnifying-glass'); }
-.icon-gear-solid::before          { background-image: url('/static/img/icon/icons.svg?v=1733725643#gear-solid'); }
-.icon-sun-solid::before           { background-image: url('/static/img/icon/icons.svg?v=1733725643#sun-solid'); }
-.icon-eye-slash-solid::before     { background-image: url('/static/img/icon/icons.svg?v=1733725643#eye-slash-solid'); }
-.icon-manicule-right::before      { background-image: url('/static/img/icon/icons.svg?v=1733725643#manicule-right'); }
-.icon-manicule-left::before       { background-image: url('/static/img/icon/icons.svg?v=1733725643#manicule-left'); }
 
 
 /*************/

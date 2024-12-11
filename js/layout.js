@@ -842,6 +842,23 @@ function isNodeEmpty_metadataAware(node) {
 /* LAYOUT PROCESSORS */
 /*********************/
 
+/*******************************************************************************/
+/*	Run given callback on given container immediately and also at any later
+	time when block layout classes are updated in that container (e.g., <body>).
+ */
+function processContainerNowAndAfterBlockLayout(container, callback) {
+	//	Run immediately...
+	callback(container);
+
+	//	... and also add event listener for if block layout classes are updated.
+	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+		callback(container);
+	}, {
+		condition: (layoutEventInfo) => (   layoutEventInfo.container == container
+										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
+	});
+}
+
 /*************************************************************************/
 /*	Apply block layout classes to appropriate elements in given container.
  */
@@ -1087,23 +1104,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (container) => {
 	});
 });
 
-/*******************************************************************************/
-/*	Run given callback on given container immediately and also at any later
-	time when block layout classes are updated in that container (e.g., <body>).
- */
-function processContainerNowAndAfterBlockLayout(container, callback) {
-	//	Run immediately...
-	callback(container);
-
-	//	... and also add event listener for if block layout classes are updated.
-	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
-		callback(container);
-	}, {
-		condition: (layoutEventInfo) => (   layoutEventInfo.container == container
-										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
-	});
-}
-
 /**********************************************/
 /*	Apply block spacing in the given container.
  */
@@ -1203,6 +1203,21 @@ addLayoutProcessor("applyBlockSpacingInContainer", (container) => {
 
 			floatBlock.style.setProperty("--bsm", nextBlockBSM);
 		}
+	});
+});
+
+/**********************************************/
+/*	Enable inline icons in the given container.
+ */
+addLayoutProcessor("processInlineIconsInContainer", (container) => {
+	let selectorize = selectorizeForContainer(container);
+
+	container.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
+		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
+
+		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-")).slice("icon-".length);
+
+		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
 	});
 });
 
