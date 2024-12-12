@@ -2578,8 +2578,14 @@ addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) =
 		let boxRadius = 256.0;
 		let radius = boxRadius - (strokeWidth * 0.5);
 
+		let backdropCircleGray = 170.0 + (percent * 0.64);
+		let backdropCircleColor = Color.hexStringFromRGB({
+			red: backdropCircleGray,
+			green: backdropCircleGray,
+			blue: backdropCircleGray
+		});
 		let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"` 
-							  + ` stroke-width="${strokeWidth}" stroke="#aaa" fill="none"/>`;
+							  + ` stroke-width="${strokeWidth}" stroke="${backdropCircleColor}" fill="none"/>`;
 
 		let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
 		let arcSrc;
