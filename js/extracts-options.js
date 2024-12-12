@@ -3,8 +3,8 @@ Extracts = { ...Extracts,
 	/*	Configuration.
 	 */
 	modeOptions: [
-		[ "on", "Enable Pop-frames", "Pop-frames Enabled", `Enable link pop-frames.`, "message-lines-solid" ],
-		[ "off", "Disable Pop-frames", "Pop-frames Disabled", `Disable link pop-frames.`, "message-slash-solid" ],
+		[ "on", "On", "Enable Pop-frames", "Pop-frames Enabled", "Enable link pop-frames.", "message-lines-solid" ],
+		[ "off", "Off", "Disable Pop-frames", "Pop-frames Disabled", "Disable link pop-frames.", "message-slash-solid" ],
 	],
 
 	selectedModeOptionNote: " [This option is currently selected.]",
@@ -34,7 +34,7 @@ Extracts = { ...Extracts,
 		let currentMode = Extracts.extractPopFramesEnabled() ? "on" : "off";
 
 		let modeSelectorInnerHTML = Extracts.modeOptions.map(modeOption => {
-			let [ name, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
+			let [ name, shortLabel, unselectedLabel, selectedLabel, desc, iconName ] = modeOption;
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			unselectedLabel = unselectedLabel.replace("-frame", Extracts.popFrameTypeSuffix());
@@ -42,7 +42,11 @@ Extracts = { ...Extracts,
 			desc = desc.replace("-frame", Extracts.popFrameTypeSuffix());
 			if (name == currentMode)
 				desc += Extracts.selectedModeOptionNote;
-			let label = (name == currentMode) ? selectedLabel : unselectedLabel;
+			let label = inline
+						? shortLabel
+						: (name == currentMode
+						   ? selectedLabel 
+						   : unselectedLabel);
 			return `<button
 					 type="button"
 					 class="select-mode-${name}${selected}"
@@ -97,6 +101,7 @@ Extracts = { ...Extracts,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(Extracts.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
+			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = Extracts.modeSelector = GW.pageToolbar.addWidget(Extracts.modeSelectorHTML());
 		}

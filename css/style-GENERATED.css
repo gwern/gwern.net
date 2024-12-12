@@ -7880,6 +7880,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .mode-selector-inline button .icon {
     width: 1.125em;
     height: 1em;
+	box-sizing: border-box;
     display: flex;
     opacity: 0.4;
 }
@@ -7922,6 +7923,29 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 .mode-selector-inline button:not(:disabled):active .label::after {
     transform: translateY(-2px);
+}
+
+/*  Specific mode selectors & buttons.
+ */
+.mode-selector-inline.dark-mode-selector button .icon {
+	margin-right: -2px;
+}
+.mode-selector-inline.reader-mode-selector button .icon {
+	padding: 0 1px;
+	margin: 0 1px 0 -1px;
+}
+.mode-selector-inline.extracts-mode-selector button.select-mode-on .icon {
+	padding: 1px 0 0 0;
+}
+
+/*	Special layout fix.
+
+	NOTE: The specific class name used here (`inline-mode-selector`) is
+	*intentionally* different from the class (`mode-selector-inline`) that is
+	used for actual mode selectors. These classes should not match!
+ */
+.parenthesized-set.inline-mode-selector {
+	white-space: nowrap;
 }
 
 

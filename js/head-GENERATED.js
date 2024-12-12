@@ -4076,6 +4076,39 @@ function paragraphizeTextNodesOfElementRetainingMetadata(element) {
 	});
 }
 
+/****************************************************************************/
+/*	Given a set of nodes all of which are children of the same parent node, 
+	and conditional on the node before the first node of the set being a text
+	node that ends in a left parenthesis and the node after the last node of 
+	the set being a text node that begins with a right parenthesis, wraps the
+	nodes in the set, plus the preceding and following nodes, in a <span>
+	with the class `parenthesized-set` plus any other classes given by an 
+	optional class string.
+
+	If the conditions are not met, does nothing.
+ */
+function wrapParenthesizedNodes(className = null, ...args) {
+	let parentNode = args.first.parentNode;
+	if (parentNode == null)
+		return;
+
+	for (let node of args)
+		if (node.parentNode != parentNode)
+			return;
+
+	let leftParen, rightParen;
+	if (   args.first.previousSibling?.nodeType == Node.TEXT_NODE
+		&& (leftParen = args.first.previousSibling).nodeValue.endsWith("(")
+		&& args.last.nextSibling?.nodeType == Node.TEXT_NODE
+		&& (rightParen = args.last.nextSibling).nodeValue.startsWith(")")) {
+		let parentNode = leftParen.parentNode;
+		let nextNode = rightParen.nextSibling;
+		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? " " + className : "")}` });
+		wrapper.append(leftParen, ...args, rightParen);
+		parentNode.insertBefore(wrapper, nextNode);
+	}
+}
+
 /*****************************************************************************/
 /*	Like isNodeEmpty, but does not count elements with metadata as being empty
 	(i.e., if they have an ID, or non-layout classes, or any data attributes).
