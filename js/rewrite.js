@@ -2570,20 +2570,36 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) => {
     GWLog("injectProgressIcons", "rewrite.js", 1);
 
-	let progressIcons = {
-		0: "circle-empty",
-		1: "circle-one-quarter",
-		2: "circle-half",
-		3: "circle-three-quarters",
-		4: "circle-full-check",
+	let arcSVGForProgressPercent = (percent) => {
+		let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
+		let svgClosingTagSrc = `</svg>`;
+
+		let arcSrc;
+		let strokeWidth = 56.0;
+		let boxRadius = 256.0;
+		let radius = boxRadius - (strokeWidth * 0.5);
+		let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
+		if (percent == 100) {
+			arcSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}" ${arcAttributesSrc}/>`;
+		} else {
+			let angle = 2.0 * Math.PI * ((percent / 100.0) - 0.25);
+			let y = (radius * Math.sin(angle)) + boxRadius;
+			let x = (radius * Math.cos(angle)) + boxRadius;
+			let largeArc = percent > 50 ? "1" : "0";
+			arcSrc = `<path
+					   d="M ${boxRadius} ${strokeWidth * 0.5} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}"
+					   ${arcAttributesSrc}/>`;
+		}
+
+		return (svgOpeningTagSrc + arcSrc + svgClosingTagSrc);
 	};
 
 	eventInfo.container.querySelectorAll("[data-progress-percentage]").forEach(progressIndicator => {
-		let progressPercent = parseInt(progressIndicator.dataset.progressPercentage);
-		let progressQuarters = Math.round(progressPercent / 25.0);
-		progressIndicator.insertBefore(newElement("SPAN", {
-			class: "progress-indicator-icon icon-" + progressIcons[progressQuarters]
-		}), progressIndicator.firstChild);
+		let svgSrc = arcSVGForProgressPercent(parseInt(progressIndicator.dataset.progressPercentage));
+		progressIndicator.appendChild(newElement("SPAN", {
+			class: "progress-indicator-icon icon-special",
+			style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`
+		}));
 	});
 }, "rewrite");
 

@@ -403,11 +403,9 @@ header h1 em {
 }
 /*	Adjust icon spacing.
  */
-#page-metadata .page-metadata-fields .page-status .progress-indicator-icon {
-	margin: 0 0.2em 0 0;
-}
-#page-metadata .page-metadata-fields .page-confidence .progress-indicator-icon {
-	margin: 0 0.1em 0 0;
+#page-metadata .page-metadata-fields .progress-indicator-icon {
+	margin: 0 0 0 0.25em;
+	top: 0;
 }
 /*	Adjust z-order of text elements.
  */
@@ -1906,15 +1904,6 @@ a code {
     background-size: var(--icon-width) var(--icon-height);
 }
 
-.icon-circle-empty,
-.icon-circle-one-quarter,
-.icon-circle-half,
-.icon-circle-three-quarters,
-.icon-circle-full-check {
-    --icon-opacity: 0.55;
-    --icon-width: 0.90em;
-    --icon-height: 0.95em;
-}
 .icon-moon-solid,
 .icon-gear-solid {
 	--icon-opacity: 0.70;
@@ -1949,6 +1938,10 @@ a code {
 	/*	This icon uses a special data-URI variable.
 	 */
 	--icon-url: var(--GW-image-single-white-star-on-black-circle-svg);
+}
+
+.icon-special.progress-indicator-icon {
+    --icon-opacity: 0.55;
 }
 
 /*  Recently-modified link icons.
