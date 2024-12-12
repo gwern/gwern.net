@@ -1215,22 +1215,6 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	});
 });
 
-/**********************************************/
-/*	Enable inline icons in the given container.
- */
-addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
-	let selectorize = selectorizeForBlockContainer(blockContainer);
-
-	blockContainer.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
-		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
-		if (iconName == null)
-			return;
-
-		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
-		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
-	});
-}, { blockLayout: false });
-
 /****************************************************************************/
 /*	Apply block layout classes to the main document, prior to rewrites. (This
 	is necessary in browsers that delay MutationObserver firing until after
@@ -1289,3 +1273,60 @@ function doWhenPageLayoutComplete(f) {
             f();
         }, { once: true });
 }
+
+
+/**********************/
+/* REWRITE PROCESSORS */
+/**********************/
+/*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
+ */
+
+/**********************************************/
+/*	Enable inline icons in the given container.
+ */
+addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
+	let selectorize = selectorizeForBlockContainer(blockContainer);
+
+	blockContainer.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
+		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
+		if (iconName == null)
+			return;
+
+		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
+		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
+	});
+}, { blockLayout: false });
+
+/**************************************************************************/
+/*  Enable special list icons for list items that contain recently modified
+    links.
+ */
+addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
+	let selectorize = selectorizeForBlockContainer(blockContainer);
+
+    blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
+        let inList = false;
+        let containingGraf = link.closest("p");
+        if (containingGraf?.matches("li > p:only-of-type")) {
+            inList = true;
+        } else if (containingGraf?.matches(".data-field")) {
+            /*  This handles cases such as those where we’re transcluding an
+                annotation into a list, and each annotation has its own list
+                item (thus the .link-modified-recently class would be on the
+                title-link of the annotation).
+             */
+            let ancestor = containingGraf.parentElement;
+            while (   ancestor.matches("li") == false
+                   && (   ancestor.parentElement.children.length == 1
+                       || (   ancestor.parentElement.children.length == 2
+                           && ancestor.matches(".include-wrapper"))))
+                   ancestor = ancestor.parentElement;
+            if (ancestor.matches("li"))
+                inList = true;
+        }
+        if (inList) {
+            link.closest("li").classList.add("link-modified-recently-list-item");
+            link.classList.add("in-list");
+        }
+    });
+}, { blockLayout: false });
