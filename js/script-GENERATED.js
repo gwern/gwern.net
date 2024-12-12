@@ -14420,18 +14420,6 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
     });
 }, ">rewrite");
 
-/*************************************************************/
-/*	Add certain style classes to certain lists and list items.
- */
-addContentInjectHandler(GW.contentInjectHandlers.designateListStyles = (eventInfo) => {
-    GWLog("designateListStyles", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("ul > li").forEach(listItem => {
-		if (listItem.closest(".TOC") == null)
-			listItem.classList.add("dark-mode-invert");
-	});
-}, ">rewrite");
-
 /*****************************************************************/
 /*  Wrap text nodes and inline elements in list items in <p> tags.
  */
@@ -16784,17 +16772,6 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
             sup.classList.add("ordinal");
     });
 }, "rewrite");
-
-/*************************************************/
-/*	Add certain style classes to horizontal rules.
- */
-addContentInjectHandler(GW.contentInjectHandlers.designateHorizontalRuleStyles = (eventInfo) => {
-    GWLog("designateHorizontalRuleStyles", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("hr").forEach(hr => {
-		hr.classList.add("dark-mode-invert");
-	});
-}, ">rewrite");
 
 /**********************************************************/
 /*	Inject progress indicator icons into any element with a 

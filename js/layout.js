@@ -1285,9 +1285,7 @@ function doWhenPageLayoutComplete(f) {
 /*	Enable inline icons in the given container.
  */
 addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
-	let selectorize = selectorizeForBlockContainer(blockContainer);
-
-	blockContainer.querySelectorAll(selectorize([ "span[class*='icon-']" ])).forEach(inlineIcon => {
+	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
 		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
 		if (iconName == null)
 			return;
@@ -1302,8 +1300,6 @@ addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
     links.
  */
 addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
-	let selectorize = selectorizeForBlockContainer(blockContainer);
-
     blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
         let inList = false;
         let containingGraf = link.closest("p");
@@ -1330,3 +1326,23 @@ addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
         }
     });
 }, { blockLayout: false });
+
+/*************************************************************/
+/*	Add certain style classes to certain lists and list items.
+ */
+addLayoutProcessor("designateListStyles", (blockContainer) => {
+	blockContainer.querySelectorAll("ul > li").forEach(listItem => {
+		if (listItem.closest(".TOC") == null)
+			listItem.classList.add("dark-mode-invert");
+	});
+}, { blockLayout: false });
+
+/*************************************************/
+/*	Add certain style classes to horizontal rules.
+ */
+addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
+	blockContainer.querySelectorAll("hr").forEach(hr => {
+		hr.classList.add("dark-mode-invert");
+	});
+}, { blockLayout: false });
+
