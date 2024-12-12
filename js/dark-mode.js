@@ -60,11 +60,22 @@ DarkMode = { ...DarkMode,
 	setup: () => {
 		GWLog("DarkMode.setup", "dark-mode.js", 1);
 
-		//	Inject mode selector(s).
+		//	Inject primary (page toolbar widget) mode selector.
 		DarkMode.injectModeSelector();
-		document.querySelectorAll(".dark-mode-selector-inline").forEach(element => {
-			DarkMode.injectModeSelector(element);
-		});
+
+		/*	Inject inline mode selectors in already-loaded content, and add
+			rewrite processor to inject any inline selectors in subsequently
+			loaded content.
+		 */
+		let injectInlineSelectorsInContainer = (container) => {
+			container.querySelectorAll(".dark-mode-selector-inline").forEach(element => {
+				DarkMode.injectModeSelector(element);
+			});
+		};
+		injectInlineSelectorsInContainer(document.main);
+		addLayoutProcessor("addInlineDarkModeSelectorsInLoadedContent", (blockContainer) => {
+			injectInlineSelectorsInContainer(blockContainer);
+		}, { blockLayout: false });
 
 		//	Update saved setting.
 		DarkMode.saveMode();
@@ -264,6 +275,4 @@ DarkMode = { ...DarkMode,
 
 GW.notificationCenter.fireEvent("DarkMode.didLoad");
 
-doWhenPageLoaded(() => {
-    DarkMode.setup();
-});
+doWhenElementExists(DarkMode.setup, "#page-toolbar");

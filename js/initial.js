@@ -1232,23 +1232,31 @@ function doWhenDOMContentLoaded(f) {
         window.addEventListener("DOMContentLoaded", () => { f(); });
 }
 
-/*  Run the given function immediately if the <body> element has already been
-    created, or add a mutation observer to run it as soon as the <body> element
-    is created.
+/*	Run the given function immediately if an element specified by a given
+	selector exists; otherwise, add a mutation observer to run the given 
+	function as soon as such an element is added to the document.
  */
-function doWhenBodyExists(f) {
-    if (document.body) {
-        f();
-    } else {
+function doWhenElementExists(f, selector) {
+	if (document.querySelector(selector) != null) {
+		f();
+	} else {
         let observer = new MutationObserver((mutationsList, observer) => {
-            if (document.body) {
+            if (document.querySelector(selector) != null) {
                 observer.disconnect();
                 f();
             }
         });
 
-        observer.observe(document.documentElement, { childList: true });
-    }
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+	}
+}
+
+/*  Run the given function immediately if the <body> element has already been
+    created, or add a mutation observer to run it as soon as the <body> element
+    is created.
+ */
+function doWhenBodyExists(f) {
+    doWhenElementExists(f, "body");
 }
 
 /*  Run the given function immediately if the <main> element has already been
@@ -1256,18 +1264,7 @@ function doWhenBodyExists(f) {
     is created.
  */
 function doWhenMainExists(f) {
-    if (document.querySelector("main")) {
-        f();
-    } else {
-        let observer = new MutationObserver((mutationsList, observer) => {
-            if (document.querySelector("main")) {
-                observer.disconnect();
-                f();
-            }
-        });
-
-        observer.observe(document.documentElement, { childList: true, subtree: true });
-    }
+    doWhenElementExists(f, "main");
 }
 
 /*	Define convenient alias.
