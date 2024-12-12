@@ -4560,12 +4560,28 @@ function doWhenPageLayoutComplete(f) {
  */
 addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
 	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
-		let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
-		if (iconName == null)
+		if (inlineIcon.classList.contains("icon-not"))
 			return;
 
+		//	Some icons are special.
+		let specialIconsSelector = [
+			".icon-single-white-star-on-black-circle"
+		].join(", ");
+		if (inlineIcon.matches(specialIconsSelector))
+			inlineIcon.classList.add("icon-special");
+
+		/*	“Special” icons will have their `--icon-url` CSS variable set
+			elsewhere (in other runtime code, or in CSS).
+		 */
+		if (inlineIcon.classList.contains("icon-special") == false) {
+			let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
+			if (iconName == null)
+				return;
+
+			inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
+		}
+
 		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
-		inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
 	});
 }, { blockLayout: false });
 

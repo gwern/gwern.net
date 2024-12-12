@@ -1948,7 +1948,7 @@ a code {
 
 	/*	This icon uses a special data-URI variable.
 	 */
-	--icon-url: var(--GW-image-single-white-star-on-black-circle-svg) !important;
+	--icon-url: var(--GW-image-single-white-star-on-black-circle-svg);
 }
 
 /*  Recently-modified link icons.
