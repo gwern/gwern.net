@@ -187,6 +187,7 @@ DarkMode = { ...DarkMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
+			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
 		}

@@ -7927,15 +7927,52 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  Specific mode selectors & buttons.
  */
+.mode-selector-inline.dark-mode-selector {
+	margin-left: -0.2em;
+	margin-right: -0.1em;
+}
+.mode-selector-inline.dark-mode-selector button + button {
+	margin-left: 0.5em;
+}
 .mode-selector-inline.dark-mode-selector button .icon {
 	margin-right: -2px;
+}
+.mode-selector-inline.reader-mode-selector {
+	margin-left: -0.1em;
 }
 .mode-selector-inline.reader-mode-selector button .icon {
 	padding: 0 1px;
 	margin: 0 1px 0 -1px;
 }
+.mode-selector-inline.extracts-mode-selector {
+	margin-left: -0.1em;
+	margin-right: -0.1em;
+}
 .mode-selector-inline.extracts-mode-selector button.select-mode-on .icon {
 	padding: 1px 0 0 0;
+}
+
+/*	Pre-replacement elements (styled to prevent reflow).
+ */
+.dark-mode-selector-inline,
+.reader-mode-selector-inline,
+.extracts-mode-selector-inline {
+	display: inline-block;
+	margin: -0.2em 0;
+}
+.dark-mode-selector-inline {
+	width: 9.65em;
+	margin-left: -0.2em;
+	margin-right: -0.1em;
+}
+.reader-mode-selector-inline {
+	width: 8.90em;
+	margin-left: -0.1em;
+}
+.extracts-mode-selector-inline {
+	width: 5.60em;
+	margin-left: -0.1em;
+	margin-right: -0.1em;
 }
 
 /*	Special layout fix.

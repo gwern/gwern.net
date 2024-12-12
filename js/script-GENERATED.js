@@ -11233,10 +11233,22 @@ Extracts = {
 
 		//	Inject mode selectors, if need be.
 		if (Extracts.modeSelector == null) {
+			//	Inject primary (page toolbar widget) mode selector.
 			Extracts.injectModeSelector();
-			Extracts.rootDocument.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
-				Extracts.injectModeSelector(element);
-			});
+
+			/*	Inject inline mode selectors in already-loaded content, and add
+				rewrite processor to inject any inline selectors in subsequently
+				loaded content.
+			 */
+			let injectInlineSelectorsInContainer = (container) => {
+				container.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
+					Extracts.injectModeSelector(element);
+				});
+			};
+			injectInlineSelectorsInContainer(document.main);
+			addLayoutProcessor("addInlineExtractsModeSelectorsInLoadedContent", (blockContainer) => {
+				injectInlineSelectorsInContainer(blockContainer);
+			}, { blockLayout: false });
 		}
 
 		//	Do not proceed if disabled.
@@ -20531,6 +20543,7 @@ DarkMode = { ...DarkMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
+			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
 		}
@@ -20670,11 +20683,22 @@ ReaderMode = { ...ReaderMode,
 		if (ReaderMode.active)
 			ReaderMode.activate();
 
-		//	Inject mode selector(s).
+		//	Inject primary (page toolbar widget) mode selector.
 		ReaderMode.injectModeSelector();
-		document.querySelectorAll(".reader-mode-selector-inline").forEach(element => {
-			ReaderMode.injectModeSelector(element);
-		});
+
+		/*	Inject inline mode selectors in already-loaded content, and add
+			rewrite processor to inject any inline selectors in subsequently
+			loaded content.
+		 */
+		let injectInlineSelectorsInContainer = (container) => {
+			container.querySelectorAll(".reader-mode-selector-inline").forEach(element => {
+				ReaderMode.injectModeSelector(element);
+			});
+		};
+		injectInlineSelectorsInContainer(document.main);
+		addLayoutProcessor("addInlineReaderModeSelectorsInLoadedContent", (blockContainer) => {
+			injectInlineSelectorsInContainer(blockContainer);
+		}, { blockLayout: false });
 	},
 
 	/******************/
@@ -20798,6 +20822,7 @@ ReaderMode = { ...ReaderMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
+			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addWidget(ReaderMode.modeSelectorHTML());
 		}

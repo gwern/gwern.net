@@ -181,10 +181,22 @@ Extracts = {
 
 		//	Inject mode selectors, if need be.
 		if (Extracts.modeSelector == null) {
+			//	Inject primary (page toolbar widget) mode selector.
 			Extracts.injectModeSelector();
-			Extracts.rootDocument.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
-				Extracts.injectModeSelector(element);
-			});
+
+			/*	Inject inline mode selectors in already-loaded content, and add
+				rewrite processor to inject any inline selectors in subsequently
+				loaded content.
+			 */
+			let injectInlineSelectorsInContainer = (container) => {
+				container.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
+					Extracts.injectModeSelector(element);
+				});
+			};
+			injectInlineSelectorsInContainer(document.main);
+			addLayoutProcessor("addInlineExtractsModeSelectorsInLoadedContent", (blockContainer) => {
+				injectInlineSelectorsInContainer(blockContainer);
+			}, { blockLayout: false });
 		}
 
 		//	Do not proceed if disabled.
