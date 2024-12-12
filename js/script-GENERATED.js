@@ -16801,11 +16801,15 @@ addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) =
 		let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
 		let svgClosingTagSrc = `</svg>`;
 
-		let arcSrc;
 		let strokeWidth = 56.0;
 		let boxRadius = 256.0;
 		let radius = boxRadius - (strokeWidth * 0.5);
+
+		let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"` 
+							  + ` stroke-width="${strokeWidth}" stroke="#aaa" fill="none"/>`;
+
 		let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
+		let arcSrc;
 		if (percent == 100) {
 			arcSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}" ${arcAttributesSrc}/>`;
 		} else {
@@ -16818,7 +16822,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) =
 					   ${arcAttributesSrc}/>`;
 		}
 
-		return (svgOpeningTagSrc + arcSrc + svgClosingTagSrc);
+		return (svgOpeningTagSrc + backdropCircleSrc + arcSrc + svgClosingTagSrc);
 	};
 
 	eventInfo.container.querySelectorAll("[data-progress-percentage]").forEach(progressIndicator => {
