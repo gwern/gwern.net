@@ -910,6 +910,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	//	Designate headings.
 	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
+		if (heading.closest("header"))
+			console.trace(blockContainer);
 	});
 
 	//	Designate floats (on non-mobile layouts).
@@ -1256,7 +1258,9 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocument = (eventInfo) => {
     GWLog("applyBlockLayoutClassesInMainDocument", "layout.js", 1);
 
-	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
+	eventInfo.container.querySelectorAll(".markdownBody").forEach(blockContainer => {
+		GW.layout.applyBlockLayoutClassesInContainer(blockContainer);
+	});
 }, "<rewrite", (info) => (info.container == document.main));
 
 /****************************************************************************/
@@ -1286,7 +1290,7 @@ doWhenMainExists(() => {
 
 	//	Add listener to redo layout when orientation changes.
 	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
-		document.querySelectorAll(".markdownBody").forEach(blockContainer => {
+		document.main.querySelectorAll(".markdownBody").forEach(blockContainer => {
 			GW.layout.layoutProcessors.forEach(processorSpec => {
 				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
 			});
