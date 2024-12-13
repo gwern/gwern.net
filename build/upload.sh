@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-11-24 17:53:23 gwern"
+# When:  Time-stamp: "2024-12-12 17:08:07 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -93,6 +93,9 @@ _upload() {
   }
   rename_file "$FILENAME"
 
+  BROWSER=""
+  if [ -n "$(pgrep firefox)" ]; then BROWSER="firefox"; else BROWSER="chromium"; fi
+
   if [[ $# -eq 1 || "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
       if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
@@ -121,7 +124,7 @@ _upload() {
       rsync --chmod='a+r' -q "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
           rsync --chmod='a+r' -v "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
       URL="https://gwern.net/doc/www/misc/$TARGET"
-      echo "$URL" && firefox "$URL" 2> /dev/null &
+      echo "$URL" && "$BROWSER" "$URL" 2> /dev/null &
   else
       TARGET_DIR=""
       TARGET_DIR=doc/"$2"
@@ -173,7 +176,7 @@ _upload() {
 
                   if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
 
-                  firefox "$URL" 2> /dev/null) &
+                  "$BROWSER" "$URL" 2> /dev/null) &
 
               else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo

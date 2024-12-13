@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-12-10 16:53:09 gwern"
+# When:  Time-stamp: "2024-12-12 20:03:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1059,16 +1059,18 @@ else
     chmod --recursive a+r ./* &
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
-    ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time:
+    ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time to reduce risk:
     bold "Syncing static/…"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static" &
+    REMOTE="gwern@176.9.41.242:'/home/gwern/gwern.net/static'"
+    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE" &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if [ "$SLOW" ] || everyNDays 60; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ gwern@176.9.41.242:"/home/gwern/gwern.net" || true
+    ## note we use `--copy-links` here, which pulls in all the symlinked static documents:
+    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ "$REMOTE" || true
     wait
     set +e
 

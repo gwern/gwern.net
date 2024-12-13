@@ -5963,4 +5963,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Hacker_news", "Hacker_News")
         , ("Taxi_medallions", "Taxi_medallion")
         , ("Scheme", "Scheme_(programming_language)")
+        , ("Suno", "Suno_AI")
+        , ("Elo", "Elo_rating_system")
+        , ("Fermi_Problem", "Fermi_problem")
         ]

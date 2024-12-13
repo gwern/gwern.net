@@ -395,13 +395,13 @@ figureCaptionLinebreakTestcases = [ (Figure nullAttr (Caption (Just [Strong [Str
 
 ----
 
--- turn a given string describing 'completion status', of various levels, into a HTML span element which has the class '.completion-status' and encodes the percentage 0–100% as a data-attribute.
+-- Ordinal scale visualization: turn a given string describing 'completion status', of various levels, into a HTML span element which has the class '.completion-status' and encodes the percentage 0–100% as a data-attribute.
 -- eg 'finished' → '<span class="completion-status" data-progress-percentage="100">finished</span>'.
 -- This could be useful for denoting how finished a page is, where one is in reading through a page, how large a collapse's abstract is compared to the full abstract, progress on individual tasks in a todo or reading list, etc.
 -- They can be stylized in various ways in Unicode or with icons, like using line-drawing or circles filled in clockwise. The data-attribute encodes the full range, so one is not limited to a few arbitrarily-chosen levels like '0, 0.25, 0.5, 0.75, 1'.
 -- Supported completion ranges: essay completion status; subjective confidence calibration
 -- If the string input is not found in the `completionMap` and it parses as an integer, it will be used as-is.
--- TODO: config test: unique pairs, unique keys, all keys = positive integers 0-100
+-- TODO: config test: unique pairs, unique keys, all keys = positive integers 0–100
 completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
 completionMap = essayCompletionMap ++ confidenceMap
 essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]

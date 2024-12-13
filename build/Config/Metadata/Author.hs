@@ -1082,10 +1082,10 @@ authorLinkDB = M.fromList $
     , ("Sonja I. Berndt", "https://en.wikipedia.org/wiki/Sonja_Berndt")
     , ("Satu Männistö", "https://scholar.google.com/citations?user=BaGYiQQAAAAJ")
     , ("Peter R. Schofield", "https://neura.edu.au/researchers/prof-peter-schofield")
-    , ("Nicholas A. Furlotte", "https://scholar.google.com/citations?user=Q0EQvCEAAAAJ&hl=en&oi=ao")
+    , ("Nicholas A. Furlotte", "https://scholar.google.com/citations?user=Q0EQvCEAAAAJ")
     , ("Melissa E. Garcia", "https://www.researchgate.net/profile/Melissa-Garcia-43")
-    , ("Mary F. Feitosa", "https://scholar.google.com/citations?user=OpNQ188AAAAJ&hl=en&oi=ao")
-    , ("Maciej Trzaskowski", "https://scholar.google.com/citations?user=PcnCBM8AAAAJ&hl=en&oi=ao")
+    , ("Mary F. Feitosa", "https://scholar.google.com/citations?user=OpNQ188AAAAJ")
+    , ("Maciej Trzaskowski", "https://scholar.google.com/citations?user=PcnCBM8AAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

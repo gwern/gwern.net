@@ -150,7 +150,7 @@ tagsShort2LongRewrites =
    , ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")
    , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")
    , ("order-statistics", "statistics/order")
-   , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia"), ("economics", "economics"), ("math/humor", "math/humor"), ("low-iq", "iq/low"), ("low/iq", "iq/low")]
+   , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia"), ("economics", "economics"), ("math/humor", "math/humor"), ("low-iq", "iq/low"), ("low/[ iq", "iq/low"), ("stylegan-2", "stylegan/2")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
