@@ -2872,6 +2872,8 @@ GW.keyCommands = {
 	    GWLog("GW.keyCommands.keyUp", "misc.js", 3);
 
 		let keyDownEventInfo = GW.keyCommands.keysPressed[event.keyCode];
+		if (keyDownEventInfo == null)
+			return;
 
 		GW.notificationCenter.fireEvent("GW.keyWasPressed", {
 			key: keyDownEventInfo.key,
