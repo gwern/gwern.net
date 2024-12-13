@@ -1942,6 +1942,7 @@ a code {
 
 .icon-special.progress-indicator-icon {
     --icon-opacity: 0.60;
+    --icon-width: 0.80em;
 }
 
 /*  Recently-modified link icons.
