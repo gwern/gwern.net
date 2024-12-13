@@ -4151,8 +4151,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	//	Designate headings.
 	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
-		if (heading.closest("header"))
-			console.trace(blockContainer);
 	});
 
 	//	Designate floats (on non-mobile layouts).

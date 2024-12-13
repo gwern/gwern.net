@@ -2569,7 +2569,7 @@ GW.popFrameSpawnWidgets = {
 		if (popup == null)
 			return;
 
-		let widgetType = popup.spawningTarget.closest(".link-widget").dataset.widgetType;
+		let widgetType = GW.popFrameSpawnWidgets.widgetTypes[popup.spawningTarget.closest(".link-widget").dataset.widgetType];
 
 		Popups.pinPopup(popup);
 
@@ -2578,7 +2578,7 @@ GW.popFrameSpawnWidgets = {
 	},
 
 	activateWidget: (widget) => {
-		let widgetType = widget.dataset.widgetType;
+		let widgetType = GW.popFrameSpawnWidgets.widgetTypes[widget.dataset.widgetType];
 
 		widget.widgetLink.onclick = () => false;
 
