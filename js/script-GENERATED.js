@@ -20538,7 +20538,7 @@ DarkMode = { ...DarkMode,
 			if (event.pointerId == -1) {
 				button.blur();
 
-				let widgetFlashStayDuration = 1500;
+				let widgetFlashStayDuration = 3000;
 				let autoToggleDelay = 250;
 
 				//	Expand toolbar.
