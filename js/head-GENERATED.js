@@ -4096,15 +4096,15 @@ function wrapParenthesizedNodes(className = null, ...args) {
 		if (node.parentNode != parentNode)
 			return;
 
-	let leftParen, rightParen;
 	if (   args.first.previousSibling?.nodeType == Node.TEXT_NODE
-		&& (leftParen = args.first.previousSibling).nodeValue.endsWith("(")
+		&& args.first.previousSibling.nodeValue.endsWith("(")
 		&& args.last.nextSibling?.nodeType == Node.TEXT_NODE
-		&& (rightParen = args.last.nextSibling).nodeValue.startsWith(")")) {
-		let parentNode = leftParen.parentNode;
-		let nextNode = rightParen.nextSibling;
-		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? " " + className : "")}` });
-		wrapper.append(leftParen, ...args, rightParen);
+		&& args.last.nextSibling.nodeValue.startsWith(")")) {
+		args.first.previousSibling.nodeValue = args.first.previousSibling.nodeValue.slice(0, -1);
+		args.last.nextSibling.nodeValue = args.last.nextSibling.nodeValue.slice(1);
+		let nextNode = args.last.nextSibling;
+		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? (" " + className) : "")}` });
+		wrapper.append(document.createTextNode("("), ...args, document.createTextNode(")"));
 		parentNode.insertBefore(wrapper, nextNode);
 	}
 }
@@ -4151,8 +4151,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	//	Designate headings.
 	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
-		if (heading.closest("header"))
-			console.trace(blockContainer);
 	});
 
 	//	Designate floats (on non-mobile layouts).
@@ -4684,7 +4682,7 @@ DarkMode = {
 
 	//	Called by: DarkMode.setMode
 	saveMode: (newMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
+		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
 
 		if (newMode == DarkMode.defaultMode)
 			localStorage.removeItem("dark-mode-setting");
@@ -4698,7 +4696,7 @@ DarkMode = {
 		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
 	 */
 	setMode: (selectedMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.setMode", "dark-mode.js", 1);
+		GWLog("DarkMode.setMode", "dark-mode-initial.js", 1);
 
 		//	Remember previous mode.
 		let previousMode = DarkMode.currentMode();
@@ -4748,20 +4746,14 @@ ReaderMode = {
 
     readerModeTitleNote: " (reader mode)",
 
-    /*  Activate or deactivate reader mode, as determined by the current setting
-        and the selected mode.
+	/*	Overridable default mode.
+	 */
+	defaultMode: "auto",
+
+    /*  Returns current (saved) mode (on, off, or auto).
      */
-    //  Called by: this file (doWhenBodyExists)
-    //  Called by: ReaderMode.modeSelectButtonClicked (reader-mode.js)
-    setMode: (selectedMode = ReaderMode.currentMode()) => {
-        GWLog("ReaderMode.setMode", "reader-mode.js", 1);
-
-        //  Activate (if needed).
-        if (ReaderMode.enabled() == true)
-            ReaderMode.activate();
-
-        //  Fire event.
-        GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
+    currentMode: () => {
+        return (localStorage.getItem("reader-mode-setting") ?? ReaderMode.defaultMode);
     },
 
     /*  Returns true if reader mode is set to be enabled for the current page,
@@ -4774,31 +4766,27 @@ ReaderMode = {
                     && document.body.classList.contains("reader-mode")))
     },
 
-    /*  Returns current (saved) mode (on, off, or auto).
-     */
-    currentMode: () => {
-        return (localStorage.getItem("reader-mode-setting") || "auto");
-    },
-
     /*  Masks links and hide other elements, as appropriate. This will hide
         linkicons and pop-frame indicators, and will thus cause reflow.
      */
     //  Called by: ReaderMode.setMode
     activate: () => {
-        GWLog("ReaderMode.activate", "reader-mode.js", 1);
-
-        ReaderMode.active = true;
+        GWLog("ReaderMode.activate", "reader-mode-initial.js", 1);
 
         //  Add body classes.
         document.body.classList.add("reader-mode-active", "masked-links-hidden");
 
         //  Update document title.
         document.title += ReaderMode.readerModeTitleNote;
-    },
+    }
 };
 
 //  Activate saved mode, once the <body> element is loaded (and classes known).
-doWhenBodyExists(ReaderMode.setMode);
+doWhenBodyExists(() => {
+	//  Activate (if needed).
+	if (ReaderMode.enabled() == true)
+		ReaderMode.activate();
+});
 GW.assetVersions = {
 	"/static/img/icon/icons.svg": "1733961308",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",

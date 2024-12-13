@@ -855,15 +855,15 @@ function wrapParenthesizedNodes(className = null, ...args) {
 		if (node.parentNode != parentNode)
 			return;
 
-	let leftParen, rightParen;
 	if (   args.first.previousSibling?.nodeType == Node.TEXT_NODE
-		&& (leftParen = args.first.previousSibling).nodeValue.endsWith("(")
+		&& args.first.previousSibling.nodeValue.endsWith("(")
 		&& args.last.nextSibling?.nodeType == Node.TEXT_NODE
-		&& (rightParen = args.last.nextSibling).nodeValue.startsWith(")")) {
-		let parentNode = leftParen.parentNode;
-		let nextNode = rightParen.nextSibling;
-		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? " " + className : "")}` });
-		wrapper.append(leftParen, ...args, rightParen);
+		&& args.last.nextSibling.nodeValue.startsWith(")")) {
+		args.first.previousSibling.nodeValue = args.first.previousSibling.nodeValue.slice(0, -1);
+		args.last.nextSibling.nodeValue = args.last.nextSibling.nodeValue.slice(1);
+		let nextNode = args.last.nextSibling;
+		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? (" " + className) : "")}` });
+		wrapper.append(document.createTextNode("("), ...args, document.createTextNode(")"));
 		parentNode.insertBefore(wrapper, nextNode);
 	}
 }
@@ -910,8 +910,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	//	Designate headings.
 	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
 		heading.classList.add("heading");
-		if (heading.closest("header"))
-			console.trace(blockContainer);
 	});
 
 	//	Designate floats (on non-mobile layouts).

@@ -76,9 +76,6 @@ DarkMode = { ...DarkMode,
 		addLayoutProcessor("addInlineDarkModeSelectorsInLoadedContent", (blockContainer) => {
 			injectInlineSelectorsInContainer(blockContainer);
 		}, { blockLayout: false });
-
-		//	Update saved setting.
-		DarkMode.saveMode();
 	},
 
 	/******************/
@@ -147,7 +144,7 @@ DarkMode = { ...DarkMode,
 			if (event.pointerId == -1) {
 				button.blur();
 
-				let widgetFlashStayDuration = 1500;
+				let widgetFlashStayDuration = 3000;
 				let autoToggleDelay = 250;
 
 				//	Expand toolbar.
