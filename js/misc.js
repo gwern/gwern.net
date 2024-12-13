@@ -1973,356 +1973,365 @@ GW.floatingHeader = {
 doWhenPageLoaded(GW.floatingHeader.setup);
 
 
-/**********/
-/* SEARCH */
-/**********/
+/***************************/
+/* POP-FRAME SPAWN WIDGETS */
+/***************************/
 
-GW.search = {
-    searchWidgetId: "search-widget",
+GW.popFrameSpawnWidgets = {
+	widgetTypes: {
+		template: {
+			//	Configuration.
+			linkHref: null,
+			linkAdditionalAttributes: null,
+			iconName: null,
+			onPopupPinDo: null,
+			addToolbarWidget: false,
+			toolbarWidgetLabel: null,
+			inlineWidgetReplacedElementSelector: null,
+			keyCommand: null,
+			additionalSetup: null,
+			additionalWidgetActivation: null,
 
-    keyCommandSpawnSearchWidgetFlashStayDuration: 3000,
+			//	Defaults.
+			keyCommandSpawnWidgetFlashStayDuration: 3000,
 
-    searchWidget: null,
-    searchWidgetLink: null,
+			//	Infrastructure.
+			toolbarWidget: null,
+			virtualWidget: null
+		}
+	},
 
-    searchPopup: null,
+	addWidgetType: (widgetTypeName, widgetTypeSpec) => {
+		return (GW.popFrameSpawnWidgets.widgetTypes[widgetTypeName] = Object.assign({ }, 
+			GW.popFrameSpawnWidgets.widgetTypes.template, 
+			widgetTypeSpec, 
+			{ name: widgetTypeName }));
+	},
 
-    pinSearchPopup: () => {
-		if (GW.search.searchPopup == null)
+	pinPopup: (popup) => {
+		if (popup == null)
 			return;
 
-		Popups.pinPopup(GW.search.searchPopup);
+		let widgetType = popup.spawningTarget.closest(".link-widget").dataset.widgetType;
 
-		requestAnimationFrame(() => {
-			GW.search.searchPopup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus();
-		});
-    },
+		Popups.pinPopup(popup);
 
-    setup: () => {
-        //  Add search widget to page toolbar.
-        GW.search.searchWidget = GW.pageToolbar.addWidget(  `<div id="${GW.search.searchWidgetId}" class="link-widget">`
-                                                          + `<a
-                                                               class="search no-footer-bar"
-                                                               href="/static/google-search.html"
-                                                               aria-label="Search site with Google Search"
-                                                               data-link-content-type="local-document"
-                                                               >`
-                                                          + `<span class="icon">`
-                                                          + GW.svg("magnifying-glass")
-                                                          + `</span>`
-                                                          + `<span class="label">Search</span>`
-                                                          + `</a></div>`);
+		if (widgetType.onPopupPinDo != null)
+			requestAnimationFrame(() => { widgetType.onPopupPinDo(popup); });
+	},
 
-        //  Disable normal link functionality.
-        GW.search.searchWidgetLink = GW.search.searchWidget.querySelector("a");
-        GW.search.searchWidgetLink.onclick = () => false;
+	activateWidget: (widget) => {
+		let widgetType = widget.dataset.widgetType;
+
+		widget.widgetLink.onclick = () => false;
 
         //  Activate pop-frames.
-        Extracts.config.hooklessLinksContainersSelector += `, #${GW.search.searchWidgetId}`;
-        Extracts.addTargetsWithin(GW.search.searchWidget);
-
- 		//	Function to set the proper mode (auto, light, dark) in the iframe.
-		let updateSearchIframeMode = (iframe) => {
-			iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
-		};
-
-		//  Event handler for popup spawn / popin inject.
-        let popFrameSpawnEventHandler = (eventInfo) => {
-            let popFrame = (eventInfo.popup ?? eventInfo.popin);
-
-			if (Extracts.popFrameProvider == Popups)
-				GW.search.searchPopup = popFrame;
-
-			let iframe = popFrame.document.querySelector("iframe");
-            iframe.addEventListener("load", (event) => {
-
-				updateSearchIframeMode(iframe);
-
-				//	Add handler to update search pop-frame when switching modes.
-				GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
-					updateSearchIframeMode(iframe)
-				});
-
-				let inputBox = iframe.contentDocument.querySelector("input.search");
-
-                //  Focus search box on load.
-                inputBox.focus();
-
-                if (Extracts.popFrameProvider == Popups) {
-					//	Pin popup if text is entered.
-					inputBox.addEventListener("input", (event) => {
-						if (Popups.popupIsPinned(popFrame) == false)
-							Popups.pinPopup(popFrame);
-					});
-
-					//	Enable normal popup Esc-key behavior.
-                    iframe.contentDocument.addEventListener("keyup", (event) => {
-                        let allowedKeys = [ "Escape", "Esc" ];
-                        if (allowedKeys.includes(event.key) == false)
-                            return;
-
-                        event.preventDefault();
-
-                        switch(event.key) {
-                            case "Escape":
-                            case "Esc": {
-                                if (Popups.popupIsPinned(popFrame)) {
-                                    Popups.unpinPopup(popFrame);
-                                } else {
-                                    Popups.despawnPopup(popFrame);
-                                }
-
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
-                        }
-                    });
-                }
-            });
-        };
-
-		//	Event handler for popup despawn.
-		let popFrameDespawnEventHandler = (eventInfo) => {
-			let popFrame = (eventInfo.popup ?? eventInfo.popin);
-
-			if (Extracts.popFrameProvider == Popups)
-				GW.search.searchPopup = null;
-
-			GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
-		};
+        Extracts.addTargetsWithin(widget);
 
         //  Configure pop-frame behavior.
         if (Extracts.popFrameProvider == Popups) {
             //  Configure popup positioning and click response.
-            GW.search.searchWidgetLink.preferPopupSidePositioning = () => true;
-            GW.search.searchWidgetLink.cancelPopupOnClick = () => false;
-            GW.search.searchWidgetLink.keepPopupAttachedOnPin = () => true;
-
-            //  Pin popup and focus search box if widget is clicked.
-            GW.search.searchWidgetLink.addActivateEvent((event) => {
-				if (GW.search.searchPopup == null) {
-					//  When the popup spawns, pin it.
-					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-						requestAnimationFrame(() => {
-							GW.search.pinSearchPopup();
-						});
-					}, {
-						once: true,
-						condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
-					});
-
-					//  Spawn popup.
-					Popups.spawnPopup(document.querySelector(`#${GW.search.searchWidgetId} a`));
-				} else {
-					GW.search.pinSearchPopup();
-				}
-            });
-
-            //  Add popup spawn event handler.
-            GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
-                condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
-            });
-            //	Add popup despawn event handler.
-            GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", popFrameDespawnEventHandler, {
-            	condition: (info) => (info.popup.spawningTarget == GW.search.searchWidgetLink)
-            });
-        } else {
-            //  Add popin inject event handler.
-            GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
-                condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
-            });
-			//	Add popin despawn event handler.
-			GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
-                condition: (info) => (info.popin.spawningTarget == GW.search.searchWidgetLink)
-            });
-        }
-
-		//	Add DNS-prefetch tag.
-		//	See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
-		document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
-    }
-};
-
-doWhenPageLoaded(GW.search.setup);
-
-
-/********/
-/* HELP */
-/********/
-
-GW.help = {
-	helpWidgetId: "help-widget",
-
-    keyCommandSpawnHelpWidgetFlashStayDuration: 3000,
-
-    helpWidget: null,
-    helpWidgetLink: null,
-
-    helpPopup: null,
-
-    pinHelpPopup: () => {
-		if (GW.help.helpPopup == null)
-			return;
-
-		Popups.pinPopup(GW.help.helpPopup);
-    },
-
-	setup: () => {
-		GW.help.helpWidget = GW.pageToolbar.addWidget(  `<div id="${GW.help.helpWidgetId}" class="link-widget">`
-                                                      + `<a
-                                                           class="help no-footer-bar"
-                                                           href="/help"
-                                                           >`
-                                                      + `<span class="icon">`
-                                                      + GW.svg("question-solid")
-                                                      + `</span>`
-                                                      + `<span class="label">Help</span>`
-                                                      + `</a></div>`);
-
-        //  Disable normal link functionality.
-        GW.help.helpWidgetLink = GW.help.helpWidget.querySelector("a");
-        GW.help.helpWidgetLink.onclick = () => false;
-
-        //  Activate pop-frames.
-        Extracts.config.hooklessLinksContainersSelector += `, #${GW.help.helpWidgetId}`;
-        Extracts.addTargetsWithin(GW.help.helpWidget);
-
-        //  Configure pop-frame behavior.
-        if (Extracts.popFrameProvider == Popups) {
-            //  Configure popup positioning and click response.
-            GW.help.helpWidgetLink.preferPopupSidePositioning = () => true;
-            GW.help.helpWidgetLink.cancelPopupOnClick = () => false;
-            GW.help.helpWidgetLink.keepPopupAttachedOnPin = () => true;
+            widget.widgetLink.cancelPopupOnClick = () => false;
+			widget.widgetLink.keepPopupAttachedOnPin = () => true;
+            if (   widget == widgetType.toolbarWidget
+            	|| widget == widgetType.virtualWidget)
+	            widget.widgetLink.preferPopupSidePositioning = () => true;
 
             //  Pin popup if widget is clicked.
-            GW.help.helpWidgetLink.addActivateEvent((event) => {
-				if (GW.help.helpPopup == null) {
+            widget.widgetLink.addActivateEvent((event) => {
+				if (widget.widgetLink.popup == null) {
 					//  When the popup spawns, pin it.
 					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 						requestAnimationFrame(() => {
-							GW.help.pinHelpPopup();
+							GW.popFrameSpawnWidgets.pinPopup(info.popup);
 						});
 					}, {
 						once: true,
-						condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
+						condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
 					});
 
 					//  Spawn popup.
-					Popups.spawnPopup(document.querySelector(`#${GW.help.helpWidgetId} a`));
+					Popups.spawnPopup(widget.widgetLink);
 				} else {
-					GW.help.pinHelpPopup();
+					GW.popFrameSpawnWidgets.pinPopup(widget.widgetLink.popup);
 				}
             });
-
-            //  Add popup spawn event handler.
-            GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				GW.help.helpPopup = info.popup;
-			}, {
-                condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
-            });
-            //	Add popup despawn event handler.
-            GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", (info) => {
-				GW.help.helpPopup = null;
-			}, {
-            	condition: (info) => (info.popup.spawningTarget == GW.help.helpWidgetLink)
-            });
         }
-	}
+
+		//	Run any additional activation code.
+		if (widgetType.additionalWidgetActivation != null)
+			widgetType.additionalWidgetActivation(widget);
+	},
+
+	setup: (widgetType) => {
+		if (widgetType.addToolbarWidget == true) {
+			//	Add.
+			let widgetHTML = `<div 
+							   id="${widgetType.name}-widget" 
+							   class="link-widget"
+							   data-widget-type="${widgetType.name}">`
+						   + `<a
+						   	   class="${widgetType.name} no-footer-bar"
+						   	   href="${widgetType.linkHref}" `
+						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+						   	  ).join(" "))
+						   + `>`
+						   + `<span class="icon">`
+						   + GW.svg(widgetType.iconName)
+						   + `</span>`
+						   + `<span class="label">${widgetType.toolbarWidgetLabel}</span>`
+						   + `</a></div>`;
+			widgetType.toolbarWidget = GW.pageToolbar.addWidget(widgetHTML);
+			widgetType.toolbarWidget.widgetLink = widgetType.toolbarWidget.querySelector("a");
+
+			//	Activate.
+			GW.popFrameSpawnWidgets.activateWidget(widgetType.toolbarWidget);
+		} else if (widgetType.keyCommand != null) {
+			//	Create “virtual widget”.
+			let widgetHTML = `<div 
+							   id="${widgetType.name}-widget" 
+							   class="link-widget"
+							   data-widget-type="${widgetType.name}">`
+						   + `<a class="${widgetType.name} no-footer-bar"
+								 href="${widgetType.linkHref}" `
+						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+						   	  ).join(" "))
+						   + `></a></div>`;
+			widgetType.virtualWidget = GW.popFrameSpawnWidgets.virtualWidgetContainer.appendChild(elementFromHTML(widgetHTML));
+			widgetType.virtualWidget.widgetLink = widgetType.virtualWidget.querySelector("a");
+
+			//	Activate.
+			GW.popFrameSpawnWidgets.activateWidget(widgetType.virtualWidget);
+		}
+
+		if (widgetType.inlineWidgetReplacedElementSelector != null) {
+			/*	Inject inline mode widgets in already-loaded content, and add
+				rewrite processor to inject any inline widgets in subsequently
+				loaded content.
+			 */
+			let injectInlineWidgetsInContainer = (container) => {
+				container.querySelectorAll(widgetType.inlineWidgetReplacedElementSelector).forEach(element => {
+					let widgetHTML = `<span class="link-widget" data-widget-type="${widgetType.name}">`
+								   + `<a class="${widgetType.name} no-footer-bar"
+								   		 href="${widgetType.linkHref}" `
+								   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+								   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+								   	  ).join(" "))
+								   + `>`
+								   + `<span class="icon-${widgetType.iconName}"></span>`
+								   + `</a>`;
+					let widget = elementFromHTML(widgetHTML);
+					widget.widgetLink = widget.querySelector("a");
+					element.replaceWith(widget);
+
+					//	Activate.
+					GW.popFrameSpawnWidgets.activateWidget(widget);
+				});
+			};
+			injectInlineWidgetsInContainer(document.main);
+			addLayoutProcessor("addInline_" + widgetType.name + "_widgetsInLoadedContent", (blockContainer) => {
+				injectInlineWidgetsInContainer(blockContainer);
+			}, { blockLayout: false });
+		}
+
+		if (widgetType.additionalSetup != null)
+			widgetType.additionalSetup(widgetType);
+	},
 };
 
-doWhenPageLoaded(GW.help.setup);
+doWhenPageLoaded(() => {
+	//	Add virtual widget container.
+	GW.popFrameSpawnWidgets.virtualWidgetContainer = document.body.appendChild(newElement("DIV", { id: "virtual-widget-container" }));
 
+	//	Add event handler for widget key commands.
+	GW.notificationCenter.addHandlerForEvent("GW.keyWasPressed", GW.popFrameSpawnWidgets.keyPressEventHandler = (eventInfo) => {
+		eventInfo.keyUpEvent.preventDefault();
 
-/****************/
-/* KEY COMMANDS */
-/****************/
-/*  Miscellaneous key commands.
- */
+		let widgetType = Object.values(GW.popFrameSpawnWidgets.widgetTypes).find(widgetType => widgetType.keyCommand == eventInfo.key);
 
-GW.keyCommands = {
-	keyDownFlagNames: [ "altKey", "ctrlKey", "metaKey", "shiftKey" ],
-	keyDownFlags: { },
-
-	keyDown: (event) => {
-		GWLog("GW.keyCommands.keyDown", "popups.js", 3);
-
-		GW.keyCommands.keyDownFlagNames.forEach(flag => { GW.keyCommands.keyDownFlags[flag] = event[flag]; });
-	}
-};
-
-GW.keyCommands.keyUp = (event) => {
-    GWLog("GW.keyCommands.keyUp", "popups.js", 3);
-
-    let allowedKeys = [ "/", "?" ];
-    if (allowedKeys.includes(event.key) == false)
-        return;
-
-    event.preventDefault();
-
-    switch(event.key) {
-        case "/":
-        case "?": {
+		if (widgetType.toolbarWidget != null) {
 			//  Expand page toolbar.
 			GW.pageToolbar.toggleCollapseState(false, {
 				temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
 			});
 
-			let widgetId, widgetLink, flashStayDuration, popup, pinPopupFunction;
+			//	Flash widget.
+			GW.pageToolbar.flashWidget(widgetType.toolbarWidget.id, {
+				flashStayDuration: widgetType.keyCommandSpawnWidgetFlashStayDuration
+			});
+		}
 
-			if (   event.key == "/" 
-				&& event.shiftKey == false
-				&& GW.keyCommands.keyDownFlags.shiftKey == false) {
-				widgetId = GW.search.searchWidgetId;
-				widgetLink = GW.search.searchWidgetLink;
-				flashStayDuration = GW.search.keyCommandSpawnSearchWidgetFlashStayDuration;
-				popup = GW.search.searchPopup;
-				pinPopupFunction = GW.search.pinSearchPopup;
-			} else {
-				widgetId = GW.help.helpWidgetId;
-				widgetLink = GW.help.helpWidgetLink;
-				flashStayDuration = GW.help.keyCommandSpawnHelpWidgetFlashStayDuration;
-				popup = GW.help.helpPopup;
-				pinPopupFunction = GW.help.pinHelpPopup;
-			}
-
-			GW.pageToolbar.flashWidget(widgetId, {
-				flashStayDuration: flashStayDuration
+		let mainWidgetLink = (widgetType.toolbarWidget ?? widgetType.virtualWidget).widgetLink;
+		if (mainWidgetLink.popup == null) {
+			//  When the popup spawns, pin it.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				requestAnimationFrame(() => {
+					GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
+				});
+			}, {
+				once: true,
+				condition: (info) => (info.popup.spawningTarget == mainWidgetLink)
 			});
 
-			if (popup == null) {
-				//  When the popup spawns, pin it.
-				GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-					requestAnimationFrame(() => {
-						pinPopupFunction();
-					});
-				}, {
-					once: true,
-					condition: (info) => (info.popup.spawningTarget == widgetLink)
-				});
-
-				//  Spawn popup.
-				Popups.spawnPopup(document.querySelector(`#${widgetId} a`));
-			} else {
-				pinPopupFunction();
-			}
-
-			break;
+			//  Spawn popup.
+			Popups.spawnPopup(mainWidgetLink);
+		} else {
+			GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
 		}
-        default: {
-            break;
-        }
-    }
+	}, {
+		condition: (info) => (Object.values(GW.popFrameSpawnWidgets.widgetTypes).map(
+			widgetType => widgetType.keyCommand
+		).filter(x => x).includes(info.key))
+	});
 
-	GW.keyCommands.keyDownFlagNames.forEach(flag => { GW.keyCommands.keyDownFlags[flag] = null; });
+	//	Set up help widget(s).
+	GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("help", {
+		linkHref: "/help",
+		linkAdditionalAttributes: null,
+		iconName: "question-solid",
+		onPopupPinDo: null,
+		addToolbarWidget: true,
+		toolbarWidgetLabel: "Help",
+		inlineWidgetReplacedElementSelector: ".help-mode-selector-inline",
+		keyCommand: "?"
+	}));
+
+	//	Set up search widget(s).
+	GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("search", {
+		linkHref: "/static/google-search.html",
+		linkAdditionalAttributes: { "aria-label": "Search site with Google Search",
+									"data-link-content-type": "local-document" },
+		iconName: "magnifying-glass",
+		onPopupPinDo: (popup) => { popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus(); },
+		addToolbarWidget: true,
+		toolbarWidgetLabel: "Search",
+		inlineWidgetReplacedElementSelector: ".search-mode-selector-inline",
+		keyCommand: "/",
+		additionalSetup: (widgetType) => {
+			//	Add DNS-prefetch tag.
+			//	See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
+			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
+		},
+		additionalWidgetActivation: (widget) => {
+			//	Function to set the proper mode (auto, light, dark) in the iframe.
+			let updateSearchIframeMode = (iframe) => {
+				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
+			};
+
+			//  Event handler for popup spawn / popin inject.
+			let popFrameSpawnEventHandler = (eventInfo) => {
+				let popFrame = (eventInfo.popup ?? eventInfo.popin);
+				let iframe = popFrame.document.querySelector("iframe");
+				iframe.addEventListener("load", (event) => {
+
+					updateSearchIframeMode(iframe);
+
+					//	Add handler to update search pop-frame when switching modes.
+					GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
+						updateSearchIframeMode(iframe)
+					});
+
+					let inputBox = iframe.contentDocument.querySelector("input.search");
+
+					//  Focus search box on load.
+					inputBox.focus();
+
+					if (Extracts.popFrameProvider == Popups) {
+						//	Pin popup if text is entered.
+						inputBox.addEventListener("input", (event) => {
+							Popups.pinPopup(popFrame);
+						});
+
+						//	Enable normal popup Esc-key behavior.
+						iframe.contentDocument.addEventListener("keyup", (event) => {
+							let allowedKeys = [ "Escape", "Esc" ];
+							if (allowedKeys.includes(event.key) == false)
+								return;
+
+							event.preventDefault();
+
+							if (Popups.popupIsPinned(popFrame)) {
+								Popups.unpinPopup(popFrame);
+							} else {
+								Popups.despawnPopup(popFrame);
+							}
+						});
+					}
+				});
+			};
+
+			//	Event handler for popup despawn.
+			let popFrameDespawnEventHandler = (eventInfo) => {
+				let popFrame = (eventInfo.popup ?? eventInfo.popin);
+				GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
+			};
+
+			//  Add pop-frame spawn/despawn event handlers.
+			if (Extracts.popFrameProvider == Popups) {
+				GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
+					condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
+				});
+				GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", popFrameDespawnEventHandler, {
+					condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
+				});
+			} else {
+				GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
+					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+				});
+				GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
+					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+				});
+			}
+		}
+	}));
+});
+
+
+/****************/
+/* KEY COMMANDS */
+/****************/
+/*  Proper keypress support (such that keypress sequences work properly for
+	modified keypresses).
+ */
+
+GW.keyCommands = {
+	keysPressed: { },
+
+	keyDown: (event) => {
+		GWLog("GW.keyCommands.keyDown", "misc.js", 3);
+
+		GW.keyCommands.keysPressed[event.keyCode] = {
+			key: event.key,
+			altKey: event.altKey,
+			ctrlKey: event.altKey,
+			metaKey: event.altKey,
+			shiftKey: event.altKey,
+		};
+	},
+
+	keyUp: (event) => {
+	    GWLog("GW.keyCommands.keyUp", "misc.js", 3);
+
+		let keyDownEventInfo = GW.keyCommands.keysPressed[event.keyCode];
+
+		GW.notificationCenter.fireEvent("GW.keyWasPressed", {
+			key: keyDownEventInfo.key,
+			altKey: keyDownEventInfo.altKey,
+			ctrlKey: keyDownEventInfo.altKey,
+			metaKey: keyDownEventInfo.altKey,
+			shiftKey: keyDownEventInfo.altKey,
+			keyUpEvent: event
+		});
+
+		GW.keyCommands.keysPressed[event.keyCode] = null;
+	}
 };
 
 doWhenPageLoaded(() => {
-    if (Extracts.popFrameProvider == Popups) {
-        document.addEventListener("keydown", GW.keyCommands.keyDown);
-        document.addEventListener("keyup", GW.keyCommands.keyUp);
-    }
+	document.addEventListener("keydown", GW.keyCommands.keyDown);
+	document.addEventListener("keyup", GW.keyCommands.keyUp);
 });
 
 
