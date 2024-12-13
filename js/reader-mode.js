@@ -2,7 +2,7 @@ ReaderMode = { ...ReaderMode,
 	/*****************/
 	/*	Configuration.
 	 */
-	maskedLinksSelector: "p a, li a",
+	maskedLinksSelector: "p a",
 
 	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-decoration-container",
 
@@ -45,7 +45,7 @@ ReaderMode = { ...ReaderMode,
 		GWLog("ReaderMode.setup", "reader-mode.js", 1);
 
 		//	Fully activate.
-		if (ReaderMode.active)
+		if (ReaderMode.enabled() == true)
 			ReaderMode.activate();
 
 		//	Inject primary (page toolbar widget) mode selector.
@@ -70,14 +70,19 @@ ReaderMode = { ...ReaderMode,
 	/*	Mode selection.
 	 */
 
-	//	Called by: ReaderMode.modeSelectButtonClicked
-	saveMode: (newMode) => {
+	//	Called by: ReaderMode.setMode
+	saveMode: (newMode = ReaderMode.currentMode()) => {
 		GWLog("ReaderMode.saveMode", "reader-mode.js", 1);
 
-		if (newMode == "auto")
+		if (newMode == ReaderMode.defaultMode)
 			localStorage.removeItem("reader-mode-setting");
 		else
 			localStorage.setItem("reader-mode-setting", newMode);
+	},
+
+	//	Returns true if reader mode is currently active.
+	active: () => {
+		return document.body.classList.contains("reader-mode-active");
 	},
 
 	/*	Activate or deactivate reader mode, as determined by the current setting
@@ -87,11 +92,14 @@ ReaderMode = { ...ReaderMode,
 	setMode: (selectedMode = ReaderMode.currentMode()) => {
 		GWLog("ReaderMode.setMode", "reader-mode.js", 1);
 
+		//	Save the new setting.
+		ReaderMode.saveMode(selectedMode);
+
 		//	Activate or deactivate, as (and if) needed.
-		if (   ReaderMode.active == true
+		if (   ReaderMode.active() == true
 			&& ReaderMode.enabled() == false) {
 			ReaderMode.deactivate();
-		} else if (   ReaderMode.active == false
+		} else if (   ReaderMode.active() == false
 				   && ReaderMode.enabled() == true) {
 			ReaderMode.activate();
 		}
@@ -103,7 +111,7 @@ ReaderMode = { ...ReaderMode,
 			&& ReaderMode.deactivateOnScrollDownObserver != null) {
 			ReaderMode.despawnObserver();
 		} else if (   selectedMode == "auto"
-				   && ReaderMode.active == true
+				   && ReaderMode.active() == true
 				   && ReaderMode.deactivateOnScrollDownObserver == null) {
 			ReaderMode.spawnObserver();
 		}
@@ -122,7 +130,7 @@ ReaderMode = { ...ReaderMode,
 			let selected = (name == currentMode ? " selected" : " selectable");
 			let disabled = (name == currentMode ? " disabled" : "");
 			let active = ((   currentMode == "auto"
-						   && name == (ReaderMode.active ? "on" : "off"))
+						   && name == (ReaderMode.enabled() ? "on" : "off"))
 						  ? " active"
 						  : "");
 			if (name == currentMode)
@@ -170,9 +178,6 @@ ReaderMode = { ...ReaderMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			// Save the new setting.
-			ReaderMode.saveMode(selectedMode);
-
 			// Actually change the mode.
 			ReaderMode.setMode(selectedMode);
 		}, ReaderMode, "modeSelectorInteractable");
@@ -250,7 +255,7 @@ ReaderMode = { ...ReaderMode,
 			indicator, if the current mode is ‘auto’.
 		 */
 		if (currentMode == "auto") {
-			let activeMode = ReaderMode.active 
+			let activeMode = ReaderMode.enabled() 
 							 ? "on" 
 							 : "off";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
@@ -267,8 +272,6 @@ ReaderMode = { ...ReaderMode,
 	//	Called by: ReaderMode.setMode
 	activate: () => {
 		GWLog("ReaderMode.activate", "reader-mode.js", 1);
-
-		ReaderMode.active = true;
 
 		//	Add body classes.
 		document.body.classList.add("reader-mode-active", "masked-links-hidden");
@@ -373,8 +376,6 @@ ReaderMode = { ...ReaderMode,
 	deactivate: () => {
 		GWLog("ReaderMode.deactivate", "reader-mode.js", 1);
 
-		ReaderMode.active = false;
-
 		//	Update document title.
 		if (document.title.endsWith(ReaderMode.readerModeTitleNote))
 			document.title = document.title.slice(0, (-1 * ReaderMode.readerModeTitleNote.length));
@@ -392,9 +393,6 @@ ReaderMode = { ...ReaderMode,
 			ReaderMode.maskedLinks will be null).
 		 */
 		(ReaderMode.maskedLinks || [ ]).forEach(link => {
-			//	Extract hooks.
-// 			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
-
 			if (GW.isMobile() == false) {
 				//	Remove `mouseenter` / `mouseleave` listeners from the link.
 				link.removeMouseEnterEvent();

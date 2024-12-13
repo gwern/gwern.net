@@ -76,9 +76,6 @@ DarkMode = { ...DarkMode,
 		addLayoutProcessor("addInlineDarkModeSelectorsInLoadedContent", (blockContainer) => {
 			injectInlineSelectorsInContainer(blockContainer);
 		}, { blockLayout: false });
-
-		//	Update saved setting.
-		DarkMode.saveMode();
 	},
 
 	/******************/

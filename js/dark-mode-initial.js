@@ -42,7 +42,7 @@ DarkMode = {
 
 	//	Called by: DarkMode.setMode
 	saveMode: (newMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
+		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
 
 		if (newMode == DarkMode.defaultMode)
 			localStorage.removeItem("dark-mode-setting");
@@ -56,7 +56,7 @@ DarkMode = {
 		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
 	 */
 	setMode: (selectedMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.setMode", "dark-mode.js", 1);
+		GWLog("DarkMode.setMode", "dark-mode-initial.js", 1);
 
 		//	Remember previous mode.
 		let previousMode = DarkMode.currentMode();

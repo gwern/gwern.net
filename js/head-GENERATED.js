@@ -4684,7 +4684,7 @@ DarkMode = {
 
 	//	Called by: DarkMode.setMode
 	saveMode: (newMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.saveMode", "dark-mode.js", 1);
+		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
 
 		if (newMode == DarkMode.defaultMode)
 			localStorage.removeItem("dark-mode-setting");
@@ -4698,7 +4698,7 @@ DarkMode = {
 		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
 	 */
 	setMode: (selectedMode = DarkMode.currentMode()) => {
-		GWLog("DarkMode.setMode", "dark-mode.js", 1);
+		GWLog("DarkMode.setMode", "dark-mode-initial.js", 1);
 
 		//	Remember previous mode.
 		let previousMode = DarkMode.currentMode();
@@ -4748,20 +4748,14 @@ ReaderMode = {
 
     readerModeTitleNote: " (reader mode)",
 
-    /*  Activate or deactivate reader mode, as determined by the current setting
-        and the selected mode.
+	/*	Overridable default mode.
+	 */
+	defaultMode: "auto",
+
+    /*  Returns current (saved) mode (on, off, or auto).
      */
-    //  Called by: this file (doWhenBodyExists)
-    //  Called by: ReaderMode.modeSelectButtonClicked (reader-mode.js)
-    setMode: (selectedMode = ReaderMode.currentMode()) => {
-        GWLog("ReaderMode.setMode", "reader-mode.js", 1);
-
-        //  Activate (if needed).
-        if (ReaderMode.enabled() == true)
-            ReaderMode.activate();
-
-        //  Fire event.
-        GW.notificationCenter.fireEvent("ReaderMode.didSetMode");
+    currentMode: () => {
+        return (localStorage.getItem("reader-mode-setting") ?? ReaderMode.defaultMode);
     },
 
     /*  Returns true if reader mode is set to be enabled for the current page,
@@ -4774,31 +4768,27 @@ ReaderMode = {
                     && document.body.classList.contains("reader-mode")))
     },
 
-    /*  Returns current (saved) mode (on, off, or auto).
-     */
-    currentMode: () => {
-        return (localStorage.getItem("reader-mode-setting") || "auto");
-    },
-
     /*  Masks links and hide other elements, as appropriate. This will hide
         linkicons and pop-frame indicators, and will thus cause reflow.
      */
     //  Called by: ReaderMode.setMode
     activate: () => {
-        GWLog("ReaderMode.activate", "reader-mode.js", 1);
-
-        ReaderMode.active = true;
+        GWLog("ReaderMode.activate", "reader-mode-initial.js", 1);
 
         //  Add body classes.
         document.body.classList.add("reader-mode-active", "masked-links-hidden");
 
         //  Update document title.
         document.title += ReaderMode.readerModeTitleNote;
-    },
+    }
 };
 
 //  Activate saved mode, once the <body> element is loaded (and classes known).
-doWhenBodyExists(ReaderMode.setMode);
+doWhenBodyExists(() => {
+	//  Activate (if needed).
+	if (ReaderMode.enabled() == true)
+		ReaderMode.activate();
+});
 GW.assetVersions = {
 	"/static/img/icon/icons.svg": "1733961308",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
