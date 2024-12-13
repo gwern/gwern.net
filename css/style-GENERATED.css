@@ -6992,6 +6992,33 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 
+/******************/
+/* INLINE WIDGETS */
+/******************/
+
+.link-widget a {
+	opacity: 0.6;
+}
+.link-widget a:hover {
+	opacity: 1.0;
+}
+
+
+/*******************/
+/* VIRTUAL WIDGETS */
+/*******************/
+
+#virtual-widget-container {
+	position: fixed;
+	visibility: hidden;
+	overflow: hidden;
+	top: 5em;
+	right: 3em;
+	width: 0;
+	height: 0;
+}
+
+
 /***************/
 /* IMAGE FOCUS */
 /***************/
