@@ -1655,6 +1655,34 @@ GW.pageToolbar = {
 
         GW.pageToolbar.setupComplete = true;
     },
+
+	expandToolbarFlashWidgetDoThing: (widgetId, doThing, options) => {
+		options = Object.assign({
+			widgetFlashStayDuration: 3000,
+			doThingDelay: 250
+		}, options);
+
+		//	Expand toolbar.
+		GW.pageToolbar.toggleCollapseState(false);
+
+		setTimeout(() => {
+			GW.pageToolbar.flashWidget(widgetId, {
+				flashStayDuration: options.widgetFlashStayDuration,
+				showSelectedButtonLabel: true,
+				highlightSelectedButtonLabelAfterDelay: options.doThingDelay
+			});
+			setTimeout(() => {
+				doThing();
+
+				//	Collapse toolbar, after a delay.
+				GW.pageToolbar.toggleCollapseState(true, {
+													   delay: GW.pageToolbar.demoCollapseDelay
+															+ options.widgetFlashStayDuration
+															+ GW.pageToolbar.widgetFlashFallDuration
+												   });
+			}, GW.pageToolbar.widgetFlashRiseDuration + options.doThingDelay);
+		}, GW.pageToolbar.collapseDuration);
+	}
 };
 
 doWhenBodyExists(GW.pageToolbar.setup);

@@ -144,30 +144,10 @@ DarkMode = { ...DarkMode,
 			if (event.pointerId == -1) {
 				button.blur();
 
-				let widgetFlashStayDuration = 3000;
-				let autoToggleDelay = 250;
-
-				//	Expand toolbar.
-				GW.pageToolbar.toggleCollapseState(false);
-
-				setTimeout(() => {
-					GW.pageToolbar.flashWidget("dark-mode-selector", {
-						flashStayDuration: widgetFlashStayDuration,
-						showSelectedButtonLabel: true,
-						highlightSelectedButtonLabelAfterDelay: autoToggleDelay
-					});
-					setTimeout(() => {
-						//	Actually change the mode.
-						DarkMode.setMode(selectedMode);
-
-						//	Collapse toolbar, after a delay.
-						GW.pageToolbar.toggleCollapseState(true, {
-															   delay: GW.pageToolbar.demoCollapseDelay
-																	+ widgetFlashStayDuration
-																	+ GW.pageToolbar.widgetFlashFallDuration
-														   });
-					}, GW.pageToolbar.widgetFlashRiseDuration + autoToggleDelay);
-				}, GW.pageToolbar.collapseDuration);
+				GW.pageToolbar.expandToolbarFlashWidgetDoThing("dark-mode-selector", () => {
+					//	Actually change the mode.
+					DarkMode.setMode(selectedMode);
+				});
 			} else {
 				//	Actually change the mode.
 				DarkMode.setMode(selectedMode);

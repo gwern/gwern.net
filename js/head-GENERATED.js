@@ -4787,6 +4787,11 @@ doWhenBodyExists(() => {
 	if (ReaderMode.enabled() == true)
 		ReaderMode.activate();
 });
+
+//	Once .setMode() is available, set the mode.
+GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
+	ReaderMode.setMode();
+}, { once: true });
 GW.assetVersions = {
 	"/static/img/icon/icons.svg": "1733961308",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",

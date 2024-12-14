@@ -44,3 +44,8 @@ doWhenBodyExists(() => {
 	if (ReaderMode.enabled() == true)
 		ReaderMode.activate();
 });
+
+//	Once .setMode() is available, set the mode.
+GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
+	ReaderMode.setMode();
+}, { once: true });

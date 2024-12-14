@@ -2212,6 +2212,34 @@ GW.pageToolbar = {
 
         GW.pageToolbar.setupComplete = true;
     },
+
+	expandToolbarFlashWidgetDoThing: (widgetId, doThing, options) => {
+		options = Object.assign({
+			widgetFlashStayDuration: 3000,
+			doThingDelay: 250
+		}, options);
+
+		//	Expand toolbar.
+		GW.pageToolbar.toggleCollapseState(false);
+
+		setTimeout(() => {
+			GW.pageToolbar.flashWidget(widgetId, {
+				flashStayDuration: options.widgetFlashStayDuration,
+				showSelectedButtonLabel: true,
+				highlightSelectedButtonLabelAfterDelay: options.doThingDelay
+			});
+			setTimeout(() => {
+				doThing();
+
+				//	Collapse toolbar, after a delay.
+				GW.pageToolbar.toggleCollapseState(true, {
+													   delay: GW.pageToolbar.demoCollapseDelay
+															+ options.widgetFlashStayDuration
+															+ GW.pageToolbar.widgetFlashFallDuration
+												   });
+			}, GW.pageToolbar.widgetFlashRiseDuration + options.doThingDelay);
+		}, GW.pageToolbar.collapseDuration);
+	}
 };
 
 doWhenBodyExists(GW.pageToolbar.setup);
@@ -20538,30 +20566,10 @@ DarkMode = { ...DarkMode,
 			if (event.pointerId == -1) {
 				button.blur();
 
-				let widgetFlashStayDuration = 3000;
-				let autoToggleDelay = 250;
-
-				//	Expand toolbar.
-				GW.pageToolbar.toggleCollapseState(false);
-
-				setTimeout(() => {
-					GW.pageToolbar.flashWidget("dark-mode-selector", {
-						flashStayDuration: widgetFlashStayDuration,
-						showSelectedButtonLabel: true,
-						highlightSelectedButtonLabelAfterDelay: autoToggleDelay
-					});
-					setTimeout(() => {
-						//	Actually change the mode.
-						DarkMode.setMode(selectedMode);
-
-						//	Collapse toolbar, after a delay.
-						GW.pageToolbar.toggleCollapseState(true, {
-															   delay: GW.pageToolbar.demoCollapseDelay
-																	+ widgetFlashStayDuration
-																	+ GW.pageToolbar.widgetFlashFallDuration
-														   });
-					}, GW.pageToolbar.widgetFlashRiseDuration + autoToggleDelay);
-				}, GW.pageToolbar.collapseDuration);
+				GW.pageToolbar.expandToolbarFlashWidgetDoThing("dark-mode-selector", () => {
+					//	Actually change the mode.
+					DarkMode.setMode(selectedMode);
+				});
 			} else {
 				//	Actually change the mode.
 				DarkMode.setMode(selectedMode);
@@ -20766,12 +20774,12 @@ ReaderMode = { ...ReaderMode,
 		ReaderMode.saveMode(selectedMode);
 
 		//	Activate or deactivate, as (and if) needed.
-		if (   ReaderMode.active() == true
-			&& ReaderMode.enabled() == false) {
-			ReaderMode.deactivate();
-		} else if (   ReaderMode.active() == false
-				   && ReaderMode.enabled() == true) {
+		if (   ReaderMode.enabled() == true
+			&& ReaderMode.active() == false) {
 			ReaderMode.activate();
+		} else if (   ReaderMode.active() == true
+				   && ReaderMode.enabled() == false) {
+			ReaderMode.deactivate();
 		}
 
 		/*	Kill the intersection observer, if switching away from "auto" mode.
@@ -20848,8 +20856,18 @@ ReaderMode = { ...ReaderMode,
 			modes.
 		 */
 		doIfAllowed(() => {
-			// Actually change the mode.
-			ReaderMode.setMode(selectedMode);
+			//	Check if this is a click or an accesskey press.
+			if (event.pointerId == -1) {
+				button.blur();
+
+				GW.pageToolbar.expandToolbarFlashWidgetDoThing("reader-mode-selector", () => {
+					//	Actually change the mode.
+					ReaderMode.setMode(selectedMode);
+				});
+			} else {
+				//	Actually change the mode.
+				ReaderMode.setMode(selectedMode);
+			}
 		}, ReaderMode, "modeSelectorInteractable");
 	},
 
@@ -20876,6 +20894,9 @@ ReaderMode = { ...ReaderMode,
 		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", (info) => {
 			ReaderMode.updateModeSelectorState(modeSelector);
 		});
+
+		//	Update state now.
+		ReaderMode.updateModeSelectorState(modeSelector);
 	},
 
 	//	Called by: ReaderMode.didSetMode event handler
@@ -20906,6 +20927,9 @@ ReaderMode = { ...ReaderMode,
 				let label = button.querySelector(".label");
 				label.innerHTML = label.dataset.unselectedLabel;
 			}
+
+			//	Clear accesskey.
+			button.accessKey = "";
 		});
 
 		//	Set the correct button to be selected.
@@ -20920,6 +20944,10 @@ ReaderMode = { ...ReaderMode,
 				label.innerHTML = label.dataset.selectedLabel;
 			}
 		});
+
+		//	Set accesskey.
+		let buttons = Array.from(modeSelector.querySelectorAll("button"));
+		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "r";
 
 		/*	Ensure the right button (on or off) has the “currently active”
 			indicator, if the current mode is ‘auto’.
@@ -20995,12 +21023,6 @@ ReaderMode = { ...ReaderMode,
 			document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
 		}
 
-		/*	Create intersection observer to automatically unmask links when
-			page is scrolled down to a specified location (element).
-		 */
-		if (ReaderMode.currentMode() == "auto")
-			ReaderMode.spawnObserver();
-
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
 
@@ -21009,7 +21031,6 @@ ReaderMode = { ...ReaderMode,
 			document.title += ReaderMode.readerModeTitleNote;
 	},
 
-	//	Called by: ReaderMode.activate
 	//	Called by: ReaderMode.setMode
 	spawnObserver: () => {
 		GWLog("ReaderMode.spawnObserver", "reader-mode.js", 2);
@@ -21038,8 +21059,8 @@ ReaderMode = { ...ReaderMode,
 		ReaderMode.deactivateOnScrollDownObserver = null;
 	},
 
-	/*	Unmasks links and reveal other elements, as appropriate. This will
-		un-hide linkicons and pop-frame indicators, and will thus cause reflow.
+	/*	Unmasks links and reveal other elements, as appropriate. (This will 
+		also un-hide pop-frame indicators.)
 	 */
 	//	Called by: ReaderMode.setMode
 	//	Called by: ReaderMode.deactivateOnScrollDownObserver callback
