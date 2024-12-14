@@ -1546,7 +1546,8 @@ GW.pageToolbar = {
                 type: "button",
                 title: "Collapse/expand controls",
                 class: "toggle-button main-toggle-button",
-                tabindex: "-1"
+                tabindex: "-1",
+                accessKey: "t"
             }, {
                 innerHTML: GW.svg("gear-solid")
             }),

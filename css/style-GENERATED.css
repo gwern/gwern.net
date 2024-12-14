@@ -6655,6 +6655,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     order: -1;
     opacity: 0.4;
 }
+#page-toolbar > button.main-toggle-button:focus {
+	outline: none;
+}
 #page-toolbar > button.main-toggle-button:active {
     transform: scale(0.95);
 }

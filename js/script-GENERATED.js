@@ -2103,7 +2103,8 @@ GW.pageToolbar = {
                 type: "button",
                 title: "Collapse/expand controls",
                 class: "toggle-button main-toggle-button",
-                tabindex: "-1"
+                tabindex: "-1",
+                accessKey: "t"
             }, {
                 innerHTML: GW.svg("gear-solid")
             }),
@@ -13395,6 +13396,13 @@ Extracts = { ...Extracts,
 	/*	Mode selection.
 	 */
 
+	setMode: (selectedMode) => {
+		if (selectedMode == "on")
+			Extracts.enableExtractPopFrames();
+		else
+			Extracts.disableExtractPopFrames();
+	},
+
 	//	Called by: Extracts.injectModeSelector
 	modeSelectorHTML: (inline = false) => {
 		//	Get saved mode setting (or default).
@@ -13452,10 +13460,18 @@ Extracts = { ...Extracts,
 			modes.
 		 */
 		doIfAllowed(() => {
-			if (selectedMode == "on")
-				Extracts.enableExtractPopFrames();
-			else
-				Extracts.disableExtractPopFrames();
+			//	Check if this is a click or an accesskey press.
+			if (event.pointerId == -1) {
+				button.blur();
+
+				GW.pageToolbar.expandToolbarFlashWidgetDoThing("extracts-mode-selector", () => {
+					//	Actually change the mode.
+					Extracts.setMode(selectedMode);
+				});
+			} else {
+				//	Actually change the mode.
+				Extracts.setMode(selectedMode);
+			}
 		}, Extracts, "modeSelectorInteractable");
 	},
 
@@ -13482,6 +13498,9 @@ Extracts = { ...Extracts,
 		GW.notificationCenter.addHandlerForEvent("Extracts.didSetMode", (info) => {
 			Extracts.updateModeSelectorState(modeSelector);
 		});
+
+		//	Update state now.
+		Extracts.updateModeSelectorState(modeSelector);
 	},
 
 	//	Called by: Extracts.didSetMode event handler
@@ -13501,12 +13520,19 @@ Extracts = { ...Extracts,
 			button.classList.remove("active");
 			button.swapClasses([ "selectable", "selected" ], 0);
 			button.disabled = false;
+
+			//	Remove “[This option is currently selected.]” note.
 			if (button.title.endsWith(Extracts.selectedModeOptionNote))
 				button.title = button.title.slice(0, (-1 * Extracts.selectedModeOptionNote.length));
 
 			//	Reset label text to unselected state.
-			let label = button.querySelector(".label");
-			label.innerHTML = label.dataset.unselectedLabel;
+			if (modeSelector.classList.contains("mode-selector-inline") == false) {
+				let label = button.querySelector(".label");
+				label.innerHTML = label.dataset.unselectedLabel;
+			}
+
+			//	Clear accesskey.
+			button.accessKey = "";
 		});
 
 		//	Set the correct button to be selected.
@@ -13516,9 +13542,15 @@ Extracts = { ...Extracts,
 			button.title += Extracts.selectedModeOptionNote;
 
 			//	Set label text to selected state.
-			let label = button.querySelector(".label");
-			label.innerHTML = label.dataset.selectedLabel;
+			if (modeSelector.classList.contains("mode-selector-inline") == false) {
+				let label = button.querySelector(".label");
+				label.innerHTML = label.dataset.selectedLabel;
+			}
 		});
+
+		//	Set accesskey.
+		let buttons = Array.from(modeSelector.querySelectorAll("button"));
+		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "p";
 	},
 
 	//	Called by: extracts.js
