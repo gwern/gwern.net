@@ -559,7 +559,7 @@ function addCopyProcessor(processor) {
     for any shadow roots.)
  */
 function registerCopyProcessorsForDocument(doc) {
-    GWLog("registerCopyProcessorsForDocument", "rewrite.js", 1);
+    GWLog("registerCopyProcessorsForDocument", "misc.js", 1);
 
     doc.addEventListener("copy", (event) => {
         if (   GW.copyProcessors == null
@@ -1019,7 +1019,7 @@ function updatePageTOC(container = document) {
 /*  Mark hash-targeted footnote with ‘targeted’ class.
  */
 function updateFootnoteTargeting() {
-    GWLog("updateFootnoteTargeting", "rewrite.js", 1);
+    GWLog("updateFootnoteTargeting", "misc.js", 1);
 
     if (   Sidenotes
         && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
@@ -1588,7 +1588,7 @@ GW.pageToolbar = {
 			rewrite processor to inject any inline widgets in subsequently
 			loaded content.
 		 */
-		let injectInlineWidgetsInContainer = (container) => {
+		processMainContentAndAddRewriteProcessor("addInlineToolbarToggleWidgetsInContainer", (container) => {
 			container.querySelectorAll(".toolbar-mode-selector-inline").forEach(element => {
 				let widgetHTML = `<span class="toolbar-toggle-widget mode-selector mode-selector-inline`
 							   + (startCollapsed ? " toolbar-collapsed" : "")
@@ -1612,11 +1612,7 @@ GW.pageToolbar = {
 					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
 				});
 			});
-		};
-		injectInlineWidgetsInContainer(document.main);
-		addLayoutProcessor("addInlineToolbarToggleWidgetsInLoadedContent", (blockContainer) => {
-			injectInlineWidgetsInContainer(blockContainer);
-		}, { blockLayout: false });
+		});
 
         //  Activate buttons.
         GW.pageToolbar.toolbar.querySelectorAll("button.toggle-button").forEach(button => {
@@ -1742,7 +1738,7 @@ doWhenBodyExists(GW.pageToolbar.setup);
     Called by the ‘updateBackToTopLinkScrollListener’ scroll listener.
  */
 function updateBackToTopLinkVisibility(event) {
-    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
+    GWLog("updateBackToTopLinkVisibility", "misc.js", 3);
 
     //  One PgDn’s worth of scroll distance, approximately.
     let onePageScrollDistance = (0.8 * window.innerHeight);
@@ -1767,7 +1763,7 @@ function updateBackToTopLinkVisibility(event) {
 /*  Injects the “back to top” link.
  */
 if (GW.isMobile() == false) doWhenPageLoaded(() => {
-    GWLog("injectBackToTopLink", "rewrite.js", 1);
+    GWLog("injectBackToTopLink", "misc.js", 1);
 
     GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">`
         + GW.svg("arrow-up-to-line-light")
@@ -1802,7 +1798,7 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
 /*	Rewrite footer logo link to also link to #top on /index.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (eventInfo) => {
-    GWLog("rewriteIndexFooterLogoLinkHref", "rewrite.js", 1);
+    GWLog("rewriteIndexFooterLogoLinkHref", "misc.js", 1);
 
     eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
         footerLogo.href = "#top";
@@ -1840,7 +1836,7 @@ GW.floatingHeader = {
         (Called by the ‘updateFloatingHeaderScrollListener’ scroll listener.)
      */
     updateState: (event, maxChainLength = GW.floatingHeader.maxChainLength) => {
-        GWLog("updateFloatingHeaderState", "rewrite.js", 3);
+        GWLog("updateFloatingHeaderState", "misc.js", 3);
 
         //  Show/hide the entire header.
         GW.floatingHeader.header.classList.toggle("hidden",
@@ -1981,7 +1977,7 @@ GW.floatingHeader = {
     },
 
     setup: () => {
-        GWLog("GW.floatingHeader.setup", "rewrite.js", 1);
+        GWLog("GW.floatingHeader.setup", "misc.js", 1);
 
         //  No floating header on desktop /index.
         if (   GW.isMobile() == false
@@ -2183,7 +2179,7 @@ GW.popFrameSpawnWidgets = {
 				rewrite processor to inject any inline widgets in subsequently
 				loaded content.
 			 */
-			let injectInlineWidgetsInContainer = (container) => {
+			processMainContentAndAddRewriteProcessor("addInline_" + widgetType.name + "_widgetsInContainer", (container) => {
 				container.querySelectorAll(widgetType.inlineWidgetReplacedElementSelector).forEach(element => {
 					let widgetHTML = `<span class="link-widget" data-widget-type="${widgetType.name}">`
 								   + `<a class="${widgetType.name} no-footer-bar"
@@ -2202,11 +2198,7 @@ GW.popFrameSpawnWidgets = {
 					//	Activate.
 					GW.popFrameSpawnWidgets.activateWidget(widget);
 				});
-			};
-			injectInlineWidgetsInContainer(document.main);
-			addLayoutProcessor("addInline_" + widgetType.name + "_widgetsInLoadedContent", (blockContainer) => {
-				injectInlineWidgetsInContainer(blockContainer);
-			}, { blockLayout: false });
+			});
 		}
 
 		if (widgetType.additionalSetup != null)
@@ -2430,7 +2422,7 @@ doWhenPageLayoutComplete(() => {
 /**************************/
 
 function cleanLocationHash() {
-    GWLog("cleanLocationHash", "rewrite.js", 2);
+    GWLog("cleanLocationHash", "misc.js", 2);
 
     if (   location.hash == "#top"
         || (   location.hash == ""
@@ -2440,7 +2432,7 @@ function cleanLocationHash() {
 }
 
 doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
-    GWLog("GW.pageLayoutCompleteHashHandlingSetup", "rewrite.js", 1);
+    GWLog("GW.pageLayoutCompleteHashHandlingSetup", "misc.js", 1);
 
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
     if (GW.isFirefox()) {
@@ -2461,7 +2453,7 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
         back-to-top link).
      */
     window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
-        GWLog("GW.handleBrowserHashChangeEvent", "rewrite.js", 1);
+        GWLog("GW.handleBrowserHashChangeEvent", "misc.js", 1);
 
         //  Clean location hash.
         cleanLocationHash();

@@ -188,15 +188,11 @@ Extracts = {
 				rewrite processor to inject any inline selectors in subsequently
 				loaded content.
 			 */
-			let injectInlineSelectorsInContainer = (container) => {
+			processMainContentAndAddRewriteProcessor("addInlineExtractsModeSelectorsInContainer", (container) => {
 				container.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
 					Extracts.injectModeSelector(element);
 				});
-			};
-			injectInlineSelectorsInContainer(document.main);
-			addLayoutProcessor("addInlineExtractsModeSelectorsInLoadedContent", (blockContainer) => {
-				injectInlineSelectorsInContainer(blockContainer);
-			}, { blockLayout: false });
+			});
 		}
 
 		//	Do not proceed if disabled.

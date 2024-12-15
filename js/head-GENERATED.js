@@ -4557,6 +4557,15 @@ function doWhenPageLayoutComplete(f) {
 /*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
  */
 
+/*****************************************************************************/
+/*	Run rewrite processor in already-loaded main page content, and add rewrite
+	processor to process any subsequently loaded content.
+ */
+function processMainContentAndAddRewriteProcessor(processorName, processor) {
+	processor(document.main);
+	addLayoutProcessor(processorName, processor, { blockLayout: false });
+}
+
 /**********************************************/
 /*	Enable inline icons in the given container.
  */

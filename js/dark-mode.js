@@ -67,15 +67,11 @@ DarkMode = { ...DarkMode,
 			rewrite processor to inject any inline selectors in subsequently
 			loaded content.
 		 */
-		let injectInlineSelectorsInContainer = (container) => {
+		processMainContentAndAddRewriteProcessor("addInlineDarkModeSelectorsInLoadedContent", (container) => {
 			container.querySelectorAll(".dark-mode-selector-inline").forEach(element => {
 				DarkMode.injectModeSelector(element);
 			});
-		};
-		injectInlineSelectorsInContainer(document.main);
-		addLayoutProcessor("addInlineDarkModeSelectorsInLoadedContent", (blockContainer) => {
-			injectInlineSelectorsInContainer(blockContainer);
-		}, { blockLayout: false });
+		});
 	},
 
 	/******************/
