@@ -4793,7 +4793,7 @@ GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
 	ReaderMode.setMode();
 }, { once: true });
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1733961308",
+	"/static/img/icon/icons.svg": "1734296141",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",

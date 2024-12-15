@@ -2641,18 +2641,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5740,7 +5740,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5927,7 +5927,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6398,7 +6398,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7408,7 +7408,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#question');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7612,7 +7612,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -7981,14 +7981,31 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .mode-selector-inline.extracts-mode-selector button.select-mode-on .icon {
 	padding: 1px 0 0 0;
 }
+.mode-selector-inline.toolbar-toggle-widget {
+	margin-left: -0.15em;
+	margin-right: -0.15em;
+}
+.mode-selector-inline.toolbar-toggle-widget button {
+    transition:
+        transform var(--GW-page-toolbar-collapse-duration) ease-out;
+}
+.mode-selector-inline.toolbar-toggle-widget button:active {
+	transform: scale(0.95);
+}
+.mode-selector-inline.toolbar-toggle-widget.toolbar-collapsed button {
+    transform: rotateZ(0.5turn);
+}
+.mode-selector-inline.toolbar-toggle-widget.toolbar-collapsed button:active {
+    transform: rotateZ(0.5turn) scale(0.95);
+}
+.mode-selector-inline.toolbar-toggle-widget button .icon {
+	width: 1em;
+}
 
 /*	Pre-replacement elements (styled to prevent reflow).
  */
-.dark-mode-selector-inline,
-.reader-mode-selector-inline,
-.extracts-mode-selector-inline {
+[class*="-mode-selector-inline"] {
 	display: inline-block;
-	margin: -0.2em 0;
 }
 .dark-mode-selector-inline {
 	width: 9.65em;
@@ -7998,11 +8015,23 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .reader-mode-selector-inline {
 	width: 8.90em;
 	margin-left: -0.1em;
+	margin-right: -0.2em;
 }
 .extracts-mode-selector-inline {
 	width: 5.60em;
 	margin-left: -0.1em;
 	margin-right: -0.1em;
+}
+.search-mode-selector-inline {
+	width: 1.1em;
+}
+.help-mode-selector-inline {
+	width: 0.85em;
+}
+.toolbar-mode-selector-inline {
+	width: 1.5em;
+	margin-left: -0.15em;
+	margin-right: -0.15em;
 }
 
 /*	Special layout fix.
@@ -8109,7 +8138,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1734040064#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1734296141#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -8190,7 +8219,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734040064#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1734296141#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

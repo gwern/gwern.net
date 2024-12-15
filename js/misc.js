@@ -1423,6 +1423,12 @@ GW.pageToolbar = {
         } else {
             GW.pageToolbar.uncollapse(options.temp);
         }
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
+			collapse: collapse,
+			collapseOptions: options
+		});
     },
 
     /*  Collapse toolbar.
@@ -1561,24 +1567,61 @@ GW.pageToolbar = {
             })
         );
 
+		//	Toolbar toggle button click event handler.
+		let buttonClickHandler = (event) => {
+			//  Left-click only.
+			if (event.button != 0)
+				return;
+
+			if (GW.pageToolbar.isTempExpanded()) {
+				/*  Do not re-collapse if temp-expanded; instead,
+					permanentize expanded state (expand-lock).
+				 */
+				GW.pageToolbar.toggleCollapseState(false);
+			} else {
+				//  Expand or collapse.
+				GW.pageToolbar.toggleCollapseState();
+			}
+		};
+
+		/*	Inject inline mode widgets in already-loaded content, and add
+			rewrite processor to inject any inline widgets in subsequently
+			loaded content.
+		 */
+		let injectInlineWidgetsInContainer = (container) => {
+			container.querySelectorAll(".toolbar-mode-selector-inline").forEach(element => {
+				let widgetHTML = `<span class="toolbar-toggle-widget mode-selector mode-selector-inline`
+							   + (startCollapsed ? " toolbar-collapsed" : "")
+							   + `">`
+							   + `<button
+							   	   type="button"
+							   	   class="toggle-button"
+							   	   title="Collapse/expand controls"
+							   	   tabindex="-1">`
+							   + `<span class="icon">`
+							   + GW.svg("gear-solid")
+							   + `</span>`
+							   + `</button>`
+							   + `</span>`;
+				let widget = elementFromHTML(widgetHTML);
+				element.replaceWith(widget);
+				widget.querySelector("button").addEventListener("click", buttonClickHandler);
+				wrapParenthesizedNodes("inline-mode-selector", widget);
+
+				GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
+					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
+				});
+			});
+		};
+		injectInlineWidgetsInContainer(document.main);
+		addLayoutProcessor("addInlineToolbarToggleWidgetsInLoadedContent", (blockContainer) => {
+			injectInlineWidgetsInContainer(blockContainer);
+		}, { blockLayout: false });
+
         //  Activate buttons.
         GW.pageToolbar.toolbar.querySelectorAll("button.toggle-button").forEach(button => {
             //  Toggle collapse state on click/tap.
-            button.addEventListener("click", (event) => {
-                //  Left-click only.
-                if (event.button != 0)
-                    return;
-
-                if (GW.pageToolbar.isTempExpanded()) {
-                    /*  Do not re-collapse if temp-expanded; instead,
-                        permanentize expanded state (expand-lock).
-                     */
-                    GW.pageToolbar.toggleCollapseState(false);
-                } else {
-                    //  Expand or collapse.
-                    GW.pageToolbar.toggleCollapseState();
-                }
-            });
+            button.addEventListener("click", buttonClickHandler);
 
             if (button.classList.contains("main-toggle-button")) {
                 if (GW.isMobile()) {
@@ -2154,6 +2197,7 @@ GW.popFrameSpawnWidgets = {
 					let widget = elementFromHTML(widgetHTML);
 					widget.widgetLink = widget.querySelector("a");
 					element.replaceWith(widget);
+					wrapParenthesizedNodes("inline-mode-selector", widget);
 
 					//	Activate.
 					GW.popFrameSpawnWidgets.activateWidget(widget);

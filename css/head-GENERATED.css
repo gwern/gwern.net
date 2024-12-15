@@ -1928,6 +1928,9 @@ a code {
     --icon-width: 0.90em;
     --icon-height: 1.00em;
 }
+.icon-question-solid {
+    --icon-width: 0.65em;
+}
 
 .icon-single-white-star-on-black-circle {
     --icon-opacity: 0.75;
