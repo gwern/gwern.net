@@ -249,4 +249,4 @@ DarkMode = { ...DarkMode,
 
 GW.notificationCenter.fireEvent("DarkMode.didLoad");
 
-doWhenElementExists(DarkMode.setup, "#page-toolbar");
+DarkMode.setup();

@@ -330,7 +330,7 @@ addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo
             sortTables(eventInfo);
         }, { once: true });
     }
-});
+}, ">rewrite");
 
 /************************************************************************/
 /*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper

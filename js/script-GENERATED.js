@@ -14661,7 +14661,7 @@ addContentInjectHandler(GW.contentInjectHandlers.makeTablesSortable = (eventInfo
             sortTables(eventInfo);
         }, { once: true });
     }
-});
+}, ">rewrite");
 
 /************************************************************************/
 /*  Wrap each table in a div.table-wrapper and a div.table-scroll-wrapper
@@ -18517,25 +18517,6 @@ Sidenotes = { ...Sidenotes,
 			counterpart.classList.add("targeted");
 	},
 
-	/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on what mode
-		the page is in (based on viewport width), whether each margin note is
-		in a constrained block, and whether it’s on the main page or in
-		something like a pop-frame.
-
-		(This function should be called from a load or inject event handler,
-		 and the event info passed to it as argument.)
-	 */
-	setMarginNoteStyle: (eventInfo) => {
-		GWLog("Sidenotes.setMarginNoteStyle", "sidenotes.js", 1);
-
-		eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
-			let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-						  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false
-						  || eventInfo.document != document);
-			marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
-		});
-	},
-
 	/*  Hide sidenotes within currently-collapsed collapse blocks. Show
 		sidenotes not within currently-collapsed collapse blocks.
 	 */
@@ -19144,16 +19125,33 @@ Sidenotes = { ...Sidenotes,
 		if (GW.isMobile())
 			return;
 
-		/*	Update the margin note style, and add event listener to re-update it
-			when the viewport width changes. Also add event handler to update
-			margin note style in transcluded content and pop-frames.
+		/*	Add event handler to update margin note style in transcluded content
+			and pop-frames.
+		 */
+		addContentInjectHandler(GW.contentInjectHandlers.setMarginNoteStyle = (eventInfo) => {
+			GWLog("setMarginNoteStyle", "sidenotes.js", 1);
+
+			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on 
+				what mode the page is in (based on viewport width), whether each
+				margin note is in a constrained block, and whether it’s on the 
+				main page or in something like a pop-frame.
+			 */
+			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
+				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
+							  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false
+							  || eventInfo.document != document);
+				marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
+			});
+		}, ">rewrite");
+
+		/*	When the main content loads, update the margin note style; and add 
+			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler((info) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
-				Sidenotes.setMarginNoteStyle(info);
+				GW.contentInjectHandlers.setMarginNoteStyle(info);
 			});
 		}, "rewrite", (info) => info.container == document.main, true);
-		addContentInjectHandler(Sidenotes.setMarginNoteStyle, ">rewrite");
 
 		/*	When an anchor link is clicked that sets the hash to its existing
 			value, weird things happen. In particular, weird things happen with
@@ -19378,8 +19376,8 @@ Sidenotes = { ...Sidenotes,
 		/*  Construct the sidenotes whenever content is injected into the main
 			page (including the initial page load).
 		 */
-		addContentInjectHandler(Sidenotes.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
-			GWLog("Sidenotes.constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
+		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
+			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
 			if (eventInfo.container == document.main) {
 				Sidenotes.constructSidenotes();
@@ -20735,7 +20733,7 @@ DarkMode = { ...DarkMode,
 
 GW.notificationCenter.fireEvent("DarkMode.didLoad");
 
-doWhenElementExists(DarkMode.setup, "#page-toolbar");
+DarkMode.setup();
 ReaderMode = { ...ReaderMode, 
 	/*****************/
 	/*	Configuration.

@@ -342,14 +342,6 @@ function startDynamicLayoutInContainer(container) {
 					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container);
 				});
 			}
-
-			if (   GW.DOMContentLoaded == true
-				&& GW.layout.initialPageLayoutComplete == false) {
-				requestAnimationFrame(() => {
-					GW.layout.initialPageLayoutComplete = true;
-					GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
-				});
-			}			
 		});
 	});
 
@@ -1242,6 +1234,19 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocume
 		GW.layout.applyBlockLayoutClassesInContainer(blockContainer);
 	});
 }, "<rewrite", (info) => (info.container == document.main));
+
+/**************************************************************************/
+/*	Fire “page layout complete event” on the next animation frame after the 
+	end of all rewrites triggered directly by the DOMContentLoaded event.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo) => {
+    GWLog("completePageLayout", "layout.js", 1);
+
+	requestAnimationFrame(() => {
+		GW.layout.initialPageLayoutComplete = true;
+		GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
+	});
+}, ">rewrite", (info) => (info.container == document.main));
 
 /****************************************************************************/
 /*	Apply block layout classes to a document fragment, to make them available

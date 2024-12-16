@@ -3583,14 +3583,6 @@ function startDynamicLayoutInContainer(container) {
 					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container);
 				});
 			}
-
-			if (   GW.DOMContentLoaded == true
-				&& GW.layout.initialPageLayoutComplete == false) {
-				requestAnimationFrame(() => {
-					GW.layout.initialPageLayoutComplete = true;
-					GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
-				});
-			}			
 		});
 	});
 
@@ -4484,6 +4476,19 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocume
 	});
 }, "<rewrite", (info) => (info.container == document.main));
 
+/**************************************************************************/
+/*	Fire “page layout complete event” on the next animation frame after the 
+	end of all rewrites triggered directly by the DOMContentLoaded event.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo) => {
+    GWLog("completePageLayout", "layout.js", 1);
+
+	requestAnimationFrame(() => {
+		GW.layout.initialPageLayoutComplete = true;
+		GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
+	});
+}, ">rewrite", (info) => (info.container == document.main));
+
 /****************************************************************************/
 /*	Apply block layout classes to a document fragment, to make them available
 	to any other load handlers (rewrite functions).
@@ -4784,7 +4789,7 @@ GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
 	ReaderMode.setMode();
 }, { once: true });
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1734296141",
+	"/static/img/icon/icons.svg": "1734331913",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707794185",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1698080524",
