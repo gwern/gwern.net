@@ -300,7 +300,9 @@ function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, con
 /*	Activates dynamic layout for the given container.
  */
 function startDynamicLayoutInContainer(container) {
-	let selectorize = selectorizeForBlockContainer(container);
+	let blockContainersSelector = GW.layout.blockContainers.map(
+		part => (part == ".markdownBody") ? part : (".markdownBody " + part)
+	).join(", ");
 
 	let observer = new MutationObserver((mutationsList, observer) => {
 		//	Construct list of all block containers affected by these mutations.
@@ -308,10 +310,10 @@ function startDynamicLayoutInContainer(container) {
 
 		for (mutationRecord of mutationsList) {
 			//	Find block container in which the mutated element is contained.
-			let nearestBlockContainer = mutationRecord.target.closest(selectorize(GW.layout.blockContainers));
+			let nearestBlockContainer = mutationRecord.target.closest(blockContainersSelector);
 
-			//	Avoid adding a container twice, and apply exclusions.
-			if (   nearestBlockContainer
+			//	Avoid adding a container twice.
+			if (   nearestBlockContainer != null
 				&& affectedBlockContainers.includes(nearestBlockContainer) == false)
 				affectedBlockContainers.push(nearestBlockContainer);
 		}
@@ -703,22 +705,6 @@ function isBareWrapper(element) {
 				&& element.className.trim() == ""));
 }
 
-/**************************************************************************/
-/*	Returns assembled and appropriately prefixed selector from given parts.
- */
-function selectorizeForBlockContainer(blockContainer) {
-	if (   blockContainer instanceof DocumentFragment
-		|| blockContainer.closest(".markdownBody") == null) {
-		return (parts) => (parts.join(", "));
-	} else {
-		return (parts) => (parts.map(
-			part => (part == ".markdownBody" 
-					 ? `.markdownBody` 
-					 : `.markdownBody ${part}`)
-		).join(", "));
-	}
-}
-
 /***************************************************************/
 /*	Returns tag_name#id.class1.class2.class3 of a given element.
  */
@@ -905,10 +891,8 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 /*	Apply block layout classes to appropriate elements in given block container.
  */
 addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
-	let selectorize = selectorizeForBlockContainer(blockContainer);
-
 	//	Designate headings.
-	blockContainer.querySelectorAll(selectorize(range(1, 6).map(x => `h${x}`))).forEach(heading => {
+	blockContainer.querySelectorAll(range(1, 6).map(x => `h${x}`).join(", ")).forEach(heading => {
 		heading.classList.add("heading");
 	});
 
@@ -918,20 +902,20 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		".float-right"
 	];
 	if (GW.mediaQueries.mobileWidth.matches == false) {
-		blockContainer.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
+		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
 			floatBlock.classList.add("float");
 		});
 	} else {
-		blockContainer.querySelectorAll(selectorize(floatClasses)).forEach(floatBlock => {
+		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
 			floatBlock.classList.remove("float");
 		});
 	}
 
 	//	Designate lists.
-	blockContainer.querySelectorAll(selectorize([
+	blockContainer.querySelectorAll([
 		"ul",
 		"ol"
-	])).forEach(list => {
+	].join(", ")).forEach(list => {
 		list.classList.add("list");
 	});
 
@@ -992,7 +976,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	});
 
 	//	Disable triptychs on mobile layouts.
-	blockContainer.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
 		/*	Why “aptych”? Because on mobile it is laid out in one column
 			instead of three, making it “un-folded”:
 			https://old.reddit.com/r/AncientGreek/comments/ypts2o/polyptychs_help_with_a_word/
@@ -1001,7 +985,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	});
 
 	//	Apply special block sequence classes.
-	blockContainer.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
+	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -1150,10 +1134,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 /*	Apply block spacing in the given container.
  */
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
-	let selectorize = selectorizeForBlockContainer(blockContainer);
-
 	//	Apply block spacing.
-	blockContainer.querySelectorAll(selectorize(GW.layout.blockElements)).forEach(block => {
+	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -1168,7 +1150,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	});
 
 	//	Triptychs require special treatment.
-	blockContainer.querySelectorAll(selectorize([ ".triptych" ])).forEach(triptych => {
+	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
 		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -1189,7 +1171,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	});
 
 	//	Lists require special treatment.
-	blockContainer.querySelectorAll(selectorize([ "li:not(.footnote)" ])).forEach(listItem => {
+	blockContainer.querySelectorAll("li:not(.footnote)").forEach(listItem => {
 		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
@@ -1221,7 +1203,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	});
 
 	//	Floats require special treatment on non-mobile layouts.
-	blockContainer.querySelectorAll(selectorize([ ".float" ])).forEach(floatBlock => {
+	blockContainer.querySelectorAll(".float").forEach(floatBlock => {
 		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
 			return;
 
