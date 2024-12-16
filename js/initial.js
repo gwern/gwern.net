@@ -30,6 +30,10 @@ GW.isFirefox = () => {
     return (navigator.userAgent.indexOf("Firefox") > 0);
 };
 
+GW.isTorBrowser = () => {
+	return (("serviceWorker" in navigator) == false);
+};
+
 GW.isX11 = () => {
     return (navigator.userAgent.indexOf("X11") > 0);
 };

@@ -2094,10 +2094,15 @@ GW.pageToolbar = {
 		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-y", offset.y + "px");
 	},
 
+	shouldStartCollapsed: () => {
+		return (   GW.isTorBrowser()
+        		|| getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos);
+	},
+
     setup: () => {
         GW.pageToolbar.toolbar = GW.pageToolbar.getToolbar();
 
-        let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
+        let startCollapsed = GW.pageToolbar.shouldStartCollapsed();
         if (startCollapsed) {
             //  Don’t collapse if hovering.
             if (GW.pageToolbar.toolbar.matches(":hover") == false)
@@ -2214,7 +2219,7 @@ GW.pageToolbar = {
             /*  Slowly collapse toolbar shortly after page load (if it’s not
                 already collapsed).
              */
-            let startCollapsed = getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos;
+            let startCollapsed = GW.pageToolbar.shouldStartCollapsed();
             if (startCollapsed == false) {
                 requestAnimationFrame(() => {
                     Array.from(GW.pageToolbar.getToolbar().querySelector(".widgets").children).forEach(widget => {
