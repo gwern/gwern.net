@@ -546,6 +546,34 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     });
 }, "rewrite");
 
+/**********************************************************/
+/*	Inject the page thumbnail image into the page abstract.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
+    GWLog("injectThumbnailIntoPageAbstract", "rewrite.js", 1);
+
+	let pageAbstract = document.querySelector(".abstract blockquote");
+	if (   pageAbstract == null
+		|| previousBlockOf(pageAbstract) != null)
+		return;
+
+	//	Designate page abstract.
+	pageAbstract.classList.add("page-abstract");
+
+	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
+		return;
+
+	//	Insert page thumbnail into page abstract.
+	let referenceData = Content.referenceDataForLink(newElement("A", { href: location.href }));
+	if (referenceData.pageThumbnailHTML != null) {
+		pageAbstract.appendChild(newElement("FIGURE", {
+			class: "page-thumbnail-figure float-not"
+		}, {
+			innerHTML: referenceData.pageThumbnailHTML
+		}));
+	}
+}, "rewrite", (info) => (info.container == document.main));
+
 /******************************************************************************/
 /*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
  */
@@ -2473,6 +2501,18 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
 /*********/
 /* MISC. */
 /*********/
+
+/*****************************************************************************/
+/*	For obvious reasons, <noscript> tags are completely useless in any content
+	loaded by this code, and they sometimes interfere with stuff.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.removeNoscriptTags = (eventInfo) => {
+    GWLog("removeNoscriptTags", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("noscript").forEach(noscript => {
+		noscript.remove();
+	});
+}, "<rewrite");
 
 GW.defaultImageAuxText = "[Image]";
 
