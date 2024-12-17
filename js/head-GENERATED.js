@@ -2707,6 +2707,7 @@ function replacePageLogoWhenPossible(replaceLogo) {
             if (   window.getSavedCount
             	&& window.getAssetPathname
             	&& window.versionedAssetURL
+            	&& window.processAssetSequenceOptions
             	&& (logoImage = document.querySelector(logoSelector))) {
                 observer.disconnect();
                 replaceLogo(logoImage);
@@ -2715,6 +2716,13 @@ function replacePageLogoWhenPossible(replaceLogo) {
         observer.observe(document.documentElement, { childList: true, subtree: true });
     }
 }
+
+GW.allowedAssetSequencingModes = [
+	"nextAfterSaved",
+	"previousBeforeSaved",
+	"nextAfterCurrent",
+	"previousBeforeCurrent" 
+];
 
 /******************************************************************************/
 /*  Inject a special page logo image of a specific type (‘halloween’,
@@ -2801,19 +2809,12 @@ function injectSpecialPageLogo(logoType, options) {
 		link: null
 	}, options);
 
-	let allowedSequenceModes = [
-		"nextAfterSaved",
-		"previousBeforeSaved",
-		"nextAfterCurrent",
-		"previousBeforeCurrent" 
-	];
-
 	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
     let logoIdentifierRegexpString = ``;
     if (options.identifier) {
     	logoIdentifierRegexpString = `-${options.identifier}`;
     } else if (   options.randomize == true
-    		   || allowedSequenceModes.includes(options.sequence)) {
+    		   || GW.allowedAssetSequencingModes.includes(options.sequence)) {
     	logoIdentifierRegexpString = `-%R`;
     }
 
@@ -2821,7 +2822,7 @@ function injectSpecialPageLogo(logoType, options) {
 		display); SVGs are singular.
 	 */
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 3);
-    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))`;
+    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))$`;
 
 	/*	File name pattern further depends on whether we have separate light
 		and dark logos of this sort.
@@ -2830,7 +2831,8 @@ function injectSpecialPageLogo(logoType, options) {
 							+ (options.mode
 							   ? `${options.mode}/logo-${logoType}-${options.mode}`
 							   : `logo-${logoType}`)
-							+ `${logoIdentifierRegexpString}${fileFormatRegexpSuffix}$`;
+							+ logoIdentifierRegexpString
+							+ fileFormatRegexpSuffix;
 
     //  Temporarily brighten logo, then fade slowly after set duration.
     let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
@@ -2853,50 +2855,20 @@ function injectSpecialPageLogo(logoType, options) {
         });
     };
 
-    /*  Note that getAssetPathname() and versionedAssetURL() are defined in 
-    	misc.js, and so cannot be called prior to this.
+    /*  Note that getAssetPathname(), versionedAssetURL(), and 
+    	processAssetSequenceOptions() are defined in misc.js, and so cannot be 
+    	called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
 		//	Get enclosing link, in case we have to modify it.
 		let logoLink = logoImage.closest("a");
 
         //  Get new logo URL (specified, random, or sequenced).
-        let sequenceIndex, sequenceCurrent;
-        if (allowedSequenceModes.includes(options.sequence) == false) {
-        	sequenceIndex = null;
-        	sequenceCurrent = null;
-        } else if (options.sequence.endsWith("Current")) {
-        	for (let prefix of [ "next", "previous" ])
-        		if (options.sequence.startsWith(prefix))
-        			sequenceIndex = prefix;
-
-			sequenceCurrent = URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
-											?? logoImage.querySelector("img")?.src).pathname;
-        } else {
-        	let savedIndexKey = `logo-sequence-index-${logoType}`;
-        	let savedIndex = localStorage.getItem(savedIndexKey);
-        	if (   savedIndex == null
-        		&& options.randomize) {
-        		sequenceIndex = rollDie(1E6);
-        		localStorage.setItem(savedIndexKey, sequenceIndex);
-        	} else if (options.sequence.startsWith("next")) {
-        		sequenceIndex = savedIndex == null 
-        						? 1
-        						: parseInt(savedIndex) + 1;
-        		localStorage.setItem(savedIndexKey, sequenceIndex);
-        	} else {
-        		sequenceIndex = savedIndex == null 
-        						? 0
-        						: parseInt(savedIndex) - 1;
-        		localStorage.setItem(savedIndexKey, sequenceIndex);
-        	}
-
-        	sequenceCurrent = null;
-        }
-		let logoPathname = getAssetPathname(logoPathnamePattern, {
-			sequenceIndex: sequenceIndex,
-			sequenceCurrent: sequenceCurrent
-		});
+		let logoPathname = getAssetPathname(logoPathnamePattern, processAssetSequenceOptions(options, {
+			currentAssetURL: URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
+										   ?? logoImage.querySelector("img")?.src),
+			assetSavedIndexKey: `logo-sequence-index-${logoType}`
+		}));
 
         let versionedLogoURL = versionedAssetURL(logoPathname);
 

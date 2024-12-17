@@ -546,13 +546,14 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     });
 }, "rewrite");
 
-/**********************************************************/
-/*	Inject the page thumbnail image into the page abstract.
+/*****************************************************************************/
+/*	Inject the page thumbnail image into the page abstract (or the abstract of
+	a full-page pop-frame.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
     GWLog("injectThumbnailIntoPageAbstract", "rewrite.js", 1);
 
-	let pageAbstract = document.querySelector(".abstract blockquote");
+	let pageAbstract = eventInfo.container.querySelector(".abstract blockquote");
 	if (   pageAbstract == null
 		|| previousBlockOf(pageAbstract) != null)
 		return;
@@ -564,15 +565,24 @@ addContentLoadHandler(GW.contentLoadHandlers.injectThumbnailIntoPageAbstract = (
 		return;
 
 	//	Insert page thumbnail into page abstract.
-	let referenceData = Content.referenceDataForLink(newElement("A", { href: location.href }));
+	let referenceData = Content.referenceDataForLink(newElement("A", { href: eventInfo.loadLocation.href }));
 	if (referenceData.pageThumbnailHTML != null) {
-		pageAbstract.appendChild(newElement("FIGURE", {
-			class: "page-thumbnail-figure float-not"
+		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
+			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
 		}, {
 			innerHTML: referenceData.pageThumbnailHTML
-		}));
+		}), (eventInfo.context == "popFrame"
+			 ? pageAbstract.firstElementChild
+			 : null));
+		let pageThumbnail = pageThumbnailFigure.querySelector("img");
+		wrapElement(pageThumbnail, "span.image-wrapper.img");
+		if (eventInfo.context == "popFrame")
+			Images.thumbnailifyImage(pageThumbnail);
 	}
-}, "rewrite", (info) => (info.container == document.main));
+}, "rewrite", (info) => (   info.container == document.main
+						 || (   info.context == "popFrame"
+						 	 && Extracts.popFrameProvider == Popups
+						 	 && Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("full-page"))));
 
 /******************************************************************************/
 /*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
@@ -2731,7 +2741,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
                 });
 
                 //  Select a dropcap.
-                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                let dropcapURL = getDropcapURL(dropcapType, initialLetter);
                 if (dropcapURL == null) {
                     //  If no available dropcap image, set disabled flag.
                     dropcapBlock.classList.add("disable-dropcap");
@@ -2812,7 +2822,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropcap
                 dropcapBlock.classList.remove("disable-dropcap");
 
                 //  Get new dropcap URL.
-                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                let dropcapURL = getDropcapURL(dropcapType, initialLetter);
                 if (dropcapURL == null) {
                     //  If no available dropcap image, set disabled flag.
                     dropcapBlock.classList.add("disable-dropcap");

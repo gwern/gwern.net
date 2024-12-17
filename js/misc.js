@@ -159,6 +159,50 @@ function versionedAssetURL(pathname) {
     return URLFromString(pathname + versionString);
 }
 
+/***************************************************************************/
+/*	Convenience function for shared code between uses of getAssetPathname().
+ */
+function processAssetSequenceOptions(options, metaOptions) {
+	metaOptions = Object.assign({
+		currentAssetURL: null,
+		assetSavedIndexKey: null
+	}, metaOptions);
+
+	let sequenceIndex, sequenceCurrent;
+	if (GW.allowedAssetSequencingModes.includes(options.sequence) == false) {
+		sequenceIndex = null;
+		sequenceCurrent = null;
+	} else if (options.sequence.endsWith("Current")) {
+		for (let prefix of [ "next", "previous" ])
+			if (options.sequence.startsWith(prefix))
+				sequenceIndex = prefix;
+
+		sequenceCurrent = metaOptions.currentAssetURL.pathname;
+	} else {
+		let savedIndexKey = metaOptions.assetSavedIndexKey;
+		let savedIndex = localStorage.getItem(savedIndexKey);
+		if (   savedIndex == null
+			&& options.randomize) {
+			sequenceIndex = rollDie(1E6);
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		} else if (options.sequence.startsWith("next")) {
+			sequenceIndex = savedIndex == null 
+							? 1
+							: parseInt(savedIndex) + 1;
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		} else {
+			sequenceIndex = savedIndex == null 
+							? 0
+							: parseInt(savedIndex) - 1;
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		}
+
+		sequenceCurrent = null;
+	}
+
+	return { sequenceIndex, sequenceCurrent };
+}
+
 /*****************************************************************************/
 /*  Return an asset pathname (not versioned), given a pathname regular 
 	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
@@ -1058,14 +1102,49 @@ GW.dropcaps = {
 };
 
 /***************************************************************************/
-/*  Returns URL of a random graphical dropcap of the given type and letter,
+/*  Returns URL of a graphical dropcap of the given type and letter,
     appropriate for the current mode and the viewport’s device pixel ratio.
- */
-function randomDropcapURL(dropcapType, letter) {
-    let mode = DarkMode.computedMode();
-    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-    let dropcapPathname = getAssetPathname(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
+	For an explanation of the available option fields, see the
+	`injectSpecialPageLogo()` function in special-occasions.js.
+ */
+function getDropcapURL(dropcapType, letter, options) {
+	options = Object.assign({
+		mode: DarkMode.computedMode(),
+		identifier: null,
+		randomize: true,
+		sequence: null
+	}, options);
+
+	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
+    let dropcapIdentifierRegexpString = ``;
+    if (options.identifier) {
+    	dropcapIdentifierRegexpString = `-${options.identifier}`;
+    } else if (   options.randomize == true
+    		   || GW.allowedAssetSequencingModes.includes(options.sequence)) {
+    	dropcapIdentifierRegexpString = `-%R`;
+    }
+
+	/*	Bitmap files come in several scales (for different pixel densities of
+		display); SVGs are singular.
+	 */
+    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))$`;
+
+	/*	File name pattern further depends on whether we have separate light
+		and dark dropcaps of this sort.
+	 */
+	let dropcapPathnamePattern = `/static/font/dropcap/${dropcapType}/`
+							   + (options.mode
+							      ? `(${options.mode}/)?`
+							      : ``)
+							   + letter.toUpperCase()
+							   + `(-.+)?`
+							   + dropcapIdentifierRegexpString
+							   + fileFormatRegexpSuffix;
+    let dropcapPathname = getAssetPathname(dropcapPathnamePattern, processAssetSequenceOptions(options, {
+    	assetSavedIndexKey: `dropcap-sequence-index-${dropcapType}`
+    }));
     if (dropcapPathname == null)
         return null;
 

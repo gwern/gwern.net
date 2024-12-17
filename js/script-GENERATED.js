@@ -716,6 +716,50 @@ function versionedAssetURL(pathname) {
     return URLFromString(pathname + versionString);
 }
 
+/***************************************************************************/
+/*	Convenience function for shared code between uses of getAssetPathname().
+ */
+function processAssetSequenceOptions(options, metaOptions) {
+	metaOptions = Object.assign({
+		currentAssetURL: null,
+		assetSavedIndexKey: null
+	}, metaOptions);
+
+	let sequenceIndex, sequenceCurrent;
+	if (GW.allowedAssetSequencingModes.includes(options.sequence) == false) {
+		sequenceIndex = null;
+		sequenceCurrent = null;
+	} else if (options.sequence.endsWith("Current")) {
+		for (let prefix of [ "next", "previous" ])
+			if (options.sequence.startsWith(prefix))
+				sequenceIndex = prefix;
+
+		sequenceCurrent = metaOptions.currentAssetURL.pathname;
+	} else {
+		let savedIndexKey = metaOptions.assetSavedIndexKey;
+		let savedIndex = localStorage.getItem(savedIndexKey);
+		if (   savedIndex == null
+			&& options.randomize) {
+			sequenceIndex = rollDie(1E6);
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		} else if (options.sequence.startsWith("next")) {
+			sequenceIndex = savedIndex == null 
+							? 1
+							: parseInt(savedIndex) + 1;
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		} else {
+			sequenceIndex = savedIndex == null 
+							? 0
+							: parseInt(savedIndex) - 1;
+			localStorage.setItem(savedIndexKey, sequenceIndex);
+		}
+
+		sequenceCurrent = null;
+	}
+
+	return { sequenceIndex, sequenceCurrent };
+}
+
 /*****************************************************************************/
 /*  Return an asset pathname (not versioned), given a pathname regular 
 	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
@@ -1615,14 +1659,49 @@ GW.dropcaps = {
 };
 
 /***************************************************************************/
-/*  Returns URL of a random graphical dropcap of the given type and letter,
+/*  Returns URL of a graphical dropcap of the given type and letter,
     appropriate for the current mode and the viewport’s device pixel ratio.
- */
-function randomDropcapURL(dropcapType, letter) {
-    let mode = DarkMode.computedMode();
-    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
 
-    let dropcapPathname = getAssetPathname(`/static/font/dropcap/${dropcapType}/(${mode}/)?${letter.toUpperCase()}(-.+)?-%R(\\.svg|-small-${scale}x\\.png)$`);
+	For an explanation of the available option fields, see the
+	`injectSpecialPageLogo()` function in special-occasions.js.
+ */
+function getDropcapURL(dropcapType, letter, options) {
+	options = Object.assign({
+		mode: DarkMode.computedMode(),
+		identifier: null,
+		randomize: true,
+		sequence: null
+	}, options);
+
+	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
+    let dropcapIdentifierRegexpString = ``;
+    if (options.identifier) {
+    	dropcapIdentifierRegexpString = `-${options.identifier}`;
+    } else if (   options.randomize == true
+    		   || GW.allowedAssetSequencingModes.includes(options.sequence)) {
+    	dropcapIdentifierRegexpString = `-%R`;
+    }
+
+	/*	Bitmap files come in several scales (for different pixel densities of
+		display); SVGs are singular.
+	 */
+    let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
+    let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))$`;
+
+	/*	File name pattern further depends on whether we have separate light
+		and dark dropcaps of this sort.
+	 */
+	let dropcapPathnamePattern = `/static/font/dropcap/${dropcapType}/`
+							   + (options.mode
+							      ? `(${options.mode}/)?`
+							      : ``)
+							   + letter.toUpperCase()
+							   + `(-.+)?`
+							   + dropcapIdentifierRegexpString
+							   + fileFormatRegexpSuffix;
+    let dropcapPathname = getAssetPathname(dropcapPathnamePattern, processAssetSequenceOptions(options, {
+    	assetSavedIndexKey: `dropcap-sequence-index-${dropcapType}`
+    }));
     if (dropcapPathname == null)
         return null;
 
@@ -12153,8 +12232,8 @@ Extracts = { ...Extracts,
 			  "localVideo", 
 			  "localAudio" 
 			  ].findIndex(x => Content.contentTypes[x].matches(popFrame.spawningTarget)) !== -1) {
-			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
-			let fileIncludes = popFrame.document.querySelector(".file-includes");
+			let annotationAbstract = contentContainer.querySelector(".annotation-abstract");
+			let fileIncludes = contentContainer.querySelector(".file-includes");
 			let includeLink = fileIncludes.querySelector("a");
 			includeLink.classList.add("include-caption-not");
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));
@@ -12593,8 +12672,8 @@ Extracts = { ...Extracts,
 		}
 
 		//	Make first image load eagerly.
-		let firstImage = (   popFrame.document.querySelector(".page-thumbnail")
-						  ?? popFrame.document.querySelector("figure img"))
+		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
+						  ?? contentContainer.querySelector("figure img"))
 		if (firstImage) {
 			firstImage.loading = "eager";
 			firstImage.decoding = "sync";
@@ -12628,35 +12707,24 @@ Extracts = { ...Extracts,
     rewritePopupContent_LOCAL_PAGE: (popup, contentContainer) => {
         GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup, contentContainer);
-
-		//	Insert page thumbnail into page abstract.
-		let referenceData = Content.referenceDataForLink(popup.spawningTarget);
-		if (   referenceData.pageThumbnailHTML
-			&& popup.document.querySelector("img.page-thumbnail") == null) {
-			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
-			if (pageAbstract)
-				pageAbstract.insertBefore(newElement("FIGURE", {
-					class: "float-right"
-				}, {
-					innerHTML: referenceData.pageThumbnailHTML
-				}), pageAbstract.firstChild);
-		}
-
         //  Make anchorlinks scroll popup instead of opening normally.
 		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup, contentContainer);
     },
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin, contentContainer) => {
         GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
-
         /*  Make anchorlinks scroll popin instead of opening normally
         	(but only for non-popin-spawning anchorlinks).
          */
 		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("spawns-popin") == false));
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
     }
 };
 
@@ -14882,13 +14950,14 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     });
 }, "rewrite");
 
-/**********************************************************/
-/*	Inject the page thumbnail image into the page abstract.
+/*****************************************************************************/
+/*	Inject the page thumbnail image into the page abstract (or the abstract of
+	a full-page pop-frame.
  */
-addContentLoadHandler(GW.contentLoadHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
+addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
     GWLog("injectThumbnailIntoPageAbstract", "rewrite.js", 1);
 
-	let pageAbstract = document.querySelector(".abstract blockquote");
+	let pageAbstract = eventInfo.container.querySelector(".abstract blockquote");
 	if (   pageAbstract == null
 		|| previousBlockOf(pageAbstract) != null)
 		return;
@@ -14900,15 +14969,24 @@ addContentLoadHandler(GW.contentLoadHandlers.injectThumbnailIntoPageAbstract = (
 		return;
 
 	//	Insert page thumbnail into page abstract.
-	let referenceData = Content.referenceDataForLink(newElement("A", { href: location.href }));
+	let referenceData = Content.referenceDataForLink(newElement("A", { href: eventInfo.loadLocation.href }));
 	if (referenceData.pageThumbnailHTML != null) {
-		pageAbstract.appendChild(newElement("FIGURE", {
-			class: "page-thumbnail-figure float-not"
+		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
+			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
 		}, {
 			innerHTML: referenceData.pageThumbnailHTML
-		}));
+		}), (eventInfo.context == "popFrame"
+			 ? pageAbstract.firstElementChild
+			 : null));
+		let pageThumbnail = pageThumbnailFigure.querySelector("img");
+		wrapElement(pageThumbnail, "span.image-wrapper.img");
+		if (eventInfo.context == "popFrame")
+			Images.thumbnailifyImage(pageThumbnail);
 	}
-}, "rewrite", (info) => (info.container == document.main));
+}, "rewrite", (info) => (   info.container == document.main
+						 || (   info.context == "popFrame"
+						 	 && Extracts.popFrameProvider == Popups
+						 	 && Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("full-page"))));
 
 /******************************************************************************/
 /*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
@@ -17067,7 +17145,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
                 });
 
                 //  Select a dropcap.
-                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                let dropcapURL = getDropcapURL(dropcapType, initialLetter);
                 if (dropcapURL == null) {
                     //  If no available dropcap image, set disabled flag.
                     dropcapBlock.classList.add("disable-dropcap");
@@ -17148,7 +17226,7 @@ addContentInjectHandler(GW.contentInjectHandlers.activateDynamicGraphicalDropcap
                 dropcapBlock.classList.remove("disable-dropcap");
 
                 //  Get new dropcap URL.
-                let dropcapURL = randomDropcapURL(dropcapType, initialLetter);
+                let dropcapURL = getDropcapURL(dropcapType, initialLetter);
                 if (dropcapURL == null) {
                     //  If no available dropcap image, set disabled flag.
                     dropcapBlock.classList.add("disable-dropcap");

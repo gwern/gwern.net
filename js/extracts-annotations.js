@@ -104,8 +104,8 @@ Extracts = { ...Extracts,
 			  "localVideo", 
 			  "localAudio" 
 			  ].findIndex(x => Content.contentTypes[x].matches(popFrame.spawningTarget)) !== -1) {
-			let annotationAbstract = popFrame.document.querySelector(".annotation-abstract");
-			let fileIncludes = popFrame.document.querySelector(".file-includes");
+			let annotationAbstract = contentContainer.querySelector(".annotation-abstract");
+			let fileIncludes = contentContainer.querySelector(".file-includes");
 			let includeLink = fileIncludes.querySelector("a");
 			includeLink.classList.add("include-caption-not");
 			annotationAbstract.insertBefore(includeLink, annotationAbstract.querySelector(".aux-links-append"));

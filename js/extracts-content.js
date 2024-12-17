@@ -255,8 +255,8 @@ Extracts = { ...Extracts,
 		}
 
 		//	Make first image load eagerly.
-		let firstImage = (   popFrame.document.querySelector(".page-thumbnail")
-						  ?? popFrame.document.querySelector("figure img"))
+		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
+						  ?? contentContainer.querySelector("figure img"))
 		if (firstImage) {
 			firstImage.loading = "eager";
 			firstImage.decoding = "sync";
@@ -290,35 +290,24 @@ Extracts = { ...Extracts,
     rewritePopupContent_LOCAL_PAGE: (popup, contentContainer) => {
         GWLog("Extracts.rewritePopupContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup, contentContainer);
-
-		//	Insert page thumbnail into page abstract.
-		let referenceData = Content.referenceDataForLink(popup.spawningTarget);
-		if (   referenceData.pageThumbnailHTML
-			&& popup.document.querySelector("img.page-thumbnail") == null) {
-			let pageAbstract = popup.document.querySelector("#page-metadata + .abstract blockquote");
-			if (pageAbstract)
-				pageAbstract.insertBefore(newElement("FIGURE", {
-					class: "float-right"
-				}, {
-					innerHTML: referenceData.pageThumbnailHTML
-				}), pageAbstract.firstChild);
-		}
-
         //  Make anchorlinks scroll popup instead of opening normally.
 		Extracts.constrainLinkClickBehaviorInPopFrame(popup);
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup, contentContainer);
     },
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin, contentContainer) => {
         GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
-
         /*  Make anchorlinks scroll popin instead of opening normally
         	(but only for non-popin-spawning anchorlinks).
          */
 		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("spawns-popin") == false));
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
     }
 };
 
