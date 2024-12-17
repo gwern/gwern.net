@@ -2317,7 +2317,7 @@ GW.pageToolbar = {
                                                               delay: GW.pageToolbar.demoCollapseDelay
                                                            });
                 });
-            } else {
+
                 incrementSavedCount("page-toolbar-demos-count");
             }
 
