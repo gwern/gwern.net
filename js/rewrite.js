@@ -465,7 +465,8 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutlining
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
         if (applyImageOutliningJudgment(image)) {
 			propagateClassesToFigure(image);
-        } else if (image.outliningJudgmentAvailabilityHandler == null) {
+        } else if (   outliningJudgmentHasBeenAppliedToImage(image) == false
+        		   && image.outliningJudgmentAvailabilityHandler == null) {
 			/*	If no outlining judgment has been applied, there may yet be hope
 				for this image; add another listener to wait for additional 
 				image outlining judgments to become available in the future.

@@ -329,12 +329,12 @@ function outliningJudgmentForImage(image) {
 /*	Applies available (i.e., requested and received from the outlineOrNot API)
 	image outlining judgment data to the given image, and returns true if this
 	was done successfully. If no such data is available for the given image, 
-	does nothing (and returns false). Likewise does nothing (but returns true) 
+	does nothing (and returns false). Likewise does nothing (and returns null) 
 	for images which already have their outlining status specified.
  */
 function applyImageOutliningJudgment(image) {
 	if (outliningJudgmentHasBeenAppliedToImage(image))
-		return true;
+		return null;
 
 	let outliningJudgment = outliningJudgmentForImage(image);
 	if (outliningJudgment != null) {
@@ -417,12 +417,12 @@ function inversionJudgmentForImage(image) {
 /*	Applies available (i.e., requested and received from the invertOrNot API)
 	image inversion judgment data to the given image, and returns true if this
 	was done successfully. If no such data is available for the given image, 
-	does nothing (and returns false). Likewise does nothing (but returns true) 
+	does nothing (and returns false). Likewise does nothing (and returns null) 
 	for images which already have their inversion status specified.
  */
 function applyImageInversionJudgment(image) {
 	if (inversionJudgmentHasBeenAppliedToImage(image))
-		return true;
+		return null;
 
 	let inversionJudgment = inversionJudgmentForImage(image);
 	if (inversionJudgment != null) {
