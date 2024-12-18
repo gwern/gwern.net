@@ -14990,7 +14990,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutlining
 					GW.notificationCenter.removeHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler);
 					image.outliningJudgmentAvailabilityHandler = null;
 				}
-			}, { image: image });
+			});
 		}
     });
 }, "rewrite");
