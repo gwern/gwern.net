@@ -350,6 +350,11 @@ function applyImageOutliningJudgment(image) {
     given container ought to be outlined.
  */
 function requestImageOutliningJudgmentsForImagesInContainer(container) {
+	/*	Disable, for now.
+			—SA 2024-12-18
+	 */
+	return;
+
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
     	let imageURL = Images.thumbnailURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
