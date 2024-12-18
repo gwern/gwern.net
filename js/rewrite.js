@@ -443,13 +443,14 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutlining
     GWLog("applyImageInversionAndOutliningJudgments", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (applyImageInversionJudgment(image) == false) {
+        if (   applyImageInversionJudgment(image) == false
+        	&& image.inversionJudgmentAvailabilityHandler == null) {
 			/*	If no inversion judgment has been applied, there may yet be hope
 				for this image; add another listener to wait for additional 
 				image inversion judgments to become available in the future.
 			 */
 			GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
-				if (applyImageInversionJudgment(image) == true) {
+				if (applyImageInversionJudgment(image)) {
 					GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
 					image.inversionJudgmentAvailabilityHandler = null;
 				}
@@ -462,21 +463,20 @@ addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutlining
 	};
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (applyImageOutliningJudgment(image) == false) {
+        if (applyImageOutliningJudgment(image)) {
+			propagateClassesToFigure(image);
+        } else if (image.outliningJudgmentAvailabilityHandler == null) {
 			/*	If no outlining judgment has been applied, there may yet be hope
 				for this image; add another listener to wait for additional 
 				image outlining judgments to become available in the future.
 			 */
 			GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
-				if (applyImageOutliningJudgment(image) == true) {
+				if (applyImageOutliningJudgment(image)) {
+					propagateClassesToFigure(image);
 					GW.notificationCenter.removeHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler);
 					image.outliningJudgmentAvailabilityHandler = null;
-				} else {
-					propagateClassesToFigure(image);
 				}
-			});
-		} else {
-			propagateClassesToFigure(image);
+			}, { image: image });
 		}
     });
 }, "rewrite");

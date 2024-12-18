@@ -374,7 +374,7 @@ function requestImageOutliningJudgmentsForImagesInContainer(container) {
                 };
             });
 
-			GW.notificationCenter.fireEvent("GW.imageOutliningJudgmentsAvailable");
+			GW.notificationCenter.fireEvent("GW.imageOutliningJudgmentsAvailable", { judgments: event.target.response });
         },
         onFailure: (event) => {
             console.log(event);
@@ -457,7 +457,7 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
                 };
             });
 
-			GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable");
+			GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable", { judgments: event.target.response });
         },
         onFailure: (event) => {
             console.log(event);
