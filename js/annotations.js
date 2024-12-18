@@ -297,8 +297,11 @@ Annotations = { ...Annotations,
 		if (abstractElement) {
 			let abstractDocument = newDocument(abstractElement.childNodes);
 
-			//	Request image inversion judgments from invertornot.
+			//	Request image inversion judgments from invertOrNot.
 			requestImageInversionJudgmentsForImagesInContainer(abstractDocument);
+
+			//	Request image outlining judgments from outlineOrNot.
+			requestImageOutliningJudgmentsForImagesInContainer(abstractDocument);
 
 			//	Post-process abstract.
 			Annotations.postProcessAnnotationAbstract(abstractDocument, link);

@@ -857,6 +857,90 @@ function getAssetPathname(assetPathnamePattern, options) {
 
 
 /*******************/
+/* IMAGE OUTLINING */
+/*******************/
+
+GW.outlineOrNot = { };
+GW.outlineOrNotAPIEndpoint = "https://api.obormot.net/outlineornot/url";
+
+/******************************************************************************/
+/*	Returns true if the given image’s outlining status has been set (i.e., if 
+	it has one of the classes [ "outline", "outline-auto", "outline-not", 
+	"outline-not-auto" ]), false otherwise.
+ */
+function outliningJudgmentHasBeenAppliedToImage(image) {
+// 	return (image.classList.containsAnyOf([ "outline", "outline-auto", "outline-not", "outline-not-auto" ]) == true);
+	return (image.classList.containsAnyOf([ "outline-auto", "outline-not-auto" ]) == true);
+}
+
+/*****************************************************************************/
+/*  Returns true if the given image should be outlined (i.e., the outlineOrNot 
+	API has judged this image to be outline-requiring), false if the image 
+	should not be outlined (i.e., the outlineOrNot API has judged this image 
+	to be non-outline-requiring, null if no judgment is available.
+ */
+function outliningJudgmentForImage(image) {
+    return (GW.outlineOrNot[Images.thumbnailURLForImage(image).href]?.outline ?? null);
+}
+
+/*****************************************************************************/
+/*	Applies available (i.e., requested and received from the outlineOrNot API)
+	image outlining judgment data to the given image, and returns true if this
+	was done successfully. If no such data is available for the given image, 
+	does nothing (and returns false). Likewise does nothing (but returns true) 
+	for images which already have their outlining status specified.
+ */
+function applyImageOutliningJudgment(image) {
+	if (outliningJudgmentHasBeenAppliedToImage(image))
+		return true;
+
+	let outliningJudgment = outliningJudgmentForImage(image);
+	if (outliningJudgment != null) {
+		image.classList.add(outliningJudgment == true ? "outline-auto" : "outline-not-auto");
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/*****************************************************************************/
+/*  Sends request to outlineOrNot for judgments about whether the images in the
+    given container ought to be outlined.
+ */
+function requestImageOutliningJudgmentsForImagesInContainer(container) {
+    let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
+    	let imageURL = Images.thumbnailURLForImage(image);
+        return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
+        		&& GW.invertOrNot[imageURL.href] == null)
+        	   ? imageURL.href
+        	   : null;
+    }).filter(x => x);
+    if (imageURLs.length == 0)
+        return;
+
+    doAjax({
+        location: GW.outlineOrNotAPIEndpoint,
+        method: "POST",
+        serialization: "JSON",
+        responseType: "json",
+        params: imageURLs,
+        onSuccess: (event) => {
+            event.target.response.forEach(imageInfo => {
+                GW.outlineOrNot[imageInfo.url] = {
+                    outline: (imageInfo.outline == 1)
+                };
+            });
+
+			GW.notificationCenter.fireEvent("GW.imageOutliningJudgmentsAvailable");
+        },
+        onFailure: (event) => {
+            console.log(event);
+        }
+    });
+}
+
+
+/*******************/
 /* IMAGE INVERSION */
 /*******************/
 
@@ -879,35 +963,41 @@ function inversionJudgmentHasBeenAppliedToImage(image) {
 	image to be non-invertible, null if no judgment is available.
  */
 function inversionJudgmentForImage(image) {
-    return (GW.invertOrNot[image.src]?.invert ?? null);
-}
-
-/****************************************************************************/
-/*	Applies available (i.e., requested and received from the invertOrNot API)
-	image inversion judgment data to the given image. If no such data is 
-	available for the given image, does nothing. Likewise does nothing for 
-	images which already have their inversion status specified.
- */
-function applyImageInversionJudgment(image) {
-	if (inversionJudgmentHasBeenAppliedToImage(image))
-		return;
-
-	let inversionJudgment = inversionJudgmentForImage(image);
-	if (inversionJudgment != null)
-		image.classList.add(inversionJudgment == true ? "invert-auto" : "invert-not-auto");
+    return (GW.invertOrNot[Images.thumbnailURLForImage(image).href]?.invert ?? null);
 }
 
 /*****************************************************************************/
-/*  Sends request to InvertOrNot for judgments about whether the images in the
+/*	Applies available (i.e., requested and received from the invertOrNot API)
+	image inversion judgment data to the given image, and returns true if this
+	was done successfully. If no such data is available for the given image, 
+	does nothing (and returns false). Likewise does nothing (but returns true) 
+	for images which already have their inversion status specified.
+ */
+function applyImageInversionJudgment(image) {
+	if (inversionJudgmentHasBeenAppliedToImage(image))
+		return true;
+
+	let inversionJudgment = inversionJudgmentForImage(image);
+	if (inversionJudgment != null) {
+		image.classList.add(inversionJudgment == true ? "invert-auto" : "invert-not-auto");
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/*****************************************************************************/
+/*  Sends request to invertOrNot for judgments about whether the images in the
     given container ought to be inverted.
  */
 function requestImageInversionJudgmentsForImagesInContainer(container) {
-    let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image =>
-        (   URLFromString(image.src).pathname.match(/\.(png|jpe?g$)/i)
-         && GW.invertOrNot[image.src] == null)
-        ? image.src
-        : null
-    ).filter(x => x);
+    let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
+    	let imageURL = Images.thumbnailURLForImage(image);
+        return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
+        		&& GW.invertOrNot[imageURL.href] == null)
+        	   ? imageURL.href
+        	   : null;
+    }).filter(x => x);
     if (imageURLs.length == 0)
         return;
 
@@ -949,6 +1039,10 @@ Images = {
 		return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
 	},
 
+	fullSizeURLForImage: (image) => {
+		return URLFromString(image.dataset.srcSizeFull ?? image.src);
+	},
+
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
         if (imageSrcURL.hostname != location.hostname)
             return null;
@@ -959,10 +1053,15 @@ Images = {
     },
 
     thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
-        return Images.thumbnailURLForImageURL(URLFromString(image.src));
+        return (Images.isThumbnail(image)
+        		? URLFromString(image.src)
+        		: Images.thumbnailURLForImageURL(URLFromString(image.src)));
     },
 
     thumbnailifyImage: (image) => {
+    	if (Images.isThumbnail(image))
+    		return;
+
         let thumbnailURL = Images.thumbnailURLForImage(image);
         if (thumbnailURL) {
             image.dataset.srcSizeFull = image.src;
@@ -6754,8 +6853,11 @@ Annotations = { ...Annotations,
 		if (abstractElement) {
 			let abstractDocument = newDocument(abstractElement.childNodes);
 
-			//	Request image inversion judgments from invertornot.
+			//	Request image inversion judgments from invertOrNot.
 			requestImageInversionJudgmentsForImagesInContainer(abstractDocument);
+
+			//	Request image outlining judgments from outlineOrNot.
+			requestImageOutliningJudgmentsForImagesInContainer(abstractDocument);
 
 			//	Post-process abstract.
 			Annotations.postProcessAnnotationAbstract(abstractDocument, link);
@@ -7587,8 +7689,11 @@ Content = {
 				//	Post-process entry content.
 				Content.contentTypes.wikipediaEntry.postProcessEntryContent(contentDocument, articleLink);
 
-				//	Request image inversion judgments from invertornot.
+				//	Request image inversion judgments from invertOrNot.
 				requestImageInversionJudgmentsForImagesInContainer(contentDocument);
+
+				//	Request image outlining judgments from outlineOrNot.
+				requestImageOutliningJudgmentsForImagesInContainer(contentDocument);
 
 				//	Pull out initial figure (thumbnail).
 				if (GW.mediaQueries.mobileWidth.matches == false) {
@@ -8087,11 +8192,17 @@ Content = {
                 //  Main tweet content.
                 let tweetContentHTML = tweetContent.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
-				//	Request image inversion judgments from invertOrNot.
-				requestImageInversionJudgmentsForImagesInContainer(newDocument(tweetContentHTML));
-
                 //  Attached media (video or images).
                 tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetContent.document);
+
+				//	Temporary document fragment.
+				let tweetContentDocument = newDocument(tweetContentHTML);
+
+				//	Request image inversion judgments from invertOrNot.
+				requestImageInversionJudgmentsForImagesInContainer(tweetContentDocument);
+
+				//	Request image outlining judgments from outlineOrNot.
+				requestImageOutliningJudgmentsForImagesInContainer(tweetContentDocument);
 
                 //  Pop-frame title text.
                 let popFrameTitleText = `${authorPlusAvatarHTML} on ${tweetDateString}`;
@@ -14817,57 +14928,70 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
     });
 }, "eventListeners");
 
-/*******************************************************************************/
-/*  Request image inversion judgments for images in the loaded content. (We omit
-    from this load handler those GW.contentDidLoad events which are fired when
-    we construct templated content from already extracted reference data, as by
-    then it is already too late; there is no time to send an invertOrNot API
-    request and receive a response. Instead, requesting inversion judgments for
-    images in templated content is handled by the data source object for that
-    content (either Content, in content.js, or Annotations, in annotations.js).)
+/******************************************************************************/
+/*  Request image inversion and outlining judgments for images in the loaded 
+	content. (We omit from this load handler those GW.contentDidLoad events 
+	which are fired when we construct templated content from already extracted 
+	reference data, as by then it is already too late; there is no time to send 
+	an invertOrNot / outlineOrNot API request and receive a response, before 
+	the image must be displayed. Instead, requesting inversion and outlining 
+	judgments for images in templated content is handled by the data source 
+	object for that content (either Content, in content.js, or Annotations, in 
+	annotations.js).)
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (eventInfo) => {
     GWLog("requestImageInversionJudgments", "rewrite.js", 1);
 
     //  Request image inversion judgments from invertOrNot.
     requestImageInversionJudgmentsForImagesInContainer(eventInfo.container);
+
+    //  Request image outlining judgments from outlineOrNot.
+    requestImageOutliningJudgmentsForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
-/*************************************************************************/
-/*  Apply image inversion judgments (received from the invertOrNot API) to 
-	images in the loaded content, if available.
+/***************************************************************************/
+/*  Apply image inversion judgments (received from the invertOrNot API) and
+	image outlining judgments (received from the outlineOrNot API) to images 
+	in the loaded content, if available.
  */
-addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionJudgments = (eventInfo) => {
-    GWLog("applyImageInversionJudgments", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutliningJudgments = (eventInfo) => {
+    GWLog("applyImageInversionAndOutliningJudgments", "rewrite.js", 1);
 
     eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        applyImageInversionJudgment(image);
-
-		/*	If no inversion judgment has been applied, but the image is not 
-			loaded yet, add listener to attempt to apply inversion judgments 
-			again when the image loads, in the hopes that we’ve gotten a 
-			response from the invertOrNot API by then.
-		 */
-		if (   inversionJudgmentHasBeenAppliedToImage(image) == false
-			&& image.naturalWidth * image.naturalHeight == 0) {
-			image.addEventListener("load", (event) => {
-				applyImageInversionJudgment(image);
-			}, { once: true });
-
-			/*	If we still don’t have an inversion judgment for this image, 
-				then add another listener to wait for additional image inversion
-				judgments to become available in the future; maybe there’s still
-				hope for this image after all.
+        if (applyImageInversionJudgment(image) == false) {
+			/*	If no inversion judgment has been applied, there may yet be hope
+				for this image; add another listener to wait for additional 
+				image inversion judgments to become available in the future.
 			 */
-			if (inversionJudgmentHasBeenAppliedToImage(image) == false) {
-				GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
-					applyImageInversionJudgment(image);
-					if (inversionJudgmentHasBeenAppliedToImage(image)) {
-						GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
-						image.inversionJudgmentAvailabilityHandler = null;
-					}
-				});
-			}
+			GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
+				if (applyImageInversionJudgment(image) == true) {
+					GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
+					image.inversionJudgmentAvailabilityHandler = null;
+				}
+			});
+		}
+    });
+
+	let propagateClassesToFigure = (image) => {
+		image.closest("figure").swapClasses([ "outline-not", "outline" ], outliningJudgmentForImage(image) ? 1 : 0);
+	};
+
+    eventInfo.container.querySelectorAll("figure img").forEach(image => {
+        if (applyImageOutliningJudgment(image) == false) {
+			/*	If no outlining judgment has been applied, there may yet be hope
+				for this image; add another listener to wait for additional 
+				image outlining judgments to become available in the future.
+			 */
+			GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
+				if (applyImageOutliningJudgment(image) == true) {
+					GW.notificationCenter.removeHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler);
+					image.outliningJudgmentAvailabilityHandler = null;
+				} else {
+					propagateClassesToFigure(image);
+				}
+			});
+		} else {
+			propagateClassesToFigure(image);
 		}
     });
 }, "rewrite");

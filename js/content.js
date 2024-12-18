@@ -713,8 +713,11 @@ Content = {
 				//	Post-process entry content.
 				Content.contentTypes.wikipediaEntry.postProcessEntryContent(contentDocument, articleLink);
 
-				//	Request image inversion judgments from invertornot.
+				//	Request image inversion judgments from invertOrNot.
 				requestImageInversionJudgmentsForImagesInContainer(contentDocument);
+
+				//	Request image outlining judgments from outlineOrNot.
+				requestImageOutliningJudgmentsForImagesInContainer(contentDocument);
 
 				//	Pull out initial figure (thumbnail).
 				if (GW.mediaQueries.mobileWidth.matches == false) {
@@ -1213,11 +1216,17 @@ Content = {
                 //  Main tweet content.
                 let tweetContentHTML = tweetContent.document.querySelector(".main-tweet .tweet-content").innerHTML.split("\n\n").map(graf => `<p>${graf}</p>`).join("\n");
 
-				//	Request image inversion judgments from invertOrNot.
-				requestImageInversionJudgmentsForImagesInContainer(newDocument(tweetContentHTML));
-
                 //  Attached media (video or images).
                 tweetContentHTML += Content.contentTypes.tweet.mediaEmbedHTML(tweetContent.document);
+
+				//	Temporary document fragment.
+				let tweetContentDocument = newDocument(tweetContentHTML);
+
+				//	Request image inversion judgments from invertOrNot.
+				requestImageInversionJudgmentsForImagesInContainer(tweetContentDocument);
+
+				//	Request image outlining judgments from outlineOrNot.
+				requestImageOutliningJudgmentsForImagesInContainer(tweetContentDocument);
 
                 //  Pop-frame title text.
                 let popFrameTitleText = `${authorPlusAvatarHTML} on ${tweetDateString}`;

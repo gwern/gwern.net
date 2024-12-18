@@ -7,7 +7,8 @@ $image_path = $argv[1];
 $image = null;
 if (str_ends_with($image_path, ".png"))
 	$image = imageCreateFromPng($image_path);
-else if (str_ends_with($image_path, ".jpg"))
+else if (   str_ends_with($image_path, ".jpg")
+		 || str_ends_with($image_path, ".jpeg"))
 	$image = imageCreateFromJpeg($image_path);
 else
 	die;
