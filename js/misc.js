@@ -312,8 +312,7 @@ GW.outlineOrNotAPIEndpoint = "https://api.obormot.net/outlineornot/url";
 	"outline-not-auto" ]), false otherwise.
  */
 function outliningJudgmentHasBeenAppliedToImage(image) {
-// 	return (image.classList.containsAnyOf([ "outline", "outline-auto", "outline-not", "outline-not-auto" ]) == true);
-	return (image.classList.containsAnyOf([ "outline-auto", "outline-not-auto" ]) == true);
+	return (image.classList.containsAnyOf([ "outline", "outline-auto", "outline-not", "outline-not-auto" ]) == true);
 }
 
 /*****************************************************************************/
