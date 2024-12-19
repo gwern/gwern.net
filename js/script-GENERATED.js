@@ -12167,6 +12167,11 @@ Extracts = {
     preparePopin: (popin) => {
         GWLog("Extracts.preparePopin", "extracts.js", 2);
 
+		//	Set popin border color to link icon hover color, if any.
+		let target = popin.spawningTarget;
+		if (target.dataset.linkIconColor > "")
+			popin.style.setProperty("--GW-popins-popin-border-color", target.dataset.linkIconColor);
+
         /*  Call generic pop-frame prepare function (which will attempt to fill
             the popin).
          */
