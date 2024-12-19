@@ -322,7 +322,7 @@ function outliningJudgmentHasBeenAppliedToImage(image) {
 	to be non-outline-requiring, null if no judgment is available.
  */
 function outliningJudgmentForImage(image) {
-    return (GW.outlineOrNot[Images.thumbnailURLForImage(image).href]?.outline ?? null);
+    return (GW.outlineOrNot[Images.smallestAvailableImageSizeURLForImage(image).href]?.outline ?? null);
 }
 
 /*****************************************************************************/
@@ -356,7 +356,7 @@ function requestImageOutliningJudgmentsForImagesInContainer(container) {
 	return;
 
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
-    	let imageURL = Images.thumbnailURLForImage(image);
+    	let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
         		&& GW.invertOrNot[imageURL.href] == null)
         	   ? imageURL.href
@@ -410,7 +410,7 @@ function inversionJudgmentHasBeenAppliedToImage(image) {
 	image to be non-invertible, null if no judgment is available.
  */
 function inversionJudgmentForImage(image) {
-    return (GW.invertOrNot[Images.thumbnailURLForImage(image).href]?.invert ?? null);
+    return (GW.invertOrNot[Images.smallestAvailableImageSizeURLForImage(image).href]?.invert ?? null);
 }
 
 /*****************************************************************************/
@@ -439,7 +439,7 @@ function applyImageInversionJudgment(image) {
  */
 function requestImageInversionJudgmentsForImagesInContainer(container) {
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
-    	let imageURL = Images.thumbnailURLForImage(image);
+    	let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
         		&& GW.invertOrNot[imageURL.href] == null)
         	   ? imageURL.href
@@ -484,6 +484,10 @@ Images = {
 			url = URLFromString(url);
 
 		return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
+	},
+
+	smallestAvailableImageSizeURLForImage: (image) => {
+		return (Images.thumbnailURLForImage(image) ?? Images.fullSizeURLForImage(image));
 	},
 
 	fullSizeURLForImage: (image) => {
