@@ -4343,6 +4343,15 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 /*	Apply block spacing in the given container.
  */
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
+	//	Remove block spacing metadata from what shouldn’t have it.
+	blockContainer.querySelectorAll(".block").forEach(block => {
+		if (   block.matches(GW.layout.blockElements.join(", ")) == false
+			|| block.closest(GW.layout.blockLayoutExclusionSelector) != null) {
+			block.classList.remove("block");
+			block.style.removeProperty("--bsm");
+		}
+	});
+
 	//	Apply block spacing.
 	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector))

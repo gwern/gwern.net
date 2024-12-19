@@ -39,7 +39,9 @@ addContentInjectHandler(GW.contentInjectHandlers.injectBacklinksLinkIntoLocalSec
         //  Construct link and enclosing block.
         let backlinksLink = newElement("A", {
             "class": "aux-links backlinks",
-            "href": "#" + backlinksBlock.id
+            "href": "#" + backlinksBlock.id,
+            "data-link-icon": "arrows-pointing-inwards-to-dot",
+            "data-link-icon-type": "svg"
         }, {
             "innerHTML": "backlinks"
         });
