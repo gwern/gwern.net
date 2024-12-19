@@ -37,7 +37,8 @@ Extracts.config = {
 		"#sidebar",
 		".TOC",
 		"#floating-header",
-    	"#page-toolbar"
+    	"#page-toolbar",
+    	".link-widget"
 	].join(", ")
 };
 

@@ -2270,6 +2270,7 @@ GW.popFrameSpawnWidgets = {
 		let widgetType = GW.popFrameSpawnWidgets.widgetTypes[popup.spawningTarget.closest(".link-widget").dataset.widgetType];
 
 		Popups.pinPopup(popup);
+		Popups.bringPopupToFront(popup);
 
 		if (widgetType.onPopupPinDo != null)
 			requestAnimationFrame(() => { widgetType.onPopupPinDo(popup); });
