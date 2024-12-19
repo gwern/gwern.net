@@ -1316,6 +1316,8 @@ function processMainContentAndAddRewriteProcessor(processorName, processor) {
 /*	Enable inline icons in the given container.
  */
 addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
+    GWLog("processInlineIconsInContainer", "layout.js", 2);
+
 	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
 		if (inlineIcon.classList.contains("icon-not"))
 			return;
@@ -1347,6 +1349,8 @@ addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
     links.
  */
 addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
+    GWLog("enableRecentlyModifiedLinkIcons", "layout.js", 2);
+
     blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
         let inList = false;
         let containingGraf = link.closest("p");
@@ -1370,6 +1374,10 @@ addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
         if (inList) {
             link.closest("li").classList.add("link-modified-recently-list-item");
             link.classList.add("in-list");
+
+			//	Remove existing icon, if any.
+			if (link.classList.contains("has-recently-modified-icon"))
+	            removeRecentlyModifiedIconFromLink(link);
         }
     });
 }, { blockLayout: false });
@@ -1378,6 +1386,8 @@ addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
 /*	Add certain style classes to certain lists and list items.
  */
 addLayoutProcessor("designateListStyles", (blockContainer) => {
+    GWLog("designateListStyles", "layout.js", 2);
+
 	blockContainer.querySelectorAll("ul > li").forEach(listItem => {
 		if (listItem.closest(".TOC") == null)
 			listItem.classList.add("dark-mode-invert");
@@ -1388,6 +1398,8 @@ addLayoutProcessor("designateListStyles", (blockContainer) => {
 /*	Add certain style classes to horizontal rules.
  */
 addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
+    GWLog("designateHorizontalRuleStyles", "layout.js", 2);
+
 	blockContainer.querySelectorAll("hr").forEach(hr => {
 		hr.classList.add("dark-mode-invert");
 	});
