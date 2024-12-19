@@ -7730,7 +7730,7 @@ Content = {
 						thumbnailFigure:            thumbnailFigureHTML
 					},
 					contentTypeClass:               contentTypeClass,
-					popFrameTitle:                  popFrameTitle.innerHTML,
+					popFrameTitle:                  popFrameTitle.firstElementChild.innerHTML,
 					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					template:                       "wikipedia-entry-blockquote-inside",
 					popFrameTemplate:               "wikipedia-entry-blockquote-not",
