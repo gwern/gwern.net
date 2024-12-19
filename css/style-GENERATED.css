@@ -5781,8 +5781,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     left: 0;
     top: var(--popup-title-bar-height);
     width: 100%;
-    height: calc(100% - var(--popup-title-bar-height) - 0.1em - 1px);
-    padding-bottom: 0.1em;
+    height: calc(100% - var(--popup-title-bar-height) - 1px);
+    box-sizing: border-box;
+    padding: 0.1em 0.25em;
     display: flex;
     justify-content: center;
     align-items: center;
