@@ -1059,7 +1059,7 @@ hr,
 .horizontal-rule-nth-0 hr {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
-    --icon-image: url('/static/img/ornament/sun-verginasun-black.svg');
+    --icon-image: var(--GW-image-sun-verginasun-black-svg);
     --icon-size: 40px;
     --icon-opacity: 0.85;
 	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
@@ -1071,13 +1071,13 @@ hr,
         https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
         - while nice, it lacks the intense moire effect of the Vergina Sun
      */
-    --icon-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
+    --icon-image: var(--GW-image-japanesecrest-tsukinihoshi-dottedmoon-svg);
     --icon-size: 28px;
     --icon-opacity: 0.85;
 	--icon-dark-mode-invert-filter: invert(1);
 }
 .horizontal-rule-nth-2 hr {
-    --icon-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
+    --icon-image: var(--GW-image-asterism-triplewhitestar-svg);
     --icon-size: 38px;
     --icon-opacity: 0.90;
 	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
@@ -3387,8 +3387,8 @@ ol.link-bibliography-list-compact > li::before {
     width: calc(100% - 1rem);
     height: 2rem;
     background-image:
-        url('/static/img/ornament/three-wavy-lines-ornament-left.svg'),
-        url('/static/img/ornament/three-wavy-lines-ornament-right.svg');
+        var(--GW-image-three-wavy-lines-ornament-left-svg),
+        var(--GW-image-three-wavy-lines-ornament-right-svg);
     background-repeat: no-repeat;
     background-size: 4rem 100%;
     background-position:
@@ -3445,7 +3445,7 @@ ol.link-bibliography-list-compact > li::before {
         calc(var(--box-size) + 2.0 * var(--box-padding-top))
         var(--box-padding-bottom)
         calc(var(--box-size) + 2.0 * var(--box-padding-top) + var(--box-horizontal-offset));
-    background-image: url('/static/img/ornament/swissspiralroll.svg#svgView(preserveAspectRatio(none))');
+    background-image: var(--GW-image-swiss-spiral-roll-stretched-svg);
     background-size: 1000% 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -3470,7 +3470,7 @@ ol.link-bibliography-list-compact > li::before {
     position: absolute;
     width: var(--box-total-size);
     height: var(--box-total-size);
-    background-image: url('/static/img/ornament/swissspiralroll.svg');
+    background-image: var(--GW-image-swiss-spiral-roll-svg);
     background-repeat: no-repeat;
     background-color: inherit;
     background-size: cover;

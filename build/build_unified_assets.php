@@ -11,6 +11,7 @@ global $template_dir, $css_dir, $js_dir;
 ## FILES
 
 $head_css = [
+	'inlined-images-initial-GENERATED.css',
 	'initial.css',
 	'special-occasions.css',
 	'initial-fonts-VERSIONED.css',
@@ -28,6 +29,7 @@ $head_js = [
 ];
 
 $css = [
+	'inlined-images-GENERATED.css',
 	'fonts-VERSIONED.css',
 	'default.css',
 	'links.css'

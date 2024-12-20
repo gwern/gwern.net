@@ -1,0 +1,19 @@
+/**********/
+/* IMAGES */
+/**********/
+
+:root {
+	--GW-image-single-black-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /></svg>');
+	--GW-image-single-white-star-on-black-circle-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle style="fill:%23000000;stroke:%23000000;stroke-width:3.829" cx="5" cy="5" r="3.0853674" /><path style="fill:%23ffffff;stroke-width:1" d="M 5,-7.5e-8 C 4,4 4,4 2.5e-8,5 4,6 4,6 5,10 c 1,-4 1,-4 5,-5 C 6,4 6,4 5,-7.5e-8 Z"/></svg>');
+	--GW-image-single-white-star-rotated-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 8.75,1.25 C 5,3.5 5,3.5 1.25,1.25 3.5,5 3.5,5 1.25,8.75 5,6.5 5,6.5 8.75,8.75 6.5,5 6.5,5 8.75,1.25 Z" /><path d="M 7,3 C 5,4.2 5,4.2 3,3 4.2,5 4.2,5 3,7 5,5.8 5,5.8 7,7 5.8,5 5.8,5 7,3 Z" style="fill:%23ffffff" /></svg>');
+	--GW-image-single-white-star-svg: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M 5,0 C 4,4 4,4 0,5 4,6 4,6 5,10 6,6 6,6 10,5 6,4 6,4 5,0 Z" /><path d="M 5,2.5 C 4.5,4.5 4.5,4.5 2.5,5 4.5,5.5 4.5,5.5 5,7.5 5.5,5.5 5.5,5.5 7.5,5 5.5,4.5 5.5,4.5 5,2.5 Z" style="fill:%23ffffff" /></svg>');
+	--GW-image-checkerboard-000-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+	--GW-image-checkerboard-777-fff-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
+	--GW-image-checkerboard-888-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+	--GW-image-checkerboard-bfbfbf-000-2x-gif: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+	--GW-image-pattern-dotted-161616-on-252525-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFiUlJSwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+	--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMRYWFj4+PiwAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+	--GW-image-pattern-dotted-e6e6e6-on-fff-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHowPcKgb6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+	--GW-image-pattern-dotted-fff-on-e6e6e6-2x-gif: url('data:image/gif;base64,R0lGODlhEAAQAPAAMebm5v///ywAAAAAEAAQAAACHoQfcagL6V6LtFoDXV6b3Q9aHTZ5WhmmJodK0ajGBQA7');
+}
+

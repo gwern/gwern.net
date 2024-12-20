@@ -99,6 +99,21 @@ foreach ($versioned_asset_patterns as $pattern) {
 process_source_files($versioned_assets, 'build_asset_versions.php');
 
 
+## Built CSS files which contain images inlined as CSS variables.
+$css_inlined_images = [ ];
+$css_inlined_image_patterns = [
+	"{$img_dir}/pattern/*.*",
+	"{$img_dir}/ornament/inlined-initial/*.*",
+
+	"{$img_dir}/ornament/inlined/*.*"
+];
+foreach ($css_inlined_image_patterns as $pattern) {
+	$css_inlined_images = array_merge($css_inlined_images, glob($pattern));
+}
+
+process_source_files($css_inlined_images, 'build_inlined_images.php');
+
+
 ## Unified assets (JS & CSS).
 ## Assemble all the .css and .js files into head.css/style.css and 
 ## head.js/script.js, respectively.
@@ -111,6 +126,7 @@ $disparate_assets = [
 	"{$js_dir}/reader-mode-initial.js",
 	"{$js_dir}/asset-versions-GENERATED.js",
 
+	"{$css_dir}/inlined-images-initial-GENERATED.css",
 	"{$css_dir}/initial.css",
 	"{$css_dir}/special-occasions.css",
 	"{$css_dir}/initial-fonts-VERSIONED.css",
@@ -137,6 +153,7 @@ $disparate_assets = [
 	"{$js_dir}/dark-mode.js",
 	"{$js_dir}/reader-mode.js",
 
+	"{$css_dir}/inlined-images-GENERATED.css",
 	"{$css_dir}/fonts-VERSIONED.css",
 	"{$css_dir}/default.css",
 	"{$css_dir}/links.css"	
