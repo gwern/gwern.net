@@ -2187,43 +2187,46 @@ hr {
     are a sun.
  */
 hr::after {
+	--dark-mode-invert-filter: var(--icon-dark-mode-invert-filter);
+
     content: "";
     margin: auto;
     box-sizing: border-box;
     width: 40px;
     height: var(--icon-size);
+    background-image: var(--icon-image);
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
     background-size: var(--icon-size);
+    opacity: var(--icon-opacity);
 }
-hr::after,
-.horizontal-rule-nth-0 hr::after {
+hr,
+.horizontal-rule-nth-0 hr {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
+    --icon-image: url('/static/img/ornament/sun-verginasun-black.svg');
     --icon-size: 40px;
-	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
-
-    background-image: url('/static/img/ornament/sun-verginasun-black.svg');
-    opacity: 0.85;
+    --icon-opacity: 0.85;
+	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-.horizontal-rule-nth-1 hr::after {
+.horizontal-rule-nth-1 hr {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
-        NOTE: alternative moon icon is https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
+
+        NOTE: alternative moon icon is 
+        https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
         - while nice, it lacks the intense moire effect of the Vergina Sun
      */
+    --icon-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
     --icon-size: 28px;
-	--dark-mode-invert-filter: invert(1);
-
-    background-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
-    opacity: 0.85;
+    --icon-opacity: 0.85;
+	--icon-dark-mode-invert-filter: invert(1);
 }
-.horizontal-rule-nth-2 hr::after {
+.horizontal-rule-nth-2 hr {
+    --icon-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
     --icon-size: 38px;
-	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
-
-    background-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
-    opacity: 0.90;
+    --icon-opacity: 0.90;
+	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
 
 
@@ -2647,18 +2650,18 @@ p.intro-graf::first-line {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5746,7 +5749,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5934,7 +5937,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6405,7 +6408,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7415,7 +7418,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#question');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7619,7 +7622,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -8145,7 +8148,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1734481578#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1734701250#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -8226,7 +8229,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1734481578#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1734701250#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;

@@ -2187,43 +2187,46 @@ hr {
     are a sun.
  */
 hr::after {
+	--dark-mode-invert-filter: var(--icon-dark-mode-invert-filter);
+
     content: "";
     margin: auto;
     box-sizing: border-box;
     width: 40px;
     height: var(--icon-size);
+    background-image: var(--icon-image);
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
     background-size: var(--icon-size);
+    opacity: var(--icon-opacity);
 }
-hr::after,
-.horizontal-rule-nth-0 hr::after {
+hr,
+.horizontal-rule-nth-0 hr {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
+    --icon-image: url('/static/img/ornament/sun-verginasun-black.svg');
     --icon-size: 40px;
-	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
-
-    background-image: url('/static/img/ornament/sun-verginasun-black.svg');
-    opacity: 0.85;
+    --icon-opacity: 0.85;
+	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-.horizontal-rule-nth-1 hr::after {
+.horizontal-rule-nth-1 hr {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
-        NOTE: alternative moon icon is https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
+
+        NOTE: alternative moon icon is 
+        https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
         - while nice, it lacks the intense moire effect of the Vergina Sun
      */
+    --icon-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
     --icon-size: 28px;
-	--dark-mode-invert-filter: invert(1);
-
-    background-image: url('/static/img/ornament/japanesecrest-tsukinihoshi-dottedmoon.svg');
-    opacity: 0.85;
+    --icon-opacity: 0.85;
+	--icon-dark-mode-invert-filter: invert(1);
 }
-.horizontal-rule-nth-2 hr::after {
+.horizontal-rule-nth-2 hr {
+    --icon-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
     --icon-size: 38px;
-	--dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
-
-    background-image: url('/static/img/ornament/asterism-triplewhitestar.svg');
-    opacity: 0.90;
+    --icon-opacity: 0.90;
+	--icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
 
 
