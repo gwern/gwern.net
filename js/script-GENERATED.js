@@ -17605,6 +17605,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToMathBl
         mathElement.title = mathElement.classList.contains("mjpage__block")
                             ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
                             : "Double-click to select equation; copy to get LaTeX source";
+    	mathElement.title += ": " + mathElement.querySelector(".mjx-math").getAttribute("aria-label");
     });
 }, "eventListeners");
 
@@ -17621,7 +17622,9 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
                 type: "button",
                 class: "copy",
                 tabindex: "-1",
-                title: "Copy LaTeX source of this equation to clipboard"
+                title: (  "Copy LaTeX source of this equation to clipboard"
+                		+ ": " 
+                		+ mathBlock.querySelector(".mjx-math").getAttribute("aria-label"))
             }, {
                 innerHTML: GW.svg("copy-regular")
             }),
