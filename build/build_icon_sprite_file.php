@@ -28,28 +28,34 @@ foreach ($icon_file_paths as $path) {
 
 	preg_match('/<svg (.+?)>(.+)<\/svg>/', $icon, $m);
 	$svg_attributes = $m[1];
-	$svg_contents =  $m[2];
+	$svg_contents = $m[2];
 
 	preg_match_all('/(\S+?)="(.+?)"/', $svg_attributes, $m, PREG_SET_ORDER);
 	$viewBox = '';
-	$icon_attributes = implode(' ', array_map(function ($match) {
-										return "{$match[1]}=\"{$match[2]}\"";
-									}, array_filter($m,
-													function ($match) use (&$viewBox) { 
-														if ($match[1] == 'viewBox')
-															$viewBox = $match[2];
+	$icon_attributes = array_filter($m,
+									function ($match) use (&$viewBox) { 
+										if ($match[1] == 'viewBox')
+											$viewBox = $match[2];
 
-												 		return (in_array($match[1], [ 
-																			 'viewBox', 
-																			 'xmlns', 
-																			 'xmlns:xlink'
-																		 ]) == false); 
-												 	})));
+										return ((   $match[1] == 'viewBox'
+												 || $match[1] == 'xmlns'
+												 || str_starts_with($match[1], 'xmlns:')) == false);
+									});
 
 	if ($viewBox == '') {
-		preg_match('/[^\/]+$/', $path, $m);
-		echo "WARNING: Icon `{$m[0]}` has invalid viewBox attribute; skipping.\n";
-		continue;
+		## If there is no `viewBox` attribute, but we do have both the `width`
+		## and `height` attributes set, then we can simply set the viewBox from
+		## the width and height (setting the origin to be 0,0).
+		if (   isset($icon_attributes['width'])
+			&& isset($icon_attributes['height'])) {
+			$viewBox = "0 0 {$icon_attributes['width']} {$icon_attributes['height']}";
+			unset($icon_attributes['width']);
+			unset($icon_attributes['height']);
+		} else {
+			preg_match('/[^\/]+$/', $path, $m);
+			echo "WARNING: Icon `{$m[0]}` has invalid or missing viewBox attribute (and no width+height attributes); skipping.\n";
+			continue;
+		}
 	}
 
 	$viewBox = explode(' ', $viewBox);
@@ -61,6 +67,21 @@ foreach ($icon_file_paths as $path) {
 
 	$viewBox = implode(' ', $viewBox);
 	$out[] = "<view id=\"{$icon_file_name}\" viewBox=\"{$viewBox}\" preserveAspectRatio=\"xMinYMin\" />";
+
+	## If the SVG has a `transform` attribute on the <svg> element itself, we
+	## must move it to nested a wrapper <g>; otherwise, it will conflict with
+	## the transform we must apply to the icon contents to position it within
+	## the file.
+	if (isset($icon_attributes['transform'])) {
+		$svg_contents = "<g transform=\"{$icon_attributes['transform']}\">"
+					  + $svg_contents
+					  + "</g>";
+		unset($icon_attributes['transform']);
+	}
+
+	$icon_attributes = implode(' ', array_map(function ($match) {
+										return "{$match[1]}=\"{$match[2]}\"";
+									}, $icon_attributes));
 
 	$out[] = "<g" 
 		   . ($icon_attributes ? ' ' : '') 
