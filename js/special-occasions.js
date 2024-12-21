@@ -405,8 +405,8 @@ GW.specialOccasions = [
 			});
 			doWhenPageLoaded(() => {
 				colorizeElements([
-					[ "li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
-					[ "li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
+					[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
+					[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
 					[ "hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
@@ -423,7 +423,7 @@ GW.specialOccasions = [
 			resetPageLogo();
 			doWhenPageLoaded(() => {
 				uncolorizeElements([
-					[ "li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
+					[ "ul > li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
 					[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
