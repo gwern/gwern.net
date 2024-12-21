@@ -16,6 +16,7 @@ $inlined_images_files_structure = [
 
 	## Images inlined into style.css.
 	"inlined-images" => [
+		"{$img_dir}/logo/logo-smooth.svg",
 		"{$img_dir}/ornament/inlined/*.*"
 	]
 ];

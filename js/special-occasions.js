@@ -2,6 +2,96 @@
 /* SPECIAL OCCASIONS */
 /*********************/
 
+/******************************************************************************/
+/*	Colorize the given elements (optionally, within the given container).
+
+	The `colorizationSpecs` argument is an array of entries, each of which is a
+	an array of three elements: a selector, a CSS variable name, and a color
+	value. For example:
+
+	colorizeElements([
+		[ "li:nth-of-type(odd)", "--list-bullet", "#f00" ],
+		[ "li:nth-of-type(even)", "--list-bullet", "#0f0" ],
+		[ "hr", "--icon-image", "#f00" ]
+	]);
+
+	This will colorize the list bullets of odd-numbered list items to red, the
+	list bullets of even-numbered list items to green, and the icon images of
+	horizontal rules to red.
+
+	(An optional fourth element in each entry specifies a dark mode property 
+	 which should be disabled - i.e., set to `unset` - when an element is
+	 colorized.)
+
+	NOTE: In order for colorization to work properly, the given selectors must 
+	have, as values of the given CSS variables, a CSS url() value containing an 
+	inline-defined (and *not* base64-encoded) SVG image.
+ */
+function colorizeElements(colorizationSpecs, container = document.main) {
+	for (let [ selector, cssVariableName, referenceColor, undesiredDarkModeProperty ] of colorizationSpecs) {
+		let colorTransformFunction = (colorCode) => {
+			return Color.processColorValue(colorCode, [ {
+				type: Color.ColorTransform.COLORIZE,
+				referenceColor: referenceColor
+			} ]);
+		};
+
+		container.querySelectorAll(selector).forEach(element => {
+			colorizeElement(element, cssVariableName, colorTransformFunction, undesiredDarkModeProperty);
+		});
+	}
+}
+
+/*********************************************************/
+/*	Helper function. (See colorizeElements() for details.)
+ */
+function colorizeElement(element, cssVariableName, colorTransformFunction, undesiredDarkModeProperty) {
+	if (element.style.getPropertyValue(cssVariableName) > "")
+		uncolorizeElement(element, cssVariableName, undesiredDarkModeProperty);
+
+	let svgSrc = getComputedStyle(element).getPropertyValue(cssVariableName).match(/url\(['"]data:image\/svg\+xml;utf8,(.+?)['"]\)/)[1];
+	svgSrc = svgSrc.replaceAll("%23", "#").replaceAll("\\", "").replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+		(match, colorCode) => {
+			return `"${(colorTransformFunction(colorCode))}"`;
+		});
+	let svg = elementFromHTML(svgSrc);
+	svg.setAttribute("fill", colorTransformFunction("#000"));
+	svgSrc = svg.outerHTML.replaceAll("#", "%23");
+	element.style.setProperty(cssVariableName, `url('data:image/svg+xml;utf8,${svgSrc}')`);
+
+	if (undesiredDarkModeProperty)
+		element.style.setProperty(undesiredDarkModeProperty, "unset");
+}
+
+/***********************************************************/
+/*	Helper function. (See uncolorizeElements() for details.)
+ */
+function uncolorizeElement(element, cssVariableName, darkModeProperty) {
+	element.style.removeProperty(cssVariableName);
+
+	if (darkModeProperty)
+		element.style.removeProperty(darkModeProperty);
+}
+
+/******************************************************************************/
+/*	Undo the effects of colorizeElements(), for the given elements (optionally, 
+	within the given container).
+
+	(Each entry in the uncolorizationSpecs array need only have the selector 
+	 and CSS variable name; no color need be specified.)
+
+	(An optional third element in each entry specifies a dark mode property 
+	 which should be un-disabled - i.e., the inline value of `unset` removed - 
+	 when an element is un-colorized.)
+ */
+function uncolorizeElements(uncolorizationSpecs, container = document.main) {
+	for (let [ selector, cssVariableName, darkModeProperty ] of uncolorizationSpecs) {
+		container.querySelectorAll(selector).forEach(element => {
+			uncolorizeElement(element, cssVariableName, darkModeProperty);
+		});
+	}
+}
+
 /**************************************************************************/
 /*	Returns the source string for the <svg> container for an SVG page logo.
  */
@@ -313,8 +403,41 @@ GW.specialOccasions = [
 				sequence: "previousBeforeSaved",
 				link: newLogoLink
 			});
+			doWhenPageLoaded(() => {
+				colorizeElements([
+					[ "li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
+					[ "li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
+					[ "hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
+					[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
+					[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
+					[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
+				]);
+				doWhenElementExists(() => {
+					colorizeElements([
+						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image", "#126512" ],
+						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides", "#126512" ]
+					]);
+				}, "#x-of-the-day .site-of-the-day");
+			});
         }, null, (mediaQuery) => {        	
 			resetPageLogo();
+			doWhenPageLoaded(() => {
+				uncolorizeElements([
+					[ "li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
+					[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
+					[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
+					[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
+					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
+					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+					[ "#footer-decoration-container .footer-logo", "--logo-image", "--logo-image-dark-mode-invert-filter" ]
+				]);
+				doWhenElementExists(() => {
+					uncolorizeElements([
+						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
+						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+					]);
+				}, "#x-of-the-day .site-of-the-day");
+			});
         });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");

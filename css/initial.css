@@ -1350,7 +1350,7 @@ li {
 /*=-----------------------=*/
 
 ul > li::before {
-	--dark-mode-invert-filter: invert(1);
+	--dark-mode-invert-filter: var(--list-bullet-dark-mode-invert-filter);
 
     content: var(--list-bullet);
     position: absolute;
@@ -1362,6 +1362,10 @@ ul > li::before {
     height: 1em;
     line-height: 1;
     opacity: var(--list-bullet-opacity);
+}
+
+ul > li {
+    --list-bullet-dark-mode-invert-filter: invert(1);
 }
 
 ul,

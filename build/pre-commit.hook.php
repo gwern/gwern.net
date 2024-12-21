@@ -100,7 +100,9 @@ process_source_files($versioned_assets, 'build_asset_versions.php');
 
 
 ## Built CSS files which contain images inlined as CSS variables.
-$css_inlined_images = [ ];
+$css_inlined_images = [
+	"{$img_dir}/logo/logo-smooth.svg"
+];
 $css_inlined_image_patterns = [
 	"{$img_dir}/pattern/*.*",
 	"{$img_dir}/ornament/inlined-initial/*.*",
