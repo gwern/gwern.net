@@ -6224,6 +6224,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+
+	color: var(--popframe-title-link-color, var(--GW-body-link-color));
 }
 
 /*  Buttons in the popin title bar.
