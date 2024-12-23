@@ -870,6 +870,40 @@ Extracts = { ...Extracts,
         if (popFrame.document.querySelector("img[width][height]"))
         	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "dimensions-specified");
     },
+
+	//	Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
+	resizeImageInImagePopup: (popup) => {
+		let image = popup.document.querySelector("img");
+
+		let intrinsicWidth = parseInt(image.getAttribute("width"));
+		let intrinsicHeight = parseInt(image.getAttribute("height"));
+
+		let computedStyles = getComputedStyle(document.documentElement);
+		let popupMaxWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-width"));
+		let popupMaxHeight = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-height"));
+		let popupBorderWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-border-width"));
+		let popupTitleBarHeight = popup.classList.contains("mini-title-bar") ? 21 : 31;
+		let popupHorizontalPadding = popupBorderWidth * 2;
+		let popupVerticalPadding = popupBorderWidth * 2 + popupTitleBarHeight;
+		let imageMaxWidth = popupMaxWidth - popupHorizontalPadding;
+		let imageMaxHeight = popupMaxHeight - popupVerticalPadding;
+
+		let height = Math.round(Math.min(Math.min(intrinsicWidth, imageMaxWidth) * (intrinsicHeight / intrinsicWidth), imageMaxHeight));
+		let width = Math.round(height * (intrinsicWidth / intrinsicHeight));
+
+		image.style.width = `${width}px`;
+		image.style.height = `${height}px`;
+	},
+
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopupContent_LOCAL_IMAGE: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_IMAGE", "extracts-content.js", 2);
+
+		Extracts.resizeImageInImagePopup(popup);
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup, contentContainer);
+    },
 };
 
 /*=--------------------------=*/

@@ -5494,13 +5494,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: var(--popup-title-bar-button-size);
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
+    justify-content: center;
 }
 .popup .popframe-title-bar-button:disabled {
 	color: var(--GW-popups-popup-title-bar-button-color-disabled);
 	pointer-events: none;
 }
-.popup .popframe-title-bar-button + .popframe-title-bar-button {
-    margin: 0 1px 0 0;
+.popup .popframe-title-bar-button:nth-child(n+2) {
+    margin: 0 0 0 1px;
 }
 .popup.mini-title-bar .popframe-title-bar-button {
     padding: 2px;
@@ -5897,17 +5898,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Object popups. │*/
 /*└────────────────┘*/
 
-.popup.object {
-    width: var(--GW-popups-popup-max-width);
-    height: var(--GW-popups-popup-max-height);
-}
-.popup.object.has-footer {
-	height: var(--GW-popups-popup-with-footer-max-height);
-}
-
-.popup-body.object iframe {
-    width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
-    height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+.popup-body.object,
+.popup-body.object figure,
+.popup-body.object .figure-outer-wrapper,
+.popup-body.object .image-wrapper {
+	flex: 1 0 auto;
+	display: flex;
+	width: 100%;
+	height: 100%;
 }
 
 /*  Overlay (for dragging / click capturing).
@@ -5932,29 +5930,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Image popups. │*/
 /*└───────────────┘*/
 
+/*  Popups for images.
+    */
 .popup.image {
-    width: unset;
-    height: unset;
-    min-height: calc(var(--GW-popups-image-popup-min-size) + var(--GW-popups-popup-mini-title-bar-height));
-}
-.popup.image:not(.has-footer) {
     min-width: var(--GW-popups-image-popup-min-size);
-}
-
-.popup-body.image figure {
-    background-color: var(--background-color);
-}
-
-.popup-body.image img {
-    margin: auto;
-    max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
-    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
-    object-fit: contain;
-    outline: none;
-}
-.popup-body.image img.invert,
-.popup-body.image img.invert-auto {
-    background-color: var(--background-color);
+    min-height: calc(var(--GW-popups-image-popup-min-size) + var(--popup-title-bar-height));
 }
 
 /*  “Loading failed” message.
@@ -5977,17 +5957,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Popups for videos.
     */
 .popup.video {
-    width: unset;
-    height: unset;
     min-width: var(--GW-popups-video-popup-min-width);
     min-height: var(--GW-popups-video-popup-min-height);
-}
-
-.popup-body.video video {
-    max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
-    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
-    object-fit: contain;
-    outline: none;
 }
 
 .popup-body.video.youtube iframe {

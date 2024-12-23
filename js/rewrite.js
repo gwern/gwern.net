@@ -668,7 +668,8 @@ addContentInjectHandler(GW.contentInjectHandlers.updateMediaElementDimensions = 
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         setMediaElementDimensions(mediaElement, true);
     });
-}, "rewrite");
+}, "rewrite", (info) => (   info.context == "popFrame"
+						 && Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("object")) == false);
 
 /************************************************************************/
 /*  Set image dimensions from inline-specified image data (e.g., base64).
@@ -718,7 +719,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElemen
             });
         });
     });
-}, "eventListeners");
+}, "eventListeners", (info) => (   info.context == "popFrame"
+								&& Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("object")) == false);
 
 /********************************/
 /*  Inject wrappers into figures.
