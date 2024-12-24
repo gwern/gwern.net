@@ -187,9 +187,11 @@ body.special-christmas-light {
     --GW-santa-hat-red: #900;
     --GW-holly-berry-red: #c00;
     --GW-holly-leaf-green: #060;
+    --GW-christmas-lights-red: #f00;
     --GW-mistletoe-green: #0c0;
     --GW-pine-needle-green: #050;
     --GW-fir-needle-green: #014421;
+    --GW-spruce-needle-green: #4bd24d;
     --GW-christmas-lights-gold: #ff0;
 }
 
@@ -197,8 +199,10 @@ body.special-christmas-dark {
     --GW-santa-hat-red: #d00;
     --GW-holly-berry-red: #f00;
     --GW-holly-leaf-green: #0a3;
+    --GW-christmas-lights-red: #f00;
     --GW-mistletoe-green: #005519;
     --GW-pine-needle-green: #5eff66;
+    --GW-spruce-needle-green: #5ce15b;
     --GW-fir-needle-green: #a7cab6;
     --GW-christmas-lights-gold: #996515;
 }
@@ -282,6 +286,13 @@ body[class*='special-christmas'] #navigation {
 }
 body[class*='special-christmas'] #navigation a:hover {
     color: var(--GW-holly-berry-red);
+}
+
+body[class*='special-christmas'] ol > li:nth-of-type(odd)::before {
+	color: var(--GW-spruce-needle-green);
+}
+body[class*='special-christmas'] ol > li:nth-of-type(even)::before {
+	color: var(--GW-christmas-lights-red);
 }
 
 /********/
