@@ -101,7 +101,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- we suppress what would be duplicate entries in the File/me section
   let taggedAll  = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
-  let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll
+  let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll -- TODO: generalize to multiple authors which include me
   let tagged'    = taggedAll \\ taggedSelf
 
   dirsChildren   <- listTagDirectoriesAll [dir'']

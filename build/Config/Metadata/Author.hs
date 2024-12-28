@@ -1086,6 +1086,11 @@ authorLinkDB = M.fromList $
     , ("Melissa E. Garcia", "https://www.researchgate.net/profile/Melissa-Garcia-43")
     , ("Mary F. Feitosa", "https://scholar.google.com/citations?user=OpNQ188AAAAJ")
     , ("Maciej Trzaskowski", "https://scholar.google.com/citations?user=PcnCBM8AAAAJ")
+    , ("Paul Graham", "https://en.wikipedia.org/wiki/Paul_Graham_(programmer)")
+    , ("Tero Karras", "https://research.nvidia.com/person/tero-karras")
+    , ("Timo Aila", "https://scholar.google.com/citations?user=e7abmgkAAAAJ")
+    , ("Samuli Laine", "https://users.aalto.fi/~laines9/")
+    , ("Li Dong", "https://scholar.google.com/citations?user=wEfQgPgAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

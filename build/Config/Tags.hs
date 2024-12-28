@@ -150,7 +150,9 @@ tagsShort2LongRewrites =
    , ("eamcs", "emacs"), ("elisp", "emacs"), ("emacs-lisp", "emacs")
    , ("adblocker", "adblock"), ("adblocking", "adblock"), ("ad-block", "adblock")
    , ("order-statistics", "statistics/order")
-   , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia"), ("economics", "economics"), ("math/humor", "math/humor"), ("low-iq", "iq/low"), ("low/[ iq", "iq/low"), ("stylegan-2", "stylegan/2")]
+   , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia"), ("economics", "economics"), ("math/humor", "math/humor"), ("low-iq", "iq/low"), ("low/[ iq", "iq/low"), ("stylegan-2", "stylegan/2")
+   , ("marbling", "paper-marbling"), ("marble", "paper-marbling"), ("marbling-paper", "paper-marbling"), ("marble-paper", "paper-marbling")
+   , ("microbion", "microbiome"), ("germfree", "germ-free")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -253,6 +255,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("economics/mechanism-design/quadratic-voting", "quadratic voting")
   , ("economics/mechanism-design/auction", "auctions")
   , ("economics/mechanism-design", "mechanism design")
+  , ("design/paper-marbling", "paper marbling")
   , ("design/typography/floral", "floral ornaments")
   , ("design/typography/square", "block fonts")
   , ("design/typography/dropcap", "dropcaps (typography)")
@@ -357,6 +360,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("economics/experience-curve", "experience curves")
   , ("economics/georgism", "Georgism")
   , ("genetics/microbiome/acne", "acne")
+  , ("genetics/microbiome/germ-free", "germ-free animals")
   , ("genetics/microbiome", "microbiome")
   , ("genetics/heritable/correlation/mendelian-randomization", "Mendelian Randomization")
   , ("genetics/heritable/correlation", "genetic correlation")
