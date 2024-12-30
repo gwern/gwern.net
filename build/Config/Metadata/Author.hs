@@ -561,6 +561,8 @@ canonicals = M.fromList
   , ("Nicholas Patterson", "Nick Patterson")
   , ("Satu Mannisto", "Satu Männistö")
   , ("Melissa García", "Melissa E. Garcia")
+  , ("o1-pro", "ChatGPT-4 o1-pro")
+  , ("__nmca__", "Nat McAleese")
   ]
 
 -- tests: unique
@@ -572,7 +574,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1091,6 +1093,15 @@ authorLinkDB = M.fromList $
     , ("Timo Aila", "https://scholar.google.com/citations?user=e7abmgkAAAAJ")
     , ("Samuli Laine", "https://users.aalto.fi/~laines9/")
     , ("Li Dong", "https://scholar.google.com/citations?user=wEfQgPgAAAAJ")
+    , ("ChatGPT-4 o1-pro", "https://openai.com/index/introducing-chatgpt-pro/")
+    , ("Brian Hayes", "https://en.wikipedia.org/wiki/Brian_Hayes_(scientist)")
+    , ("Nat McAleese", "https://scholar.google.com/citations?user=crw6TeIAAAAJ")
+    , ("Kevin Lu", "https://kevinlu.ai/")
+    , ("Jonathan Berant", "https://www.cs.tau.ac.il//~joberant/")
+    , ("John McKinley Chambers", "https://en.wikipedia.org/wiki/John_Chambers_(statistician)")
+    , ("John C. Chambers", "https://scholar.google.com/citations?user=FAt7WY0AAAAJ&hl=en&oi=ao")
+    , ("Joel Lehman", "https://scholar.google.com/citations?user=GcvxHWQAAAAJ&hl=en&oi=ao")
+    , ("John Joseph McGrath", "https://scholar.google.com/citations?user=KR7K-XEAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1648,7 +1659,7 @@ authorWpLinkDB =
     ,"John Geanakoplos", "John H. Conway", "John H. Dessauer", "John H. Holland", "John H. R. Maunsell"
     ,"John Haltiwanger", "John Harrison", "John Hopcroft", "John Hopfield", "John Horwood"
     ,"John Huddleston", "John Ioannidis", "John J. Crowley", "John J. Donovan", "John J. Ely"
-    ,"John J. Farrell", "John J. McArdle", "John J. McGrath", "John J. Walsh", "John Jonides"
+    ,"John J. Farrell", "John J. McArdle", "John J. Walsh", "John Jonides"
     ,"John K. Hewitt", "John K. Kruschke", "John Kemp", "John Kruschke", "John L. Fuller"
     ,"John L. Gustafson", "John L. Hennessy", "John Ledyard", "John M. Barry", "John M. Davis"
     ,"John M. Shelton", "John M. Wells", "John Markoff", "John Marshall", "John Massie"

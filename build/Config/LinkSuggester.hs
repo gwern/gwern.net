@@ -227,6 +227,7 @@ whiteList = [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Gregor_Mendel", ["Gregor Mendel", "Mendel"])
   , ("https://en.wikipedia.org/wiki/Comma-separated_values", ["CSV"])
   , ("https://en.wikipedia.org/wiki/Marc_Andreessen", ["Marc Andreessen"])
   , ("https://en.wikipedia.org/wiki/Microsoft_Bing", ["Bing", "MS Bing", "Microsoft Bing", "Bing Search"])

@@ -1740,6 +1740,7 @@ htmlRewriteFixed =
          , ("urbanisatio", "nurbanization")
          , ("organisation", "organization")
          , ("diarisation", "diarization")
+         , (" tokenisation", " tokenization")
          , ("vectorised", "vectorized")
          , ("nonspecifically", "non-specifically")
          , ("attentionless", "attention-less")

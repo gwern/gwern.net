@@ -2369,6 +2369,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.manifold1.com"
    , "www.dwarkeshpatel.com"
    , "jamanetwork.com"
+   , "www.midjourney.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -4623,5 +4624,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810"
             , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414784"
             , "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
+            , "https://www.midjourney.com/home/"
             ]
 
