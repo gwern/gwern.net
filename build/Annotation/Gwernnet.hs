@@ -83,8 +83,7 @@ gwern md p
                         let keywordTags = if "#" `isInfixOf` p then [] else
                                             concatMap safeKeywords metas
                         let author = cleanAuthors $ concatMap safeAuthor metas
-                        let author' = if indexP then "" else
-                                        if author == "Gwern Branwen" then "Gwern" else author
+                        let author' = if indexP then "" else author
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           safeContent $ head $ filter filterThumbnail metas
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else delete "https://gwern.net/" thumbnail
