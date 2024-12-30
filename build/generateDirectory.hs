@@ -36,7 +36,7 @@ import LinkBacklink (getLinkBibLinkCheck)
 import Query (extractImages)
 import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
-import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete)
+import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete, anyInfix)
 import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import Config.GenerateSimilar as CGS (minTagAuto)
@@ -101,7 +101,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- we suppress what would be duplicate entries in the File/me section
   let taggedAll  = filter (\(f,_,_) -> not ("/doc/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
-  let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"]) taggedAll -- TODO: generalize to multiple authors which include me
+  let taggedSelf = filter (\(_,(_,aut,_,_,_,_,_),_) -> aut `anyInfix` ["Gwern", "gwern"]) taggedAll -- we include multiple-authored annotations as long as the author list includes me
   let tagged'    = taggedAll \\ taggedSelf
 
   dirsChildren   <- listTagDirectoriesAll [dir'']
@@ -213,10 +213,10 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 filterDbNewest :: Int -> Int -> Int -> Metadata -> Metadata
 filterDbNewest selfN annotationN linkN md = let -- ml = M.toList md
                                                 mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/index-long" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p || "/changelog" `isPrefixOf` p)) md
-                                                selfs      = take selfN $ sortItemDateModified $ M.toList $ M.filterWithKey (\p (_,aut,_,_,_,_,_) -> aut `elem` ["Gwern", "gwern", "Gwern Branwen"] && not ('#' `elem` p)) mdAnnotated
+                                                selfs      = take selfN $ sortItemDateModified $ M.toList $ M.filterWithKey (\p (_,aut,_,_,_,_,_) -> aut `anyInfix` ["Gwern", "gwern"] && not ('#' `elem` p)) mdAnnotated
 
                                                 annotations = take annotationN $ sortItemPathDateCreated $ M.toList $
-                                                              M.filter (\(_,aut,_,_,_,_,_) -> aut `notElem` ["Gwern", "gwern", "Gwern Branwen"]) mdAnnotated
+                                                              M.filter (\(_,aut,_,_,_,_,_) -> not (aut `anyInfix` ["Gwern", "gwern"])) mdAnnotated
                                                 links       = take linkN $ sortItemPathDateCreated $ M.toList $
                                                               M.filter (\(_,_,_,_,_,_,abst) -> abst == "") md
                                              in M.fromList $ selfs ++ annotations ++ links
