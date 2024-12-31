@@ -6489,6 +6489,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 	--dark-mode-invert-filter: none;
 
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
+    color: var(--link-icon-color-hover, currentColor);
     opacity: 1.0;
 }
 
