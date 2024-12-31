@@ -563,6 +563,11 @@ canonicals = M.fromList
   , ("Melissa García", "Melissa E. Garcia")
   , ("o1-pro", "ChatGPT-4 o1-pro")
   , ("__nmca__", "Nat McAleese")
+  , ("Ines Barroso", "Inês Barroso")
+  , ("Hinrich Schutze", "Hinrich Schütze")
+  , ("Hinrich Schuetze", "Hinrich Schütze")
+  , ("H. Schütze", "Hinrich Schütze")
+  , ("United States Patent and Trademark Office", "USPTO")
   ]
 
 -- tests: unique
@@ -574,7 +579,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1099,9 +1104,14 @@ authorLinkDB = M.fromList $
     , ("Kevin Lu", "https://kevinlu.ai/")
     , ("Jonathan Berant", "https://www.cs.tau.ac.il//~joberant/")
     , ("John McKinley Chambers", "https://en.wikipedia.org/wiki/John_Chambers_(statistician)")
-    , ("John C. Chambers", "https://scholar.google.com/citations?user=FAt7WY0AAAAJ&hl=en&oi=ao")
-    , ("Joel Lehman", "https://scholar.google.com/citations?user=GcvxHWQAAAAJ&hl=en&oi=ao")
-    , ("John Joseph McGrath", "https://scholar.google.com/citations?user=KR7K-XEAAAAJ&hl=en&oi=ao")
+    , ("John C. Chambers", "https://scholar.google.com/citations?user=FAt7WY0AAAAJ")
+    , ("Joel Lehman", "https://scholar.google.com/citations?user=GcvxHWQAAAAJ")
+    , ("John Joseph McGrath", "https://scholar.google.com/citations?user=KR7K-XEAAAAJ")
+    , ("Inês Barroso", "https://www.mrc-epid.cam.ac.uk/cds2024/faculty/ines-barroso/")
+    , ("Ingrid B. Borecki", "https://scholar.google.com/scholar?q=Ingrid%20B.%20Borecki")
+    , ("Hinrich Schütze", "https://scholar.google.com/citations?user=qIL9dWUAAAAJ")
+    , ("Harald Grallert", "https://research.com/u/harald-grallert")
+    , ("USPTO", "https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2337,4 +2347,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard"]

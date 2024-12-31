@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-12-29 18:00:22 gwern"
+# When:  Time-stamp: "2024-12-30 14:19:16 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -519,6 +519,8 @@ Katri Räikkönen
 - "PStricks : applications: The marbled paper with PSTricks: adaptation of the works of Aubrey Jaffer"
 "The marbled paper with PSTricks: adaptation of the works of Aubrey Jaffer"
 - "nyuu dot page"
+""
+- "Perma"
 ""
 
 Task:

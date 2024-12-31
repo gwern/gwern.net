@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2024-12-10 10:18:05 gwern"
+# When:  Time-stamp: "2024-12-30 16:38:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -497,6 +497,8 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://news.ycombinator.com/item?id=36302805 Why sqlite3 temporary files were renamed <code>etilqs_*</code> (2006)"
 ""
+- "https://gianlucaventurini.com/posts/2024/factorio-sat Learning Solver Design: Automating Factorio Balancers"
+"2024"
 
 Task:
 

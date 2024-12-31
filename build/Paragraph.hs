@@ -57,7 +57,7 @@ paragraphized f a = f `elem` C.whitelist ||
    paragraphsMarkdown b = "\n\n" `isInfixOf` b
    blockElements :: String -> Bool
    -- full-blown lists or blockquotes also imply it's fully-formatted
-   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>", "<table>", "<div class="]
+   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>", "<table>", "<div class=", "<br />"]
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
