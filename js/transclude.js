@@ -875,6 +875,21 @@ function includeContent(includeLink, content) {
         wrapper.append(idBearerBlock);
     }
 
+	//	Heading level rectification.
+	if (shouldLocalize) {
+		let containingSectionLevel = sectionLevel(wrapper.closest("section")) ?? 0;
+		let containedSectionLevel = sectionLevel(wrapper.querySelector("section")) ?? 1;
+		let sectionLevelOffset = (containingSectionLevel - containedSectionLevel) + 1
+		if (sectionLevelOffset > 0) {
+			wrapper.querySelectorAll("section").forEach(section => {
+				let oldLevel = sectionLevel(section);
+				let newLevel = oldLevel + sectionLevelOffset;
+				section.swapClasses([ `level${oldLevel}`, `level${newLevel}` ], 1);
+				rewrapContents(section.querySelector(`h${oldLevel}`), `h${newLevel}`, { moveClasses: true })
+			});
+		}
+	}
+
 	//	Clear loading state of all include-links.
 	Transclude.allIncludeLinksInContainer(wrapper).forEach(Transclude.clearLinkState);
 
@@ -1037,10 +1052,8 @@ function includeContent(includeLink, content) {
 
 	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
-		&& shouldLocalize) {
-		console.log(includeLink);
-        updatePageTOCIfNeeded(wrapper);
-    }
+		&& shouldLocalize)
+        updatePageTOCIfNeeded(wrapper.parentElement);
 
 	//	Aggregate margin notes.
 	aggregateMarginNotesIfNeededInDocument(containingDocument);
