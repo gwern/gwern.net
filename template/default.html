@@ -76,17 +76,29 @@
   <!-- CSS for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. -->
   <noscript>
     <style>
-      #markdownBody #noscript-warning-header {
-    	  position: fixed; /* sticky */
-    	  top: 6px; /* at top */
-    	  width: 58%;
-    	  z-index: 99; /* Make sure it is on top */
-    	  background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
-    	  border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
-    	  border-width: 6px 6px 6px 6px;
-    	  border-style: double;
+      #noscript-warning-header {
+        position: fixed; /* floating */
+        top: 0; /* at the top */
+        left: 0; /* from the left side of the screen, and not the body margin */
+        width: calc(100% - 12px); /* full-width, calculate the exact value, in case one insists on the border */
+        margin: 0 auto; /* don't waste space */
+        z-index: 99; /* Make sure it is on top */
+        /* Note: currently the mode is always dark in noscript mode */
+        background-color: var(--GW-admonition-warning-background-color); /* Background color according to theme */
+        color: var(--GW-admonition-warning-text-color); /* Font color according to theme */
+        border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
+        border-width: 6px 6px 6px 6px;
+        border-style: double;
       }
-      #markdownBody #noscript-warning-header p { margin: 10px; }
+      /* markdown is not parsed, adjusting link appearance */
+      #noscript-warning-header a { 
+        color: var(--GW-admonition-warning-text-color);
+        text-shadow: unset; /* unset shadow in noscript mode, as it does not display properly */
+      }
+      #noscript-warning-header p { 
+        margin: 10px;
+        text-indent: unset; /* don't waste space */
+      }
       nav#sidebar { padding-top: 160px; } /* avoid overlap with page header */
     </style>
   </noscript>
