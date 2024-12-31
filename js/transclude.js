@@ -148,46 +148,6 @@
 			Expanded block context mode omits paragraphs (the <p> element) from
 			consideration as containing blocks.
 
-    include-replace-container
-    data-replace-container-selector
-    data-replace-container-options
-        Normally, when transclusion occurs, the transcluded content replaces the
-        include-link in the page, leaving any surrounding elements untouched.
-        When the `include-replace-container` option is used, the include-link’s
-        parent element, instead of just the include-link itself, is replaced by
-        the transcluded content. (This means that any other contents of the
-        include-link’s parent element are also discarded.) If the include-link
-        has no parent element (if, for example, it is an immediate child node of
-        a DocumentFragment), then it will simply behave normally (as if the 
-        `include-replace-container option was not set at all).
-
-		The `data-replace-container-selector` attribute allows specification of
-		a list of CSS selectors that should be used to locate the ‘container’ 
-		element to be replaced by the transcluded content (rather than simply 
-		using the include-link’s immediate parent). The value of this attribute 
-		is a pipe (`|`) separated list of CSS selectors. Each selector is 
-		checked in turn; if no containing element matching the given selector is 
-		found, the next selector is checked, and so on. If no containing element 
-		matching any of the given selectors is found, then the include-link will 
-		default to replacing its immediate parent element (as if the 
-		`data-replace-container-selector` attribute were absent). (But see the 
-		`strict` option of the `data-replace-container-options` attribute, 
-		below).
-
-		The `data-replace-container-options` attribute allows various options to 
-		be specified for how container replacement should proceed. The value of 
-		this attribute is a pipe (`|`) separated list of option fields. The 
-		following options may be specified:
-
-		strict
-			If this option is specified, and a value is provided for the 
-			`data-replace-container-selector` attribute, and no containing 
-			element matching any of the specified selectors is found, then the
-			include-link will *not* default to replacing its immediate parent
-			(as is the default behavior), but will instead replace nothing 
-			(i.e., it will behave as if the `include-replace-selector` option
-			were not specified at all).
-
 	include-rectify-not
 		Normally, when transclusion occurs, the surrounding HTML structure is
 		intelligently rectified, to preserve block containment rules and so on.
@@ -849,51 +809,11 @@ function includeContent(includeLink, content) {
 		"include-complete"
 	])) return;
 
-	//	Where to inject?
-	let insertWhere = includeLink;
-	if (includeLink.classList.contains("include-replace-container")) {
-		/*	This code block implements the `include-replace-container` class
-			and the `data-replace-container-selector` and
-			`data-replace-container-options` attributes.
-			(See documentation, at the start of this file, for details.)
-		 */
-
-		//	Parse `data-replace-container-options` attribute.
-		let replaceContainerOptions = parsePipedOptions(includeLink.dataset.replaceContainerOptions);
-
-		//	Find the container to replace.
-		let replacedContainer = null;
-		let replaceContainerSelectors = parsePipedOptions(includeLink.dataset.replaceContainerSelector);
-		if (replaceContainerSelectors) {
-			/*	If `data-replace-container-selector` is specified, we try each 
-				specified selector in turn...
-			 */
-			while (   replacedContainer == null
-				   && replaceContainerSelectors.length > 0)
-				replacedContainer = includeLink.closest(replaceContainerSelectors.shift());
-
-			/*	... and if they all fail, we default to the immediate parent, 
-				or else no replacement at all (the `strict` option).
-			 */
-			if (   replacedContainer == null
-				&& replaceContainerOptions?.includes("strict") != true)
-				replacedContainer = includeLink.parentElement;
-		} else {
-			/*	If `data-replace-container-selector` is not specified, we simply
-				replace the immediate parent.
-			 */
-			replacedContainer = includeLink.parentElement;
-		}
-
-		if (replacedContainer)
-			insertWhere = replacedContainer; 
-	}
-
     /*  Just in case, do nothing if the element-to-be-replaced (either the
     	include-link itself, or its container, as appropriate) isn’t attached
     	to anything.
      */
-    if (insertWhere.parentNode == null)
+    if (includeLink.parentNode == null)
         return;
 
     //  Prevent race condition, part I.
@@ -917,7 +837,7 @@ function includeContent(includeLink, content) {
     }
 
     //  Inject wrapper.
-    insertWhere.parentNode.insertBefore(wrapper, insertWhere);
+    includeLink.parentNode.insertBefore(wrapper, includeLink);
 
 	//	Determine whether to “localize” content.
 	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
@@ -977,9 +897,7 @@ function includeContent(includeLink, content) {
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
 
     //  Remove extraneous text node after link, if any.
-    if (   includeLink.classList.contains("include-replace-container") == false
-        && includeLink.nextSibling
-        && includeLink.nextSibling.nodeType == Node.TEXT_NODE) {
+    if (includeLink.nextSibling?.nodeType == Node.TEXT_NODE) {
         let cleanedNodeContents = Typography.processString(includeLink.nextSibling.textContent, Typography.replacementTypes.CLEAN);
         if (   cleanedNodeContents.match(/\S/) == null
         	|| cleanedNodeContents == ".")
@@ -987,42 +905,119 @@ function includeContent(includeLink, content) {
     }
 
     //  Remove include-link (along with container, if specified).
-    insertWhere.remove();
+    includeLink.remove();
 
     //  Intelligent rectification of surrounding HTML structure.
     if (   includeLink.classList.contains("include-rectify-not") == false
     	&& firstBlockOf(wrapper) != null) {
-        let allowedParentTags = [ "SECTION", "DIV", "LI", "BLOCKQUOTE", "FIGCAPTION" ];
+		/*	Any kind of transcluded content can be contained within these types
+			of block containers.
+		 */
+        let allowedParentTags = [ "SECTION", "DIV", "BLOCKQUOTE" ];
+
+		/*	If the transcluded content doesn’t contain entire sections (with
+			headings), then it can be contained within some additional types of
+			block container elements.
+		 */
+        if (wrapper.querySelector("section") == null)
+        	allowedParentTags.push("LI", "FIGCAPTION");
+
+		/*	If need be, shift the wrapper up until it is no longer contained 
+			within a forbidden type of parent element (maintaining strict node
+			sequence in the process).
+		 */
         while (   wrapper.parentElement != null
                && allowedParentTags.includes(wrapper.parentElement.tagName) == false
                && wrapper.parentElement.parentElement != null) {
+			/*	Retain a reference to where in the node sequence of its current
+				parent element the wrapper is, prior to shifting up.
+			 */
             let nextNode = wrapper.nextSibling;
 
+			/*	Shift the wrapper up one level in the tree, inserting it just
+				after its current parent element.
+			 */
             wrapper.parentElement.parentElement.insertBefore(wrapper, wrapper.parentElement.nextSibling);
 
+			/*	If the now-former parent element of the wrapper is now empty
+				(i.e., it contained only the wrapper, and no other substantive
+				content), delete that element. The node sequence has not been
+				altered by the up-shift, so nothing remains to do in this
+				iteration.
+			 */
             if (isNodeEmpty_metadataAware(wrapper.previousSibling)) {
                 wrapper.previousSibling.remove();
                 continue;
             }
 
+			/*	If the wrapper was the last node within its former parent 
+				element, then, once again, the node sequence has not been 
+				altered by the up-shift, so nothing remains to do in this 
+				iteration.
+			 */
             if (nextNode == null)
                 continue;
 
+			/*	The node sequence has been altered, and must be corrected. 
+				Nodes that came before the wrapper within its former parent
+				element (which is now the wrapper’s previous sibling) will be 
+				kept where they are; nodes that came after the wrapper within
+				its former parent element will be placed in a new element, 
+				which will be inserted as the wrapper’s next sibling.
+			 */
             let firstPart = wrapper.previousSibling;
+            /*	Create the second part (an element of the same kind as the 
+            	first part, containing the nodes that should come after the 
+            	wrapper).
+             */
             let secondPart = newElement(firstPart.tagName);
+            //	Ensure that both parts have the same classes.
             if (firstPart.className > "")
                 secondPart.className = firstPart.className;
+			//	Move requisite nodes from the first part to the second.
             while (nextNode) {
                 let thisNode = nextNode;
                 nextNode = nextNode.nextSibling;
                 secondPart.appendChild(thisNode);
             }
 
+			/*	If no substantive content remains in the wrapper’s previous
+				sibling (i.e., it was the first non-empty node within its 
+				former parent element), delete the empty previous sibling.
+			 */
             if (isNodeEmpty_metadataAware(firstPart) == true)
                 firstPart.remove();
 
+			/*	If the nodes that came after the wrapper within its former
+				parent element (which are now housed within a new element, the
+				wrapper’s next sibling) end up adding to no substantive content,
+				delete them.
+			 */
             if (isNodeEmpty_metadataAware(secondPart) == false)
                 wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
+
+			/*	If the transcluded content contains block elements, and the 
+				other content within the wrapper’s former parent element 
+				(before and/or after the wrapper in the node sequence) does 
+				not contain block elements, and also does not contain any links
+				that are not present within the transcluded content, delete 
+				said other content, as it is surely extraneous.
+			 */
+			if (wrapper.querySelector(GW.layout.blockElements.join(", ")) != null) {
+				[ firstPart, secondPart ].forEach(part => {
+					if (part.querySelector(GW.layout.blockElements.join(", ")) != null)
+						return;
+
+					let unduplicatedLinksPresent = false;
+					part.querySelectorAll("a").forEach(link => {
+						if (wrapper.querySelector(`a[href='${CSS.escape(decodeURIComponent(link.href))}']`) == null)
+							unduplicatedLinksPresent = true;
+					});
+
+					if (unduplicatedLinksPresent == false)
+						part.remove();
+				});
+			}
         }
     }
 
@@ -1369,10 +1364,14 @@ Transclude = {
         "include-even-when-collapsed",
         "include-unwrap",
         "include-block-context",
-        "include-replace-container",
         "include-rectify-not",
         "include-identify-not",
-        "include-localize-not"
+        "include-localize-not",
+
+		/*	TEMPORARY.
+				—SA 2024-12-31
+		 */
+		"include-replace-container"
     ],
 
     transcludeAnnotationsByDefault: true,
