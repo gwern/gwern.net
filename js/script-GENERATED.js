@@ -1096,7 +1096,7 @@ Images = {
 
 /******************************************************************************/
 /*  Returns true if the link is an annotated link, OR if it is an include-link
-    which transclude.js treats  as an annotation transclude. (This is relevant
+    which transclude.js treats as an annotation transclude. (This is relevant
     because in either case, the link hash should be ignored, when deciding what
     to do with a link on the basis of it having or not having a link hash.)
  */
@@ -9789,12 +9789,15 @@ function includeContent(includeLink, content) {
     if (   includeLink.id > ""
         && includeLink.classList.contains("include-identify-not") == false
         && wrapper.querySelector(`#${(CSS.escape(includeLink.id))}`) == null) {
-        let idBearerBlockTagName = firstBlockOf(wrapper) != null
-        						   ? "DIV"
-        						   : "SPAN";
-        let idBearerBlock = newElement(idBearerBlockTagName, { "id": includeLink.id, "class": "include-wrapper-block" });
-        idBearerBlock.append(...wrapper.childNodes);
-        wrapper.append(idBearerBlock);
+        let includedContentWrapperTagName = firstBlockOf(wrapper) != null
+        									? "DIV"
+        									: "SPAN";
+        let includedContentWrapper = newElement(includedContentWrapperTagName, {
+        	"id": includeLink.id,
+        	"class": "include-wrapper-block"
+        });
+        includedContentWrapper.append(...wrapper.childNodes);
+        wrapper.append(includedContentWrapper);
     }
 
 	//	Heading level rectification.
