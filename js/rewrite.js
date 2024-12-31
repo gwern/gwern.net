@@ -2676,11 +2676,11 @@ addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) =
 		let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
 		let svgClosingTagSrc = `</svg>`;
 
-		let strokeWidth = 56.0;
+		let strokeWidth = GW.isMobile() ? 64.0 : 56.0;
 		let boxRadius = 256.0;
 		let radius = boxRadius - (strokeWidth * 0.5);
 
-		let backdropCircleGray = 170.0 + (percent * 0.64);
+		let backdropCircleGray = (GW.isMobile() ? 110.0 : 170.0) + (percent * 0.64);
 		let backdropCircleColor = Color.hexStringFromRGB({
 			red: backdropCircleGray,
 			green: backdropCircleGray,
