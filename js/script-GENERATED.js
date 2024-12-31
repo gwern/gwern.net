@@ -9789,7 +9789,10 @@ function includeContent(includeLink, content) {
     if (   includeLink.id > ""
         && includeLink.classList.contains("include-identify-not") == false
         && wrapper.querySelector(`#${(CSS.escape(includeLink.id))}`) == null) {
-        let idBearerBlock = newElement("DIV", { "id": includeLink.id, "class": "include-wrapper-block" });
+        let idBearerBlockTagName = firstBlockOf(wrapper) != null
+        						   ? "DIV"
+        						   : "SPAN";
+        let idBearerBlock = newElement(idBearerBlockTagName, { "id": includeLink.id, "class": "include-wrapper-block" });
         idBearerBlock.append(...wrapper.childNodes);
         wrapper.append(idBearerBlock);
     }
@@ -9925,9 +9928,9 @@ function includeContent(includeLink, content) {
 				that are not present within the transcluded content, delete 
 				said other content, as it is surely extraneous.
 			 */
-			if (wrapper.querySelector(GW.layout.blockElements.join(", ")) != null) {
+			if (firstBlockOf(wrapper) != null) {
 				[ firstPart, secondPart ].forEach(part => {
-					if (part.querySelector(GW.layout.blockElements.join(", ")) != null)
+					if (firstBlockOf(part, null, true) != null)
 						return;
 
 					let unduplicatedLinksPresent = false;
@@ -9956,8 +9959,10 @@ function includeContent(includeLink, content) {
 
 	//  Update TOC, if need be, when transcluding into the base page.
     if (   containingDocument == document
-		&& shouldLocalize)
+		&& shouldLocalize) {
+		console.log(includeLink);
         updatePageTOCIfNeeded(wrapper);
+    }
 
 	//	Aggregate margin notes.
 	aggregateMarginNotesIfNeededInDocument(containingDocument);
