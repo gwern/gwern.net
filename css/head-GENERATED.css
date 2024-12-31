@@ -442,6 +442,12 @@ header h1 em {
     font-variant-numeric: oldstyle-nums;
 }
 
+/*	Importance.
+ */
+#page-metadata .page-metadata-fields .page-importance {
+	font-variant-numeric: tabular-nums;
+}
+
 /*=------------=*/
 /*= Responsive =*/
 /*=------------=*/
