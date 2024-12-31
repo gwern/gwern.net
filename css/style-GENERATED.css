@@ -6192,11 +6192,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popin .popframe-title-link {
+	--link-underline-gradient-line-color: var(--popframe-title-link-color, currentColor);
+
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-
-	color: var(--popframe-title-link-color, var(--GW-body-link-color));
 }
 
 /*  Buttons in the popin title bar.
@@ -6481,6 +6481,16 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌────────────────────┐*/
 /*│ Annotation popins. │*/
 /*└────────────────────┘*/
+
+.popin-body.annotation .data-field.title .title-link {
+	--link-underline-gradient-line-color: var(--popframe-title-link-color, currentColor);
+}
+.popin-body.annotation .data-field.title .title-link .link-icon-hook::after {
+	--dark-mode-invert-filter: none;
+
+    background-image: var(--link-icon-url-hover, var(--link-icon-url));
+    opacity: 1.0;
+}
 
 /*┌──────────────────┐*/
 /*│ Footnote popins. │*/
