@@ -1053,12 +1053,24 @@ function getSelectionAsDocument(doc = document) {
     let docFrag = new DocumentFragment();
     docFrag.append(selection.getRangeAt(0).cloneContents());
 
-	//	Strip whitespace (remove top-level empty nodes).
+	//	Trim whitespace (remove top-level empty nodes at start and end).
 	let nodesToRemove = [ ];
-	docFrag.childNodes.forEach(node => {
-		if (isNodeEmpty(node))
+	for (let i = 0; i < docFrag.childNodes.length; i++) {
+		let node = docFrag.childNodes[i];
+		if (isNodeEmpty(node)) {
 			nodesToRemove.push(node);
-	});
+		} else {
+			break;
+		}
+	}
+	for (let j = 0; j < docFrag.childNodes.length; j++) {
+		let node = docFrag.childNodes[docFrag.childNodes.length - (1 + j)];
+		if (isNodeEmpty(node)) {
+			nodesToRemove.push(node);
+		} else {
+			break;
+		}
+	}
 	nodesToRemove.forEach(node => {
 		docFrag.removeChild(node);
 	});

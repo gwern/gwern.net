@@ -2731,6 +2731,31 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyPageMetadataFieldLinkAppeara
 	});
 }, "rewrite");
 
+/****************************************************************************/
+/*	Remove from copied content anything that is hidden on the current type of
+	client (i.e., via the .mobile-not or .desktop-not classes).
+ */
+addCopyProcessor((event, selection) => {
+	selection.querySelectorAll(GW.isMobile() ? ".mobile-not" : ".desktop-not").forEach(element => { element.remove(); });
+
+	return true;
+});
+
+/****************************************************************************/
+/*	Ensure that inline mode selectors have reasonable textual representations
+	in copied content.
+ */
+addCopyProcessor((event, selection) => {
+	selection.querySelectorAll(".mode-selector-inline button, .link-widget a").forEach(button => {
+		let label = button.dataset.name ?? button.getAttribute("aria-label") ?? (button.getAttribute("title") || button.getAttribute("href"))
+		if (button.classList.contains("selected"))
+			label = label.toUpperCase();
+		button.replaceWith(document.createTextNode("[" + label + "]"));
+	});
+
+	return true;
+});
+
 
 /************/
 /* DROPCAPS */
