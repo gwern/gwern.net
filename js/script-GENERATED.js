@@ -8968,20 +8968,20 @@ Content = {
 
     include-annotation
     include-content
-        If the include-link is an annotated link, then instead of transcluding 
-        the linked content, the annotation for the linked content may be 
+        If the include-link is an annotated link, then instead of transcluding
+        the linked content, the annotation for the linked content may be
         transcluded.
 
         The default behavior is set via the
         Transclude.transcludeAnnotationsByDefault property. If this is set to
-        `true`, then fully (not partially!) annotated links transclude the 
-        annotation unless the `include-content` class is set (in which case they 
+        `true`, then fully (not partially!) annotated links transclude the
+        annotation unless the `include-content` class is set (in which case they
         transclude their linked content). If it is set to `false`, then fully
-        annotated links transclude the annotation only if the 
-        `include-annotation` class is set (otherwise they transclude their 
+        annotated links transclude the annotation only if the
+        `include-annotation` class is set (otherwise they transclude their
         linked content).
 
-		Note that merely partially annotated links always default to 
+		Note that merely partially annotated links always default to
 		transcluding content, unless the `include-annotation` class is set.
 		(See also the `include-annotation-partial` alias class.)
 
@@ -8995,41 +8995,41 @@ Content = {
         A strict include-link, on the other hand, triggers immediately at
         load time.
 
-        Note that `include-strict` implies `include-even-when-collapsed`, 
-        because otherwise odd behavior can result (eg. a ‘strict’ transclusion 
-        in the first line or two of a collapse will be visibly untranscluded; 
-        and collapses blocking strict transclusion can lead to unpredictable 
-        breakage when the contents of the transclusion are depended upon by the 
+        Note that `include-strict` implies `include-even-when-collapsed`,
+        because otherwise odd behavior can result (eg. a ‘strict’ transclusion
+        in the first line or two of a collapse will be visibly untranscluded;
+        and collapses blocking strict transclusion can lead to unpredictable
+        breakage when the contents of the transclusion are depended upon by the
         rest of the page, and collapses are added/removed by editors).
 
 	include-lazy
 		By default, include-links are loaded when they are within some scroll
 		distance away from the view rect of their scroll container (i.e., the
-		viewport, or the frame of a pop-frame, etc.); this is done so that the 
+		viewport, or the frame of a pop-frame, etc.); this is done so that the
 		transcluded content is likely to already be loaded by the time the user
 		scrolls to the include-link’s position in the document flow.
 
-		The `include-lazy` option makes the transclusion behavior lazier than 
+		The `include-lazy` option makes the transclusion behavior lazier than
 		usual; an include-link with this class will trigger only when it crosses
 		the boundary of the viewport (or the scroll container’s view rect).
 
 		Note that if the `include-strict` option is set, then `include-lazy`
 		will have no effect. Similarly, if the `include-even-when-collapsed`
-		option is *not* set (assuming that `include-strict` is also not set), 
-		then `include-lazy` will have no effect if the include-link is within 
+		option is *not* set (assuming that `include-strict` is also not set),
+		then `include-lazy` will have no effect if the include-link is within
 		a collapsed block.
 
     include-even-when-collapsed
         Normally, an include-link that is inside a collapsed block will not
         trigger at load time; instead, it will trigger only when it is revealed
-        by expansion of its containing collapse block(s). The 
-        `include-even-when-collapsed` class disables this delay, forcing the 
-        include-link to trigger when revealed by scrolling (if it is not marked 
-        as `include-strict`; otherwise, `include-strict` will force the 
+        by expansion of its containing collapse block(s). The
+        `include-even-when-collapsed` class disables this delay, forcing the
+        include-link to trigger when revealed by scrolling (if it is not marked
+        as `include-strict`; otherwise, `include-strict` will force the
         include-link to trigger at load time, regardless of anything to do with
         collapses) even if, at such time, it is within a collapsed block.
 
-        Note that the `include-strict` and `include-even-when-collapsed` options 
+        Note that the `include-strict` and `include-even-when-collapsed` options
         do not do the same thing; the former implies the latter, but not the
         other way around.
 
@@ -9061,7 +9061,7 @@ Content = {
         (This option has no effect unless the include-link’s URL hash specifies
          a single element ID to transclude.)
 
-		The `data-block-context-options` attribute allows various options to be 
+		The `data-block-context-options` attribute allows various options to be
 		specified for how block context should be determined and handled. The
 		value of this attribute is a pipe (`|`) separated list of option fields.
 		The following options may be specified:
@@ -9089,15 +9089,15 @@ Content = {
 
 	include-localize-not
 		When content specified by an include-link is transcluded into the base
-		page, and the transcluded content has headings, should those headings be 
-		added to the page’s table of contents? When transcluded content has 
+		page, and the transcluded content has headings, should those headings be
+		added to the page’s table of contents? When transcluded content has
 		footnote references, should those citations be integrated into the host
 		page’s footnote numbering, and should the associated footnotes be added
 		to the host page’s footnotes section?
 
-		Normally, the answer (and it’s the same answer for both questions, and 
-		several related ones such as link qualification) is determined on the 
-		basis of the content type of the transcluded content, the context in 
+		Normally, the answer (and it’s the same answer for both questions, and
+		several related ones such as link qualification) is determined on the
+		basis of the content type of the transcluded content, the context in
 		which it’s being transcluded (e.g., a backlink context block), and some
 		other factors. If the `include-localize-not` option is used, however,
 		the content will NOT be “localized”, no matter what other conditions
@@ -9133,7 +9133,7 @@ Content = {
         <a class="include" href="/Sidenotes#tufte-css#tables"></a>
 
     This will include all parts of the "/Sidenotes" page’s content starting from
-    the element with ID `tufte-css`, all the way up to (but *not* including!) 
+    the element with ID `tufte-css`, all the way up to (but *not* including!)
     the element with ID `tables`.
 
     Either the first or the second identifier (the parts after the ‘#’) may
@@ -9167,7 +9167,7 @@ Content = {
 	2. Include template
 	-------------------
 
-	The `data-include-template` attribute allows selection of include template 
+	The `data-include-template` attribute allows selection of include template
 	to use.
 
 	(Note that some include data sources specify a template by default;
@@ -9181,12 +9181,12 @@ Content = {
 	HTML source.)
 
 	If the value of this attribute begins with the ‘$’ character, then the rest
-	if the attribute value (after the dollar sign) is treated as a key into the 
+	if the attribute value (after the dollar sign) is treated as a key into the
 	template data object, rather than directly as the name of a template file.
 	This allows a template data source to specify different templates for use
 	in different contexts. (For example, a template data source may specify a
-	default template, to be used when transcluding normally, and a different 
-	template to be used when the transcluded content is to be used as the 
+	default template, to be used when transcluding normally, and a different
+	template to be used when the transcluded content is to be used as the
 	content of a pop-frame. In such a case, the template data object might have
 	a field with key `popFrameTemplate` whose value is the name of a template,
 	and the include-link’s `data-include-template` attribute would have a value
@@ -9196,30 +9196,30 @@ Content = {
 	-------------------------------------
 
 	The `data-include-selector` and `data-include-selector-not` attributes allow
-	the use of CSS selectors to specify parts of the included DOM subtree to 
-	include or omit. (If both attributes are present, 
+	the use of CSS selectors to specify parts of the included DOM subtree to
+	include or omit. (If both attributes are present,
 	`data-include-selector-not` is applied first.)
 
 	The `data-include-selector-options`, `data-include-selector-not-options`,
-	and `data-include-selector-general-options` attributes allows various 
-	options to be specified for how the selectors should be applied. The values 
-	of these attributes are pipe (`|`) separated lists of option fields. The 
+	and `data-include-selector-general-options` attributes allows various
+	options to be specified for how the selectors should be applied. The values
+	of these attributes are pipe (`|`) separated lists of option fields. The
 	`-options` version of the attribute applies only to `data-include-selector`;
-	`-not-options` applies only to `data-include-selector-not`; and 
+	`-not-options` applies only to `data-include-selector-not`; and
 	`-general-options` applies to both. (The specific options attributes take
 	precedence over the general options attribute.)
 
 	The following options may be specified:
 
 	first
-		Select only the first element matching the specified selector, instead 
+		Select only the first element matching the specified selector, instead
 		of selecting all matching elements. (In other words, use querySelector()
 		instead of querySelectorAll().)
 
-	(NOTE: `data-include-selector` may be seen as a generalization of the 
+	(NOTE: `data-include-selector` may be seen as a generalization of the
 	 `include-block-context` option, described above. Note, however, that both
-	 `include-block-context` and either or both of `data-include-selector` / 
-	 `data-include-selector-not` may be used simultaneously. The effects of the 
+	 `include-block-context` and either or both of `data-include-selector` /
+	 `data-include-selector-not` may be used simultaneously. The effects of the
 	 data attributes are applied last, after all `include-*` options have been
 	 applied.)
 
@@ -9229,8 +9229,8 @@ Content = {
 
 	The following classes, set on include-links, function as aliases for various
 	combinations of the above-described functionality. Each entry below lists
-	the alias class (or set of multiple specific classes, in some cases), 
-	followed by the combination of classes, data attributes, etc. to which the 
+	the alias class (or set of multiple specific classes, in some cases),
+	followed by the combination of classes, data attributes, etc. to which the
 	alias is equivalent. Some entries also include usage notes.
 
 	class="include-block-context-expanded"
@@ -9238,7 +9238,7 @@ Content = {
 		class="include-block-context"
 		data-block-context-options="expanded"
 
-		“Expanded block context” typically means “broaden the block context 
+		“Expanded block context” typically means “broaden the block context
 		beyond a single paragraph”.
 
 	class="include-annotation-partial"
@@ -9248,7 +9248,7 @@ Content = {
 		data-template-fields="annotationClassSuffix:$"
 		data-annotation-class-suffix="-partial"
 
-		Includes only the metadata of annotations (omitting the annotation 
+		Includes only the metadata of annotations (omitting the annotation
 		abstract, i.e. the body of the annotation, if any). Formats the included
 		annotation as a partial.
 
@@ -9258,15 +9258,15 @@ Content = {
 		data-include-selector=".annotation-abstract, .file-includes"
 
 		Essentially the opposite of .include-annotation-partial; includes only
-		the annotation abstract, omitting metadata. (If there is no abstract - 
+		the annotation abstract, omitting metadata. (If there is no abstract -
 		i.e., if the annotation is a partial - the included content will be
 		empty.)
 
 	class="include-content-core"
 
 		class="include-content"
-		data-include-selector-not="#footnotes, #backlinks-section, 
-			#similars-section, #link-bibliography-section, 
+		data-include-selector-not="#footnotes, #backlinks-section,
+			#similars-section, #link-bibliography-section,
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
@@ -9280,8 +9280,8 @@ Content = {
 		data-include-selector-not="h1, h2, h3, h4, h5, h6"
 		data-include-selector-not-options="first"
 
-		Applied to an include-link that targets a <section>, will include only 
-		the content of the section; the <section> will be unwrapped, and the 
+		Applied to an include-link that targets a <section>, will include only
+		the content of the section; the <section> will be unwrapped, and the
 		heading discarded. (If applied in some other case, behavior may be
 		unpredictable.)
 
@@ -9289,8 +9289,8 @@ Content = {
 
 		data-include-selector-not=".caption-wrapper"
 
-		Normally, media (image, video, audio) include-links which have 
-		annotations will, when transcluded, get a <figcaption> whose contents 
+		Normally, media (image, video, audio) include-links which have
+		annotations will, when transcluded, get a <figcaption> whose contents
 		are the abstract of the annotation. If the `include-caption-not` class
 		is set, the caption is omitted. (This class has no effect if applied to
 		include-links of non-media content types.)
@@ -9342,12 +9342,12 @@ Content = {
 
 		<span data-template-fields="foo:$title, bar:.tagName" title="Baz"></span>
 
-			This element defines two data fields: one with name `foo` and value 
+			This element defines two data fields: one with name `foo` and value
 			`Baz`,and one with name `bar` and value `SPAN`.
 
 		<span data-template-field="foo:title" title="Bar"></span>
 
-			This element defines no data fields. (Likely this is a typo, and 
+			This element defines no data fields. (Likely this is a typo, and
 			the desired attribute name is actually `data-template-fields`; note
 			the plural form.)
  */
@@ -9398,7 +9398,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	return evaluateTemplateExpression(expr.replace(
 		//	Quotes.
 		/(['"])(.*?)(\1)/g,
-		(match, leftQuote, quotedExpr, rightQuote) => 
+		(match, leftQuote, quotedExpr, rightQuote) =>
 		"<<" + fixedEncodeURIComponent(quotedExpr) + ">>"
 	).replace(
 		//	Brackets.
@@ -9610,8 +9610,8 @@ function synthesizeIncludeLink(link, attributes, properties) {
 
 	if (link instanceof HTMLAnchorElement) {
 		//	Import source link classes.
-		includeLink.classList.add(...(Array.from(link.classList).filter(linkClass => 
-			(   [ "link-annotated", 
+		includeLink.classList.add(...(Array.from(link.classList).filter(linkClass =>
+			(   [ "link-annotated",
 				  "link-annotated-partial",
 				  "has-annotation",
 				  "has-content",
@@ -9638,7 +9638,7 @@ function synthesizeIncludeLink(link, attributes, properties) {
  */
 function loadLocationForIncludeLink(includeLink) {
     if (Transclude.isAnnotationTransclude(includeLink) == false) {
-    	return (   Content.sourceURLsForLink(includeLink)?.first 
+    	return (   Content.sourceURLsForLink(includeLink)?.first
     			?? includeLink.eventInfo.loadLocation);
     } else {
     	return null;
@@ -9657,7 +9657,7 @@ function contentTypeIdentifierForIncludeLink(includeLink) {
 		contentType = "annotation";
 	} else {
 		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
-		if (   referenceData 
+		if (   referenceData
 			&& referenceData.contentTypeClass != null)
 			contentType = referenceData.contentTypeClass.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
 	}
@@ -9705,7 +9705,7 @@ function highlightTargetElementInDocument(link, doc) {
 			) == false) {
 		targetElement.classList.add("block-context-highlighted");
 
-		/*	When highlighting <div> elements, place the manicule appropriately 
+		/*	When highlighting <div> elements, place the manicule appropriately
 			(and only if appropriate).
 		 */
 		if (   targetElement.tagName == "DIV"
@@ -9781,7 +9781,7 @@ function includeContent(includeLink, content) {
     		section.remove();
     	});
 
-		shouldMergeFootnotes = (   shouldLocalize 
+		shouldMergeFootnotes = (   shouldLocalize
 								&& newContentFootnotesSection != null);
     }
 
@@ -9865,7 +9865,7 @@ function includeContent(includeLink, content) {
         if (wrapper.querySelector("section") == null)
         	allowedParentTags.push("LI", "FIGCAPTION");
 
-		/*	If need be, shift the wrapper up until it is no longer contained 
+		/*	If need be, shift the wrapper up until it is no longer contained
 			within a forbidden type of parent element (maintaining strict node
 			sequence in the process).
 		 */
@@ -9893,24 +9893,24 @@ function includeContent(includeLink, content) {
                 continue;
             }
 
-			/*	If the wrapper was the last node within its former parent 
-				element, then, once again, the node sequence has not been 
-				altered by the up-shift, so nothing remains to do in this 
+			/*	If the wrapper was the last node within its former parent
+				element, then, once again, the node sequence has not been
+				altered by the up-shift, so nothing remains to do in this
 				iteration.
 			 */
             if (nextNode == null)
                 continue;
 
-			/*	The node sequence has been altered, and must be corrected. 
+			/*	The node sequence has been altered, and must be corrected.
 				Nodes that came before the wrapper within its former parent
-				element (which is now the wrapper’s previous sibling) will be 
+				element (which is now the wrapper’s previous sibling) will be
 				kept where they are; nodes that came after the wrapper within
-				its former parent element will be placed in a new element, 
+				its former parent element will be placed in a new element,
 				which will be inserted as the wrapper’s next sibling.
 			 */
             let firstPart = wrapper.previousSibling;
-            /*	Create the second part (an element of the same kind as the 
-            	first part, containing the nodes that should come after the 
+            /*	Create the second part (an element of the same kind as the
+            	first part, containing the nodes that should come after the
             	wrapper).
              */
             let secondPart = newElement(firstPart.tagName);
@@ -9925,7 +9925,7 @@ function includeContent(includeLink, content) {
             }
 
 			/*	If no substantive content remains in the wrapper’s previous
-				sibling (i.e., it was the first non-empty node within its 
+				sibling (i.e., it was the first non-empty node within its
 				former parent element), delete the empty previous sibling.
 			 */
             if (isNodeEmpty_metadataAware(firstPart) == true)
@@ -9939,11 +9939,11 @@ function includeContent(includeLink, content) {
             if (isNodeEmpty_metadataAware(secondPart) == false)
                 wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
 
-			/*	If the transcluded content contains block elements, and the 
-				other content within the wrapper’s former parent element 
-				(before and/or after the wrapper in the node sequence) does 
+			/*	If the transcluded content contains block elements, and the
+				other content within the wrapper’s former parent element
+				(before and/or after the wrapper in the node sequence) does
 				not contain block elements, and also does not contain any links
-				that are not present within the transcluded content, delete 
+				that are not present within the transcluded content, delete
 				said other content, as it is surely extraneous.
 			 */
 			if (firstBlockOf(wrapper) != null) {
@@ -10021,7 +10021,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 
 	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
 		let id = backlinkContextLink.dataset.targetId.split("--")[1];
-		if (   id == "" 
+		if (   id == ""
 			|| id == undefined)
 			return;
 
@@ -10123,7 +10123,7 @@ function importStylesAfterTransclusion(includeLink) {
 		let [ styleSheetSelector, elementSelector ] = styleDef;
 		let stylesheet = newContentSourceDocument.querySelector(styleSheetSelector);
 		if (   stylesheet
-			&& (elementSelector 
+			&& (elementSelector
 				? containingDocument.querySelector(elementSelector) != null
 				: true)) {
 			/*	Add stylesheet to root document in all cases, if need be.
@@ -10319,7 +10319,7 @@ Transclude = {
 
     transcludeAnnotationsByDefault: true,
 
-    defaultLoadViewportMargin: "100%",
+    defaultLoadViewportMargin: "105%",
 
     /******************************/
     /*  Detection of include-links.
@@ -10337,7 +10337,7 @@ Transclude = {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
 
-        if ((   Transclude.hasFullAnnotation(link) 
+        if ((   Transclude.hasFullAnnotation(link)
         	 || link.classList.contains("include-annotation")
         	 ) == false)
             return true;
@@ -10352,7 +10352,7 @@ Transclude = {
 		if (Transclude.isIncludeLink(link) == false)
 			return false;
 
-        if ((   Transclude.hasFullAnnotation(link) 
+        if ((   Transclude.hasFullAnnotation(link)
         	 || link.classList.contains("include-annotation")
         	 ) == false)
             return false;
@@ -10454,7 +10454,7 @@ Transclude = {
 
 		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
 
-		/*	Parse and process block context options (if any) specified by the 
+		/*	Parse and process block context options (if any) specified by the
 			include-link. (See documentation for the .include-block-context
 			class for details.)
 		 */
@@ -10484,7 +10484,7 @@ Transclude = {
 
 		/*	Remove any child sections. (We know the target element is not
 			contained within them, because if it were, then *that* section would
-			be the block context. So, any child sections are necessarily 
+			be the block context. So, any child sections are necessarily
 			extraneous.)
 
 			(Do not do this if the section itself is the target element.)
@@ -10662,7 +10662,7 @@ Transclude = {
 													 && targetElement.classList.contains("include-identify-not") == false)));
 
 				/*	We do not want to transclude annotations within backlink
-					context. So, we will transform an annotation include link 
+					context. So, we will transform an annotation include link
 					in such a case into a normal link, and include its block
 					context normally.
 				 */
@@ -10695,7 +10695,7 @@ Transclude = {
 
 		//	Apply `data-include-selector-not` attribute.
 		if (includeLink.dataset.includeSelectorNot) {
-			/*	Parse and process selector inclusion options (if any) specified 
+			/*	Parse and process selector inclusion options (if any) specified
 				by the include-link. (See documentation for selector-based
 				inclusion for details.)
 			 */
@@ -10719,7 +10719,7 @@ Transclude = {
 
 		//	Apply `data-include-selector` attribute.
 		if (includeLink.dataset.includeSelector) {
-			/*	Parse and process selector inclusion options (if any) specified 
+			/*	Parse and process selector inclusion options (if any) specified
 				by the include-link. (See documentation for selector-based
 				inclusion for details.)
 			 */
@@ -10757,8 +10757,8 @@ Transclude = {
 	},
 
 	doWhenDataProviderLoaded: (includeLink, loadHandler) => {
-		GW.notificationCenter.addHandlerForEvent(`${(Transclude.dataProviderNameForLink(includeLink))}.didLoad`, 
-												 loadHandler, 
+		GW.notificationCenter.addHandlerForEvent(`${(Transclude.dataProviderNameForLink(includeLink))}.didLoad`,
+												 loadHandler,
 												 { once: true });
 	},
 
@@ -10797,8 +10797,8 @@ Transclude = {
             "include-loading-failed"
         ])) return;
 
-		/*	We do not attempt to transclude annotation transclude links which 
-			do not (according to their set-by-the-server designation) actually 
+		/*	We do not attempt to transclude annotation transclude links which
+			do not (according to their set-by-the-server designation) actually
 			have any annotation.
 		 */
 		if (   Transclude.isAnnotationTransclude(includeLink)
@@ -10847,7 +10847,7 @@ Transclude = {
 		//	Get data provider.
 		let dataProvider = Transclude.dataProviderForLink(includeLink);
         if (dataProvider == null) {
-			/*  If data provider is not loaded, wait until it loads to attempt 
+			/*  If data provider is not loaded, wait until it loads to attempt
 				transclusion.
 			 */
 			includeLink.delayed = true;
@@ -10961,7 +10961,7 @@ Transclude = {
 
 
 	/*	Available option fields (all optional):
-	
+
 		doWhenDidLoad
 		doWhenDidLoadOptions
 		doWhenDidInject
@@ -11165,18 +11165,18 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 /*==========================================================*/
 /*	.include-content-core
 		`class="include-content"
-		`data-include-selector-not="#footnotes, #backlinks-section, 
-			#similars-section, #link-bibliography-section, 
+		`data-include-selector-not="#footnotes, #backlinks-section,
+			#similars-section, #link-bibliography-section,
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"`
  */
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
-		"#footnotes", 
-		"#backlinks-section", 
+		"#footnotes",
+		"#backlinks-section",
 		"#similars-section",
-		"#link-bibliography-section", 
-		"#page-metadata .link-tags", 
+		"#link-bibliography-section",
+		"#page-metadata .link-tags",
 		"#page-metadata .page-metadata-fields"
 	].join(", ");
 });
