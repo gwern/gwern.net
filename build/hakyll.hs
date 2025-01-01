@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2024-12-29 22:11:53 gwern"
+When: Time-stamp: "2025-01-01 15:34:58 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -174,10 +174,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
         either error id $ either (error . show) id $
         runPure $ runWithDefaultPartials $
         compileTemplate "" $ T.pack $ "<div id=\"TOC\" class=\"TOC\">$toc$</div> <div id=\"markdownBody\" class=\"markdownBody\">" ++
-                              noScriptTemplate ++ "$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
-
-   -- NOTE: we need to do the site-wide `<noscript>` warning  to make sure it is inside the #markdownBody and gets all of the CSS styling that we expect it to.
-    noScriptTemplate = "<noscript><div id=\"noscript-warning-header\" class=\"admonition error\"><div class=\"admonition-title\"><p>[<strong>Warning</strong>: JavaScript Disabled!]</p></div> <p>[For support of key <a href=\"/design\" title=\"About: Gwern.net Design: principles, features, links, tricks\">website features</a> (link annotation popups/popovers & transclusions, collapsible sections, backlinks, tablesorting, image zooming, <a href=\"/sidenote\">sidenotes</a> etc), you must enable JavaScript.]</p></div></noscript>"
+                              "$body$" -- we do the main $body$ substitution inside default.html so we can inject stuff inside the #markdownBody wrapper; the div is closed there
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
