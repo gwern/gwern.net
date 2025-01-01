@@ -568,6 +568,8 @@ canonicals = M.fromList
   , ("Hinrich Schuetze", "Hinrich Schütze")
   , ("H. Schütze", "Hinrich Schütze")
   , ("United States Patent and Trademark Office", "USPTO")
+  , ("hardmaru", "David Ha")
+  , ("QuintinPope5", "Quintin Pope")
   ]
 
 -- tests: unique
@@ -1112,6 +1114,12 @@ authorLinkDB = M.fromList $
     , ("Hinrich Schütze", "https://scholar.google.com/citations?user=qIL9dWUAAAAJ")
     , ("Harald Grallert", "https://research.com/u/harald-grallert")
     , ("USPTO", "https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office")
+    , ("George McMahon", "https://scholar.google.com/scholar?q=George+McMahon+genetics")
+    , ("George Kirov", "https://profiles.cardiff.ac.uk/staff/kirov")
+    , ("Gabriel Goh", "https://scholar.google.com/citations?user=2O3IZlkAAAAJ&hl=en&oi=ao")
+    , ("David Ha", "https://otoro.net/ml/")
+    , ("Zhengdong Wang", "https://zhengdongwang.com/")
+    , ("Quintin Pope", "https://www.lesswrong.com/users/quintin-pope")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

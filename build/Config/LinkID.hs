@@ -288,7 +288,7 @@ linkIDOverrides =
        , ("https://openai.com/research/ai-and-efficiency", "hernandezbrown-2020-blog")
        , ("https://openai.com/index/better-language-models/", "gpt-2-blog")
        , ("https://openai.com/index/clip/", "radford-et-al-blog")
-       , ("https://openai.com/research/dall-e", "ramesh-et-al-2021-dalle-blog")
+       , ("https://openai.com/index/dall-e/", "ramesh-et-al-2021-dalle-blog")
        , ("https://openai.com/research/fine-tuning-gpt-2", "ziegler-et-al-2019-blog")
        , ("https://openai.com/index/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/research/jukebox", "jukebox-blog")
