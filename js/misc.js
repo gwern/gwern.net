@@ -539,7 +539,7 @@ Images = {
 
 /******************************************************************************/
 /*  Returns true if the link is an annotated link, OR if it is an include-link
-    which transclude.js treats  as an annotation transclude. (This is relevant
+    which transclude.js treats as an annotation transclude. (This is relevant
     because in either case, the link hash should be ignored, when deciding what
     to do with a link on the basis of it having or not having a link hash.)
  */

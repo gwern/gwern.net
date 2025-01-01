@@ -867,12 +867,15 @@ function includeContent(includeLink, content) {
     if (   includeLink.id > ""
         && includeLink.classList.contains("include-identify-not") == false
         && wrapper.querySelector(`#${(CSS.escape(includeLink.id))}`) == null) {
-        let idBearerBlockTagName = firstBlockOf(wrapper) != null
-        						   ? "DIV"
-        						   : "SPAN";
-        let idBearerBlock = newElement(idBearerBlockTagName, { "id": includeLink.id, "class": "include-wrapper-block" });
-        idBearerBlock.append(...wrapper.childNodes);
-        wrapper.append(idBearerBlock);
+        let includedContentWrapperTagName = firstBlockOf(wrapper) != null
+        									? "DIV"
+        									: "SPAN";
+        let includedContentWrapper = newElement(includedContentWrapperTagName, {
+        	"id": includeLink.id,
+        	"class": "include-wrapper-block"
+        });
+        includedContentWrapper.append(...wrapper.childNodes);
+        wrapper.append(includedContentWrapper);
     }
 
 	//	Heading level rectification.
