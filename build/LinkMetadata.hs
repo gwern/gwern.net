@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-12-01 14:47:15 gwern"
+When:  Time-stamp: "2024-12-31 14:19:14 gwern"
 License: CC-0
 -}
 
@@ -263,7 +263,7 @@ readLinkMetadataAndCheck = do
 
              let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
-             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (titles \\ nubOrd titles))
+             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
 
              let authorWhitelist = ["K. U.", "6510#HN", "N. K."] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL

@@ -2370,6 +2370,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.dwarkeshpatel.com"
    , "jamanetwork.com"
    , "www.midjourney.com"
+   , "www.mrc-epid.cam.ac.uk"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -3481,7 +3482,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://journalnow.com/business/business_news/local/targacept-sale-to-catalyst-is-complete/article_8a0008c4-4dc2-5770-81db-758e527f177b.html"
             , "https://journals.ametsoc.org/view/journals/clim/18/23/jcli3593.1.xml"
             , "https://journals.asm.org/doi/10.1128/mbio.00036-12"
-            , "https://journals.le.ac.uk/ojs1/index.php/pst/issue/archive"
+            , "https://journals.le.ac.uk/index.php/pst/issue/archive"
             , "https://journals.lww.com/greenjournal/fulltext/2003/03000/a_randomized_trial_of_docosahexaenoic_acid.11.aspx"
             , "https://journals.physiology.org/doi/full/10.1152/ajpregu.2000.278.4.r905"
             , "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0201246"
@@ -4625,5 +4626,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414784"
             , "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
             , "https://www.midjourney.com/home/"
+            , "https://www.mrc-epid.cam.ac.uk/cds2024/faculty/ines-barroso/"
             ]
 
