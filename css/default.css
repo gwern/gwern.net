@@ -2762,8 +2762,8 @@ a.footnote-back {
 #sidenote-column-left,
 #sidenote-column-right,
 #hidden-sidenote-storage {
-    width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
-    max-width: var(--GW-sidenotes-max-width);
+	width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
+	max-width: var(--GW-sidenotes-max-width);
 }
 
 #sidenote-column-left,

@@ -58,15 +58,6 @@ html,
 
 
 
-/********************/
-/* GENERIC ELEMENTS */
-/********************/
-
-svg {
-    fill: currentColor;
-}
-
-
 /**********/
 /* LAYOUT */
 /**********/
@@ -977,6 +968,10 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /****************/
 /* MAIN CONTENT */
 /****************/
+
+#markdownBody {
+	position: relative;
+}
 
 .markdownBody {
     --base-block-spacing: 0.25em;
@@ -1973,6 +1968,10 @@ a code {
 /* MISC */
 /********/
 
+svg {
+    fill: currentColor;
+}
+
 /*  Date ranges.
 
     These should also move as a block, just like inflation adjustments. Also,
@@ -2033,17 +2032,9 @@ body.page-index span.date-range .subsup sup {
 /*  Hide sidenote columns on narrow viewports.
     */
 @media all and (max-width: 1760px) {
-    #sidenote-column-left,
+	#sidenote-column-left,
     #sidenote-column-right {
         display: none;
-    }
-}
-
-/*  Breakpoint for sidenotes.
- */
-@media all and (min-width: 1761px) {
-    #markdownBody {
-        position: relative;
     }
 }
 
