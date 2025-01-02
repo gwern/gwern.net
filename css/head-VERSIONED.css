@@ -574,9 +574,6 @@ header h1 em {
         margin: 0 2.25rem 1rem 0;
         float: left;
         max-width: 285px;
-        box-shadow:
-            -1rem 0 0 0 var(--GW-body-background-color),
-            2.25rem 0 0 0 var(--GW-body-background-color);
     }
 }
 @media all and (max-width: 900px) {

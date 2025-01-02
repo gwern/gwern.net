@@ -475,6 +475,11 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 
 			section.style.setProperty("--collapse-toggle-top-height", Math.round(totalHeight + oneLineHeight * 0.15) + "px");
 			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.15) + "px");
+
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "Collapse.rectifySectionCollapseLayout",
+				collapseBlock: section
+			});
 		});
 	});
 }, ">rewrite");
@@ -564,7 +569,8 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
-			if (contentColumn.id == "markdownBody") {
+			if (   collapseBlock.tagName != "SECTION"
+				&& contentColumn.id == "markdownBody") {
 				let TOC = document.querySelector("#TOC");
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();

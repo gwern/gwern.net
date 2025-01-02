@@ -3773,22 +3773,14 @@ function processLayoutOptions(options) {
 	return options;
 }
 
-/******************************************************************/
-/*	Generate element layout cache key for given action and options.
-	(Or, just use provided cache key, if any.)
- */
-function generateCacheKey(action, options) {
-	return `${action} ${options.cacheKey}`;
-}
-
 /***************************************************************************/
 /*	Retrieve desired result from element’s layout cache, or calculate it and
 	store in element’s layout cache; and, in any case, return.
  */
-function useLayoutCache(element, uniqueKey, options, f) {
+function useLayoutCache(element, action, options, f) {
 	options = processLayoutOptions(options);
 
-	let cacheKey = generateCacheKey(uniqueKey, options);
+	let cacheKey = `${action} ${options.cacheKey}`;
 
 	if (  (element.layoutCache?.time ?? 0) < GW.layout.currentPassBegin
 		|| element.layoutCache[cacheKey] == null) {
@@ -3810,7 +3802,7 @@ function isWrapper(element, wrapperType, options) {
 	if (element == null)
 		return null;
 
-	return useLayoutCache(element, "isWrapper", options, (element, options) => {
+	return useLayoutCache(element, "isWrapper_" + wrapperType, options, (element, options) => {
 		return (   element?.matches(options.wrapperOptions[wrapperType].wrappersSelector) == true
 				&& element?.matches(options.wrapperOptions[wrapperType].blockElementsSelector) != true
 				&& element?.matches(options.wrapperOptions[wrapperType].blockContainersSelector) != true);
@@ -4216,7 +4208,7 @@ function isNodeEmpty_metadataAware(node) {
 
 /*******************************************************************************/
 /*	Run given callback on given container immediately and also at any later
-	time when block layout classes are updated in that container (e.g., <body>).
+	time when block layout classes are updated in that container (e.g., <main>).
  */
 function processContainerNowAndAfterBlockLayout(container, callback) {
 	//	Run immediately...

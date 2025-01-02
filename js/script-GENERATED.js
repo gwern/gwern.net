@@ -17332,6 +17332,67 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyPageMetadataFieldLinkAppeara
 	});
 }, "rewrite");
 
+/***************************************************************************/
+/*	Make blocks that are next to the TOC clear the TOC if they are too long.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout = (eventInfo) => {
+    GWLog("rectifyTOCAdjacentBlockLayout", "rewrite.js", 1);
+
+	let markdownBody = document.querySelector("#markdownBody");
+	let TOC = document.querySelector("#TOC");
+
+	GW.layout.TOCAdjacentBlockLayoutNeedsRectification = false;
+
+	let rectifyTOCAdjacentBlockLayoutIfNeeded = () => {
+		if (GW.layout.TOCAdjacentBlockLayoutNeedsRectification == false)
+			return;
+
+		GW.layout.TOCAdjacentBlockLayoutNeedsRectification = false;
+
+		let TOCRect = TOC.getBoundingClientRect();
+
+		let blockOptions = {
+			notBlockElements: [ "section" ],
+			alsoWrapperElements: [ "section" ]
+		};
+		let block = firstBlockOf(markdownBody, blockOptions, true);
+		while (block = nextBlockOf(block, blockOptions)) {
+			if (   block.classList.contains("collapse")
+				&& (   isCollapsed(block) == false
+					|| block.style.clear > ""))
+				continue;
+
+			block.style.clear = "";
+			block.closest("section").style.clear = "";
+
+			let blockRect = block.getBoundingClientRect();
+			if (   blockRect.top <= TOCRect.bottom
+				&& blockRect.bottom - TOCRect.bottom > window.innerHeight * 0.5) {
+				if (previousBlockOf(block) == null) {
+					block.closest("section").style.clear = "left";
+				} else {
+					block.style.clear = "left";
+				}
+
+				TOC.style.marginBottom = "2.5rem";
+			} else if (   blockRect.top > TOCRect.bottom
+					   && block.style.clear == ""
+					   && block.closest("section").style.clear == "") {
+				break;
+			}
+		}
+	};
+
+	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+		GW.layout.TOCAdjacentBlockLayoutNeedsRectification = true;
+
+		requestAnimationFrame(rectifyTOCAdjacentBlockLayoutIfNeeded);
+	}, {
+		condition: (layoutEventInfo) => (   layoutEventInfo.blockContainer == markdownBody
+										 && layoutEventInfo.processorName == "applyBlockSpacingInContainer")
+	});
+}, "rewrite", (info) => info.container == document.main);
+
 /****************************************************************************/
 /*	Remove from copied content anything that is hidden on the current type of
 	client (i.e., via the .mobile-not or .desktop-not classes).
@@ -17598,7 +17659,7 @@ addContentInjectHandler(GW.contentInjectHandlers.preventDropcapsOverlap = (event
     ].join(", ");
 
     processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-        container.querySelectorAll("p[class*='dropcap-']").forEach(dropcapBlock => {
+        container.querySelectorAll("p[class*='dropcap-']:not(.dropcap-not)").forEach(dropcapBlock => {
             let nextBlock = nextBlockOf(dropcapBlock);
             if (   nextBlock == null
                 || nextBlock.matches(blocksNotToBeOverlappedSelector))
@@ -18312,6 +18373,11 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 
 			section.style.setProperty("--collapse-toggle-top-height", Math.round(totalHeight + oneLineHeight * 0.15) + "px");
 			section.style.setProperty("--collapse-toggle-top-icon-size", Math.round(oneLineHeight * 1.15) + "px");
+
+			GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+				source: "Collapse.rectifySectionCollapseLayout",
+				collapseBlock: section
+			});
 		});
 	});
 }, ">rewrite");
@@ -18401,7 +18467,8 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
-			if (contentColumn.id == "markdownBody") {
+			if (   collapseBlock.tagName != "SECTION"
+				&& contentColumn.id == "markdownBody") {
 				let TOC = document.querySelector("#TOC");
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();
