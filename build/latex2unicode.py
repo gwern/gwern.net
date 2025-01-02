@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2024-11-12 17:30:08 gwern"
+# When:  Time-stamp: "2025-01-01 22:14:03 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -44,10 +44,14 @@ Task example:
 Input to convert: <span class="math inline">\\(H\\gg1\\)</span>
 Converted output: <em>H</em> ≫ 1
 
+Preview of input:
+
+- '""" + target + """'
+
 Details:
 
 - Convert only if the result is unambiguous.
-- Note that inputs may be very short, because each LaTeX fragment in an ArXiv abstract is processed individually. Many inputs will be as short as a single letter (which are variables).
+- Note that inputs may be very short, because each LaTeX fragment in an abstract is processed individually. Many inputs will be as short as a single letter (which are variables).
 - Assume only default environment settings with no redefinitions or uses like `\\newcommand` or `\\begin`. Skip custom operators.
 - Do not modify block-level equations, or complex structures such as diagrams or tables or arrays or matrices (eg `\\begin{bmatrix}`), or illustrations such as drawn by TikZ or `\\draw` , as those require special processing (eg. matrixes must be converted into HTML tables). Do not convert them & simply repeat it if the input is not an inline math expression.
 - If a TeX command has no reasonable Unicode equivalent, such as the `\\overrightarrow{AB}`/`\\vec{AB}` or `\\check{a}` or `\\underline`/`\\overline` commands in LaTeX, simply repeat it.
@@ -212,6 +216,8 @@ lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</e
 %
 - '%'
 %
+- "\\(0.90, 0.91, 0.94\\)"
+0.90, 0.91, 0.94
 
 Task:
 

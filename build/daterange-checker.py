@@ -4,7 +4,7 @@
 # daterange-checker.py: check dates in context for whether they are actually numbers
 # Author: Gwern Branwen
 # Date: 2024-08-04
-# When:  Time-stamp: "2024-08-06 20:12:11 gwern"
+# When:  Time-stamp: "2025-01-01 22:13:41 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python daterange-checker.py
@@ -39,6 +39,9 @@ Classify the input by whether the dates are correctly dates, or numbers incorrec
 For correct inputs, do not print out the input; print out nothing and say nothing.
 For incorrect inputs, print out the exact input; do not reformat or change it.
 (If unsure, print out the input to be safe.)
+
+Preview of input:
+- Input: <text>{target}</text>
 
 Examples:
 

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2024-12-30 14:19:16 gwern"
+# When:  Time-stamp: "2025-01-01 22:17:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -30,6 +30,9 @@ If the title can be fixed, remove the junk (spam, cruft, boilerplate) from the t
 Convert inline Markdown to HTML, like '*foo*' → '<em>foo</em>'
 If the title looks good, then print out the original title.
 If you are unsure how to fix it, then simply print out the original title.
+
+Preview of input:
+- """ + target + """\n
 
 Task examples:
 
@@ -522,6 +525,12 @@ Katri Räikkönen
 ""
 - "Perma"
 ""
+- "Justin Pombrio"
+""
+- "ōtoro.net"
+""
+- "Qitmir (dog&232;)"
+"Qitmir (dog)"
 
 Task:
 

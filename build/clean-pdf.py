@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2024-12-27 18:38:12 gwern"
+# When:  Time-stamp: "2025-01-01 18:39:59 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -45,8 +45,11 @@ Task description: Fix ONLY the PDF OCR errors. Otherwise, copy exactly and do no
 
 In particular, fix hyphens at the end of lines which are not in the original words and are from the PDF hard-wrapping lines. Replace ligatures or control codes with the original letters, like 'ﬄ' → 'ffl'. Strip spurious footnotes, like in author lists.
 
+Preview of input:
+<text>{target}</text>
+
 Examples:
-text>Numer-
+<text>Numer-
 ous approaches attempt to approximate the core attention layer to address its efﬁciency issues (Tay et al. 2022), such as</text> →
 Numerous approaches attempt to approximate the core attention layer to address its efficiency issues (Tay et al. 2022), such as
 
@@ -120,10 +123,15 @@ Patricia A. Fleming, Heather M. Crawford, Clare H. Auckland, Michael C. Calver
 
 <text>Authors: Milton Packer, M.D. https://orcid.org/0000-0003-1828-2387, Michael R. Zile, M.D., Christopher M. Kramer, M.D., Seth J. Baum, M.D., Sheldon E. Litwin, M.D., Venu Menon, M.D., Junbo Ge, M.D., Govinda J. Weerakkody, Ph.D., Yang Ou, Ph.D., Mathijs C. Bunck, M.D., Karla C. Hurt, B.S.N., Masahiro Murakami, M.D., and Barry A. Borlaug</text> →
 Milton Packer, Michael R. Zile, Christopher M. Kramer, Seth J. Baum, Sheldon E. Litwin, Venu Menon, Junbo Ge, Govinda J. Weerakkody, Yang Ou, Mathijs C. Bunck, Karla C. Hurt, Masahiro Murakami, Barry A. Borlaug
-- <text>Abrams, Gerald D., Bauer, Heinz, Sprinz, Helmunz</text> →
+
+<text>Abrams, Gerald D., Bauer, Heinz, Sprinz, Helmunz</text> →
 Gerald D. Abrams, Heinz Bauer, Helmuth Sprinz
-- <text>Helmut A. Gordon, M.D., Edith Bruckner-Kardoss, M.T., Bernard S. Wostmann</text> →
+
+<text>Helmut A. Gordon, M.D., Edith Bruckner-Kardoss, M.T., Bernard S. Wostmann</text> →
 Helmut A. Gordon, Edith Bruckner-Kardoss, Bernard S. Wostmann
+
+<text>Author links open overlay panelFlorence A.R. Oxley a b, Kirsty Wilding a, Sophie von Stumm a</text> →
+Florence A. R. Oxley, Kirsty Wilding, Sophie von Stumm
 
 Input:
 <text>{target}</text> →

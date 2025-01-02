@@ -4,7 +4,7 @@
 # text2epositive.py: text style transfer to negation-free "positive" English ("e-positive" or "abs-e")
 # Author: Gwern Branwen
 # Date: 2024-09-26
-# When:  Time-stamp: "2024-09-26 21:08:14 gwern"
+# When:  Time-stamp: "2025-01-01 22:15:20 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python text2epositive.py
@@ -32,6 +32,9 @@ Examples of negative forms to avoid: "nowhere", "nothing", "cannot", "immortal",
 Preserve the meaning and as much of the original language as possible. If you can't rewrite without altering the meaning, keep the original text unchanged.
 
 Exceptions: Do not modify quotes, source code, URLs, mathematics, tables, or other literals—these should remain intact.
+
+Preview of input:
+- "{target}"
 
 Task examples:
 

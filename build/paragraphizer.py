@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2024-12-31 21:54:40 gwern"
+# When:  Time-stamp: "2025-01-01 22:14:15 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -73,7 +73,7 @@ f"""Task: reformatting abstracts.
 
 Summary: Add linebreaks to a large runon paragraph. As well, add relevant HTML hyperlinks & formatting to text, and add double-newlines to split abstracts into Markdown paragraphs (one topic per paragraph.)
 
-The runon paragraph you will be processing is:
+Preview of input:
 
 - Input: <abstract>{target}</abstract>
 
