@@ -17362,8 +17362,8 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
 					|| block.style.clear > ""))
 				continue;
 
-			block.style.clear = "";
-			block.closest("section").style.clear = "";
+			block.style.removeProperty("clear");
+			block.closest("section")?.style.removeProperty("clear");
 
 			let blockRect = block.getBoundingClientRect();
 			if (   blockRect.top <= TOCRect.bottom
@@ -17377,7 +17377,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
 				TOC.style.marginBottom = "2.5rem";
 			} else if (   blockRect.top > TOCRect.bottom
 					   && block.style.clear == ""
-					   && block.closest("section").style.clear == "") {
+					   && (block.closest("section")?.style.clear > "") == false) {
 				break;
 			}
 		}
