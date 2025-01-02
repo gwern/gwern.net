@@ -84,6 +84,8 @@ Sidenotes = { ...Sidenotes,
 
 	hiddenSidenoteStorage: null,
 
+	sidenotesNeedConstructing: false,
+
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
@@ -98,12 +100,16 @@ Sidenotes = { ...Sidenotes,
 		or, the citation of the same number as the given sidenote.
 	 */
 	counterpart: (element) => {
+		if (element == null)
+			return null;
+
 		let number = Notes.noteNumberFromHash(element.id);
 		let counterpart = (element.classList.contains("sidenote")
 						   ? Sidenotes.citationOfNumber(number)
 						   : Sidenotes.sidenoteOfNumber(number));
 		if (counterpart == null)
 			GWLog(`Counterpart of ${element.tagName}#${element.id}.${(Array.from(element.classList).join("."))} not found!`, "sidenotes.js", 0);
+
 		return counterpart;
 	},
 
@@ -134,10 +140,6 @@ Sidenotes = { ...Sidenotes,
 		let target = location.hash.match(/^#(sn|fnref)[0-9]+$/)
 					 ? getHashTargetedElement()
 					 : null;
-
-		if (target == null)
-			return;
-
 		let counterpart = Sidenotes.counterpart(target);
 
 		//  Mark the target and the counterpart, if any.
@@ -169,8 +171,74 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.positionUpdateQueued = true;
 		requestAnimationFrame(() => {
 			Sidenotes.positionUpdateQueued = false;
+
+			if (Sidenotes.sidenotesNeedConstructing)
+				return;
+
 			Sidenotes.updateSidenotePositions();
 		});
+	},
+
+	updateStateAfterHashChange: () => {
+		GWLog("Sidenotes.updateStateAfterHashChange", "sidenotes.js", 1);
+
+		//	Update highlighted state of sidenote and citation, if need be.
+		Sidenotes.updateTargetCounterpart();
+
+		/*	If hash targets a sidenote, reveal corresponding citation; and
+			vice-versa. Scroll everything into view properly.
+		 */
+		if (location.hash.match(/#sn[0-9]/)) {
+			let citation = document.querySelector("#fnref" + Notes.noteNumberFromHash());
+			if (citation == null)
+				return;
+
+			revealElement(citation, {
+				scrollIntoView: false
+			});
+
+			let sidenote = Sidenotes.counterpart(citation);
+			if (sidenote == null)
+				return;
+
+			Sidenotes.slideLockSidenote(sidenote);
+
+			requestAnimationFrame(() => {
+				scrollElementIntoView(sidenote, {
+					offset: (-1 * (Sidenotes.sidenotePadding + 1))
+				});
+
+				Sidenotes.unSlideLockSidenote(sidenote);
+			});
+		} else if (location.hash.match(/#fnref[0-9]/)) {
+			let citation = getHashTargetedElement();
+			if (citation == null)
+				return;
+
+			let sidenote = Sidenotes.counterpart(citation);
+			if (sidenote == null)
+				return;
+
+			Sidenotes.slideLockSidenote(sidenote);
+
+			requestAnimationFrame(() => {
+				let sidenoteRect = sidenote.getBoundingClientRect();
+				let citationRect = citation.getBoundingClientRect();
+				if (   sidenoteRect.top < Sidenotes.sidenotePadding + 1
+					&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
+					scrollElementIntoView(sidenote, {
+						offset: (-1 * (Sidenotes.sidenotePadding + 1))
+					});
+
+				Sidenotes.unSlideLockSidenote(sidenote);
+			});
+		}
+
+		/*	Hide mode selectors, as they would otherwise overlap a
+			sidenote that’s on the top-right.
+		 */
+		if (Notes.noteNumberFromHash() > "")
+			Sidenotes.hideInterferingUIElements();
 	},
 
 	/*  This function actually calculates and sets the positions of all sidenotes.
@@ -503,11 +571,14 @@ Sidenotes = { ...Sidenotes,
 
 	/*  Destroys the HTML structure of the sidenotes.
 	 */
-	deconstructSidenotes: () => {
+	deconstructSidenotes: (alsoDeconstructInfrastructure = false) => {
 		GWLog("Sidenotes.deconstructSidenotes", "sidenotes.js", 1);
 
 		Sidenotes.sidenotes = null;
 		Sidenotes.citations = null;
+
+		if (alsoDeconstructInfrastructure == false)
+			return;
 
 		if (Sidenotes.sidenoteColumnLeft)
 			Sidenotes.sidenoteColumnLeft.remove();
@@ -525,37 +596,34 @@ Sidenotes = { ...Sidenotes,
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 	 */
-	constructSidenotes: () => {
+	constructSidenotes: (alsoConstructInfrastructure = false) => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
-		/*  Do nothing if constructSidenotes() somehow gets run extremely early
-			in the page load process.
-		 */
-		let markdownBody = document.querySelector("#markdownBody");
-		if (markdownBody == null)
-			return;
-
 		//	Destroy before creating.
-		Sidenotes.deconstructSidenotes();
+		Sidenotes.deconstructSidenotes(alsoConstructInfrastructure);
 
-		//  Add the sidenote columns.
-		Sidenotes.sidenoteColumnLeft = newElement("DIV", { "id": "sidenote-column-left" });
-		Sidenotes.sidenoteColumnRight = newElement("DIV", { "id": "sidenote-column-right" });
-		[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
-			column.classList.add("footnotes");
-			column.style.visibility = "hidden";
-			markdownBody.append(column);
-		});
+		//	Create infrastructure.
+		if (alsoConstructInfrastructure) {
+			let markdownBody = document.querySelector("#markdownBody");
 
-		//	Add the hidden sidenote storage.
-		markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
-			"id": "hidden-sidenote-storage",
-			"class": "footnotes",
-			"style": "display:none"
-		}));
+			//  Add the sidenote columns.
+			Sidenotes.sidenoteColumnLeft = newElement("DIV", { "id": "sidenote-column-left" });
+			Sidenotes.sidenoteColumnRight = newElement("DIV", { "id": "sidenote-column-right" });
+			[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
+				column.classList.add("footnotes", "sidenote-column");
+				column.style.visibility = "hidden";
+				markdownBody.append(column);
+			});
 
-		/*  Create and inject the sidenotes.
-		 */
+			//	Add the hidden sidenote storage.
+			markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
+				"id": "hidden-sidenote-storage",
+				"class": "footnotes",
+				"style": "display:none"
+			}));
+		}
+
+		//  Create and inject the sidenotes.
 		Sidenotes.sidenotes = [ ];
 		//  The footnote references (citations).
 		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
@@ -695,12 +763,13 @@ Sidenotes = { ...Sidenotes,
 		/*	Deactivate active media queries.
 		 */
 		cancelDoWhenMatchMedia("Sidenotes.rewriteHashForCurrentMode");
+		cancelDoWhenMatchMedia("Sidenotes.updateMarginNoteStyleForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.rewriteCitationTargetsForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.addOrRemoveEventHandlersForCurrentMode");
 
 		/*	Remove sidenotes & auxiliaries from HTML.
 		 */
-		Sidenotes.deconstructSidenotes();
+		Sidenotes.deconstructSidenotes(true);
 
 		GW.notificationCenter.fireEvent("Sidenotes.cleanupDidComplete");
 	},
@@ -777,9 +846,9 @@ Sidenotes = { ...Sidenotes,
 		/*	When the main content loads, update the margin note style; and add 
 			event listener to re-update it when the viewport width changes.
 		 */
-		addContentLoadHandler((info) => {
+		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
-				GW.contentInjectHandlers.setMarginNoteStyle(info);
+				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
 			});
 		}, "rewrite", (info) => info.container == document.main, true);
 
@@ -838,60 +907,11 @@ Sidenotes = { ...Sidenotes,
 			sidenote or footnote or citation? We need to scroll appropriately,
 			and do other adjustments, just as we do when the hash updates.
 		 */
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", Sidenotes.updateStateAfterHashChange = (info) => {
-			GWLog("Sidenotes.updateStateAfterHashChange", "sidenotes.js", 1);
-
-			//	Update highlighted state of sidenote and citation, if need be.
-			Sidenotes.updateTargetCounterpart();
-
-			/*	If hash targets a sidenote, reveal corresponding citation; and
-				vice-versa. Scroll everything into view properly.
-			 */
-			if (location.hash.match(/#sn[0-9]/)) {
-				let citation = document.querySelector("#fnref" + Notes.noteNumberFromHash());
-				if (citation == null)
-					return;
-
-				let sidenote = Sidenotes.counterpart(citation);
-
-				revealElement(citation, {
-					scrollIntoView: false
-				});
-
-				Sidenotes.slideLockSidenote(sidenote);
-
-				requestAnimationFrame(() => {
-					scrollElementIntoView(sidenote, {
-						offset: (-1 * (Sidenotes.sidenotePadding + 1))
-					});
-
-					Sidenotes.unSlideLockSidenote(sidenote);
-				});
-			} else if (location.hash.match(/#fnref[0-9]/)) {
-				let citation = getHashTargetedElement();
-				let sidenote = Sidenotes.counterpart(citation);
-
-				Sidenotes.slideLockSidenote(sidenote);
-
-				requestAnimationFrame(() => {
-					let sidenoteRect = sidenote.getBoundingClientRect();
-					let citationRect = citation.getBoundingClientRect();
-					if (   sidenoteRect.top < Sidenotes.sidenotePadding + 1
-						&& citationRect.bottom + (-1 * (sidenoteRect.top - Sidenotes.sidenotePadding)) < window.innerHeight)
-						scrollElementIntoView(sidenote, {
-							offset: (-1 * (Sidenotes.sidenotePadding + 1))
-						});
-
-					Sidenotes.unSlideLockSidenote(sidenote);
-				});
-			}
-
-			/*	Hide mode selectors, as they would otherwise overlap a
-				sidenote that’s on the top-right.
-			 */
-			if (Notes.noteNumberFromHash() > "")
-				Sidenotes.hideInterferingUIElements();
-		}, { once: true });
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", Sidenotes.updateHashTargetedElementStateAfterSidenotesDidConstruct = (eventInfo) => {
+			GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", (eventInfo) => {
+				Sidenotes.updateStateAfterHashChange();
+			}, { once: true });
+		});
 
 		//	Add event listeners, and the switch between modes.
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
@@ -906,7 +926,7 @@ Sidenotes = { ...Sidenotes,
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when full-width media lazy-loads.
 			 */
-			GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (info) => {
+			GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (eventInfo) => {
 				if (isWithinCollapsedBlock(info.mediaElement))
 					return;
 
@@ -916,22 +936,26 @@ Sidenotes = { ...Sidenotes,
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when collapse blocks are expanded/collapsed.
 			 */
-			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (info) => {
+			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			}, { condition: (info) => (info.collapseBlock.closest("#markdownBody") != null) });
+			}, {
+				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
+			});
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when new content is loaded (e.g. via transclusion).
 			 */
-			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (info) => {
+			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (eventInfo) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			}, { condition: (info) => (info.document == document) });
+			}, {
+				condition: (info) => (info.document == document)
+			});
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.
 			 */
 			addWindowResizeListener(Sidenotes.windowResized = (event) => {
-				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
+				GWLog("Sidenotes.windowResized", "sidenotes.js", 3);
 
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, {
@@ -987,18 +1011,29 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		//	Once the sidenotes are constructed, lay them out.
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (eventInfo) => {
 			//	Lay out sidenotes once page layout is complete.
 			doWhenPageLayoutComplete(() => {
 				Sidenotes.updateSidenotePositionsIfNeeded();
 
 				//	Add listener to lay out sidenotes when they are re-constructed.
-				GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (info) => {
+				GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (eventInfo) => {
 					//	Update highlighted state of sidenote and citation, if need be.
 					Sidenotes.updateTargetCounterpart();
 
 					//	Update sidenote positions.
 					Sidenotes.updateSidenotePositionsIfNeeded();
+				});
+
+				/*	Add listener to lay out sidenotes when additional layout is
+					done in the main document.
+				 */
+				GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (eventInfo) => {
+					//	Update sidenote positions.
+					Sidenotes.updateSidenotePositionsIfNeeded();
+				}, {
+					condition: (info) => (   info.processorName == "applyBlockSpacingInContainer"
+										  && info.container == document.main)
 				});
 			});
 		}, { once: true });
@@ -1010,7 +1045,9 @@ Sidenotes = { ...Sidenotes,
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
 			if (eventInfo.container == document.main) {
-				Sidenotes.constructSidenotes();
+				Sidenotes.sidenotesNeedConstructing = true;
+				Sidenotes.constructSidenotes(true);
+				Sidenotes.sidenotesNeedConstructing = false;
 			} else {
 				Sidenotes.sidenotesNeedConstructing = true;
 				requestIdleCallback(() => {

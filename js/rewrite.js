@@ -2787,7 +2787,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
 
 		requestAnimationFrame(rectifyTOCAdjacentBlockLayoutIfNeeded);
 	}, {
-		condition: (layoutEventInfo) => (   layoutEventInfo.blockContainer == markdownBody
+		condition: (layoutEventInfo) => (   layoutEventInfo.container == document.main
 										 && layoutEventInfo.processorName == "applyBlockSpacingInContainer")
 	});
 }, "rewrite", (info) => info.container == document.main);

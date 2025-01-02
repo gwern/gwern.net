@@ -79,7 +79,13 @@ GW.layout = {
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
 		".TOC > *",
-		".popframe"
+		".popframe",
+		"#hidden-sidenote-storage"
+	].join(", "),
+
+	//	Isolate block layout within these elements.
+	blockLayoutIsolationSelector: [
+		".sidenote-column"
 	].join(", "),
 
 	emptyNodeExclusionPredicate: (node) => {
@@ -307,14 +313,23 @@ function startDynamicLayoutInContainer(container) {
 	let observer = new MutationObserver((mutationsList, observer) => {
 		//	Construct list of all block containers affected by these mutations.
 		let affectedBlockContainers = [ ];
+		for (let mutationRecord of mutationsList) {
+			//	Check if the mutated element is within an exclusion zone.
+			if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
+				continue;
 
-		for (mutationRecord of mutationsList) {
-			//	Find block container in which the mutated element is contained.
+			//	Find nearest ancestor block container.
 			let nearestBlockContainer = mutationRecord.target.closest(blockContainersSelector);
+			if (nearestBlockContainer == null)
+				continue;
 
+			//	Enforce isolation zones.
+			let isolationZone = mutationRecord.target.closest(GW.layout.blockLayoutIsolationSelector);
+			if (isolationZone?.closest(blockContainersSelector) == nearestBlockContainer)
+				continue;
+			
 			//	Avoid adding a container twice.
-			if (   nearestBlockContainer != null
-				&& affectedBlockContainers.includes(nearestBlockContainer) == false)
+			if (affectedBlockContainers.includes(nearestBlockContainer) == false)
 				affectedBlockContainers.push(nearestBlockContainer);
 		}
 
