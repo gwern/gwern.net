@@ -316,7 +316,7 @@ Extracts = { ...Extracts,
 /*=-----------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "AUX_LINKS_LINK",       // Type name
+    "AUX_LINKS",            // Type name
     "isAuxLinksLink",       // Type predicate function
     "has-content",          // Target classes to add
     "auxLinksForTarget",    // Pop-frame fill function
@@ -332,12 +332,12 @@ Extracts = { ...Extracts,
     },
 
     /*  This “special testing function” is used to exclude certain targets which
-        have already been categorized as (in this case) `AUX_LINKS_LINK` targets.
+        have already been categorized as (in this case) `AUX_LINKS` targets.
         It returns false if the target is to be excluded, true otherwise.
         Excluded targets will not spawn pop-frames.
      */
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
-    testTarget_AUX_LINKS_LINK: (target) => {
+    testTarget_AUX_LINKS: (target) => {
         let exclude = false;
         let auxLinksType = AuxLinks.auxLinksLinkType(target);
         let containingAnnotation = target.closest(".annotation");
@@ -363,7 +363,7 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    titleForPopFrame_AUX_LINKS_LINK: (popFrame) => {
+    titleForPopFrame_AUX_LINKS: (popFrame) => {
         let target = popFrame.spawningTarget;
         let targetPage = AuxLinks.targetOfAuxLinksLink(target);
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(target);
@@ -380,8 +380,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
-    preparePopFrame_AUX_LINKS_LINK: (popFrame) => {
-        GWLog("Extracts.preparePopFrame_AUX_LINKS_LINK", "extracts-content.js", 2);
+    preparePopFrame_AUX_LINKS: (popFrame) => {
+        GWLog("Extracts.preparePopFrame_AUX_LINKS", "extracts-content.js", 2);
 
         let auxLinksLinkType = AuxLinks.auxLinksLinkType(popFrame.spawningTarget);
         if (auxLinksLinkType > "")
@@ -391,8 +391,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_AUX_LINKS_LINK: (popFrame, contentContainer) => {
-        GWLog("Extracts.rewritePopFrameContent_AUX_LINKS_LINK", "extracts-content.js", 2);
+    rewritePopFrameContent_AUX_LINKS: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_AUX_LINKS", "extracts-content.js", 2);
 
 		if (Extracts.popFrameProvider == Popups) {
 			popFrame.document.querySelectorAll(".backlink-source a:nth-of-type(2)").forEach(fullContextLink => {
@@ -422,7 +422,7 @@ Extracts = { ...Extracts,
 /*=--------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "DROPCAP_INFO_LINK",     // Type name
+    "DROPCAP_INFO",          // Type name
     "isDropcapInfoLink",     // Type predicate function
     null,                    // Target classes to add
     "dropcapInfoForTarget",  // Pop-frame fill function
@@ -450,17 +450,25 @@ Extracts = { ...Extracts,
 			"data-dropcap-type": target.dataset.dropcapType
 		}));
     },
+
+    //  Called by: extracts.js (as `preparePopFrame_${targetTypeName}`)
+	preparePopFrame_DROPCAP_INFO: (popFrame) => {
+		//	Base location is base location of spawning link’s document.
+		popFrame.document.baseLocation = baseLocationForDocument(popFrame.spawningTarget.getRootNode());
+
+		return popFrame;
+	},
 };
 
 /*=-----------=*/
-/*= CITATIONS =*/
+/*= FOOTNOTES =*/
 /*=-----------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "CITATION",           // Type name
-    "isCitation",         // Type predicate function
+    "FOOTNOTE",           // Type name
+    "isFootnoteLink",     // Type predicate function
     null,                 // Target classes to add
-    "citationForTarget",  // Pop-frame fill function
+    "footnoteForTarget",  // Pop-frame fill function
     (popFrame) => [       // Pop-frame classes
 		"footnote",
 		(Extracts.popFrameProvider == Popups
@@ -471,13 +479,13 @@ Extracts.targetTypeDefinitions.insertBefore([
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
-    isCitation: (target) => {
+    isFootnoteLink: (target) => {
         return target.classList.contains("footnote-ref");
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    citationForTarget: (target) => {
-        GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
+    footnoteForTarget: (target) => {
+        GWLog("Extracts.footnoteForTarget", "extracts-content.js", 2);
 
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "include-strict include-spinner-not",
@@ -486,7 +494,7 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    titleForPopFrame_CITATION: (popFrame) => {
+    titleForPopFrame_FOOTNOTE: (popFrame) => {
         let target = popFrame.spawningTarget;
         let footnoteNumber = target.querySelector("sup").textContent;
         let popFrameTitleHTML = `Footnote #${footnoteNumber}`;
@@ -495,7 +503,7 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_CITATION: (popup) => {
+    preparePopup_FOOTNOTE: (popup) => {
         let target = popup.spawningTarget;
 
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
@@ -524,8 +532,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_CITATION: (popFrame, contentContainer) => {
-        GWLog("Extracts.rewritePopFrameContent_CITATION", "extracts-content.js", 2);
+    rewritePopFrameContent_FOOTNOTE: (popFrame, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_FOOTNOTE", "extracts-content.js", 2);
 
 		/*	Unwrap sidenote. (Corrects for edge case where a popup for a section
 			of the current page which is currently within a collapsed section,
@@ -538,15 +546,15 @@ Extracts = { ...Extracts,
     },
 };
 
-/*=---------------------=*/
-/*= CITATIONS BACKLINKS =*/
-/*=---------------------=*/
+/*=-------------------------=*/
+/*= CITATIONS CONTEXT LINKS =*/
+/*=-------------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-    "CITATION_BACK_LINK",         // Type name
-    "isCitationBackLink",         // Type predicate function
+    "CITATION_CONTEXT",           // Type name
+    "isCitationContextLink",      // Type predicate function
     null,                         // Target classes to add
-    "citationBackLinkForTarget",  // Pop-frame fill function
+    "citationContextForTarget",   // Pop-frame fill function
     (popFrame) => [               // Pop-frame classes
 		"citation-context",
 		(Extracts.popFrameProvider == Popups
@@ -557,13 +565,13 @@ Extracts.targetTypeDefinitions.insertBefore([
 
 Extracts = { ...Extracts,
     //  Called by: extracts.js (as `predicateFunctionName`)
-    isCitationBackLink: (target) => {
+    isCitationContextLink: (target) => {
         return target.classList.contains("footnote-back");
     },
 
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    citationBackLinkForTarget: (target) => {
-        GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
+    citationContextForTarget: (target) => {
+        GWLog("Extracts.citationContextForTarget", "extracts-content.js", 2);
 
         return newDocument(synthesizeIncludeLink(target, {
         	class: "include-block-context-expanded include-strict include-spinner-not"
@@ -571,17 +579,17 @@ Extracts = { ...Extracts,
     },
 
     /*  This “special testing function” is used to exclude certain targets which
-        have already been categorized as (in this case) `CITATION_BACK_LINK`
+        have already been categorized as (in this case) `CITATION_CONTEXT`
         targets. It returns false if the target is to be excluded, true
         otherwise. Excluded targets will not spawn pop-frames.
      */
     //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
-    testTarget_CITATION_BACK_LINK: (target) => {
+    testTarget_CITATION_CONTEXT: (target) => {
         return (Extracts.popFrameProvider != Popins);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-    preparePopup_CITATION_BACK_LINK: (popup) => {
+    preparePopup_CITATION_CONTEXT: (popup) => {
         let target = popup.spawningTarget;
 
         //  Do not spawn citation context popup if citation is visible.
@@ -597,8 +605,8 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
-    rewritePopupContent_CITATION_BACK_LINK: (popup, contentContainer) => {
-        GWLog("Extracts.rewritePopupContent_CITATION_BACK_LINK", "extracts-content.js", 2);
+    rewritePopupContent_CITATION_CONTEXT: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopupContent_CITATION_CONTEXT", "extracts-content.js", 2);
 
         //  Highlight citation in popup.
         /*  Remove the .targeted class from a targeted citation (if any)
