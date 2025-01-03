@@ -1910,7 +1910,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSectionSelfLink = (ev
         return;
 
     let footnotesSectionSelfLink = newElement("A", {
-        "class": "section-self-link",
+        "class": "section-self-link graf-content-not",
         "href": "#footnotes",
         "title": "Link to section: § ‘Footnotes’"
     });
@@ -1967,7 +1967,7 @@ addContentLoadHandler(GW.contentLoadHandlers.injectFootnoteSelfLinks = (eventInf
         footnote.insertBefore(newElement("A", {
             href: `#fn${footnoteNumber}`,
             title: `Link to footnote ${footnoteNumber}`,
-            class: "footnote-self-link"
+            class: "footnote-self-link graf-content-not"
         }, {
             innerHTML: "&nbsp;"
         }), footnote.firstChild);

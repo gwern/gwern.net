@@ -971,19 +971,22 @@ function isNodeEmpty(node, options) {
 
 	Available option fields:
 
+	includeSelector (string)
+		Selector for elements which should be considered as content to be
+		wrapped in <p> tags. (By default, this selects the most common inline
+		elements, such as <a>, <span>, etc.)
+
+	excludeSelector (string)
+		Selector for elements which should *not* be considered as content to be
+		wrapped in <p> tags. Note that this option takes priority over the 
+		previous one (`includeSelector`).
+
 	nodeOmissionOptions (object)
 		Options to pass to the isNodeEmpty() call that determines whether a 
 		node should be dropped when aggregating nodes into paragraphs.
 
  */
 function paragraphizeTextNodesOfElement(element, options) {
-	options = Object.assign({
-		nodeOmissionOptions: {
-			alsoExcludeSelector: "a, br", 
-			excludeIdentifiedElements: true
-		}
-	}, options);
-
 	let inlineElementSelector = [
 		"a",
 		"em",
@@ -996,6 +999,15 @@ function paragraphizeTextNodesOfElement(element, options) {
 		"span"
 	].join(", ");
 
+	options = Object.assign({
+		includeSelector: inlineElementSelector,
+		excludeSelector: "",
+		nodeOmissionOptions: {
+			alsoExcludeSelector: "a, br", 
+			excludeIdentifiedElements: true
+		}
+	}, options);
+
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
 	let shouldOmitNode = (node) => isNodeEmpty(node, options.nodeOmissionOptions);
@@ -1005,7 +1017,8 @@ function paragraphizeTextNodesOfElement(element, options) {
 		let omitNode = shouldOmitNode(node);
 		if (   (   node?.nodeType == Node.TEXT_NODE
 				|| (   node?.nodeType == Node.ELEMENT_NODE
-					&& node.matches(inlineElementSelector)))
+					&& node.matches(options.includeSelector) == true
+					&& node.matches(options.excludeSelector) == false))
 			&& omitNode == false) {
 			nodeSequence.push(node);
 		} else if (omitNode) {

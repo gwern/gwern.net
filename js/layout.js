@@ -812,6 +812,9 @@ function stripDropcapClassesFrom(block) {
  */
 function paragraphizeTextNodesOfElementRetainingMetadata(element) {
 	paragraphizeTextNodesOfElement(element, {
+		excludeSelector: [
+			".graf-content-not"		
+			].join(", "),
 		nodeOmissionOptions: {
 			alsoExcludePredicate: GW.layout.emptyNodeExclusionPredicate,
 			alsoExcludeSelector: "a, br, ul, ol", 
