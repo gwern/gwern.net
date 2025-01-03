@@ -1223,6 +1223,13 @@ figure .image-wrapper::before {
 	max-width: unset;
 }
 
+/*	Figures in blockquotes.
+ */
+blockquote figure.outline-not img,
+blockquote figure.outline-not video {
+	outline: 1px solid var(--border-color);
+}
+
 /*  Image alt-text.
     */
 img::before {
