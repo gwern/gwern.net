@@ -570,6 +570,12 @@ canonicals = M.fromList
   , ("United States Patent and Trademark Office", "USPTO")
   , ("hardmaru", "David Ha")
   , ("QuintinPope5", "Quintin Pope")
+  , ("Beate St. Pourcain", "Beate St Pourcain")
+  , ("Beate Pourcain", "Beate St Pourcain")
+  , ("Beate S. Pourcain", "Beate St Pourcain")
+  , ("B. S. Pourcain", "Beate St Pourcain")
+  , ("Pourcain", "Beate St Pourcain")
+  , ("St Pourcain", "Beate St Pourcain")
   ]
 
 -- tests: unique
@@ -1116,10 +1122,14 @@ authorLinkDB = M.fromList $
     , ("USPTO", "https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office")
     , ("George McMahon", "https://scholar.google.com/scholar?q=George+McMahon+genetics")
     , ("George Kirov", "https://profiles.cardiff.ac.uk/staff/kirov")
-    , ("Gabriel Goh", "https://scholar.google.com/citations?user=2O3IZlkAAAAJ&hl=en&oi=ao")
+    , ("Gabriel Goh", "https://scholar.google.com/citations?user=2O3IZlkAAAAJ")
     , ("David Ha", "https://otoro.net/ml/")
     , ("Zhengdong Wang", "https://zhengdongwang.com/")
     , ("Quintin Pope", "https://www.lesswrong.com/users/quintin-pope")
+    , ("David A. Bennett", "https://en.wikipedia.org/wiki/David_Bennett_(neurologist)")
+    , ("Christopher Potts", "https://scholar.google.com/citations?user=3j08YoAAAAAJ")
+    , ("Caglar Gulcehre", "https://www.caglarg.com/")
+    , ("Beate St Pourcain", "https://scholar.google.com/citations?user=anzvUNIAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2355,4 +2365,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb"]

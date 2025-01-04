@@ -231,7 +231,7 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])", " \\1,\\2,\\3,\\4,\\5") -- trillions
          , ("([0-9]+) ([0-9]+)",                                                             "\\1,\\2") -- '50 000' → '50,000'
          , ("([0-9]+) percent([ [:punct:]])", "\\1%\\2") -- eg '$22,000 (46 percent) higher annual early-career wages than they would'
-         , ("\\(([0-9\\.]+)x ", "(\\1× ") -- "we are faster (10.1x faster) than a competitor" → "we are faster (10.1× faster) than a competitor"
+         , ("\\(([0-9\\.]+)[xX] ", "(\\1× ") -- "we are faster (10.1x faster) than a competitor" → "we are faster (10.1× faster) than a competitor"
          , ("([0-9][0-9]+) [xX] ([0-9][0-9]+) ", "\\1×\\2") -- "high fidelity generation of 1024 x 1024 images" / "0.85 X 30 mEq/kg"
          , ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px") --  "Alexnet performance for 16 x16 px features)."
          , ("([0-9]+)[ -]fold", "\\1×")
@@ -261,8 +261,8 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , (" -([0-9])", " −\\1") -- eg. 'β = -0.08', HYPHEN to MINUS SIGN; review of annotations shows that this is almost always safe to do except in a few very rare cases like a psychiatry paper abbreviating 'DSM-3, -4, and -5'.
          , ("×10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>")
          , (" × 10[-–—]([0-9]+)", " × 10<sup>−\\1</sup>") -- the Unicode '×' seems to never match when used inside a range...?
-         , ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>")
-         , ("([0-9]) [x×] 10\\([-–—]([0-9]+)\\)", "\\1 × 10<sup>−\\2</sup>")
+         , ("([0-9]) [x×X] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>")
+         , ("([0-9]) [x×X] 10\\([-–—]([0-9]+)\\)", "\\1 × 10<sup>−\\2</sup>")
          , ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>") -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
          , ("([0-9]+)\\^([0-9\\.]+)", "\\1<sup>\\2</sup>") -- eg '(p<10^4)'
          , ("([0-9]+)\\^[-−]([0-9\\.]+)", "\\1<sup>−\\2</sup>") -- eg '(p<10^-4)'

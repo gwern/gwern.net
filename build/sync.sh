@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-12-31 13:09:26 gwern"
+# When:  Time-stamp: "2025-01-03 12:36:12 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -327,7 +327,7 @@ else
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
-    bold "Generating HTML previews of document types like MS Word…"
+    bold "Generating HTML previews of document types (like MS Word)…"
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     convert_to_html() {
@@ -858,7 +858,7 @@ else
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
             -- ./metadata/*.gtx; }
-    wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)."
+    wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 
     λ(){ gfc -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
             -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '/p&gt;' -e '<i><i' -e '</e>' -e '>>' \
@@ -875,7 +875,7 @@ else
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
             -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx | gfv 'jamais vu'; }
-    wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)."
+    wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)." &
     λ(){ gfc -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age ' -e '….' -e '((' -e ' %' \
             -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
@@ -982,7 +982,7 @@ else
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database" &
 
     λ(){ grep --perl-regexp --null --color --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
-    wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)"
+    wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)" &
 
     λ(){ gfc -e ' significant'  ./metadata/full.gtx; }
     wrap λ "Misleading language in full.gtx" &
@@ -1046,6 +1046,8 @@ else
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links" &
 
+    wait;
+
     ## Is the remote server up?
     ping -q -c 5 gwern.net  &>/dev/null
 
@@ -1054,7 +1056,6 @@ else
 
     # Sync:
     set -e
-    wait;
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ./ -type d) &
     chmod --recursive a+r ./* &

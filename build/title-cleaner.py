@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-01 22:17:07 gwern"
+# When:  Time-stamp: "2025-01-03 14:35:58 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -531,6 +531,12 @@ Katri Räikkönen
 ""
 - "Qitmir (dog&232;)"
 "Qitmir (dog)"
+- "Research Scientist"
+""
+- "http://jpkoning.blogspot.com/2024/12/after-twelve-years-of-writing-about.html Moneyness: After 12 years of writing about bitcoin, here’s how my thinking has changed"
+"After 12 years of writing about bitcoin, here’s how my thinking has changed"
+- "Spotmicro—robot dog by KDY0523—Thingiverse"
+"Spotmicro—robot dog"
 
 Task:
 

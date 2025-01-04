@@ -437,6 +437,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychology/nature", "psych of nature")
   , ("psychology/dark-knowledge", "dark knowledge (human)")
   , ("psychedelic/lsd", "LSD")
+  , ("psychedelic/ketamine", "ketamine")
   , ("psychedelic", "psychedelics")
   , ("statistics/prediction/election", "election forecast")
   , ("statistics/prediction", "forecasting")

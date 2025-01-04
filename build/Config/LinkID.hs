@@ -2890,4 +2890,5 @@ linkIDOverrides =
   , ("https://www.newyorker.com/magazine/2001/12/10/the-bench-burner","macfarquhar-2001-posner")
   , ("https://www.reddit.com/r/mlscaling/comments/1djoqjh/ilya_sutskever_launches_safe_superintelligence_a/l9uogp9/","gwern-2024-oamojo")
   , ("https://arxiv.org/abs/2206.02279","sharma-et-al-2022-1"),("/doc/psychiatry/lithium/2022-sharma.pdf","sharma-et-al-2022-2")
+  , ("https://zhengdongwang.com/2024/12/29/2024-letter.html","wang-2024-llm"),("https://www.nytimes.com/2024/05/25/world/asia/china-surveillance-xi.html","wang-2024-surveillance")
       ]

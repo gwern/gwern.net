@@ -5966,4 +5966,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Suno", "Suno_AI")
         , ("Elo", "Elo_rating_system")
         , ("Fermi_Problem", "Fermi_problem")
+        , ("Test-retest", "Repeatability")
+        , ("☞", "Manicule")
         ]

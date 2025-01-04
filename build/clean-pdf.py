@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-01 18:39:59 gwern"
+# When:  Time-stamp: "2025-01-03 14:09:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -132,6 +132,12 @@ Helmut A. Gordon, Edith Bruckner-Kardoss, Bernard S. Wostmann
 
 <text>Author links open overlay panelFlorence A.R. Oxley a b, Kirsty Wilding a, Sophie von Stumm a</text> →
 Florence A. R. Oxley, Kirsty Wilding, Sophie von Stumm
+
+<text>Pronoiais the delusionthat othersthinkwellof one. Actionsandthe productsof one'seffortsarethought
+to be well receivedand praisedby otherswho, when they talk behindone's back, must be sayinggood
+things,not bad. Mereacquaintancesareseenas close friends.Politenessand the exchangeof pleasantries
+are interpretedas expressionsof deep attachmentand the promiseof futuresuppor</text> →
+Pronoia is the delusion that others think well of one. Actions and the products of one's efforts are thought to be well received and praised by others who, when they talk behind one's back, must be saying good things, not bad. Mere acquaintances are seen as close friends. Politeness and the exchange of pleasantries are interpreted as expressions of deep attachment and the promise of future support.
 
 Input:
 <text>{target}</text> →

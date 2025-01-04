@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2024-12-31 14:19:14 gwern"
+When:  Time-stamp: "2025-01-01 14:45:04 gwern"
 License: CC-0
 -}
 
@@ -124,7 +124,7 @@ updateGwernEntries = do rescrapeGTX gwernEntries "metadata/full.gtx"
   where gwernEntries path = ("/" `isPrefixOf` path || "https://gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)
 
 -- eg. to rescrape a specific page from the CLI:
--- `cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'rescrapeGTX (\p -> p == "/review/quantum-thief") "metadata/half.gtx"'`
+-- `cd ~/wiki/ && ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'rescrapeGTX (\p -> p == "/fiction/christmas") "metadata/half.gtx"'`
 rescrapeGTX :: (Path -> Bool) -> Path -> IO ()
 rescrapeGTX filterF gtxpath = do dbl <- readGTXFast gtxpath
                                  let paths = filter filterF $ map fst dbl
