@@ -1653,7 +1653,7 @@ figure.width-full {
     left: unset;
 
     /*  We inherit left and right padding from .sidenote class. */
-    padding-top: 0.5em;
+    padding-top: 0.2em;
     padding-bottom: 0.5em;
 
     font-size: calc(var(--GW-body-text-font-size) * 0.85);
@@ -1681,24 +1681,17 @@ figure.width-full {
     right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
 }
 
-/*  Special “manicule” margin notes.
-    For manual use, see '.icon-manicule-right' (default), and '.icon-manicule-left' (mirrored).
+/*  Special “icon only” margin notes.
  */
-.marginnote.manicule svg {
-    display: inline-block;
-    width: 1.75em;
-    top: 0.2em;
-    position: relative;
-    opacity: 0.9;
-}
-#markdownBody .marginnote.manicule.sidenote {
-    font-size: inherit;
-    padding-top: 0.2em;
-    opacity: 1;
+#markdownBody .marginnote.only-icon {
     pointer-events: none;
 }
-#markdownBody .marginnote.manicule.sidenote::after {
-    display: none;
+#markdownBody .marginnote.only-icon.inline {
+	margin-right: 0.2em;
+}
+#markdownBody .marginnote.only-icon.sidenote {
+	font-size: inherit;
+    padding-top: 0.1em;
 }
 
 /*******************************************/
@@ -1860,9 +1853,12 @@ a code {
 	--icon-opacity: 1.00;
 	--icon-width: 1.00em;
 	--icon-height: 1.00em;
+	--icon-offset-x: 0.00em;
+	--icon-offset-y: 0.00em;
 
     position: relative;
-    top: 0.05em;
+    top: calc(0.05em + var(--icon-offset-y));
+    left: var(--icon-offset-x);
     background-color: var(--link-underline-background-color);
 	padding-left: calc(var(--icon-width) + 0.2em);
 }
@@ -1891,12 +1887,17 @@ a code {
 }
 .icon-book-open-solid,
 .icon-message-slash-solid,
-.icon-eye-slash-solid,
-.icon-manicule-left,
-.icon-manicule-right {
+.icon-eye-slash-solid {
 	--icon-opacity: 0.70;
     --icon-width: 0.90em;
     --icon-height: 0.75em;
+}
+.icon-manicule-left,
+.icon-manicule-right {
+	--icon-opacity: 0.85;
+    --icon-width: 1.70em;
+    --icon-height: 1.10em;
+    --icon-offset-y: -0.05em;
 }
 .icon-sun-solid {
 	--icon-opacity: 0.75;

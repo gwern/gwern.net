@@ -53,7 +53,7 @@ Sidenotes = {
 		".backlink-context",
 		".margin-notes-block",
 		".footnote",
-		".sidenote"
+		".sidenote > *"
 	],
 
 	/*	The smallest width (in CSS dimensions) at which sidenotes will be shown.

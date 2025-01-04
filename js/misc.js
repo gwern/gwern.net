@@ -920,7 +920,7 @@ function aggregateMarginNotesInDocument(doc) {
     let marginNotesBlockClass = "margin-notes-block";
 
     doc.querySelectorAll(".marginnote").forEach(marginNote => {
-        if (marginNote.textContent.trim() == "☞")
+        if (marginNote.classList.contains("only-icon"))
             return;
 
         let section = marginNote.closest("section, .markdownBody, .annotation-abstract");

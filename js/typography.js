@@ -189,7 +189,7 @@ Typography = {
 			if (Typography.excludedTags.includes(element.nodeName))
 				return [ text, textNodes ];
 
-			for (node of element.childNodes) {
+			for (let node of element.childNodes) {
 				if (node.nodeType === Node.TEXT_NODE) {
 					textNodes.push(node);
 					text += node.nodeValue;
@@ -221,7 +221,7 @@ Typography = {
 	},
 	rectifyWordBreaks: (element) => {
 		let replacements = [ ];
-		for (node of element.childNodes) {
+		for (let node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.rectifyWordBreaks(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
@@ -240,7 +240,8 @@ Typography = {
 							replacementNodes.push(document.createTextNode(node.textContent.slice(...part)));
 						replacementNodes.push(newElement("WBR"));
 					});
-					replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+					if (node.textContent.length > start)
+						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
 					replacements.push([ node, replacementNodes ]);
 				}
 			}

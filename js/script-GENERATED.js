@@ -1477,7 +1477,7 @@ function aggregateMarginNotesInDocument(doc) {
     let marginNotesBlockClass = "margin-notes-block";
 
     doc.querySelectorAll(".marginnote").forEach(marginNote => {
-        if (marginNote.textContent.trim() == "☞")
+        if (marginNote.classList.contains("only-icon"))
             return;
 
         let section = marginNote.closest("section, .markdownBody, .annotation-abstract");
@@ -14168,7 +14168,7 @@ Typography = {
 			if (Typography.excludedTags.includes(element.nodeName))
 				return [ text, textNodes ];
 
-			for (node of element.childNodes) {
+			for (let node of element.childNodes) {
 				if (node.nodeType === Node.TEXT_NODE) {
 					textNodes.push(node);
 					text += node.nodeValue;
@@ -14200,7 +14200,7 @@ Typography = {
 	},
 	rectifyWordBreaks: (element) => {
 		let replacements = [ ];
-		for (node of element.childNodes) {
+		for (let node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.rectifyWordBreaks(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
@@ -14219,7 +14219,8 @@ Typography = {
 							replacementNodes.push(document.createTextNode(node.textContent.slice(...part)));
 						replacementNodes.push(newElement("WBR"));
 					});
-					replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+					if (node.textContent.length > start)
+						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
 					replacements.push([ node, replacementNodes ]);
 				}
 			}
@@ -15779,17 +15780,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteInterviews = (eventInfo) => 
 /* MARGIN NOTES */
 /****************/
 
-addContentLoadHandler(GW.contentLoadHandlers.prettifyManiculeMarginNotes = (eventInfo) => {
-    GWLog("prettifyManiculeMarginNotes", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
-        if (marginnote.innerHTML == "☞") { // U+261E WHITE RIGHT POINTING INDEX
-            marginnote.innerHTML = GW.svg("manicule-right");
-            marginnote.classList.add("manicule");
-        }
-    });
-}, "rewrite");
-
 /*************************************************************/
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
@@ -15800,6 +15790,12 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
         let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
         innerWrapper.append(...marginnote.childNodes);
         marginnote.append(innerWrapper);
+
+		/*	Designate those margin notes which consist of just an icon (e.g. 
+			manicule).
+		 */
+		if (innerWrapper.textContent.trim().length <= 1)
+			marginnote.classList.add("only-icon");
     });
 }, "rewrite");
 
@@ -15868,6 +15864,60 @@ addContentLoadHandler(GW.contentLoadHandlers.removeExtraneousWhitespaceFromCitat
                 && isNodeEmpty(citationPart.nextSibling))
                 citationPart.nextSibling.remove();
         });
+    });
+}, "rewrite");
+
+/**********************************************************/
+/*	Convert Unicode “icon” glyphs into proper inline icons.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.iconifyUnicodeIconGlyphs = (eventInfo) => {
+    GWLog("iconifyUnicodeIconGlyphs", "rewrite.js", 1);
+
+	let glyphIconMapping = {
+		"☞": "icon-manicule-right"  // U+261E WHITE RIGHT POINTING INDEX
+	};
+
+	let processElement = (element) => {
+		let replacements = [ ];
+		for (let node of element.childNodes) {
+			if (node.nodeType === Node.ELEMENT_NODE) {
+				processElement(node);
+
+				if (node.classList.containsAnyOf(Object.values(glyphIconMapping)))
+					replacements.push([ node, node.childNodes ]);
+			} else if (node.nodeType === Node.TEXT_NODE) {
+				let glyphRegExp = new RegExp(Object.keys(glyphIconMapping).join("|"), "g");
+				let parts = [ ];
+				let start = 0;
+				let match = null;
+				while (match = glyphRegExp.exec(node.textContent)) {
+					parts.push([ match[0], start, match.index ]);
+					start = match.index + match[0].length;
+				}
+				if (parts.length > 0) {
+					let replacementNodes = [ ];
+					parts.forEach(part => {
+						if (part[1] > part[0])
+							replacementNodes.push(document.createTextNode(node.textContent.slice(...(part.slice(1,2)))));
+						replacementNodes.push(newElement("SPAN", { "class": glyphIconMapping[part[0]] }));
+					});
+					if (node.textContent.length > start)
+						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+					replacements.push([ node, replacementNodes ]);
+				}
+			}
+		}
+		if (replacements.length > 0) {
+			//	Replace.
+			replacements.forEach(replacement => {
+				let [ replacedNode, replacementNodes ] = replacement;
+				replacedNode.parentNode.replaceChild(newDocument(replacementNodes), replacedNode);
+			});
+		}
+	}
+
+    eventInfo.container.querySelectorAll("p").forEach(graf => {
+    	processElement(graf);
     });
 }, "rewrite");
 
@@ -18881,7 +18931,7 @@ Sidenotes = {
 		".backlink-context",
 		".margin-notes-block",
 		".footnote",
-		".sidenote"
+		".sidenote > *"
 	],
 
 	/*	The smallest width (in CSS dimensions) at which sidenotes will be shown.
