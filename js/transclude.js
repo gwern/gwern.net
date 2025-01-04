@@ -348,9 +348,16 @@
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
-		(Footnotes, Further Reading, Backlinks, Link Bibliography), as well as
+		(Footnotes, Backlinks, Similar Links, Link Bibliography), as well as
 		the page tags and the date/status/confidence/importance/etc. metadata
 		fields block.
+
+		Note that this option is redundant when transcluding into a full page
+		(i.e., a page with a #page-metadata section), because in such a case,
+		all auxiliary content sections, as well as the entire #page-metadata 
+		section, are stripped from a transcluded page. (The content of some of
+		the stripped sections, such as the backlinks and the footnotes, are 
+		then integrated into the host page.)
 
 	class="include-content-no-header"
 
@@ -843,24 +850,19 @@ function includeContent(includeLink, content) {
 	let shouldLocalize = shouldLocalizeContentFromLink(includeLink);
 
     /*  When transcluding into a full page, delete various “metadata” sections
-    	such as page-metadata, footnotes, etc. (Save references to some.)
+    	such as page-metadata, footnotes, etc.
      */
-    let shouldMergeFootnotes = false;
-	let newContentFootnotesSection = wrapper.querySelector("#footnotes");
     if (transcludingIntoFullPage) {
     	let metadataSectionsSelector = [
     		"#page-metadata",
     		"#footnotes",
-    		"#further-reading",
+    		"#backlinks-section",
     		"#similars-section",
     		"#link-bibliography-section"
     	].join(", ");
     	wrapper.querySelectorAll(metadataSectionsSelector).forEach(section => {
     		section.remove();
     	});
-
-		shouldMergeFootnotes = (   shouldLocalize
-								&& newContentFootnotesSection != null);
     }
 
     //  ID transplantation.
@@ -902,8 +904,6 @@ function includeContent(includeLink, content) {
 		flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 	if (shouldLocalize)
 		flags |= GW.contentDidInjectEventFlags.localize;
-	if (shouldMergeFootnotes)
-		flags |= GW.contentDidInjectEventFlags.mergeFootnotes;
 	GW.notificationCenter.fireEvent("GW.contentDidInject", {
 		source: "transclude",
 		contentType: contentTypeIdentifierForIncludeLink(includeLink),
@@ -1042,21 +1042,24 @@ function includeContent(includeLink, content) {
         }
     }
 
-	//	Distribute backlinks, if need be.
-	if (   transcludingIntoFullPage
-		&& loadLocationForIncludeLink(includeLink) != null
-		&& AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
-		&& wrapper.closest("#backlinks-section") != null)
-		distributeSectionBacklinks(includeLink, wrapper);
+	/*	Updates to page sections outside the wrapper, when transcluding into a
+		full page (whether the base page or otherwise).
+	 */
+	if (transcludingIntoFullPage) {
+		//	Distribute backlinks, when transcluding the backlinks section.
+		if (   AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
+			&& wrapper.closest("#backlinks-section") != null)
+			distributeSectionBacklinks(includeLink, wrapper);
+	
+		//  Update footnotes, when transcluding localizable content.
+		if (shouldLocalize)
+			updateFootnotesAfterInclusion(includeLink, wrapper);
 
-    //  Update footnotes, if need be, when transcluding into a full page.
-    if (shouldMergeFootnotes)
-        updateFootnotesAfterInclusion(includeLink, wrapper, newContentFootnotesSection);
-
-	//  Update TOC, if need be, when transcluding into the base page.
-    if (   containingDocument == document
-		&& shouldLocalize)
-        updatePageTOCIfNeeded(wrapper.parentElement);
+		//  Update TOC, when transcluding localizable content into the base page.
+		if (   containingDocument == document
+			&& shouldLocalize)
+			updatePageTOCIfNeeded(wrapper.parentElement);
+	}
 
 	//	Aggregate margin notes.
 	aggregateMarginNotesIfNeededInDocument(containingDocument);
@@ -1219,27 +1222,20 @@ function importStylesAfterTransclusion(includeLink) {
 	});
 }
 
-/**************************************************************************/
+/************************************************/
 /*  Updates footnotes section after transclusion.
-
-    Returns wrapper element of the added footnotes, if any; null otherwise.
  */
 //  Called by: includeContent
-function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootnotesSection) {
+function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
     GWLog("updateFootnotesAfterInclusion", "transclude.js", 2);
 
-	/*	If the transcluded content didn’t include the footnotes section of the
-		source page, attempt to get the footnotes section from the cached full
-		document that the new content was sliced from.
+	/*	Get the footnotes section associated with the transcluded content from 
+		the cached full document that the new content was sliced from.
 	 */
-    if (   newContentFootnotesSection == null
-    	&& Transclude.isAnnotationTransclude(includeLink) == false) {
-    	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
-    	if (newContentSourceDocument)
-    		newContentFootnotesSection = newContentSourceDocument.querySelector("#footnotes");
-    }
+	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
+	let newContentFootnotesSection = newContentSourceDocument?.querySelector("#footnotes");
 
-    let citationsInNewContent = newContent.querySelectorAll(".footnote-ref");
+    let citationsInNewContent = newContentWrapper.querySelectorAll(".footnote-ref");
     if (   citationsInNewContent.length == 0
         || newContentFootnotesSection == null)
         return;
@@ -1248,7 +1244,7 @@ function updateFootnotesAfterInclusion(includeLink, newContent, newContentFootno
 
 	//	If the host page doesn’t have a footnotes section, construct one.
     let footnotesSection = containingDocument.querySelector(".markdownBody > #footnotes");
-    if (!footnotesSection) {
+    if (footnotesSection == null) {
         //  Construct footnotes section.
         footnotesSection = newElement("SECTION", { "id": "footnotes", "class": "footnotes", "role": "doc-endnotes" });
         footnotesSection.append(newElement("HR"));
