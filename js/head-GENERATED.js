@@ -3645,10 +3645,6 @@ function addLayoutProcessor(name, processor, options) {
 	Fires didComplete event for each time a layout processor fires.
  */
 function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container) {
-	if (   processorSpec.options.blockLayout == true
-		&& blockContainer.closest(GW.layout.blockLayoutExclusionSelector) != null)
-		return;
-
 	processorSpec.processor(blockContainer);
 
 	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
@@ -3671,47 +3667,57 @@ function startDynamicLayoutInContainer(container) {
 		//	Construct list of all block containers affected by these mutations.
 		let affectedBlockContainers = [ ];
 		for (let mutationRecord of mutationsList) {
-			//	Check if the mutated element is within an exclusion zone.
-			if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
-				continue;
-
 			//	Find nearest ancestor block container.
 			let nearestBlockContainer = mutationRecord.target.closest(blockContainersSelector);
 			if (nearestBlockContainer == null)
 				continue;
 
-			//	Enforce isolation zones.
+			/*	Track whether block layout should be done in this block 
+				container, or only non-block rewrites.
+			 */
+			let blockContainerEntry = {
+				blockContainer: nearestBlockContainer,
+				doBlockLayout: true
+			};
+
+			//	Enforce block layout exclusion zones.
+			if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
+				blockContainerEntry.doBlockLayout = false;
+
+			//	Enforce block layout isolation zones.
 			let isolationZone = mutationRecord.target.closest(GW.layout.blockLayoutIsolationSelector);
 			if (isolationZone?.closest(blockContainersSelector) == nearestBlockContainer)
-				continue;
+				blockContainerEntry.doBlockLayout = false;
 			
-			//	Avoid adding a container twice.
-			if (affectedBlockContainers.includes(nearestBlockContainer) == false)
-				affectedBlockContainers.push(nearestBlockContainer);
+			//	Avoid adding a block container twice.
+			if (affectedBlockContainers.findIndex(x => x.blockContainer == blockContainerEntry.blockContainer) == -1)
+				affectedBlockContainers.push(blockContainerEntry);
 		}
 
 		/*	Exclude block containers that are contained within other block
 			containers in the list, to prevent redundant processing.
 		 */
 		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x =>
-			(c.compareDocumentPosition(x) & Node.DOCUMENT_POSITION_CONTAINS)
+			(c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS)
 		) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
 		 */
-		affectedBlockContainers.forEach(affectedBlockContainer => {
-			if (GW.layout.blockContainersNeedingLayout.includes(affectedBlockContainer) == false)
-				GW.layout.blockContainersNeedingLayout.push(affectedBlockContainer);
+		affectedBlockContainers.forEach(blockContainerEntry => {
+			if (GW.layout.blockContainersNeedingLayout.includes(blockContainerEntry) == false)
+				GW.layout.blockContainersNeedingLayout.push(blockContainerEntry);
 		});
 		requestAnimationFrame(() => {
 			GW.layout.currentPassBegin = performance.now();
 
 			//	Do layout in all waiting block containers.
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {
-				let nextBlockContainer = GW.layout.blockContainersNeedingLayout.shift();
+				let nextBlockContainerEntry = GW.layout.blockContainersNeedingLayout.shift();
 				GW.layout.layoutProcessors.forEach(processorSpec => {
-					applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainer, container);
+					if (   processorSpec.options.blockLayout == false
+						|| nextBlockContainerEntry.doBlockLayout == true)
+						applyLayoutProcessorToBlockContainer(processorSpec, nextBlockContainerEntry.blockContainer, container);
 				});
 			}
 		});
