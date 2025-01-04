@@ -2098,8 +2098,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                 || (   injectingIntoFullPage
                            //  if we’re transcluding a citation (because we merge footnotes)
                     && (   (   eventInfo.source == "transclude"
-                            && link.classList.contains("footnote-ref")
-                            && eventInfo.mergeFootnotes == true)
+                            && link.classList.contains("footnote-ref"))
                            //  if we’re merging a footnote for transcluded content
                         || (   eventInfo.source == "transclude.footnotes"
                             && link.classList.contains("footnote-back"))
