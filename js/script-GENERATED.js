@@ -13055,10 +13055,12 @@ Extracts = { ...Extracts,
     footnoteForTarget: (target) => {
         GWLog("Extracts.footnoteForTarget", "extracts-content.js", 2);
 
-		return newDocument(synthesizeIncludeLink(target, {
+		let includeLink = synthesizeIncludeLink(target, {
 			"class": "include-strict include-spinner-not",
 			"data-include-selector-not": ".footnote-self-link, .footnote-back"
-		}));
+		})
+		includeLink.hash = Notes.footnoteSelectorMatching(target);
+		return newDocument(includeLink);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -13097,21 +13099,7 @@ Extracts = { ...Extracts,
 		});
 
         return popup;
-    },
-
-    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    rewritePopFrameContent_FOOTNOTE: (popFrame, contentContainer) => {
-        GWLog("Extracts.rewritePopFrameContent_FOOTNOTE", "extracts-content.js", 2);
-
-		/*	Unwrap sidenote. (Corrects for edge case where a popup for a section
-			of the current page which is currently within a collapsed section,
-			contains a footnote reference. Hovering over the citation will spawn
-			a popup instead of sliding up the sidenote, as the latter is hidden.
-			The sidenote, once transcluded, must then be unwrapped specially.)
-		 */
-		if (contentContainer.firstElementChild.classList.contains("sidenote"))
-			unwrap(contentContainer.querySelector(".sidenote-inner-wrapper"));
-    },
+    }
 };
 
 /*=-------------------------=*/
