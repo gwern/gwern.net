@@ -1070,11 +1070,11 @@ Sidenotes = { ...Sidenotes,
 		requestAnimationFrame(() => {
 			setTimeout(() => {
 				//	Page toolbar.
-				GW.pageToolbar.toggleCollapseState(true);
-				GW.pageToolbar.fade();
+				GW.pageToolbar?.toggleCollapseState(true);
+				GW.pageToolbar?.fade();
 
 				//	Back-to-top link.
-				GW.backToTop.classList.toggle("hidden", true)
+				GW.backToTop?.classList.toggle("hidden", true)
 			}, 25);
 		});
 	},
