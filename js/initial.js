@@ -901,14 +901,6 @@ GW.notificationCenter = {
 				into which it is being injected. (Affects things like link
 				qualification. See transclude.js for more information.)
 				Generally true for page content, false for auxiliary content.
-
-			‘mergeFootnotes’
-				Specifies whether footnotes in the content will be merged into
-				the page wherein the content is being injected. Inapplicable on
-				the initial page load, generally false for auxiliary content;
-				generally true for page content, if the ‘localize’ flag is true
-				(although false in some cases even then; see, e.g., the
-				.include-content-core alias class in transclude.js).
  */
 
 GW.contentLoadHandlers = { };

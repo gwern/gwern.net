@@ -348,9 +348,16 @@
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
-		(Footnotes, Further Reading, Backlinks, Link Bibliography), as well as
+		(Footnotes, Backlinks, Similar Links, Link Bibliography), as well as
 		the page tags and the date/status/confidence/importance/etc. metadata
 		fields block.
+
+		Note that this option is redundant when transcluding into a full page
+		(i.e., a page with a #page-metadata section), because in such a case,
+		all auxiliary content sections, as well as the entire #page-metadata 
+		section, are stripped from a transcluded page. (The content of some of
+		the stripped sections, such as the backlinks and the footnotes, are 
+		then integrated into the host page.)
 
 	class="include-content-no-header"
 
@@ -849,7 +856,7 @@ function includeContent(includeLink, content) {
     	let metadataSectionsSelector = [
     		"#page-metadata",
     		"#footnotes",
-    		"#further-reading",
+    		"#backlinks-section",
     		"#similars-section",
     		"#link-bibliography-section"
     	].join(", ");
