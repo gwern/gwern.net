@@ -18879,7 +18879,9 @@ Sidenotes = {
 
 	constrainMarginNotesWithinSelectors: [
 		".backlink-context",
-		".margin-notes-block"
+		".margin-notes-block",
+		".footnote",
+		".sidenote"
 	],
 
 	/*	The smallest width (in CSS dimensions) at which sidenotes will be shown.
