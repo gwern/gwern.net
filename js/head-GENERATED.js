@@ -3484,6 +3484,8 @@ GW.layout = {
 
 		[ "section#see-also.first-block", 				 4, false ],
 
+		[ "#link-bibliography-section",                 15, false ],
+
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
 
