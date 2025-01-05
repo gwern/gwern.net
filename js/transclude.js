@@ -828,7 +828,7 @@ function includeContent(includeLink, content) {
 
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
-    let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
+    let transcludingIntoFullPage = (containingDocument.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
@@ -1117,7 +1117,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
 			//	Backlinks block.
-			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
+			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
 
 			//	Label.
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
@@ -1526,7 +1526,8 @@ Transclude = {
 	blockContext: (element, includeLink) => {
 		let block = null;
 
-		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
+		let specificBlockElementSelectors = [ ...Transclude.specificBlockElementSelectors ];
+		let generalBlockElementSelectors = [ ...Transclude.generalBlockElementSelectors ];
 
 		/*	Parse and process block context options (if any) specified by the
 			include-link. (See documentation for the .include-block-context
@@ -1537,17 +1538,27 @@ Transclude = {
 		//	Expanded mode.
 		if (options?.includes("expanded")) {
 			//	Remove `p`, to prioritize selectors for enclosing elements.
-			selectors.remove("p");
+			generalBlockElementSelectors.remove("p");
 
 			//	Re-add `p` as a last-resort selector.
-			selectors.push("p");
+			generalBlockElementSelectors.push("p");
 		}
 
-		for (let selector of selectors)
-			if (   (block = element.closest(selector) ?? block)
-				&& block.textContent.length < Transclude.blockContextMaximumLength
-				&& block.matches(Transclude.notBlockElementSelector) == false)
+		//	Look for specific block element types (ignoring exclusions).
+		for (let selector of specificBlockElementSelectors)
+			if (block = element.closest(selector))
 				break;
+
+		/*	Look for general block element types (respecting exclusions and
+			length limit).
+		 */
+		if (block == null) {
+			for (let selector of generalBlockElementSelectors)
+				if (   (block = element.closest(selector) ?? block)
+					&& block.textContent.length < Transclude.blockContextMaximumLength
+					&& block.matches(Transclude.notBlockElementSelector) == false)
+					break;
+		}
 
 		if (block == null)
 			return null;

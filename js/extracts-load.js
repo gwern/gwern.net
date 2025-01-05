@@ -7,7 +7,6 @@ Extracts.config = {
     contentContainersSelector: [
     	".markdownBody",
     	"#TOC",
-    	"#page-metadata",
     	"#sidebar"
     ].join(", "),
 

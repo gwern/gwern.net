@@ -8860,11 +8860,9 @@ Content = {
                 //  The page content is the page body plus the metadata block.
                 let bodyContentDocument = newDocument();
                 //  Add the page metadata block.
-                let pageMetadataBlock = pageContent.document.querySelector("#page-metadata");
+                let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
                 if (pageMetadataBlock) {
-                    bodyContentDocument.append(newDocument(pageMetadataBlock));
-
-                    pageMetadataBlock = bodyContentDocument.querySelector("#page-metadata");
+                    pageMetadataBlock = bodyContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
                     pageMetadataBlock.classList.remove("markdownBody");
                     if (pageMetadataBlock.className == "")
                         pageMetadataBlock.removeAttribute("class");
@@ -9750,7 +9748,7 @@ function includeContent(includeLink, content) {
 
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
-    let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
+    let transcludingIntoFullPage = (containingDocument.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
@@ -10039,7 +10037,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
 			//	Backlinks block.
-			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
+			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
 
 			//	Label.
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
@@ -10448,7 +10446,8 @@ Transclude = {
 	blockContext: (element, includeLink) => {
 		let block = null;
 
-		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
+		let specificBlockElementSelectors = [ ...Transclude.specificBlockElementSelectors ];
+		let generalBlockElementSelectors = [ ...Transclude.generalBlockElementSelectors ];
 
 		/*	Parse and process block context options (if any) specified by the
 			include-link. (See documentation for the .include-block-context
@@ -10459,17 +10458,27 @@ Transclude = {
 		//	Expanded mode.
 		if (options?.includes("expanded")) {
 			//	Remove `p`, to prioritize selectors for enclosing elements.
-			selectors.remove("p");
+			generalBlockElementSelectors.remove("p");
 
 			//	Re-add `p` as a last-resort selector.
-			selectors.push("p");
+			generalBlockElementSelectors.push("p");
 		}
 
-		for (let selector of selectors)
-			if (   (block = element.closest(selector) ?? block)
-				&& block.textContent.length < Transclude.blockContextMaximumLength
-				&& block.matches(Transclude.notBlockElementSelector) == false)
+		//	Look for specific block element types (ignoring exclusions).
+		for (let selector of specificBlockElementSelectors)
+			if (block = element.closest(selector))
 				break;
+
+		/*	Look for general block element types (respecting exclusions and
+			length limit).
+		 */
+		if (block == null) {
+			for (let selector of generalBlockElementSelectors)
+				if (   (block = element.closest(selector) ?? block)
+					&& block.textContent.length < Transclude.blockContextMaximumLength
+					&& block.matches(Transclude.notBlockElementSelector) == false)
+					break;
+		}
 
 		if (block == null)
 			return null;
@@ -12742,9 +12751,13 @@ Extracts = { ...Extracts,
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
-		if (popFrame.classList.contains("backlinks")) {
+		/*	This is for section backlinks popups for the base page, and any
+			(section or full) backlinks popups for a different page.
+		 */
+		if (   popFrame.classList.contains("backlinks")
+			&& (   target.pathname == location.pathname
+				&& [ "#backlinks", "#backlinks-section" ].includes(target.hash)) == false)
 			popFrameTitleHTML += " (Backlinks)";
-		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
@@ -12812,7 +12825,7 @@ Extracts = { ...Extracts,
 
 		//	Add page body classes.
 		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.filter(c => c.startsWith("dropcaps-") == false)));
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame);
@@ -12829,6 +12842,11 @@ Extracts = { ...Extracts,
 			return;
 		}
 
+		//	Remove empty page-metadata section.
+		let pageMetadata = contentContainer.querySelector("#page-metadata");
+		if (isNodeEmpty(pageMetadata))
+			pageMetadata.remove();
+
 		//	Make first image load eagerly.
 		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
 						  ?? contentContainer.querySelector("figure img"))
@@ -12837,14 +12855,10 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
-		//	Strip a single collapse block encompassing the top level content.
+		//	Expand a single collapse block encompassing the top level content.
 		if (   isOnlyChild(contentContainer.firstElementChild)
 			&& contentContainer.firstElementChild.classList.contains("collapse"))
 			expandLockCollapseBlock(contentContainer.firstElementChild);
-
-		//	Designate section backlinks popups as such.
-		if (contentContainer.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "aux-links", "backlinks");
 
 		/*	In the case where the spawning link points to a specific element
 			within the transcluded content, but we’re transcluding the full
@@ -13939,7 +13953,6 @@ Extracts.config = {
     contentContainersSelector: [
     	".markdownBody",
     	"#TOC",
-    	"#page-metadata",
     	"#sidebar"
     ].join(", "),
 
@@ -16946,23 +16959,15 @@ function disableLinkIcon(link) {
 addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo) => {
     GWLog("setLinkIconStates", "rewrite.js", 1);
 
-    /*  Enable display of link icons for all links that have specified icons.
-     */
-    eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
-        enableLinkIcon(link);
-    });
+	//	Disable display of all link icons.
+	eventInfo.container.querySelectorAll("a.has-icon").forEach(link => {
+		disableLinkIcon(link);
+	});
 
-    /*  Disable display of link icons for links that have had it enabled, but
-        actually should not display icons (which may happen if, e.g.,
-        a .link-page becomes a .link-self due to transclusion / pop-frame
-        embedding, and has no anchor).
-     */
-    let iconlessLinkSelector = [
-        "a:not([data-link-icon])",
-        "a[data-link-icon='']"
-    ].map(x => x + ".has-icon").join(", ");
-    eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
-        disableLinkIcon(link);
+    //  Enable display of link icons for all links that have specified icons.
+    eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
+		if (link.dataset.linkIcon > "")
+	        enableLinkIcon(link);
     });
 }, "rewrite");
 
@@ -18239,6 +18244,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		}
 
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
+
+		//	The collapse block might already be prepared.
+		if (isCollapsed(collapseBlock) != undefined) {
+			if (isCollapsed(collapseBlock) == startExpanded)
+				collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
+
+			return;
+		}
 
 		if (GW.collapse.hoverEventsEnabled)
 			collapseBlock.classList.add("expand-on-hover");

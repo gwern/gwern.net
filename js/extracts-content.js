@@ -167,9 +167,13 @@ Extracts = { ...Extracts,
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
-		if (popFrame.classList.contains("backlinks")) {
+		/*	This is for section backlinks popups for the base page, and any
+			(section or full) backlinks popups for a different page.
+		 */
+		if (   popFrame.classList.contains("backlinks")
+			&& (   target.pathname == location.pathname
+				&& [ "#backlinks", "#backlinks-section" ].includes(target.hash)) == false)
 			popFrameTitleHTML += " (Backlinks)";
-		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
@@ -237,7 +241,7 @@ Extracts = { ...Extracts,
 
 		//	Add page body classes.
 		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.filter(c => c.startsWith("dropcaps-") == false)));
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame);
@@ -254,6 +258,11 @@ Extracts = { ...Extracts,
 			return;
 		}
 
+		//	Remove empty page-metadata section.
+		let pageMetadata = contentContainer.querySelector("#page-metadata");
+		if (isNodeEmpty(pageMetadata))
+			pageMetadata.remove();
+
 		//	Make first image load eagerly.
 		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
 						  ?? contentContainer.querySelector("figure img"))
@@ -262,14 +271,10 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
-		//	Strip a single collapse block encompassing the top level content.
+		//	Expand a single collapse block encompassing the top level content.
 		if (   isOnlyChild(contentContainer.firstElementChild)
 			&& contentContainer.firstElementChild.classList.contains("collapse"))
 			expandLockCollapseBlock(contentContainer.firstElementChild);
-
-		//	Designate section backlinks popups as such.
-		if (contentContainer.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "aux-links", "backlinks");
 
 		/*	In the case where the spawning link points to a specific element
 			within the transcluded content, but we’re transcluding the full

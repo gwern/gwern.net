@@ -301,6 +301,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
 
+		//	The collapse block might already be prepared.
+		if (isCollapsed(collapseBlock) != undefined) {
+			if (isCollapsed(collapseBlock) == startExpanded)
+				collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
+
+			return;
+		}
+
 		if (GW.collapse.hoverEventsEnabled)
 			collapseBlock.classList.add("expand-on-hover");
 

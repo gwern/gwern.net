@@ -100,6 +100,7 @@ GW.layout = {
 			"first-block",
 			"empty-graf",
 			"first-graf",
+			"intro-graf",
 			"list",
 			"in-list",
 			"float",
@@ -785,6 +786,9 @@ function getBlockSpacingMultiplier(block, debug = false) {
 /*	Returns a block’s dropcap type (‘goudy’, ‘yinit’, etc.), or null if none.
  */
 function dropcapTypeOf(block) {
+	if (block == null)
+		return null;
+
 	return Array.from(block.classList).find(cssClass => /^dropcaps?-/.test(cssClass))?.replace(/^dropcaps-/, "dropcap-")?.slice("dropcap-".length);
 }
 
@@ -899,6 +903,8 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 /*	Apply block layout classes to appropriate elements in given block container.
  */
 addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
+	let containingDocument = blockContainer.getRootNode();
+
 	//	Designate headings.
 	blockContainer.querySelectorAll(range(1, 6).map(x => `h${x}`).join(", ")).forEach(heading => {
 		heading.classList.add("heading");
@@ -1104,7 +1110,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				if (introGraf) {
 					dropcapType = (previousBlock?.matches(".abstract blockquote")
 								   ? dropcapTypeOf(previousBlock)
-								   : null) ?? dropcapTypeOf(document.body);
+								   : null) ?? dropcapTypeOf(containingDocument.body);
 				} else {
 					let dropcapContainerOptions = {
 						alsoBlockContainers: [ "div[class*='dropcap-']" ],
