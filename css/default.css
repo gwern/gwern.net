@@ -3326,13 +3326,6 @@ blockquote .TOC,
 .annotation .data-field.annotation-abstract .page-description-annotation {
     font-style: italic;
 }
-.annotation .data-field.annotation-abstract .page-description-annotation:not(.first-block)::before {
-    content: "";
-    display: block;
-    overflow: auto;
-    margin: 0.75em 0 0.5em 0;
-    border-top: 1px dotted currentColor;
-}
 
 /*  Images.
  */

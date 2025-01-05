@@ -1091,9 +1091,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				};
 
 				let previousBlock = previousBlockOf(block, options);
-				if (   isFirstWithin(block, ".markdownBody", options)
+				if (   isFirstWithin(block, "#markdownBody", options)
 					|| (   isFirstWithin(block, "section", options)
-						&& isFirstWithin(blockContainerOf(block), ".markdownBody"))
+						&& isFirstWithin(blockContainerOf(block), "#markdownBody"))
 					|| previousBlock?.matches(".abstract blockquote, #page-metadata"))
 					introGraf = true;
 
