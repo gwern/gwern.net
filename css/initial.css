@@ -396,9 +396,9 @@ header h1 em {
     order: 3;
 }
 /* backlinks, similar, bibliography */
-#page-metadata .page-metadata-fields .backlinks,
-#page-metadata .page-metadata-fields .similars,
-#page-metadata .page-metadata-fields .link-bibliography {
+#page-metadata .page-metadata-fields .page-backlinks,
+#page-metadata .page-metadata-fields .page-similars,
+#page-metadata .page-metadata-fields .page-link-bibliography {
     order: 5;
 }
 
@@ -406,12 +406,6 @@ header h1 em {
  */
 #page-metadata .page-metadata-fields .page-author {
     white-space: normal;
-}
-
-/*  Page source link.
- */
-#page-metadata .page-metadata-fields .page-date-range .page-source a {
-    font-variant-numeric: oldstyle-nums;
 }
 
 /*	Importance.
