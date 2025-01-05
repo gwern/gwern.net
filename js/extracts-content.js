@@ -140,8 +140,6 @@ Extracts = { ...Extracts,
 				includeLink.hash = "#" + nearestSection.id;
 		}
 
-		console.log(includeLink.outerHTML);
-
 		return newDocument(includeLink);
     },
 

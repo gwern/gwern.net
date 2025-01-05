@@ -2352,23 +2352,15 @@ function disableLinkIcon(link) {
 addContentInjectHandler(GW.contentInjectHandlers.setLinkIconStates = (eventInfo) => {
     GWLog("setLinkIconStates", "rewrite.js", 1);
 
-    /*  Enable display of link icons for all links that have specified icons.
-     */
-    eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
-        enableLinkIcon(link);
-    });
+	//	Disable display of all link icons.
+	eventInfo.container.querySelectorAll("a.has-icon").forEach(link => {
+		disableLinkIcon(link);
+	});
 
-    /*  Disable display of link icons for links that have had it enabled, but
-        actually should not display icons (which may happen if, e.g.,
-        a .link-page becomes a .link-self due to transclusion / pop-frame
-        embedding, and has no anchor).
-     */
-    let iconlessLinkSelector = [
-        "a:not([data-link-icon])",
-        "a[data-link-icon='']"
-    ].map(x => x + ".has-icon").join(", ");
-    eventInfo.container.querySelectorAll(iconlessLinkSelector).forEach(link => {
-        disableLinkIcon(link);
+    //  Enable display of link icons for all links that have specified icons.
+    eventInfo.container.querySelectorAll("a[data-link-icon]").forEach(link => {
+		if (link.dataset.linkIcon > "")
+	        enableLinkIcon(link);
     });
 }, "rewrite");
 
