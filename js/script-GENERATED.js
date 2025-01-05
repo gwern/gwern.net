@@ -8860,11 +8860,9 @@ Content = {
                 //  The page content is the page body plus the metadata block.
                 let bodyContentDocument = newDocument();
                 //  Add the page metadata block.
-                let pageMetadataBlock = pageContent.document.querySelector("#page-metadata");
+                let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
                 if (pageMetadataBlock) {
-                    bodyContentDocument.append(newDocument(pageMetadataBlock));
-
-                    pageMetadataBlock = bodyContentDocument.querySelector("#page-metadata");
+                    pageMetadataBlock = bodyContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
                     pageMetadataBlock.classList.remove("markdownBody");
                     if (pageMetadataBlock.className == "")
                         pageMetadataBlock.removeAttribute("class");
@@ -9750,7 +9748,7 @@ function includeContent(includeLink, content) {
 
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
-    let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
+    let transcludingIntoFullPage = (containingDocument.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 
@@ -12827,7 +12825,7 @@ Extracts = { ...Extracts,
 
 		//	Add page body classes.
 		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.filter(c => c.startsWith("dropcaps-") == false)));
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame);
@@ -12843,6 +12841,11 @@ Extracts = { ...Extracts,
 			Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			return;
 		}
+
+		//	Remove empty page-metadata section.
+		let pageMetadata = contentContainer.querySelector("#page-metadata");
+		if (isNodeEmpty(pageMetadata))
+			pageMetadata.remove();
 
 		//	Make first image load eagerly.
 		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
@@ -13950,7 +13953,6 @@ Extracts.config = {
     contentContainersSelector: [
     	".markdownBody",
     	"#TOC",
-    	"#page-metadata",
     	"#sidebar"
     ].join(", "),
 

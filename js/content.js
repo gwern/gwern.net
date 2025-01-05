@@ -1879,11 +1879,9 @@ Content = {
                 //  The page content is the page body plus the metadata block.
                 let bodyContentDocument = newDocument();
                 //  Add the page metadata block.
-                let pageMetadataBlock = pageContent.document.querySelector("#page-metadata");
+                let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
                 if (pageMetadataBlock) {
-                    bodyContentDocument.append(newDocument(pageMetadataBlock));
-
-                    pageMetadataBlock = bodyContentDocument.querySelector("#page-metadata");
+                    pageMetadataBlock = bodyContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
                     pageMetadataBlock.classList.remove("markdownBody");
                     if (pageMetadataBlock.className == "")
                         pageMetadataBlock.removeAttribute("class");

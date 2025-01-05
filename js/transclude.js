@@ -828,7 +828,7 @@ function includeContent(includeLink, content) {
 
     //  Document into which the transclusion is being done.
     let containingDocument = includeLink.eventInfo.document;
-    let transcludingIntoFullPage = (containingDocument.querySelector("#page-metadata") != null);
+    let transcludingIntoFullPage = (containingDocument.querySelector(".markdownBody > #page-metadata, #page-metadata.markdownBody") != null);
 
 	//	WITHIN-WRAPPER MODIFICATIONS BEGIN
 

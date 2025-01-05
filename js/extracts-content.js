@@ -241,7 +241,7 @@ Extracts = { ...Extracts,
 
 		//	Add page body classes.
 		let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
-		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses));
+		Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(referenceData.pageBodyClasses.filter(c => c.startsWith("dropcaps-") == false)));
 
 		//	Update pop-frame title.
 		Extracts.updatePopFrameTitle(popFrame);
@@ -257,6 +257,11 @@ Extracts = { ...Extracts,
 			Extracts.postRefreshUpdatePopFrame(popFrame, false);
 			return;
 		}
+
+		//	Remove empty page-metadata section.
+		let pageMetadata = contentContainer.querySelector("#page-metadata");
+		if (isNodeEmpty(pageMetadata))
+			pageMetadata.remove();
 
 		//	Make first image load eagerly.
 		let firstImage = (   contentContainer.querySelector(".page-thumbnail")
