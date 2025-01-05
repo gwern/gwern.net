@@ -3469,6 +3469,13 @@ del {
     hyphens: none;
 }
 
+/*	TEMPORARY, until context links are fixed.
+		—SA 2025-01-05
+ */
+#link-bibliography a[href*='.md'].link-self {
+	display: none;
+}
+
 
 /*************/
 /* DROPCAPS */
