@@ -10039,7 +10039,7 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
 		if (backlinksBlock == null) {
 			//	Backlinks block.
-			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${id}-backlinks` });
+			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
 
 			//	Label.
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
@@ -10448,7 +10448,8 @@ Transclude = {
 	blockContext: (element, includeLink) => {
 		let block = null;
 
-		let selectors = [ ...Transclude.specificBlockElementSelectors, ...Transclude.generalBlockElementSelectors ];
+		let specificBlockElementSelectors = [ ...Transclude.specificBlockElementSelectors ];
+		let generalBlockElementSelectors = [ ...Transclude.generalBlockElementSelectors ];
 
 		/*	Parse and process block context options (if any) specified by the
 			include-link. (See documentation for the .include-block-context
@@ -10459,17 +10460,27 @@ Transclude = {
 		//	Expanded mode.
 		if (options?.includes("expanded")) {
 			//	Remove `p`, to prioritize selectors for enclosing elements.
-			selectors.remove("p");
+			generalBlockElementSelectors.remove("p");
 
 			//	Re-add `p` as a last-resort selector.
-			selectors.push("p");
+			generalBlockElementSelectors.push("p");
 		}
 
-		for (let selector of selectors)
-			if (   (block = element.closest(selector) ?? block)
-				&& block.textContent.length < Transclude.blockContextMaximumLength
-				&& block.matches(Transclude.notBlockElementSelector) == false)
+		//	Look for specific block element types (ignoring exclusions).
+		for (let selector of specificBlockElementSelectors)
+			if (block = element.closest(selector))
 				break;
+
+		/*	Look for general block element types (respecting exclusions and
+			length limit).
+		 */
+		if (block == null) {
+			for (let selector of generalBlockElementSelectors)
+				if (   (block = element.closest(selector) ?? block)
+					&& block.textContent.length < Transclude.blockContextMaximumLength
+					&& block.matches(Transclude.notBlockElementSelector) == false)
+					break;
+		}
 
 		if (block == null)
 			return null;
@@ -12715,6 +12726,8 @@ Extracts = { ...Extracts,
 				includeLink.hash = "#" + nearestSection.id;
 		}
 
+		console.log(includeLink.outerHTML);
+
 		return newDocument(includeLink);
     },
 
@@ -12742,9 +12755,13 @@ Extracts = { ...Extracts,
 			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
 		}
 
-		if (popFrame.classList.contains("backlinks")) {
+		/*	This is for section backlinks popups for the base page, and any
+			(section or full) backlinks popups for a different page.
+		 */
+		if (   popFrame.classList.contains("backlinks")
+			&& (   target.pathname == location.pathname
+				&& [ "#backlinks", "#backlinks-section" ].includes(target.hash)) == false)
 			popFrameTitleHTML += " (Backlinks)";
-		}
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
 			popFrameTitleLinkHref:  popFrameTitleLinkHref,
@@ -12837,14 +12854,10 @@ Extracts = { ...Extracts,
 			firstImage.decoding = "sync";
 		}
 
-		//	Strip a single collapse block encompassing the top level content.
+		//	Expand a single collapse block encompassing the top level content.
 		if (   isOnlyChild(contentContainer.firstElementChild)
 			&& contentContainer.firstElementChild.classList.contains("collapse"))
 			expandLockCollapseBlock(contentContainer.firstElementChild);
-
-		//	Designate section backlinks popups as such.
-		if (contentContainer.firstElementChild.classList.containsAnyOf([ "section-backlinks", "section-backlinks-container" ]))
-			Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "aux-links", "backlinks");
 
 		/*	In the case where the spawning link points to a specific element
 			within the transcluded content, but we’re transcluding the full
