@@ -646,6 +646,17 @@ Extracts = { ...Extracts,
 		return newDocument(synthesizeIncludeLink(target, {
 			"class": "include-caption-not include-strict include-spinner-not"
         }));
+    },
+
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopupContent_REMOTE_IMAGE: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_REMOTE_IMAGE", "extracts-content.js", 2);
+
+		contentContainer.querySelector("img").addEventListener("load", (event) => {
+			requestAnimationFrame(() => {
+				Extracts.resizeObjectInObjectPopup(popup, "img");
+			});
+		}, { once: true });
     }
 };
 
@@ -795,6 +806,13 @@ Extracts = { ...Extracts,
         return newDocument(synthesizeIncludeLink(target, {
 			"class": "include-caption-not include-strict include-spinner-not"
         }));
+    },
+
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopupContent_LOCAL_VIDEO: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_VIDEO", "extracts-content.js", 2);
+
+		Extracts.resizeObjectInObjectPopup(popup, "video");
     }
 };
 
@@ -872,39 +890,15 @@ Extracts = { ...Extracts,
         	Extracts.popFrameProvider.addClassesToPopFrame(popFrame, "dimensions-specified");
     },
 
-	//	Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
-	resizeImageInImagePopup: (popup) => {
-		let image = popup.document.querySelector("img");
-
-		let intrinsicWidth = parseInt(image.getAttribute("width"));
-		let intrinsicHeight = parseInt(image.getAttribute("height"));
-
-		let computedStyles = getComputedStyle(document.documentElement);
-		let popupMaxWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-width"));
-		let popupMaxHeight = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-height"));
-		let popupBorderWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-border-width"));
-		let popupTitleBarHeight = popup.classList.contains("mini-title-bar") ? 21 : 31;
-		let popupHorizontalPadding = popupBorderWidth * 2;
-		let popupVerticalPadding = popupBorderWidth * 2 + popupTitleBarHeight;
-		let imageMaxWidth = popupMaxWidth - popupHorizontalPadding;
-		let imageMaxHeight = popupMaxHeight - popupVerticalPadding;
-
-		let height = Math.round(Math.min(Math.min(intrinsicWidth, imageMaxWidth) * (intrinsicHeight / intrinsicWidth), imageMaxHeight));
-		let width = Math.round(height * (intrinsicWidth / intrinsicHeight));
-
-		image.style.width = `${width}px`;
-		image.style.height = `${height}px`;
-	},
-
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
     rewritePopupContent_LOCAL_IMAGE: (popup, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_IMAGE", "extracts-content.js", 2);
 
-		Extracts.resizeImageInImagePopup(popup);
+		Extracts.resizeObjectInObjectPopup(popup, "img");
 
 		//	Non-provider-specific rewrites.
 		Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup, contentContainer);
-    },
+    }
 };
 
 /*=--------------------------=*/
@@ -964,6 +958,16 @@ Extracts = { ...Extracts,
 					Extracts.updatePopFrameTitle(popFrame, title);
 			}, { once: true });
 		}
+    },
+
+    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
+    rewritePopupContent_LOCAL_DOCUMENT: (popup, contentContainer) => {
+        GWLog("Extracts.rewritePopFrameContent_LOCAL_DOCUMENT", "extracts-content.js", 2);
+
+		Extracts.resizeObjectInObjectPopup(popup, "iframe");
+
+		//	Non-provider-specific rewrites.
+		Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popup, contentContainer);
     }
 };
 
@@ -1028,6 +1032,44 @@ Extracts = { ...Extracts,
 /*=------------------=*/
 
 Extracts = { ...Extracts,
+	/*	Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
+	 */
+	resizeObjectInObjectPopup: (popup, objectSelector, options) => {
+		options = Object.assign({
+			width: null,
+			height: null
+		}, options);
+
+		let object = popup.document.querySelector(objectSelector);
+		if (object == null)
+			return;
+
+		let specifiedWidth = options.width ?? parseInt(object.getAttribute("width") ?? "0");
+		let specifiedHeight = options.height ?? parseInt(object.getAttribute("height") ?? "0");
+
+		let computedStyles = getComputedStyle(document.documentElement);
+		let popupMaxWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-width"));
+		let popupMaxHeight = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-max-height"));
+		let popupBorderWidth = parseInt(computedStyles.getPropertyValue("--GW-popups-popup-border-width"));
+		let popupTitleBarHeight = popup.classList.contains("mini-title-bar") ? 21 : 31;
+		let popupHorizontalPadding = popupBorderWidth * 2;
+		let popupVerticalPadding = popupBorderWidth * 2 + popupTitleBarHeight;
+		let objectMaxWidth = popupMaxWidth - popupHorizontalPadding;
+		let objectMaxHeight = popupMaxHeight - popupVerticalPadding;
+
+		if (   object.tagName == "IFRAME"
+			&& specifiedWidth * specifiedHeight == 0) {
+			specifiedWidth = objectMaxWidth;
+			specifiedHeight = objectMaxHeight;
+		}
+
+		let height = Math.round(Math.min(Math.min(specifiedWidth, objectMaxWidth) * (specifiedHeight / specifiedWidth), objectMaxHeight));
+		let width = Math.round(height * (specifiedWidth / specifiedHeight));
+
+		object.style.width = `${width}px`;
+		object.style.height = `${height}px`;
+	},
+
 	//	Used in: Extracts.setUpContentLoadEventsWithin
 	contentLoadHoverDelay: 25,
 
