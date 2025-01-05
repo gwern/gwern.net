@@ -124,9 +124,9 @@ $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css
             <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
             <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
             <span class="page-importance"><a href="/about#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world.">importance</a>: <em>$importance$</em></span>
-            $if(backlinks-yes)$<span class="backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
-            $if(similars-yes)$<span class="similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
-            $if(linkbib-yes)$<span class="link-bibliography"><a href="#link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
+            $if(backlinks-yes)$<span class="page-backlinks"><a class="backlinks" href="#backlinks" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">backlinks</a></span>$endif$
+            $if(similars-yes)$<span class="page-similars"><a class="similars" data-link-icon="≈" data-link-icon-type="text" href="#similars" title="Similar links for this link (by text embedding).">similar</a></span>$endif$
+            $if(linkbib-yes)$<span class="page-link-bibliography"><a class="link-bibliography" href="#link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg" title="Bibliography of links cited in this page (forward citations).">bibliography</a></span>$endif$
         </div>
       </div>
       $endif$
