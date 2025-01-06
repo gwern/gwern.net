@@ -3440,7 +3440,10 @@ Popups = {
     updatePageScrollState: () => {
         GWLog("Popups.updatePageScrollState", "popups.js", 2);
 
-        if (Popups.allSpawnedPopups().findIndex(popup => Popups.popupIsMaximized(popup)) == -1)
+        if (Popups.allSpawnedPopups().findIndex(popup => 
+        		(   Popups.popupIsMaximized(popup) == true
+        		 && Popups.popupIsMinimized(popup) == false)
+        	) == -1)
             togglePageScrolling(true);
         else
             togglePageScrolling(false);
@@ -3901,6 +3904,9 @@ Popups = {
 
         //  Focus the front-most popup (preferring un-minimized ones).
         Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: true }));
+
+        //  Enable/disable main document scrolling.
+        Popups.updatePageScrollState();
 	},
 
 	unminimizePopup: (popup) => {
@@ -3949,6 +3955,9 @@ Popups = {
 
 		//	Update minimized popup arrangement.
 		Popups.updateMinimizedPopupArrangement();
+
+        //  Enable/disable main document scrolling.
+        Popups.updatePageScrollState();
 	},
 
 	updateMinimizedPopupArrangement: () => {
@@ -5349,6 +5358,9 @@ Popups = {
         //  Prevent clicks from doing anything other than what we want.
         event.preventDefault();
 
+        //  Mark popup as being resized.
+        Popups.addClassesToPopFrame(popup, "resizing");
+
         //  Determine direction of resizing.
         let edgeOrCorner = Popups.edgeOrCorner(popup, {
             x: event.clientX - popup.viewportRect.left,
@@ -5397,7 +5409,7 @@ Popups = {
 
 		//	Update classes.
 		Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
-		Popups.addClassesToPopFrame(popup, "resizing", "resized");
+		Popups.addClassesToPopFrame(popup, "resized");
 
 		//  Viewport width must account for vertical scroll bar.
 		let viewportWidth = document.documentElement.offsetWidth;
@@ -12048,8 +12060,8 @@ Extracts = {
         //  We then remove some of the imported classes.
         Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
-        	"link-self", "link-annotated", "link-page", "link-tag", "icon-not", 
-        	"has-icon", "has-indicator-hook", "decorate-not",
+        	"link-self", "link-annotated", "link-page",
+        	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
         	"spawns-popup", "spawns-popin");
 
 		//	Import classes from include-link.
@@ -13604,16 +13616,6 @@ Extracts = { ...Extracts,
 					Extracts.updatePopFrameTitle(popFrame, title);
 			}, { once: true });
 		}
-    },
-
-    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
-    rewritePopupContent_LOCAL_DOCUMENT: (popup, contentContainer) => {
-        GWLog("Extracts.rewritePopFrameContent_LOCAL_DOCUMENT", "extracts-content.js", 2);
-
-		Extracts.resizeObjectInObjectPopup(popup, "iframe");
-
-		//	Non-provider-specific rewrites.
-		Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popup, contentContainer);
     }
 };
 
@@ -13703,17 +13705,13 @@ Extracts = { ...Extracts,
 		let objectMaxWidth = popupMaxWidth - popupHorizontalPadding;
 		let objectMaxHeight = popupMaxHeight - popupVerticalPadding;
 
-		if (   object.tagName == "IFRAME"
-			&& specifiedWidth * specifiedHeight == 0) {
-			specifiedWidth = objectMaxWidth;
-			specifiedHeight = objectMaxHeight;
-		}
-
 		let height = Math.round(Math.min(Math.min(specifiedWidth, objectMaxWidth) * (specifiedHeight / specifiedWidth), objectMaxHeight));
 		let width = Math.round(height * (specifiedWidth / specifiedHeight));
 
 		object.style.width = `${width}px`;
 		object.style.height = `${height}px`;
+
+		object.style.setProperty("--aspect-ratio", object.style.aspectRatio);
 	},
 
 	//	Used in: Extracts.setUpContentLoadEventsWithin
@@ -16775,9 +16773,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
 
-        if (isOnlyChild(backlink))
-            backlink.parentElement.classList.add("footnote-back-block");
-
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
@@ -19088,6 +19083,12 @@ Sidenotes = {
 	 */
 	minimumViewportWidthForSidenotes: "1761px",
 
+	/*	The smallest width (in CSS dimensions) at which margin notes will be
+		shown as sidenotes. If the viewport is narrower than this, then margin
+		notes will be inlined.
+	 */
+	minimumViewportWidthForSidenoteMarginNotes: "1537px",
+
 	useLeftColumn: () => false,
 	useRightColumn: () => true
 };
@@ -19099,7 +19100,8 @@ Sidenotes = { ...Sidenotes,
 	/*  Media query objects (for checking and attaching listeners).
 	 */
 	mediaQueries: {
-		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`)
+		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`),
+		marginNoteViewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenoteMarginNotes})`)
 	},
 
 	/*****************/
@@ -19187,6 +19189,8 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.sidenotes.forEach(sidenote => {
 			let citation = Sidenotes.counterpart(sidenote);
 			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+			if (sidenote.classList.contains("hidden"))
+				Sidenotes.hiddenSidenoteStorage.append(sidenote);
 		});
 	},
 
@@ -19284,16 +19288,8 @@ Sidenotes = { ...Sidenotes,
 		//  Update the disposition of sidenotes within collapse blocks.
 		Sidenotes.updateSidenotesInCollapseBlocks();
 
-		//	Check for cut-off sidenotes.
+		//	Assign sidenotes to sides.
 		Sidenotes.sidenotes.forEach(sidenote => {
-			/*  Check whether the sidenote is currently hidden (i.e., within a
-				currently-collapsed collapse block or similar). If so, skip it.
-			 */
-			if (sidenote.classList.contains("hidden")) {
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
-				return;
-			}
-
 			//  On which side should the sidenote go?
 			let sidenoteNumber = Notes.noteNumberFromHash(sidenote.id);
 			let side = null;
@@ -19314,12 +19310,9 @@ Sidenotes = { ...Sidenotes,
 			}
 
 			//  Inject the sidenote into the column (provisionally).
-			side.append(sidenote);
-
-			/*  Mark sidenotes which are cut off vertically.
-			 */
-			let sidenoteOuterWrapper = sidenote.firstElementChild;
-			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
+			if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
+				|| sidenote.parentElement == null)
+				side.append(sidenote);
 		});
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
@@ -19380,14 +19373,14 @@ Sidenotes = { ...Sidenotes,
 			}
 		});
 
-		/*	Remove sidenotes from page, so that we can set their positions
-			without causing reflow. Store their layout heights (which cannot
-			be retrieved in the normal way while the sidenotes aren’t part of
-			the DOM).
-		 */
+		//	Store their layout heights of sidenotes.
 		Sidenotes.sidenotes.forEach(sidenote => {
+			//  Mark sidenotes which are cut off vertically.
+			let sidenoteOuterWrapper = sidenote.firstElementChild;
+			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
+
+			//	Store layout height.
 			sidenote.lastKnownHeight = sidenote.offsetHeight;
-			sidenote.remove();
 		});
 
 		//	Clean up old layout cells, if any.
@@ -19434,18 +19427,14 @@ Sidenotes = { ...Sidenotes,
 
 		//	Assign sidenotes to layout cells.
 		for (citation of Sidenotes.citations) {
-			let citationBoundingRect = citation.getBoundingClientRect();
-
 			let sidenote = Sidenotes.counterpart(citation);
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its
-				citation is within a currently-collapsed collapse block)? If so,
-				skip it.
+				citation is within a currently-collapsed collapse block)?
+				If so, skip it.
 			 */
-			if (sidenote.classList.contains("hidden")) {
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
+			if (sidenote.classList.contains("hidden"))
 				continue;
-			}
 
 			//	Get all the cells that the sidenote can fit into.
 			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.lastKnownHeight);
@@ -19460,6 +19449,7 @@ Sidenotes = { ...Sidenotes,
 			/*	These functions are used to sort layout cells by best fit for
 				placing the current sidenote.
 			 */
+			let citationBoundingRect = citation.getBoundingClientRect();
 			let vDistanceToCell = (cell) => {
 				if (   citationBoundingRect.top > cell.rect.top
 					&& citationBoundingRect.top < cell.rect.bottom)
@@ -19622,6 +19612,24 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
+	/*	Construct sidenotes, if need be; and, if needed, infrastructure.
+	 */
+	constructSidenotesIfNeeded: (firstRun = false) => {
+		if (firstRun) {
+			Sidenotes.sidenotesNeedConstructing = true;
+			Sidenotes.constructSidenotes(true);
+			Sidenotes.sidenotesNeedConstructing = false;
+		} else {
+			Sidenotes.sidenotesNeedConstructing = true;
+			requestIdleCallback(() => {
+				if (Sidenotes.sidenotesNeedConstructing == true) {
+					Sidenotes.constructSidenotes();
+					Sidenotes.sidenotesNeedConstructing = false;
+				}
+			});
+		}
+	},
+
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 	 */
@@ -19682,10 +19690,12 @@ Sidenotes = { ...Sidenotes,
 			/*	If the sidenote contents were copied from a footnote that exists
 				in the page, then we should regenerate placeholders, otherwise
 				the back-to-citation links (among possibly other things) may
-				not work right.
+				not work right. Also, clear link state of include-links.
 			 */
-			if (referencedFootnote)
+			if (referencedFootnote) {
 				regeneratePlaceholderIds(sidenoteContents);
+				Transclude.allIncludeLinksInContainer(sidenoteContents).forEach(Transclude.clearLinkState);
+			}
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", {
@@ -19866,7 +19876,7 @@ Sidenotes = { ...Sidenotes,
 			 */
 			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
 				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-							  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false
+							  || Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint.matches == false
 							  || eventInfo.document != document);
 				marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
 			});
@@ -19876,7 +19886,7 @@ Sidenotes = { ...Sidenotes,
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
-			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
+			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
 			});
 		}, "rewrite", (info) => info.container == document.main, true);
@@ -19966,7 +19976,8 @@ Sidenotes = { ...Sidenotes,
 				when collapse blocks are expanded/collapsed.
 			 */
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
-				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				if (eventInfo.collapseBlock.closest(".sidenote") == null)
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, {
 				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
 			});
@@ -20073,19 +20084,7 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container == document.main) {
-				Sidenotes.sidenotesNeedConstructing = true;
-				Sidenotes.constructSidenotes(true);
-				Sidenotes.sidenotesNeedConstructing = false;
-			} else {
-				Sidenotes.sidenotesNeedConstructing = true;
-				requestIdleCallback(() => {
-					if (Sidenotes.sidenotesNeedConstructing == true) {
-						Sidenotes.constructSidenotes();
-						Sidenotes.sidenotesNeedConstructing = false;
-					}
-				});
-			}
+			Sidenotes.constructSidenotesIfNeeded(eventInfo.container == document.main);
 		}, "rewrite", (info) => (   info.document == document
 								 && info.source != "Sidenotes.constructSidenotes"
 								 && info.container.closest(".sidenote") == null));

@@ -2067,7 +2067,7 @@ body.page-index span.date-range .subsup sup {
 /*  On wide viewports, hide the margin notes until it is determined which layout
     form it should take (‘sidenote’ or ‘inline’).
  */
-@media all and (min-width: 1761px) {
+@media all and (min-width: 1537px) {
     .marginnote:not(.inline):not(.sidenote) {
         display: none;
     }

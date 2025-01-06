@@ -2064,9 +2064,6 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     eventInfo.container.querySelectorAll("#footnotes > ol > li").forEach(footnote => {
         let backlink = footnote.querySelector(".footnote-back");
 
-        if (isOnlyChild(backlink))
-            backlink.parentElement.classList.add("footnote-back-block");
-
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
