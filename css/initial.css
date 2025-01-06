@@ -1126,6 +1126,17 @@ section.level6 > .heading {
     background: none;
 }
 
+/*	No visited link styling in headings.
+ */
+.markdownBody .heading a:link,
+.markdownBody .heading a:visited {
+	color: var(--GW-body-link-color);
+}
+.markdownBody .heading a:hover,
+.markdownBody .heading a:visited:hover {
+	color: var(--GW-body-link-hover-color);
+}
+
 /*  Disable bold within headings.
  */
 .heading strong {
