@@ -1708,6 +1708,12 @@ figure.width-full {
     hyphens: none;
 }
 
+@media all and (min-width: 1497px) {
+	#markdownBody .margin-notes-block {
+		display: none;
+	}
+}
+
 .markdownBody .margin-notes-block.hidden {
     display: none;
 }
