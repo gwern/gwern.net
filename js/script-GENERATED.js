@@ -12051,8 +12051,8 @@ Extracts = {
         //  We then remove some of the imported classes.
         Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
-        	"link-self", "link-annotated", "link-page", "link-tag", "icon-not", 
-        	"has-icon", "has-indicator-hook", "decorate-not",
+        	"link-self", "link-annotated", "link-page",
+        	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
         	"spawns-popup", "spawns-popin");
 
 		//	Import classes from include-link.

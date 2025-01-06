@@ -5056,6 +5056,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
 
+.popframe-body > .annotation > .annotation-abstract > .TOC > ul {
+	column-width: 12em;
+	column-gap: 1.25em;
+}
+.popframe-body.link-tag > .annotation > .annotation-abstract > .TOC > ul {
+	column-width: unset;
+	column-gap: unset;
+}
+
 /*  Collapses in annotations.
  */
 .popframe-body > .annotation > .annotation-abstract > .collapse-block,
