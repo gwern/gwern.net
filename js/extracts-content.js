@@ -723,7 +723,8 @@ Extracts = { ...Extracts,
 	isContentTransformLink: (target) => {
 		return (   target.classList.contains("content-transform-not") == false
 				&& [ "tweet",
-					 "wikipediaEntry"
+					 "wikipediaEntry",
+					 "githubIssue"
 					 ].findIndex(x => Content.contentTypes[x].matches(target)) !== -1);
 	},
 

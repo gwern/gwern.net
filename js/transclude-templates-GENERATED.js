@@ -73,6 +73,12 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
+	"github-issue-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
+	<div class="data-field issue-content"><{issueContent}></div>
+</div>`,
+	"github-issue-blockquote-outside": `<blockquote class="content-transform <{contentTypeClass}>">
+	<div class="data-field issue-content"><{issueContent}></div>
+</blockquote>`,
 	"pop-frame-title-standard": `<a
 	class="popframe-title-link"
 	href="<{popFrameTitleLinkHref}>"

@@ -228,7 +228,8 @@ Content = {
 
 	isContentTransformLink: (link) => {
 		return ([ "tweet",
-        		  "wikipediaEntry"
+        		  "wikipediaEntry",
+        		  "githubIssue"
         		  ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1);
 	},
 
@@ -407,6 +408,7 @@ Content = {
                 //  Some foreign-site links are handled specially.
                 if ([ "tweet",
                 	  "wikipediaEntry",
+                	  "githubIssue",
                       "remoteVideo",
                       "remoteImage"
                       ].findIndex(x => Content.contentTypes[x].matches(link)) !== -1)
@@ -745,10 +747,10 @@ Content = {
 						thumbnailFigure:            thumbnailFigureHTML
 					},
 					contentTypeClass:               contentTypeClass,
-					popFrameTitle:                  popFrameTitle.textContent,
-					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					template:                       "wikipedia-entry-blockquote-inside",
 					popFrameTemplate:               "wikipedia-entry-blockquote-not",
+					popFrameTitle:                  popFrameTitle.textContent,
+					popFrameTitleLinkHref:          popFrameTitleLinkHref,
 					annotationFileIncludeTemplate:  "wikipedia-entry-blockquote-title-not"
 				};
 			},
@@ -1127,6 +1129,58 @@ Content = {
 					if (isNodeEmpty(node))
 						node.remove();
 				});
+			}
+		},
+
+		githubIssue: {
+			matches: (link) => {
+				return (   link.classList.contains("content-transform-not") == false
+						&& /github\.com/.test(link.hostname)
+						&& /\/.+?\/.+?\/issues\/[0-9]+$/.test(link.pathname));
+			},
+
+			isSliceable: false,
+
+			contentCacheKeyForLink: (link) => {
+				return link.href;
+			},
+
+			sourceURLsForLink: (link) => {
+				let apiRequestURL = URLFromString(link.href);
+
+				apiRequestURL.hostname = "api.github.com";
+				apiRequestURL.pathname = "/repos" + apiRequestURL.pathname;
+				apiRequestURL.hash = "";
+
+				return [ apiRequestURL ];
+			},
+
+            contentFromResponse: (response, link, sourceURL) => {
+                return {
+                    document: newDocument(JSON.parse(response)["body_html"])
+                };
+            },
+
+			referenceDataCacheKeyForLink: (link) => {
+				return link.href;
+			},
+
+			referenceDataFromContent: (issueContent, link) => {
+				return {
+                    content: {
+                    	issueContent:       issueContent.document.innerHTML
+                    },
+                    contentTypeClass:       "github-issue",
+                    template:               "github-issue-blockquote-outside",
+					popFrameTemplate:       "github-issue-blockquote-not",
+                    popFrameTitle:          null,
+                    popFrameTitleLinkHref:  null,
+                };
+			},
+
+			additionalAPIRequestHeaders: {
+				"Accept": "application/vnd.github.html+json",
+				"X-GitHub-Api-Version": "2022-11-28"
 			}
 		},
 
