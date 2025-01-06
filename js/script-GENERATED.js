@@ -13607,16 +13607,6 @@ Extracts = { ...Extracts,
 					Extracts.updatePopFrameTitle(popFrame, title);
 			}, { once: true });
 		}
-    },
-
-    //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
-    rewritePopupContent_LOCAL_DOCUMENT: (popup, contentContainer) => {
-        GWLog("Extracts.rewritePopFrameContent_LOCAL_DOCUMENT", "extracts-content.js", 2);
-
-		Extracts.resizeObjectInObjectPopup(popup, "iframe");
-
-		//	Non-provider-specific rewrites.
-		Extracts.rewritePopFrameContent_LOCAL_DOCUMENT(popup, contentContainer);
     }
 };
 
@@ -13706,17 +13696,13 @@ Extracts = { ...Extracts,
 		let objectMaxWidth = popupMaxWidth - popupHorizontalPadding;
 		let objectMaxHeight = popupMaxHeight - popupVerticalPadding;
 
-		if (   object.tagName == "IFRAME"
-			&& specifiedWidth * specifiedHeight == 0) {
-			specifiedWidth = objectMaxWidth;
-			specifiedHeight = objectMaxHeight;
-		}
-
 		let height = Math.round(Math.min(Math.min(specifiedWidth, objectMaxWidth) * (specifiedHeight / specifiedWidth), objectMaxHeight));
 		let width = Math.round(height * (specifiedWidth / specifiedHeight));
 
 		object.style.width = `${width}px`;
 		object.style.height = `${height}px`;
+
+		object.style.setProperty("--aspect-ratio", object.style.aspectRatio);
 	},
 
 	//	Used in: Extracts.setUpContentLoadEventsWithin

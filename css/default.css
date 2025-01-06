@@ -4020,6 +4020,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popframe-body.object iframe {
     border: unset;
     max-height: unset;
+    height: var(--popframe-scroll-view-height);
+    width: 100%;
 }
 
 /*  Don’t show when loading failed.
@@ -4733,12 +4735,30 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup-body.object,
 .popup-body.object figure,
-.popup-body.object .figure-outer-wrapper,
-.popup-body.object .image-wrapper {
+.popup-body.object .figure-outer-wrapper {
 	flex: 1 0 auto;
 	display: flex;
 	width: 100%;
 	height: 100%;
+}
+
+.popup-body.object .figure-outer-wrapper {
+	background-color: var(--GW-popups-popup-border-color);
+}
+
+.popup-body.object .image-wrapper {
+	flex: 0 1 auto;
+	display: flex;
+	width: auto;
+}
+
+.popup-body.image.zoomed img,
+.popup-body.video.zoomed video,
+.popup-body.image.resized img,
+.popup-body.video.resized video {
+	width: calc(var(--popframe-scroll-view-height) * var(--aspect-ratio)) !important;
+	height: unset !important;
+	max-height: unset;
 }
 
 /*  Overlay (for dragging / click capturing).
@@ -4795,13 +4815,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     min-height: var(--GW-popups-video-popup-min-height);
 }
 
-.popup-body.video.youtube iframe {
-    width: var(--GW-popups-video-youtube-iframe-width);
-    height: var(--GW-popups-video-youtube-iframe-height);
+.popup.video.youtube {
+	width: calc(var(--GW-popups-video-youtube-iframe-width) + 2 * var(--GW-popups-popup-border-width));
+	height: calc(var(--GW-popups-video-youtube-iframe-height) + 2 * var(--GW-popups-popup-border-width) + var(--popup-title-bar-height));
 }
-.popup-body.video.vimeo iframe {
-    width: var(--GW-popups-video-vimeo-iframe-width);
-    height: var(--GW-popups-video-vimeo-iframe-height);
+.popup.video.vimeo {
+	width: calc(var(--GW-popups-video-vimeo-iframe-width) + 2 * var(--GW-popups-popup-border-width));
+	height: calc(var(--GW-popups-video-vimeo-iframe-height) + 2 * var(--GW-popups-popup-border-width) + var(--popup-title-bar-height));
 }
 
 /*┌───────────────┐*/
@@ -4837,6 +4857,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌────────────────────────┐*/
 /*│ Local document popups. │*/
 /*└────────────────────────┘*/
+
+.popup.local-document {
+	width: var(--GW-popups-popup-max-width);
+	height: var(--GW-popups-popup-max-height);
+}
 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
