@@ -3440,7 +3440,10 @@ Popups = {
     updatePageScrollState: () => {
         GWLog("Popups.updatePageScrollState", "popups.js", 2);
 
-        if (Popups.allSpawnedPopups().findIndex(popup => Popups.popupIsMaximized(popup)) == -1)
+        if (Popups.allSpawnedPopups().findIndex(popup => 
+        		(   Popups.popupIsMaximized(popup) == true
+        		 && Popups.popupIsMinimized(popup) == false)
+        	) == -1)
             togglePageScrolling(true);
         else
             togglePageScrolling(false);
@@ -3901,6 +3904,9 @@ Popups = {
 
         //  Focus the front-most popup (preferring un-minimized ones).
         Popups.focusPopup(Popups.frontmostPopup({ includeMinimizedPopups: true }));
+
+        //  Enable/disable main document scrolling.
+        Popups.updatePageScrollState();
 	},
 
 	unminimizePopup: (popup) => {
@@ -3949,6 +3955,9 @@ Popups = {
 
 		//	Update minimized popup arrangement.
 		Popups.updateMinimizedPopupArrangement();
+
+        //  Enable/disable main document scrolling.
+        Popups.updatePageScrollState();
 	},
 
 	updateMinimizedPopupArrangement: () => {
