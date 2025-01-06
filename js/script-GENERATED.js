@@ -16463,6 +16463,29 @@ addContentInjectHandler(GW.contentInjectHandlers.applyLinkBibliographyCompactSty
     });
 }, "rewrite");
 
+/****************************************************/
+/*	Adjust layout of link bibliography context links.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyLinkBibliographyContextLinks = (eventInfo) => {
+    GWLog("rectifyLinkBibliographyContextLinks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".link-bibliography-context").forEach(link => {
+		//	Inject context links into annotations, once those load.
+		let linkBibEntryIncludeLink = link.closest("li").querySelector("a:not(.link-bibliography-context)");
+		if (Transclude.isAnnotationTransclude(linkBibEntryIncludeLink)) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
+				let annotationTitleLine = info.container.querySelector(".data-field.title");
+				annotationTitleLine.insertBefore(document.createTextNode(" "), annotationTitleLine.firstChild);
+				annotationTitleLine.insertBefore(link, annotationTitleLine.firstChild);
+			}, {
+				condition: (info) => (info.includeLink == linkBibEntryIncludeLink),
+				once: true
+			});
+		}
+	});
+}, "<rewrite", (info) => (   info.source == "transclude"
+						  && info.loadLocation?.pathname.startsWith("/metadata/annotation/link-bibliography/")));
+
 
 /*********************/
 /* TABLE OF CONTENTS */

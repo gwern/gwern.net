@@ -2292,7 +2292,7 @@ del {
 /* AUX-LINKS */
 /*************/
 
-#link-bibliography-section > .list > li > p {
+.link-bibliography-list > li > p {
     --text-alignment: left;
 }
 
@@ -2307,13 +2307,6 @@ del {
  */
 .backlink-source a:nth-of-type(2) {
     hyphens: none;
-}
-
-/*	TEMPORARY, until context links are fixed.
-		—SA 2025-01-05
- */
-#link-bibliography a[href*='.md'].link-self {
-	display: none;
 }
 
 
