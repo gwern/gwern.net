@@ -4499,6 +4499,10 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				}
 			}
 			block.classList.toggle("intro-graf", introGraf);
+
+			let footnoteBackLink = block.querySelector(".footnote-back");
+			if (isOnlyChild(footnoteBackLink))
+				block.classList.add("footnote-back-block");
 		}
 	});
 });

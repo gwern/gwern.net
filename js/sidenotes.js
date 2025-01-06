@@ -655,10 +655,12 @@ Sidenotes = { ...Sidenotes,
 			/*	If the sidenote contents were copied from a footnote that exists
 				in the page, then we should regenerate placeholders, otherwise
 				the back-to-citation links (among possibly other things) may
-				not work right.
+				not work right. Also, clear link state of include-links.
 			 */
-			if (referencedFootnote)
+			if (referencedFootnote) {
 				regeneratePlaceholderIds(sidenoteContents);
+				Transclude.allIncludeLinksInContainer(sidenoteContents).forEach(Transclude.clearLinkState);
+			}
 
 			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", {
