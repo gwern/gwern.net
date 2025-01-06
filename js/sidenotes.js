@@ -287,7 +287,9 @@ Sidenotes = { ...Sidenotes,
 			}
 
 			//  Inject the sidenote into the column (provisionally).
-			side.append(sidenote);
+			if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
+				|| sidenote.parentElement == null)
+				side.append(sidenote);
 
 			/*  Mark sidenotes which are cut off vertically.
 			 */
@@ -353,14 +355,9 @@ Sidenotes = { ...Sidenotes,
 			}
 		});
 
-		/*	Remove sidenotes from page, so that we can set their positions
-			without causing reflow. Store their layout heights (which cannot
-			be retrieved in the normal way while the sidenotes aren’t part of
-			the DOM).
-		 */
+		//	Store their layout heights of sidenotes.
 		Sidenotes.sidenotes.forEach(sidenote => {
 			sidenote.lastKnownHeight = sidenote.offsetHeight;
-			sidenote.remove();
 		});
 
 		//	Clean up old layout cells, if any.
@@ -941,7 +938,8 @@ Sidenotes = { ...Sidenotes,
 				when collapse blocks are expanded/collapsed.
 			 */
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
-				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				if (eventInfo.collapseBlock.closest(".sidenote") == null)
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, {
 				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
 			});
