@@ -2131,6 +2131,9 @@ Popups = {
         //  Prevent clicks from doing anything other than what we want.
         event.preventDefault();
 
+        //  Mark popup as being resized.
+        Popups.addClassesToPopFrame(popup, "resizing");
+
         //  Determine direction of resizing.
         let edgeOrCorner = Popups.edgeOrCorner(popup, {
             x: event.clientX - popup.viewportRect.left,
@@ -2179,7 +2182,7 @@ Popups = {
 
 		//	Update classes.
 		Popups.removeClassesFromPopFrame(popup, ...(Popups.titleBarComponents.popupPlaces));
-		Popups.addClassesToPopFrame(popup, "resizing", "resized");
+		Popups.addClassesToPopFrame(popup, "resized");
 
 		//  Viewport width must account for vertical scroll bar.
 		let viewportWidth = document.documentElement.offsetWidth;

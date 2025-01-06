@@ -4755,7 +4755,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popup.object.focused .popframe-content-view::before {
     visibility: hidden;
 }
-.popup.object.dragging .popframe-content-view::before {
+.popup.object.dragging .popframe-content-view::before,
+.popup.object.resizing .popframe-content-view::before {
     visibility: visible;
 }
 
