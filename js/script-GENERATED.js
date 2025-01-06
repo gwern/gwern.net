@@ -10476,7 +10476,8 @@ Transclude = {
 		[	".footnote",
 			".sidenote"
 			].join(", "),
-		".aux-links-append"
+		".aux-links-append",
+		".epigraph"
 	],
 
 	generalBlockElementSelectors: [
