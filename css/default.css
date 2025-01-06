@@ -1366,6 +1366,7 @@ p.intro-graf::first-line {
     display: flow-root;
     margin: auto;
     padding: 0.75em 2.5em;
+    overflow: hidden;
 }
 
 .epigraph blockquote {
