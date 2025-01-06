@@ -19087,7 +19087,7 @@ Sidenotes = {
 		shown as sidenotes. If the viewport is narrower than this, then margin
 		notes will be inlined.
 	 */
-	minimumViewportWidthForSidenoteMarginNotes: "1537px",
+	minimumViewportWidthForSidenoteMarginNotes: "1497px",
 
 	useLeftColumn: () => false,
 	useRightColumn: () => true
