@@ -19083,6 +19083,12 @@ Sidenotes = {
 	 */
 	minimumViewportWidthForSidenotes: "1761px",
 
+	/*	The smallest width (in CSS dimensions) at which margin notes will be
+		shown as sidenotes. If the viewport is narrower than this, then margin
+		notes will be inlined.
+	 */
+	minimumViewportWidthForSidenoteMarginNotes: "1537px",
+
 	useLeftColumn: () => false,
 	useRightColumn: () => true
 };
@@ -19094,7 +19100,8 @@ Sidenotes = { ...Sidenotes,
 	/*  Media query objects (for checking and attaching listeners).
 	 */
 	mediaQueries: {
-		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`)
+		viewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenotes})`),
+		marginNoteViewportWidthBreakpoint: matchMedia(`(min-width: ${Sidenotes.minimumViewportWidthForSidenoteMarginNotes})`)
 	},
 
 	/*****************/
@@ -19869,7 +19876,7 @@ Sidenotes = { ...Sidenotes,
 			 */
 			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
 				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
-							  || Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false
+							  || Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint.matches == false
 							  || eventInfo.document != document);
 				marginNote.swapClasses([ "inline", "sidenote" ], (inline ? 0 : 1));
 			});
@@ -19879,7 +19886,7 @@ Sidenotes = { ...Sidenotes,
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
-			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
+			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
 			});
 		}, "rewrite", (info) => info.container == document.main, true);
