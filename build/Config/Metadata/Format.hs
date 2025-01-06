@@ -153,11 +153,11 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner"
                           , "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science"
                           , "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer"
-                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer"]
+                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX"]
 
 filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"
-                      , "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "mchahino", "LaTeX2e", "Paperless", "fulvio", "Winter", "markj"
+                      , "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "LaTeX2e", "Paperless", "fulvio", "Winter", "markj"
                       , "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009", "021186U129", "02_ASQ523602 1..33"
                       , "03_gbb155 240..248", "1)", "1.0b", "110s(6) Science. 555-", "1247", "2913 | 01 Chorney", "301246", "378787 1100..1105", "4559"
                       , "459119", "4AD004/Prov9 FMV/4P", "52457938", "7.0 psym 7#1 2002", "72508-danigelis.q41", "9757 van Stuijvenberg", "99202", "BBS1200319 661..726", "BBS1300119 297..350"
@@ -1774,6 +1774,7 @@ htmlRewriteFixed =
          , ("Lee Sidol", "Lee Sedol")
          , ("DeepBlue", "Deep Blue")
          , ("thatuse", "that use")
+         , ("paperuses", "paper uses")
          , ("Weuse", "We use")
          , ("weuse", "we use")
          , ("nuture", "nurture")

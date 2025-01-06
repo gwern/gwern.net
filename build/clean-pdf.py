@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-03 14:09:37 gwern"
+# When:  Time-stamp: "2025-01-04 18:25:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -138,6 +138,12 @@ to be well receivedand praisedby otherswho, when they talk behindone's back, mus
 things,not bad. Mereacquaintancesareseenas close friends.Politenessand the exchangeof pleasantries
 are interpretedas expressionsof deep attachmentand the promiseof futuresuppor</text> →
 Pronoia is the delusion that others think well of one. Actions and the products of one's efforts are thought to be well received and praised by others who, when they talk behind one's back, must be saying good things, not bad. Mere acquaintances are seen as close friends. Politeness and the exchange of pleasantries are interpreted as expressions of deep attachment and the promise of future support.
+
+<text>Author links open overlay panelAna Stanojevic a b, Stanisław Woźniak a, Guillaume Bellec b, Giovanni Cherubini a, Angeliki Pantazi a, Wulfram Gerstner b</text> →
+Ana Stanojevic, Stanisław Woźniak, Guillaume Bellec, Giovanni Cherubini, Angeliki Pantazi, Wulfram Gerstner
+
+<text>Author links open overlay panelMira Fischer a, Elisabeth Grewenig b, Philipp Lergetporer c, Katharina Werner d, Helen Zeidler e</text> →
+Mira Fischer, Elisabeth Grewenig, Philipp Lergetporer, Katharina Werner, Helen Zeidler
 
 Input:
 <text>{target}</text> →

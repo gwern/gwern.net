@@ -2504,7 +2504,7 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/1603.01417","xiong-et-al-2016-2")
        , ("https://arxiv.org/abs/2112.07210#facebook","xiong-et-al-2021-1")
        , ("https://arxiv.org/abs/2102.03902","xiong-et-al-2021-2")
-       , ("/doc/psychedelic/2021-xiong.pdf","xiong-et-al-2021-3")
+       , ("/doc/psychedelic/ketamine/2021-xiong.pdf","xiong-et-al-2021-3")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7450728/","xu-et-al-2017-1")
        , ("https://arxiv.org/abs/1711.10485#microsoft","xu-et-al-2017-2")
        , ("https://arxiv.org/abs/1709.00513","xu-et-al-2017-3")
@@ -2891,4 +2891,8 @@ linkIDOverrides =
   , ("https://www.reddit.com/r/mlscaling/comments/1djoqjh/ilya_sutskever_launches_safe_superintelligence_a/l9uogp9/","gwern-2024-oamojo")
   , ("https://arxiv.org/abs/2206.02279","sharma-et-al-2022-1"),("/doc/psychiatry/lithium/2022-sharma.pdf","sharma-et-al-2022-2")
   , ("https://zhengdongwang.com/2024/12/29/2024-letter.html","wang-2024-llm"),("https://www.nytimes.com/2024/05/25/world/asia/china-surveillance-xi.html","wang-2024-surveillance")
+  , ("https://www.sciencedirect.com/science/article/pii/S0165176524000429","fischer-et-al-2024-1"),("/doc/economics/2024-fischer.pdf","fischer-et-al-2024-2")
+  ,("https://www.thepsmiths.com/p/review-reentry-by-eric-berger","psmith-2024-1"),("https://www.thepsmiths.com/p/review-invitation-to-a-banquet-by","psmith-2024-2")
+  ,("https://arxiv.org/abs/2406.04329#deepmind","shi-et-al-2024-1"),("https://arxiv.org/abs/2405.14394","shi-et-al-2024-2")
+  ,("https://link.springer.com/article/10.1007/s10557-023-07488-3","wong-et-al-2023-1"),("https://arxiv.org/abs/2306.12672","wong-et-al-2023-2")
       ]

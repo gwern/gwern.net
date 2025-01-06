@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-03 14:35:58 gwern"
+# When:  Time-stamp: "2025-01-05 18:53:32 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -537,6 +537,14 @@ Katri Räikkönen
 "After 12 years of writing about bitcoin, here’s how my thinking has changed"
 - "Spotmicro—robot dog by KDY0523—Thingiverse"
 "Spotmicro—robot dog"
+- "A Very Private Life—Nikolai Tolstoy Remembers Patrick O’Brian by Unseen Histories - Unseen Histories"
+"A Very Private Life—Nikolai Tolstoy Remembers Patrick O’Brian"
+- "“AI” on a Calculator: Part 1 | Blog"
+"“AI” on a Calculator: Part 1"
+- "File:Ascii art alphabet.png - Wikimedia Commons"
+"File:Ascii art alphabet.png"
+- "Prompt Design for DALL·E: Photorealism—Emulating Reality | by Merzmensch | Merzazine"
+"Prompt Design for DALL·E: Photorealism—Emulating Reality"
 
 Task:
 

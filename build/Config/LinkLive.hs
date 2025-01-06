@@ -2371,6 +2371,7 @@ badDomainsSimple = [ "2chan.us"
    , "jamanetwork.com"
    , "www.midjourney.com"
    , "www.mrc-epid.cam.ac.uk"
+   , "wiki.c2.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -3549,7 +3550,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://mnemosyne-proj.org/"
             , "https://models.aminer.cn/CogView/index.html"
             , "https://money.cnn.com/magazines/fortune/fortune_archive/2006/04/03/8373034/index.htm"
-            , "https://mosaicscience.com/story/my-deja-vu-so-extreme-i-cant-tell-whats-real-any-more/"
+            , "https://www.bbc.com/future/article/20170531-my-dj-vu-is-so-bad-i-cant-tell-whats-real"
             , "https://moz.com/blog/google-alerts-vs-mention-vs-talkwalker"
             , "https://mpra.ub.uni-muenchen.de/74268/1/MPRA_paper_74268.pdf"
             , "https://mru.org/development-economics"
@@ -4627,5 +4628,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2569454"
             , "https://www.midjourney.com/home/"
             , "https://www.mrc-epid.cam.ac.uk/cds2024/faculty/ines-barroso/"
+            , "https://wiki.c2.com/?LazinessImpatienceHubris"
             ]
 

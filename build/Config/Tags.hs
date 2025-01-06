@@ -152,7 +152,7 @@ tagsShort2LongRewrites =
    , ("order-statistics", "statistics/order")
    , ("aphantasic", "aphantasia"), ("aphantasy", "aphantasia"), ("economics", "economics"), ("math/humor", "math/humor"), ("low-iq", "iq/low"), ("low/[ iq", "iq/low"), ("stylegan-2", "stylegan/2")
    , ("marbling", "paper-marbling"), ("marble", "paper-marbling"), ("marbling-paper", "paper-marbling"), ("marble-paper", "paper-marbling")
-   , ("microbion", "microbiome"), ("germfree", "germ-free")]
+   , ("microbion", "microbiome"), ("germfree", "germ-free"), ("selfsinking", "self-sinking")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
