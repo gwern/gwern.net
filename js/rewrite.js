@@ -1285,18 +1285,24 @@ addContentLoadHandler(GW.contentLoadHandlers.iconifyUnicodeIconGlyphs = (eventIn
 
 	let processElement = (element) => {
 		let replacements = [ ];
+		let replacedGlyphs = [ ];
+
 		for (let node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
-				processElement(node);
+				let replacedGlyphsInNode = processElement(node);
 
-				if (node.classList.containsAnyOf(Object.values(glyphIconMapping)))
+				if (   replacedGlyphsInNode.length > 0
+					&& node.classList.containsAnyOf(replacedGlyphsInNode.map(g => glyphIconMapping[g])))
 					replacements.push([ node, node.childNodes ]);
+
+				replacedGlyphs.push(...replacedGlyphsInNode);
 			} else if (node.nodeType === Node.TEXT_NODE) {
 				let glyphRegExp = new RegExp(Object.keys(glyphIconMapping).join("|"), "g");
 				let parts = [ ];
 				let start = 0;
 				let match = null;
 				while (match = glyphRegExp.exec(node.textContent)) {
+					replacedGlyphs.push(match[0]);
 					parts.push([ match[0], start, match.index ]);
 					start = match.index + match[0].length;
 				}
@@ -1313,6 +1319,7 @@ addContentLoadHandler(GW.contentLoadHandlers.iconifyUnicodeIconGlyphs = (eventIn
 				}
 			}
 		}
+
 		if (replacements.length > 0) {
 			//	Replace.
 			replacements.forEach(replacement => {
@@ -1320,6 +1327,8 @@ addContentLoadHandler(GW.contentLoadHandlers.iconifyUnicodeIconGlyphs = (eventIn
 				replacedNode.parentNode.replaceChild(newDocument(replacementNodes), replacedNode);
 			});
 		}
+
+		return replacedGlyphs;
 	}
 
     eventInfo.container.querySelectorAll("p").forEach(graf => {
