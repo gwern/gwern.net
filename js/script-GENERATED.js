@@ -19182,6 +19182,8 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.sidenotes.forEach(sidenote => {
 			let citation = Sidenotes.counterpart(sidenote);
 			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+			if (sidenote.classList.contains("hidden"))
+				Sidenotes.hiddenSidenoteStorage.append(sidenote);
 		});
 	},
 
@@ -19279,16 +19281,8 @@ Sidenotes = { ...Sidenotes,
 		//  Update the disposition of sidenotes within collapse blocks.
 		Sidenotes.updateSidenotesInCollapseBlocks();
 
-		//	Check for cut-off sidenotes.
+		//	Assign sidenotes to sides.
 		Sidenotes.sidenotes.forEach(sidenote => {
-			/*  Check whether the sidenote is currently hidden (i.e., within a
-				currently-collapsed collapse block or similar). If so, skip it.
-			 */
-			if (sidenote.classList.contains("hidden")) {
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
-				return;
-			}
-
 			//  On which side should the sidenote go?
 			let sidenoteNumber = Notes.noteNumberFromHash(sidenote.id);
 			let side = null;
@@ -19312,11 +19306,6 @@ Sidenotes = { ...Sidenotes,
 			if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
 				|| sidenote.parentElement == null)
 				side.append(sidenote);
-
-			/*  Mark sidenotes which are cut off vertically.
-			 */
-			let sidenoteOuterWrapper = sidenote.firstElementChild;
-			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
 		});
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
@@ -19379,6 +19368,11 @@ Sidenotes = { ...Sidenotes,
 
 		//	Store their layout heights of sidenotes.
 		Sidenotes.sidenotes.forEach(sidenote => {
+			//  Mark sidenotes which are cut off vertically.
+			let sidenoteOuterWrapper = sidenote.firstElementChild;
+			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
+
+			//	Store layout height.
 			sidenote.lastKnownHeight = sidenote.offsetHeight;
 		});
 
@@ -19426,18 +19420,14 @@ Sidenotes = { ...Sidenotes,
 
 		//	Assign sidenotes to layout cells.
 		for (citation of Sidenotes.citations) {
-			let citationBoundingRect = citation.getBoundingClientRect();
-
 			let sidenote = Sidenotes.counterpart(citation);
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its
-				citation is within a currently-collapsed collapse block)? If so,
-				skip it.
+				citation is within a currently-collapsed collapse block)?
+				If so, skip it.
 			 */
-			if (sidenote.classList.contains("hidden")) {
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
+			if (sidenote.classList.contains("hidden"))
 				continue;
-			}
 
 			//	Get all the cells that the sidenote can fit into.
 			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.lastKnownHeight);
@@ -19452,6 +19442,7 @@ Sidenotes = { ...Sidenotes,
 			/*	These functions are used to sort layout cells by best fit for
 				placing the current sidenote.
 			 */
+			let citationBoundingRect = citation.getBoundingClientRect();
 			let vDistanceToCell = (cell) => {
 				if (   citationBoundingRect.top > cell.rect.top
 					&& citationBoundingRect.top < cell.rect.bottom)
@@ -19612,6 +19603,24 @@ Sidenotes = { ...Sidenotes,
 		if (Sidenotes.hiddenSidenoteStorage)
 			Sidenotes.hiddenSidenoteStorage.remove();
 		Sidenotes.hiddenSidenoteStorage = null;
+	},
+
+	/*	Construct sidenotes, if need be; and, if needed, infrastructure.
+	 */
+	constructSidenotesIfNeeded: (firstRun = false) => {
+		if (firstRun) {
+			Sidenotes.sidenotesNeedConstructing = true;
+			Sidenotes.constructSidenotes(true);
+			Sidenotes.sidenotesNeedConstructing = false;
+		} else {
+			Sidenotes.sidenotesNeedConstructing = true;
+			requestIdleCallback(() => {
+				if (Sidenotes.sidenotesNeedConstructing == true) {
+					Sidenotes.constructSidenotes();
+					Sidenotes.sidenotesNeedConstructing = false;
+				}
+			});
+		}
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -20068,19 +20077,7 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container == document.main) {
-				Sidenotes.sidenotesNeedConstructing = true;
-				Sidenotes.constructSidenotes(true);
-				Sidenotes.sidenotesNeedConstructing = false;
-			} else {
-				Sidenotes.sidenotesNeedConstructing = true;
-				requestIdleCallback(() => {
-					if (Sidenotes.sidenotesNeedConstructing == true) {
-						Sidenotes.constructSidenotes();
-						Sidenotes.sidenotesNeedConstructing = false;
-					}
-				});
-			}
+			Sidenotes.constructSidenotesIfNeeded(eventInfo.container == document.main);
 		}, "rewrite", (info) => (   info.document == document
 								 && info.source != "Sidenotes.constructSidenotes"
 								 && info.container.closest(".sidenote") == null));
