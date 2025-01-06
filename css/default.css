@@ -24,10 +24,10 @@
     --GW-popups-wikipedia-entry-popup-min-height: 120px;
     --GW-popups-tweet-popup-min-height: 120px;
     --GW-popups-tweet-avatar-size: 75px;
-    --GW-popups-aux-links-popup-min-width: 480px;
-    --GW-popups-aux-links-popup-min-height: 240px;
-    --GW-popups-local-page-popup-min-width: 480px;
-    --GW-popups-local-page-popup-min-height: 240px;
+    --GW-popups-aux-links-popup-min-width: 360px;
+    --GW-popups-aux-links-popup-min-height: 120px;
+    --GW-popups-local-page-popup-min-width: 360px;
+    --GW-popups-local-page-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
