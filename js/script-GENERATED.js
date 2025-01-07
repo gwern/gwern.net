@@ -19225,6 +19225,9 @@ Sidenotes = { ...Sidenotes,
 		if an update is not already queued.
 	 */
 	updateSidenotePositionsIfNeeded: () => {
+		if (Sidenotes.hiddenSidenoteStorage == null)
+			return;
+
 		if (Sidenotes.positionUpdateQueued)
 			return;
 
@@ -19647,6 +19650,10 @@ Sidenotes = { ...Sidenotes,
 
 		//	Destroy before creating.
 		Sidenotes.deconstructSidenotes(alsoConstructInfrastructure);
+
+		//	Ensure that infrastructure is constructed if need be.
+		if (Sidenotes.hiddenSidenoteStorage == null)
+			alsoConstructInfrastructure = true;
 
 		//	Create infrastructure.
 		if (alsoConstructInfrastructure) {
