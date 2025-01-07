@@ -83,8 +83,8 @@ GW.layout = {
 		"#hidden-sidenote-storage"
 	].join(", "),
 
-	//	Isolate block layout within these elements.
-	blockLayoutIsolationSelector: [
+	//	Isolate layout within these elements.
+	layoutIsolationSelector: [
 		".sidenote-column"
 	].join(", "),
 
@@ -326,26 +326,36 @@ function startDynamicLayoutInContainer(container) {
 				doBlockLayout: true
 			};
 
-			//	Enforce block layout exclusion zones.
-			if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
-				blockContainerEntry.doBlockLayout = false;
+			//	Enforce layout isolation zones.
+			let isolationZone = mutationRecord.target.closest(GW.layout.layoutIsolationSelector);
+			if (isolationZone?.closest(blockContainersSelector) == nearestBlockContainer) {
+				isolationZone.querySelectorAll(blockContainersSelector).forEach(isolatedBlockContainer => {
+					//	Avoid adding a block container twice.
+					if (affectedBlockContainers.findIndex(x => x.blockContainer == isolatedBlockContainer) == -1) {
+						affectedBlockContainers.push({
+							blockContainer: isolatedBlockContainer,
+							doBlockLayout: true
+						});
+					}
+				});
+			} else {
+				//	Enforce block layout exclusion zones.
+				if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
+					blockContainerEntry.doBlockLayout = false;
 
-			//	Enforce block layout isolation zones.
-			let isolationZone = mutationRecord.target.closest(GW.layout.blockLayoutIsolationSelector);
-			if (isolationZone?.closest(blockContainersSelector) == nearestBlockContainer)
-				blockContainerEntry.doBlockLayout = false;
-			
-			//	Avoid adding a block container twice.
-			if (affectedBlockContainers.findIndex(x => x.blockContainer == blockContainerEntry.blockContainer) == -1)
-				affectedBlockContainers.push(blockContainerEntry);
+				//	Avoid adding a block container twice.
+				if (affectedBlockContainers.findIndex(x => x.blockContainer == blockContainerEntry.blockContainer) == -1)
+					affectedBlockContainers.push(blockContainerEntry);
+			}			
 		}
 
 		/*	Exclude block containers that are contained within other block
 			containers in the list, to prevent redundant processing.
 		 */
-		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x =>
-			(c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS)
-		) == -1);
+		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => {
+			//	This means “x contains c”.
+			return (c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS);
+		}) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
@@ -911,6 +921,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Designate headings.
 	blockContainer.querySelectorAll(range(1, 6).map(x => `h${x}`).join(", ")).forEach(heading => {
+		if (heading.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
+
 		heading.classList.add("heading");
 	});
 
@@ -921,10 +934,16 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	];
 	if (GW.mediaQueries.mobileWidth.matches == false) {
 		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
+			if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+				return;
+
 			floatBlock.classList.add("float");
 		});
 	} else {
 		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
+			if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+				return;
+
 			floatBlock.classList.remove("float");
 		});
 	}
@@ -939,6 +958,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Designate float-containing lists.
 	blockContainer.querySelectorAll(".markdownBody li .float").forEach(floatBlock => {
+		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
+
 		let options = {
 			alsoBlockContainers: [ ".list" ],
 			cacheKey: "alsoBlockContainers_lists"
@@ -970,6 +992,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		return false;
 	};
 	blockContainer.querySelectorAll(".list").forEach(list => {
+		if (list.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
+
 		let bigList = isBigList(list);
 
 		/*	If this is a sub-list, and any other sub-lists on the same level as
@@ -995,6 +1020,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Disable triptychs on mobile layouts.
 	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
+		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
+			return;
+
 		/*	Why “aptych”? Because on mobile it is laid out in one column
 			instead of three, making it “un-folded”:
 			https://old.reddit.com/r/AncientGreek/comments/ypts2o/polyptychs_help_with_a_word/
