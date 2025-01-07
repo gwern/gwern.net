@@ -98,11 +98,11 @@ Sidenotes = { ...Sidenotes,
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
-		return (Sidenotes.sidenotes.find(sidenote => Notes.noteNumberFromHash(sidenote.id) == number) ?? null);
+		return (Sidenotes.sidenotes.find(sidenote => Notes.noteNumber(sidenote) == number) ?? null);
 	},
 
 	citationOfNumber: (number) => {
-		return (Sidenotes.citations.find(citation => Notes.noteNumberFromHash(citation.id) == number) ?? null);
+		return (Sidenotes.citations.find(citation => Notes.noteNumber(citation) == number) ?? null);
 	},
 
 	/*	The sidenote of the same number as the given citation;
@@ -112,7 +112,7 @@ Sidenotes = { ...Sidenotes,
 		if (element == null)
 			return null;
 
-		let number = Notes.noteNumberFromHash(element.id);
+		let number = Notes.noteNumber(element);
 		let counterpart = (element.classList.contains("sidenote")
 						   ? Sidenotes.citationOfNumber(number)
 						   : Sidenotes.sidenoteOfNumber(number));
@@ -196,14 +196,16 @@ Sidenotes = { ...Sidenotes,
 	updateStateAfterHashChange: () => {
 		GWLog("Sidenotes.updateStateAfterHashChange", "sidenotes.js", 1);
 
+		return;
+
 		//	Update highlighted state of sidenote and citation, if need be.
 		Sidenotes.updateTargetCounterpart();
 
 		/*	If hash targets a sidenote, reveal corresponding citation; and
 			vice-versa. Scroll everything into view properly.
 		 */
-		if (location.hash.match(/#sn[0-9]/)) {
-			let citation = document.querySelector("#fnref" + Notes.noteNumberFromHash());
+		if (Notes.hashMatchesSidenote()) {
+			let citation = document.querySelector(Notes.citationSelectorMatchingHash());
 			if (citation == null)
 				return;
 
@@ -224,7 +226,7 @@ Sidenotes = { ...Sidenotes,
 
 				Sidenotes.unSlideLockSidenote(sidenote);
 			});
-		} else if (location.hash.match(/#fnref[0-9]/)) {
+		} else if (Notes.hashMatchesCitation()) {
 			let citation = getHashTargetedElement();
 			if (citation == null)
 				return;
@@ -272,7 +274,7 @@ Sidenotes = { ...Sidenotes,
 		//	Assign sidenotes to sides.
 		Sidenotes.sidenotes.forEach(sidenote => {
 			//  On which side should the sidenote go?
-			let sidenoteNumber = Notes.noteNumberFromHash(sidenote.id);
+			let sidenoteNumber = Notes.noteNumber(sidenote);
 			let side = null;
 			       if (   Sidenotes.useLeftColumn()  == true
 					   && Sidenotes.useRightColumn() == false) {
@@ -637,16 +639,19 @@ Sidenotes = { ...Sidenotes,
 			return;
 
 		Sidenotes.citations.forEach(citation => {
-			let noteNumber = Notes.noteNumberFromHash(citation.hash);
+			let noteNumber = Notes.noteNumber(citation);
 
 			//  Create the sidenote outer containing block...
-			let sidenote = newElement("DIV", { class: "sidenote", id: `sn${noteNumber}` });
+			let sidenote = newElement("DIV", {
+				class: "sidenote",
+				id: Notes.sidenoteIdForNumber(noteNumber)
+			});
 
 			/*	Fill the sidenote either by copying from an existing footnote
 				in the current page, or else by transcluding the footnote to
 				which the citation refers.
 			 */
-			let referencedFootnote = document.querySelector(`#fn${noteNumber}`);
+			let referencedFootnote = document.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
 			let sidenoteContents = newDocument(referencedFootnote
 											   ? referencedFootnote.childNodes
 											   : synthesizeIncludeLink(citation, {
@@ -676,7 +681,7 @@ Sidenotes = { ...Sidenotes,
 			 */
 			sidenote.append(newElement("A", {
 				"class": "sidenote-self-link",
-				"href": `#sn${noteNumber}`
+				"href": Notes.sidenoteSelectorMatchingHash(citation.hash)
 			}, {
 				"textContent": noteNumber
 			}));
@@ -803,11 +808,11 @@ Sidenotes = { ...Sidenotes,
 			width media query changes.
 		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
-			let regex = new RegExp(mediaQuery.matches ? "^#fn[0-9]+$" : "^#sn[0-9]+$");
-			let prefix = (mediaQuery.matches ? "#sn" : "#fn");
-
-			if (location.hash.match(regex)) {
-				relocate(prefix + Notes.noteNumberFromHash());
+			if (   Notes.hashMatchesFootnote()
+				|| Notes.hashMatchesSidenote()) {
+				relocate(mediaQuery.matches 
+						 ? Notes.sidenoteSelectorMatchingHash() 
+						 : Notes.footnoteSelectorMatchingHash());
 
 				//	Update targeting.
 				if (mediaQuery.matches)
@@ -816,8 +821,8 @@ Sidenotes = { ...Sidenotes,
 					updateFootnoteTargeting();
 			}
 		}, null, (mediaQuery) => {
-			if (location.hash.match(/^#sn[0-9]/)) {
-				relocate("#fn" + Notes.noteNumberFromHash());
+			if (Notes.hashMatchesSidenote()) {
+				relocate(Notes.footnoteSelectorMatchingHash());
 
 				//	Update targeting.
 				updateFootnoteTargeting();
@@ -893,19 +898,22 @@ Sidenotes = { ...Sidenotes,
 		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				citation.href = (mediaQuery.matches ? "#sn" : "#fn") + Notes.noteNumberFromHash(citation.hash);
+				citation.href = mediaQuery.matches 
+								? Notes.sidenoteSelectorMatchingHash(citation.hash)
+								: Notes.footnoteSelectorMatchingHash(citation.hash);
 			});
 		}, null, (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				citation.href = "#fn" + Notes.noteNumberFromHash(citation.hash);
+				citation.href = Notes.footnoteSelectorMatchingHash(citation.hash);
 			});
 		});
 
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.href = (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches ? "#sn" : "#fn")
-									+ Notes.noteNumberFromHash(citation.hash);
+					citation.href = Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
+									? Notes.sidenoteSelectorMatchingHash(citation.hash)
+									: Notes.footnoteSelectorMatchingHash(citation.hash);
 			});
 		}, "rewrite", (info) => info.document == document);
 

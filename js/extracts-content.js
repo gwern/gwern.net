@@ -496,7 +496,7 @@ Extracts = { ...Extracts,
 			"class": "include-strict include-spinner-not",
 			"data-include-selector-not": ".footnote-self-link, .footnote-back"
 		})
-		includeLink.hash = Notes.footnoteSelectorMatching(target);
+		includeLink.hash = Notes.footnoteSelectorMatchingHash(target.hash);
 		return newDocument(includeLink);
     },
 

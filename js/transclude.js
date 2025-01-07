@@ -1123,8 +1123,9 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
 			let sectionLabelHTML = targetBlock.tagName == "SECTION"
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
-								   : `footnote <span class="footnote-number">${(Notes.noteNumberFromHash(targetBlock.id))}</span>`;
+								   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
 			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
+			console.log(sectionLabelHTML);
 
 			//	List.
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
@@ -1286,11 +1287,13 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 	//	Add new footnotes to wrapper.
     citationsInNewContent.forEach(citation => {
         //  Original footnote (in source content/document).
-        let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
+        let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
+        console.log(footnote);
 
 		//	Determine footnote’s source page, and its note number on that page.
 		let sourcePagePathname = (footnote.dataset.sourcePagePathname ?? loadLocationForIncludeLink(includeLink).pathname);
 		let originalNoteNumber = (footnote.dataset.originalNoteNumber ?? Notes.noteNumber(citation));
+		console.log(originalNoteNumber);
 
 		//	Check for already added copy of this footnote.
 		let alreadyAddedFootnote = footnotesSection.querySelector(`li.footnote`
@@ -1330,7 +1333,8 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 		if (citation.closest(".sidenote"))
 			return;
 
-		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatching(citation));
+		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
+		console.log(footnote);
 
 		if (footnote.parentElement == newFootnotesWrapper) {
 			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));

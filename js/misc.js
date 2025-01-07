@@ -777,46 +777,62 @@ AuxLinks = {
 /*********/
 
 Notes = {
-    /*  Get the (side|foot)note number from the URL hash (which might point to a
+	hashForCitationRegexp: new RegExp("^#fnref[0-9]+$"),
+
+	hashMatchesCitation: (hash = location.hash) => {
+		return Notes.hashForCitationRegexp.test(hash);
+	},
+
+	hashForFootnoteRegexp: new RegExp("^#fn[0-9]+$"),
+
+	hashMatchesFootnote: (hash = location.hash) => {
+		return Notes.hashForFootnoteRegexp.test(hash);
+	},
+
+	hashForSidenoteRegexp: new RegExp("^#sn[0-9]+$"),
+
+	hashMatchesSidenote: (hash = location.hash) => {
+		return Notes.hashForSidenoteRegexp.test(hash);
+	},
+
+    /*  Get the (side|foot)note number from a URL hash (which might point to a
         footnote, a sidenote, or a citation).
      */
     noteNumberFromHash: (hash = location.hash) => {
-        if (hash.startsWith("#") == false)
-            hash = "#" + hash;
-
-        if (hash.match(/#[sf]n[0-9]/))
+        if (   Notes.hashMatchesFootnote(hash)
+        	|| Notes.hashMatchesSidenote(hash))
             return hash.substr(3);
-        else if (hash.match(/#fnref[0-9]/))
+        else if (Notes.hashMatchesCitation(hash))
             return hash.substr(6);
         else
             return "";
     },
 
     noteNumber: (element) => {
-        return Notes.noteNumberFromHash(element.hash ?? element.id);
+        return Notes.noteNumberFromHash(element.hash ?? ("#" + element.id));
     },
 
-    citationSelectorMatching: (element) => {
-        return ("#" + Notes.idForCitationNumber(Notes.noteNumberFromHash(element.hash)));
+    citationSelectorMatchingHash: (hash) => {
+        return ("#" + Notes.citationIdForNumber(Notes.noteNumberFromHash(hash)));
     },
 
-    footnoteSelectorMatching: (element) => {
-        return ("#" + Notes.idForFootnoteNumber(Notes.noteNumberFromHash(element.hash)));
+    footnoteSelectorMatchingHash: (hash) => {
+        return ("#" + Notes.footnoteIdForNumber(Notes.noteNumberFromHash(hash)));
     },
 
-    sidenoteSelectorMatching: (element) => {
-        return ("#" + Notes.idForSidenoteNumber(Notes.noteNumberFromHash(element.hash)));
+    sidenoteSelectorMatchingHash: (hash) => {
+        return ("#" + Notes.sidenoteIdForNumber(Notes.noteNumberFromHash(hash)));
     },
 
-    idForCitationNumber: (number) => {
+    citationIdForNumber: (number) => {
         return `fnref${number}`;
     },
 
-    idForFootnoteNumber: (number) => {
+    footnoteIdForNumber: (number) => {
         return `fn${number}`;
     },
 
-    idForSidenoteNumber: (number) => {
+    sidenoteIdForNumber: (number) => {
         return `sn${number}`;
     },
 
