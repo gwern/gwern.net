@@ -2603,6 +2603,21 @@ body[class*='special-christmas'] blockquote {
     --border-color: var(--GW-holly-leaf-green);
 }
 
+body[class*='special-christmas'] blockquote.blockquote-level-1,
+body[class*='special-christmas'] blockquote.blockquote-level-3,
+body[class*='special-christmas'] blockquote.blockquote-level-5 {
+    --GW-body-link-color: var(--GW-holly-berry-red);
+    --GW-body-link-visited-color: var(--GW-santa-hat-red);
+    --GW-body-link-hover-color: var(--GW-pine-needle-green);
+}
+body[class*='special-christmas'] blockquote.blockquote-level-2,
+body[class*='special-christmas'] blockquote.blockquote-level-4,
+body[class*='special-christmas'] blockquote.blockquote-level-6 {
+    --GW-body-link-color: var(--GW-pine-needle-green);
+    --GW-body-link-visited-color: var(--GW-fir-needle-green);
+    --GW-body-link-hover-color: var(--GW-holly-berry-red);
+}
+
 body[class*='special-christmas'] .heading {
     --GW-body-text-color: var(--GW-holly-leaf-green);
     --GW-body-link-color: var(--GW-holly-leaf-green);
