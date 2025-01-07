@@ -10127,7 +10127,6 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 								   ? `“${(targetBlock.firstElementChild.textContent)}”`
 								   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
 			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
-			console.log(sectionLabelHTML);
 
 			//	List.
 			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
@@ -10290,12 +10289,10 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
     citationsInNewContent.forEach(citation => {
         //  Original footnote (in source content/document).
         let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
-        console.log(footnote);
 
 		//	Determine footnote’s source page, and its note number on that page.
 		let sourcePagePathname = (footnote.dataset.sourcePagePathname ?? loadLocationForIncludeLink(includeLink).pathname);
 		let originalNoteNumber = (footnote.dataset.originalNoteNumber ?? Notes.noteNumber(citation));
-		console.log(originalNoteNumber);
 
 		//	Check for already added copy of this footnote.
 		let alreadyAddedFootnote = footnotesSection.querySelector(`li.footnote`
@@ -10336,7 +10333,6 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 			return;
 
 		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
-		console.log(footnote);
 
 		if (footnote.parentElement == newFootnotesWrapper) {
 			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));
