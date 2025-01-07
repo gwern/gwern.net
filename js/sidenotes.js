@@ -590,24 +590,6 @@ Sidenotes = { ...Sidenotes,
 		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
-	/*	Construct sidenotes, if need be; and, if needed, infrastructure.
-	 */
-	constructSidenotesIfNeeded: (firstRun = false) => {
-		if (firstRun) {
-			Sidenotes.sidenotesNeedConstructing = true;
-			Sidenotes.constructSidenotes(true);
-			Sidenotes.sidenotesNeedConstructing = false;
-		} else {
-			Sidenotes.sidenotesNeedConstructing = true;
-			requestIdleCallback(() => {
-				if (Sidenotes.sidenotesNeedConstructing == true) {
-					Sidenotes.constructSidenotes();
-					Sidenotes.sidenotesNeedConstructing = false;
-				}
-			});
-		}
-	},
-
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 	 */
@@ -954,10 +936,10 @@ Sidenotes = { ...Sidenotes,
 				when collapse blocks are expanded/collapsed.
 			 */
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
-				if (eventInfo.collapseBlock.closest(".sidenote") == null)
-					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 			}, {
-				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
+				condition: (info) => (   info.collapseBlock.closest("#markdownBody") != null
+									  && info.collapseBlock.closest(".sidenote") == null)
 			});
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
@@ -1051,7 +1033,8 @@ Sidenotes = { ...Sidenotes,
 					Sidenotes.updateSidenotePositionsIfNeeded();
 				}, {
 					condition: (info) => (   info.processorName == "applyBlockSpacingInContainer"
-										  && info.container == document.main)
+										  && info.container == document.main
+										  && info.blockContainer.closest(".sidenote-column") == null)
 				});
 			});
 		}, { once: true });
@@ -1062,7 +1045,22 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotesIfNeeded(eventInfo.container == document.main);
+			if (eventInfo.container.querySelector("a.footnote-ref") == null)
+				return;
+
+			if (eventInfo.container == document.main) {
+				Sidenotes.sidenotesNeedConstructing = true;
+				Sidenotes.constructSidenotes(true);
+				Sidenotes.sidenotesNeedConstructing = false;
+			} else {
+				Sidenotes.sidenotesNeedConstructing = true;
+				requestIdleCallback(() => {
+					if (Sidenotes.sidenotesNeedConstructing == true) {
+						Sidenotes.constructSidenotes();
+						Sidenotes.sidenotesNeedConstructing = false;
+					}
+				});
+			}
 		}, "rewrite", (info) => (   info.document == document
 								 && info.source != "Sidenotes.constructSidenotes"
 								 && info.container.closest(".sidenote") == null));

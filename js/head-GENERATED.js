@@ -4263,6 +4263,8 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 /*	Apply block layout classes to appropriate elements in given block container.
  */
 addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
+    GWLog("applyBlockLayoutClassesInContainer", "layout.js", 2);
+
 	let containingDocument = blockContainer.getRootNode();
 
 	//	Designate headings.
@@ -4512,6 +4514,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 /*	Apply block spacing in the given container.
  */
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
+    GWLog("applyBlockSpacingInContainer", "layout.js", 2);
+
 	//	Remove block spacing metadata from what shouldn’t have it.
 	blockContainer.querySelectorAll(".block").forEach(block => {
 		if (   block.matches(GW.layout.blockElements.join(", ")) == false
