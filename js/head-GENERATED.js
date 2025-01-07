@@ -3103,7 +3103,8 @@ GW.specialOccasions = [
 				colorizeElements([
 					[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
 					[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
-					[ "hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
+					[ "div[class^='horizontal-rule']:nth-of-type(odd) hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
+					[ "div[class^='horizontal-rule']:nth-of-type(even) hr", "--icon-image", "#0b0", "--icon-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
 					[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
 					[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
