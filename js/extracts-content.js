@@ -813,7 +813,7 @@ Extracts = { ...Extracts,
     rewritePopupContent_LOCAL_VIDEO: (popup, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_VIDEO", "extracts-content.js", 2);
 
-		Extracts.resizeObjectInObjectPopup(popup, "video");
+		Extracts.resizeObjectInObjectPopup(popup, "video", { loosenSizeConstraints: true });
     }
 };
 
@@ -895,7 +895,7 @@ Extracts = { ...Extracts,
     rewritePopupContent_LOCAL_IMAGE: (popup, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_IMAGE", "extracts-content.js", 2);
 
-		Extracts.resizeObjectInObjectPopup(popup, "img");
+		Extracts.resizeObjectInObjectPopup(popup, "img", { loosenSizeConstraints: true });
 
 		//	Non-provider-specific rewrites.
 		Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup, contentContainer);
@@ -1028,7 +1028,8 @@ Extracts = { ...Extracts,
 	resizeObjectInObjectPopup: (popup, objectSelector, options) => {
 		options = Object.assign({
 			width: null,
-			height: null
+			height: null,
+			loosenSizeConstraints: false
 		}, options);
 
 		let object = popup.document.querySelector(objectSelector);
@@ -1045,6 +1046,27 @@ Extracts = { ...Extracts,
 		let popupTitleBarHeight = popup.classList.contains("mini-title-bar") ? 21 : 31;
 		let popupHorizontalPadding = popupBorderWidth * 2;
 		let popupVerticalPadding = popupBorderWidth * 2 + popupTitleBarHeight;
+
+		/*	Allow media popups to squeeze the same maximum screen area (defined
+			by the --GW-popups-popup-max-width and --GW-popups-popup-max-height
+			CSS variables) into more horizontal or vertical space (useful for 
+			images that deviate from the standard ~4:3 aspect ratio of popups).
+		 */
+		if (options.loosenSizeConstraints) {
+			let popupWidth = specifiedWidth + popupHorizontalPadding;
+			let popupHeight = specifiedHeight + popupVerticalPadding;
+			let popupMaxArea = popupMaxWidth * popupMaxHeight;
+			popupMaxWidth = Math.sqrt(popupMaxArea / (popupHeight / popupWidth));
+			popupMaxHeight = popupMaxWidth * (popupHeight / popupWidth);
+			if (popupMaxHeight > window.innerHeight) {
+				popupMaxWidth *= window.innerHeight / popupMaxHeight;
+				popupMaxHeight = window.innerHeight;
+			} else if (popupMaxWidth > window.innerWidth) {
+				popupMaxHeight *= window.innerWidth / popupMaxWidth;
+				popupMaxWidth = window.innerWidth;
+			}
+		}
+
 		let objectMaxWidth = popupMaxWidth - popupHorizontalPadding;
 		let objectMaxHeight = popupMaxHeight - popupVerticalPadding;
 
@@ -1055,6 +1077,11 @@ Extracts = { ...Extracts,
 		object.style.height = `${height}px`;
 
 		object.style.setProperty("--aspect-ratio", object.style.aspectRatio);
+
+		if (options.loosenSizeConstraints) {
+			popup.style.maxWidth = "unset";
+			popup.style.maxHeight = "unset";
+		}
 	},
 
 	//	Used in: Extracts.setUpContentLoadEventsWithin
