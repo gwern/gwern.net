@@ -1,12 +1,14 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2024-09-05 12:28:57 gwern"
+When:  Time-stamp: "2025-01-07 17:39:36 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
 to work (reasonably) well as cross-site popups inside a frame.
 `extracts-contents.js` at runtime reads the class to decide which links will be live-popup-able.
+To block it, set `.link-live-not`.
+(This is for external links. The equivalent for *internal* popups, to block them popping up, use `.extract-not`. An example of this would be links to </lorem-dropcaps>: that page exists to show off dropcaps... but dropcaps are disabled inside popups & popovers, for lack of space, and therefore popping up any part of that page is pointless. We want to disable popups, so the interested desktop reader is forced to load the page instead, at which point they can then see something.)
 
 Live popups are an alternative to, or a further step from, annotations. They let the reader preview
 a link instantly. This is useful when an annotation is not available, or when the reader has read
@@ -61,6 +63,7 @@ linkLive x@(Link (_,cl,kvs) _ (u, _))
  | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
  | "http://" `T.isPrefixOf` u   = x -- WARNING: no HTTP page can be live-link loaded by a browser visiting HTTP*S*-only Gwern.net due to 'mixed security context'
  | "/"    `T.isPrefixOf` u   = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
+ -- NOTE: special API-using links like Wikipedia or Github (or formerly Twitter) are handled by the frontend JS
  | otherwise = case urlLive u of
                  Just True -> aL x
                  _         -> x
