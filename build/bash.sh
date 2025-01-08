@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2024-10-30 19:43:22 gwern"
+# When:  Time-stamp: "2025-01-08 09:59:54 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -649,7 +649,7 @@ mvuri () {
 # (Better than actual randomness because it avoids clumping/starvation, or potentially doing all of the operations on the same run by chance; and far simpler than any explicit tracking of state/date.)
 # The optional second whole-number argument is an 'offset' to avoid clumping of multiple calls with the same _N_; they can be offset by relatively-prime numbers or just plain incremented.
 everyNDays () {
-    (( (($(date +%j) + ${2:-0}) % $1) == 0 )) # optional offset second argument to stagger or space out multiple calls of _N_ relative to each other
+    (( (($(date +%-j) + ${2:-0}) % $1) == 0 )) # optional offset second argument to stagger or space out multiple calls of _N_ relative to each other
 }
 
 # sort a list of directories from stdin by their most recently modified file.

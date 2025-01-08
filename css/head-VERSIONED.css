@@ -2816,7 +2816,7 @@ body.page-index[class*='special-christmas'] #sidebar a.logo {
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
 }
-/*	Elements to be deleted completely.
+/*  Elements to be deleted completely.
  */
 body.reader-mode-active #sidebar,
 body.reader-mode-active #page-metadata .page-status,
@@ -2840,19 +2840,19 @@ body.reader-mode-active .file-includes {
     display: none;
 }
 
-/*	Link icons in reader mode just don’t work well, sadly.
-		—SA 2024-11-27
+/*  Link icons in reader mode just don’t work well, sadly.
+        —SA 2024-11-27
  */
 body.reader-mode-active .markdownBody a .link-icon-hook {
     display: none;
 }
 
 body.reader-mode-active .markdownBody a .recently-modified-icon-hook {
-	display: none;
+    display: none;
 }
 
-/*	Preserve the positioning of related elements by hiding visibility, instead 
-	of deleting entirely.
+/*  Preserve the positioning of related elements by hiding visibility, instead
+    of deleting entirely.
  */
 body.reader-mode-active .date-range .subsup sub {
     visibility: hidden;
@@ -2875,19 +2875,19 @@ body.reader-mode-active #TOC ul li {
 /*  Links.
  */
 body.reader-mode-active .markdownBody a.has-indicator-hook {
-	margin: 0;
+    margin: 0;
     position: relative;
     z-index: 111;
 }
 
 body.reader-mode-active .markdownBody a .indicator-hook {
-	background-image: inherit;
-	background-size: inherit;
-	background-repeat: inherit;
-	background-position: inherit;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
     background-color: var(--link-underline-background-color);
     box-shadow: -2px 0 0 0 var(--link-underline-background-color);
-	margin-left: -0.3em;
+    margin-left: -0.3em;
 }
 body.reader-mode-active.masked-links-hidden .markdownBody a .indicator-hook {
     visibility: hidden;
@@ -2949,19 +2949,19 @@ body.reader-mode-active .date-range .subsup {
     margin: -0.5em 0 0 0;
 }
 
-/*	Anti-style zone.
+/*  Anti-style zone.
  */
 body.reader-mode-active .reader-mode-style-not * {
-	font-weight: inherit;
-	font-style: inherit;
-	font-variant: inherit;
-	color: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
+    color: inherit;
 }
 
 /*  Mobile layout adjustments.
  */
 @media all and (max-width: 649px) {
-	body.reader-mode-active article {
-		margin-top: 0;
-	}
+    body.reader-mode-active article {
+        margin-top: 0;
+    }
 }

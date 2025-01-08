@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-01-01 22:14:03 gwern"
+# When:  Time-stamp: "2025-01-06 19:14:12 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -60,7 +60,7 @@ Details:
 - Use Unicode entities, eg. MATHEMATICAL CAPITAL SCRIPT O `𝒪` in place of `\\mathcal{O}`, and likewise for the Fraktur ones (`\\mathfrak`) and bold ones (`\\mathbb`). Convert to the closest Unicode entity that exists. Convert symbols, special symbols, mathematical operators, and Greek letters. Convert even if the Unicode is rare (such as  `𝒪`). If there is no Unicode equivalent (such as because there is not a matching letter in that font family, or no appropriate combining character), then do not convert it.
 - If there are multiple reasonable choices, such as  `\\approx` which could be represented as `≈` or `~`, choose the simpler-looking one. Do not choose the complex one unless there is some good specific reason for that.
 - For superimposed subscript+superscript, use a predefined CSS <span> class `subsup`, eg. `(\\Delta^0_n)` → `Δ<span class="subsup"><sup>0</sup><sub><em>n</em></sub></span>`; `\\Xi_{cc}^{++} = ccu` → `Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span> = <em>ccu</em>`; `\\,\\Lambda_c \\Lambda_c \\to \\Xi_{cc}^{++}\\,n\\,` → `<em>Λ<sub>c</sub></em> <em>Λ<sub>c</sub></em> → Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span>,<em>n</em>`. This is also useful for summations or integrals, such as `\\int_a^b f(x) dx` → `∫<span class="subsup"><sub><em>a</em></sub><sup><em>b</em></sup></span> <em>f</em>(<em>x</em>) <em>dx</em>`.
-- For small fractions, use FRACTION SLASH (⁄) to convert (eg. `1/2` or `\\frac{1}{2}` → `1⁄2`). Do not use the Unicode fractions like VULGAR FRACTION ONE HALF `½`.
+- For small fractions, where both numbers are 3 digits or less, use FRACTION SLASH (⁄) to convert (eg. `1/2` or `\\frac{1}{2}` → `1⁄2`). Do not use the Unicode fractions like VULGAR FRACTION ONE HALF `½`.
 - For complex fractions which use superscripts or subscripts, multiple arguments etc, do not convert them & simply repeat them. eg. do not convert `\\(\\frac{a^{b}}{c^{d}}\\)`, as it is too complex.
 - Convert roots such as square or cube roots if that would be unambiguous. For example, `\\sqrt[3]{8}` → `∛8` is good, but not `\\sqrt[3]{ab}` because `∛<em>ab</em>` is ambiguous; do not convert complex roots like `\\sqrt[3]{ab}`.
 - Color & styling: if necessary, you may use simple CSS inline with a `<span style="">` declaration, such as to color something blue using `<span style="color: blue">`.
@@ -215,9 +215,27 @@ lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</e
 - '$%$'
 %
 - '%'
-%
+%q
 - "\\(0.90, 0.91, 0.94\\)"
 0.90, 0.91, 0.94
+- '123/456'
+123⁄456
+- '123/4567'
+123/4,567
+- '1234/765'
+1,234/765
+- '5610/987980'
+5,610/987,980
+- '504827'
+50,4827
+- '($(\\frac{202680742}{582771} \\cdot 0.1) \\cdot 100$)'
+((202,680,742/582,771) × 0.1 × 100)
+- '740/618'
+740⁄618
+- $\\frac{1910}{209} = 9.14$
+1,910/209 = 9.14
+- '(504827⁄1800) × 1.0 × 100'
+(504,827/1,800) × 1.0 × 100
 
 Task:
 
