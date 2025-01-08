@@ -1,14 +1,14 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2024-11-11 12:05:45 gwern"
+When:  Time-stamp: "2025-01-07 21:50:45 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
 module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML, extractLinksInlines, extractLinkIDsWith) where
 
-import qualified Data.Text as T (append, init, drop, head, last, takeWhile, Text)
+import qualified Data.Text as T (append, init, drop, head, last, Text)
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
 import Text.Pandoc.Walk (query, walk)
 
@@ -47,10 +47,9 @@ extractURLWith _ _ = []
 
 -- Note: does not count images; for that, see `extractImages`
 extractLinkIDsWith :: (Inline -> Bool) -> T.Text  -> Pandoc -> [(T.Text, T.Text)]
-extractLinkIDsWith rule filename pndc = queryWith extractIDs $ convertInterwikiLinks pndc
+extractLinkIDsWith rule _ pndc = queryWith extractIDs $ convertInterwikiLinks pndc
   where extractIDs :: Inline -> [(T.Text, T.Text)]
-        extractIDs x@(Link ("",_,_)    _ (url,_)) = if rule x then [(url, filename)] else []
-        extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, (T.takeWhile (/='#') $ filename) `T.append` "#" `T.append` ident)] else []
+        extractIDs x@(Link (ident,_,_) _ (url,_)) = if rule x then [(url, ident)] else []
         extractIDs _ = []
 
 -- extractLinkIDsWith :: (Inline -> Bool) -> T.Text  -> Pandoc -> [(T.Text, -- URL

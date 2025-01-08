@@ -84,7 +84,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
         when (length (filter (\(l,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do
 
-             let triplets = linksToAnnotations md links
+             let triplets = linksToAnnotations md path links
                  body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
@@ -151,18 +151,18 @@ extractLinksFromPage path =
                                          filter (\(l,_) -> head l /= '#') $ -- self-links are not useful in link bibliographies
                                          nubOrd $ map (\(a,b) -> (T.unpack a, T.unpack b)) $ extractLinkIDsWith (const True) (T.pack path) p
 
-linksToAnnotations :: Metadata -> [(String,String)] -- (URL, Markdown file/parent URL calling it for debugging purposes)
+linksToAnnotations :: Metadata -> String -> [(String,String)] -- (URL, hash)
                    -> [(String,String,MetadataItem)] -- (URL, hash ID of its actual use within the parent, annotation)
-linksToAnnotations _ [] = []
-linksToAnnotations m items = map (linkToAnnotation m) items
-linkToAnnotation :: Metadata -> (String,String) -> (String,String,MetadataItem)
-linkToAnnotation _ ("",pt) = error $ "generateLinkBibliography.linkToAnnotation: empty URL input; parent: " ++ pt
-linkToAnnotation m (u,_) = case M.lookup u m of
+linksToAnnotations _  _    [] = []
+linksToAnnotations m pt items = map (linkToAnnotation m pt) items
+linkToAnnotation :: Metadata -> String -> (String,String) -> (String,String,MetadataItem)
+linkToAnnotation _ pt ("",ident) = error $ "generateLinkBibliography.linkToAnnotation: empty URL input; identifier: " ++ ident ++ "; parent: " ++ pt
+linkToAnnotation m _ (u,ident) = case M.lookup u m of
                                  Just mi  ->
-                                   let ident' = T.unpack (LinkID.metadataItem2ID u mi) in
+                                   let ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID u mi) in
                                      (u,ident',mi)
                                  Nothing -> let mi' = ("","","","",[],[],"")
-                                                ident'' = T.unpack (LinkID.metadataItem2ID u mi')
+                                                ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID u mi')
                                             in
-                                                  (u,ident'',mi')
+                                                  (u,ident',mi')
 
