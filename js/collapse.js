@@ -570,6 +570,8 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 		if (expanding) {
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
 			let contentColumn = collapseBlock.closest(".sidenote, .markdownBody");
+			if (contentColumn.matches(".sidenote"))
+				return;
 
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
 			let enclosingContentRect = contentColumn.getBoundingClientRect();

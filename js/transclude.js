@@ -1073,6 +1073,7 @@ function includeContent(includeLink, content) {
 
 	//	Retain reference to nodes.
 	let addedNodes = Array.from(wrapper.childNodes);
+	let where = wrapper.parentElement;
 
     //  Unwrap.
     unwrap(wrapper);
@@ -1085,7 +1086,8 @@ function includeContent(includeLink, content) {
         GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
             source: "transclude",
             document: containingDocument,
-            nodes: addedNodes
+            nodes: addedNodes,
+            where: where
         });
     }
 
@@ -1142,9 +1144,41 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			container.append(includeWrapper);
 		}
 
-		backlinksBlock.querySelector(".backlinks-list").append(backlinkContextLink.closest("li").cloneNode(true));
+		let clonedBacklinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+
+		/*	If we are injecting into an existing section backlinks block, then
+			a separate inject event must be fired for the distributed backlink.
+		 */
+		if (backlinksBlock.closest(".section-backlinks-include-wrapper") == null) {
+			let includeWrapper = newElement("DIV", { "class": "include-wrapper" });
+			includeWrapper.append(clonedBacklinkEntry);
+			backlinksBlock.querySelector(".backlinks-list").append(includeWrapper);
+
+			//	Clear loading state of all include-links.
+			Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+
+			//	Fire inject event.
+			let flags = GW.contentDidInjectEventFlags.clickable;
+			if (containingDocument == document)
+				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "transclude.section-backlinks",
+				container: includeWrapper,
+				document: containingDocument,
+				loadLocation: loadLocationForIncludeLink(includeLink),
+				flags: flags
+			});
+
+			unwrap(includeWrapper);
+		} else {
+			backlinksBlock.querySelector(".backlinks-list").append(clonedBacklinkEntry);
+		}
 	});
 
+	/*	For any new section backlinks blocks we constructed, we fire load and
+		inject events for the entire section backlinks block (which also takes
+		care of the individual backlink entries within).
+	 */
 	containingDocument.querySelectorAll(".section-backlinks-include-wrapper").forEach(includeWrapper => {
 		//	Clear loading state of all include-links.
 		Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);

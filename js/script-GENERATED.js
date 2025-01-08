@@ -10075,6 +10075,7 @@ function includeContent(includeLink, content) {
 
 	//	Retain reference to nodes.
 	let addedNodes = Array.from(wrapper.childNodes);
+	let where = wrapper.parentElement;
 
     //  Unwrap.
     unwrap(wrapper);
@@ -10087,7 +10088,8 @@ function includeContent(includeLink, content) {
         GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
             source: "transclude",
             document: containingDocument,
-            nodes: addedNodes
+            nodes: addedNodes,
+            where: where
         });
     }
 
@@ -10144,9 +10146,41 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			container.append(includeWrapper);
 		}
 
-		backlinksBlock.querySelector(".backlinks-list").append(backlinkContextLink.closest("li").cloneNode(true));
+		let clonedBacklinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+
+		/*	If we are injecting into an existing section backlinks block, then
+			a separate inject event must be fired for the distributed backlink.
+		 */
+		if (backlinksBlock.closest(".section-backlinks-include-wrapper") == null) {
+			let includeWrapper = newElement("DIV", { "class": "include-wrapper" });
+			includeWrapper.append(clonedBacklinkEntry);
+			backlinksBlock.querySelector(".backlinks-list").append(includeWrapper);
+
+			//	Clear loading state of all include-links.
+			Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+
+			//	Fire inject event.
+			let flags = GW.contentDidInjectEventFlags.clickable;
+			if (containingDocument == document)
+				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "transclude.section-backlinks",
+				container: includeWrapper,
+				document: containingDocument,
+				loadLocation: loadLocationForIncludeLink(includeLink),
+				flags: flags
+			});
+
+			unwrap(includeWrapper);
+		} else {
+			backlinksBlock.querySelector(".backlinks-list").append(clonedBacklinkEntry);
+		}
 	});
 
+	/*	For any new section backlinks blocks we constructed, we fire load and
+		inject events for the entire section backlinks block (which also takes
+		care of the individual backlink entries within).
+	 */
 	containingDocument.querySelectorAll(".section-backlinks-include-wrapper").forEach(includeWrapper => {
 		//	Clear loading state of all include-links.
 		Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
@@ -18688,6 +18722,8 @@ function toggleCollapseBlockState(collapseBlock, expanding) {
 		if (expanding) {
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
 			let contentColumn = collapseBlock.closest(".sidenote, .markdownBody");
+			if (contentColumn.matches(".sidenote"))
+				return;
 
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
 			let enclosingContentRect = contentColumn.getBoundingClientRect();
@@ -19248,7 +19284,7 @@ Sidenotes = { ...Sidenotes,
 			return;
 
 		Sidenotes.positionUpdateQueued = true;
-		requestAnimationFrame(() => {
+		requestIdleCallback(() => {
 			Sidenotes.positionUpdateQueued = false;
 
 			if (Sidenotes.sidenotesNeedConstructing)
@@ -19260,8 +19296,6 @@ Sidenotes = { ...Sidenotes,
 
 	updateStateAfterHashChange: () => {
 		GWLog("Sidenotes.updateStateAfterHashChange", "sidenotes.js", 1);
-
-		return;
 
 		//	Update highlighted state of sidenote and citation, if need be.
 		Sidenotes.updateTargetCounterpart();
@@ -19757,7 +19791,7 @@ Sidenotes = { ...Sidenotes,
 			//	Add listener to update sidenote positions when media loads.
 			sidenote.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
-					Sidenotes.updateSidenotePositionsIfNeeded();
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 				}, { once: true });
 			});
 
@@ -19792,9 +19826,11 @@ Sidenotes = { ...Sidenotes,
 			//	Bind new events.
 			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", true);
+				sidenote.classList.toggle("hovering", true);
 			});
 			sidenote.addEventListener("mouseleave", sidenote.onSidenoteMouseLeaveUnhighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", false);
+				sidenote.classList.toggle("hovering", false);
 			});
 
 			citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
@@ -20016,19 +20052,33 @@ Sidenotes = { ...Sidenotes,
 				when collapse blocks are expanded/collapsed.
 			 */
 			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
-				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				let sidenote = eventInfo.collapseBlock.closest(".sidenote");
+				if (sidenote?.classList.contains("hovering")) {
+					sidenote.addEventListener("mouseleave", (event) => {
+						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+					}, { once: true });
+				} else {
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				}
 			}, {
-				condition: (info) => (   info.collapseBlock.closest("#markdownBody") != null
-									  && info.collapseBlock.closest(".sidenote") == null)
+				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
 			});
 
 			/*	Add event handler to (asynchronously) recompute sidenote positioning
 				when new content is loaded (e.g. via transclusion).
 			 */
 			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (eventInfo) => {
-				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				let sidenote = eventInfo.where.closest(".sidenote");
+				if (sidenote?.classList.contains("hovering")) {
+					sidenote.addEventListener("mouseleave", (event) => {
+						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+					}, { once: true });
+				} else {
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				}
 			}, {
-				condition: (info) => (info.document == document)
+				condition: (info) => (   info.document == document
+									  && info.source == "transclude")
 			});
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
@@ -20047,10 +20097,10 @@ Sidenotes = { ...Sidenotes,
 			 */
 			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
 				eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
-					if (citation.pathname != location.pathname)
+					let sidenote = Sidenotes.counterpart(citation);
+					if (sidenote == null)
 						return;
 
-					let sidenote = Sidenotes.counterpart(citation);
 					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
 						Sidenotes.putAllSidenotesBack(sidenote);
 						requestAnimationFrame(() => {
@@ -20094,7 +20144,7 @@ Sidenotes = { ...Sidenotes,
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (eventInfo) => {
 			//	Lay out sidenotes once page layout is complete.
 			doWhenPageLayoutComplete(() => {
-				Sidenotes.updateSidenotePositionsIfNeeded();
+				Sidenotes.updateSidenotePositions();
 
 				//	Add listener to lay out sidenotes when they are re-constructed.
 				GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (eventInfo) => {
@@ -20125,7 +20175,8 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container.querySelector("a.footnote-ref") == null)
+			if (   eventInfo.container.querySelector("a.footnote-ref") == null
+				&& eventInfo.container.closest("li.footnote") == null)
 				return;
 
 			if (eventInfo.container == document.main) {
