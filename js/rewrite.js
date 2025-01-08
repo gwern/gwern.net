@@ -1619,7 +1619,7 @@ addContentInjectHandler(GW.contentInjectHandlers.handleFileIncludeUncollapseInAn
             //  Designate now-last collapse for styling.
             let previousBlock = previousBlockOf(embed);
             if (   embed.closest(".collapse") == null
-                && previousBlock.classList.contains("collapse-block"))
+                && previousBlock?.classList.contains("collapse-block"))
                 previousBlock.classList.add("last-collapse");
         }, {
             once: true,

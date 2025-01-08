@@ -2835,7 +2835,8 @@ body.reader-mode-active #navigation,
 body.reader-mode-active #footer,
 body.reader-mode-active .inflation-adjusted .subsup,
 body.reader-mode-active .has-recently-modified-icon .recently-modified-icon-hook
-body.reader-mode-active .date-range sub {
+body.reader-mode-active .date-range sub,
+body.reader-mode-active .file-includes {
     display: none;
 }
 
@@ -2858,7 +2859,8 @@ body.reader-mode-active .date-range .subsup sub {
 }
 
 body.reader-mode-active.masked-links-hidden .footnote-ref,
-body.reader-mode-active.masked-links-hidden .footnote-back {
+body.reader-mode-active.masked-links-hidden .footnote-back,
+body.reader-mode-active.masked-links-hidden .footnote-back-block {
     opacity: 0;
 }
 
