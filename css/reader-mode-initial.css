@@ -4,10 +4,11 @@ body.reader-mode-active #sidebar,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
 body.reader-mode-active #page-metadata .page-importance,
-body.reader-mode-active #page-metadata .backlinks,
-body.reader-mode-active #page-metadata .link-bibliography,
-body.reader-mode-active #page-metadata .similars,
+body.reader-mode-active #page-metadata .page-backlinks,
+body.reader-mode-active #page-metadata .page-link-bibliography,
+body.reader-mode-active #page-metadata .page-similars,
 body.reader-mode-active #page-metadata .page-date-range::after,
+body.reader-mode-active #page-metadata .page-metadata-fields::after,
 body.reader-mode-active #TOC ul li::before,
 body.reader-mode-active #TOC .toc-collapse-toggle-button,
 body.reader-mode-active #sidenote-column-left,
@@ -125,7 +126,7 @@ body.reader-mode-active .markdownBody p code {
 }
 
 body.reader-mode-active .date-range .subsup {
-    margin: 0;
+    margin: -0.5em 0 0 0;
 }
 
 /*	Anti-style zone.

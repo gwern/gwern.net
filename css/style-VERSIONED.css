@@ -3335,18 +3335,12 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 {
 }
 
 
-/********************/
-/* SUB/SUPERSCRIPTS */
-/********************/
+/********/
+/* MISC */
+/********/
 
-sub,
-sup {
-    font-size: 0.7em;
-    position: relative;
-    line-height: 0.3em;
-    font-variant-numeric: lining-nums;
-}
-
+/*	Ordinals.
+ */
 sup.ordinal {
     text-transform: lowercase;
     top: 0.1em;
@@ -3357,29 +3351,6 @@ sup.ordinal {
 }
 .markdownBody a sup.ordinal {
     padding: 0;
-}
-
-sub {
-    bottom: 0.1em;
-}
-
-/*  SUBSCRIPT+SUPERSCRIPT (necessary for inflation adjuster, and other math)
- */
-.subsup {
-    margin-left: 0.15em;
-    margin-right: 0.1em;
-    display: inline-flex;
-    flex-flow: column;
-    align-items: flex-start;
-    vertical-align: text-bottom;
-    position: relative;
-    bottom: -0.1em;
-}
-.subsup sup,
-.subsup sub {
-    position: relative;
-    line-height: 1;
-    font-size: 0.6em;
 }
 
 /*  Inflation adjustments.
@@ -3395,11 +3366,6 @@ span.inflation-adjusted .subsup {
     align-items: flex-end;
     bottom: 0;
 }
-
-
-/********/
-/* MISC */
-/********/
 
 /*  Enable standard Pandoc attribute-based syntax for small-caps like
     ‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps

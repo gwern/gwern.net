@@ -1973,6 +1973,42 @@ a code {
 }
 
 
+/********************/
+/* SUB/SUPERSCRIPTS */
+/********************/
+
+sub,
+sup {
+    font-size: 0.7em;
+    position: relative;
+    line-height: 0.3em;
+    font-variant-numeric: lining-nums;
+}
+
+sub {
+    bottom: 0.1em;
+}
+
+/*  SUBSCRIPT+SUPERSCRIPT (necessary for inflation adjuster, and other math)
+ */
+.subsup {
+    margin-left: 0.15em;
+    margin-right: 0.1em;
+    display: inline-flex;
+    flex-flow: column;
+    align-items: flex-start;
+    vertical-align: text-bottom;
+    position: relative;
+    bottom: -0.1em;
+}
+.subsup sup,
+.subsup sub {
+    position: relative;
+    line-height: 1;
+    font-size: 0.6em;
+}
+
+
 /********/
 /* MISC */
 /********/
