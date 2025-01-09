@@ -1705,6 +1705,7 @@ section.collapse > .heading {
 
 .collapse-block > .disclosure-button .part.top .label {
     padding: 0 0 0 1.25em;
+	margin-right: 1.5em;
 }
 
 /*  Bottom part of disclosure button.
@@ -1742,6 +1743,21 @@ section.collapse > .heading {
 }
 .collapse-block.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
     display: none;
+}
+
+/*	Iceberg indicators.
+ */
+.collapse-block > .disclosure-button > .collapse-iceberg-indicator {
+	--indicator-size: calc(0.5 * var(--collapse-toggle-top-icon-size));
+	
+	position: absolute;
+	right: 1.75em;
+	font-size: var(--indicator-size);
+	top: calc(0.5 * (var(--collapse-toggle-top-icon-size) - var(--indicator-size)));
+}
+.collapse-block > .disclosure-button > .collapse-iceberg-indicator .inline-icon {
+	top: 0;
+	background-color: transparent;
 }
 
 /*  Inline disclosure button.
@@ -1800,6 +1816,19 @@ section.collapse > .heading {
 .collapse-inline.expanded-not.just-clicked > .collapse-content-outer-wrapper > .disclosure-button.end:hover .icon svg:nth-last-of-type(2) {
     transform: none;
     transition: none;
+}
+
+/*	Iceberg indicators in inline collapses.
+ */
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+	font-size: 1.25em;
+	position: relative;
+}
+.collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator .inline-icon {
+	top: 0;
+}
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+	display: none;
 }
 
 /*****************************/
@@ -1897,7 +1926,7 @@ section.collapse > .heading {
     min-height: var(--collapse-toggle-top-height);
     margin-left: calc(-1 * var(--collapse-toggle-left-width));
     margin-bottom: 0;
-    padding: 0.25em 2.5em 0 0;
+    padding: 0.25em 3em 0 0;
     text-align: left;
     border: none;
     box-sizing: border-box;
@@ -2086,6 +2115,10 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
 }
 
+.collapse.aux-links-append > .disclosure-button > .collapse-iceberg-indicator {
+	display: none;
+}
+
 /**************************/
 /*  File include collapses.
  */
@@ -2099,6 +2132,10 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
 .collapse.file-include-collapse > .collapse-content-wrapper {
     padding: 0.5em 0.5em 0.5em 0;
+}
+
+.collapse.file-include-collapse > .disclosure-button > .collapse-iceberg-indicator {
+	display: none;
 }
 
 /***********************************************************/
