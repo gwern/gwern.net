@@ -2856,7 +2856,7 @@ goodLinks =
             , "https://www.eugenewei.com/blog/2017/5/11/jpeg-your-ideas"
             , "https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php"
             , "https://www.explainxkcd.com/wiki/index.php/Randall"
-            , "https://www.fadedpage.com/showbook.php?pid=20160325#Page_107"
+            , "https://www.fadedpage.com/books/20160325/html.php#Page_107"
             , "https://www.fast.ai/2018/08/10/fastai-diu-imagenet/"
             , "https://www.fhi.ox.ac.uk/"
             , "https://www.filfre.net/2020/01/master-of-orion/"

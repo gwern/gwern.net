@@ -876,7 +876,7 @@ linkIconTestUnitsText =
          , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text", redTufte)
          , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text", redTufte)
          , ("https://github.com/edwardtufte/tufte-css", "ET", "text", redTufte)
-         , ("https://www.fadedpage.com/showbook.php?pid=20160325", "PG", "text", yellowPG)
+         , ("https://www.fadedpage.com/books/20160325/html.php", "PG", "text", yellowPG)
          , ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text", yellowPG)
          , ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text", yellowPG)
          , ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text", yellowPG)

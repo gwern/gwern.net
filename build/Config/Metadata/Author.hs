@@ -1142,6 +1142,12 @@ authorLinkDB = M.fromList $
     , ("Rewon Child", "https://rewonc.github.io/")
     , ("Raymond K. Walters", "https://psychology.nd.edu/assets/45969/")
     , ("Xe Iaso", "https://xeiaso.net/")
+    , ("David Crawshaw", "https://crawshaw.io/")
+    , ("Kate Moran", "https://www.nngroup.com/people/kate-moran/")
+    , ("Prafulla Dhariwal", "https://prafulladhariwal.com/")
+    , ("Patrick Sulem", "https://scholar.google.com/citations?user=7SUBeRMAAAAJ&hl=en&oi=ao")
+    , ("Nicolas Christin", "https://www.andrew.cmu.edu/user/nicolasc/")
+    , ("Pablo V. Gejman", "https://www.emedevents.com/speaker-profile/pablo-v-gejman")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1762,7 +1768,7 @@ authorWpLinkDB =
     ,"Karestan Koenen", "Kari Stefansson", "Karim R. Lakhani", "Karin Broberg", "Karin Strauss"
     ,"Karl Friston", "Karl J. Friston", "Karl J. Holzinger", "Karl Pearson", "Karl Popper"
     ,"Karl Zilles", "Karla Miller", "Karsten M\252ller", "Karthik Muralidharan", "Karthik Raman"
-    ,"Katalin Karik\243", "Katalin Susztak", "Kate Devlin", "Kate Moran", "Kate Tchanturia"
+    ,"Katalin Karik\243", "Katalin Susztak", "Kate Devlin", "Kate Tchanturia"
     ,"Kate Tilling", "Katelyn Brown", "Katerina Douka", "Kath Smith", "Katherine A. Rawson"
     ,"Katherine Baicker", "Katherine Baker", "Katherine Belov", "Katherine Harvey", "Katherine Kirk"
     ,"Katherine L. Milkman", "Katherine Martin", "Katherine S. Brehme", "Katherine S. Pollard", "Kathleen D. Vohs"
@@ -2377,4 +2383,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini"]

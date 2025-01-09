@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-05 11:35:51 gwern"
+# When:  Time-stamp: "2025-01-08 12:54:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -532,6 +532,10 @@ A possible interpretation of our results is that the amount and type of treatmen
 World War II was arguably one of history’s largest shocks to the US economic and production system.
 In this paper, I argue that “managerial technology” played a key role in shaping US WWII production and its capacity to defeat some of the most advanced economies in the world. The large-scale diffusion of innovative management practices to US firms involved in war production acted as a technology that put them on a higher growth path for decades.
 Moreover, it made US managerial practices internationally distinctive and created the “American Way” of doing business—exported worldwide in the aftermath of the war.
+- <abstract>Many existing evaluation benchmarks for Large Language Models (LLMs) quickly become outdated due to the emergence of new models and training data. These benchmarks also fall short in assessing how LLM performance changes over time, as they consist of static questions without a temporal dimension. To address these limitations, we propose using future event prediction as a continuous evaluation method to assess LLMs' temporal generalization and forecasting abilities. Our benchmark, Daily Oracle, automatically generates question-answer (QA) pairs from daily news, challenging LLMs to predict "future" event outcomes. Our findings reveal that as pre-training data becomes outdated, LLM performance degrades over time. While Retrieval Augmented Generation (RAG) has the potential to enhance prediction accuracy, the performance degradation pattern persists, highlighting the need for continuous model updates.</abstract> →
+Many existing evaluation benchmarks for Large Language Models (LLMs) quickly become outdated due to the emergence of new models and training data. These benchmarks also fall short in assessing how LLM performance changes over time, as they consist of static questions without a temporal dimension.
+To address these limitations, we propose using future event prediction as a continuous evaluation method to assess LLMs’ temporal generalization and forecasting abilities. Our benchmark, <strong>Daily Oracle</strong>, automatically generates question-answer (QA) pairs from daily news, challenging LLMs to predict “future” event outcomes.
+Our findings reveal that as pre-training data becomes outdated, LLM performance degrades over time. While Retrieval Augmented Generation (RAG) has the potential to enhance prediction accuracy, the performance degradation pattern persists, highlighting the need for continuous model updates.
 
 [Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
