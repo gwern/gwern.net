@@ -93,8 +93,6 @@ Sidenotes = { ...Sidenotes,
 
 	hiddenSidenoteStorage: null,
 
-	sidenotesNeedConstructing: false,
-
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
@@ -189,7 +187,7 @@ Sidenotes = { ...Sidenotes,
 			vice-versa. Scroll everything into view properly.
 		 */
 		if (Notes.hashMatchesSidenote()) {
-			let citation = document.querySelector(Notes.citationSelectorMatchingHash());
+			let citation = document.querySelector("#" + Notes.citationIdForNumber(Notes.noteNumberFromHash()));
 			if (citation == null)
 				return;
 
@@ -563,18 +561,11 @@ Sidenotes = { ...Sidenotes,
 
 	/*  Destroys the HTML structure of the sidenotes.
 	 */
-	deconstructSidenotes: (alsoDeconstructInfrastructure = false) => {
+	deconstructSidenotes: () => {
 		GWLog("Sidenotes.deconstructSidenotes", "sidenotes.js", 1);
-
-		Sidenotes.sidenotes?.forEach(sidenote => {
-			sidenote.remove();
-		});
 
 		Sidenotes.sidenotes = null;
 		Sidenotes.citations = null;
-
-		if (alsoDeconstructInfrastructure == false)
-			return;
 
 		if (Sidenotes.sidenoteColumnLeft)
 			Sidenotes.sidenoteColumnLeft.remove();
@@ -592,18 +583,11 @@ Sidenotes = { ...Sidenotes,
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
 		of the sidenotes.
 	 */
-	constructSidenotes: (alsoConstructInfrastructure = false) => {
+	constructSidenotes: (injectEventInfo) => {
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
-		//	Destroy before creating.
-		Sidenotes.deconstructSidenotes(alsoConstructInfrastructure);
-
 		//	Ensure that infrastructure is constructed if need be.
-		if (Sidenotes.hiddenSidenoteStorage == null)
-			alsoConstructInfrastructure = true;
-
-		//	Create infrastructure.
-		if (alsoConstructInfrastructure) {
+		if (Sidenotes.hiddenSidenoteStorage == null) {
 			let markdownBody = document.querySelector("#markdownBody");
 
 			//  Add the sidenote columns.
@@ -621,18 +605,52 @@ Sidenotes = { ...Sidenotes,
 				"class": "footnotes",
 				"style": "display:none"
 			}));
+
+			Sidenotes.sidenotes = [ ];
+			Sidenotes.citations = [ ];
 		}
 
-		//  Create and inject the sidenotes.
-		Sidenotes.sidenotes = [ ];
-		//  The footnote references (citations).
-		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
+		let modifiedFootnote = injectEventInfo.container.closest("li.footnote");
+		if (modifiedFootnote) {
+			let noteNumber = Notes.noteNumber(modifiedFootnote);
 
-		//	If there are no footnotes, we’re done.
-		if (Sidenotes.citations.length == 0)
+			let sidenote = Sidenotes.sidenoteOfNumber(noteNumber);
+			if (sidenote == null)
+				return;
+
+			let citation = Sidenotes.citationOfNumber(noteNumber);
+
+			//	Inject the sidenote contents into the sidenote.
+			let includeLink = synthesizeIncludeLink(citation, {
+				"class": "include-strict include-unwrap",
+				"data-include-selector-not": ".footnote-self-link"
+			});
+			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
+			sidenote.querySelector(".sidenote-inner-wrapper").replaceChildren(includeLink);
+
+			//	Trigger transclude.
+			Transclude.triggerTransclude(includeLink, {
+				container: sidenote,
+				document: document,
+				source: "Sidenotes.constructSidenotes"
+			});
+
+			//	Fire event.
+			GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
+
+			return;
+		}
+
+		let newCitations = Array.from(injectEventInfo.container.querySelectorAll("a.footnote-ref"));
+		if (newCitations.length == 0)
 			return;
 
-		Sidenotes.citations.forEach(citation => {
+		//  The footnote references (citations).
+		Sidenotes.citations.push(...newCitations);
+
+		//  Create and inject the sidenotes.
+		let newSidenotes = [ ];
+		newCitations.forEach(citation => {
 			let noteNumber = Notes.noteNumber(citation);
 
 			//  Create the sidenote outer containing block...
@@ -641,66 +659,44 @@ Sidenotes = { ...Sidenotes,
 				id: Notes.sidenoteIdForNumber(noteNumber)
 			});
 
-			/*	Fill the sidenote either by copying from an existing footnote
-				in the current page, or else by transcluding the footnote to
-				which the citation refers.
-			 */
-			let referencedFootnote = document.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
-			let sidenoteContents = newDocument(referencedFootnote
-											   ? referencedFootnote.childNodes
-											   : synthesizeIncludeLink(citation, {
-											   		"class": "include-strict include-unwrap",
-											   		"data-include-selector-not": ".footnote-self-link"
-											   	 }));
-
-			/*	If the sidenote contents were copied from a footnote that exists
-				in the page, then we should regenerate placeholders, otherwise
-				the back-to-citation links (among possibly other things) may
-				not work right. Also, clear link state of include-links.
-			 */
-			if (referencedFootnote) {
-				regeneratePlaceholderIds(sidenoteContents);
-				Transclude.allIncludeLinksInContainer(sidenoteContents).forEach(Transclude.clearLinkState);
-			}
-
 			//  Wrap the contents of the footnote in two wrapper divs...
 			sidenote.appendChild(sidenote.outerWrapper = newElement("DIV", {
 				class: "sidenote-outer-wrapper"
 			})).appendChild(sidenote.innerWrapper = newElement("DIV", {
 				class: "sidenote-inner-wrapper"
-			})).append(sidenoteContents);
+			}));
 
-			/*  Create & inject the sidenote self-links (ie. boxed sidenote
-				numbers).
+			/*  Create & inject the sidenote self-link (ie. boxed sidenote
+				number).
 			 */
 			sidenote.append(newElement("A", {
 				"class": "sidenote-self-link",
-				"href": Notes.sidenoteSelectorMatchingHash(citation.hash)
+				"href": "#" + Notes.sidenoteIdForNumber(noteNumber)
 			}, {
 				"textContent": noteNumber
 			}));
 
-			//	Remove footnote self-link.
-			sidenote.querySelector(".footnote-self-link")?.remove();
-
-			//	Add listener to update sidenote positions when media loads.
-			sidenote.querySelectorAll("figure img, figure video").forEach(mediaElement => {
-				mediaElement.addEventListener("load", (event) => {
-					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-				}, { once: true });
+			//	Inject the sidenote contents into the sidenote.
+			let includeLink = synthesizeIncludeLink(citation, {
+				"class": "include-strict include-unwrap",
+				"data-include-selector-not": ".footnote-self-link"
 			});
+			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
+			sidenote.querySelector(".sidenote-inner-wrapper").append(includeLink);
 
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenotes.push(sidenote);
 
+			//	Track newly added sidenotes.
+			newSidenotes.push(sidenote);
 		});
 
 		//	Inject the sidenotes into the page.
-		Sidenotes.hiddenSidenoteStorage.append(...Sidenotes.sidenotes);
+		Sidenotes.hiddenSidenoteStorage.append(...newSidenotes);
 
 		/*  Bind sidenote mouse-hover events.
 		 */
-		Sidenotes.citations.forEach(citation => {
+		newCitations.forEach(citation => {
 			let sidenote = Sidenotes.counterpart(citation);
 
 			//	Unbind existing events, if any.
@@ -752,16 +748,14 @@ Sidenotes = { ...Sidenotes,
 			});
 		});
 
-		//	Fire event.
-		GW.notificationCenter.fireEvent("GW.contentDidInject", {
-			source: "Sidenotes.constructSidenotes",
+		//	Trigger transcludes.
+		Transclude.triggerTranscludesInContainer(Sidenotes.hiddenSidenoteStorage, {
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
-			loadLocation: location,
-			flags: (  GW.contentDidInjectEventFlags.fullWidthPossible
-					| GW.contentDidInjectEventFlags.localize)
+			source: "Sidenotes.constructSidenotes"
 		});
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 	},
 
@@ -807,9 +801,9 @@ Sidenotes = { ...Sidenotes,
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
 			if (   Notes.hashMatchesFootnote()
 				|| Notes.hashMatchesSidenote()) {
-				relocate(mediaQuery.matches 
-						 ? Notes.sidenoteSelectorMatchingHash() 
-						 : Notes.footnoteSelectorMatchingHash());
+				relocate("#" + (mediaQuery.matches 
+								? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash()) 
+								: Notes.footnoteIdForNumber(Notes.noteNumberFromHash())));
 
 				//	Update targeting.
 				if (mediaQuery.matches)
@@ -819,7 +813,7 @@ Sidenotes = { ...Sidenotes,
 			}
 		}, null, (mediaQuery) => {
 			if (Notes.hashMatchesSidenote()) {
-				relocate(Notes.footnoteSelectorMatchingHash());
+				relocate("#" + Notes.footnoteIdForNumber(Notes.noteNumberFromHash()));
 
 				//	Update targeting.
 				updateFootnoteTargeting();
@@ -895,22 +889,24 @@ Sidenotes = { ...Sidenotes,
 		 */
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				citation.href = mediaQuery.matches 
-								? Notes.sidenoteSelectorMatchingHash(citation.hash)
-								: Notes.footnoteSelectorMatchingHash(citation.hash);
+				if (citation.pathname == location.pathname)
+					citation.hash = "#" + (mediaQuery.matches 
+										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
+										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 			});
 		}, null, (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				citation.href = Notes.footnoteSelectorMatchingHash(citation.hash);
+				if (citation.pathname == location.pathname)
+					citation.hash = "#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation));
 			});
 		});
 
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.href = Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
-									? Notes.sidenoteSelectorMatchingHash(citation.hash)
-									: Notes.footnoteSelectorMatchingHash(citation.hash);
+					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
+										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
+										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 			});
 		}, "rewrite", (info) => info.document == document);
 
@@ -923,6 +919,17 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.updateStateAfterHashChange();
 			}, { once: true });
 		});
+
+		//	Add listener to update sidenote positions when media loads.
+		addContentInjectHandler(GW.contentInjectHandlers.addMediaElementLoadEventsInSidenotes = (eventInfo) => {
+			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
+
+			eventInfo.container.querySelectorAll("figure img, figure video").forEach(mediaElement => {
+				mediaElement.addEventListener("load", (event) => {
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				}, { once: true });
+			});
+		}, "eventListeners", (info) => (info.container.closest(".sidenote") != null));
 
 		//	Add event listeners, and the switch between modes.
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
@@ -1071,27 +1078,14 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			if (   eventInfo.container.querySelector("a.footnote-ref") == null
-				&& eventInfo.container.closest("li.footnote") == null)
-				return;
-
-			if (eventInfo.container == document.main) {
-				Sidenotes.sidenotesNeedConstructing = true;
-				Sidenotes.constructSidenotes(true);
-				Sidenotes.sidenotesNeedConstructing = false;
-			} else {
-				Sidenotes.sidenotesNeedConstructing = true;
-				requestIdleCallback(() => {
-					if (Sidenotes.sidenotesNeedConstructing == true) {
-						Sidenotes.sidenotesNeedConstructing = false;
-						Sidenotes.constructSidenotes();
-					}
-				});
-			}
+			Sidenotes.constructSidenotes(eventInfo);
 		}, "rewrite", (info) => (   info.document == document
-								 && info.source != "Sidenotes.constructSidenotes"
-								 && info.container.closest(".sidenote") == null));
+								 && info.container.closest(".sidenote") == null
+								 && (   (   info.localize == true
+								 		 && info.container.querySelector("a.footnote-ref") != null)
+								 	 || info.container.closest("li.footnote") != null)));
 
+		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	},
 

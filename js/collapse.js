@@ -449,6 +449,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 										 collapseContentWrapper);
 		}
 
+		//	Inject the size indicator.
+		let icebergWhere = collapseWrapper.classList.contains("collapse-block")
+						   ? collapseWrapper.querySelector(".disclosure-button")
+						   : collapseWrapper.querySelector(".disclosure-button.end");
+		icebergWhere.appendChild(newElement("SPAN", {
+			"class": "collapse-iceberg-indicator graf-content-not"
+		}));
+
 		//	Mark as expanded, if need be.
 		collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
 
@@ -542,6 +550,28 @@ function updateDisclosureButtonState(collapseBlock, options) {
 			disclosureButton.title = labelText;
 		});
 	}
+
+	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
+	let progressPercentage = 100;
+	if (isCollapsed(collapseBlock)) {
+		if (collapseBlock.classList.contains("collapse-block")) {
+			if (collapseBlock.classList.contains("no-abstract")) {
+				let collapsedContentHeight = collapseBlock.querySelector(".collapse-content-wrapper").clientHeight;
+				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
+				progressPercentage = Math.round(100 * collapsedContentHeight / contentHeight);
+			} else {
+				let abstractHeight = collapseBlock.querySelector(".abstract-collapse").clientHeight;
+				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
+				progressPercentage = Math.round(100 * abstractHeight / (abstractHeight + contentHeight));
+			}
+		} else {
+			let abstractLength = collapseBlock.querySelector(".abstract-collapse, .abstract-collapse-only").textContent.length;
+			let contentLength = collapseBlock.querySelector(".collapse-content-wrapper").textContent.length;
+			progressPercentage = Math.round(100 * abstractLength / (abstractLength + contentLength));
+		}
+	}
+	icebergIndicator.dataset.progressPercentage = progressPercentage;
+	renderProgressPercentageIcon(icebergIndicator);
 }
 
 /***************************************/
