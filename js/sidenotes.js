@@ -641,7 +641,15 @@ Sidenotes = { ...Sidenotes,
 			return;
 		}
 
-		let newCitations = Array.from(injectEventInfo.container.querySelectorAll("a.footnote-ref"));
+		/*	Get citations in the newly injected content. (Skip citations of a
+			number matching existing citations; also, deduplicate, keeping only
+			the first instance of multiple citations with the same number.)
+		 */
+		let newCitations = Array.from(injectEventInfo.container.querySelectorAll("a.footnote-ref")).filter(citation => {
+			return (Sidenotes.citationOfNumber(Notes.noteNumber(citation)) == null);
+		}).filter((citation, index, array) => {
+			return (array.findIndex(otherCitation => (Notes.noteNumber(otherCitation) == Notes.noteNumber(citation))) == index);
+		});
 		if (newCitations.length == 0)
 			return;
 
