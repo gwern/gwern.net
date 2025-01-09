@@ -57,15 +57,15 @@ generateID :: String -> String -> String -> T.Text
 generateID url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) C.linkIDOverrides = fromJust $ lookup url C.linkIDOverrides
-  -- indexes or tag-directories shouldn't be cited/have IDs (often linked many times on a page)
-  | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
+  -- indexes or tag-directories shouldn't be cited as they would be often linked many times on a page due to transcludes:
+  -- | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- eg. '/face' = '#gwern-face'; `generateID "https://gwern.net/font" "Gwern Branwen" "2021-01-01"` → "gwern-font" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
   -- NOTE: we have hitherto not set IDs on *section* or *anchor* links like '/improvement#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvement-microsoft'. (Tacking on the hash to the baseline ID of '/improvement' → 'gwern-improvement'.)
   | ("Gwern Branwen" == author || "gwern" == author || "Gwern" == author || "" == author) &&
     (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
   = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
-  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
-  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
+  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway (forcing use of hashes).
+  -- | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   | "#" `isPrefixOf` url = "" -- HACK/TODO: skip self-links: often there's a bunch of them because we may repeatedly refer to a particular section on a page (is this safe? do we actually need self-links to have unique IDs per use?)
   -- _shikata ga nai_, not enough metadata; we use the hash ID fallback:
   | author == "" || date == "" = url2ID (T.pack url)

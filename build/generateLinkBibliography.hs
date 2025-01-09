@@ -42,6 +42,7 @@ import Typography (typographyTransform, titlecase')
 import Utils (writeUpdatedFile, replace, printRed, toPandoc)
 import Interwiki (convertInterwikiLinks)
 import qualified Config.Misc as C (mininumLinkBibliographyFragment)
+import Inflation (nominalToRealInflationAdjuster)
 
 main :: IO ()
 main = do md <- readLinkMetadata
@@ -88,7 +89,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                  body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
-                   walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
+                   walk typographyTransform $ walk nominalToRealInflationAdjuster $ convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:
