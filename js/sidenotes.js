@@ -98,11 +98,11 @@ Sidenotes = { ...Sidenotes,
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
-		return (Sidenotes.sidenotes.find(sidenote => Notes.noteNumber(sidenote) == number) ?? null);
+		return (Sidenotes.sidenotes?.find(sidenote => Notes.noteNumber(sidenote) == number) ?? null);
 	},
 
 	citationOfNumber: (number) => {
-		return (Sidenotes.citations.find(citation => Notes.noteNumber(citation) == number) ?? null);
+		return (Sidenotes.citations?.find(citation => Notes.noteNumber(citation) == number) ?? null);
 	},
 
 	/*	The sidenote of the same number as the given citation;
@@ -156,20 +156,6 @@ Sidenotes = { ...Sidenotes,
 			target.classList.add("targeted");
 		if (counterpart)
 			counterpart.classList.add("targeted");
-	},
-
-	/*  Hide sidenotes within currently-collapsed collapse blocks. Show
-		sidenotes not within currently-collapsed collapse blocks.
-	 */
-	updateSidenotesInCollapseBlocks: () => {
-		GWLog("Sidenotes.updateSidenotesInCollapseBlocks", "sidenotes.js", 1);
-
-		Sidenotes.sidenotes.forEach(sidenote => {
-			let citation = Sidenotes.counterpart(sidenote);
-			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
-			if (sidenote.classList.contains("hidden"))
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
-		});
 	},
 
 	/*	Queues a sidenote position update on the next available animation frame,
@@ -266,11 +252,14 @@ Sidenotes = { ...Sidenotes,
 		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
 			return;
 
-		//  Update the disposition of sidenotes within collapse blocks.
-		Sidenotes.updateSidenotesInCollapseBlocks();
-
-		//	Assign sidenotes to sides.
+		//	Update the disposition of sidenotes.
 		Sidenotes.sidenotes.forEach(sidenote => {
+			/*  Hide sidenotes within currently-collapsed collapse blocks. Show
+				sidenotes not within currently-collapsed collapse blocks.
+			 */
+			let citation = Sidenotes.counterpart(sidenote);
+			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+
 			//  On which side should the sidenote go?
 			let sidenoteNumber = Notes.noteNumber(sidenote);
 			let side = null;
@@ -291,9 +280,12 @@ Sidenotes = { ...Sidenotes,
 			}
 
 			//  Inject the sidenote into the column (provisionally).
-			if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
-				|| sidenote.parentElement == null)
+			if (sidenote.classList.contains("hidden")) {
+				Sidenotes.hiddenSidenoteStorage.append(sidenote);
+			} else if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
+					   || sidenote.parentElement == null) {
 				side.append(sidenote);
+			}
 		});
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
@@ -574,6 +566,10 @@ Sidenotes = { ...Sidenotes,
 	deconstructSidenotes: (alsoDeconstructInfrastructure = false) => {
 		GWLog("Sidenotes.deconstructSidenotes", "sidenotes.js", 1);
 
+		Sidenotes.sidenotes?.forEach(sidenote => {
+			sidenote.remove();
+		});
+
 		Sidenotes.sidenotes = null;
 		Sidenotes.citations = null;
 
@@ -697,9 +693,10 @@ Sidenotes = { ...Sidenotes,
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenotes.push(sidenote);
 
-			//	Inject the sidenote into the page.
-			Sidenotes.hiddenSidenoteStorage.append(sidenote);
 		});
+
+		//	Inject the sidenotes into the page.
+		Sidenotes.hiddenSidenoteStorage.append(...Sidenotes.sidenotes);
 
 		/*  Bind sidenote mouse-hover events.
 		 */
@@ -755,8 +752,6 @@ Sidenotes = { ...Sidenotes,
 			});
 		});
 
-		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
-
 		//	Fire event.
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "Sidenotes.constructSidenotes",
@@ -766,6 +761,8 @@ Sidenotes = { ...Sidenotes,
 			flags: (  GW.contentDidInjectEventFlags.fullWidthPossible
 					| GW.contentDidInjectEventFlags.localize)
 		});
+
+		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 	},
 
 	cleanup: () => {
@@ -1086,8 +1083,8 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.sidenotesNeedConstructing = true;
 				requestIdleCallback(() => {
 					if (Sidenotes.sidenotesNeedConstructing == true) {
-						Sidenotes.constructSidenotes();
 						Sidenotes.sidenotesNeedConstructing = false;
+						Sidenotes.constructSidenotes();
 					}
 				});
 			}
