@@ -10310,6 +10310,10 @@ function importStylesAfterTransclusion(includeLink) {
 function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
     GWLog("updateFootnotesAfterInclusion", "transclude.js", 2);
 
+	//	Do not when into sidenote.
+	if (newContentWrapper.closest(".sidenote"))
+		return;
+
 	/*	Get the footnotes section associated with the transcluded content from 
 		the cached full document that the new content was sliced from.
 	 */
@@ -10953,6 +10957,8 @@ Transclude = {
     //  Called by: handleTranscludes (rewrite function)
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
+
+// 		return;
 
 		//	Resolve alias classes.
 		Transclude.resolveIncludeLinkAliasClasses(includeLink);
@@ -19783,7 +19789,15 @@ Sidenotes = { ...Sidenotes,
 			return;
 		}
 
-		let newCitations = Array.from(injectEventInfo.container.querySelectorAll("a.footnote-ref"));
+		/*	Get citations in the newly injected content. (Skip citations of a
+			number matching existing citations; also, deduplicate, keeping only
+			the first instance of multiple citations with the same number.)
+		 */
+		let newCitations = Array.from(injectEventInfo.container.querySelectorAll("a.footnote-ref")).filter(citation => {
+			return (Sidenotes.citationOfNumber(Notes.noteNumber(citation)) == null);
+		}).filter((citation, index, array) => {
+			return (array.findIndex(otherCitation => (Notes.noteNumber(otherCitation) == Notes.noteNumber(citation))) == index);
+		});
 		if (newCitations.length == 0)
 			return;
 

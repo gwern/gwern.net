@@ -1263,6 +1263,10 @@ function importStylesAfterTransclusion(includeLink) {
 function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
     GWLog("updateFootnotesAfterInclusion", "transclude.js", 2);
 
+	//	Do not when into sidenote.
+	if (newContentWrapper.closest(".sidenote"))
+		return;
+
 	/*	Get the footnotes section associated with the transcluded content from 
 		the cached full document that the new content was sliced from.
 	 */
@@ -1906,6 +1910,8 @@ Transclude = {
     //  Called by: handleTranscludes (rewrite function)
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
+
+// 		return;
 
 		//	Resolve alias classes.
 		Transclude.resolveIncludeLinkAliasClasses(includeLink);
