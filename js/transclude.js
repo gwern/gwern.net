@@ -1319,12 +1319,14 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 
 	//	Add new footnotes to wrapper.
     citationsInNewContent.forEach(citation => {
+		let citationNumber = Notes.noteNumber(citation);
+
         //  Original footnote (in source content/document).
-        let footnote = newContentFootnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
+        let footnote = newContentFootnotesSection.querySelector("#" + Notes.footnoteIdForNumber(citationNumber));
 
 		//	Determine footnote’s source page, and its note number on that page.
 		let sourcePagePathname = (footnote.dataset.sourcePagePathname ?? loadLocationForIncludeLink(includeLink).pathname);
-		let originalNoteNumber = (footnote.dataset.originalNoteNumber ?? Notes.noteNumber(citation));
+		let originalNoteNumber = (footnote.dataset.originalNoteNumber ?? citationNumber);
 
 		//	Check for already added copy of this footnote.
 		let alreadyAddedFootnote = footnotesSection.querySelector(`li.footnote`
@@ -1364,8 +1366,7 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 		if (citation.closest(".sidenote"))
 			return;
 
-		let footnote = citation.footnote ?? footnotesSection.querySelector(Notes.footnoteSelectorMatchingHash(citation.hash));
-
+		let footnote = citation.footnote ?? footnotesSection.querySelector("#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 		if (footnote.parentElement == newFootnotesWrapper) {
 			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));
 		} else {

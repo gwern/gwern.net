@@ -812,18 +812,6 @@ Notes = {
         return Notes.noteNumberFromHash(element.hash ?? ("#" + element.id));
     },
 
-    citationSelectorMatchingHash: (hash) => {
-        return ("#" + Notes.citationIdForNumber(Notes.noteNumberFromHash(hash)));
-    },
-
-    footnoteSelectorMatchingHash: (hash) => {
-        return ("#" + Notes.footnoteIdForNumber(Notes.noteNumberFromHash(hash)));
-    },
-
-    sidenoteSelectorMatchingHash: (hash) => {
-        return ("#" + Notes.sidenoteIdForNumber(Notes.noteNumberFromHash(hash)));
-    },
-
     citationIdForNumber: (number) => {
         return `fnref${number}`;
     },

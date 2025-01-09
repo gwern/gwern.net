@@ -641,10 +641,6 @@ GW.dimensionSpecifiedMediaElementSelector = [
 addContentLoadHandler(GW.contentLoadHandlers.setMediaElementDimensions = (eventInfo) => {
     GWLog("setMediaElementDimensions", "rewrite.js", 1);
 
-    //  Do not set image dimensions in sidenotes.
-    if (eventInfo.container == Sidenotes.hiddenSidenoteStorage)
-        return;
-
     //  Set specified dimensions in CSS.
     eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector).forEach(mediaElement => {
         let fixWidth = (   mediaElement.classList.containsAnyOf([ "float-left", "float-right" ])
@@ -2632,6 +2628,15 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
 /*********/
 /* MISC. */
 /*********/
+
+/*********************************************************/
+/*	Regenerate placeholder IDs. (See misc.js for details.)
+ */
+addContentInjectHandler(GW.contentInjectHandlers.regeneratePlaceholderIds = (eventInfo) => {
+    GWLog("removeNoscriptTags", "rewrite.js", 1);
+
+	regeneratePlaceholderIds(eventInfo.container);
+}, "rewrite");
 
 /*****************************************************************************/
 /*	For obvious reasons, <noscript> tags are completely useless in any content

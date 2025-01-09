@@ -1315,7 +1315,7 @@ addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo
 		GW.layout.initialPageLayoutComplete = true;
 		GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
 	});
-}, ">rewrite", (info) => (info.container == document.main));
+}, "<eventListeners", (info) => (info.container == document.main));
 
 /****************************************************************************/
 /*	Apply block layout classes to a document fragment, to make them available
