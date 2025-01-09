@@ -42,7 +42,7 @@ import Typography (typographyTransform, titlecase')
 import Utils (writeUpdatedFile, replace, printRed, toPandoc)
 import Interwiki (convertInterwikiLinks)
 import qualified Config.Misc as C (mininumLinkBibliographyFragment)
-import Inflation (nominalToRealInflationAdjuster)
+import Inflation (isInflationURL)
 
 main :: IO ()
 main = do md <- readLinkMetadata
@@ -81,7 +81,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                         extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".md") -- Markdown essay
                     else return $ nubOrd $ map (\(a,b) -> (T.unpack a, T.unpack b)) $ extractLinkIDsWith (const True) (T.pack path) $ toPandoc abstract -- annotation
             -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
-        let links = filter (\(l,_) -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) linksRaw
+        let links = filter (\(l,_) -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l || isInflationURL (T.pack l))) linksRaw
         when (length (filter (\(l,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do
 
@@ -89,7 +89,7 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                  body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
-                   walk typographyTransform $ walk nominalToRealInflationAdjuster $ convertInterwikiLinks $ walk (hasAnnotation md) document
+                   walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
              case html of
                Left e   -> printRed (show e)
                -- compare with the old version, and update if there are any differences:

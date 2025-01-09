@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, inflationDollarTestSuite) where
+module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, inflationDollarTestSuite, isInflationURL, isInflationLink) where
 
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2024-11-01 18:30:02 gwern"
+-- When:  Time-stamp: "2025-01-09 12:33:15 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -87,7 +87,7 @@ import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 import Config.Misc (currentYear)
 import Metadata.Format (printDouble)
 import Metadata.Date (isDate)
-import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete)
+import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete, isInflationURL, isInflationLink)
 import Config.Inflation as C
 
 -- ad hoc dollar-only string-munging version of `nominalToRealInflationAdjuster`, which attempts to parse out an amount and adjust it to a specified date.
@@ -193,7 +193,7 @@ bitcoinAdjuster currentyear l@(Link _ text (oldDates, _)) =
         oldBitcoinString = filter (/= '\8383') $ T.unpack $ inlinesToText text
         oldBitcoin = case (readMaybe (filter (/=',') oldBitcoinString) :: Maybe Double) of
                        Just ob -> ob
-                       Nothing -> error (show l)
+                       Nothing -> error $ "Inflation.bitcoinAdjuster: 'oldBitcoin' failed at reading 'oldBitcoingString' into a double; 'oldBitcoinString' was: " ++ show oldBitcoinString ++ "; Inline input was: " ++ (show l)
         oldYear = take 4 $ T.unpack oldDate -- it takes up too much space to display full dates like '2017-01-01'; readers only really need the year; the exact date is provided in the tooltip
         oldDollar = bitcoinAdjust currentyear oldBitcoin (T.unpack oldDate)
         adjustedDollar = dollarAdjust currentyear oldDollar oldYear

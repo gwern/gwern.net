@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2025-01-07 21:50:45 gwern"
+When:  Time-stamp: "2025-01-09 12:36:43 gwern"
 License: CC-0
 -}
 
@@ -12,6 +12,7 @@ import qualified Data.Text as T (append, init, drop, head, last, Text)
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, OrderedList), nullMeta)
 import Text.Pandoc.Walk (query, walk)
 
+import Inflation (isInflationURL)
 import Interwiki (convertInterwikiLinks)
 import Utils (inlinesToText)
 
@@ -40,7 +41,7 @@ extractURLs = extractURLsWith (const True)
 extractURLWith :: (Inline -> Bool) -> Inline -> [(T.Text,T.Text,T.Text)]
 extractURLWith _ x@(Link _ _ ("", _)) = error $ "Invalid link used in extractURLWith: " ++ show x
 extractURLWith rule x@(Link _ anchorText (url, tooltip))
-    | url == "" || T.head url == '$' || T.head url == '\8383' = []
+    | url == "" || isInflationURL url = []
     | rule x = [(url, inlinesToText anchorText, tooltip)]
     | otherwise = []
 extractURLWith _ _ = []

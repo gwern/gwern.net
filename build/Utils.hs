@@ -487,7 +487,7 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 -- WARNING: due to the difficulty of getting Network.URI to accept unescaped Unicode, we attempt to escape it before processing, so `host` is operating on a somewhat different URL than you assume if it contains raw Unicode.
 -- (With HTML5, it is valid to have unescaped Unicode in URLs, and Pandoc generates these rather than percent-encode them. However, with older standards, which Network.URI was written against, they are required to be percent-encoded.)
 host :: T.Text -> T.Text
-host p = if T.head p `elem` ['#', '$', '₿', '!'] then "" else
+host p = if T.head p `elem` ['#', '!'] || isInflationURL p then "" else
   case parseURIReference (T.unpack $ escapeUnicode p) of
     Nothing -> let anchor = T.dropWhile (/='#') p in
                  if '#' `T.elem` anchor then "" else -- we skip this 'bad' URL because it may just be us using the PmWiki range syntax for transcludes, like `/lorem-link#internal-page-links#` or `/note/killing-rabbits##`; but if there is no hash in what appears to be the anchor, then we may have a real issue and should complain about it:
@@ -584,3 +584,13 @@ formatDaysInLargestUnit days
                    in  show months ++ "m"
     | otherwise  = let years = days `div` 365
                    in  show years ++ "y"
+
+-- defined here and used elsewhere in Utils, but re-exported from Inflation to avoid circular dependencies
+isInflationURL :: T.Text -> Bool
+isInflationURL "" = False
+isInflationURL u  = T.head u == '$' || T.head u == '₿'
+
+isInflationLink :: Inline -> Bool
+isInflationLink (Link _ _ (y, _))         = isInflationURL y
+isInflationLink (Span (_, _, [(k, _)]) _) = k == "inflation"
+isInflationLink _                         = False

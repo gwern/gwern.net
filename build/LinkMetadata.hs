@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-01 14:45:04 gwern"
+When:  Time-stamp: "2025-01-09 12:36:08 gwern"
 License: CC-0
 -}
 
@@ -43,7 +43,7 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
 import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString)
-import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML)
+import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks)
 import Typography (titlecase', typesetHtmlField, titleWrap)
 import Image (addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
@@ -252,7 +252,7 @@ readLinkMetadataAndCheck = do
              -- check validity of all external links:
              let urlsAll = filter (\(x,_) -> if x == "" then error "LinkMetadata.urlsAll: empty URL!" else
                                                let u = head x in
-                                               if u `elem` ['/', '!', '$', '\8383'] ||
+                                               if u `elem` ['/', '!'] || isInflationURL (T.pack [u]) ||
                                                       "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || not (anyPrefix x ["ttps://", "ttp://", "/wiki", "wiki/", "/http"]) then False
                                                  else not (isURIReference x)) finalL
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)

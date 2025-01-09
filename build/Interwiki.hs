@@ -12,6 +12,7 @@ import Text.Pandoc (Inline(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
 import Cycle (isCycleLess, findCycles)
+import Inflation (isInflationURL)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText, deleteT)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
@@ -99,7 +100,7 @@ convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error 
 convertInterwikiLinksInline _ x@(Link _ _ ("", _))        = x
 convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinksInline): tooltip malformed with excess whitespace? " ++ show x else
-  if T.head interwiki == '!' then if article/="" && (T.head article == '$' || T.head article == '₿') then error $ "Interwiki.convertInterwikiLinksInline called with accidental inflation-adjustment amount instead? " ++ show x else
+  if T.head interwiki == '!' then if article/="" && (isInflationURL article) then error $ "Interwiki.convertInterwikiLinksInline called with accidental inflation-adjustment amount instead? " ++ show x else
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
                                             nubOrd (wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
