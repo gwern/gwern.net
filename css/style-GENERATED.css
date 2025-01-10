@@ -1827,7 +1827,8 @@ section.collapse > .heading {
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator .inline-icon {
 	top: 0;
 }
-.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator,
+.collapse-inline > .abstract-collapse-only + .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
 	display: none;
 }
 
