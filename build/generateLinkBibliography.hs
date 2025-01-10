@@ -85,8 +85,10 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
         when (length (filter (\(l,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do
 
-             let triplets = linksToAnnotations md path links
-                 body = [Para [Link ("",["icon-special"], []) [Strong [Str "Bibliography", Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
+             let triplets  = linksToAnnotations md path links
+                 tripletsN = length triplets
+                 countString = if tripletsN < 2 then [] else [Str " (", Str (T.pack $ show tripletsN), Str ")"]
+                 body = [Para [Link ("",["icon-special"], []) [Strong $ [Str "Bibliography"]++countString++[Str ":"]] ("/design#link-bibliographies", "")], generateLinkBibliographyItems am path triplets]
                  document = Pandoc nullMeta body
                  html = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} $
                    walk typographyTransform $ convertInterwikiLinks $ walk (hasAnnotation md) document
