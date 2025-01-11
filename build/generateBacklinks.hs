@@ -86,6 +86,8 @@ main' = do
   writeBacklinksDB bldb'
 
 writeOutCallers :: Metadata -> Embeddings -> ListSortedMagic -> T.Text -> [(T.Text, [T.Text])] -> IO ()
+writeOutCallers _  _   _      _               [] = return ()
+writeOutCallers _  _   _      ""     callerPairs = error $ "generateBacklinks.writeOutCallers: empty target! This should never happen? 'callerPairs' was: " ++ show callerPairs
 writeOutCallers md edb sortDB target callerPairs
                                   = do let f = take 274 $ "metadata/annotation/backlink/" ++ urlEncode (T.unpack target) ++ ".html"
                                        -- guess at the anchor ID in the calling page, so the cross-page popup will pop up at the calling site,

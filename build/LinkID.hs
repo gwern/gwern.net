@@ -4,7 +4,7 @@ module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, me
 
 import Control.Monad (replicateM)
 import Data.Char (isAlphaNum, isPunctuation, toLower)
-import Data.List (isInfixOf, isPrefixOf, isSuffixOf, sortOn)
+import Data.List (isInfixOf, isPrefixOf, sortOn) -- isSuffixOf
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (null, pack, unpack, take, Text)

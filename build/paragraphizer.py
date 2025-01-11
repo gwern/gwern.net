@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-08 12:54:45 gwern"
+# When:  Time-stamp: "2025-01-09 18:33:52 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -536,6 +536,11 @@ Moreover, it made US managerial practices internationally distinctive and create
 Many existing evaluation benchmarks for Large Language Models (LLMs) quickly become outdated due to the emergence of new models and training data. These benchmarks also fall short in assessing how LLM performance changes over time, as they consist of static questions without a temporal dimension.
 To address these limitations, we propose using future event prediction as a continuous evaluation method to assess LLMs’ temporal generalization and forecasting abilities. Our benchmark, <strong>Daily Oracle</strong>, automatically generates question-answer (QA) pairs from daily news, challenging LLMs to predict “future” event outcomes.
 Our findings reveal that as pre-training data becomes outdated, LLM performance degrades over time. While Retrieval Augmented Generation (RAG) has the potential to enhance prediction accuracy, the performance degradation pattern persists, highlighting the need for continuous model updates.
+- Input: <abstract>This is a reminiscence and short biographical sketch of the late philosopher and cognitive scientist Jerry Fodor. It includes a summary of his main proposals about the mind: his “Language of Thought” hypothesis; his rejection of analyticity and conceptual role semantics; his “mad dog nativism”; his proposal of mental modules and—by contrast—his skepticism about a computational theory of central cognition; his anti-reductionist, but still physicalist, views about psychology; and, lastly, his attacks on selectionism. I conclude with some discussion of his idiosyncratic style and of his esthetic and other interests. An appendix provides some memorable quotes.</abstract> →
+This is a reminiscence and short biographical sketch of the late philosopher and cognitive scientist Jerry Fodor.
+It includes a summary of his main proposals about the mind: his “Language of Thought” hypothesis; his rejection of analyticity and conceptual role semantics; his “mad dog nativism”; his proposal of mental modules and—by contrast—his skepticism about a computational theory of central cognition; his anti-reductionist, but still physicalist, views about psychology; and, lastly, his attacks on selectionism.
+I conclude with some discussion of his idiosyncratic style and of his esthetic and other interests.
+An appendix provides some memorable quotes.
 
 [Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

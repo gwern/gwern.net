@@ -1627,6 +1627,7 @@ linkIDOverrides =
        , ("/doc/ai/nn/gan/2023-lin.pdf","lin-et-al-2023-9")
        , ("https://arxiv.org/abs/2404.07965#microsoft","lin-et-al-2024-1")
        , ("https://arxiv.org/abs/2403.08266","lin-et-al-2024-2")
+       , ("https://arxiv.org/abs/2410.18647","lin-et-al-2024-3"),("https://arxiv.org/abs/2404.01291","lin-et-al-2024-4")
        , ("https://www.biorxiv.org/content/10.1101/357483.full","liu-et-al-2018-1")
        , ("https://link.springer.com/article/10.1007/s10623-018-0461-x","liu-et-al-2018-2")
        , ("https://arxiv.org/abs/1803.04383","liu-et-al-2018-3")
@@ -2895,4 +2896,7 @@ linkIDOverrides =
   ,("https://www.thepsmiths.com/p/review-reentry-by-eric-berger","psmith-2024-1"),("https://www.thepsmiths.com/p/review-invitation-to-a-banquet-by","psmith-2024-2")
   ,("https://arxiv.org/abs/2406.04329#deepmind","shi-et-al-2024-1"),("https://arxiv.org/abs/2405.14394","shi-et-al-2024-2")
   ,("https://link.springer.com/article/10.1007/s10557-023-07488-3","wong-et-al-2023-1"),("https://arxiv.org/abs/2306.12672","wong-et-al-2023-2")
+  , ("/index-long", "index-long"), ("/index", "index")
+  , ("/newsletter/2024/index","gwern-2024-1"),("/newsletter/2022/index","gwern-2024-2"),("/newsletter/2021/index","newsletters-2021"),("/newsletter/2019/index","newsletters-2019"),("/newsletter/2018/index","newsletters-2018"),("/newsletter/2017/index","newsletters-2017"),("/newsletter/2016/index","newsletters-2016"),("/newsletter/2015/index","newsletters-2015"),("/newsletter/2014/index","newsletters-2014"),("/newsletter/2013/index","newsletters-2013") ,("/newsletter/2025/index","newsletters-2025"),("/newsletter/2026/index","newsletters-2026"),("/newsletter/2027/index","newsletters-2027"),("/newsletter/2028/index","newsletters-2028"),("/newsletter/2029/index","newsletters-2029"),("/newsletter/2030/index","newsletters-2030")
+  ,("https://en.wikipedia.org/wiki/Metamagical_Themas","wp-metamagicalthemas"),("/doc/design/typography/1982-hofstadter.pdf","hofstadter-1982-fonts")
       ]

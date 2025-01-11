@@ -713,7 +713,6 @@ goodDomainsSimple =
     , "www.wired.co.uk"
     , "www.wolfewiki.com"
     , "www.writingroutines.com"
-    , "www.wsj.com"
     , "www.yalelawjournal.org"
     , "www.yf.io"
     , "www.yourdictionary.com"
@@ -2372,6 +2371,8 @@ badDomainsSimple = [ "2chan.us"
    , "www.midjourney.com"
    , "www.mrc-epid.cam.ac.uk"
    , "wiki.c2.com"
+   , "www.wsj.com"
+   , "scholarship.law.upenn.edu"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -3013,9 +3014,6 @@ goodLinks =
             , "https://www.wired.com/story/lsd-microdosing-drugs-silicon-valley/"
             , "https://www.wolfewiki.com/pmwiki/pmwiki.php?n=WolfeWiki.Introduction"
             , "https://www.writingroutines.com/routines/"
-            , "https://www.wsj.com/articles/BL-REB-13994"
-            , "https://www.wsj.com/articles/SB10001424052702304432304576371462612272884"
-            , "https://www.wsj.com/articles/SB10001424053111903480904576512250915629460"
             , "https://www.yalelawjournal.org/note/amazons-antitrust-paradox"
             , "https://www.yourdictionary.com/articles/examples-acrostic-poems"
             , "https://www.youtube.com/embed/gaMuet_ibWE"
@@ -4630,5 +4628,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.midjourney.com/home/"
             , "https://www.mrc-epid.cam.ac.uk/cds2024/faculty/ines-barroso/"
             , "https://wiki.c2.com/?LazinessImpatienceHubris"
+            , "https://www.wsj.com/articles/SB10001424053111903480904576512250915629460"
+            , "https://scholarship.law.upenn.edu/cgi/viewcontent.cgi?article=1022&context=penn_law_review"
             ]
 

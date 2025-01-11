@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-05 18:53:32 gwern"
+# When:  Time-stamp: "2025-01-10 22:26:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -545,6 +545,10 @@ Katri Räikkönen
 "File:Ascii art alphabet.png"
 - "Prompt Design for DALL·E: Photorealism—Emulating Reality | by Merzmensch | Merzazine"
 "Prompt Design for DALL·E: Photorealism—Emulating Reality"
+- "‘Twelfth Night Till Candlemas’—the story of a forty-year book-quest and of its remarkable ending — The Law and Policy Blog"
+"‘Twelfth Night Till Candlemas’—the story of a forty-year book-quest and of its remarkable ending"
+- "I’ve acquired a new superpower—Daniel Wirtz"
+"I’ve acquired a new superpower"
 
 Task:
 
