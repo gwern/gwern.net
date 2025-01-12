@@ -3,7 +3,7 @@
 # memoriam.sh: generate a `X-Clacks-Overhead` HTTP header nginx configuration line based on day-of-year & list of deceased.
 # Author: Gwern Branwen
 # Date: 2024-02-24
-# When:  Time-stamp: "2024-07-21 16:50:07 gwern"
+# When:  Time-stamp: "2025-01-11 20:43:34 gwern"
 # License: CC-0
 #
 # memoriam.sh is intended for generating HTTP headers (<https://en.wikipedia.org/wiki/List_of_HTTP_header_fields>) which memorialize a dead person.
@@ -22,7 +22,7 @@
 # at least 50ms.) The nginx header looks like `add_header X-Clacks-Overhead "$AUTHOR";`, and the call is
 # `include /etc/nginx/conf.d/memoriam.conf;`.
 # The separate memorial configuration file is simply overwritten each day by a root cron job, and nginx restarted:
-# `@daily rm /etc/nginx/conf.d/memoriam.conf && /home/gwern/gwern.net/static/nginx/memoriam.sh > /etc/nginx/conf.d/memoriam.conf && systemctl reload nginx`.
+# `0 5 * * * rm /etc/nginx/conf.d/memoriam.conf && /home/gwern/gwern.net/static/nginx/memoriam.sh > /etc/nginx/conf.d/memoriam.conf && systemctl reload nginx`.
 #
 # Thus, the header will change each day at 0 runtime cost while still being fairly straightforward to implement.
 # The actual database/selection/overwriting is done by this Bash script.

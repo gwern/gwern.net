@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-10 13:01:15 gwern"
+# When:  Time-stamp: "2025-01-11 20:44:54 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -834,7 +834,7 @@ else
     λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside." &
 
-    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv '_search_algorithm'; } # need to exclude 'A* search'
+    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple'; } # need to exclude 'A* search'
     wrap λ "Look for italics errors." &
 
     λ(){ gf -e 'amp#' -- ./metadata/*.gtx; }
@@ -1296,7 +1296,7 @@ else
     }
     wrap λ "Canary token was downloadable; nginx password-protection security failed?"
 
-    λ() { OUTPUT=$(./static/nginx/memoriam.sh)
+    λ() { OUTPUT=$(./static/nginx/memoriam.sh) # NOTE: time is set to 'America/New_York' in the script
           if [[ ! -z "$OUTPUT" ]]; then
               HEADER=$(curl --head --silent -- 'https://gwern.net/index' | gf --ignore-case 'X-Clacks-Overhead')
               if [[ -z "$HEADER" ]]; then

@@ -2,8 +2,8 @@
 module Config.Misc where
 
 import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
-import Data.Time.Clock (getCurrentTime, utctDay)
-import Data.Time (utcToLocalTime, localTimeOfDay, getCurrentTimeZone, todHour, Day(ModifiedJulianDay))
+import Data.Time.Clock (getCurrentTime)
+import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory)
@@ -17,25 +17,39 @@ root = "/home/gwern/wiki/"
 cd :: IO ()
 cd = setCurrentDirectory root
 
+-- NOTE: all time operations are done in the local timezone, unless otherwise specified.
 currentYear :: Int
-currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime -- 2024
+currentYear = unsafePerformIO $ do
+    now <- getCurrentTime
+    tz <- getCurrentTimeZone
+    let localTime = utcToLocalTime tz now
+    return $ (\(year,_,_) -> fromInteger year) . toGregorian . localDay $ localTime
 
 todayDay :: IO Integer
-todayDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
+todayDay = do
+    now <- getCurrentTime
+    tz <- getCurrentTimeZone
+    return $ toModifiedJulianDay . localDay . utcToLocalTime tz $ now
 
 currentMonthAgo :: String
 currentMonthAgo = unsafePerformIO $ do
-  today <- fmap utctDay getCurrentTime
-  let monthAgo = addDays (-daysAgo) today
-  return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
-  where daysAgo = 31 * 2 :: Integer
+    now <- getCurrentTime
+    tz <- getCurrentTimeZone
+    let localTime = utcToLocalTime tz now
+        today = localDay localTime
+        monthAgo = addDays (-daysAgo) today
+    return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
+    where daysAgo = 31 * 2 :: Integer
 
 -- New generic function to format a day, relative to today, as a string
 dayStringFromToday :: Integer -> IO String
 dayStringFromToday offset = do
-  todayJulian <- todayDay
-  let targetDay = ModifiedJulianDay (todayJulian + offset)
-  return $ formatTime defaultTimeLocale "%Y-%m-%d" targetDay
+    now <- getCurrentTime
+    tz <- getCurrentTimeZone
+    let localTime = utcToLocalTime tz now
+        localDay' = localDay localTime
+        targetDay = addDays offset localDay'
+    return $ formatTime defaultTimeLocale "%Y-%m-%d" targetDay
 
 todayDayString :: IO String
 todayDayString = dayStringFromToday 0
@@ -55,8 +69,6 @@ lateNight = do
 -- for Columns.hs:
 listLengthMaxN :: Int
 listLengthMaxN = 75
--- sublistsLengthMinN :: Int -- TODO: dead config variable?
--- sublistsLengthMinN = 8
 
 -- LinkBacklinks:
 sectionizeWhiteList :: [T.Text]
