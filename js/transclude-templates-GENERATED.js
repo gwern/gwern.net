@@ -3,7 +3,7 @@ Transclude.templates = {
 	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
 		<a 
 		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   target="<{linkTarget}>"
 		   <{titleLinkDataAttributes}>
@@ -34,7 +34,7 @@ Transclude.templates = {
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   target="<{linkTarget}>"
 		   <{titleLinkDataAttributes}>
@@ -57,7 +57,7 @@ Transclude.templates = {
 	<p class="data-field title">
 		<a 
 		   class="<{titleLinkClass}>"
-		   title="Open <{titleLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   target="<{linkTarget}>"
 		   <{titleLinkDataAttributes}>
@@ -82,14 +82,14 @@ Transclude.templates = {
 	"pop-frame-title-standard": `<a
 	class="popframe-title-link"
 	href="<{popFrameTitleLinkHref}>"
-	title="Open <{popFrameTitleLinkHref}> in <{whichTab}> <{tabOrWindow}>."
+	title="Open <<{popFrameTitleLinkHref}>> in <{whichTab}> <{tabOrWindow}>."
 	target="<{linkTarget}>"
 		><{popFrameTitle}></a>`,
 	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
 		<a 
 		   class="<{authorLinkClass}>"
-		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{authorLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
 		   target="<{linkTarget}>"
 		   <{authorLinkIconMetadata}>
@@ -97,7 +97,7 @@ Transclude.templates = {
 		on \\
 		<a
 		   class="<{tweetLinkClass}>" 
-		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{tweetLinkHref>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{tweetLinkHref}>" 
 		   <{archivedTweetURLDataAttribute}> 
 		   <{tweetLinkIconMetadata}>
@@ -109,7 +109,7 @@ Transclude.templates = {
 	<p class="data-field tweet-links">
 		<a 
 		   class="<{authorLinkClass}>"
-		   title="Open <{authorLinkHref}> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{authorLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{authorLinkHref}>"
 		   target="<{linkTarget}>"
 		   <{authorLinkIconMetadata}>
@@ -117,7 +117,7 @@ Transclude.templates = {
 		on \\
 		<a
 		   class="<{tweetLinkClass}>" 
-		   title="Open <{tweetLinkHref> in <{whichTab}> <{tabOrWindow}>"
+		   title="Open <<{tweetLinkHref>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{tweetLinkHref}>" 
 		   <{archivedTweetURLDataAttribute}> 
 		   <{tweetLinkIconMetadata}>
