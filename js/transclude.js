@@ -488,6 +488,9 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		"_FALSE_"
 	];
 
+	let constantRegExp = new RegExp(/^_(\S*)_$/);
+	let literalRegExp = new RegExp(/^<<(.*)>>$/);
+
 	return evaluateTemplateExpression(expr.replace(
 		//	Quotes.
 		/(['"])(.*?)(\1)/g,
@@ -509,7 +512,9 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			let expressionTrue = operator == "&"
 								 ? (leftOperandTrue && rightOperandTrue)
 								 : (leftOperandTrue || rightOperandTrue);
-			return expressionTrue ? "_TRUE_" : "_FALSE_";
+			return (expressionTrue 
+					? "_TRUE_" 
+					: "_FALSE_");
 		}
 	).replace(
 		//	Boolean NOT.
@@ -522,7 +527,6 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		//	Comparison.
 		/\s*(\S+)\s+(\S+)\s*/,
 		(match, leftOperand, rightOperand) => {
-			let constantRegExp = new RegExp(/^_(\S*)_$/);
 			if (   constantRegExp.test(leftOperand)
 				|| constantRegExp.test(rightOperand)) {
 				return (   evaluateTemplateExpression(leftOperand, valueFunction)
@@ -530,7 +534,6 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 						? "_TRUE_"
 						: "_FALSE_");
 			} else {
-				let literalRegExp = new RegExp(/^<<(.*)>>$/);
 				leftOperand = literalRegExp.test(leftOperand)
 							  ? decodeURIComponent(leftOperand.slice(2, -2))
 							  : valueFunction(leftOperand);
@@ -543,15 +546,25 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			}
 		}
 	).replace(/\s*(\S+)\s*/g,
-		//	Constant or field name.
-		(match, constantOrFieldName) =>
-		(/^_(\S*)_$/.test(constantOrFieldName)
-		 ? (constants.includes(constantOrFieldName)
-		    ? constantOrFieldName
-		    : "")
-		 : (valueFunction(constantOrFieldName)
-			? "_TRUE_"
-			: "_FALSE_"))
+		//	Constant, literal, or field name.
+		(match, string) => {
+			//	Constant.
+			if (constantRegExp.test(string))
+				return (constants.includes(string)
+						? string
+						: "");
+
+			//	Literal.
+			if (literalRegExp.test(string))
+				return (string.length > "<<>>".length
+						? "_TRUE_"
+						: "_FALSE_");
+
+			//	Field name.
+			return (valueFunction(string)
+					? "_TRUE_"
+					: "_FALSE_");
+		}
 	));
 }
 
