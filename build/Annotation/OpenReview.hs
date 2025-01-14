@@ -29,8 +29,8 @@ openreview md p =
                                     let keywords'
                                            | null keywords || keywords == [""] = ""
                                            | length keywords > 1 =
-                                             unlines (init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
-                                           | otherwise = "[Keywords: " ++ concat keywords ++ "]"
+                                             unlines (init keywords) ++ "\n<!-- [Keywords: " ++ last keywords ++ "] -->"
+                                           | otherwise = "<!-- [Keywords: " ++ concat keywords ++ "] -->"
                                     let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                                     let desc' = cleanAbstractsHTML $ processArxivAbstract desc
                                     abstract <- processParagraphizer md p' $ linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords'
