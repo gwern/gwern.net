@@ -9527,6 +9527,14 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	if (expr == "_FALSE_")
 		return false;
 
+	if (expr == "")
+		return false;
+
+	let constants = [
+		"_TRUE_",
+		"_FALSE_"
+	];
+
 	return evaluateTemplateExpression(expr.replace(
 		//	Quotes.
 		/(['"])(.*?)(\1)/g,
@@ -9585,7 +9593,9 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		//	Constant or field name.
 		(match, constantOrFieldName) =>
 		(/^_(\S*)_$/.test(constantOrFieldName)
-		 ? constantOrFieldName
+		 ? (constants.includes(constantOrFieldName)
+		    ? constantOrFieldName
+		    : "")
 		 : (valueFunction(constantOrFieldName)
 			? "_TRUE_"
 			: "_FALSE_"))
@@ -9614,7 +9624,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		fireContentLoadEvent (false)
 			If true, a GW.contentDidLoad event is fired on the filled template.
  */
-//	(string, string|object, object, object) => DocumentFragment
+//	(string, string|Document|DocumentFragment|object, object, object) => DocumentFragment
 function fillTemplate(template, data = null, context = null, options) {
 	options = Object.assign({
 		preserveSurroundingWhitespaceInConditionals: false,
@@ -9631,9 +9641,11 @@ function fillTemplate(template, data = null, context = null, options) {
 		data = template;
 
 	/*	If the data source is a string, assume it to be HTML and extract data;
-		likewise, if the data source is a DocumentFragment, extract data.
+		likewise, if the data source is a Document or a DocumentFragment, 
+		extract data.
 	 */
 	if (   typeof data == "string"
+		|| data instanceof Document
 		|| data instanceof DocumentFragment)
 		data = templateDataFromHTML(data);
 
@@ -9662,7 +9674,7 @@ function fillTemplate(template, data = null, context = null, options) {
 
 	//	Escapes.
 	template = template.replace(
-		/\\(.)/gs,
+		/\\(.)/gsu,
 		(match, escaped) => "<[:" + escaped.codePointAt(0) + ":]>"
 	);
 
