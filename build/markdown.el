@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2024-12-27 18:47:31 gwern"
+;;; When:  Time-stamp: "2025-01-13 11:29:49 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -328,20 +328,17 @@ Mostly string search-and-replace to enforce house style in terms of format."
      (check-parens) ; run this before the save-excursion so we error out immediately & jump to the location of the typo
      (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
          (goto-char (point-max))
-         (insert "\n\n")
+         (insert "\n")
          (let ((begin (if (region-active-p) (region-beginning) (point-min)))
                (end (if (region-active-p) (region-end) (point-max)))
                )
            (save-excursion
-       (save-excursion ; ensure a blank line at the end in case of off-by-1 errors in utilities
-         (goto-char (point-max))
-         (insert "\n\n"))
        (goto-char (point-min))
        (de-unicode)
        (de-unicode)
        (flyspell-buffer)
        (delete-trailing-whitespace)
-       (clean-pdf-text begin end)
+       (clean-pdf-text)
 
        (let ; Blind unconditional rewrites:
            ((blind '(("﻿" . "") ; byte order mark?
@@ -925,6 +922,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("(n3)" . "(_n_^3^)")
                         ("n→" . "_n_ → ")
                         ("n-back" . "_n_-back")
+                        (" n-body" . " _n_-body")
                         ("log 2" . "log<sub>2</sub>")
                         ("fuck" . "f—k")
                         ("damn" . "d—n")
@@ -1819,41 +1817,62 @@ Note: This function assumes that `clean-pdf.py` is in Emacs's executable path."
   (interactive)
   (unless (executable-find "clean-pdf.py")
     (error "Error: Python `clean-pdf.py` script not found in path"))
-  (let* ((region-active (or (region-active-p) (and start end)))
-         (process-start (or start (and region-active (region-beginning)) (point-min)))
-         (process-end (or end (and region-active (region-end)) (point-max))))
+
+  (let* ((region-is-active (region-active-p))  ; simplified this check
+         (process-start (cond (start start)
+                            (region-is-active (region-beginning))
+                            (t (point-min))))
+         (process-end (cond (end end)
+                          (region-is-active (region-end))
+                          (t (point-max)))))
+
     (atomic-change-group
       (save-excursion
         (let ((case-fold-search nil))  ; Make search case-sensitive
           (goto-char process-start)
-          (while (< (point) process-end)
-            (let* ((paragraph-end (or (search-forward "\n\n\n" process-end t)
-                                      process-end))
-                   (paragraph (buffer-substring-no-properties (point) paragraph-end))
-                   (needs-cleaning (and (string-match-p "-\n" paragraph)
-                                        ; but skip uses of em-dash at the end of lines (eg. dialogue), and Pandoc Markdown YAML headers:
-                                        (not (string-match-p "—\n" paragraph))
-                                        (not (string-match-p "---\n" paragraph)))))
+          (while (and (< (point) process-end)
+                     (not (eobp)))
+            (let* ((current-point (point))
+                   (found-boundary (save-excursion
+                                   (search-forward "\n\n\n" process-end t)))
+                   (paragraph-end (if found-boundary
+                                    (match-beginning 0)
+                                    (min process-end (point-max))))
+                   (paragraph (when (and (< current-point paragraph-end)
+                                       (<= paragraph-end (point-max)))
+                              (buffer-substring-no-properties current-point paragraph-end)))
+                   (needs-cleaning (and paragraph
+                                      (not (string-empty-p paragraph))
+                                      (string-match-p "-\n" paragraph)
+                                      (not (string-match-p "—\n" paragraph))
+                                      (not (string-match-p "---\n" paragraph)))))
+
               (when needs-cleaning
                 (let ((cleaned-paragraph
                        (with-temp-buffer
                          (insert paragraph)
-                         ;; Call the clean-pdf.py script
                          (condition-case err
-                             (call-process-region (point-min) (point-max)
+                             (progn
+                               (call-process-region (point-min) (point-max)
                                                   "clean-pdf.py"
                                                   t t nil)
+                               (buffer-string))
                            (error
                             (message "Error in clean-pdf.py: %s" (error-message-string err))
-                            (buffer-string)))  ; Return original text if there's an error
-                         (buffer-string))))
-                  ;; Replace the original paragraph with the cleaned version
-                  (delete-region (point) paragraph-end)
-                  (insert cleaned-paragraph)))
-              ;; Move to the end of the paragraph
-              (goto-char paragraph-end))))))
+                            paragraph)))))
+
+                  (unless (string= paragraph cleaned-paragraph)
+                    (when (and (<= current-point (point-max))
+                              (<= paragraph-end (point-max)))
+                      (delete-region current-point paragraph-end)
+                      (insert cleaned-paragraph)))))
+
+              (if found-boundary
+                  (goto-char (+ (match-end 0) 1))
+                (goto-char (min (1+ paragraph-end) (point-max))))))))
+
     (message "PDF text cleaning completed for %s"
-             (if region-active "selected region" "entire buffer"))))
+             (if region-is-active "selected region" "entire buffer")))))
 
 (defun query-inflation-adjust ()
   "Interactively inflation-adjust all dollar amounts in the buffer.

@@ -579,6 +579,8 @@ canonicals = M.fromList
   , ("AmandaAskell", "Amanda Askell")
   , ("Peter Deutsch", "L. Peter Deutsch")
   , ("ChrisChipMonk", "Chris Lakin")
+  , ("Henrik Gronberg", "Henrik Grönberg")
+  , ("Henrik Groenberg", "Henrik Grönberg")
   ]
 
 -- tests: unique
@@ -1160,10 +1162,15 @@ authorLinkDB = M.fromList $
     , ("Jun Wang", "https://scholar.google.com/citations?user=wIE1tY4AAAAJ")
     , ("Jun Wang#genetics", "https://en.wikipedia.org/wiki/Wang_Jun_(scientist)")
     , ("Judith M. Vonk", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/judith-vonk?lang=en")
-    , ("Juan Pablo Frias", "https://scholar.google.com/citations?user=GPOxOFkAAAAJ&hl=en&oi=ao")
+    , ("Juan Pablo Frias", "https://scholar.google.com/citations?user=GPOxOFkAAAAJ")
     , ("Jason Yosinski", "https://yosinski.com/")
-    , ("Joel Veness", "https://scholar.google.co.uk/citations?user=_iYrAxEAAAAJ&hl=en")
+    , ("Joel Veness", "https://scholar.google.co.uk/citations?user=_iYrAxEAAAAJ")
     , ("Chris Lakin", "https://chrislakin.blog/about")
+    , ("Rupesh Kumar Srivastava", "https://rupeshks.cc/")
+    , ("Hilary Kiyo Finucane", "https://en.wikipedia.org/wiki/Hilary_Finucane")
+    , ("Henrik Larsson", "https://scholar.google.com/citations?user=jlcdEbUAAAAJ")
+    , ("Henrik Grönberg", "https://ki.se/en/people/henrik-gronberg")
+    , ("Gibran Hemani", "https://www.explodecomputer.com/about/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1599,7 +1606,7 @@ authorWpLinkDB =
     ,"Henry Wong", "Herbert A. Simon", "Herbert Maschner", "Herbert Spencer Jennings", "Herbert Weissbach"
     ,"Herman Aguinis", "Herman H. Spitz", "Herman Pleij", "Herman Pontzer", "Hermann Wagner"
     ,"Hermine Maes", "Hernan Aguirre", "Herwig Baier", "Hessel Oosterbeek", "Hideyuki Okano"
-    ,"Hilary Finucane", "Hilary Hoynes", "Hilary W. Hoynes", "Himabindu Lakkaraju", "Himanshu Thakur"
+    ,"Hilary Hoynes", "Hilary W. Hoynes", "Himabindu Lakkaraju", "Himanshu Thakur"
     ,"Hiram Stevens Maxim", "Hiroshi Ishikawa", "Hiroshi Kaneda", "Hirotaka Sugawara", "Hiroyuki Morita"
     ,"Hiroyuki Sasaki", "Hisham Al-Obaidi", "Hod Lipson", "Holden Karnofsky", "Holger Rootz\233n"
     ,"Hollis Robbins", "Holly A. Taylor", "Holly Jackson", "Hong Wei", "Hong Wu"
@@ -2399,4 +2406,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch", "Philip Kapleau", "Gerard Nolst Trenité"]

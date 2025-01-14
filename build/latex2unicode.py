@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-01-06 19:14:12 gwern"
+# When:  Time-stamp: "2025-01-13 12:03:11 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -170,10 +170,13 @@ M<sub>☉</sub
 ≉
 - '\\left\\langle A \\middle| B \\right\\rangle'
 ⟨<em>A</em>|<em>B</em>⟩
+# note: <https://en.wikipedia.org/wiki/Blackboard_bold#Encoding>: "In Unicode, a few of the more common blackboard bold characters (ℂ, ℍ, ℕ, ℙ, ℚ, ℝ, and ℤ) are encoded in the Basic Multilingual Plane (BMP) in the Letterlike Symbols (2100–214F) area, named DOUBLE-STRUCK CAPITAL C etc. The rest, however, are encoded outside the BMP, in Mathematical Alphanumeric Symbols (1D400–1D7FF), specifically from 1D538–1D550 (uppercase, excluding those encoded in the BMP), 1D552–1D56B (lowercase) and 1D7D8–1D7E1 (digits). Blackboard bold Arabic letters are encoded in Arabic Mathematical Alphabetic Symbols (1EE00–1EEFF), specifically 1EEA1–1EEBB."
 - '\\mathcal{R}'
 ℛ
 - '\\mathbb{R}'
 ℝ
+- '\\mathbb{N}'
+ℕ
 - '\\cancel{x}'
 x̸
 - '\\left{\\frac{1}{2} \\right}'

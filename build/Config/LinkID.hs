@@ -1068,7 +1068,7 @@ linkIDOverrides =
        , ("https://www.biorxiv.org/content/10.1101/072306.full","hagenaars-et-al-2016-2")
        , ("https://www.sciencedirect.com/science/article/pii/S0272494421001584","hahn-et-al-2021-1")
        , ("https://arxiv.org/abs/2104.10343","hahn-et-al-2021-2")
-       , ("https://www.fadedpage.com/books/20160325/html.php","haldane-1927-1")
+       , ("https://www.fadedpage.com/link.php?file=20160325.html","haldane-1927-1")
        , ("/doc/biology/1927-haldane-possibleworldsandotheressays-ch3-onbeingtherightsize.pdf","haldane-1927-2")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3730114/","hamshere-et-al-2013-1")
        , ("/doc/genetics/heritable/correlation/2013-hamshere.pdf","hamshere-et-al-2013-2")
@@ -2899,4 +2899,6 @@ linkIDOverrides =
   , ("/index-long", "index-long"), ("/index", "index")
   , ("/newsletter/2024/index","gwern-2024-1"),("/newsletter/2022/index","gwern-2024-2"),("/newsletter/2021/index","newsletters-2021"),("/newsletter/2019/index","newsletters-2019"),("/newsletter/2018/index","newsletters-2018"),("/newsletter/2017/index","newsletters-2017"),("/newsletter/2016/index","newsletters-2016"),("/newsletter/2015/index","newsletters-2015"),("/newsletter/2014/index","newsletters-2014"),("/newsletter/2013/index","newsletters-2013") ,("/newsletter/2025/index","newsletters-2025"),("/newsletter/2026/index","newsletters-2026"),("/newsletter/2027/index","newsletters-2027"),("/newsletter/2028/index","newsletters-2028"),("/newsletter/2029/index","newsletters-2029"),("/newsletter/2030/index","newsletters-2030")
   ,("https://en.wikipedia.org/wiki/Metamagical_Themas","wp-metamagicalthemas"),("/doc/design/typography/1982-hofstadter.pdf","hofstadter-1982-fonts")
+  , ("https://arxiv.org/abs/2404.01261","kim-et-al-2024-1"),("https://arxiv.org/abs/2402.16785","kim-et-al-2024-2")
+  , ("https://drmarkgriffiths.wordpress.com/2014/12/22/hoover-damn-a-brief-look-at-sexual-injury-by-vacuum-cleaners/", "vacuum-sex-1"), ("https://drmarkgriffiths.wordpress.com/2015/10/09/hoovers-and-shakers-another-look-at-vacuum-cleaner-sex/", "vacuum-sex-2")
       ]

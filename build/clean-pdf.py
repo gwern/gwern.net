@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-08 10:06:48 gwern"
+# When:  Time-stamp: "2025-01-13 15:55:49 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -147,6 +147,8 @@ Mira Fischer, Elisabeth Grewenig, Philipp Lergetporer, Katharina Werner, Helen Z
 
 <text>Andrea Di Francesco 1,✉, Andrew G Deighan 2, Lev Litichevskiy 3,4, Zhenghao Chen 1, Alison Luciano 2, Laura Robinson 2, Gaven Garland 2, Hannah Donato 2, Matthew Vincent 2, Will Schott 2, Kevin M Wright 1,6, Anil Raj 1, G V Prateek 1, Martin Mullis 1, Warren G Hill 5, Mark L Zeidel 5, Luanne L Peters 2, Fiona Harding 1, David Botstein 1, Ron Korstanje 2, Christoph A Thaiss 3, Adam Freund 1,7, Gary A Churchill 2,✉</text> →
 Andrea Di Francesco, Andrew G. Deighan, Lev Litichevskiy, Zhenghao Chen, Alison Luciano, Laura Robinson, Gaven Garland, Hannah Donato, Matthew Vincent, Will Schott, Kevin M. Wright, Anil Raj, G. V. Prateek, Martin Mullis, Warren G. Hill, Mark L. Zeidel, Luanne L. Peters, Fiona Harding, David Botstein, Ron Korstanje, Christoph A. Thaiss, Adam Freund, Gary A. Churchill
+- <text>Rachel G. Higier, Ph.D., Amy M. Jimenez, Ph.D., Christina M. Hultman, Ph.D., Jacqueline Borg, Ph.D., Cristina Roman, B.A., Isabelle Kizling, M.Sc., Henrik Larsson, Ph.D., and Tyrone D. Cannon, Ph.D.Authors Info & Affiliations</text> →
+Rachel G. Higier, Amy M. Jimenez, Christina M. Hultman, Jacqueline Borg, Cristina Roman, Isabelle Kizling, Henrik Larsson, Tyrone D. Cannon
 
 Input:
 <text>{target}</text> →

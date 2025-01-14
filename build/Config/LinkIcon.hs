@@ -19,24 +19,29 @@ overrideLinkIcons = [("/index#abstract", ("","",""))]
 prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
--- TODO: icon+color:
--- color-only:
--- icon-only:
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
                               , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
  , "www.joelonsoftware.com", "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
  , "blog.johantibell.com", "humanvarieties.org", "cognitivefun.net", "annals.org", "www.replicatedtypo.com"
  , "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "www.incompleteideas.net"
- , "www.artbreeder.com"
+ , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "alumni.media.mit.edu", "www.eugenewei.com", "karpathy.github.io", "demos.obormot.net"
+
+-- TODO: icon+color:
+ , "danwang.co" -- 'D' + red
+ , "www.worldcat.org" -- spiral icon + blue
+ , "www.buzzfeed.com" -- BF + red
+-- color-only:
+ , "www.nausicaa.net" -- blue
+ , "blog.acolyer.org" -- blue
+ , "arbtt.nomeata.de" -- blue
+-- icon-only:
+ , "www.thestranger.com" -- thick S - MATHEMATICAL SCRIPT CAPITAL S maybe? 𝒮
  -- TODO:
- , "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com"
- , "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io"
- , "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de"
  , "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com"
  , "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au"
  , "repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com"
- , "alumni.media.mit.edu", "ralphmerkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org"
+ , "ralphmerkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org"
  , "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu"
  , "www.austlii.edu.au", "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live"
  , "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu"
@@ -393,7 +398,7 @@ linkIconRulesQuad u
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue text background
  | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALS SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
  | u' u "mitpress.mit.edu/sites/default/files/sicp/" || u' u "mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/" = ("SI CP", "text,quad,sans", "") -- overrides IA
- | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
+ | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" || u' u "web.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono", "")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono", "")
  | u'' u "www.mdpi.com" = ("MDPI", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
@@ -876,7 +881,7 @@ linkIconTestUnitsText =
          , ("https://cran.r-project.org/web/packages/tufte/index.html", "ET", "text", redTufte)
          , ("https://edwardtufte.github.io/tufte-css/#epigraphs", "ET", "text", redTufte)
          , ("https://github.com/edwardtufte/tufte-css", "ET", "text", redTufte)
-         , ("https://www.fadedpage.com/books/20160325/html.php", "PG", "text", yellowPG)
+         , ("https://www.fadedpage.com/link.php?file=20160325.html", "PG", "text", yellowPG)
          , ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text", yellowPG)
          , ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text", yellowPG)
          , ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text", yellowPG)
