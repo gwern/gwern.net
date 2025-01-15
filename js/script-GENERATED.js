@@ -9616,6 +9616,182 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 }
 
 /******************************************************************************/
+/*	TEMPLATE SYNTAX REFERENCE
+	=========================
+
+	The following syntactic elements are available in the transclude.js 
+	template syntax (as used, e.g., in the .tmpl files loaded by the build 
+	scripts); these are listed in order of evaluation.
+
+	1. Line continuations.
+
+	   The following sequence of characters:
+
+		[closing angle bracket (‘>’)]
+		[backslash (‘\’)]
+		[newline character]
+		[zero or more whitespace characters]
+		[opening angle bracket (‘<’)]
+
+	   … collapses into the following sequence:
+
+		[closing angle bracket (‘>’)]
+		[opening angle bracket (‘<’)]
+
+	   (This allows nicely formatted and readable template source files, 
+	    without introducing undesired whitespace into the rendered HTML.)
+
+	2. Comments.
+
+	   The sequences ‘<(’ and ‘)>’ delineate a template comment. In the 
+	   rendered HTML, any such comment is replaced with the empty string.
+
+	3. Escaped characters.
+
+	   There are two forms of the character escape syntax, a simple form and a
+	   full form. During template processing, any escapes in the simple form
+	   are transformed into escapes in the full form; the latter are processed
+	   last (after conditionals are evaluated and data variable substitutions
+	   performed).
+
+	   The simple form escape syntax is a backslash (‘\’), followed by any 
+	   character. (Note that only a single code point will be escaped, not an 
+	   extended grapheme cluster.)
+
+	   The full form escape syntax is delineated by ‘<[:’ and ‘:]>’, containing
+	   a slash (‘/’) separated sequence of zero or more Unicode code points in
+	   decimal form. (During processing, this is transformed into the string 
+	   which consists of that sequence of code points.)
+
+	   NOTE on escaping: angle brackets (‘<’ and ‘>’) do not need to be escaped
+	   when they appear within quote-wrapped HTML attribute values (or within
+	   template expressions that will resolve into strings that appear within
+	   quote-wrapped HTML attribute values). When angle brackets appear outside
+	   of quote-wrapped HTML attribute values, they must be escaped as HTML
+	   entities (‘<’ as ‘&lt;’ and ‘>’ as ‘&gt;’). Escaping angle brackets via
+	   the template escaping syntax is NOT a substitute for HTML escaping!
+
+	4. Conditionals.
+
+	   The template syntax supports nested conditionals, so content wrapped in
+	   a conditional can itself contain conditionals. In order to do this, the
+	   conditional syntax requires that each nested level of conditionals be
+	   indicated.
+
+	   The basic conditional syntax is:
+
+	    <[IF $TEMPLATE_CONDITIONAL_EXPRESSION]>foo<[IFEND]>
+
+	   or:
+
+	    <[IF $TEMPLATE_CONDITIONAL_EXPRESSION]>foo<[ELSE]>bar<[IFEND]>
+
+	   The first form resolves into “foo” if $TEMPLATE_EXPRESSION evaluates to
+	   true, the empty string otherwise. The second form resolves into “foo” if
+	   $TEMPLATE_EXPRESSION evaluates to true, “bar” otherwise.
+
+	   To indicate nesting level, a numeric sequence is added to the operators:
+
+	    <[IF1 $TEMPLATE_CONDITIONAL_EXPRESSION]>foo<[ELSE1]>bar<[IF1END]>
+
+	   The template conditional expression syntax is described in the next 
+	   section.
+
+	5. Data variable substitutions.
+
+	   The sequences ‘<{’ and ‘}>’ delineate a data variable name. This will
+	   resolve into the stringified form of the value of the variable of that
+	   name. This value is retrieved by using the variable name as an index 
+	   into template fill context object, else (if no context object is given
+	   or the context object has no non-null value for that variable name) into
+	   the template data object. If the template data object also has no 
+	   non-null value for that index, then the data variable expression 
+	   resolves into the empty string.
+
+
+	TEMPLATE CONDITIONAL EXPRESSION SYNTAX REFERENCE
+	================================================
+
+	Template conditional expressions always return true or false. They are
+	evaluated recursively. The available operators are listed below, in order 
+	of evaluation within a single evaluation pass.
+
+	(Note that whitespace is permitted in conditional expressions. Whitespace
+	 characters are ignored, except within quote-wrapped string literals, and
+	 between the operands of the comparison operator; see below for more.)
+
+	0. Constants.
+
+	   The expression “_TRUE_” is evaluated as true. The expression “_FALSE_” 
+	   is evaluated as false. The empty string likewise evaluates as false.
+
+	1. Quotation.
+
+	   A string wrapped in quotes (these may be single quotes, ‘'’; double 
+	   quotes, ‘"’; or double angle brackets ‘<<’ ‘>>’; note that the latter 
+	   are not the double angle quotation marks ‘«’ ‘»’, but rather pairs of 
+	   the ordinary single angle brackets, ‘<’ ‘>’). When used as an operand of
+	   the comparison operator (see below), a quoted string is treated as a 
+	   string literal. Otherwise, evaluates to true if the quoted string is
+	   nonempty, false otherwise.
+
+	2. Brackets.
+
+	   Square brackets (‘[’ and ‘]’) delineate a nested expression, which 
+	   evaluates to one of the boolean constants, “_TRUE_” or “_FALSE_”.
+
+	3. Boolean comparison.
+
+	   The operators ‘&’ (AND) and ‘|’ (OR) have the same precedence, and are
+	   right-associative. They evaluate to one of the boolean constants.
+
+	4. Boolean negation.
+
+	   The negation operator ‘!’ (NOT) precedes the operand (which must be 
+	   either a quoted string literal, or else a non-quoted-wrapped sequence of
+	   non-whitespace characters), and evaluates as “_FALSE_” if the operand
+	   evalutes to false, as “_TRUE_” otherwise.
+
+	5. Comparison.
+
+	   Two operands (each of which may be a quoted string literal, or else a
+	   non-quote-wrapped sequence of non-whitespace characters) separated by
+	   whitespace are compared, evaluating to “_TRUE_” if they are equal,
+	   “_FALSE_” otherwise.
+
+	   How equality is tested depends on the type of the operands:
+
+	   - If either operand is a boolean constants, then both operands are 
+	     evaluated and the values (true or false) compared.
+	   - Otherwise, each operand is either unwrapped from quotes (if it is a
+	     quote-wrapped string literal) and URI-decoded, or else treated as a 
+	     data variable name and its value retrieved (see “Data variable 
+	     substitutions” in the previous section); the operands are then tested 
+	     for equality using the JavaScript ‘==’ operator.
+
+	   Naturally, the comparison expression evaluates as “_TRUE_” if the 
+	   operands are found to be equal, as “_FALSE_” otherwise.
+
+	6. Single term.
+
+	   A string by itself, not part of one of the above operations, is either
+	   a constant, or a literal, or a data variable name.
+
+	   If the string begins and ends with underscores (‘_’), it is treated as a
+	   constant; if it is equal to one of the boolean constants, the string 
+	   evaluates as that constant; otherwise, as the empty string (and thus
+	   as false).
+
+	   If the string is a quote-wrapped (i.e., double-angle-bracket-wrapped) 
+	   string literal, evaluates as true if the quoted string is nonempty,
+	   false otherwise.
+
+	   Otherwise, the string is treated as a data variable name, and its value
+	   retrieved (see “Data variable substitutions” in the previous section);
+	   the term then evaluates as true if the value is truthy, false otherwise.
+ */
+
+/******************************************************************************/
 /*	Fill a template with provided reference data (supplemented by an optional
 	context object).
 
