@@ -518,14 +518,14 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		}
 	).replace(
 		//	Boolean NOT.
-		/\s*!\s*(\S+)\s*/g,
+		/\s*!\s*(\S+|<<.+?>>)\s*/g,
 		(match, operand) =>
 		(evaluateTemplateExpression(operand, valueFunction)
 		 ? "_FALSE_"
 		 : "_TRUE_")
 	).replace(
 		//	Comparison.
-		/\s*(\S+)\s+(\S+)\s*/,
+		/\s*(\S+|<<.+?>>)\s+(\S+|<<.+?>>)\s*/,
 		(match, leftOperand, rightOperand) => {
 			if (   constantRegExp.test(leftOperand)
 				|| constantRegExp.test(rightOperand)) {
@@ -545,7 +545,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 						: "_FALSE_");
 			}
 		}
-	).replace(/\s*(\S+)\s*/g,
+	).replace(/\s*(\S+|<<.+?>>)\s*/g,
 		//	Constant, literal, or field name.
 		(match, string) => {
 			//	Constant.
