@@ -3868,6 +3868,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popframe-body .table-scroll-wrapper {
     max-height: unset;
+    overscroll-behavior: unset;
 }
 
 .popframe-body .marginnote {
