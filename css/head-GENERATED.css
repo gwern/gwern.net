@@ -2079,6 +2079,12 @@ span.date-range > sub {
     }
 }
 
+/*	Small caps blocks.
+ */
+.smallcaps > p {
+	font-variant-caps: smallcaps;
+}
+
 /*  Hide date range metadata on /index.
  */
 body.page-index span.date-range sub {
