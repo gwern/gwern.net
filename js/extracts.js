@@ -206,9 +206,8 @@ Extracts = {
 				loaded content.
 			 */
 			processMainContentAndAddRewriteProcessor("addInlineExtractsModeSelectorsInContainer", (container) => {
-				container.querySelectorAll(".extracts-mode-selector-inline").forEach(element => {
-					Extracts.injectModeSelector(element);
-				});
+				container.querySelectorAll(".extracts-mode-selector-inline").forEach(Extracts.injectModeSelector);
+				container.querySelectorAll(".extracts-mode-selector").forEach(Extracts.activateModeSelector);
 			});
 		}
 
