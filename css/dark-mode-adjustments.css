@@ -71,39 +71,39 @@ table th.tablesorter-headerDesc {
     ‘.invert’/‘.invert-auto’: inverted (uninverted upon mouse hover);
     none: grayscaled (ungrayscaled on hover).
  */
-img.invert,
-img.invert-auto {
+figure img.invert,
+figure img.invert-auto {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
 }
-img:not(.invert):not(.invert-auto) {
+figure img:not(.invert):not(.invert-auto) {
     filter: grayscale(50%);
 }
-img,
-img.invert,
-img.invert-auto {
+figure img,
+figure img.invert,
+figure img.invert-auto {
     transition: filter 0.25s ease;
 }
-img:not(.drop-filter-on-hover-not):hover,
-img:not(.drop-filter-on-hover-not).invert:hover,
-img:not(.drop-filter-on-hover-not).invert-auto:hover,
-img:not(.drop-filter-on-hover-not):not(.invert):not(.invert-auto):hover {
+figure img:not(.drop-filter-on-hover-not):hover,
+figure img:not(.drop-filter-on-hover-not).invert:hover,
+figure img:not(.drop-filter-on-hover-not).invert-auto:hover,
+figure img:not(.drop-filter-on-hover-not):not(.invert):not(.invert-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
 
-img[src$=".svg"].invert:hover,
-img[src$=".svg"].invert-auto:hover {
+figure img[src$=".svg"].invert:hover,
+figure img[src$=".svg"].invert-auto:hover {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
 }
 
 /*  Image alt-text.
  */
-img.invert::before,
-img.invert-auto::before {
+figure img.invert::before,
+figure img.invert-auto::before {
     filter: invert(1);
 }
-img.invert:hover::before,
-img.invert-auto:hover::before {
+figure img.invert:hover::before,
+figure img.invert-auto:hover::before {
     filter: none;
 }
 /*  Styling the image alt-text interferes with the transitions in dark mode.
@@ -112,12 +112,12 @@ img.invert-auto:hover::before {
     TEMPORARY until we transition to a color-based instead of filter-based
     scheme for this. —SA 2022-07-29
  */
-img,
-img:hover,
-img.invert,
-img.invert:hover,
-img.invert-auto,
-img.invert-auto:hover {
+figure img,
+figure img:hover,
+figure img.invert,
+figure img.invert:hover,
+figure img.invert-auto,
+figure img.invert-auto:hover {
     transition: none;
 }
 
@@ -128,8 +128,8 @@ img.invert-auto:hover {
 	default. (Or invertOrNot has judged the image to be non-invertible, which
 	presumably means something like the above also.)
  */
-#markdownBody img.invert-not,
-#markdownBody img.invert-not-auto {
+#markdownBody figure img.invert-not,
+#markdownBody figure img.invert-not-auto {
     filter: none;
 }
 

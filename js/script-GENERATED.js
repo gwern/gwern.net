@@ -8528,6 +8528,8 @@ Content = {
                             auxLinksList.querySelectorAll(".backlink-source a:nth-of-type(2), .backlink-context a").forEach(auxLink => {
                                 auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(sourceURL);
                             });
+                        } else if (auxLinksLinkType == "link-bibliography") {
+                        	auxLinksList.querySelector("ol ol").setAttribute("type", "a");
                         }
                     }
                 }
