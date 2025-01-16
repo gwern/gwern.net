@@ -4,14 +4,9 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-09 12:36:08 gwern"
+When:  Time-stamp: "2025-01-16 11:28:51 gwern"
 License: CC-0
 -}
-
--- TODO:
--- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the
--- '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples
--- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings #-}
 module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
@@ -519,7 +514,7 @@ generateAnnotationBlock am (f, ann) blp slp lb =
 
            date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
                                                  if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
-                                           [Str (T.pack $ dateTruncateBad dt)]]
+                                           [Str (T.pack $ take 4 dt)]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "id-not", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
            similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
