@@ -119,8 +119,12 @@ Extracts = { ...Extracts,
 			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = Extracts.modeSelector = GW.pageToolbar.addWidget(Extracts.modeSelectorHTML());
+			Extracts.activateModeSelector(modeSelector);
 		}
+	},
 
+	//	Called by: Extracts.setup (extracts.js)
+	activateModeSelector: (modeSelector) => {
 		//	Activate mode selector widget buttons.
 		modeSelector.querySelectorAll("button").forEach(button => {
 			button.addActivateEvent(Extracts.modeSelectButtonClicked);

@@ -68,9 +68,8 @@ DarkMode = { ...DarkMode,
 			loaded content.
 		 */
 		processMainContentAndAddRewriteProcessor("addInlineDarkModeSelectorsInLoadedContent", (container) => {
-			container.querySelectorAll(".dark-mode-selector-inline").forEach(element => {
-				DarkMode.injectModeSelector(element);
-			});
+			container.querySelectorAll(".dark-mode-selector-inline").forEach(DarkMode.injectModeSelector);
+			container.querySelectorAll(".dark-mode-selector").forEach(DarkMode.activateModeSelector);
 		});
 	},
 
@@ -163,8 +162,13 @@ DarkMode = { ...DarkMode,
 			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
+			DarkMode.activateModeSelector(modeSelector);
 		}
 
+	},
+
+	//	Called by: DarkMode.setup
+	activateModeSelector: (modeSelector) => {
 		//	Activate mode selector widget buttons.
 		modeSelector.querySelectorAll("button").forEach(button => {
 			button.addActivateEvent(DarkMode.modeSelectButtonClicked);

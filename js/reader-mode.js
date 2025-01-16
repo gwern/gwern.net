@@ -56,9 +56,8 @@ ReaderMode = { ...ReaderMode,
 			loaded content.
 		 */
 		processMainContentAndAddRewriteProcessor("addInlineReaderModeSelectorsInContainer", (container) => {
-			container.querySelectorAll(".reader-mode-selector-inline").forEach(element => {
-				ReaderMode.injectModeSelector(element);
-			});
+			container.querySelectorAll(".reader-mode-selector-inline").forEach(ReaderMode.injectModeSelector);
+			container.querySelectorAll(".reader-mode-selector").forEach(ReaderMode.activateModeSelector);
 		});
 	},
 
@@ -201,8 +200,12 @@ ReaderMode = { ...ReaderMode,
 			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addWidget(ReaderMode.modeSelectorHTML());
+			ReaderMode.activateModeSelector(modeSelector);
 		}
+	},
 
+	//	Called by: ReaderMode.setup
+	activateModeSelector: (modeSelector) => {
 		//	Activate mode selector widget buttons.
 		modeSelector.querySelectorAll("button").forEach(button => {
 			button.addActivateEvent(ReaderMode.modeSelectButtonClicked);
