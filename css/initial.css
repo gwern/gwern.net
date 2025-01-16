@@ -1441,6 +1441,9 @@ ol.list-type-lower-roman > li::before {
 ol.list-type-upper-roman > li::before {
     content: counter(list-item, upper-roman) ".";
 }
+ol.list-type-lower-greek > li::before {
+    content: counter(list-item, lower-greek) ".";
+}
 
 /*=---------------------------------------------=*/
 /*= “Recently modified” black star list markers =*/

@@ -8529,7 +8529,7 @@ Content = {
                                 auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(sourceURL);
                             });
                         } else if (auxLinksLinkType == "link-bibliography") {
-                        	auxLinksList.querySelector("ol ol").setAttribute("type", "a");
+                        	auxLinksList.querySelector("ol ol").setAttribute("type", "α");
                         }
                     }
                 }
@@ -15144,7 +15144,8 @@ GW.layout.orderedListTypes = [
     "lower-alpha",
     "upper-alpha",
     "lower-roman",
-    "upper-roman"
+    "upper-roman",
+    "lower-greek"
 ];
 
 /*****************************************************************************/
@@ -15222,6 +15223,9 @@ addContentInjectHandler(GW.contentInjectHandlers.designateListTypes = (eventInfo
             break;
         case 'I':
             setOrderedListType(list, "upper-roman");
+            break;
+        case 'α':
+            setOrderedListType(list, "lower-greek");
             break;
         default:
             break;
