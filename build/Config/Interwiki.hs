@@ -9,157 +9,157 @@ testCases :: [(Inline, Inline)]
 testCases = [
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python%27s_Life_of_Brian", ""))
+      Link ("", ["link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python%27s_Life_of_Brian", ""))
   , (Link nullAttr [Str "SHA-1#Attacks"] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
+      Link ("", ["link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
   , (Link nullAttr [Str "Bayesian search theory"] ("!Wikipedia","USS Scorpion (SSN-589)#Search: 1968"),
-      Link ("", ["id-not", "link-live"], []) [Str "Bayesian search theory"] ("https://en.wikipedia.org/wiki/USS_Scorpion_(SSN-589)#Search:_1968", ""))
+      Link ("", ["link-live"], []) [Str "Bayesian search theory"] ("https://en.wikipedia.org/wiki/USS_Scorpion_(SSN-589)#Search:_1968", ""))
   , (Link nullAttr [Str "C++ templates"] ("!Wikipedia","Template (C++)"),
-     Link ("", ["id-not", "link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C%2B%2B)", ""))
+     Link ("", ["link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C%2B%2B)", ""))
   , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
+    Link ("", ["link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
     , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
+    Link ("", ["link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
     , (Link nullAttr [Str "D&D"] ("!Wikipedia","Dungeons & Dragons"),
-    Link ("", ["id-not", "link-live"], []) [Str "D&D"] ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ""))
+    Link ("", ["link-live"], []) [Str "D&D"] ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ""))
     , (Link nullAttr [Str "Arm & Hammer"] ("!Wikipedia",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Arm & Hammer"] ("https://en.wikipedia.org/wiki/Arm_%26_Hammer", ""))
+    Link ("", ["link-live"], []) [Str "Arm & Hammer"] ("https://en.wikipedia.org/wiki/Arm_%26_Hammer", ""))
     , (Link nullAttr [Str "Achaea"] ("!Wikipedia","Achaea, Dreams of Divine Lands"),
-    Link ("", ["id-not", "link-live"], []) [Str "Achaea"] ("https://en.wikipedia.org/wiki/Achaea,_Dreams_of_Divine_Lands", ""))
+    Link ("", ["link-live"], []) [Str "Achaea"] ("https://en.wikipedia.org/wiki/Achaea,_Dreams_of_Divine_Lands", ""))
     , (Link nullAttr [Str "Armageddon"] ("!Wikipedia","Armageddon (MUD)"),
-    Link ("", ["id-not", "link-live"], []) [Str "Armageddon"] ("https://en.wikipedia.org/wiki/Armageddon_(MUD)", ""))
+    Link ("", ["link-live"], []) [Str "Armageddon"] ("https://en.wikipedia.org/wiki/Armageddon_(MUD)", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("!Wikipedia",""),
-     Link ("", ["id-not", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("!Wikipedia",""),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W
   , (Link nullAttr [Str "Jure Robič"] ("!W",""),
-      Link ("", ["id-not", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
+      Link ("", ["link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
   , (Link nullAttr [Str "Pondicherry"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!W",""),
-    Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("!W",""),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
    -- !W + duplicate classes
-  , (Link ("", ["id-not", "link-live"], []) [Str "Jure Robič"] ("!W",""),
-      Link ("", ["id-not", "link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
+  , (Link ("", ["link-live"], []) [Str "Jure Robič"] ("!W",""),
+      Link ("", ["link-live"], []) [Str "Jure Robič"] ("https://en.wikipedia.org/wiki/Jure_Robi%C4%8D", ""))
 
   -- !W + title
   , (Link nullAttr [Str "foo"] ("!W","Pondicherry"),
-    Link ("", ["id-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","Special:Pondicherry"),
-    Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live-not"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","SpecialPondicherry"),
-     Link ("", ["id-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "foo"] ("!W","Category:Pondicherry"),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "foo"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- !W + possessive special-case rewrite:
   , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+      Link ("", ["link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
   , (Link nullAttr [Emph [Str "George Washington's"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "George Washington's"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+      Link ("", ["link-live"], []) [Emph [Str "George Washington's"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
   , (Link nullAttr [Emph [Str "George Washington’s"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "George Washington’s"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
+      Link ("", ["link-live"], []) [Emph [Str "George Washington’s"]] ("https://en.wikipedia.org/wiki/George_Washington", ""))
   , (Link nullAttr [Emph [Str "George Washington"]] ("!Wikipedia","George Washington's"),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington%27s", ""))
+      Link ("", ["link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
+      Link ("", ["link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia","Antoine's"),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
+      Link ("", ["link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "famous restaurant"]] ("!Wikipedia","Antoine's"),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
+      Link ("", ["link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
 
     -- !W + quotation marks special-case rewrite:
     , (Link nullAttr [Emph [Str "“The Two Cultures”"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "“The Two Cultures”"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+      Link ("", ["link-live"], []) [Emph [Str "“The Two Cultures”"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
     , (Link nullAttr [Emph [Str "”The Two Cultures“"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "”The Two Cultures“"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", "")) -- must be able to handle cases of smart-quotes going awry
+      Link ("", ["link-live"], []) [Emph [Str "”The Two Cultures“"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", "")) -- must be able to handle cases of smart-quotes going awry
     , (Link nullAttr [Emph [Str "\"The Two Cultures\""]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "\"The Two Cultures\""]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+      Link ("", ["link-live"], []) [Emph [Str "\"The Two Cultures\""]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
     , (Link nullAttr [Emph [Str "'The Two Cultures'"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "'The Two Cultures'"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+      Link ("", ["link-live"], []) [Emph [Str "'The Two Cultures'"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
     , (Link nullAttr [Emph [Str "‘The Two Cultures’"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "‘The Two Cultures’"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+      Link ("", ["link-live"], []) [Emph [Str "‘The Two Cultures’"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
     , (Link nullAttr [Emph [Str "’The Two Cultures‘"]] ("!Wikipedia",""),
-      Link ("", ["id-not", "link-live"], []) [Emph [Str "’The Two Cultures‘"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+      Link ("", ["link-live"], []) [Emph [Str "’The Two Cultures‘"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
 
    -- <https://en.wikipedia.org/wiki/$ARTICLE>
   , (Link nullAttr [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
+    Link ("", ["link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry",""),
-    Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
   , (Link nullAttr [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry",""),
-     Link ("", ["id-not", "link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
+     Link ("", ["link-live"], []) [Str "SpecialPondicherry"] ("https://en.wikipedia.org/wiki/SpecialPondicherry", ""))
   , (Link nullAttr [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry",""),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "Category:Pondicherry"] ("https://en.wikipedia.org/wiki/Category:Pondicherry", ""))
 
   -- bypass redirects:
   , (Link nullAttr [Str "WP:RS"] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Str "WP:RS"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources", ""))
+     Link ("", ["link-live"], []) [Str "WP:RS"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources", ""))
   , (Link nullAttr [Str "WP:RS#foobar"] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Str "WP:RS#foobar"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources#foobar", ""))
+     Link ("", ["link-live"], []) [Str "WP:RS#foobar"] ("https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources#foobar", ""))
   , (Link nullAttr [Str "Robots exclusion standard"] ("https://en.wikipedia.org/wiki/Robots_exclusion_standard",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Robots exclusion standard"] ("https://en.wikipedia.org/wiki/Robots.txt", ""))
+    Link ("", ["link-live"], []) [Str "Robots exclusion standard"] ("https://en.wikipedia.org/wiki/Robots.txt", ""))
 
   -- /lorem testcases: Should popup (as an **annotation**):
   , (Link nullAttr [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum",""),
-     Link ("", ["id-not", "link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
+     Link ("", ["link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
   , (Link nullAttr [Str "Small caps"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Small caps"] ("https://en.wikipedia.org/wiki/Small_caps", ""))
+    Link ("", ["link-live"], []) [Str "Small caps"] ("https://en.wikipedia.org/wiki/Small_caps", ""))
   , (Link nullAttr [Str "Talk:Small caps"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Talk:Small caps"] ("https://en.wikipedia.org/wiki/Talk:Small_caps", ""))
+    Link ("", ["link-live"], []) [Str "Talk:Small caps"] ("https://en.wikipedia.org/wiki/Talk:Small_caps", ""))
   , (Link nullAttr [Str "User:Gwern"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "User:Gwern"] ("https://en.wikipedia.org/wiki/User:Gwern", ""))
+    Link ("", ["link-live"], []) [Str "User:Gwern"] ("https://en.wikipedia.org/wiki/User:Gwern", ""))
   , (Link nullAttr [Str "User talk:Gwern"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "User talk:Gwern"] ("https://en.wikipedia.org/wiki/User_talk:Gwern", ""))
+    Link ("", ["link-live"], []) [Str "User talk:Gwern"] ("https://en.wikipedia.org/wiki/User_talk:Gwern", ""))
   , (Link nullAttr [Str "Help:Authority control"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
+    Link ("", ["link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
   , (Link nullAttr [Str "Help talk:Authority control"] ("!W",""),
-    Link ("", ["id-not", "link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Template_talk:Authority_control", ""))
+    Link ("", ["link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Template_talk:Authority_control", ""))
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
-      Link ("", ["id-not", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
+      Link ("", ["link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
    -- NOTE: we ban all 'Wikipedia:.*Signpost.*' popups due to very strange newsletter HTML structure breaking parsing & popups too weirdly for Achmiz to fix; they can only be live-links:
   , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
-    Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
+    Link ("", ["content-transform-not", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
 
    -- /lorem testcases: should all be annotations, but check that the presence of the slash (these slashes are genuine, and in the true article name, they aren't redirects which can be skipped, so we do need to verify we handle them correctly) doesn't screw up and trigger false negatives on annotation/live status:
   , (Link nullAttr  [Str "Bouba/kiki effect"] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Str "Bouba/kiki effect"] ("https://en.wikipedia.org/wiki/Bouba/kiki_effect", ""))
+     Link ("", ["link-live"], []) [Str "Bouba/kiki effect"] ("https://en.wikipedia.org/wiki/Bouba/kiki_effect", ""))
   , (Link nullAttr [Emph [Str "Fate/stay night"]] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Emph [Str "Fate/stay night"]] ("https://en.wikipedia.org/wiki/Fate/stay_night", ""))
+     Link ("", ["link-live"], []) [Emph [Str "Fate/stay night"]] ("https://en.wikipedia.org/wiki/Fate/stay_night", ""))
   , (Link nullAttr [Emph [Str "Fate/stay_night: Unlimited_Blade_Works (film)"]] ("!W",""),
-     Link ("", ["id-not", "link-live"], []) [Emph [Str "Fate/stay_night: Unlimited_Blade_Works (film)"]] ("https://en.wikipedia.org/wiki/Fate/stay_night:_Unlimited_Blade_Works_(film)", ""))
+     Link ("", ["link-live"], []) [Emph [Str "Fate/stay_night: Unlimited_Blade_Works (film)"]] ("https://en.wikipedia.org/wiki/Fate/stay_night:_Unlimited_Blade_Works_(film)", ""))
 
     -- Should popup (as a **live link** but not annotation): [Category:Buddhism and sports](!W)
   , (Link nullAttr [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports",""),
-     Link ("", ["id-not", "content-transform-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
+     Link ("", ["content-transform-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
 
     -- Should **not** popup at all: [Special:Random](!W)
   , (Link nullAttr [Str "Special:Random"] ("!W",""),
-      Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
+      Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
   , (Link nullAttr [Str "Special:BookSources/0-8054-2836-4"] ("!W",""),
-     Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
+     Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
   , (Link nullAttr [Str "Special:Log/Marudubshinki"] ("!W",""),
-     Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Special:Log/Marudubshinki"] ("https://en.wikipedia.org/wiki/Special:Log/Marudubshinki", ""))
+     Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Log/Marudubshinki"] ("https://en.wikipedia.org/wiki/Special:Log/Marudubshinki", ""))
   , (Link nullAttr [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=",""),
-      Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=", ""))
+      Link ("", ["content-transform-not", "link-live-not"], []) [Str "Deletion log"] ("https://en.wikipedia.org/w/index.php?title=Special:Log&type=delete&user=&page=Gernot+Pfl%C3%BCger&year=&month=-1&tagfilter=", ""))
 
     -- TODO: historical page versions should be queryable, but the WP popups code doesn't support that yet, so for now we must mark them non-popuable
   , (Link nullAttr [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""),
-     Link ("", ["id-not", "content-transform-not", "link-live-not"], []) [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""))
+     Link ("", ["content-transform-not", "link-live-not"], []) [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""))
   ]
 
 quoteOverrides :: [T.Text]

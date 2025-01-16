@@ -164,7 +164,7 @@ interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCy
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: T.Text -> [T.Text]
 wpPopupClasses "" = error "Interwiki.wpPopupClasses: called with an empty string! This should never happen."
-wpPopupClasses u = ["id-not"] ++ case parseURIReference (T.unpack u) of
+wpPopupClasses u = case parseURIReference (T.unpack u) of
                         Nothing -> []
                         Just uri -> case uriAuthority uri of
                           Nothing -> []
