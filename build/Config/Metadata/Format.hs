@@ -187,7 +187,7 @@ htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 25
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexpAfter = [ -- sedMany
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
-         , ("^(<p>\\[<strong>Keywords</strong>: .+\\]</p>)$", "\n<!-- \\1 -->\n")
+         , ("^(<p>\\[<strong>Keywords</strong>: .+\\]</p>)$", "<!-- \\1 -->\n")
          -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to strip attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")

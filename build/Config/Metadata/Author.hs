@@ -1171,6 +1171,8 @@ authorLinkDB = M.fromList $
     , ("Henrik Larsson", "https://scholar.google.com/citations?user=jlcdEbUAAAAJ")
     , ("Henrik Grönberg", "https://ki.se/en/people/henrik-gronberg")
     , ("Gibran Hemani", "https://www.explodecomputer.com/about/")
+    , ("Nikkin", "https://nikkin.dev/about.html")
+    , ("John Tromp", "https://tromp.github.io/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

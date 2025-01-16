@@ -98,7 +98,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     maxLength = 8100 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
     -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
-    -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do link-suggestions on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
+    -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg. '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do link-suggestions on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
     extractURLs :: Pandoc -> [(T.Text,[T.Text])]
     extractURLs = queryWith extractURL . walk convertInterwikiLinks
      where

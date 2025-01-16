@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-13 17:20:50 gwern"
+# When:  Time-stamp: "2025-01-15 11:06:49 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -555,6 +555,14 @@ We provide evidence that classic lottery anomalies like probability weighting an
 They also arise (and often with equal strength) when subjects evaluate deterministic, positive monetary payments that have been disaggregated to resemble lotteries. Thus, we find, eg. apparent probability weighting in settings without probabilities and loss aversion in settings without scope for loss.
 Across subjects, anomalies in these deterministic tasks strongly predict the same anomalies in lotteries.
 These findings suggest that much of the behavior motivating our most important behavioral theories of risk derive from complexity-driven mistakes rather than true risk preferences.
+- <abstract>Derived from diffusion models, MangaNinja specializes in the task of reference-guided line art colorization. We incorporate two thoughtful designs to ensure precise character detail transcription, including a patch shuffling module to facilitate correspondence learning between the reference color image and the target line art, and a point-driven control scheme to enable fine-grained color matching. Experiments on a self-collected benchmark demonstrate the superiority of our model over current solutions in terms of precise colorization. We further showcase the potential of the proposed interactive point control in handling challenging cases, cross-character colorization, multi-reference harmonization, beyond the reach of existing algorithms.</abstract> →
+Derived from diffusion models, <strong>MangaNinja</strong> specializes in the task of reference-guided line art colorization.
+We incorporate two thoughtful designs to ensure precise character detail transcription, including a patch shuffling module to facilitate correspondence learning between the reference color image and the target line art, and a point-driven control scheme to enable fine-grained color matching.
+Experiments on a self-collected benchmark demonstrate the superiority of our model over current solutions in terms of precise colorization.
+We further showcase the potential of the proposed interactive point control in handling challenging cases, cross-character colorization, multi-reference harmonization, beyond the reach of existing algorithms.
+- <abstract>We consider a variant of the classical Secretary Problem. In this setting, the candidates are ranked according to some exchangeable random variable and the quest is to maximize the expected quality of the chosen aspirant. We find an upper bound for the optimal hiring rule, present examples showing it is sharp, and recover the classical case, among other results.</abstract> →
+We consider a variant of the classical Secretary Problem. In this setting, the candidates are ranked according to some exchangeable random variable and the quest is to maximize the expected quality of the chosen aspirant.
+We find an upper bound for the optimal hiring rule, present examples showing it is sharp, and recover the classical case, among other results.
 
 [Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2024-10-14 12:27:33 gwern"
+ * When:  Time-stamp: "2025-01-14 10:58:14 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -60,7 +60,7 @@
  * the old URLs were, and there is much more traffic to old URLs than new URLs.)
  *
  * Security Note: the sitemap.xml is trusted and assumed to contain clean valid XML with well-behaved
- * alphanum/punctuation URLs and maybe a bit of Unicode. We do not attempt to sanitize or
+ * alphanumerical/punctuation URLs and maybe a bit of Unicode. We do not attempt to sanitize or
  * validate the XML or the parsed URLs, so if used in settings where attackers may control
  * the sitemap.xml (eg. user-generated content), the XML part should probably be
  * rewritten to be ultra-paranoid & do things like ping the final suggested URLs to

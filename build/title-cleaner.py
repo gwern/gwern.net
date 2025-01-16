@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-10 22:26:45 gwern"
+# When:  Time-stamp: "2025-01-15 12:50:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -549,6 +549,16 @@ Katri Räikkönen
 "‘Twelfth Night Till Candlemas’—the story of a forty-year book-quest and of its remarkable ending"
 - "I’ve acquired a new superpower—Daniel Wirtz"
 "I’ve acquired a new superpower"
+- "https://olup-blog.pages.dev/stories/image-detection-cars Olup Stories"
+""
+- "https://machinamenta.blogspot.com/2013/06/tolkien-and-darwin-among-machines.html Machinamenta: Tolkien and Darwin Among the Machines"
+"Tolkien and Darwin Among the Machines"
+- "Machinamenta: Forming Extended Analogies with GPT-3 https://machinamenta.blogspot.com/2020/08/forming-extended-analogies-with-gpt-3.html"
+"Forming Extended Analogies with GPT-3"
+- "https://www.blog.radiator.debacle.us/2012/07/thief-1s-assassins-and-environmental.html Radiator Blog: <em>Thief 1</em>’s “Assassins” and environmental storytelling"
+"<em>Thief 1</em>’s “Assassins” and environmental storytelling"
+- "John Tromp HomePage"
+"John Tromp Homepage"
 
 Task:
 

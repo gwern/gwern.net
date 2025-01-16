@@ -107,6 +107,7 @@ generateLinkBibliographyItems am pathParent items =
         -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
         if null itemsWP then [] else [
                                       [Div ("",["collapse"],[]) [
+                                          -- TODO: make these .include-content links
                                           Para [Strong [Str "Wikipedia Bibliography:"]],
                                           OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent) itemsWP)]]]
                                       )

@@ -594,8 +594,8 @@ linkIDOverrides =
        , ("/doc/psychedelic/lsd/2022-cao.pdf","cao-et-al-2022-2")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5813086/","carhart-harris-et-al-2018-1")
        , ("/doc/psychedelic/2018-carhartharris.pdf","carhart-harris-et-al-2018-2")
-       , ("https://arxiv.org/abs/2012.07805","carlini-et-al-2020-1")
-       , ("https://arxiv.org/abs/2003.04884","carlini-et-al-2020-2")
+       , ("https://arxiv.org/abs/2012.07805","carlini-et-al-2020-1"), ("https://arxiv.org/abs/2003.04884","carlini-et-al-2020-2")
+       , ("https://arxiv.org/abs/2306.15447","carlini-et-al-2023-1"),("https://arxiv.org/abs/2302.10149","carlini-et-al-2023-2")
        , ("/doc/psychology/animal/maze/1917-journalofanimalbehavior-v7.pdf","carr-et-al-1917-1")
        , ("/doc/psychology/animal/maze/1917-carr.pdf","carr-et-al-1917-2")
        , ("/doc/ai/nn/1990-caudill-internationaljointconferenceonneuralnetworks1990-v2.pdf","caudill-1990-1")
@@ -2901,4 +2901,5 @@ linkIDOverrides =
   ,("https://en.wikipedia.org/wiki/Metamagical_Themas","wp-metamagicalthemas"),("/doc/design/typography/1982-hofstadter.pdf","hofstadter-1982-fonts")
   , ("https://arxiv.org/abs/2404.01261","kim-et-al-2024-1"),("https://arxiv.org/abs/2402.16785","kim-et-al-2024-2")
   , ("https://drmarkgriffiths.wordpress.com/2014/12/22/hoover-damn-a-brief-look-at-sexual-injury-by-vacuum-cleaners/", "vacuum-sex-1"), ("https://drmarkgriffiths.wordpress.com/2015/10/09/hoovers-and-shakers-another-look-at-vacuum-cleaner-sex/", "vacuum-sex-2")
+  , ("https://journals.sagepub.com/doi/10.1177/17470161241247720","zhang-wang-2024-1"),("https://arxiv.org/abs/2412.19048","zhang-wang-2024-2")
       ]

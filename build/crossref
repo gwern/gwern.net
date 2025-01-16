@@ -66,9 +66,11 @@ if [ "${*##*.}" = "pdf" ]; then
     timeout 8s curl -s -L 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
     echo ""
 
-        ( if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
+        ( if [ -z "$(pgrep annotation-dump)" ]; then
+              if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
           else gwa "$URL" || true;
-          fi; ) &
+          fi;
+        fi; ) &
 
     echo "---"
     exiftool -q -q -Subject  "$TARGET" | tr '\n' ' '; echo ""
