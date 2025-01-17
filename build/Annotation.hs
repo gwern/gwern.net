@@ -86,6 +86,7 @@ processItalicizer t =
                 ExitFailure err -> printGreen (intercalate " : " [t, ppShow status, ppShow err, ppShow mb]) >> printRed "Italicizer failed!" >> return t
                 _ -> let t' = trim $ U.toString mb in
                   -- verify that no change happened other than adding italics:
-                  if delete "<em>" (delete "</em>" t') /= t then return t
+                  if t' == "\"\"" || t' == ""
+                  || delete "<em>" (delete "</em>" t') /= t then return t
                   else return t'
   where whitelist = ["Guys and Dolls", "A critique of pure reason"]
