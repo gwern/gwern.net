@@ -2185,7 +2185,8 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
                 )
             ) {
             link.pathname = baseLocation.pathname;
-        } else if (link.getAttribute("href").startsWith("#")) {
+        } else if (   eventInfo.loadLocation != null
+        		   && link.getAttribute("href").startsWith("#")) {
 			link.pathname = eventInfo.loadLocation.pathname;
         }
     });
