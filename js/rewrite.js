@@ -440,6 +440,53 @@ addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (e
     requestImageOutliningJudgmentsForImagesInContainer(eventInfo.container);
 }, ">rewrite", (info) => (info.source != "transclude"));
 
+/*****************************************************************************/
+/*	Apply image inversion judgment, if one is available, to the given image;
+	otherwise, add a handler to apply a judgment that becomes available later.
+ */
+function applyImageInversionJudgmentNowOrLater(image) {
+	if (   applyImageInversionJudgment(image) == false
+		&& image.inversionJudgmentAvailabilityHandler == null) {
+		/*	If no inversion judgment has been applied, there may yet be hope
+			for this image; add another listener to wait for additional 
+			image inversion judgments to become available in the future.
+		 */
+		GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
+			if (applyImageInversionJudgment(image)) {
+				GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
+				image.inversionJudgmentAvailabilityHandler = null;
+			}
+		});
+	}
+}
+
+/*****************************************************************************/
+/*	Apply image outlining judgment, if one is available, to the given image;
+	otherwise, add a handler to apply a judgment that becomes available later.
+ */
+function applyImageOutliningJudgmentNowOrLater(image) {
+	let propagateClassesToFigure = (image) => {
+		image.closest("figure").swapClasses([ "outline-not", "outline" ], outliningJudgmentForImage(image) ? 1 : 0);
+	};
+
+	if (applyImageOutliningJudgment(image)) {
+		propagateClassesToFigure(image);
+	} else if (   outliningJudgmentHasBeenAppliedToImage(image) == false
+			   && image.outliningJudgmentAvailabilityHandler == null) {
+		/*	If no outlining judgment has been applied, there may yet be hope
+			for this image; add another listener to wait for additional 
+			image outlining judgments to become available in the future.
+		 */
+		GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
+			if (applyImageOutliningJudgment(image)) {
+				propagateClassesToFigure(image);
+				GW.notificationCenter.removeHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler);
+				image.outliningJudgmentAvailabilityHandler = null;
+			}
+		});
+	}
+}
+
 /***************************************************************************/
 /*  Apply image inversion judgments (received from the invertOrNot API) and
 	image outlining judgments (received from the outlineOrNot API) to images 
@@ -448,44 +495,8 @@ addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (e
 addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutliningJudgments = (eventInfo) => {
     GWLog("applyImageInversionAndOutliningJudgments", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (   applyImageInversionJudgment(image) == false
-        	&& image.inversionJudgmentAvailabilityHandler == null) {
-			/*	If no inversion judgment has been applied, there may yet be hope
-				for this image; add another listener to wait for additional 
-				image inversion judgments to become available in the future.
-			 */
-			GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
-				if (applyImageInversionJudgment(image)) {
-					GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
-					image.inversionJudgmentAvailabilityHandler = null;
-				}
-			});
-		}
-    });
-
-	let propagateClassesToFigure = (image) => {
-		image.closest("figure").swapClasses([ "outline-not", "outline" ], outliningJudgmentForImage(image) ? 1 : 0);
-	};
-
-    eventInfo.container.querySelectorAll("figure img").forEach(image => {
-        if (applyImageOutliningJudgment(image)) {
-			propagateClassesToFigure(image);
-        } else if (   outliningJudgmentHasBeenAppliedToImage(image) == false
-        		   && image.outliningJudgmentAvailabilityHandler == null) {
-			/*	If no outlining judgment has been applied, there may yet be hope
-				for this image; add another listener to wait for additional 
-				image outlining judgments to become available in the future.
-			 */
-			GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
-				if (applyImageOutliningJudgment(image)) {
-					propagateClassesToFigure(image);
-					GW.notificationCenter.removeHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler);
-					image.outliningJudgmentAvailabilityHandler = null;
-				}
-			});
-		}
-    });
+    eventInfo.container.querySelectorAll("figure img").forEach(applyImageInversionJudgmentNowOrLater);
+    eventInfo.container.querySelectorAll("figure img").forEach(applyImageOutliningJudgmentNowOrLater);
 }, "rewrite");
 
 /******************************************************************/
@@ -598,6 +609,9 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 		wrapElement(pageThumbnail, "span.image-wrapper.img");
 		if (eventInfo.context == "popFrame")
 			Images.thumbnailifyImage(pageThumbnail);
+
+		//	Invert, or not.
+		applyImageInversionJudgmentNowOrLater(pageThumbnail);
 	}
 }, "rewrite", (info) => (   info.container == document.main
 						 || (   info.context == "popFrame"
