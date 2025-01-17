@@ -3100,7 +3100,7 @@ doWhenPageLoaded(() => {
 				let popFrame = (eventInfo.popup ?? eventInfo.popin);
 				let iframe = popFrame.document.querySelector("iframe");
 				iframe.addEventListener("load", (event) => {
-
+					//	Set proper mode.
 					updateSearchIframeMode(iframe);
 
 					//	Add handler to update search pop-frame when switching modes.
@@ -3112,6 +3112,9 @@ doWhenPageLoaded(() => {
 
 					//  Focus search box on load.
 					inputBox.focus();
+					inputBox.addEventListener("blur", (event) => {
+						inputBox.focus();
+					});
 
 					if (Extracts.popFrameProvider == Popups) {
 						//	Pin popup if text is entered.
@@ -3134,6 +3137,26 @@ doWhenPageLoaded(() => {
 							}
 						});
 					}
+
+					//	Enable “search where” functionality.
+					let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
+					searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
+						radioButton.addEventListener("change", (event) => {
+							searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
+								otherRadioButton.removeAttribute("checked");
+							});
+							radioButton.setAttribute("checked", "");
+						});
+					});
+					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
+						event.preventDefault();
+
+						let form = event.target;
+						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value 
+																+ " " 
+																+ form.querySelector("input.search").value;
+						form.submit();
+					});
 				});
 			};
 
