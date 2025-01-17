@@ -17764,14 +17764,18 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeAdmonitionTextNodes = (
 
 /*********************************************/
 /*  Fix incorrect text block tag types.
-
-    - .text-center are <div> but should be <p>
  */
 addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (eventInfo) => {
     GWLog("rectifySpecialTextBlockTagTypes", "rewrite.js", 1);
 
-    eventInfo.container.querySelectorAll(".text-center").forEach(centerDiv => {
-        unwrap(centerDiv, { moveClasses: true });
+	//	Classes which are on <div> but should be on <p>.
+	let problematicBlockSelector = [
+		"text-center",
+		"smallcaps"
+	].map(className => `div.${className}`).join(", ");
+
+    eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
+        unwrap(div, { moveClasses: true });
     });
 }, "rewrite");
 

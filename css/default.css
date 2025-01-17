@@ -1388,18 +1388,6 @@ ul.interview .speaker {
     border-color: var(--GW-abstract-border-color);
 }
 
-/*  Auto-smallcaps introductory paragraphs of documents or sub-documents.
-    (This is also where dropcaps appear.)
- */
-p.intro-graf::first-line {
-    font-variant-caps: small-caps;
-}
-
-.smallcaps-not > p.intro-graf::first-line,
-.annotation > p.data-field.title.intro-graf::first-line {
-    font-variant-caps: normal;
-}
-
 
 /*************/
 /* EPIGRAPHS */
@@ -2242,13 +2230,6 @@ span.inflation-adjusted {
 span.inflation-adjusted .subsup {
     align-items: flex-end;
     bottom: 0;
-}
-
-/*  Enable standard Pandoc attribute-based syntax for small-caps like
-    ‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
- */
-span.smallcaps {
-    font-variant-caps: small-caps;
 }
 
 /*  Fixes a bug, not with thickness of the strikethrough line, but its position.

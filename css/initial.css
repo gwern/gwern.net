@@ -2062,8 +2062,27 @@ span.date-range > sub {
 
 /*	Small caps blocks.
  */
-.smallcaps > p {
-	font-variant-caps: smallcaps;
+p.smallcaps {
+	font-variant-caps: small-caps;
+}
+
+/*  Auto-smallcaps introductory paragraphs of documents or sub-documents.
+    (This is also where dropcaps appear.)
+ */
+p.intro-graf::first-line {
+    font-variant-caps: small-caps;
+}
+
+.smallcaps-not > p.intro-graf::first-line,
+.annotation > p.data-field.title.intro-graf::first-line {
+    font-variant-caps: normal;
+}
+
+/*  Enable standard Pandoc attribute-based syntax for small-caps like
+    ‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
+ */
+span.smallcaps {
+    font-variant-caps: small-caps;
 }
 
 /*  Hide date range metadata on /index.
