@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-15 11:06:49 gwern"
+# When:  Time-stamp: "2025-01-16 16:05:03 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -75,7 +75,8 @@ Summary: Add linebreaks to a large runon paragraph. As well, add relevant HTML h
 
 Preview of input:
 
-- Input: <abstract>{target}</abstract>
+- Input: <abstract>{target}</abstract> →
+[...]
 
 Task description: Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/benchmarks/outputs; 4. conclusion/discussion/implications; 5. supplementary information (eg. URLs, code, websites, datasets).
 
@@ -563,6 +564,21 @@ We further showcase the potential of the proposed interactive point control in h
 - <abstract>We consider a variant of the classical Secretary Problem. In this setting, the candidates are ranked according to some exchangeable random variable and the quest is to maximize the expected quality of the chosen aspirant. We find an upper bound for the optimal hiring rule, present examples showing it is sharp, and recover the classical case, among other results.</abstract> →
 We consider a variant of the classical Secretary Problem. In this setting, the candidates are ranked according to some exchangeable random variable and the quest is to maximize the expected quality of the chosen aspirant.
 We find an upper bound for the optimal hiring rule, present examples showing it is sharp, and recover the classical case, among other results.
+- <abstract>Glucagon-like peptide-1 (GLP-1) is involved in a range of central and peripheral pathways related to appetitive behavior. Hence, this study explored the effects of glucagon-like peptide-1 receptor agonists (GLP-1 RAs) on substance and behavioral addictions, including alcohol, caffeine, nicotine, cannabis, psychostimulants, compulsive shopping, and sex drive/libido. Data were collected from various social platforms. Keywords related to GLP-1 RAs and substance/behavioral addiction were used to extract relevant comments. The study employed a mixed-methods approach to analyze online discussions posted from December 2019 to June 2023 and collected using a specialized web application. Reddit entries were the focus here due to limited data from other platforms, such as TikTok and YouTube. A total of 5859 threads and related comments were extracted from six subreddits, which included threads about GLP-1 RAs drugs and associated brand names. To obtain relevant posts, keywords related to potential substance use and compulsive behavior were selected. Further analysis involved two main steps: (1) manually coding posts based on users’ references to the potential impact of GLP-1 RAs on substance use and non-substance habits, excluding irrelevant or unclear comments; (2) performing a thematic analysis on the dataset of keywords, using AI-assisted techniques followed by the manual revision of the generated themes. Second, a thematic analysis was performed on the keyword-related dataset, using AI-assisted techniques followed by the manual revision of the generated themes. In total, 29.75% of alcohol-related; 22.22% of caffeine-related; and 23.08% of nicotine-related comments clearly stated a cessation of the intake of these substances following the start of GLP-1 RAs prescription. Conversely, mixed results were found for cannabis intake, and only limited, anecdotal data were made available for cocaine, entactogens, and dissociative drugs’ misuse. Regarding behavioral addictions, 21.35% of comments reported a compulsive shopping interruption, whilst the sexual drive/libido elements reportedly increased in several users. The current mixed-methods approach appeared to be a useful tool in gaining insight into complex topics such as the effects of GLP-1 RAs on substance and non-substance addiction-related disorders; some GLP-1 RA-related mental health benefits could also be inferred from here. Overall, it appeared that GLP-1 RAs may show the potential to target both substance craving and maladaptive/addictive behaviors, although further empirical research is needed.</abstract> →
+Glucagon-like peptide-1 (GLP-1) is involved in a range of central and peripheral pathways related to appetitive behavior.
+Hence, this study explored the effects of glucagon-like peptide-1 receptor agonists (GLP-1 RAs) on substance and behavioral addictions, including alcohol, caffeine, nicotine, cannabis, psychostimulants, compulsive shopping, and sex drive/libido.
+Data were collected from various social platforms.
+Keywords related to GLP-1 RAs and substance/behavioral addiction were used to extract relevant comments.
+The study employed a mixed-methods approach to analyze online discussions posted from December 2019 to June 2023 and collected using a specialized web application.
+Reddit entries were the focus here due to limited data from other platforms, such as TikTok and YouTube.
+A total of 5,859 threads and related comments were extracted from 6 subreddits, which included threads about GLP-1 RAs drugs and associated brand names.
+To obtain relevant posts, keywords related to potential substance use and compulsive behavior were selected.
+Further analysis involved two main steps: (1) manually coding posts based on users’ references to the potential impact of GLP-1 RAs on substance use and non-substance habits, excluding irrelevant or unclear comments; (2) performing a thematic analysis on the dataset of keywords, using AI-assisted techniques followed by the manual revision of the generated themes.
+In total, 29.75% of alcohol-related; 22.22% of caffeine-related; and 23.08% of nicotine-related comments clearly stated a cessation of the intake of these substances following the start of GLP-1 RAs prescription.
+Conversely, mixed results were found for cannabis intake, and only limited, anecdotal data were made available for cocaine, entactogens, and dissociative drugs’ misuse.
+Regarding behavioral addictions, 21.35% of comments reported a compulsive shopping interruption, whilst the sexual drive/libido elements reportedly increased in several users.
+The current mixed-methods approach appeared to be a useful tool in gaining insight into complex topics such as the effects of GLP-1 RAs on substance and non-substance addiction-related disorders; some GLP-1 RA-related mental health benefits could also be inferred from here.
+Overall, it appeared that GLP-1 RAs may show the potential to target both substance craving and maladaptive/addictive behaviors, although further empirical research is needed.
 
 [Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
