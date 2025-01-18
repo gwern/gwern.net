@@ -4,15 +4,17 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-15 12:50:09 gwern"
+# When:  Time-stamp: "2025-01-17 21:46:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
 #
-# When scraping HTML web pages, using the <title> field naively gives bad results: many are covert error pages, or a fixed site-wide constant string, or uselessly vague/short, or prepend/postpend the site URL or the site name or a whole variety of bizarre things.
+# When scraping HTML web pages, using the <title> field naively gives bad results: many are covert error pages, or a fixed site-wide constant string, or uselessly vague/short, or prepend/append the site URL or the site name or a whole variety of bizarre things.
 # Manually writing rules to clean them up turns out to be unmanageable due to the extreme long-tail of handling >20,000 URLs on gwern.net
 # However, the badness in scraped titles is very much a "I know it when I see it" thing and can usually be done in isolation when looking just at the text.
 # So that means it is feasible to call out to a LLM to clean up the title.
+#
+# Note: this does not attempt to add italics even where those are obviously intended/correct, due to the complexity of English italicization rules. That is handled in a separate script, </static/build/italicizer.py>. Both accept input on stdin or as an argument, thus they can be chained, like `echo "Title" | title-cleaner.py | italicizer.py`.
 
 import sys
 from openai import OpenAI
@@ -38,115 +40,115 @@ Task examples:
 
 - "Anton Seder’s *The Animal in Decorative Art* (1896)"
 "Anton Seder’s <em>The Animal in Decorative Art</em> (1896)"
-- Input title to clean: "If I Sleep for an Hour, 30 People Will Die - The New York Times"
+- "If I Sleep for an Hour, 30 People Will Die - The New York Times"
 If I Sleep for an Hour, 30 People Will Die
-- Input title to clean: "404"
+- "404"
 ""
-- Input title to clean: "Gwern.net | Collecting New Socks Efficiently"
+- "Gwern.net | Collecting New Socks Efficiently"
 Collecting New Socks Efficiently
-- Input title to clean: "worlds of DAVID BRIN"
+- "worlds of DAVID BRIN"
 ""
-- Input title to clean: "steve yegge · The Amazon Memo"
+- "steve yegge · The Amazon Memo"
 The Amazon Memo
-- Input title to clean: "index"
+- "index"
 ""
-- Input title to clean: ""
+- ""
 ""
-- Input title to clean: "After 92 years, millionaire miserâs heirs finally split $100M - TODAY People - TODAY.com"
+- "After 92 years, millionaire miserâs heirs finally split $100M - TODAY People - TODAY.com"
 After 92 years, millionaire miser’s heirs finally split $100M
-- Input title to clean: "502 Bad Gateway"
+- "502 Bad Gateway"
 ""
-- Input title to clean: "Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks. Masters Thesis 2021 @ NTUST."
+- "Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks. Masters Thesis 2021 @ NTUST."
 Faces2Anime: Cartoon Style Transfer in Faces using Generative Adversarial Networks
-- Input title to clean: "articles"
+- "articles"
 ""
-- Input title to clean: "Vercel Security Checkpoint"
+- "Vercel Security Checkpoint"
 ""
-- Input title to clean: "Fan Is A Tool-Using AnimalâdConstruct Conference Talk"
+- "Fan Is A Tool-Using AnimalâdConstruct Conference Talk"
 Fan Is A Tool-Using Animal
-- Input title to clean: "CONTENTdm"
+- "CONTENTdm"
 ""
-- Input title to clean: "The Illustrated Retrieval Transformer â Jay Alammar â Visualizing machine learning one concept at a time."
+- "The Illustrated Retrieval Transformer â Jay Alammar â Visualizing machine learning one concept at a time."
 The Illustrated Retrieval Transformer
-- Input title to clean: "Redirecting to https://now.tufts.edu/2016/07/14/moderately-reducing-calories-non-obese-people-reduces-inflammation"
+- "Redirecting to https://now.tufts.edu/2016/07/14/moderately-reducing-calories-non-obese-people-reduces-inflammation"
 ""
-- Input title to clean: "Not Found - Albion - Webflow HTML website template"
+- "Not Found - Albion - Webflow HTML website template"
 ""
-- Input title to clean: "Siberian Times"
+- "Siberian Times"
 ""
-- Input title to clean: "Stripe\\226\\128\\153s first carbon removal purchases\\nStripe logo\\nOpen mobile navigation\\nStripe logo\\nClose mobile navigation\\nPayments\\nCheckout\\nElements\\nRadar\\nConnect\\nBilling\\nInvoicing\\nTerminal\\nIdentity\\nClimate\\nBilling\\nInvoicing\\nTax\\nRevenue Recognition\\nSigma\\nAtlas\\nConnect\\nCapital\\nIssuing\\nTreasury\\nPayments\\nCheckout\\nElements\\nRadar\\nConnect\\nBilling\\nInvoicing\\nTerminal\\nIdentity\\nClimate\\nBilling\\nInvoicing\\nTax\\nRevenue Recognition\\nSigma\\nAtlas\\nConnect\\nCapital\\nIssuing\\nTreasury\\nStripe logo"
+- "Stripe\\226\\128\\153s first carbon removal purchases\\nStripe logo\\nOpen mobile navigation\\nStripe logo\\nClose mobile navigation\\nPayments\\nCheckout\\nElements\\nRadar\\nStripe logo"
 Stripe’s first carbon removal purchases
-- Input title to clean: "308 Permanent Redirect"
+- "308 Permanent Redirect"
 ""
-- Input title to clean: "404 - Isomorphic Labs"
+- "404 - Isomorphic Labs"
 ""
-- Input title to clean: "Page not found - PsyPost - Psychology News"
+- "Page not found - PsyPost - Psychology News"
 ""
-- Input title to clean: "Japanese north\226\128\147south gradient in IQ predicts differences in stature, skin color, income, and homicide rate - ScienceDirect\nScienceDirect"
+- "Japanese north\226\128\147south gradient in IQ predicts differences in stature, skin color, income, and homicide rate - ScienceDirect\nScienceDirect"
 Japanese north-south gradient in IQ predicts differences in stature, skin color, income, and homicide rate
-- Input title to clean: "Notion – The all-in-one workspace for your notes, tasks, wikis, and databases."
+- "Notion – The all-in-one workspace for your notes, tasks, wikis, and databases."
 ""
-- Input title to clean: "It’s (Still) Really Hard for Robots to Autonomously Do Household Chores - IEEE Spectrum"
+- "It’s (Still) Really Hard for Robots to Autonomously Do Household Chores - IEEE Spectrum"
 It’s (Still) Really Hard for Robots to Autonomously Do Household Chores
-- Input title to clean: "504 Gateway Time-out"
+- "504 Gateway Time-out"
 ""
-- Input title to clean: "æ°æ°æ®é"
+- "æ°æ°æ®é"
 ""
-- Input title to clean: "dnmarchives directory listing\nInternet Archive logo\nDonate icon\nSearch icon\nSearch icon\nUpload icon\nUser icon\nWeb icon\nTexts icon\nVideo icon\nAudio icon\nSoftware icon\nImages icon\nDonate icon\nEllipses icon\nHamburger icon\nSearch icon\nDonate icon"
+- "dnmarchives directory listing\nInternet Archive logo\nDonate icon"
 dnmarchives directory listing
-- Input title to clean: "Page not found : Stanford University"
+- "Page not found : Stanford University"
 ""
-- Input title to clean: "07"
+- "07"
 ""
-- Input title to clean: "Flashback Forum"
+- "Flashback Forum"
 ""
-- Input title to clean: "Stuff"
+- "Stuff"
 ""
-- Input title to clean: "Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weapons seized in state DOJ raids - The Willits News"
+- "Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weapons seized in state DOJ raids - The Willits News"
 Humboldt &amp; Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weapons seized in state DOJ raids
-- Input title to clean: "GoLocalPDX"
+- "GoLocalPDX"
 ""
-- Input title to clean: "Aurora’s Approach to Development. Self-driving cars are an appliedâ¦ by The Aurora Team Aurora Blog"
+- "Aurora’s Approach to Development. Self-driving cars are an appliedâ¦ by The Aurora Team Aurora Blog"
 Aurora’s Approach to Development. Self-driving cars are an applied
-- Input title to clean: "An open letter to Netflix from the authors of the de-anonymization paper « 33 Bits of Entropy"
+- "An open letter to Netflix from the authors of the de-anonymization paper « 33 Bits of Entropy"
 An open letter to Netflix from the authors of the de-anonymization paper
-- Input title to clean: "It\226\128\153s Probably Not Lithium\nspotify-podcast-badge-wht-blk-165x40"
+- "It\226\128\153s Probably Not Lithium\nspotify-podcast-badge-wht-blk-165x40"
 It’s Probably Not Lithium
-- Input title to clean: "Scunthorpe Sans \240\159\151\175\240\159\154\171 profanity-blocking font"
+- "Scunthorpe Sans \240\159\151\175\240\159\154\171 profanity-blocking font"
 Scunthorpe Sans: a profanity-blocking font
-- Input title to clean: "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
+- "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
 ""
-- Input title to clean: "Nadia Asparouhova How to do the jhanas"
+- "Nadia Asparouhova How to do the jhanas"
 How to do the jhanas
-- Input title to clean: "Best-of-n with misaligned reward models for Math reasoning"
+- "Best-of-n with misaligned reward models for Math reasoning"
 Best-of-<em>n</em> with misaligned reward models for Math reasoning
-- Input title to clean: "The Universe of Discourse : A potpourri of cool-looking scripts"
+- "The Universe of Discourse : A potpourri of cool-looking scripts"
 A potpourri of cool-looking scripts
-- Input title to clean: "FineWeb: decanting the web for the finest text data at scale - a Hugging Face Space by HuggingFaceFW"
+- "FineWeb: decanting the web for the finest text data at scale - a Hugging Face Space by HuggingFaceFW"
 FineWeb: decanting the web for the finest text data at scale
-- Input title to clean: "Do life hacks work? The truth is, weâll never know Psychology"
+- "Do life hacks work? The truth is, weâll never know Psychology"
 Do life hacks work? The truth is, we’ll never know
-- Input title to clean: "Operant Conditioning by Software Bugs – Embedded in Academia"
+- "Operant Conditioning by Software Bugs – Embedded in Academia"
 Operant Conditioning by Software Bugs
-- Input title to clean: "The dream of an alpine waterway - Swiss National Museum - Swiss history blog"
+- "The dream of an alpine waterway - Swiss National Museum - Swiss history blog"
 The dream of an alpine waterway
-- Input title to clean: "Andrew Wood The Medical School"
+- "Andrew Wood The Medical School"
 Andrew Wood
-- Input title to clean: "Reddit"
+- "Reddit"
 ""
-- Input title to clean: "The Stigler Diet Problem �|� OR-Tools �"
+- "The Stigler Diet Problem �|� OR-Tools �"
 The Stigler Diet Problem
-- Input title to clean: "why why why why why why why"
+- "why why why why why why why"
 ""
-- Input title to clean: "Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures - Justin Skycak"
+- "Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures - Justin Skycak"
 Optimized, Individualized Spaced Repetition in Hierarchical Knowledge Structures
-- Input title to clean: "Exclusive"
+- "Exclusive"
 ""
-- Input title to clean: "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones) – The Scholar's Stage"
+- "Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones) – The Scholar's Stage"
 Patronage vs. Constituent Parties (Or Why Republican Party Leaders Matter More Than Democratic Ones)
-- Input title to clean: "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth JAMA Network Open"
+- "Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth JAMA Network Open"
 Screen Media Use and Mental Health of Children and Adolescents: A Secondary Analysis of a Randomized Clinical Trial Media and Youth
-- Input title to clean: "Joaquin Qui�onero Candela"
+- "Joaquin Qui�onero Candela"
 Joaquin Quiñonero Candela
 - "A Visual Guide to Quantization - by Maarten Grootendorst"
 A Visual Guide to Quantization
@@ -490,7 +492,7 @@ Why I still blog after 15 years
 "About the Pedant"
 - "Home"
 ""
-- "Q&amp;A—Dominic Cummings substack"
+- "Q&amp;A—Dominic Cummings Substack"
 "Q&amp;A"
 - "https://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html Code rant: The Configuration Complexity Clock"
 "The Configuration Complexity Clock"
@@ -567,7 +569,8 @@ Input title to clean:
 - """ + target + "\"\n"
 
 completion = client.chat.completions.create(
-  model="gpt-4o-mini", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
+  temperature=0,
+  model="gpt-4o-mini", # we use GPT-4o-mini because this turns out to be relatively easy and doesn't require the o1 series
   messages=[
     {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
     {"role": "user", "content": prompt }

@@ -4,13 +4,16 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-01-17 18:34:42 gwern"
+# When:  Time-stamp: "2025-01-17 21:44:47 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
 #
 # Italicizer tries to remove a common annoyance in PDF & HTML-sourced titles: loss of italics formatting.
 # Input a string, and it will return a new string with italics added, or an empty string literal `""` (to explicitly denote no change & save tokens).
+# Italics are intelligently added where high-quality formal English writing would use them, eg film or periodical titles, unusual foreign words, species names, etc. (See the prompt for full details.)
+#
+# Because of the complexity of adding italics, this is a standalone script. For general-purpose title reformatting, see </static/build/title-cleaner.py>.
 #
 # If you parse HTML pages for `<title>`, or use APIs like the Wikipedia API, or extract titles from XML PDF metadata, they usually omit italics or make them hard to get, where the correctly-formatted title is presented at all.
 # (For example, the standard WP API will not provide the 'formatted' title; one has to use a different endpoint.)
@@ -23,7 +26,7 @@
 #
 # $ OPENAI_API_KEY="sk-XYZ" echo "Moby-Dick" | python italicizer.py
 # <em>Moby-Dick</em>
-# $ OPENAI_API_KEY="sk-XYZ" echo "the musician Moby-Dick" | python italicizer.py
+# $ OPENAI_API_KEY="sk-XYZ" italicizer.py "the musician Moby-Dick"
 # ""
 
 import sys
@@ -37,7 +40,7 @@ else:
 
 completion = client.chat.completions.create(
   # temperature=0,
-  model="o1-preview", # the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning
+    model="o1-preview", # the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
   messages=[
     # {"role": "system", "content": "You are a Wikipedia copyeditor. When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>."},
       {"role": "user", "content":
@@ -63,7 +66,7 @@ Words which should not be italicized:
 - punctuation which is not part of the italicized phrase
 - abbreviated titles or acronyms
 
-If the text is correct or you are unsure what to italicize, return the original text unaltered.
+If the text is correct or you are unsure what to italicize, return the empty string.
 (It is better to leave text unchanged than italicize incorrectly.)
 If punctuation follows an italicized phrase, keep punctuation outside the <em> tags.
 
@@ -648,6 +651,8 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Moby the dick</text>
 ""
+- <text>Qitmir (dog)</text>
+<em>Qitmir</em> (dog)
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
 

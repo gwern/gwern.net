@@ -10,7 +10,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Text.Show.Pretty (ppShow)
 import Text.Pandoc (def, pandocExtensions, readerExtensions, readMarkdown, runPure, writeHtml5String, Pandoc)
 import System.Exit (ExitCode(ExitFailure))
-import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 
 import GTX (readGTXFast)
 import Metadata.Format (cleanAbstractsHTML)
@@ -33,13 +33,16 @@ processParagraphizer md p a = -- the path is necessary to check against the whit
               (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/paragraphizer.py", a'']
               case status of
                 ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> printRed "Paragraphizer failed!" >> return a
-                _ -> do let clean = runPure $ do
-                              pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ trim $ U.toString mb)
-                              html <- writeHtml5String safeHtmlWriterOptions pandoc
-                              return (T.unpack html, pandoc)
-                        case clean of
-                              Left e -> error $ ppShow e ++ " : " ++ a
-                              Right (output,document) ->  checkURLs md document >> return (cleanAbstractsHTML output)
+                _ -> do let a''' = T.pack $ trim $ U.toString mb
+                        if a''' == "" then return a else
+                         do let clean = runPure $ do
+                                  pandoc <- readMarkdown def{readerExtensions=pandocExtensions} a'''
+                                  html <- writeHtml5String safeHtmlWriterOptions pandoc
+                                  return (T.unpack html, pandoc)
+                            case clean of
+                              Left e -> error $ ppShow e ++ " : " ++ a ++ " : " ++ a'' ++ " : " ++ T.unpack a'''
+                              Right (output,document) -> do checkURLs md document
+                                                            return (cleanAbstractsHTML output)
 
 -- EXPERIMENTAL: the GPT-4o paragraphizer seems to confabulate a fair number of wrong URLs; let's double-check them manually for a while to see how bad the problem is.
 checkURLs :: Metadata -> Pandoc -> IO ()
