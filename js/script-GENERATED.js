@@ -2099,6 +2099,9 @@ GW.pageToolbar = {
             widget = elementFromHTML(widget);
 
         widget.classList.add("widget");
+		widget.querySelectorAll("button").forEach(button => {
+			button.classList.add("widget-button");
+		});
 
         //  Add widget.
         GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
@@ -2949,7 +2952,7 @@ GW.popFrameSpawnWidgets = {
 							   class="link-widget"
 							   data-widget-type="${widgetType.name}">`
 						   + `<a
-						   	   class="${widgetType.name} no-footer-bar"
+						   	   class="${widgetType.name} widget-button no-footer-bar"
 						   	   href="${widgetType.linkHref}" `
 						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
 						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
@@ -12389,7 +12392,8 @@ Extracts = {
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
         	"link-self", "link-annotated", "link-page",
         	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
-        	"spawns-popup", "spawns-popin");
+        	"spawns-popup", "spawns-popin",
+        	"widget-button");
 
 		//	Import classes from include-link.
 		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
@@ -12552,7 +12556,7 @@ Extracts = {
 					".abstract blockquote",
 					".markdownBody"
 				].join(", ");
-				let containerRect = popin.closest(containerSelector).getBoundingClientRect();
+				let containerRect = (popin.closest(containerSelector) ?? document.main).getBoundingClientRect();
 				leftMargin = (containerRect.left - popinRect.left);
 				rightMargin = (popinRect.right - containerRect.right);
 			}

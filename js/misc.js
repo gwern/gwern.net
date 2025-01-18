@@ -1542,6 +1542,9 @@ GW.pageToolbar = {
             widget = elementFromHTML(widget);
 
         widget.classList.add("widget");
+		widget.querySelectorAll("button").forEach(button => {
+			button.classList.add("widget-button");
+		});
 
         //  Add widget.
         GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
@@ -2392,7 +2395,7 @@ GW.popFrameSpawnWidgets = {
 							   class="link-widget"
 							   data-widget-type="${widgetType.name}">`
 						   + `<a
-						   	   class="${widgetType.name} no-footer-bar"
+						   	   class="${widgetType.name} widget-button no-footer-bar"
 						   	   href="${widgetType.linkHref}" `
 						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
 						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
