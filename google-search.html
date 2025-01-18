@@ -18,12 +18,13 @@ body {
 	margin: 0;
 }
 #search-where-selector {
-	margin: 0 -1px 0.5em -1px;
+	margin: 0.625em -1px 0 -1px;
 	border: 1px solid #ccc;
 	padding: 0.375em 0.25em 0.625em 0.25em;
 }
 #search-where-selector legend {
 	padding: 0 0.25em;
+	color: #777;
 }
 #search-where-selector label {
 	padding: 0.25em;
@@ -48,6 +49,9 @@ body {
 }
 .searchform input.search:focus {
 	outline: 2px solid #777;
+}
+.searchform input.search::placeholder {
+	color: #777;
 }
 .searchform button {
 	appearance: none;
@@ -81,6 +85,9 @@ body {
 	color: #f1f1f1;
 	border: 1px solid #5c5c5c;
 }
+#search-where-selector legend {
+	color: #a6a6a6;
+}
 .searchform input.search {
 	background-color: #161616;
 	color: #f1f1f1;
@@ -91,6 +98,9 @@ body {
 }
 .searchform input.search:focus {
 	outline: 2px solid #a6a6a6;
+}
+.searchform input.search::placeholder {
+	color: #a6a6a6;
 }
 .searchform button {
 	background-color: #404040;
@@ -110,15 +120,15 @@ body {
 }
 </style>
 <main>
-	<fieldset id="search-where-selector">
-		<legend>Search in:</legend>
-		<label for="search-all"><input type="radio" id="search-all" name="search-where" value="site:gwern.net" checked /> All</label>
-		<label for="search-essays"><input type="radio" id="search-essays" name="search-where" value="gwern.net -site:gwern.net/doc/" /> Essays only</label>
-		<label for="search-docs"><input type="radio" id="search-docs" name="search-where" value="site:gwern.net/doc/" /> Docs only</label>
-	</fieldset>
 	<form action="https://www.google.com/search" class="searchform" method="get" name="searchform" target="_blank">
-		<input autocomplete="on" class="form-control search" placeholder="Search in Gwern.net" required="required" type="text">
+		<input autocomplete="on" class="form-control search" placeholder="Gwern.net search" required="required" type="text">
 		<input class="query" name="q" type="hidden">
 		<button class="button" type="submit">Search</button>
 	</form>
+	<fieldset id="search-where-selector">
+		<legend>Search in:</legend>
+		<label for="search-all"><input type="radio" id="search-all" name="search-where" value="site:gwern.net" checked /> All</label>
+		<label for="search-essays"><input type="radio" id="search-essays" name="search-where" value="site:gwern.net -site:gwern.net/doc/" /> Essays only</label>
+		<label for="search-docs"><input type="radio" id="search-docs" name="search-where" value="site:gwern.net/doc/" /> Docs only</label>
+	</fieldset>
 </main>
