@@ -635,7 +635,8 @@ Extracts = {
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
         	"link-self", "link-annotated", "link-page",
         	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
-        	"spawns-popup", "spawns-popin");
+        	"spawns-popup", "spawns-popin",
+        	"widget-button");
 
 		//	Import classes from include-link.
 		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
@@ -798,7 +799,7 @@ Extracts = {
 					".abstract blockquote",
 					".markdownBody"
 				].join(", ");
-				let containerRect = popin.closest(containerSelector).getBoundingClientRect();
+				let containerRect = (popin.closest(containerSelector) ?? document.main).getBoundingClientRect();
 				leftMargin = (containerRect.left - popinRect.left);
 				rightMargin = (popinRect.right - containerRect.right);
 			}

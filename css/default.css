@@ -5480,7 +5480,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 .popin-body.search iframe {
-	height: 3rem;
+	height: 7rem;
 }
 
 /*=---------------=*/
@@ -5625,19 +5625,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     background-color: var(--background-color);
 }
 
-#page-toolbar .widget a {
+#page-toolbar .widget a.widget-button {
     font-family: var(--GW-sans-serif-font-stack);
 }
 
-#page-toolbar .widget button .label,
-#page-toolbar .widget a .label {
+#page-toolbar .widget .widget-button .label {
     color: var(--GW-page-toolbar-button-text-color);
 }
-#page-toolbar .widget button:disabled .label {
+#page-toolbar .widget button.widget-button:disabled .label {
     color: var(--GW-page-toolbar-button-disabled-text-color);
 }
 
-#page-toolbar .widget button .icon {
+#page-toolbar .widget button.widget-button .icon {
     display: flex;
     width: 100%;
     height: 100%;
@@ -5646,29 +5645,28 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     transition:
         color 0.1s ease;
 }
-#page-toolbar .widget button.selectable .icon {
+#page-toolbar .widget button.widget-button.selectable .icon {
     color: var(--GW-page-toolbar-button-selectable-icon-color);
 }
-#page-toolbar .widget button.selected .icon {
+#page-toolbar .widget button.widget-button.selected .icon {
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 @media all and (hover: hover) {
-    #page-toolbar .widget button:hover .icon {
+    #page-toolbar .widget button.widget-button:hover .icon {
         color: var(--GW-page-toolbar-button-selected-icon-color);
     }
 }
-#page-toolbar .widget button:not(:disabled):active .icon {
+#page-toolbar .widget button.widget-button:not(:disabled):active .icon {
     transform: scale(0.95);
 }
 
-#page-toolbar .widget a .icon {
+#page-toolbar .widget a.widget-button .icon {
     color: var(--GW-page-toolbar-button-selected-icon-color);
 }
 
 /*  Icons-only toolbar mode.
  */
-#page-toolbar.button-labels-not .widget button .label,
-#page-toolbar.button-labels-not .widget a .label {
+#page-toolbar.button-labels-not .widget .widget-button .label {
     display: none;
 }
 
@@ -5719,17 +5717,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         background-color var(--GW-page-toolbar-widget-flash-fall-duration) ease-out;
 }
 
-#page-toolbar.vertical .widget button,
-#page-toolbar.vertical .widget a {
+#page-toolbar.vertical .widget .widget-button {
     position: relative;
     height: var(--toolbar-button-size);
 }
-#page-toolbar.vertical .widget button .icon,
-#page-toolbar.vertical .widget a .icon {
+#page-toolbar.vertical .widget .widget-button .icon {
     padding: 4px;
 }
-#page-toolbar.vertical .widget button .label,
-#page-toolbar.vertical .widget a .label {
+#page-toolbar.vertical .widget .widget-button .label {
     position: absolute;
     right: calc(100% + 5px);
     top: 0;
@@ -5750,16 +5745,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     pointer-events: none;
 }
 @media all and (hover: hover) {
-    #page-toolbar.vertical .widget:not(.flashing) button:hover .label,
-    #page-toolbar.vertical .widget.show-selected-button-label button.selected .label,
-    #page-toolbar.vertical .widget:not(.flashing) a:hover .label,
-    #page-toolbar.vertical .widget.show-selected-button-label a .label {
+    #page-toolbar.vertical .widget:not(.flashing) .widget-button:hover .label,
+    #page-toolbar.vertical .widget.show-selected-button-label .widget-button.selected .label {
         opacity: 1;
     }
-    #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label {
+    #page-toolbar.vertical .widget.highlight-selected-button-label button.widget-button.selected .label {
         color: var(--GW-page-toolbar-button-highlighted-text-color);
     }
-    #page-toolbar.vertical .widget.highlight-selected-button-label button.selected .label::after {
+    #page-toolbar.vertical .widget.highlight-selected-button-label button.widget-button.selected .label::after {
         content: "!";
     }
 }
@@ -5806,13 +5799,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
-#page-toolbar.mobile .widget button,
-#page-toolbar.mobile .widget a {
+#page-toolbar.mobile .widget .widget-button {
     position: relative;
     height: var(--toolbar-button-size);
 }
-#page-toolbar.mobile .widget button .icon,
-#page-toolbar.mobile .widget a .icon {
+#page-toolbar.mobile .widget .widget-button .icon {
     padding: 7px;
 }
 
