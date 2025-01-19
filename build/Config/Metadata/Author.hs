@@ -1177,7 +1177,7 @@ authorLinkDB = M.fromList $
     , ("Douglas Summers-Stay", "https://scholar.google.com/citations?hl=en&user=Q2JCPAkAAAAJ&view_op=list_works&sortby=pubdate")
     , ("Robert Yang", "https://debacle.us/")
     , ("rife", "https://www.lesswrong.com/users/rife")
-    , ("Elizabeth G. Holliday", "https://scholar.google.com/citations?user=DUIE0sQAAAAJ&hl=en&oi=ao")
+    , ("Elizabeth G. Holliday", "https://scholar.google.com/citations?user=DUIE0sQAAAAJ")
     , ("Devin M. Absher", "https://researchbank.kaiserpermanente.org/our_team/devin-absher-phd/")
     ]
 

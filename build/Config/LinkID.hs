@@ -2903,4 +2903,5 @@ linkIDOverrides =
   , ("https://drmarkgriffiths.wordpress.com/2014/12/22/hoover-damn-a-brief-look-at-sexual-injury-by-vacuum-cleaners/", "vacuum-sex-1"), ("https://drmarkgriffiths.wordpress.com/2015/10/09/hoovers-and-shakers-another-look-at-vacuum-cleaner-sex/", "vacuum-sex-2")
   , ("https://journals.sagepub.com/doi/10.1177/17470161241247720","zhang-wang-2024-1"),("https://arxiv.org/abs/2412.19048","zhang-wang-2024-2")
   , ("https://www.wsj.com/tech/ai/alexandr-wang-scale-ai-d7c6efd7","jin-2024-scalefraud"),("https://www.wsj.com/tech/ai/a-peter-thiel-backed-ai-startup-cognition-labs-seeks-2-billion-valuation-998fa39d","jin-2024-cognitionlabs"),("https://machinamenta.blogspot.com/2020/08/forming-extended-analogies-with-gpt-3.html","summers-stay-2020-gptanalogies"),("https://github.com/summerstay/true_poetry","summers-stay-2020-gptrhyming")
+  , ("/doc/design/2023-04-28-gwern-gwernnet-mobile-scrollspyheadertoc.png", "gwern-2023-scrollspy"), ("/doc/design/2023-04-29-gwern-gwernnet-popups-nativetwitterannotations.png", "gwern-2023-twitterpopups")
       ]

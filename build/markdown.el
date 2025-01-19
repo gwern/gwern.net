@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-01-13 11:29:49 gwern"
+;;; When:  Time-stamp: "2025-01-18 14:50:18 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1669,6 +1669,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "−." "−0." nil begin end)
        (query-replace " -." " −0." nil begin end)
        (query-replace "[-." "[−0." nil begin end)
+       (query-replace "\\$O\\$" "𝒪" nil begin end)
        (query-replace "\\([[:digit:]]\\) %" "\\1%" nil begin end)
        (query-replace-regexp "\\([a-zA-Z,]\\) \\.\\([[:digit:]]\\)" "\\1 0.\\2" nil begin end)
        (query-replace-regexp "^\\.\\([[:digit:]]\\)" "0.\\1" nil begin end)
