@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-01-17 21:44:47 gwern"
+# When:  Time-stamp: "2025-01-19 22:37:32 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -73,11 +73,6 @@ If punctuation follows an italicized phrase, keep punctuation outside the <em> t
 Do not add quote marks, or make any other corrections.
 Do not add extra explanation or disclaimers.
 When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>.
-
-Preview of input:
-
-- <text>{target}</text>
-[...]
 
 Examples:
 
@@ -653,6 +648,16 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Qitmir (dog)</text>
 <em>Qitmir</em> (dog)
+- <text>How to install Linux on a dead badger</text>
+""
+- <text>Haskell: A Great Procedural Language</text>
+""
+- <text>AniSora: Exploring the Frontiers of Animation Video Generation in the Sora Era</text>
+""
+- <text>The Smith v. Substack saga</text>
+""
+- <text>A divided mind: Observations on the conscious properties of the separated hemispheres</text>
+""
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
 

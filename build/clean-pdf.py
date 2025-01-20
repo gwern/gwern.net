@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-18 12:26:04 gwern"
+# When:  Time-stamp: "2025-01-19 22:37:44 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -44,9 +44,6 @@ Summary: Fix formatting and spelling errors caused by PDFs or OCR.
 Task description: Fix ONLY the PDF OCR errors. Otherwise, copy exactly and do not rewrite or change anything like pronouns.
 
 In particular, fix hyphens at the end of lines which are not in the original words and are from the PDF hard-wrapping lines. Replace ligatures or control codes with the original letters, like 'ﬄ' 'ffl'. Strip spurious footnotes or author credentials or injected text from GUIs, like in author lists.
-
-Preview of input:
-<text>{target}</text>
 
 Examples:
 <text>Numer-

@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-01-18 14:47:55 gwern"
+# When:  Time-stamp: "2025-01-19 22:37:38 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -43,10 +43,6 @@ Task example:
 
 Input to convert: <span class="math inline">\\(H\\gg1\\)</span>
 Converted output: <em>H</em> ≫ 1
-
-Preview of input:
-
-- '""" + target + """'
 
 Details:
 
