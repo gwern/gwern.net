@@ -582,6 +582,9 @@ canonicals = M.fromList
   , ("Henrik Gronberg", "Henrik Grönberg")
   , ("Henrik Groenberg", "Henrik Grönberg")
   , ("Douglas Summers Stay", "Douglas Summers-Stay")
+  , ("_rockt", "Tim Rocktäschel")
+  , ("Angela Duckworth", "Angela L. Duckworth")
+  , ("M. Douglas McIlroy", "Douglas McIlroy")
   ]
 
 -- tests: unique
@@ -1174,11 +1177,15 @@ authorLinkDB = M.fromList $
     , ("Gibran Hemani", "https://www.explodecomputer.com/about/")
     , ("Nikkin", "https://nikkin.dev/about.html")
     , ("John Tromp", "https://tromp.github.io/")
-    , ("Douglas Summers-Stay", "https://scholar.google.com/citations?hl=en&user=Q2JCPAkAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Douglas Summers-Stay", "https://scholar.google.com/citations?user=Q2JCPAkAAAAJ&view_op=list_works&sortby=pubdate")
     , ("Robert Yang", "https://debacle.us/")
     , ("rife", "https://www.lesswrong.com/users/rife")
     , ("Elizabeth G. Holliday", "https://scholar.google.com/citations?user=DUIE0sQAAAAJ")
     , ("Devin M. Absher", "https://researchbank.kaiserpermanente.org/our_team/devin-absher-phd/")
+    , ("Tim Rocktäschel", "https://rockt.ai/")
+    , ("Li-Jia Li", "https://scholar.google.com/citations?user=feX1fWAAAAAJ")
+    , ("Wei Dong", "https://scholar.google.com/citations?user=8T5VDv8AAAAJ")
+    , ("Daniel Khashabi", "https://danielkhashabi.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1254,7 +1261,7 @@ authorWpLinkDB =
     ,"Andrew Vaughn", "Andrew Vickers", "Andrew W. Lo", "Andrew Whiten", "Andrew Z. Fire"
     ,"Andrew Zisserman", "Andrey Korotayev", "Andries van Dam", "Andrzej Pajak", "Andr\225s Hajnal"
     ,"Andy Clark", "Andy Cox", "Andy Simmons", "Andy Williams", "Angela Brady"
-    ,"Angela Duckworth", "Angela N. Brooks", "Angela Page", "Angela Park", "Angela Rose"
+    ,"Angela L. Duckworth", "Angela N. Brooks", "Angela Page", "Angela Park", "Angela Rose"
     ,"Angelica Ronald", "Angelika Steger", "Angelo Rizzo", "Angie Chen", "Angus Fletcher"
     ,"Angus Trumble", "Anil Madhavapeddy", "Anil Seth", "Anima Anandkumar", "Anita Thapar"
     ,"Anjan Chatterjee", "Ann Bartuska", "Ann Finkbeiner", "Ann L. Brown", "Ann Lee"
@@ -2414,4 +2421,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch", "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch", "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"]

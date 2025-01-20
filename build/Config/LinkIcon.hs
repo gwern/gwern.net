@@ -401,7 +401,7 @@ linkIconRulesQuad u
  | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" || u' u "web.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono", "")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono", "")
- | u'' u "www.mdpi.com" = ("MDPI", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
+ | u'' u "www.mdpi.com" = ("MDP I", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
  | u'' u "mattlakeman.org" = ("MATT", "text,quad,sans", "")
  | u'' u "www.poetryfoundation.org" = ("POET", "text,quad,sans", "#ed1c24") -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad; color: red
  | u'' u "papers.ssrn.com" = ("SSRN", "text,quad", "#007398") -- color: dark blue; TODO: white-on-blue text background
@@ -1112,7 +1112,7 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans", "")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans", "")
          , ("https://people.idsia.ch/~juergen/metalearning.html", "SMDH", "text,quad,sans", "")
-         , ("https://www.mdpi.com/2220-9964/8/5/232", "MDPI","text,quad,sans", "")
+         , ("https://www.mdpi.com/2220-9964/8/5/232", "MDP I","text,quad,sans", "")
          , ("https://web.archive.org/web/20211105092005/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans", "")
          , ("https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/sicp.html", "SI CP", "text,quad,sans", "")
          , ("https://habr.com/ru/articles/516190/", "Habr", "text,quad,sans", "")

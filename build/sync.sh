@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-11 20:44:54 gwern"
+# When:  Time-stamp: "2025-01-19 17:03:10 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -305,6 +305,7 @@ else
 
     # cleanup post:
     rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
+    rm --recursive -- ./_cache/  &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections
     ## on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for
