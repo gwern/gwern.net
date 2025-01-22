@@ -15,7 +15,7 @@ extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/170391357
                                   , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
                                   , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
                                   , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
-                                  , ("https://x.com/dseetharaman?lang=en", "dseetharaman")
+                                  , ("https://x.com/dseetharaman", "dseetharaman")
                                   ]
 
 -- config testing: all unique
@@ -962,7 +962,7 @@ authorLinkDB = M.fromList $
     , ("Jeff Clune", "http://jeffclune.com/")
     , ("<em>Popular Science</em>", "https://en.wikipedia.org/wiki/Popular_Science")
     , ("Yu Cao", "https://scholar.google.com/citations?user=jkEWQIYAAAAJ")
-    , ("Ilja M. Nolte", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/ilja-nolte?lang=en")
+    , ("Ilja M. Nolte", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/ilja-nolte")
     , ("Geert Molenberghs", "/doc/statistics/survival-analysis/2017-hamasaki.pdf")
     , ("Furu Wei", "https://scholar.google.com/citations?user=G-V1VpwAAAAJ")
     , ("Eva Albrecht", "https://www.euengage.org/EvaA.html")
@@ -1165,7 +1165,7 @@ authorLinkDB = M.fromList $
     , ("Amanda Askell", "https://askell.io/")
     , ("Jun Wang", "https://scholar.google.com/citations?user=wIE1tY4AAAAJ")
     , ("Jun Wang#genetics", "https://en.wikipedia.org/wiki/Wang_Jun_(scientist)")
-    , ("Judith M. Vonk", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/judith-vonk?lang=en")
+    , ("Judith M. Vonk", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/judith-vonk")
     , ("Juan Pablo Frias", "https://scholar.google.com/citations?user=GPOxOFkAAAAJ")
     , ("Jason Yosinski", "https://yosinski.com/")
     , ("Joel Veness", "https://scholar.google.co.uk/citations?user=_iYrAxEAAAAJ")

@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2024-11-20 12:01:12 gwern"
+When:  Time-stamp: "2025-01-21 12:34:56 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -22,7 +22,7 @@ This requires multiple logically-separate phases:
 
 So let's take a case like "Eliezer Yudkowsky".
 This is sometimes written as "E. Yudkowsky", "Eliezer S. Yudkowsky", "E. S. Yudkowsky", or "esyudkowsky" (Twitter username); the canonicalizer rewrites them all to "Eliezer Yudkowsky".
-"Eliezer Yudkowsky" gets an auto-link to "https://yudkowsky.net", his homepage.
+The canonical name "Eliezer Yudkowsky" gets an auto-link to "https://yudkowsky.net", his homepage.
 However, for an annotation of a LessWrong blog post, eg. it might be manually written inline as `<a href=http://lesswrong.com/user/Eliezer_Yudkowsky/>Eliezer Yudkowsky</a>`, or if it is a tweet, to `<a href=https://x.com/esyudkowsky>` etc.
 If this is common for an author, it would be possible to define 'disambiguated' author names, using the familiar HTML anchor syntax trick we already use for disambiguating multiple annotations of the same URL: the annotation specifies an author name like "Eliezer Yudkowsky#Twitter", and the author link database specifies `("Eliezer Yudkowsky#Twitter", "https://x.com/esyudkowsky")`.
 This can also be applied to multiple people of the same name, giving them a mnemonic disambiguation: "John Smith#genetics" vs "John Smith#venture-capital" etc.
@@ -158,6 +158,7 @@ authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if nu
 authorCollapseTest :: [(String, [Inline])]
 authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) CA.authorCollapseTestCases
 
+-- NOTE: we deliberately keep the displayed authors outside the span collapse abstract to avoid triggering the ordinal size indicator; this is because, unlike 'normal' span collapses, the length of an author list has little to do with the 'quality' or 'interest' of the author list and so it is not useful to know what percentage of the author list has been collapsed. (In fact, the longer the author list, the less interesting any name in it is, and the less you want to look at it. In a physics or GWAS paper with 1,000+ authors, any name but the first few, possibly is near-meaningless for anyone except a tenure committee.) All the reader needs to know is that the rest of the author list exists, and where to find it in the rare event they need it, but not its size.
 authorCollapse :: String -> [Inline]
 authorCollapse aut
   | aut `elem` ["", "N/A", "N/\8203A"] = []

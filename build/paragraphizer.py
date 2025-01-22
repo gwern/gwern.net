@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-19 22:37:51 gwern"
+# When:  Time-stamp: "2025-01-20 22:09:15 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -592,6 +592,10 @@ Overall, it appeared that GLP-1 RAs may show the potential to target both substa
 Although many organizations strive for radical or disruptive new ideas, many fall short of their goals. We propose that a primary reason for this failure is rooted in the individuals responsible for innovation: while they seek novel ideas, they prefer familiar ones. While prior research shows that individuals are biased against ideas with high objective novelty, it has overlooked the role of subjective novelty, i.e., the extent to which an idea is novel or unfamiliar to an individual idea evaluator.
 In this paper, we investigate how such subjective familiarity with an idea shapes idea evaluation in innovation. Drawing on research from psychology and marketing on the mere exposure effect, we argue that familiarity with an idea positively affects the evaluation’s outcome. We present two field studies and one laboratory study that support our hypothesis.
 This study contributes to the understanding of cognitive biases that affect innovation processes.
+- <abstract>Large language models have been proven quite beneficial for a variety of automatic speech recognition tasks in Google. We summarize results on Voice Search and a few YouTube speech transcription tasks to highlight the impact that one can expect from increasing both the amount of training data, and the size of the language model estimated from such data. Depending on the task, availability and amount of training data used, language model size and amount of work and care put into integrating them in the lattice rescoring step we observe reductions in word error rate 6%–10% relative, for systems on a wide range of operating points 17%–52% word error rate.</abstract>
+Large language models have been proven quite beneficial for a variety of automatic speech recognition tasks in Google.
+We summarize results on Voice Search and a few YouTube speech transcription tasks to highlight the impact that one can expect from increasing both the amount of training data, and the size of the language model estimated from such data.
+Depending on the task, availability and amount of training data used, language model size and amount of work and care put into integrating them in the lattice rescoring step we observe reductions in word error rate 6%–10% relative, for systems on a wide range of operating points 17%–52% word error rate.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
