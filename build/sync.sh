@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-20 20:06:17 gwern"
+# When:  Time-stamp: "2025-01-22 13:13:38 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -464,6 +464,16 @@ else
     # essays+tags+annotations+similars+backlinks:
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
     PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html')"
+
+    # we mark up fractions in non-TeX using the Unicode '⁄' FRACTION SLASH, which is specified to turn arbitrary integer pairs into oblique fractions in a more generalized way than the hardwired vulgar fractions Unicode supports for a handful of pairs like '½'. (See <https://www.unicode.org/versions/Unicode6.0.0/ch06.pdf#page=15> & <http://www.unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf#page=5.)
+    # Unfortunately, support in applications is very patchy, and it seems to not work in most (all?) web browsers like Firefox or Chrome.
+    # So until they get native support, we will be relying on JS/CSS to restyle the fractions. To do so, we need to mark it up with a `span.fraction`.
+    # However, there are so many uses, and spans are so verbose, that it's too much of a PITA to add them all manually forever or keep the search-and-replaces in sync, and ensure no duplicates etc. But we also prefer not to overload the browser client with yet another JS rewrite pass. So we instead just rewrite the HTML after compilation to put FRACTION SLASH users inside a span.fraction.
+    bold "Adding .fraction span to FRACTION SLASH uses for better styling…"
+    # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
+    fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' "$@"; }
+    export -f fraction
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 fraction # || true
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
