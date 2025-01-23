@@ -2218,6 +2218,32 @@ sup.ordinal {
     padding: 0;
 }
 
+/*	Fractions.
+ */
+span.fraction {
+	position: relative;
+	top: 0.1em;
+}
+span.fraction > * {
+	position: relative;
+}
+span.num,
+span.denom {
+	font-variant-numeric: oldstyle-nums;
+	font-size: 0.9em;
+}
+span.frasl {
+	bottom: 0.1em;
+}
+span.num {
+	bottom: 0.6em;
+	left: 0.18em;
+}
+span.denom {
+	bottom: -0.1em;
+	left: -0.12em;
+}
+
 /*  Inflation adjustments.
 
     Make sure that adjusted prices move as a block: no breaking in the middle
