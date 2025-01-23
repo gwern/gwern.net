@@ -588,7 +588,7 @@ section.collapse > .heading {
  */
 .collapse-block > .disclosure-button > .collapse-iceberg-indicator {
 	--indicator-size: calc(0.5 * var(--collapse-toggle-top-icon-size));
-	
+
 	position: absolute;
 	right: 1.75em;
 	font-size: var(--indicator-size);
@@ -1112,7 +1112,7 @@ hr,
 .horizontal-rule-nth-1 hr {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
 
-        NOTE: alternative moon icon is 
+        NOTE: alternative moon icon is
         https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg
         - while nice, it lacks the intense moire effect of the Vergina Sun
      */
@@ -2236,7 +2236,7 @@ span.frasl {
 	bottom: 0.1em;
 }
 span.num {
-	bottom: 0.6em;
+	bottom: 0.65em;
 	left: 0.18em;
 }
 span.denom {
@@ -3554,8 +3554,8 @@ ol.link-bibliography-list-compact > li::before {
     display: block;
     height: 30px;
     position: relative;
-	background-image: linear-gradient(to right, 
-									  var(--GW-bottom-ornament-line-color) 50%, 
+	background-image: linear-gradient(to right,
+									  var(--GW-bottom-ornament-line-color) 50%,
 									  var(--GW-body-background-color) 50%);
     background-size: 2px 1px;
     background-repeat: repeat-x;
@@ -4243,7 +4243,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     --popups-popup-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
     position: absolute;
-    
+
     overflow: visible;
     max-width: var(--GW-popups-popup-max-width);
     min-height: calc(3 * var(--popup-title-bar-height) + 2 * var(--GW-popups-popup-border-width));
