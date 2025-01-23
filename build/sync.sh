@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-22 13:13:38 gwern"
+# When:  Time-stamp: "2025-01-22 14:26:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -471,7 +471,7 @@ else
     # However, there are so many uses, and spans are so verbose, that it's too much of a PITA to add them all manually forever or keep the search-and-replaces in sync, and ensure no duplicates etc. But we also prefer not to overload the browser client with yet another JS rewrite pass. So we instead just rewrite the HTML after compilation to put FRACTION SLASH users inside a span.fraction.
     bold "Adding .fraction span to FRACTION SLASH uses for better styling…"
     # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
-    fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' "$@"; }
+    fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' -- "$@"; }
     export -f fraction
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 fraction # || true
 
