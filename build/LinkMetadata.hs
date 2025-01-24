@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-22 18:54:39 gwern"
+When:  Time-stamp: "2025-01-23 18:10:06 gwern"
 License: CC-0
 -}
 
@@ -314,7 +314,7 @@ writeAnnotationFragments am md writeOnlyMissing =
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment _ _ _ _ ("","","",_,[],[],"") = return ()
 writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
-      if ("/index#" `isInfixOf` u && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
+      if (("/index#" `isInfixOf` u && "/index#abstract" /= u) && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
               let (filepath',_) = getAnnotationLink u'

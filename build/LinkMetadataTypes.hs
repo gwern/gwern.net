@@ -21,6 +21,7 @@ type Path = String
 
 data Failure = Temporary | Permanent deriving Show
 
+-- local essays: this excludes locally-hosted files such as PDFs:
 isPagePath :: T.Text -> Bool
 isPagePath f = let f' = delete "https://gwern.net" $ T.unpack f in
                  (not (not ("/" `isPrefixOf` f') || ("/static/" `isPrefixOf` f')) &&
