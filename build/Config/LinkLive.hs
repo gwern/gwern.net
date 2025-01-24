@@ -3019,7 +3019,7 @@ goodLinks =
             -- , "https://xtools.wmcloud.org/pages/en.wikipedia.org/Rhwawn"
             , "https://zlkj.in/"
             , "https://timetravel.mementoweb.org/"
-            , "https://videolectures.net/rldm2015_silver_reinforcement_learning/"
+            , "https://videolectures.net/videos/rldm2015_silver_reinforcement_learning"
             , "https://wiki.openttdcoop.org/Logic"
             , "https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2015/35.html"
             , "https://www.abcb.com/newspaper/1999-12-30_asahi_01.htm"

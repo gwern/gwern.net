@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-22 14:26:34 gwern"
+# When:  Time-stamp: "2025-01-23 11:19:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -463,9 +463,9 @@ else
     PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
     # essays+tags+annotations+similars+backlinks:
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotation/ -type f -name '*.html')"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html')"
 
-    # we mark up fractions in non-TeX using the Unicode '⁄' FRACTION SLASH, which is specified to turn arbitrary integer pairs into oblique fractions in a more generalized way than the hardwired vulgar fractions Unicode supports for a handful of pairs like '½'. (See <https://www.unicode.org/versions/Unicode6.0.0/ch06.pdf#page=15> & <http://www.unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf#page=5.)
+    # we mark up fractions in non-TeX using the Unicode '⁄' FRACTION SLASH, which is specified to turn arbitrary integer pairs into oblique fractions in a more generalized way than the hardwired vulgar fractions Unicode supports for a handful of pairs like '½'. (See <https://www.unicode.org/versions/Unicode6.0.0/ch06.pdf#page=15> & <http://www.unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf#page=5>.)
     # Unfortunately, support in applications is very patchy, and it seems to not work in most (all?) web browsers like Firefox or Chrome.
     # So until they get native support, we will be relying on JS/CSS to restyle the fractions. To do so, we need to mark it up with a `span.fraction`.
     # However, there are so many uses, and spans are so verbose, that it's too much of a PITA to add them all manually forever or keep the search-and-replaces in sync, and ensure no duplicates etc. But we also prefer not to overload the browser client with yet another JS rewrite pass. So we instead just rewrite the HTML after compilation to put FRACTION SLASH users inside a span.fraction.

@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-01-22 11:27:40 gwern"
+# When:  Time-stamp: "2025-01-22 22:56:33 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -73,6 +73,7 @@ Dates are valid only between 1000AD and """ + current_date + """; any dates outs
 (Note also that the World Wide Web was invented in 1989, so web pages cannot predate 1990AD. Web page dates before 2000AD are rare, and dates before 2010AD should be treated with extra scrutiny unless from an archival source.)
 If there is more than one valid date, print only the first one.
 Do not make up dates; if you are unsure, print only the empty string "".
+Do not add any commentary or explanations.
 
 Task examples (with explanations in '#' comments):
 
@@ -510,6 +511,8 @@ Task examples (with explanations in '#' comments):
 - "https://www.openculture.com/2021/01/david-lynchs-projection-instructions-for-mulholland-drive-2001.html David Lynch’s Projection Instructions for <em>Mulholland Drive</em> (2001)"
 "2021-01"
 - "https://www.lesswrong.com/posts/NXTkEiaLA4JdS5vSZ/what-o3-becomes-by-2028 What o3 Becomes by 2028"
+""
+- "https://en.wikipedia.org/wiki/Angela_L._Duckworth Angela L. Duckworth"
 ""
 
 Task:

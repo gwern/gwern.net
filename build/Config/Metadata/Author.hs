@@ -585,6 +585,8 @@ canonicals = M.fromList
   , ("_rockt", "Tim Rocktäschel")
   , ("Angela Duckworth", "Angela L. Duckworth")
   , ("M. Douglas McIlroy", "Douglas McIlroy")
+  , ("420_gunna", "Sam")
+  , ("Christiaan A. de Leeuw", "Christiaan de Leeuw")
   ]
 
 -- tests: unique
@@ -1186,6 +1188,11 @@ authorLinkDB = M.fromList $
     , ("Li-Jia Li", "https://scholar.google.com/citations?user=feX1fWAAAAAJ")
     , ("Wei Dong", "https://scholar.google.com/citations?user=8T5VDv8AAAAJ")
     , ("Daniel Khashabi", "https://danielkhashabi.com/")
+    , ("Sam", "https://x.com/420_gunna")
+    , ("Danbooru Community", "https://danbooru.donmai.us/wiki_pages/help:home")
+    , ("Christiaan de Leeuw", "https://www.amsterdamumc.org/en/research/researchers/christiaan-de-leeuw.htm")
+    , ("Charles Blundell", "https://scholar.google.com/citations?user=f31mvPsAAAAJ&hl=en&oi=ao")
+    , ("Bjarke Feenstra", "https://en.ssi.dk/about-us/contact/employees/b/bjarke-feenstra-fee")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

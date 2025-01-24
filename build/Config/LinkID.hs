@@ -2906,4 +2906,5 @@ linkIDOverrides =
   , ("https://www.wsj.com/tech/ai/alexandr-wang-scale-ai-d7c6efd7","jin-2024-scalefraud"),("https://www.wsj.com/tech/ai/a-peter-thiel-backed-ai-startup-cognition-labs-seeks-2-billion-valuation-998fa39d","jin-2024-cognitionlabs"),("https://machinamenta.blogspot.com/2020/08/forming-extended-analogies-with-gpt-3.html","summers-stay-2020-gptanalogies"),("https://github.com/summerstay/true_poetry","summers-stay-2020-gptrhyming")
   , ("/doc/design/2023-04-28-gwern-gwernnet-mobile-scrollspyheadertoc.png", "gwern-2023-scrollspy"), ("/doc/design/2023-04-29-gwern-gwernnet-popups-nativetwitterannotations.png", "gwern-2023-twitterpopups")
   ,("https://marginalrevolution.com/marginalrevolution/2024/12/o1-is-still-doing-well-on-monetary-economics.html","cowen-2024-o1inflation"),("https://marginalrevolution.com/marginalrevolution/2024/09/sunday-assorted-links-488.html","cowen-2024-mattlevine")
+  , ("https://yellow-apartment-148.notion.site/AI-Search-The-Bitter-er-Lesson-44c11acd27294f4495c3de778cd09c8d","mclaughlin-2024-search"),("https://aidanmclaughlin.notion.site/reasoners-problem","mclaughlin-2024-o1")
       ]
