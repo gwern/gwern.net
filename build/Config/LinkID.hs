@@ -2907,4 +2907,5 @@ linkIDOverrides =
   , ("/doc/design/2023-04-28-gwern-gwernnet-mobile-scrollspyheadertoc.png", "gwern-2023-scrollspy"), ("/doc/design/2023-04-29-gwern-gwernnet-popups-nativetwitterannotations.png", "gwern-2023-twitterpopups")
   ,("https://marginalrevolution.com/marginalrevolution/2024/12/o1-is-still-doing-well-on-monetary-economics.html","cowen-2024-o1inflation"),("https://marginalrevolution.com/marginalrevolution/2024/09/sunday-assorted-links-488.html","cowen-2024-mattlevine")
   , ("https://yellow-apartment-148.notion.site/AI-Search-The-Bitter-er-Lesson-44c11acd27294f4495c3de778cd09c8d","mclaughlin-2024-search"),("https://aidanmclaughlin.notion.site/reasoners-problem","mclaughlin-2024-o1")
+  , ("https://theendsdontjustifythemeans.substack.com/p/why-you-should-be-talking-with-gpt","lowe-2024-o1"),("/doc/technology/2024-lowe.pdf","lowe-2024-space")
       ]

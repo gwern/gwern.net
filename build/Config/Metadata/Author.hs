@@ -1191,7 +1191,7 @@ authorLinkDB = M.fromList $
     , ("Sam", "https://x.com/420_gunna")
     , ("Danbooru Community", "https://danbooru.donmai.us/wiki_pages/help:home")
     , ("Christiaan de Leeuw", "https://www.amsterdamumc.org/en/research/researchers/christiaan-de-leeuw.htm")
-    , ("Charles Blundell", "https://scholar.google.com/citations?user=f31mvPsAAAAJ&hl=en&oi=ao")
+    , ("Charles Blundell", "https://scholar.google.com/citations?user=f31mvPsAAAAJ")
     , ("Bjarke Feenstra", "https://en.ssi.dk/about-us/contact/employees/b/bjarke-feenstra-fee")
     ]
 

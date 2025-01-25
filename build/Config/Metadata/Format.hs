@@ -233,6 +233,7 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("([0-9]+) ([0-9]+)",                                                             "\\1,\\2") -- '50 000' → '50,000'
          , ("([0-9]+) percent([ [:punct:]])", "\\1%\\2") -- eg '$22,000 (46 percent) higher annual early-career wages than they would'
          , ("\\(([0-9\\.]+)[xX] ", "(\\1× ") -- "we are faster (10.1x faster) than a competitor" → "we are faster (10.1× faster) than a competitor"
+         , ("\\(([0-9\\.]+)[xX],", "(\\1×,") -- "to more than 3,000x,"
          , ("([0-9][0-9]+) [xX] ([0-9][0-9]+) ", "\\1×\\2") -- "high fidelity generation of 1024 x 1024 images" / "0.85 X 30 mEq/kg"
          , ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px") --  "Alexnet performance for 16 x16 px features)."
          , ("([0-9]+)[ -]fold", "\\1×")
@@ -410,7 +411,9 @@ htmlRewriteFixed =
          , ("O(log n) ", "𝒪(log <em>n</em>) ")
          , ("O(m log^2 n)", "𝒪(<em>m</em> log <em>n</em> + <em>n</em> log<sup>2</sup> <em>n</em>)")
          , ("O(n^2)", "𝒪(<em>n</em><sup>2</sup>)")
-         , (" O(n log n)", " 𝒪(<em>n</em> log <em>n</em>)")
+         , ("O(n log n)", "𝒪(<em>n</em> log <em>n</em>)")
+         , ("O(<em>n</em> log <em>n</em>)", "𝒪(<em>n</em> log <em>n</em>)")
+         , ("O(log <em>n</em>)", "𝒪(log <em>n</em>)")
          , ("O(nm)", "𝒪(<em>n</em>×<em>m</em>)")
          , ("O(n)", "𝒪(<em>n</em>)")
          , (" O(N)", " 𝒪(<em>N</em>)")
