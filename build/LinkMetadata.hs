@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-23 18:10:06 gwern"
+When:  Time-stamp: "2025-01-24 15:22:36 gwern"
 License: CC-0
 -}
 
@@ -230,7 +230,9 @@ readLinkMetadataAndCheck = do
                                             not (head u == 'h' || head u == '/' || anyPrefix u ["mailto:", "irc://", "rsync://"]) ||
                                             (head u == '/' && "//" `isInfixOf` u) ||
                                             ' ' `elem` u ||
-                                            ('—' `elem` u) -- EM DASH
+                                            ('—' `elem` u) || -- EM DASH
+                                             -- empty anchors are meaningless, and imply a malformed URL where an anchor was intended but got lost; similarly for other common trailing typos:
+                                            last u `elem` ['?', '&', '#']
                                           )
                                    urlsFinal
              unless (null brokenUrlsFinal) $ error $ "GTX: Broken URLs: " ++ show brokenUrlsFinal

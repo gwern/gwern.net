@@ -14,7 +14,7 @@ import qualified Data.Text as T (append, isInfixOf, head, pack, replace, unpack,
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Maybe (fromMaybe)
-import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter, filterWithKey)
+import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter) -- filterWithKey
 import System.Directory (createDirectoryIfMissing, doesFileExist, listDirectory)
 import Network.HTTP (urlEncode)
 import Data.Containers.ListUtils (nubOrd)
@@ -30,7 +30,7 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB)
 import Query (extractLinkIDsWith, parseMarkdownOrHTML, extractURL)
 import Typography (typographyTransform)
-import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printRed, safeHtmlWriterOptions)
+import Utils (writeUpdatedFile, sed, anyPrefixT, anyInfix, anyPrefix, printGreen, printRed, safeHtmlWriterOptions)
 import qualified Config.Misc as C (backlinkBlackList, cd)
 
 import GenerateSimilar (sortListPossiblyUnembedded, readEmbeddings, readListSortedMagic,
@@ -50,7 +50,7 @@ main' :: IO ()
 main' = do
   bldb <- readBacklinksDB
   md <- readLinkMetadata
-  putStrLn "Read databases."
+  printGreen "Read databases."
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".md" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.md` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
@@ -59,7 +59,7 @@ main' = do
         M.keys bldb ++ concatMap snd (concat $ M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
                              unless exist $ printRed ("Backlinks: files annotation error: file does not exist? " ++ f))
-  putStrLn "Finished checking that all targets/callers are valid & files exist."
+  printGreen "Finished checking that all targets/callers are valid & files exist."
 
   -- we want sort-by-embedding of all backlink sets (instead of sorting by date or path, which seem kinda dumb):
   edb <- readEmbeddings
@@ -67,7 +67,7 @@ main' = do
 
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md edb sortDB) bldb -- traverseWithKey may cause a memory leak here
-  putStrLn "Finished writeOutcallers."
+  printGreen "Finished writeOutcallers."
 
   -- parse all arguments & update backlink database:
   fs <- fmap (filter (\f -> not (anyPrefix f ["/backlink/","#",".#"])) .  map (sed "^\\.\\/" "") . lines) Prelude.getContents
@@ -78,10 +78,10 @@ main' = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- Par.mapM (parseFileForLinks False) html
 
-  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey (parseAnnotationForLinks . T.pack) $ M.filterWithKey (\u _ -> not (isPagePath $ T.pack u)) md
-  putStrLn ("Total target files to parse for backlinks: " ++ show (length links3))
+  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey (parseAnnotationForLinks . T.pack) md
+  printGreen ("Total target URLs to parse for backlinks: " ++ show (length links3))
 
-  let linksdb = M.fromListWith (++) $ map (\(a,b) -> (truncateAnchors a,[(a,[b])])) $ nubOrd $ concat $ links1++links2++links3
+  let linksdb = M.fromListWith (++) $ map (\(a,b) -> (truncateAnchors a,[(a,[b])])) $ nubOrd $ concat (links1++links2++links3)
   let bldb' = linksdb `M.union` bldb
   writeBacklinksDB bldb'
 
@@ -124,21 +124,32 @@ generateCaller md target (caller, callers) =
                        -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
                        -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
                        Just (_,aut,dt,_,_,_,_) -> generateID (T.unpack caller) aut dt
-     callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url in
+     callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url
+                                          filepathTitle = if T.head u == '/' then "<code>" `T.append` T.tail u `T.append`  "</code>" else u
+                                      in
                                case M.lookup (T.unpack u) md of
-                                Nothing -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                Just ("",_,"",_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                Just ("",_,_,_,_,_,_) -> if T.head u == '/' then ("",T.tail u,u) else ("",u,u)
-                                Just (t,_,dt,_,_,_,_) -> (dt,T.pack t,u))
+                                Nothing                -> ("",filepathTitle,u)
+                                Just ("",_,"",_,_,_,_) -> ("",filepathTitle,u)
+                                Just ("",_,_,_,_,_,_)  -> ("",filepathTitle,u)
+                                Just (t,_,dtc,_,_,_,_) -> (dtc,T.pack t,    u)
+                             )
                     callers
      -- a backlink can be triggered by an ordinary link, or it can be triggered by an *author* metadata field which gets turned into a link; if the latter is the case, the backlink means that an annotation was written by the author, and we are creating an author bibliography.
      -- In that case, we want to handle the author links specially, and provide them first, so we check the database for each of the callers, to see if the caller has the
      callerDatesTitlesAuthored    = filterIfAuthored md caller callerDatesTitles
      callerDatesTitlesAuthoredNot = callerDatesTitles \\ callerDatesTitlesAuthored
+  in generateCallerSublist md selfIdent False callerDatesTitlesAuthored ++
+     generateCallerSublist md selfIdent True  callerDatesTitlesAuthoredNot
+
+generateCallerSublist :: Metadata -> T.Text -> Bool -> [(String,  -- date-created
+                                                         T.Text,  -- formatted title
+                                                         T.Text)] -- URL
+                      -> [[Block]]
+generateCallerSublist md selfIdent backlinkContextP titles =
      -- sort backlinks in descending order (most-recent first) as a simple way to prioritize within author/non-author category:
-     sortDescending = map (\(_,b,c) -> (b,c)) . reverse . sort
-     callerTitles = (sortDescending callerDatesTitlesAuthored) ++ (sortDescending callerDatesTitlesAuthoredNot)
-     callerClasses = map (\(_,u) -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-page"] else ["link-annotated"]) callerTitles
+ let sortDescending = map (\(_,b,c) -> (b,c)) . reverse . sort
+     callerTitles = sortDescending titles
+     callerClasses = map (\(_,u) -> if isPagePath u then ["link-page"] else ["link-annotated"]) callerTitles
      callers' = zipWith (\a (b,c) -> (c,a,b)) callerClasses callerTitles
 
      content =  -- WARNING: critical to insert '.backlink-not' or we might get weird recursive blowup!
@@ -148,9 +159,11 @@ generateCaller md target (caller, callers) =
                                -- for top-level pages, we need a second link, like 'Foo (context)', because 'Foo' will popup the scraped abstract/annotation, but it will not pop up the reverse citation context displayed right below; this leads to a UI trap: the reader might be interested in navigating to the context, but they can't! The transclusion has replaced itself, so it doesn't provide any way to navigate to the actual page, and the provided annotation link doesn't know anything about the reverse citation because it is about the entire page. So we provide a backup non-transcluding link to the actual context.
                                -- (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++
                                (if isPagePath u then [Str " (", Link ("",["link-annotated-not"],[]) [Str "full context"] (if isPagePath u && selfIdent/="" && not ("#" `T.isInfixOf` u) then u`T.append`"#"`T.append`selfIdent else u,""), Str ")"] else []) ++ -- TODO: do we actually need .link-annotated-not on either of these links?
-                               [Str ":"]),
-                         -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one:
-                         BlockQuote [Para [Link ("",
+                               (if not backlinkContextP then [] else [Str ":"]))] ++
+                        (if not backlinkContextP then [] else
+                         -- use transclusion to default to display inline the context of the reverse citation, akin to how it would display if the reader popped the link up as a live cross-page transclusion, but without needing to hover over each one.
+                         -- NOTE: we skip this for 'author' backlinks, because when the backlink is from the author list, there is nowhere 'inside' the annotation or page to pop up, and indeed, may not even be an annotation. For example, if I create an image file, there will usually not be a description in which my name is linked; there will simply be an 'author: Gwern' metadata field which triggers a link.
+                         [BlockQuote [Para [Link ("",
                                                   ["backlink-not", "include-block-context-expanded", "collapsible"]++(if isPagePath u then ["link-annotated-not"] else ["link-annotated"]),
                                                   if selfIdent=="" then [] else [("target-id",selfIdent)]
                                                 )
@@ -158,7 +171,9 @@ generateCaller md target (caller, callers) =
                                                 (u, "")
                                           ]
                                     ]
-                       ]
+                         ]
+                        )
+
           ) callers'
        in content
 
@@ -174,7 +189,7 @@ parseAnnotationForLinks caller (_,aut,_,_,_,_,abstract) =
                             let authorURLs = zip (authorsLinkifyAndExtractURLs $ T.pack aut) $ repeat caller
                                 doc = parseMarkdownOrHTML False (T.pack abstract)
                                 linkPairs = authorURLs ++ (map (\(a,b) -> (localize a, localize b)) $ extractLinkIDsWith backLinksNot path doc)
-                                linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b  || truncateAnchors a == truncateAnchors b)) linkPairs
+                                linkPairs' = filter (\(a,b) -> not (C.backlinkBlackList a || C.backlinkBlackList b || truncateAnchors a == truncateAnchors b)) linkPairs
                             in
                             linkPairs'
                                where m' = localize caller

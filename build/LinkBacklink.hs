@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-01-23 19:00:00 gwern"
+When:  Time-stamp: "2025-01-24 12:04:41 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -58,8 +58,9 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[(T.Text, [T.Text
 getXLink :: String -> FilePath -> (FilePath, -- raw on-disk relative link like 'metatata/.../foo.html'
                                    FilePath) -- URL-encoded absolute like '/metadata'.../%...foo.html'
 getXLink linkType "" = error $ "LinkBacklink.getXLink: called on empty URL/path; this should never happen; `linkType` was: " ++ show linkType
-getXLink linkType p = let -- p' = (if isPagePath (T.pack p) then takeWhile (/='#') else id) p
-                          p' = (if head p == '/' then takeWhile (/='#') else id) p
+getXLink linkType p = let p' = (if isPagePath (T.pack p) && linkType == "backlink" then takeWhile (/='#') else id) p
+                          -- p' = (if head p == '/' then takeWhile (/='#') else id) p
+                          -- p' = p
                           linkType' = "/metadata/annotation/" ++ linkType
                           linkBase = if linkType=="" then linkType' else linkType'++"/"
                           linkRaw = linkBase ++ take 246 (urlEncode p') ++ ".html"
@@ -102,7 +103,7 @@ getSimilarLinkCount "" = return 0
 getSimilarLinkCount p = do (file,_) <- getSimilarLinkCheck p
                            if null file then return 0 else do
                              fileContents <- TIO.readFile file
-                             return $ T.count "class=\"link-annotated backlink-not id-not\"" fileContents
+                             return $ T.count "class=\"link-annotated id-not backlink-not\"" fileContents
 
 -- a backlinks database implicitly defines all the forward links as well. It's not efficient compared to converting it to a 'forwardlinks database', but we can support one-off searches easily:
 getForwardLinks :: Backlinks -> T.Text -> [T.Text]
