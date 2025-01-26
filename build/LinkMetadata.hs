@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-24 15:22:36 gwern"
+When:  Time-stamp: "2025-01-25 19:04:10 gwern"
 License: CC-0
 -}
 
@@ -196,6 +196,10 @@ readLinkMetadataAndCheck = do
              let emptyCheck = filter (\(u,(t,a,_,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
              unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
+             -- NOTE: titles can validly begin/end with a forward-slash if they are, say, a subreddit.
+             let badTitles = filter (\(_,(t,_,_,_,_,_,_)) -> t /= "" && (last t `elem` ("<\\;,_~=+-({:"::String) || head t `elem` (">\\;,_~=+-)}:"::String))) full
+             unless (null badTitles) $ error $ "full.gtx: Link Annotation Error: mangled title? Begins/ends in a strange character that should probably never happen a well-formed title: " ++ show badTitles
+
              let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) full in
                when (length (nubOrd (sort annotations)) /= length annotations) $ error $
                "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
@@ -231,8 +235,9 @@ readLinkMetadataAndCheck = do
                                             (head u == '/' && "//" `isInfixOf` u) ||
                                             ' ' `elem` u ||
                                             ('—' `elem` u) || -- EM DASH
-                                             -- empty anchors are meaningless, and imply a malformed URL where an anchor was intended but got lost; similarly for other common trailing typos:
-                                            last u `elem` ['?', '&', '#']
+                                             -- empty anchors are meaningless, and imply a malformed URL where an anchor was intended but got lost; similarly for other common trailing typos, unless it is a local page where we're doing fancy range includes:
+                                            (head u /= '/' && last u == '#') ||
+                                            last u `elem` ['?', '&']
                                           )
                                    urlsFinal
              unless (null brokenUrlsFinal) $ error $ "GTX: Broken URLs: " ++ show brokenUrlsFinal

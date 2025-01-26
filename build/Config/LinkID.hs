@@ -1582,6 +1582,7 @@ linkIDOverrides =
        , ("/doc/ai/nn/gan/2023-liang.pdf","liang-et-al-2023-4")
        , ("https://arxiv.org/abs/2403.07183","liang-et-al-2024-1")
        , ("https://arxiv.org/abs/2401.15449","liang-et-al-2024-2")
+       , ("https://arxiv.org/abs/2111.02925","liang-et-al-2021-1"),("https://aclanthology.org/2021.naacl-main.97/","liang-et-al-2021-2")
        , ("https://www.science.org/doi/10.1126/sciadv.abq3356","liao-et-al-2022-1")
        , ("https://www.biorxiv.org/content/10.1101/2022.07.09.499321.full","liao-et-al-2022-2")
        , ("https://www.nature.com/articles/s41467-023-43985-7","liao-et-al-2024-1")

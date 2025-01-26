@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-19 22:37:56 gwern"
+# When:  Time-stamp: "2025-01-25 13:14:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -558,6 +558,8 @@ Katri Räikkönen
 "<em>Thief 1</em>’s “Assassins” and environmental storytelling"
 - "John Tromp HomePage"
 "John Tromp Homepage"
+- "https://wiremodal.net/cwt Wiremodal"
+""
 
 Task:
 
