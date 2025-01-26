@@ -2,7 +2,7 @@
 <?php
 // anchor-checker.php: Check anchors in HTML files
 // Authors: D. Bohdan, Gwern Branwen
-// Date: 2024-02-27
+// Date: 2025-01-26
 // License: choice of CC-0 or MIT-0
 //
 // This script only checks anchors local to each document. Anchors prefixed
@@ -18,38 +18,71 @@
 // dir/file2.html<tab>#baz
 // ...
 //
-// Requires: PHP 8.x, HTML5-PHP
+// Requires: PHP 8.1+, HTML5-PHP
 // Installation: $ sudo apt install php-masterminds-html5 php-mbstring
+
+declare(strict_types=1);
 
 error_reporting(E_ALL);
 
-set_include_path("/usr/share/php");
-require("Masterminds/HTML5/autoload.php");
+set_include_path('/usr/share/php');
+require ('Masterminds/HTML5/autoload.php');
+
 use Masterminds\HTML5;
 
-function main($files) {
-    $exit_code = 0;
+class CheckResult
+{
+    public function __construct(
+        public readonly array $bad_anchors,
+        public readonly int $href_count
+    ) {}
+}
 
-    if (count($files) == 0) { fwrite(STDERR,"Wrong number of file arguments:"); fwrite(STDERR, implode(", ", $files)); exit(1); }
+function main(array $files): never
+{
+    if (empty($files)) {
+        fprintf(STDERR, "Fatal error: No file arguments.\n");
+        exit(1);
+    }
+
+    $exit_code = 0;
+    $no_hrefs_files = [];
 
     foreach ($files as $file) {
-        $bad_anchors = check_file($file);
-        foreach ($bad_anchors as $a) {
+        $result = check_file($file);
+
+        if ($result->href_count === 0) {
+            $no_hrefs_files[] = $file;
+            continue;
+        }
+
+        foreach ($result->bad_anchors as $a) {
             fprintf(STDERR, "%s\t%s\n", $file, $a);
             $exit_code = 1;
         }
     }
 
+    if (!empty($no_hrefs_files)) {
+        fprintf(STDERR, "Fatal error: No HTML '<a href>' elements found, are you sure this is HTML? Failed to parse files: %s\n", implode(', ', $no_hrefs_files));
+        $exit_code = 1;
+    }
+
     exit($exit_code);
 }
 
-function check_file($file) {
+function check_file(string $file): CheckResult
+{
     $html = file_get_contents($file);
-    if (!$html) { fwrite(STDERR,"Failed to read file:"); fwrite(STDERR, $file); exit(2); }
+    if ($html === false) {
+        fprintf(STDERR, "Fatal error: Failed to read file: %s\n", $file);
+        exit(2);
+    }
 
-    if (preg_match("/^\s*$/", $html)) return [];
+    if (preg_match('/^\s*$/', $html)) {
+        return new CheckResult([], 0);
+    }
 
-    $html5 = new Masterminds\HTML5([
+    $html5 = new HTML5([
         'disable_html_ns' => true,
     ]);
     $dom = $html5->loadHTML($html);
@@ -57,28 +90,32 @@ function check_file($file) {
     return check_document($dom);
 }
 
-function check_document($dom) {
-    $ids = (new DOMXpath($dom))->query("//@id");
-    $id_set = ["#" => true, "#top" => true];
+function check_document(DOMDocument $dom): CheckResult
+{
+    $xpath = new DOMXPath($dom);
+    $ids = $xpath->query('//@id');
+    $id_set = ['#' => true, '#top' => true];
 
     foreach ($ids as $id) {
-        $id_set["#" . $id->value] = true;
+        $id_set['#' . $id->value] = true;
     }
 
-    $bad_anchors = array();
-    $hrefs = (new DOMXpath($dom))->query("//a/@href");
+    $bad_anchors = [];
+    $hrefs = $xpath->query('//a/@href');
 
     foreach ($hrefs as $href) {
         $value = urldecode(trim($href->value));
 
-        if (substr($value, 0, 1) !== "#") continue;
+        if (!str_starts_with($value, '#')) {
+            continue;
+        }
 
-        if (!array_key_exists($value, $id_set)) {
+        if (!isset($id_set[$value])) {
             $bad_anchors[] = $value;
         }
     }
 
-    return $bad_anchors;
+    return new CheckResult($bad_anchors, $hrefs->length);
 }
 
 main(array_slice($argv, 1));
