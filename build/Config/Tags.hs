@@ -154,7 +154,7 @@ tagsShort2LongRewrites =
    , ("marbling", "paper-marbling"), ("marble", "paper-marbling"), ("marbling-paper", "paper-marbling"), ("marble-paper", "paper-marbling")
    , ("microbion", "microbiome"), ("germfree", "germ-free"), ("selfsinking", "self-sinking")
    , ("dantzig", "stigler-diet"), ("4/nonficton", "4/nonfiction"), ("nonficton", "nonfiction")
-   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation"), ("longnow", "long-now")]
+   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation"), ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -456,6 +456,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("reinforcement-learning/meta-learning/continual-learning", "continual learning")
   , ("reinforcement-learning/meta-learning", "meta-learning")
   , ("ai/nn/anthropic", "Anthropic")
+  , ("ai/nn/deepseek", "DeepSeek")
   , ("reinforcement-learning/deepmind", "DeepMind")
   , ("reinforcement-learning/openai", "OA")
   , ("cs/linkrot/archiving", "Internet archiving")

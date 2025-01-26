@@ -70,7 +70,7 @@ linkIconTypes = ["text", "svg"
                 ]
 
 -- Color hex code shortcuts:
-blueDM, blueFB, blueG, bluePatio11, blueYahoo, brownAnthropic, greenNV, orangeNGE, purpleHaskell, redAdobe, redR, redTufte, yellowMoR, yellowPG :: T.Text
+blueDM, blueDS, blueFB, blueG, bluePatio11, blueYahoo, brownAnthropic, greenNV, orangeNGE, purpleHaskell, redAdobe, redR, redTufte, yellowMoR, yellowPG :: T.Text
 redAdobe = "#f40f02"
 redR     = "#1b61b1"
 redTufte = "#b1282b"
@@ -80,6 +80,7 @@ brownAnthropic = "#d4a27f"
 orangeNGE = "#f71a00"
 greenNV = "#77ba00"
 blueDM      = "#4185f4"
+blueDS      = "#4d6bfe"
 blueFB      = "#1877f2"
 blueG       = "#4285f4"
 bluePatio11 = "#3498db"
@@ -121,6 +122,7 @@ linkIconRulesOverrides "" = error "Config.LinkIcon.linkIconRulesOverrides: passe
 -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL. This must be matched first.
 linkIconRulesOverrides u
  | u' u "deepmind"  = ("deepmind", "svg", blueDM) -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
+ | u' u "deepseek"  = ("deepseek", "svg", blueDS) -- DeepSeek; similar. Primary user: <www.deepseek.com>/<chat.deepseek.com>, DS papers on Arxiv (`#deepseek` & `org=deepseek`)
  | u' u "schmidhuber" || u' u "people.idsia.ch/~juergen/" = ("SMDH", "text,quad,sans", "") -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
  | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", blueFB)
  | u' u "sites.google.com/berkeley.edu" || aU'' u ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = ("BAIR", "text,quad,mono", "") -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
@@ -758,6 +760,7 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", blueDM)
          , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg", blueDM)
          , ("https://deepmind.google/discover/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/",  "deepmind","svg", blueDM)
+         , ("https://www.lesswrong.com/posts/kANyEjDDFWkhSKbcK/two-interviews-with-the-founder-of-deepseek", "deepseek", "svg", blueDS)
          , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", blueG)
          , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", blueG)
          , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", blueG)
