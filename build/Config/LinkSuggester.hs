@@ -420,7 +420,7 @@ whiteList = [ ( "/crop#hands"
   , ( "https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions"
     , [ "admonitions" ]
     )
-  , ( "https://danbooru.donmai.us/" , [ "Danbooru" ] )
+  , ( "https://danbooru.donmai.us/wiki_pages/help:home" , [ "Danbooru" ] )
   , ( "https://danluu.com/p95-skill/"
     , [ "95%-ile isn\8217t that good" ]
     )

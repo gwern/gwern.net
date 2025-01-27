@@ -587,6 +587,10 @@ canonicals = M.fromList
   , ("M. Douglas McIlroy", "Douglas McIlroy")
   , ("420_gunna", "Sam")
   , ("Christiaan A. de Leeuw", "Christiaan de Leeuw")
+  , ("DeepSeek-AI", "DeepSeek")
+  , ("SpencrGreenberg", "Spencer Greenberg")
+  , ("Aellagirl", "Aella")
+  , ("aella_girl", "Aella")
   ]
 
 -- tests: unique
@@ -1193,6 +1197,10 @@ authorLinkDB = M.fromList $
     , ("Christiaan de Leeuw", "https://www.amsterdamumc.org/en/research/researchers/christiaan-de-leeuw.htm")
     , ("Charles Blundell", "https://scholar.google.com/citations?user=f31mvPsAAAAJ")
     , ("Bjarke Feenstra", "https://en.ssi.dk/about-us/contact/employees/b/bjarke-feenstra-fee")
+    , ("DeepSeek", "https://www.deepseek.com/")
+    , ("Nayuki", "https://www.nayuki.io/page/about")
+    , ("Aella", "https://x.com/aella_girl")
+    , ("Fernando Borretti", "https://borretti.me/about/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

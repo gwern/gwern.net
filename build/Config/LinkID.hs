@@ -2909,4 +2909,5 @@ linkIDOverrides =
   ,("https://marginalrevolution.com/marginalrevolution/2024/12/o1-is-still-doing-well-on-monetary-economics.html","cowen-2024-o1inflation"),("https://marginalrevolution.com/marginalrevolution/2024/09/sunday-assorted-links-488.html","cowen-2024-mattlevine")
   , ("https://yellow-apartment-148.notion.site/AI-Search-The-Bitter-er-Lesson-44c11acd27294f4495c3de778cd09c8d","mclaughlin-2024-search"),("https://aidanmclaughlin.notion.site/reasoners-problem","mclaughlin-2024-o1")
   , ("https://theendsdontjustifythemeans.substack.com/p/why-you-should-be-talking-with-gpt","lowe-2024-o1"),("/doc/technology/2024-lowe.pdf","lowe-2024-space")
+  , ("https://arxiv.org/abs/2411.08324","dai-et-al-2024-1"),("https://arxiv.org/abs/2401.06066#deepseek","dai-et-al-2024-2"),("https://arxiv.org/abs/1908.00490","kipping-2019-1"),("https://arxiv.org/abs/1903.03423","kipping-2019-2"),("https://www.nature.com/articles/s41586-024-08252-9#deepmind","price-et-al-2024-1"),("https://arxiv.org/abs/2407.04108","price-et-al-2024-2"),("https://arxiv.org/abs/2402.14207","shao-et-al-2024-1"),("https://arxiv.org/abs/2402.03300#deepseek","shao-et-al-2024-2")
       ]
