@@ -558,7 +558,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 			if (collapseBlock.classList.contains("no-abstract")) {
 				let collapsedContentHeight = collapseBlock.querySelector(".collapse-content-wrapper").clientHeight;
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
-				progressPercentage = Math.round(100 * collapsedContentHeight / contentHeight);
+				progressPercentage = Math.round(100 * Math.min(1, collapsedContentHeight / contentHeight));
 			} else {
 				let abstractHeight = collapseBlock.querySelector(".abstract-collapse").clientHeight;
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);

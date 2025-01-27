@@ -593,6 +593,7 @@ section.collapse > .heading {
 	right: 1.75em;
 	font-size: var(--indicator-size);
 	top: calc(0.5 * (var(--collapse-toggle-top-icon-size) - var(--indicator-size)));
+	opacity: 0.6;
 }
 .collapse-block > .disclosure-button > .collapse-iceberg-indicator .inline-icon {
 	top: 0;
