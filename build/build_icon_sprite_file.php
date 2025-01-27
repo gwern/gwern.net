@@ -37,10 +37,10 @@ foreach ($icon_file_paths as $path) {
 										if ($match[1] == 'viewBox')
 											$viewBox = $match[2];
 
-										return ((   $match[1] == 'viewBox'
-												 || $match[1] == 'xmlns'
-												 || str_starts_with($match[1], 'xmlns:')) == false);
+										return (str_starts_with($match[1], 'xmlns:') == false);
 									});
+	$icon_attributes = array_combine(array_column($icon_attributes, 1), 
+									 array_column($icon_attributes, 2));
 
 	if ($viewBox == '') {
 		## If there is no `viewBox` attribute, but we do have both the `width`
@@ -79,9 +79,9 @@ foreach ($icon_file_paths as $path) {
 		unset($icon_attributes['transform']);
 	}
 
-	$icon_attributes = implode(' ', array_map(function ($match) {
-										return "{$match[1]}=\"{$match[2]}\"";
-									}, $icon_attributes));
+	$icon_attributes = implode(' ', array_map(function ($key) use (&$icon_attributes) {
+										return "{$key}=\"{$icon_attributes[$key]}\"";
+									}, array_keys($icon_attributes)));
 
 	$out[] = "<g" 
 		   . ($icon_attributes ? ' ' : '') 

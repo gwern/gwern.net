@@ -691,6 +691,10 @@ a[data-link-icon='deepmind'] {
     --link-icon-opacity: 0.7;
 }
 
+a[data-link-icon='deepseek'] {
+    --link-icon-size: 0.8em;
+}
+
 a[data-link-icon='distillpub'] {
     --link-icon-size: 0.45em;
     --link-icon-offset-x: 0.20em;
