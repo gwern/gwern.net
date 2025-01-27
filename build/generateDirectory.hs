@@ -56,17 +56,17 @@ main = do C.cd
           ldb <- readListName
           sortDB <- readListSortedMagic
 
-          let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
-          let dirChunks = chunksOf chunkSize dirs'
-
-          -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
-          Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
-
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
           when (length dirs > 5 || newestp) $
             generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+
+          let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
+          let dirChunks = chunksOf chunkSize dirs'
+
+          -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory newestp am md ldb sortDB dirs dir'' = do

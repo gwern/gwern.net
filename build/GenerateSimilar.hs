@@ -52,7 +52,7 @@ singleShotRecommendations html =
      bdb <- readBacklinksDB
 
      newEmbedding <- embed [] md bdb ("",("","","","",[],[],html))
-     ddb <- embeddings2Forest (newEmbedding:edb)
+     ddb <- embeddings2Forest $ map stripEmbedding (newEmbedding:edb)
      let (_,hits) = findN ddb C.bestNEmbeddings C.iterationLimit (Just 1) newEmbedding :: (String,[String])
      sortDB <- readListSortedMagic
      hitsSorted <- sortSimilars edb sortDB (head hits) hits
@@ -64,6 +64,9 @@ type Embedding  = (String, -- URL/path
                     String, -- OA API model embedding version/ID (important because comparing embeddings from different models is nonsense)
                     [Double]) -- the actual embedding vector; NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
+
+stripEmbedding :: Embedding -> Embedding -- rm metadata useful for debugging or other purposes but not necessary for regular use:
+stripEmbedding (url, _, _, _, vec) = (url, 0, "", "", vec)
 
 last5 :: (a, b, c, d, e) -> e
 last5  (_,_,_,_,e) = e
@@ -80,6 +83,7 @@ readEmbeddingsPath p = do exists <- doesFileExist p
                                  Right e -> return e
                                  Left err -> error $ show err
 
+-- called in generateSimilar.hs
 writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
                         DB.encodeFile tempf es
@@ -219,7 +223,7 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 embeddings2Forest :: Embeddings -> IO Forest
 embeddings2Forest []     = error "GenerateSimilar.embeddings2Forest: called with no arguments, which is meaningless."
 embeddings2Forest [_]    = error "GenerateSimilar.embeddings2Forest: called with only 1 arguments, which is useless."
-embeddings2Forest e = do let f = embeddings2ForestConfigurable 16 3 40 e
+embeddings2Forest e = do let f = embeddings2ForestConfigurable 60 2 10 e
                          let fl = serialiseRPForest f
                          when (length fl < 2) $ error "GenerateSimilar.embeddings2Forest: serialiseRPForest returned an invalid empty result on the output of embeddings2ForestConfigurable‽"
                          return f
@@ -419,7 +423,7 @@ map fst mls
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
 sortTagByTopic md tag = do
                            edb <- readEmbeddings
-                           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+                           let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) $ map stripEmbedding edb
                            let mdl = M.filter (\(_,_,_,_,_,tags,abstract) -> tag `elem` tags && abstract /= "") md
                            let paths = M.keys mdl
                            let mdlSorted =  filter (\(f,_) -> M.member f edbDB) $ LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList mdl
@@ -508,7 +512,7 @@ sortSimilarsStartingWithNewest _ _ [a]    = return [[a]]
 sortSimilarsStartingWithNewest _ _ [a, b] = return [[a, b]]
 sortSimilarsStartingWithNewest md sortDB items = do
   edb <- readEmbeddings
-  let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
+  let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) $ map stripEmbedding edb
   let md' = M.restrictKeys md (S.fromList $ filter (`M.member` edbDB) $ map fst items)
   let mdlSorted = LinkMetadata.sortItemPathDate $ map (\(f,i) -> (f,(i,""))) $ M.toList md'
   if null mdlSorted then return [] else
