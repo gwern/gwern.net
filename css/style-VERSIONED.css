@@ -2706,18 +2706,18 @@ ul.interview .speaker {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -5798,7 +5798,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -5984,7 +5984,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6496,7 +6496,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popin .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7508,7 +7508,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#question');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7712,7 +7712,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -8238,7 +8238,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1737942730#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1737947894#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -8319,7 +8319,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1737942730#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1737947894#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
@@ -8522,17 +8522,17 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /* POP-FRAME INDICATORS */
 /************************/
 
-/*	If a link has an automatic or custom link annotation (eg. a paper abstract,
-	or excerpts), subtly mark it with a dog-ear/tag-like icon, so users don’t
-	get frustrated hovering over links which have no useful annotation (which
-	is an unfortunate number).
+/*  If a link has an automatic or custom link annotation (eg. a paper abstract,
+    or excerpts), subtly mark it with a dog-ear/tag-like icon, so users don’t
+    get frustrated hovering over links which have no useful annotation (which
+    is an unfortunate number).
 
-	At some point, if enough links get annotated & annotation is the default,
-	we might flip this to be a warning for non-annotated links.
+    At some point, if enough links get annotated & annotation is the default,
+    we might flip this to be a warning for non-annotated links.
 
-	We exclude it on the homepage because every linked page has a
-	description/abstract, and the triangles everywhere add a lot of visual
-	clutter.
+    We exclude it on the homepage because every linked page has a
+    description/abstract, and the triangles everywhere add a lot of visual
+    clutter.
  */
 .markdownBody a.has-indicator-hook {
     margin-left: 0.1em;
@@ -8590,15 +8590,15 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody a.has-annotation,
 .markdownBody a.has-annotation-partial {
     background-image: linear-gradient(to right,
-    								  var(--link-underline-gradient-line-color) 50%,
-    								  var(--link-underline-background-color) 50%);
+                                      var(--link-underline-gradient-line-color) 50%,
+                                      var(--link-underline-background-color) 50%);
     background-size: 2px 1px;
 }
 .markdownBody a.has-annotation.decorate-not {
     background-image: none;
 }
 
-/*	Colored (on hover) links.
+/*  Colored (on hover) links.
  */
 a[data-link-icon-color]:hover {
     --link-underline-gradient-line-color: var(--link-icon-color-hover);
@@ -8653,7 +8653,7 @@ a[data-link-icon-color]:hover {
 /*=================*/
 
 .markdownBody a.has-icon {
-	margin-right: 0.1em;
+    margin-right: 0.1em;
 }
 
 /*******************/
@@ -8666,7 +8666,7 @@ a[data-link-icon-type='svg'] {
     --link-icon-opacity: 0.55;
 }
 a[data-link-icon-type='svg'] .link-icon-hook::after {
-	--dark-mode-invert-filter: invert(1);
+    --dark-mode-invert-filter: invert(1);
 
     content: "";
     position: relative;
@@ -8684,17 +8684,17 @@ a[data-link-icon-type='svg']:hover .link-icon-hook::after {
     opacity: calc(var(--link-icon-opacity) * 0.55);
 }
 
-/*	Colored graphical link icons.
+/*  Colored graphical link icons.
  */
 a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
-	--dark-mode-invert-filter: none;
+    --dark-mode-invert-filter: none;
 
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
     opacity: 1.0;
 }
 
 /*  When link colors are reversed relative to the rest of the page (e.g., in
-	some admonition types), a graphical link icon must also be inverted.
+    some admonition types), a graphical link icon must also be inverted.
  */
 .markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
     filter: invert(1);
@@ -8756,7 +8756,7 @@ a[data-link-icon-type*='overline'] {
     --link-icon-text-decoration: overline;
 }
 
-/*	Colored textual link icons.
+/*  Colored textual link icons.
  */
 a[data-link-icon-type*='text'][data-link-icon-color]:hover .link-icon-hook::after {
     color: var(--link-icon-color-hover, currentColor);
@@ -8898,8 +8898,8 @@ a[data-link-icon='▲'] { /* Melting Asphalt (Kevin Simler) */
 
 a[data-link-icon='▽'] { /* The Verge */
     --link-icon-size: 0.90em;
-	--link-icon-offset-x: 0.10em;
-	--link-icon-offset-y: 0.15em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
 }
 
 a[data-link-icon='∇'] { /* The Gradient.pub */
@@ -8975,8 +8975,8 @@ a[data-link-icon='𝔐'] { /* Daily Mail */
 
 a[data-link-icon='𝛌'] { /* Haskell */
     --link-icon-size: 0.85em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.20em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
 }
 
 a[data-link-icon='𝓝'] { /* Nintil */
@@ -9026,26 +9026,26 @@ a[data-link-icon='☀'] { /* Low Tech Magazine */
 }
 
 a[data-link-icon='🖋'] { /* NovelAI */
-	--link-icon-size: 0.65em;
-	--link-icon-offset-x: 0.20em;
-	--link-icon-offset-y: 0.35em;
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.35em;
 }
 
 a[data-link-icon='𝕆'] { /* Outside Online */
-	--link-icon-size: 0.85em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.15em;
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.15em;
 }
 
 a[data-link-icon='☯'] { /* Touhou Wiki */
-	--link-icon-size: 0.85em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.20em;
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
 }
 
 /**************************************************************************/
-/*	Triple-letter ‘tri’ initials: too few for quad, but too big for regular
-	font size/offset. Common with TLA orgs.
+/*  Triple-letter ‘tri’ initials: too few for quad, but too big for regular
+    font size/offset. Common with TLA orgs.
  */
 a[data-link-icon-type*='tri'] {
     --link-icon-size: 0.65em;
@@ -9168,10 +9168,10 @@ a[data-link-icon='bitcoin'] {
 }
 
 a[data-link-icon='cbs'] {
-	--link-icon-size: 0.70em;
-	--link-icon-offset-x: 0.10em;
-	--link-icon-offset-y: 0.20em;
-	--link-icon-opacity: 0.5;
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.5;
 }
 
 a[data-link-icon='chi-dna'] {
@@ -9300,15 +9300,15 @@ a[data-link-icon='laion'] {
 }
 
 a[data-link-icon='maggie-appleton'] {
-	--link-icon-size: 0.70em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.20em;
-	--link-icon-opacity: 0.5;
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.20em;
+    --link-icon-opacity: 0.5;
 }
 
 a[data-link-icon='magnifying-glass'] { /* eye glass for Retraction Watch; cf. .icon-magnifying-glass */
-	--link-icon-size: 0.75em;
-	--link-icon-offset-y: 0.20em;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.20em;
     --link-icon-opacity: 0.65;
 }
 
@@ -9547,6 +9547,11 @@ a[data-link-icon='youtube'] {
 
 a[data-link-icon='yud'] {
     --link-icon-offset-y: 0.25em;
+}
+
+a[data-link-icon='deepseek'] {
+    --link-icon-size: 1.05em;
+    --link-icon-offset-x: 0.10em;
 }
 
 /*=------------------=*/
