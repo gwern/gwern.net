@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-26 17:14:48 gwern"
+# When:  Time-stamp: "2025-01-26 19:53:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1316,6 +1316,10 @@ else
               fi
           fi; }
     wrap λ "X-Clacks-Overhead HTTP header check failed."
+
+    ## check that the robots-headers are being set appropriately:
+    curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | grep -E -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
+    curl --silent --head "https://gwern.net/doc/index" | grep -E -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
     ## did any of the key pages mysteriously vanish from the live version?
     linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/' &
