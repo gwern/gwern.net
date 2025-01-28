@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-08 09:59:54 gwern"
+# When:  Time-stamp: "2025-01-27 10:38:46 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -280,7 +280,8 @@ pad () {
 }
 pad-black () {
     for FILE in "$@"; do
-        mogrify -bordercolor black -border 30 "$(path2File "$FILE")"
+        # NOTE: the color is not 'black', to match the current Gwern.net dark-mode's black background, which is not full-black but slightly grayed to avoid excessive contrast:
+        mogrify -bordercolor "#161616" -border 30 "$(path2File "$FILE")"
     done
 }
 crop-pad () { crop "$@" && pad "$@"; }

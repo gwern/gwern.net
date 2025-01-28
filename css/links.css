@@ -1034,6 +1034,14 @@ a[data-link-icon='deepseek'] {
     --link-icon-offset-x: 0.10em;
 }
 
+a[data-link-icon='✤'] { /* Ganbreeder/Artbreeder */
+    --link-icon-opacity: 0.60;
+}
+
+a[data-link-icon='☤'] { /* Karolinska */
+    --link-icon-opacity: 0.50;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/

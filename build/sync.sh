@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-26 19:53:58 gwern"
+# When:  Time-stamp: "2025-01-27 12:11:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -793,18 +793,18 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
+         find ./metadata/annotation/ -maxdepth 1 -name "*.html"  -type f | xargs --max-procs=0 --max-args=500 ./static/build/collapse-checker.py | \
+             gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava'; }
+    wrap λ "Overuse of '.collapse' class in compiled HTML?"
+
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
                    -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
-         find ./metadata/annotation/ -maxdepth 1 -name "*.html"  -type f | xargs --max-procs=0 --max-args=500 ./static/build/collapse-checker.py | \
-             gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava'; }
-    wrap λ "Overuse of '.collapse' class in compiled HTML?"
-
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }

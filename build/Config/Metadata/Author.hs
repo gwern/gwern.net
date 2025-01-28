@@ -1201,6 +1201,7 @@ authorLinkDB = M.fromList $
     , ("Nayuki", "https://www.nayuki.io/page/about")
     , ("Aella", "https://x.com/aella_girl")
     , ("Fernando Borretti", "https://borretti.me/about/")
+    , ("Xavier Marquez", "http://abandonedfootnotes.blogspot.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-19 22:37:44 gwern"
+# When:  Time-stamp: "2025-01-27 13:46:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -148,6 +148,8 @@ Andrea Di Francesco, Andrew G. Deighan, Lev Litichevskiy, Zhenghao Chen, Alison 
 Rachel G. Higier, Amy M. Jimenez, Christina M. Hultman, Jacqueline Borg, Cristina Roman, Isabelle Kizling, Henrik Larsson, Tyrone D. Cannon
 - <text>Author links open overlay panelVanessa Y. Oviedo a, Andrew J. Guydish b, Jean E. Fox Tree</text>
 Vanessa Y. Oviedo, Andrew J. Guydish, Jean E. Fox Tree
+- <text>Amir Mani https://orcid.org/0000-0003-4417-622X, Cory Henn https://orcid.org/0000-0002-3585-4597, Claire Couch https://orcid.org/0000-0003-4983-3719, Sonal Patel https://orcid.org/0000-0003-4107-0497, Thora Lieke https://orcid.org/0000-0002-4345-1712, Justin T.H. Chan https://orcid.org/0000-0003-4271-0177, Tomas Korytar https://orcid.org/0000-0002-6913-0415, and Irene Salinas</text>
+Amir Mani, Cory Henn, Claire Couch, Sonal Patel, Thora Lieke, Justin T. H. Chan, Tomas Korytar, Irene Salinas
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 

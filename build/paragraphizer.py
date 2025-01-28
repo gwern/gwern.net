@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-20 22:09:15 gwern"
+# When:  Time-stamp: "2025-01-27 17:32:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -596,6 +596,11 @@ This study contributes to the understanding of cognitive biases that affect inno
 Large language models have been proven quite beneficial for a variety of automatic speech recognition tasks in Google.
 We summarize results on Voice Search and a few YouTube speech transcription tasks to highlight the impact that one can expect from increasing both the amount of training data, and the size of the language model estimated from such data.
 Depending on the task, availability and amount of training data used, language model size and amount of work and care put into integrating them in the lattice rescoring step we observe reductions in word error rate 6%–10% relative, for systems on a wide range of operating points 17%–52% word error rate.
+- <abstract>As Large Language Models (LLMs) are increasingly used for a variety of complex and critical tasks, it is vital to assess their logical capabilities in strategic environments. This paper examines their ability in strategic reasoning -- the process of choosing an optimal course of action by predicting and adapting to other agents' behavior. Using six LLMs, we analyze responses from play in classical games from behavioral economics (p-Beauty Contest, 11-20 Money Request Game, and Guessing Game) and evaluate their performance through hierarchical models of reasoning (level-k theory and cognitive hierarchy theory). Our findings reveal that while LLMs show understanding of the games, the majority struggle with higher-order strategic reasoning. Although most LLMs did demonstrate learning ability with games involving repeated interactions, they still consistently fall short of the reasoning levels demonstrated by typical behavior from human subjects. The exception to these overall findings is with OpenAI's GPT-o1 -- specifically trained to solve complex reasoning tasks -- which consistently outperforms other LLMs and human subjects. These findings highlight the challenges and pathways in advancing LLMs toward robust strategic reasoning from the perspective of behavioral economics.</abstract>
+As Large Language Models (LLMs) are increasingly used for a variety of complex and critical tasks, it is vital to assess their logical capabilities in strategic environments. This paper examines their ability in strategic reasoning—the process of choosing an optimal course of action by predicting and adapting to other agents' behavior.
+Using six LLMs, we analyze responses from play in classical games from behavioral economics (p-Beauty Contest, 11-20 Money Request Game, and Guessing Game) and evaluate their performance through hierarchical models of reasoning (level-k theory and cognitive hierarchy theory). Our findings reveal that while LLMs show understanding of the games, the majority struggle with higher-order strategic reasoning.
+Although most LLMs did demonstrate learning ability with games involving repeated interactions, they still consistently fall short of the reasoning levels demonstrated by typical behavior from human subjects. The exception to these overall findings is with OpenAI's GPT-o1—specifically trained to solve complex reasoning tasks—which consistently outperforms other LLMs and human subjects.
+These findings highlight the challenges and pathways in advancing LLMs toward robust strategic reasoning from the perspective of behavioral economics.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
