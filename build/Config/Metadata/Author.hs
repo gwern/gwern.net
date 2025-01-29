@@ -591,6 +591,9 @@ canonicals = M.fromList
   , ("SpencrGreenberg", "Spencer Greenberg")
   , ("Aellagirl", "Aella")
   , ("aella_girl", "Aella")
+  , ("_sinity", "Sinity")
+  , ("nelhage", "Nelson Elhage")
+  , ("Francis_YAO", "Francis Yao")
   ]
 
 -- tests: unique
@@ -1202,6 +1205,7 @@ authorLinkDB = M.fromList $
     , ("Aella", "https://x.com/aella_girl")
     , ("Fernando Borretti", "https://borretti.me/about/")
     , ("Xavier Marquez", "http://abandonedfootnotes.blogspot.com/")
+    , ("Nelson Elhage", "https://nelhage.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

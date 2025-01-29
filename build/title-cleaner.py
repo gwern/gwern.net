@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-25 13:14:39 gwern"
+# When:  Time-stamp: "2025-01-28 19:36:36 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -560,6 +560,8 @@ Katri Räikkönen
 "John Tromp Homepage"
 - "https://wiremodal.net/cwt Wiremodal"
 ""
+- "http://habitatchronicles.com/2007/03/the-untold-history-of-toontowns-speedchat-or-blockchattm-from-disney-finally-arrives/ Habitat Chronicles: The Untold History of Toontown’s SpeedChat (or BlockChattm from Disney finally arrives)"
+"Habitat Chronicles: The Untold History of Toontown’s SpeedChat (or BlockChat™ from Disney finally arrives)"
 
 Task:
 

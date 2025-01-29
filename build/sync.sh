@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-27 12:11:36 gwern"
+# When:  Time-stamp: "2025-01-28 22:01:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -83,7 +83,7 @@ else
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
-          s '&hl=en&oi=ao' ''; s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' ''; s '?login=false' ''; s '?open=false#' '#';
+          s '&hl=en&oi=ao' ''; s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' ''; s '?login=false' ''; s '?open=false#' '#'; s 'https://amp.theguardian.com/' 'https://theguardian.com/';
           stringReplace '&oi=ao' '' ./static/build/Config/Metadata/Author.hs; stringReplace '&hl=en' '' ./static/build/Config/Metadata/Author.hs;
 
           ## name/entity consistency:
@@ -731,7 +731,7 @@ else
     λ(){ ge --only-matching '^\[\^.*\]: ' -- $PAGES | sort | uniq --count | sort --numeric-sort | egrep -v -e '^ + 1 ./'; }
     wrap λ "Check for duplicate footnote IDs in Markdown."
 
-    λ(){ ge -e '<div class="admonition .*\?">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' -e '<span><div>' $PAGES; }
+    λ(){ ge -e '<div class="admonition .*\?">[^$]' -e 'class="admonition"' -e '"admonition warn"' -e '<div class="epigrah">' -e 'class="epigraph>' -e '<span><div>' -e '<span class="admonition' -- $PAGES; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown."
 
     λ(){  gf -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' -e '**Warn' -e '**Note' -e '**Error' -- $PAGES \
@@ -1320,6 +1320,18 @@ else
     ## check that the robots-headers are being set appropriately:
     curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | grep -E -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
     curl --silent --head "https://gwern.net/doc/index" | grep -E -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
+
+    ## check that all tag shortcuts are working,
+    λ() {
+    find ./doc/ -type f -name "index.md" | sort | while read -r file; do
+        dir=$(basename "$(dirname "$file")")
+        fullpath="${file#.}"
+        url="https://gwern.net/$dir"
+        if timeout 30s curl --silent --output /dev/null --write "%{http_code}" "$url" | grep -q "404"; then
+            echo "\"~^/$dir\$\" \"$fullpath/index\";"
+        fi
+    done; }
+    wrap λ "Need new tag-directory shortcut redirects set up." &
 
     ## did any of the key pages mysteriously vanish from the live version?
     linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/' &
