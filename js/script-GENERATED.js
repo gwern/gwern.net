@@ -2217,6 +2217,8 @@ GW.pageToolbar = {
             return;
         }
 
+		let isCollapsed = GW.pageToolbar.isCollapsed();
+
         GW.pageToolbar.toolbar.classList.remove("expanded-temp");
 
         if (collapse == undefined) {
@@ -2231,11 +2233,13 @@ GW.pageToolbar = {
             GW.pageToolbar.uncollapse(options.temp);
         }
 
-		//	Fire event.
-		GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
-			collapse: collapse,
-			collapseOptions: options
-		});
+		//	Fire event, if need be.
+		if (isCollapsed != GW.pageToolbar.isCollapsed()) {
+			GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
+				collapse: collapse,
+				collapseOptions: options
+			});
+		}
     },
 
     /*  Collapse toolbar.
@@ -3447,7 +3451,7 @@ Popups = {
 
     //  Called by: extracts.js
     addTarget: (target, prepareFunction) => {
-        GWLog("Popups.addTarget", "popups.js", 1);
+        GWLog("Popups.addTarget", "popups.js", 2);
 
         //  Bind mouseenter/mouseleave/mousedown events.
         target.addEventListener("mouseenter", Popups.targetMouseEnter);
@@ -11861,7 +11865,7 @@ Extracts = {
     //  Called by: Extracts.processTargetsInContainer
     //  Called by: extracts-options.js
     addTargetsWithin: (container) => {
-        GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
+        GWLog("Extracts.addTargetsWithin", "extracts.js", 2);
 
 		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
 			if (   target.matches(Extracts.config.excludedElementsSelector)
@@ -12935,7 +12939,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js
     setUpAnnotationLoadEventsWithin: (container) => {
-        GWLog("Extracts.setUpAnnotationLoadEventsWithin", "extracts-annotations.js", 1);
+        GWLog("Extracts.setUpAnnotationLoadEventsWithin", "extracts-annotations.js", 2);
 
         //  Get all the annotated targets in the container.
         let allAnnotatedTargetsInContainer = Annotations.allAnnotatedLinksInContainer(container);
@@ -14077,7 +14081,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js
     setUpContentLoadEventsWithin: (container) => {
-        GWLog("Extracts.setUpContentLoadEventsWithin", "extracts.js", 1);
+        GWLog("Extracts.setUpContentLoadEventsWithin", "extracts-content.js", 2);
 
         /*  Get all targets in the container that use Content as a data loading
         	provider. (Currently that is local page links, local fragment links,

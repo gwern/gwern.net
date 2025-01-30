@@ -1660,6 +1660,8 @@ GW.pageToolbar = {
             return;
         }
 
+		let isCollapsed = GW.pageToolbar.isCollapsed();
+
         GW.pageToolbar.toolbar.classList.remove("expanded-temp");
 
         if (collapse == undefined) {
@@ -1674,11 +1676,13 @@ GW.pageToolbar = {
             GW.pageToolbar.uncollapse(options.temp);
         }
 
-		//	Fire event.
-		GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
-			collapse: collapse,
-			collapseOptions: options
-		});
+		//	Fire event, if need be.
+		if (isCollapsed != GW.pageToolbar.isCollapsed()) {
+			GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
+				collapse: collapse,
+				collapseOptions: options
+			});
+		}
     },
 
     /*  Collapse toolbar.
