@@ -104,7 +104,7 @@ Extracts = {
     //  Called by: Extracts.processTargetsInContainer
     //  Called by: extracts-options.js
     addTargetsWithin: (container) => {
-        GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
+        GWLog("Extracts.addTargetsWithin", "extracts.js", 2);
 
 		container.querySelectorAll(Extracts.config.targetElementsSelector).forEach(target => {
 			if (   target.matches(Extracts.config.excludedElementsSelector)

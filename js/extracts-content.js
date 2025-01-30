@@ -1089,7 +1089,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js
     setUpContentLoadEventsWithin: (container) => {
-        GWLog("Extracts.setUpContentLoadEventsWithin", "extracts.js", 1);
+        GWLog("Extracts.setUpContentLoadEventsWithin", "extracts-content.js", 2);
 
         /*  Get all targets in the container that use Content as a data loading
         	provider. (Currently that is local page links, local fragment links,

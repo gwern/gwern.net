@@ -142,7 +142,7 @@ Popups = {
 
     //  Called by: extracts.js
     addTarget: (target, prepareFunction) => {
-        GWLog("Popups.addTarget", "popups.js", 1);
+        GWLog("Popups.addTarget", "popups.js", 2);
 
         //  Bind mouseenter/mouseleave/mousedown events.
         target.addEventListener("mouseenter", Popups.targetMouseEnter);

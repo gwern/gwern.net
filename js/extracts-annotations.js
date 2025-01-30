@@ -236,7 +236,7 @@ Extracts = { ...Extracts,
 
     //  Called by: extracts.js
     setUpAnnotationLoadEventsWithin: (container) => {
-        GWLog("Extracts.setUpAnnotationLoadEventsWithin", "extracts-annotations.js", 1);
+        GWLog("Extracts.setUpAnnotationLoadEventsWithin", "extracts-annotations.js", 2);
 
         //  Get all the annotated targets in the container.
         let allAnnotatedTargetsInContainer = Annotations.allAnnotatedLinksInContainer(container);
