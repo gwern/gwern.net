@@ -594,6 +594,13 @@ canonicals = M.fromList
   , ("_sinity", "Sinity")
   , ("nelhage", "Nelson Elhage")
   , ("Francis_YAO", "Francis Yao")
+  , ("Francis_YAO_", "Francis Yao")
+  , ("James T. Walters", "James T. R. Walters")
+  , ("James R. Walters", "James T. R. Walters")
+  , ("James Walters", "James T. R. Walters")
+  , ("R.Wm. Gosper", "Bill Gosper")
+  , ("R. W. Gosper", "Bill Gosper")
+  , ("William Gosper", "Bill Gosper")
   ]
 
 -- tests: unique
@@ -605,7 +612,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1206,6 +1213,16 @@ authorLinkDB = M.fromList $
     , ("Fernando Borretti", "https://borretti.me/about/")
     , ("Xavier Marquez", "http://abandonedfootnotes.blogspot.com/")
     , ("Nelson Elhage", "https://nelhage.com/")
+    , ("Ege Erdil", "https://www.lesswrong.com/users/ege-erdil")
+    , ("Anke Tönjes", "https://orcid.org/0009-0005-1944-1812")
+    , ("Tineke Oldehinkel", "https://scholar.google.com/citations?user=58FENLIAAAAJ")
+    , ("Albertine J. Oldehinkel", "https://orcid.org/0000-0003-3925-3913")
+    , ("Trishala Neeraj", "https://trishalaneeraj.github.io/about/")
+    , ("Timo Schick", "https://scholar.google.com/citations?user=k8CKy5UAAAAJ")
+    , ("Per Hoffman", "https://www.profiles-ngs-cn.uni-bonn.de/display/39922")
+    , ("Olav B. Smeland", "https://www.ous-research.no/home/psychosis/Group+members/17880")
+    , ("James T. R. Walters", "https://profiles.cardiff.ac.uk/staff/waltersjt")
+    , ("Valentina Escott-Price", "https://www.ukdri.ac.uk/team/valentina-escott-price")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2441,4 +2458,4 @@ authorWpLinkDB =
     , "Ted Chiang", "Bernard Greenberg", "Robert E. Peary", "Richard P. Gabriel", "Mary Lamb"
     , "Bulletin of the Atomic Scientists", "Taylor Swift", "Nick Land", "Garry Kasparov"
     , "Robert Penn Warren", "Jim Steinman", "Cristen Jennifer Willer", "Kenneth O. Stanley"
-    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch", "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy", "Kennedy Space Center"]
+    , "Robert J. Cava", "Zoe Laughlin", "Viktor Pelevin", "John Ousterhout", "Noam Shazeer", "Hans Uszkoreit", "Seneca", "Joe Biden", "Bill Watterson", "Leroy Lowe", "Fischer Black", "Jason Shiga", "Philip Larkin", "Frederik Pohl", "Jayme Odgers", "Saul Bass", "Dominic Cummings", "J. D. Trout", "Hideaki Anno", "Raymond Smullyan", "Clarence Zener", "Edward Luttwak", "Anthony Powell", "Carlos Fuentes", "Kenneth Koch", "Takashi Murakami", "Fabrice Bellard", "WikiWikiWeb", "Andreas Reif", "Elizabeth Bear", "Winston Churchill", "Nicholas Carlini", "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch", "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy", "Kennedy Space Center", "Bill Gosper", "William K. Clifford"]

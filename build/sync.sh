@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-28 22:01:19 gwern"
+# When:  Time-stamp: "2025-01-30 12:05:15 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -469,7 +469,7 @@ else
     # Unfortunately, support in applications is very patchy, and it seems to not work in most (all?) web browsers like Firefox or Chrome.
     # So until they get native support, we will be relying on JS/CSS to restyle the fractions. To do so, we need to mark it up with a `span.fraction`.
     # However, there are so many uses, and spans are so verbose, that it's too much of a PITA to add them all manually forever or keep the search-and-replaces in sync, and ensure no duplicates etc. But we also prefer not to overload the browser client with yet another JS rewrite pass. So we instead just rewrite the HTML after compilation to put FRACTION SLASH users inside a span.fraction.
-    bold "Adding .fraction span to FRACTION SLASH uses for better styling…"
+    bold "Adding '.fraction' span to FRACTION SLASH uses for better styling…"
     # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
     fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' -- "$@"; }
     export -f fraction
@@ -878,7 +878,7 @@ else
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
-            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx; }
+            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx | fgv -e 'righto.com/2025/01/'; }
     wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gfc -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
@@ -886,7 +886,7 @@ else
             -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="W"' -e 'href="(' -e '>/em>' -e '<figure>[' \
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
-            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx | gfv 'jamais vu'; }
+            -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx | gfv 'Jamais Vu'; }
     wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)." &
     λ(){ gfc -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age ' -e '….' -e '((' -e ' %' \
@@ -1050,7 +1050,7 @@ else
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
     λ() { for PAGE in $PAGES_ALL; do
               ANCHOR=$(./static/build/anchor-checker.php "$PAGE")
-              if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
+              if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR" | gfv -e '/lorem'; fi
           done;
           }
     wrap λ "Anchors linked but not defined inside page?" &

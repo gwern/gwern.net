@@ -299,6 +299,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/gan/stylegan/progan", "ProGAN")
   , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
   , ("ai/nn/diffusion/discrete", "discrete diffusion model")
+  , ("ai/nn/diffusion/imagen", "Google Imagen")
   , ("ai/nn/diffusion/midjourney/dropcap/ninit", "Ninit dropcaps")
   , ("ai/nn/diffusion/midjourney/dropcap/genewolfe-dropcap", "Gene Wolfe dropcaps")
   , ("ai/nn/diffusion/midjourney/dropcap/dropcat", "Dropcat dropcaps")
