@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Tags where
 
-import Data.Char (toLower)
+import Data.Char (toLower, isLower, isAlpha, isAlphaNum)
 import Control.Monad (filterM, unless)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (isSuffixOf, isInfixOf, isPrefixOf, sort, intersperse)
@@ -120,9 +120,18 @@ url2Tags p = concatMap (\(match,tag) -> [tag | match p]) C.urlTagDB
 abbreviateTag :: T.Text -> T.Text
 abbreviateTag = T.pack . sedMany C.wholeTagRewritesRegexes . replaceMany C.tagsLong2Short . delete "/doc/" . T.unpack
 
+-- Syntactically, a 'tag' is a lowercase alnum string with hyphens & forward-slashes (with dots grudgingly permitted for easier domain-mirroring), which semantically also exists as a valid tag-directory in the /doc/ hierarchy on disk.
+-- Here we just cheaply check the former property (which is good for quickly verifying that the tag field didn't collide with the DOI or the abstract):
+validateTagSyntax :: String -> Bool
+validateTagSyntax = all (\c -> if isAlpha c then isLower c else (isAlphaNum c || c == '/' || c == '-' || c == '.'))
+validateTagsSyntax :: [String] -> Bool
+validateTagsSyntax = all validateTagSyntax
+
 listTagsAll :: IO [String]
 listTagsAll = do Config.Misc.cd
-                 fmap (map (delete "doc/") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
+                 tags <- fmap (map (delete "doc/") . sort . filter (\f' -> not $ anyInfix f' C.tagListBlacklist) ) $ getDirFiltered (\f -> doesFileExist (f++"/index.md")) "doc/"
+                 let tagsBad = filter (not . validateTagSyntax) tags
+                 if null tagsBad then return tags else error $ "Tags.listTagsAll: invalid tags found on-disk somehow? Bad tags were: " ++ show tagsBad ++ "; all tags were: " ++ show tags
 
 -- given a list of ["doc/foo/index.md"] directories, convert them to what will be the final absolute path ("/doc/foo/index"), while checking they exist (typos are easy, eg. dropping 'doc/' is common).
 -- Bool argument = whether to include all sub-directories recursively.

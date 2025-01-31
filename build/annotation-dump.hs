@@ -16,6 +16,7 @@ import GTX (readGTXSlow)
 import LinkMetadataTypes (MetadataItem, MetadataList)
 import Utils (anyInfix, replace, sed)
 import Metadata.Author (authorsTruncateString)
+import Tags (validateTagsSyntax)
 
 type Path = String
 
@@ -45,11 +46,11 @@ blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title
 toSingleLine :: (Path,(MetadataItem,String)) -> String
 toSingleLine ("",_) = ""
 toSingleLine (f,(("",_,_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
-toSingleLine (f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
+toSingleLine x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
   ([ label,
      authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
-    show tags,
+    show tags',
     "\x1b[35m\""++b++"\"\x1b[0m",
     " (" ++ authors ++ ")",
     d,
@@ -58,3 +59,5 @@ toSingleLine (f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
   )
   where authorsShort = authorsTruncateString c
         authors = if authorsShort == c then authorsShort else authorsShort ++ "…"
+        tags' = if validateTagsSyntax tags then tags else error $ "annotation-dump: syntactically-invalid tags in item: " ++ show x
+
