@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-25 19:04:10 gwern"
+When:  Time-stamp: "2025-01-31 13:46:28 gwern"
 License: CC-0
 -}
 
@@ -37,7 +37,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks)
 import Typography (titlecase', typesetHtmlField, titleWrap)
@@ -275,7 +275,9 @@ readLinkMetadataAndCheck = do
                                                  (anyInfix a [";", "&", "?", "!"] || (not (last a == '.') && isPunctuation (last a)))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc)) finalL
+             let yearLimit = show (C.currentYear + 2) -- no entry should be published or created 2+ years in the future!
+             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc) ||
+                                                              (if not (null dt) then take 4 dt > yearLimit || take 4 dc > yearLimit else False)) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): " >> printGreen (show datesBad))
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
