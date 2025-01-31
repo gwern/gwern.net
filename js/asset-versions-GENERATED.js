@@ -1,5 +1,5 @@
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1737947894",
+	"/static/img/icon/icons.svg": "1738296955",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1707670288",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1707670332",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1735754614",
