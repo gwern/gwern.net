@@ -933,7 +933,7 @@ custom = [
         , ("\\/r\\/DecisionTheory", "https://www.reddit.com/r/DecisionTheory/")
         , ("[aA]dditive regression models", "https://en.wikipedia.org/wiki/Generalized_additive_model")
         , ("[aA]rbtt", "https://arbtt.nomeata.de/")
-        , ("brms", "https://github.com/paul-buerkner/brms#overview")
+        , ("brms", "https://github.com/paul-buerkner/brms#Overview")
         , ("[Cc]itronellol", "https://en.wikipedia.org/wiki/Citronellol")
         , ("[Dd]el\\.icio\\.us", "https://en.wikipedia.org/wiki/Delicious_(website)")
         , ("[Dd]rop-?caps?", "https://en.wikipedia.org/wiki/Initial")

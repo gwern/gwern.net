@@ -42,7 +42,7 @@ import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHt
 import Metadata.Author (authorsTruncateString)
 
 import Config.Misc (todayDay, cd)
-import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions, randSeed)
+import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions, randSeed, maxTitlesForTagGuessing)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -499,7 +499,7 @@ sortSimilarsStartingWithNewestWithTag ldb sortDB md parentTag items =
 processTitles :: String -> [String] -> [String] -> IO String
 processTitles _ _ [] = return ""
 processTitles parentTag blacklistTags a =
-      do let a' = take (4096*3) $ unlines $ [parentTag, unwords blacklistTags] ++ a
+      do let a' = take (4096*3) $ unlines $ [parentTag, unwords blacklistTags] ++ (take C.maxTitlesForTagGuessing a)
          (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/tagguesser.py", a']
          case status of
            ExitFailure err -> printRed "tagguesser.py failed!" >> printRed (show err) >> print a' >> return "" -- printGreen (ppShow (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb])) >> printRed "tagguesser.py failed!" >> return ""

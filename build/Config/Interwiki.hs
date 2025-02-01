@@ -1590,7 +1590,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Epimenides_sentence", "Liar_paradox")
           , ("Epinephrine", "Adrenaline")
           , ("Epistatic", "Epistasis")
-          , ("Epsom_salts", "Magnesium_sulfate#Heptahydrate_(Epsom_salt)")
+          , ("Epsom_salts", "Epsomite")
           , ("Epstein-Barr", "Epstein%E2%80%93Barr_virus")
           , ("Epstein-Barr_virus", "Epstein%E2%80%93Barr_virus")
           , ("Equal_environments_assumption", "Twin_study#Assumptions")

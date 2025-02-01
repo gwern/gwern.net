@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-01-30 12:11:36 gwern"
+# When:  Time-stamp: "2025-01-31 18:43:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -40,7 +40,7 @@ else:
 
 completion = client.chat.completions.create(
   # temperature=0,
-    model="o1-preview", # the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
+    model="o3-mini", # the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
   messages=[
     # {"role": "system", "content": "You are a Wikipedia copyeditor. When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>."},
       {"role": "user", "content":

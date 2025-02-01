@@ -685,7 +685,7 @@ linkIconTestUnitsText =
          , ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R",  "code","svg", redR)
          , ("https://cran.r-project.org/web/packages/censReg/index.html",  "R","text", redR)
          , ("https://www.metafor-project.org/doku.php",  "R","text", redR)
-         , ("https://github.com/paul-buerkner/brms#overview",  "R","text", redR)
+         , ("https://github.com/paul-buerkner/brms#Overview",  "R","text", redR)
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg", "#b226b1")
          , ("https://www.tandfonline.com/doi/abs/10.1080/02783190209554137", "T&F", "text,tri,sans", "#0068b1")
          , ("https://gameprogrammingpatterns.com/singleton.html", "GPP", "text,tri,sans", "#1487c1")

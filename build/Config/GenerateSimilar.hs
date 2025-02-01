@@ -52,5 +52,9 @@ minDistance = 0.01 -- avoids self-matches and other odd errors
 minTagAuto :: Int
 minTagAuto = 3
 
+-- after 30 titles, I can't imagine that you get much better at suggesting a tag name, and then it's just wasting tokens:
+maxTitlesForTagGuessing :: Int
+maxTitlesForTagGuessing = 30
+
 randSeed :: Word64
 randSeed = 23
