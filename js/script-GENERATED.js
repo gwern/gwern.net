@@ -691,8 +691,8 @@ GW.svg = (icon) => {
     viewBox[0] -= xOffset;
     viewBox = viewBox.join(" ");
 
-    return (  `<svg 
-    			xmlns="http://www.w3.org/2000/svg" 
+    return (  `<svg
+    			xmlns="http://www.w3.org/2000/svg"
     			viewBox="${viewBox}"
     			>`
             + g.innerHTML
@@ -743,12 +743,12 @@ function processAssetSequenceOptions(options, metaOptions) {
 			sequenceIndex = rollDie(1E6);
 			localStorage.setItem(savedIndexKey, sequenceIndex);
 		} else if (options.sequence.startsWith("next")) {
-			sequenceIndex = savedIndex == null 
+			sequenceIndex = savedIndex == null
 							? 1
 							: parseInt(savedIndex) + 1;
 			localStorage.setItem(savedIndexKey, sequenceIndex);
 		} else {
-			sequenceIndex = savedIndex == null 
+			sequenceIndex = savedIndex == null
 							? 0
 							: parseInt(savedIndex) - 1;
 			localStorage.setItem(savedIndexKey, sequenceIndex);
@@ -761,8 +761,8 @@ function processAssetSequenceOptions(options, metaOptions) {
 }
 
 /*****************************************************************************/
-/*  Return an asset pathname (not versioned), given a pathname regular 
-	expression pattern (in string form, not a RegExp object), with ‘%R’ where 
+/*  Return an asset pathname (not versioned), given a pathname regular
+	expression pattern (in string form, not a RegExp object), with ‘%R’ where
 	a number should be, e.g.:
 
         /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
@@ -785,36 +785,36 @@ function processAssetSequenceOptions(options, metaOptions) {
 
 	sequenceIndex (integer)
 	sequenceIndex (string)
-		If this field is set to an integer value, then, instead of returning a 
-		random asset pathname out of the asset pathnames matching the provided 
-		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1) 
+		If this field is set to an integer value, then, instead of returning a
+		random asset pathname out of the asset pathnames matching the provided
+		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1)
 		modulo the number of matching asset pathnames.
 
 		If this field is set to a string value, then it must be either “next”
-		or “previous”, and the `sequenceCurrent` field must also be set; if 
-		these conditions are not met, null is returned. (See the 
+		or “previous”, and the `sequenceCurrent` field must also be set; if
+		these conditions are not met, null is returned. (See the
 		`sequenceCurrent` field, below, for details on this option.)
 
 	sequenceCurrent (string)
 		If the `sequenceIndex` field is not set to a string value of either
 		“next” or “previous”, this field is ignored.
 
-		If `sequenceIndex` is set to “next”, and the value of this field is 
+		If `sequenceIndex` is set to “next”, and the value of this field is
 		equal to a value of one of the asset pathnames that match the provided
 		pattern, then the next pattern in the set of matching patterns is
 		returned (wrapping around to the first value after the last one).
 
 		If `sequenceIndex` is set to “previous”, and the value of this field
 		is equal to a value of one of the asset pathnames that match the
-		provided pattern, then the previous pattern in the set of matching 
-		patterns is returned (wrapping around to the last value after the 
+		provided pattern, then the previous pattern in the set of matching
+		patterns is returned (wrapping around to the last value after the
 		first).
 
-		If the value of this field does not match any of the asset pathnames 
-		that match the provided pattern (including if it is null), then, if 
-		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had 
-		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves 
-		as if `sequenceIndex` had been set to 0 (i.e., the first or the last 
+		If the value of this field does not match any of the asset pathnames
+		that match the provided pattern (including if it is null), then, if
+		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had
+		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves
+		as if `sequenceIndex` had been set to 0 (i.e., the first or the last
 		pattern in the set of matching patterns is returned).
  */
 function getAssetPathname(assetPathnamePattern, options) {
@@ -864,8 +864,8 @@ GW.outlineOrNot = { };
 GW.outlineOrNotAPIEndpoint = "https://api.obormot.net/outlineornot/url";
 
 /******************************************************************************/
-/*	Returns true if the given image’s outlining status has been set (i.e., if 
-	it has one of the classes [ "outline", "outline-auto", "outline-not", 
+/*	Returns true if the given image’s outlining status has been set (i.e., if
+	it has one of the classes [ "outline", "outline-auto", "outline-not",
 	"outline-not-auto" ]), false otherwise.
  */
 function outliningJudgmentHasBeenAppliedToImage(image) {
@@ -873,9 +873,9 @@ function outliningJudgmentHasBeenAppliedToImage(image) {
 }
 
 /*****************************************************************************/
-/*  Returns true if the given image should be outlined (i.e., the outlineOrNot 
-	API has judged this image to be outline-requiring), false if the image 
-	should not be outlined (i.e., the outlineOrNot API has judged this image 
+/*  Returns true if the given image should be outlined (i.e., the outlineOrNot
+	API has judged this image to be outline-requiring), false if the image
+	should not be outlined (i.e., the outlineOrNot API has judged this image
 	to be non-outline-requiring, null if no judgment is available.
  */
 function outliningJudgmentForImage(image) {
@@ -885,8 +885,8 @@ function outliningJudgmentForImage(image) {
 /*****************************************************************************/
 /*	Applies available (i.e., requested and received from the outlineOrNot API)
 	image outlining judgment data to the given image, and returns true if this
-	was done successfully. If no such data is available for the given image, 
-	does nothing (and returns false). Likewise does nothing (and returns null) 
+	was done successfully. If no such data is available for the given image,
+	does nothing (and returns false). Likewise does nothing (and returns null)
 	for images which already have their outlining status specified.
  */
 function applyImageOutliningJudgment(image) {
@@ -952,8 +952,8 @@ GW.invertOrNot = { };
 GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/url";
 
 /******************************************************************************/
-/*	Returns true if the given image’s inversion status has been set (i.e., if 
-	it has one of the classes [ "invert", "invert-auto", "invert-not", 
+/*	Returns true if the given image’s inversion status has been set (i.e., if
+	it has one of the classes [ "invert", "invert-auto", "invert-not",
 	"invert-not-auto" ]), false otherwise.
  */
 function inversionJudgmentHasBeenAppliedToImage(image) {
@@ -973,8 +973,8 @@ function inversionJudgmentForImage(image) {
 /*****************************************************************************/
 /*	Applies available (i.e., requested and received from the invertOrNot API)
 	image inversion judgment data to the given image, and returns true if this
-	was done successfully. If no such data is available for the given image, 
-	does nothing (and returns false). Likewise does nothing (and returns null) 
+	was done successfully. If no such data is available for the given image,
+	does nothing (and returns false). Likewise does nothing (and returns null)
 	for images which already have their inversion status specified.
  */
 function applyImageInversionJudgment(image) {
@@ -1052,14 +1052,17 @@ Images = {
 	},
 
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
+        if (typeof imageSrcURL === "string") {
+            imageSrcURL = URLFromString(imageSrcURL);
+        }
         if (imageSrcURL.hostname != location.hostname)
             return null;
-
-        return URLFromString(  Images.thumbnailBasePath
+        if (imageSrcURL.pathname.toLowerCase().endsWith('.svg'))
+            return imageSrcURL;
+        return URLFromString(Images.thumbnailBasePath
                              + size + "px/"
                              + fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
     },
-
     thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
         return (Images.isThumbnail(image)
         		? URLFromString(image.src)
@@ -1095,7 +1098,7 @@ Images = {
 /***********************/
 
 /**************************************************************************/
-/*	Returns SVG source for a progress-indicator SVG icon, given a specified 
+/*	Returns SVG source for a progress-indicator SVG icon, given a specified
 	progress percentage (in [0,100]).
  */
 function arcSVGForProgressPercent (percent) {
@@ -1112,7 +1115,7 @@ function arcSVGForProgressPercent (percent) {
 		green: backdropCircleGray,
 		blue: backdropCircleGray
 	});
-	let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"` 
+	let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"`
 						  + ` stroke-width="${strokeWidth}" stroke="${backdropCircleColor}" fill="none"/>`;
 
 	let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
@@ -2150,11 +2153,11 @@ GW.pageToolbar = {
 
         widget.classList.add("flashing");
         if (options.showSelectedButtonLabel) {
-            setTimeout(() => { widget.classList.add("show-selected-button-label"); }, 
+            setTimeout(() => { widget.classList.add("show-selected-button-label"); },
             		   GW.pageToolbar.widgetFlashRiseDuration * 0.5);
 
 			if (options.highlightSelectedButtonLabelAfterDelay != null)
-				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); }, 
+				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); },
 						   GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
         }
         setTimeout(() => {
@@ -2163,11 +2166,11 @@ GW.pageToolbar = {
                 widget.classList.remove("flashing-fade");
             }, GW.pageToolbar.widgetFlashFallDuration);
             if (options.showSelectedButtonLabel) {
-                setTimeout(() => { widget.classList.remove("show-selected-button-label"); }, 
+                setTimeout(() => { widget.classList.remove("show-selected-button-label"); },
                 		   GW.pageToolbar.widgetFlashFallDuration * 0.5);
 
 			if (options.highlightSelectedButtonLabelAfterDelay != null)
-				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); }, 
+				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); },
 						   GW.pageToolbar.widgetFlashFallDuration);
             }
         }, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
@@ -2311,7 +2314,7 @@ GW.pageToolbar = {
     updateState: (event) => {
         if (   event
             && event.type == "scroll"
-            && (   GW.isMobile() 
+            && (   GW.isMobile()
             	|| GW.pageToolbar.toolbar.matches(":hover") == false)) {
             //  Collapse on scroll.
             let thresholdScrollDistance = (0.2 * window.innerHeight);
@@ -2694,7 +2697,7 @@ GW.floatingHeader = {
 				//	Update current trail.
 				GW.floatingHeader.currentTrail = trail;
 			}
- 
+
 			/*	Update page toolbar position offset, so that the header does not
 				block the page toolbar toggle button.
 			 */
@@ -2806,7 +2809,7 @@ GW.floatingHeader = {
 													+ `<div class="scroll-indicator"></div>`
 													+ `<div class="link-chain"></div>`
 													+ `</div>`);
-        
+
         } else {
 			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-top">`
 													+ `<div class="link-chain"></div>`
@@ -2886,9 +2889,9 @@ GW.popFrameSpawnWidgets = {
 	},
 
 	addWidgetType: (widgetTypeName, widgetTypeSpec) => {
-		return (GW.popFrameSpawnWidgets.widgetTypes[widgetTypeName] = Object.assign({ }, 
-			GW.popFrameSpawnWidgets.widgetTypes.template, 
-			widgetTypeSpec, 
+		return (GW.popFrameSpawnWidgets.widgetTypes[widgetTypeName] = Object.assign({ },
+			GW.popFrameSpawnWidgets.widgetTypes.template,
+			widgetTypeSpec,
 			{ name: widgetTypeName }));
 	},
 
@@ -2951,8 +2954,8 @@ GW.popFrameSpawnWidgets = {
 	setup: (widgetType) => {
 		if (widgetType.addToolbarWidget == true) {
 			//	Add.
-			let widgetHTML = `<div 
-							   id="${widgetType.name}-widget" 
+			let widgetHTML = `<div
+							   id="${widgetType.name}-widget"
 							   class="link-widget"
 							   data-widget-type="${widgetType.name}">`
 						   + `<a
@@ -2974,8 +2977,8 @@ GW.popFrameSpawnWidgets = {
 			GW.popFrameSpawnWidgets.activateWidget(widgetType.toolbarWidget);
 		} else if (widgetType.keyCommand != null) {
 			//	Create “virtual widget”.
-			let widgetHTML = `<div 
-							   id="${widgetType.name}-widget" 
+			let widgetHTML = `<div
+							   id="${widgetType.name}-widget"
 							   class="link-widget"
 							   data-widget-type="${widgetType.name}">`
 						   + `<a class="${widgetType.name} no-footer-bar"
@@ -3159,8 +3162,8 @@ doWhenPageLoaded(() => {
 						event.preventDefault();
 
 						let form = event.target;
-						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value 
-																+ " " 
+						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
+																+ " "
 																+ form.querySelector("input.search").value;
 						form.submit();
 					});
