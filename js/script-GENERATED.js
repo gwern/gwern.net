@@ -692,9 +692,9 @@ GW.svg = (icon) => {
     viewBox = viewBox.join(" ");
 
     return (  `<svg
-    			xmlns="http://www.w3.org/2000/svg"
-    			viewBox="${viewBox}"
-    			>`
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="${viewBox}"
+                >`
             + g.innerHTML
             + `</svg>`);
 };
@@ -717,53 +717,53 @@ function versionedAssetURL(pathname) {
 }
 
 /***************************************************************************/
-/*	Convenience function for shared code between uses of getAssetPathname().
+/*  Convenience function for shared code between uses of getAssetPathname().
  */
 function processAssetSequenceOptions(options, metaOptions) {
-	metaOptions = Object.assign({
-		currentAssetURL: null,
-		assetSavedIndexKey: null
-	}, metaOptions);
+    metaOptions = Object.assign({
+        currentAssetURL: null,
+        assetSavedIndexKey: null
+    }, metaOptions);
 
-	let sequenceIndex, sequenceCurrent;
-	if (GW.allowedAssetSequencingModes.includes(options.sequence) == false) {
-		sequenceIndex = null;
-		sequenceCurrent = null;
-	} else if (options.sequence.endsWith("Current")) {
-		for (let prefix of [ "next", "previous" ])
-			if (options.sequence.startsWith(prefix))
-				sequenceIndex = prefix;
+    let sequenceIndex, sequenceCurrent;
+    if (GW.allowedAssetSequencingModes.includes(options.sequence) == false) {
+        sequenceIndex = null;
+        sequenceCurrent = null;
+    } else if (options.sequence.endsWith("Current")) {
+        for (let prefix of [ "next", "previous" ])
+            if (options.sequence.startsWith(prefix))
+                sequenceIndex = prefix;
 
-		sequenceCurrent = metaOptions.currentAssetURL.pathname;
-	} else {
-		let savedIndexKey = metaOptions.assetSavedIndexKey;
-		let savedIndex = localStorage.getItem(savedIndexKey);
-		if (   savedIndex == null
-			&& options.randomize) {
-			sequenceIndex = rollDie(1E6);
-			localStorage.setItem(savedIndexKey, sequenceIndex);
-		} else if (options.sequence.startsWith("next")) {
-			sequenceIndex = savedIndex == null
-							? 1
-							: parseInt(savedIndex) + 1;
-			localStorage.setItem(savedIndexKey, sequenceIndex);
-		} else {
-			sequenceIndex = savedIndex == null
-							? 0
-							: parseInt(savedIndex) - 1;
-			localStorage.setItem(savedIndexKey, sequenceIndex);
-		}
+        sequenceCurrent = metaOptions.currentAssetURL.pathname;
+    } else {
+        let savedIndexKey = metaOptions.assetSavedIndexKey;
+        let savedIndex = localStorage.getItem(savedIndexKey);
+        if (   savedIndex == null
+            && options.randomize) {
+            sequenceIndex = rollDie(1E6);
+            localStorage.setItem(savedIndexKey, sequenceIndex);
+        } else if (options.sequence.startsWith("next")) {
+            sequenceIndex = savedIndex == null
+                            ? 1
+                            : parseInt(savedIndex) + 1;
+            localStorage.setItem(savedIndexKey, sequenceIndex);
+        } else {
+            sequenceIndex = savedIndex == null
+                            ? 0
+                            : parseInt(savedIndex) - 1;
+            localStorage.setItem(savedIndexKey, sequenceIndex);
+        }
 
-		sequenceCurrent = null;
-	}
+        sequenceCurrent = null;
+    }
 
-	return { sequenceIndex, sequenceCurrent };
+    return { sequenceIndex, sequenceCurrent };
 }
 
 /*****************************************************************************/
 /*  Return an asset pathname (not versioned), given a pathname regular
-	expression pattern (in string form, not a RegExp object), with ‘%R’ where
-	a number should be, e.g.:
+    expression pattern (in string form, not a RegExp object), with ‘%R’ where
+    a number should be, e.g.:
 
         /static/img/logo/christmas/light/logo-christmas-light-%R(\\.svg|-small-1x\\.(png|jpg|webp))
 
@@ -772,56 +772,56 @@ function processAssetSequenceOptions(options, metaOptions) {
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.png
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.jpg
         /static/img/logo/christmas/light/logo-christmas-light-1-small-1x.webp
-		/static/img/logo/christmas/light/logo-christmas-light-1.svg
+        /static/img/logo/christmas/light/logo-christmas-light-1.svg
 
     (Or -2, -3, etc.)
 
     Specified assets must be listed in the versioned asset database.
 
-	By default, selects uniform-randomly from all available asset pathnames
-	matching the provided pattern. (But see option fields, below.)
+    By default, selects uniform-randomly from all available asset pathnames
+    matching the provided pattern. (But see option fields, below.)
 
-	Available option fields:
+    Available option fields:
 
-	sequenceIndex (integer)
-	sequenceIndex (string)
-		If this field is set to an integer value, then, instead of returning a
-		random asset pathname out of the asset pathnames matching the provided
-		pattern, selects the i’th one, where i is equal to (sequenceIndex - 1)
-		modulo the number of matching asset pathnames.
+    sequenceIndex (integer)
+    sequenceIndex (string)
+        If this field is set to an integer value, then, instead of returning a
+        random asset pathname out of the asset pathnames matching the provided
+        pattern, selects the i’th one, where i is equal to (sequenceIndex - 1)
+        modulo the number of matching asset pathnames.
 
-		If this field is set to a string value, then it must be either “next”
-		or “previous”, and the `sequenceCurrent` field must also be set; if
-		these conditions are not met, null is returned. (See the
-		`sequenceCurrent` field, below, for details on this option.)
+        If this field is set to a string value, then it must be either “next”
+        or “previous”, and the `sequenceCurrent` field must also be set; if
+        these conditions are not met, null is returned. (See the
+        `sequenceCurrent` field, below, for details on this option.)
 
-	sequenceCurrent (string)
-		If the `sequenceIndex` field is not set to a string value of either
-		“next” or “previous”, this field is ignored.
+    sequenceCurrent (string)
+        If the `sequenceIndex` field is not set to a string value of either
+        “next” or “previous”, this field is ignored.
 
-		If `sequenceIndex` is set to “next”, and the value of this field is
-		equal to a value of one of the asset pathnames that match the provided
-		pattern, then the next pattern in the set of matching patterns is
-		returned (wrapping around to the first value after the last one).
+        If `sequenceIndex` is set to “next”, and the value of this field is
+        equal to a value of one of the asset pathnames that match the provided
+        pattern, then the next pattern in the set of matching patterns is
+        returned (wrapping around to the first value after the last one).
 
-		If `sequenceIndex` is set to “previous”, and the value of this field
-		is equal to a value of one of the asset pathnames that match the
-		provided pattern, then the previous pattern in the set of matching
-		patterns is returned (wrapping around to the last value after the
-		first).
+        If `sequenceIndex` is set to “previous”, and the value of this field
+        is equal to a value of one of the asset pathnames that match the
+        provided pattern, then the previous pattern in the set of matching
+        patterns is returned (wrapping around to the last value after the
+        first).
 
-		If the value of this field does not match any of the asset pathnames
-		that match the provided pattern (including if it is null), then, if
-		`sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had
-		been set to 1; and if `sequenceIndex` is set to “previous”, it behaves
-		as if `sequenceIndex` had been set to 0 (i.e., the first or the last
-		pattern in the set of matching patterns is returned).
+        If the value of this field does not match any of the asset pathnames
+        that match the provided pattern (including if it is null), then, if
+        `sequenceIndex` is set to “next”, it behaves as if `sequenceIndex` had
+        been set to 1; and if `sequenceIndex` is set to “previous”, it behaves
+        as if `sequenceIndex` had been set to 0 (i.e., the first or the last
+        pattern in the set of matching patterns is returned).
  */
 function getAssetPathname(assetPathnamePattern, options) {
-	options = Object.assign({
-		sequenceIndex: null,
-		sequenceCurrent: null
-	}, options);
+    options = Object.assign({
+        sequenceIndex: null,
+        sequenceCurrent: null
+    }, options);
 
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let matchingAssetPathnames = [ ];
@@ -830,29 +830,29 @@ function getAssetPathname(assetPathnamePattern, options) {
             matchingAssetPathnames.push(versionedAssetPathname);
     }
 
-	if (matchingAssetPathnames.length == 0) {
-		return null;
-	} else if (options.sequenceIndex == null) {
-		return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
-	} else if (typeof options.sequenceIndex == "number") {
-		return matchingAssetPathnames[modulo(options.sequenceIndex - 1, matchingAssetPathnames.length)];
-	} else if (typeof options.sequenceIndex == "string") {
-		if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
-			return null;
+    if (matchingAssetPathnames.length == 0) {
+        return null;
+    } else if (options.sequenceIndex == null) {
+        return matchingAssetPathnames[rollDie(matchingAssetPathnames.length) - 1];
+    } else if (typeof options.sequenceIndex == "number") {
+        return matchingAssetPathnames[modulo(options.sequenceIndex - 1, matchingAssetPathnames.length)];
+    } else if (typeof options.sequenceIndex == "string") {
+        if ([ "next", "previous" ].includes(options.sequenceIndex) == false)
+            return null;
 
-		let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
-		if (currentIndex == -1) {
-			return (options.sequenceIndex == "next"
-					? matchingAssetPathnames.first
-					: matchingAssetPathnames.last);
-		} else {
-			return (options.sequenceIndex == "next"
-					? matchingAssetPathnames[modulo(currentIndex + 1, matchingAssetPathnames.length)]
-					: matchingAssetPathnames[modulo(currentIndex - 1, matchingAssetPathnames.length)]);
-		}
-	} else {
-		return null;
-	}
+        let currentIndex = matchingAssetPathnames.indexOf(options.sequenceCurrent);
+        if (currentIndex == -1) {
+            return (options.sequenceIndex == "next"
+                    ? matchingAssetPathnames.first
+                    : matchingAssetPathnames.last);
+        } else {
+            return (options.sequenceIndex == "next"
+                    ? matchingAssetPathnames[modulo(currentIndex + 1, matchingAssetPathnames.length)]
+                    : matchingAssetPathnames[modulo(currentIndex - 1, matchingAssetPathnames.length)]);
+        }
+    } else {
+        return null;
+    }
 }
 
 
@@ -864,42 +864,42 @@ GW.outlineOrNot = { };
 GW.outlineOrNotAPIEndpoint = "https://api.obormot.net/outlineornot/url";
 
 /******************************************************************************/
-/*	Returns true if the given image’s outlining status has been set (i.e., if
-	it has one of the classes [ "outline", "outline-auto", "outline-not",
-	"outline-not-auto" ]), false otherwise.
+/*  Returns true if the given image’s outlining status has been set (i.e., if
+    it has one of the classes [ "outline", "outline-auto", "outline-not",
+    "outline-not-auto" ]), false otherwise.
  */
 function outliningJudgmentHasBeenAppliedToImage(image) {
-	return (image.classList.containsAnyOf([ "outline", "outline-auto", "outline-not", "outline-not-auto" ]) == true);
+    return (image.classList.containsAnyOf([ "outline", "outline-auto", "outline-not", "outline-not-auto" ]) == true);
 }
 
 /*****************************************************************************/
 /*  Returns true if the given image should be outlined (i.e., the outlineOrNot
-	API has judged this image to be outline-requiring), false if the image
-	should not be outlined (i.e., the outlineOrNot API has judged this image
-	to be non-outline-requiring, null if no judgment is available.
+    API has judged this image to be outline-requiring), false if the image
+    should not be outlined (i.e., the outlineOrNot API has judged this image
+    to be non-outline-requiring, null if no judgment is available.
  */
 function outliningJudgmentForImage(image) {
     return (GW.outlineOrNot[Images.smallestAvailableImageSizeURLForImage(image).href]?.outline ?? null);
 }
 
 /*****************************************************************************/
-/*	Applies available (i.e., requested and received from the outlineOrNot API)
-	image outlining judgment data to the given image, and returns true if this
-	was done successfully. If no such data is available for the given image,
-	does nothing (and returns false). Likewise does nothing (and returns null)
-	for images which already have their outlining status specified.
+/*  Applies available (i.e., requested and received from the outlineOrNot API)
+    image outlining judgment data to the given image, and returns true if this
+    was done successfully. If no such data is available for the given image,
+    does nothing (and returns false). Likewise does nothing (and returns null)
+    for images which already have their outlining status specified.
  */
 function applyImageOutliningJudgment(image) {
-	if (outliningJudgmentHasBeenAppliedToImage(image))
-		return null;
+    if (outliningJudgmentHasBeenAppliedToImage(image))
+        return null;
 
-	let outliningJudgment = outliningJudgmentForImage(image);
-	if (outliningJudgment != null) {
-		image.classList.add(outliningJudgment == true ? "outline-auto" : "outline-not-auto");
-		return true;
-	} else {
-		return false;
-	}
+    let outliningJudgment = outliningJudgmentForImage(image);
+    if (outliningJudgment != null) {
+        image.classList.add(outliningJudgment == true ? "outline-auto" : "outline-not-auto");
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /*****************************************************************************/
@@ -907,17 +907,17 @@ function applyImageOutliningJudgment(image) {
     given container ought to be outlined.
  */
 function requestImageOutliningJudgmentsForImagesInContainer(container) {
-	/*	Disable, for now.
-			—SA 2024-12-18
-	 */
-	return;
+    /*  Disable, for now.
+            —SA 2024-12-18
+     */
+    return;
 
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
-    	let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
+        let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
-        		&& GW.invertOrNot[imageURL.href] == null)
-        	   ? imageURL.href
-        	   : null;
+                && GW.invertOrNot[imageURL.href] == null)
+               ? imageURL.href
+               : null;
     }).filter(x => x);
     if (imageURLs.length == 0)
         return;
@@ -935,7 +935,7 @@ function requestImageOutliningJudgmentsForImagesInContainer(container) {
                 };
             });
 
-			GW.notificationCenter.fireEvent("GW.imageOutliningJudgmentsAvailable", { judgments: event.target.response });
+            GW.notificationCenter.fireEvent("GW.imageOutliningJudgmentsAvailable", { judgments: event.target.response });
         },
         onFailure: (event) => {
             console.log(event);
@@ -952,42 +952,42 @@ GW.invertOrNot = { };
 GW.invertOrNotAPIEndpoint = "https://invertornot.com/api/url";
 
 /******************************************************************************/
-/*	Returns true if the given image’s inversion status has been set (i.e., if
-	it has one of the classes [ "invert", "invert-auto", "invert-not",
-	"invert-not-auto" ]), false otherwise.
+/*  Returns true if the given image’s inversion status has been set (i.e., if
+    it has one of the classes [ "invert", "invert-auto", "invert-not",
+    "invert-not-auto" ]), false otherwise.
  */
 function inversionJudgmentHasBeenAppliedToImage(image) {
-	return (image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not", "invert-not-auto" ]) == true);
+    return (image.classList.containsAnyOf([ "invert", "invert-auto", "invert-not", "invert-not-auto" ]) == true);
 }
 
 /****************************************************************************/
 /*  Returns true if the given image should be inverted in dark mode (i.e.,
-	the invertOrNot API has judged this image to be invertible), false if the
-	image should not be inverted (i.e., the invertOrNot API has judged this
-	image to be non-invertible, null if no judgment is available.
+    the invertOrNot API has judged this image to be invertible), false if the
+    image should not be inverted (i.e., the invertOrNot API has judged this
+    image to be non-invertible, null if no judgment is available.
  */
 function inversionJudgmentForImage(image) {
     return (GW.invertOrNot[Images.smallestAvailableImageSizeURLForImage(image).href]?.invert ?? null);
 }
 
 /*****************************************************************************/
-/*	Applies available (i.e., requested and received from the invertOrNot API)
-	image inversion judgment data to the given image, and returns true if this
-	was done successfully. If no such data is available for the given image,
-	does nothing (and returns false). Likewise does nothing (and returns null)
-	for images which already have their inversion status specified.
+/*  Applies available (i.e., requested and received from the invertOrNot API)
+    image inversion judgment data to the given image, and returns true if this
+    was done successfully. If no such data is available for the given image,
+    does nothing (and returns false). Likewise does nothing (and returns null)
+    for images which already have their inversion status specified.
  */
 function applyImageInversionJudgment(image) {
-	if (inversionJudgmentHasBeenAppliedToImage(image))
-		return null;
+    if (inversionJudgmentHasBeenAppliedToImage(image))
+        return null;
 
-	let inversionJudgment = inversionJudgmentForImage(image);
-	if (inversionJudgment != null) {
-		image.classList.add(inversionJudgment == true ? "invert-auto" : "invert-not-auto");
-		return true;
-	} else {
-		return false;
-	}
+    let inversionJudgment = inversionJudgmentForImage(image);
+    if (inversionJudgment != null) {
+        image.classList.add(inversionJudgment == true ? "invert-auto" : "invert-not-auto");
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /*****************************************************************************/
@@ -996,11 +996,11 @@ function applyImageInversionJudgment(image) {
  */
 function requestImageInversionJudgmentsForImagesInContainer(container) {
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
-    	let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
+        let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
-        		&& GW.invertOrNot[imageURL.href] == null)
-        	   ? imageURL.href
-        	   : null;
+                && GW.invertOrNot[imageURL.href] == null)
+               ? imageURL.href
+               : null;
     }).filter(x => x);
     if (imageURLs.length == 0)
         return;
@@ -1018,7 +1018,7 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
                 };
             });
 
-			GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable", { judgments: event.target.response });
+            GW.notificationCenter.fireEvent("GW.imageInversionJudgmentsAvailable", { judgments: event.target.response });
         },
         onFailure: (event) => {
             console.log(event);
@@ -1036,42 +1036,44 @@ Images = {
 
     thumbnailDefaultSize: "256",
 
-	thumbnailSizeFromURL: (url) => {
-		if (typeof url == "string")
-			url = URLFromString(url);
+    thumbnailSizeFromURL: (url) => {
+        if (typeof url == "string")
+            url = URLFromString(url);
 
-		return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
-	},
+        return parseInt(url.pathname.slice(Images.thumbnailBasePath.length).split("/")[0]);
+    },
 
-	smallestAvailableImageSizeURLForImage: (image) => {
-		return (Images.thumbnailURLForImage(image) ?? Images.fullSizeURLForImage(image));
-	},
+    smallestAvailableImageSizeURLForImage: (image) => {
+        return (Images.thumbnailURLForImage(image) ?? Images.fullSizeURLForImage(image));
+    },
 
-	fullSizeURLForImage: (image) => {
-		return URLFromString(image.dataset.srcSizeFull ?? image.src);
-	},
+    fullSizeURLForImage: (image) => {
+        return URLFromString(image.dataset.srcSizeFull ?? image.src);
+    },
 
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
         if (typeof imageSrcURL === "string") {
             imageSrcURL = URLFromString(imageSrcURL);
         }
-        if (imageSrcURL.hostname != location.hostname)
+        if (imageSrcURL.hostname !== location.hostname)
             return null;
+        // Do not create a thumbnail URL for SVG images.
         if (imageSrcURL.pathname.toLowerCase().endsWith('.svg'))
-            return imageSrcURL;
-        return URLFromString(Images.thumbnailBasePath
-                             + size + "px/"
-                             + fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
+            return null;
+        return URLFromString(Images.thumbnailBasePath +
+                             size + "px/" +
+                             fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
     },
+
     thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
         return (Images.isThumbnail(image)
-        		? URLFromString(image.src)
-        		: Images.thumbnailURLForImageURL(URLFromString(image.src)));
+                ? URLFromString(image.src)
+                : Images.thumbnailURLForImageURL(URLFromString(image.src)));
     },
 
     thumbnailifyImage: (image) => {
-    	if (Images.isThumbnail(image))
-    		return;
+        if (Images.isThumbnail(image))
+            return;
 
         let thumbnailURL = Images.thumbnailURLForImage(image);
         if (thumbnailURL) {
@@ -1080,16 +1082,16 @@ Images = {
         }
     },
 
-	isThumbnail: (image) => {
-		return (image.dataset.srcSizeFull > "");
-	},
+    isThumbnail: (image) => {
+        return (image.dataset.srcSizeFull > "");
+    },
 
-	unthumbnailifyImage: (image) => {
-		if (Images.isThumbnail(image)) {
-			image.src = image.dataset.srcSizeFull;
-			delete image.dataset.srcSizeFull;
-		}
-	}
+    unthumbnailifyImage: (image) => {
+        if (Images.isThumbnail(image)) {
+            image.src = image.dataset.srcSizeFull;
+            delete image.dataset.srcSizeFull;
+        }
+    }
 };
 
 
@@ -1098,55 +1100,55 @@ Images = {
 /***********************/
 
 /**************************************************************************/
-/*	Returns SVG source for a progress-indicator SVG icon, given a specified
-	progress percentage (in [0,100]).
+/*  Returns SVG source for a progress-indicator SVG icon, given a specified
+    progress percentage (in [0,100]).
  */
 function arcSVGForProgressPercent (percent) {
-	let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
-	let svgClosingTagSrc = `</svg>`;
+    let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
+    let svgClosingTagSrc = `</svg>`;
 
-	let strokeWidth = GW.isMobile() ? 64.0 : 56.0;
-	let boxRadius = 256.0;
-	let radius = boxRadius - (strokeWidth * 0.5);
+    let strokeWidth = GW.isMobile() ? 64.0 : 56.0;
+    let boxRadius = 256.0;
+    let radius = boxRadius - (strokeWidth * 0.5);
 
-	let backdropCircleGray = (GW.isMobile() ? 110.0 : 170.0) + (percent * 0.64);
-	let backdropCircleColor = Color.hexStringFromRGB({
-		red: backdropCircleGray,
-		green: backdropCircleGray,
-		blue: backdropCircleGray
-	});
-	let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"`
-						  + ` stroke-width="${strokeWidth}" stroke="${backdropCircleColor}" fill="none"/>`;
+    let backdropCircleGray = (GW.isMobile() ? 110.0 : 170.0) + (percent * 0.64);
+    let backdropCircleColor = Color.hexStringFromRGB({
+        red: backdropCircleGray,
+        green: backdropCircleGray,
+        blue: backdropCircleGray
+    });
+    let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"`
+                          + ` stroke-width="${strokeWidth}" stroke="${backdropCircleColor}" fill="none"/>`;
 
-	let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
-	let arcSrc;
-	if (percent == 100) {
-		arcSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}" ${arcAttributesSrc}/>`;
-	} else {
-		let angle = 2.0 * Math.PI * ((percent / 100.0) - 0.25);
-		let y = (radius * Math.sin(angle)) + boxRadius;
-		let x = (radius * Math.cos(angle)) + boxRadius;
-		let largeArc = percent > 50 ? "1" : "0";
-		arcSrc = `<path
-				   d="M ${boxRadius} ${strokeWidth * 0.5} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}"
-				   ${arcAttributesSrc}/>`;
-	}
+    let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
+    let arcSrc;
+    if (percent == 100) {
+        arcSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}" ${arcAttributesSrc}/>`;
+    } else {
+        let angle = 2.0 * Math.PI * ((percent / 100.0) - 0.25);
+        let y = (radius * Math.sin(angle)) + boxRadius;
+        let x = (radius * Math.cos(angle)) + boxRadius;
+        let largeArc = percent > 50 ? "1" : "0";
+        arcSrc = `<path
+                   d="M ${boxRadius} ${strokeWidth * 0.5} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}"
+                   ${arcAttributesSrc}/>`;
+    }
 
-	return (svgOpeningTagSrc + backdropCircleSrc + arcSrc + svgClosingTagSrc);
+    return (svgOpeningTagSrc + backdropCircleSrc + arcSrc + svgClosingTagSrc);
 }
 
 /*****************************************************************************/
-/*	Given an element with a `data-progress-percentage` attribute, injects an
-	inline icon displaying the specified progress percentage. (The icon will
-	automatically be further processed for display by the inline icon system.)
+/*  Given an element with a `data-progress-percentage` attribute, injects an
+    inline icon displaying the specified progress percentage. (The icon will
+    automatically be further processed for display by the inline icon system.)
  */
 function renderProgressPercentageIcon(progressIndicator) {
-	let svgSrc = arcSVGForProgressPercent(parseInt(progressIndicator.dataset.progressPercentage));
-	progressIndicator.querySelector(".progress-indicator-icon")?.remove();
-	progressIndicator.appendChild(newElement("SPAN", {
-		class: "progress-indicator-icon icon-special",
-		style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`
-	}));
+    let svgSrc = arcSVGForProgressPercent(parseInt(progressIndicator.dataset.progressPercentage));
+    progressIndicator.querySelector(".progress-indicator-icon")?.remove();
+    progressIndicator.appendChild(newElement("SPAN", {
+        class: "progress-indicator-icon icon-special",
+        style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`
+    }));
 }
 
 
@@ -1394,30 +1396,30 @@ AuxLinks = {
 /*********/
 
 Notes = {
-	hashForCitationRegexp: new RegExp("^#fnref[0-9]+$"),
+    hashForCitationRegexp: new RegExp("^#fnref[0-9]+$"),
 
-	hashMatchesCitation: (hash = location.hash) => {
-		return Notes.hashForCitationRegexp.test(hash);
-	},
+    hashMatchesCitation: (hash = location.hash) => {
+        return Notes.hashForCitationRegexp.test(hash);
+    },
 
-	hashForFootnoteRegexp: new RegExp("^#fn[0-9]+$"),
+    hashForFootnoteRegexp: new RegExp("^#fn[0-9]+$"),
 
-	hashMatchesFootnote: (hash = location.hash) => {
-		return Notes.hashForFootnoteRegexp.test(hash);
-	},
+    hashMatchesFootnote: (hash = location.hash) => {
+        return Notes.hashForFootnoteRegexp.test(hash);
+    },
 
-	hashForSidenoteRegexp: new RegExp("^#sn[0-9]+$"),
+    hashForSidenoteRegexp: new RegExp("^#sn[0-9]+$"),
 
-	hashMatchesSidenote: (hash = location.hash) => {
-		return Notes.hashForSidenoteRegexp.test(hash);
-	},
+    hashMatchesSidenote: (hash = location.hash) => {
+        return Notes.hashForSidenoteRegexp.test(hash);
+    },
 
     /*  Get the (side|foot)note number from a URL hash (which might point to a
         footnote, a sidenote, or a citation).
      */
     noteNumberFromHash: (hash = location.hash) => {
         if (   Notes.hashMatchesFootnote(hash)
-        	|| Notes.hashMatchesSidenote(hash))
+            || Notes.hashMatchesSidenote(hash))
             return hash.substr(3);
         else if (Notes.hashMatchesCitation(hash))
             return hash.substr(6);
@@ -1833,45 +1835,45 @@ GW.dropcaps = {
 /*  Returns URL of a graphical dropcap of the given type and letter,
     appropriate for the current mode and the viewport’s device pixel ratio.
 
-	For an explanation of the available option fields, see the
-	`injectSpecialPageLogo()` function in special-occasions.js.
+    For an explanation of the available option fields, see the
+    `injectSpecialPageLogo()` function in special-occasions.js.
  */
 function getDropcapURL(dropcapType, letter, options) {
-	options = Object.assign({
-		mode: DarkMode.computedMode(),
-		identifier: null,
-		randomize: true,
-		sequence: null
-	}, options);
+    options = Object.assign({
+        mode: DarkMode.computedMode(),
+        identifier: null,
+        randomize: true,
+        sequence: null
+    }, options);
 
-	//	Identifier string (empty, or hyphen plus a number, or “-%R”).
+    //  Identifier string (empty, or hyphen plus a number, or “-%R”).
     let dropcapIdentifierRegexpString = ``;
     if (options.identifier) {
-    	dropcapIdentifierRegexpString = `-${options.identifier}`;
+        dropcapIdentifierRegexpString = `-${options.identifier}`;
     } else if (   options.randomize == true
-    		   || GW.allowedAssetSequencingModes.includes(options.sequence)) {
-    	dropcapIdentifierRegexpString = `-%R`;
+               || GW.allowedAssetSequencingModes.includes(options.sequence)) {
+        dropcapIdentifierRegexpString = `-%R`;
     }
 
-	/*	Bitmap files come in several scales (for different pixel densities of
-		display); SVGs are singular.
-	 */
+    /*  Bitmap files come in several scales (for different pixel densities of
+        display); SVGs are singular.
+     */
     let scale = valMinMax(Math.ceil(window.devicePixelRatio), 1, 2);
     let fileFormatRegexpSuffix = `(\\.svg|-small-${scale}x\\.(png|jpg|webp))$`;
 
-	/*	File name pattern further depends on whether we have separate light
-		and dark dropcaps of this sort.
-	 */
-	let dropcapPathnamePattern = `/static/font/dropcap/${dropcapType}/`
-							   + (options.mode
-							      ? `(${options.mode}/)?`
-							      : ``)
-							   + letter.toUpperCase()
-							   + `(-.+)?`
-							   + dropcapIdentifierRegexpString
-							   + fileFormatRegexpSuffix;
+    /*  File name pattern further depends on whether we have separate light
+        and dark dropcaps of this sort.
+     */
+    let dropcapPathnamePattern = `/static/font/dropcap/${dropcapType}/`
+                               + (options.mode
+                                  ? `(${options.mode}/)?`
+                                  : ``)
+                               + letter.toUpperCase()
+                               + `(-.+)?`
+                               + dropcapIdentifierRegexpString
+                               + fileFormatRegexpSuffix;
     let dropcapPathname = getAssetPathname(dropcapPathnamePattern, processAssetSequenceOptions(options, {
-    	assetSavedIndexKey: `dropcap-sequence-index-${dropcapType}`
+        assetSavedIndexKey: `dropcap-sequence-index-${dropcapType}`
     }));
     if (dropcapPathname == null)
         return null;
@@ -1923,23 +1925,23 @@ function resetDropcapInBlock(block) {
 /**************/
 
 /****************************************************************************/
-/*	Strips all special HTML structure within date range elements in the given
-	block.
+/*  Strips all special HTML structure within date range elements in the given
+    block.
  */
 function stripDateRangeMetadataInBlock(block) {
-	block.querySelectorAll(".date-range").forEach(dateRange => {
-		//	Remove subscripts.
-		dateRange.querySelectorAll("sub").forEach(sub => {
-			sub.remove();
-		});
+    block.querySelectorAll(".date-range").forEach(dateRange => {
+        //  Remove subscripts.
+        dateRange.querySelectorAll("sub").forEach(sub => {
+            sub.remove();
+        });
 
-		//	Unwrap superscript and sub+sup span wrapper.
-		unwrap(dateRange.querySelector(".subsup"));
-		unwrap(dateRange.querySelector("sup"));
+        //  Unwrap superscript and sub+sup span wrapper.
+        unwrap(dateRange.querySelector(".subsup"));
+        unwrap(dateRange.querySelector("sup"));
 
-		//	Remove ‘title’ attribute.
-		dateRange.removeAttribute("title");
-	});
+        //  Remove ‘title’ attribute.
+        dateRange.removeAttribute("title");
+    });
 }
 
 
@@ -2006,10 +2008,10 @@ function incrementSavedCount(key) {
 }
 
 /*****************************************************/
-/*	Reset (delete) a saved (in local storage) integer.
+/*  Reset (delete) a saved (in local storage) integer.
  */
 function resetSavedCount(key) {
-	localStorage.removeItem(key);
+    localStorage.removeItem(key);
 }
 
 
@@ -2102,9 +2104,9 @@ GW.pageToolbar = {
             widget = elementFromHTML(widget);
 
         widget.classList.add("widget");
-		widget.querySelectorAll("button").forEach(button => {
-			button.classList.add("widget-button");
-		});
+        widget.querySelectorAll("button").forEach(button => {
+            button.classList.add("widget-button");
+        });
 
         //  Add widget.
         GW.pageToolbar.getToolbar().querySelector(".widgets").appendChild(widget);
@@ -2141,11 +2143,11 @@ GW.pageToolbar = {
     },
 
     flashWidget: (widgetID, options) => {
-		options = Object.assign({
-			flashStayDuration: null,
-			showSelectedButtonLabel: false,
-			highlightSelectedButtonLabelAfterDelay: null
-		}, options);
+        options = Object.assign({
+            flashStayDuration: null,
+            showSelectedButtonLabel: false,
+            highlightSelectedButtonLabelAfterDelay: null
+        }, options);
 
         let widget = GW.pageToolbar.getToolbar().querySelector(`.widget#${widgetID}`);
         if (widget == null)
@@ -2154,11 +2156,11 @@ GW.pageToolbar = {
         widget.classList.add("flashing");
         if (options.showSelectedButtonLabel) {
             setTimeout(() => { widget.classList.add("show-selected-button-label"); },
-            		   GW.pageToolbar.widgetFlashRiseDuration * 0.5);
+                       GW.pageToolbar.widgetFlashRiseDuration * 0.5);
 
-			if (options.highlightSelectedButtonLabelAfterDelay != null)
-				setTimeout(() => { widget.classList.add("highlight-selected-button-label"); },
-						   GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
+            if (options.highlightSelectedButtonLabelAfterDelay != null)
+                setTimeout(() => { widget.classList.add("highlight-selected-button-label"); },
+                           GW.pageToolbar.widgetFlashRiseDuration + options.highlightSelectedButtonLabelAfterDelay);
         }
         setTimeout(() => {
             widget.swapClasses([ "flashing", "flashing-fade" ], 1);
@@ -2167,11 +2169,11 @@ GW.pageToolbar = {
             }, GW.pageToolbar.widgetFlashFallDuration);
             if (options.showSelectedButtonLabel) {
                 setTimeout(() => { widget.classList.remove("show-selected-button-label"); },
-                		   GW.pageToolbar.widgetFlashFallDuration * 0.5);
+                           GW.pageToolbar.widgetFlashFallDuration * 0.5);
 
-			if (options.highlightSelectedButtonLabelAfterDelay != null)
-				setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); },
-						   GW.pageToolbar.widgetFlashFallDuration);
+            if (options.highlightSelectedButtonLabelAfterDelay != null)
+                setTimeout(() => { widget.classList.remove("highlight-selected-button-label"); },
+                           GW.pageToolbar.widgetFlashFallDuration);
             }
         }, GW.pageToolbar.widgetFlashRiseDuration + (options.flashStayDuration ?? GW.pageToolbar.widgetFlashStayDuration));
     },
@@ -2220,7 +2222,7 @@ GW.pageToolbar = {
             return;
         }
 
-		let isCollapsed = GW.pageToolbar.isCollapsed();
+        let isCollapsed = GW.pageToolbar.isCollapsed();
 
         GW.pageToolbar.toolbar.classList.remove("expanded-temp");
 
@@ -2236,13 +2238,13 @@ GW.pageToolbar = {
             GW.pageToolbar.uncollapse(options.temp);
         }
 
-		//	Fire event, if need be.
-		if (isCollapsed != GW.pageToolbar.isCollapsed()) {
-			GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
-				collapse: collapse,
-				collapseOptions: options
-			});
-		}
+        //  Fire event, if need be.
+        if (isCollapsed != GW.pageToolbar.isCollapsed()) {
+            GW.notificationCenter.fireEvent("GW.pageToolbarCollapseStateDidChange", {
+                collapse: collapse,
+                collapseOptions: options
+            });
+        }
     },
 
     /*  Collapse toolbar.
@@ -2315,7 +2317,7 @@ GW.pageToolbar = {
         if (   event
             && event.type == "scroll"
             && (   GW.isMobile()
-            	|| GW.pageToolbar.toolbar.matches(":hover") == false)) {
+                || GW.pageToolbar.toolbar.matches(":hover") == false)) {
             //  Collapse on scroll.
             let thresholdScrollDistance = (0.2 * window.innerHeight);
             if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
@@ -2343,18 +2345,18 @@ GW.pageToolbar = {
         }
     },
 
-	setPositionOffset: (offset) => {
-		if (GW.pageToolbar.toolbar == null)
-			return;
+    setPositionOffset: (offset) => {
+        if (GW.pageToolbar.toolbar == null)
+            return;
 
-		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-x", offset.x + "px");
-		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-y", offset.y + "px");
-	},
+        GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-x", offset.x + "px");
+        GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-y", offset.y + "px");
+    },
 
-	shouldStartCollapsed: () => {
-		return (   GW.isTorBrowser()
-        		|| getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos);
-	},
+    shouldStartCollapsed: () => {
+        return (   GW.isTorBrowser()
+                || getSavedCount("page-toolbar-demos-count") >= GW.pageToolbar.maxDemos);
+    },
 
     setup: () => {
         GW.pageToolbar.toolbar = GW.pageToolbar.getToolbar();
@@ -2386,52 +2388,52 @@ GW.pageToolbar = {
             })
         );
 
-		//	Toolbar toggle button click event handler.
-		let buttonClickHandler = (event) => {
-			//  Left-click only.
-			if (event.button != 0)
-				return;
+        //  Toolbar toggle button click event handler.
+        let buttonClickHandler = (event) => {
+            //  Left-click only.
+            if (event.button != 0)
+                return;
 
-			if (GW.pageToolbar.isTempExpanded()) {
-				/*  Do not re-collapse if temp-expanded; instead,
-					permanentize expanded state (expand-lock).
-				 */
-				GW.pageToolbar.toggleCollapseState(false);
-			} else {
-				//  Expand or collapse.
-				GW.pageToolbar.toggleCollapseState();
-			}
-		};
+            if (GW.pageToolbar.isTempExpanded()) {
+                /*  Do not re-collapse if temp-expanded; instead,
+                    permanentize expanded state (expand-lock).
+                 */
+                GW.pageToolbar.toggleCollapseState(false);
+            } else {
+                //  Expand or collapse.
+                GW.pageToolbar.toggleCollapseState();
+            }
+        };
 
-		/*	Inject inline mode widgets in already-loaded content, and add
-			rewrite processor to inject any inline widgets in subsequently
-			loaded content.
-		 */
-		processMainContentAndAddRewriteProcessor("addInlineToolbarToggleWidgetsInContainer", (container) => {
-			container.querySelectorAll(".toolbar-mode-selector-inline").forEach(element => {
-				let widgetHTML = `<span class="toolbar-toggle-widget mode-selector mode-selector-inline`
-							   + (startCollapsed ? " toolbar-collapsed" : "")
-							   + `">`
-							   + `<button
-							   	   type="button"
-							   	   class="toggle-button"
-							   	   title="Collapse/expand controls"
-							   	   tabindex="-1">`
-							   + `<span class="icon">`
-							   + GW.svg("gear-solid")
-							   + `</span>`
-							   + `</button>`
-							   + `</span>`;
-				let widget = elementFromHTML(widgetHTML);
-				element.replaceWith(widget);
-				widget.querySelector("button").addEventListener("click", buttonClickHandler);
-				wrapParenthesizedNodes("inline-mode-selector", widget);
+        /*  Inject inline mode widgets in already-loaded content, and add
+            rewrite processor to inject any inline widgets in subsequently
+            loaded content.
+         */
+        processMainContentAndAddRewriteProcessor("addInlineToolbarToggleWidgetsInContainer", (container) => {
+            container.querySelectorAll(".toolbar-mode-selector-inline").forEach(element => {
+                let widgetHTML = `<span class="toolbar-toggle-widget mode-selector mode-selector-inline`
+                               + (startCollapsed ? " toolbar-collapsed" : "")
+                               + `">`
+                               + `<button
+                                   type="button"
+                                   class="toggle-button"
+                                   title="Collapse/expand controls"
+                                   tabindex="-1">`
+                               + `<span class="icon">`
+                               + GW.svg("gear-solid")
+                               + `</span>`
+                               + `</button>`
+                               + `</span>`;
+                let widget = elementFromHTML(widgetHTML);
+                element.replaceWith(widget);
+                widget.querySelector("button").addEventListener("click", buttonClickHandler);
+                wrapParenthesizedNodes("inline-mode-selector", widget);
 
-				GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
-					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
-				});
-			});
-		});
+                GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
+                    widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
+                });
+            });
+        });
 
         //  Activate buttons.
         GW.pageToolbar.toolbar.querySelectorAll("button.toggle-button").forEach(button => {
@@ -2515,33 +2517,33 @@ GW.pageToolbar = {
         GW.pageToolbar.setupComplete = true;
     },
 
-	expandToolbarFlashWidgetDoThing: (widgetId, doThing, options) => {
-		options = Object.assign({
-			widgetFlashStayDuration: 3000,
-			doThingDelay: 250
-		}, options);
+    expandToolbarFlashWidgetDoThing: (widgetId, doThing, options) => {
+        options = Object.assign({
+            widgetFlashStayDuration: 3000,
+            doThingDelay: 250
+        }, options);
 
-		//	Expand toolbar.
-		GW.pageToolbar.toggleCollapseState(false);
+        //  Expand toolbar.
+        GW.pageToolbar.toggleCollapseState(false);
 
-		setTimeout(() => {
-			GW.pageToolbar.flashWidget(widgetId, {
-				flashStayDuration: options.widgetFlashStayDuration,
-				showSelectedButtonLabel: true,
-				highlightSelectedButtonLabelAfterDelay: options.doThingDelay
-			});
-			setTimeout(() => {
-				doThing();
+        setTimeout(() => {
+            GW.pageToolbar.flashWidget(widgetId, {
+                flashStayDuration: options.widgetFlashStayDuration,
+                showSelectedButtonLabel: true,
+                highlightSelectedButtonLabelAfterDelay: options.doThingDelay
+            });
+            setTimeout(() => {
+                doThing();
 
-				//	Collapse toolbar, after a delay.
-				GW.pageToolbar.toggleCollapseState(true, {
-													   delay: GW.pageToolbar.demoCollapseDelay
-															+ options.widgetFlashStayDuration
-															+ GW.pageToolbar.widgetFlashFallDuration
-												   });
-			}, GW.pageToolbar.widgetFlashRiseDuration + options.doThingDelay);
-		}, GW.pageToolbar.collapseDuration);
-	}
+                //  Collapse toolbar, after a delay.
+                GW.pageToolbar.toggleCollapseState(true, {
+                                                       delay: GW.pageToolbar.demoCollapseDelay
+                                                            + options.widgetFlashStayDuration
+                                                            + GW.pageToolbar.widgetFlashFallDuration
+                                                   });
+            }, GW.pageToolbar.widgetFlashRiseDuration + options.doThingDelay);
+        }, GW.pageToolbar.collapseDuration);
+    }
 };
 
 doWhenBodyExists(GW.pageToolbar.setup);
@@ -2606,15 +2608,15 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
     GW.backToTop.addEventListener("click", (event) => {
         GW.backToTop.style.transition = "";
 
-		/*	Log usage. (Temporary.)
-				— SA 2024-12-02
-		 */
-		GWServerLogError(location.href + "--used-back-to-top-link");
+        /*  Log usage. (Temporary.)
+                — SA 2024-12-02
+         */
+        GWServerLogError(location.href + "--used-back-to-top-link");
     });
 });
 
 /***********************************************************/
-/*	Rewrite footer logo link to also link to #top on /index.
+/*  Rewrite footer logo link to also link to #top on /index.
  */
 addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (eventInfo) => {
     GWLog("rewriteIndexFooterLogoLinkHref", "misc.js", 1);
@@ -2635,7 +2637,7 @@ GW.floatingHeader = {
 
     maxChainLength: 6,
 
-	//	Mobile only.
+    //  Mobile only.
     maxHeaderHeight: 60,
 
     chainLinkClasses: {
@@ -2645,9 +2647,9 @@ GW.floatingHeader = {
 
     currentTrail: [ ],
 
-	isHidden: () => {
-		return GW.floatingHeader.header?.classList.contains("hidden");
-	},
+    isHidden: () => {
+        return GW.floatingHeader.header?.classList.contains("hidden");
+    },
 
     /*  Show/hide the floating header, and update state, in response to
         scroll event.
@@ -2667,65 +2669,65 @@ GW.floatingHeader = {
 
         //  Update breadcrumb display.
         let trail = GW.floatingHeader.getTrail();
-		if (GW.isMobile()) {
-			/*	We must update the display if either the current position in the
-				page has changed (i.e., we’ve scrolled), or if we are having to
-				re-compute the state due to having to reduce the header height
-				from what it would be if we were displaying the entire current
-				trail (i.e. if this is a recursive call).
-			 */
-			if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
-				|| maxChainLength < GW.floatingHeader.maxChainLength) {
-				GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
+        if (GW.isMobile()) {
+            /*  We must update the display if either the current position in the
+                page has changed (i.e., we’ve scrolled), or if we are having to
+                re-compute the state due to having to reduce the header height
+                from what it would be if we were displaying the entire current
+                trail (i.e. if this is a recursive call).
+             */
+            if (   trail.join("/") != GW.floatingHeader.currentTrail.join("/")
+                || maxChainLength < GW.floatingHeader.maxChainLength) {
+                GW.floatingHeader.linkChain.classList.toggle("truncate-page-title", trail.length > maxChainLength);
 
-				let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
-				GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
-				chainLinks.forEach(link => {
-					let span = wrapElement(link, "span.link", { moveClasses: true });
+                let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
+                GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
+                chainLinks.forEach(link => {
+                    let span = wrapElement(link, "span.link", { moveClasses: true });
 
-					//	Enable special link click behavior.
-					link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
-				});
+                    //  Enable special link click behavior.
+                    link.addActivateEvent(GW.floatingHeader.linkInChainClicked);
+                });
 
-				//  Constrain header height.
-				if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
-					&& maxChainLength > 1) {
-					GW.floatingHeader.updateState(event, maxChainLength - 1);
-					return;
-				}
+                //  Constrain header height.
+                if (   GW.floatingHeader.header.offsetHeight > GW.floatingHeader.maxHeaderHeight
+                    && maxChainLength > 1) {
+                    GW.floatingHeader.updateState(event, maxChainLength - 1);
+                    return;
+                }
 
-				//	Update current trail.
-				GW.floatingHeader.currentTrail = trail;
-			}
+                //  Update current trail.
+                GW.floatingHeader.currentTrail = trail;
+            }
 
-			/*	Update page toolbar position offset, so that the header does not
-				block the page toolbar toggle button.
-			 */
-			GW.pageToolbar.setPositionOffset(new DOMPoint(0, GW.floatingHeader.isHidden() == false
-															 ? -1 * GW.floatingHeader.header.offsetHeight
-															 : 0));
-		} else {
-        	/*	We must update the display if the current position in the page
-        		has changed (i.e., we’ve scrolled).
-        	 */
-			if (trail.join("/") != GW.floatingHeader.currentTrail.join("/")) {
-				let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
-				GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
-				let index = 0;
-				chainLinks.forEach(link => {
-					let span = wrapElement(link, "span.link", { moveClasses: true });
+            /*  Update page toolbar position offset, so that the header does not
+                block the page toolbar toggle button.
+             */
+            GW.pageToolbar.setPositionOffset(new DOMPoint(0, GW.floatingHeader.isHidden() == false
+                                                             ? -1 * GW.floatingHeader.header.offsetHeight
+                                                             : 0));
+        } else {
+            /*  We must update the display if the current position in the page
+                has changed (i.e., we’ve scrolled).
+             */
+            if (trail.join("/") != GW.floatingHeader.currentTrail.join("/")) {
+                let chainLinks = GW.floatingHeader.constructLinkChain(trail, maxChainLength);
+                GW.floatingHeader.linkChain.replaceChildren(...chainLinks);
+                let index = 0;
+                chainLinks.forEach(link => {
+                    let span = wrapElement(link, "span.link", { moveClasses: true });
 
-					//	Enable layout based on nesting level.
-					span.style.setProperty("--link-index", index++);
-				});
+                    //  Enable layout based on nesting level.
+                    span.style.setProperty("--link-index", index++);
+                });
 
-				//	Chain links should spawn section popups.
-				Extracts.addTargetsWithin(GW.floatingHeader.linkChain);
+                //  Chain links should spawn section popups.
+                Extracts.addTargetsWithin(GW.floatingHeader.linkChain);
 
-				//	Update current trail.
-				GW.floatingHeader.currentTrail = trail;
-			}
-		}
+                //  Update current trail.
+                GW.floatingHeader.currentTrail = trail;
+            }
+        }
     },
 
     getTrail: () => {
@@ -2805,16 +2807,16 @@ GW.floatingHeader = {
 
         //  Inject header.
         if (GW.isMobile()) {
-			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-bottom">`
-													+ `<div class="scroll-indicator"></div>`
-													+ `<div class="link-chain"></div>`
-													+ `</div>`);
+            GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-bottom">`
+                                                    + `<div class="scroll-indicator"></div>`
+                                                    + `<div class="link-chain"></div>`
+                                                    + `</div>`);
 
         } else {
-			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-top">`
-													+ `<div class="link-chain"></div>`
-													+ `<div class="scroll-indicator"></div>`
-													+ `</div>`);
+            GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-top">`
+                                                    + `<div class="link-chain"></div>`
+                                                    + `<div class="scroll-indicator"></div>`
+                                                    + `</div>`);
         }
 
         //  Designate desktop version of header.
@@ -2844,16 +2846,16 @@ GW.floatingHeader = {
             ifDeferCallWhenAdd: true
         });
 
-		//	Ensure that popin positioning takes header height into account.
-		if (GW.isMobile()) {
-			if (window["Popins"] == null) {
-				GW.notificationCenter.addHandlerForEvent("Popins.didLoad", (info) => {
-					Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
-				}, { once: true });
-			} else {
-				Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
-			}
-		}
+        //  Ensure that popin positioning takes header height into account.
+        if (GW.isMobile()) {
+            if (window["Popins"] == null) {
+                GW.notificationCenter.addHandlerForEvent("Popins.didLoad", (info) => {
+                    Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+                }, { once: true });
+            } else {
+                Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+            }
+        }
     }
 };
 
@@ -2865,53 +2867,53 @@ doWhenPageLoaded(GW.floatingHeader.setup);
 /***************************/
 
 GW.popFrameSpawnWidgets = {
-	widgetTypes: {
-		template: {
-			//	Configuration.
-			linkHref: null,
-			linkAdditionalAttributes: null,
-			iconName: null,
-			onPopupPinDo: null,
-			addToolbarWidget: false,
-			toolbarWidgetLabel: null,
-			inlineWidgetReplacedElementSelector: null,
-			keyCommand: null,
-			additionalSetup: null,
-			additionalWidgetActivation: null,
+    widgetTypes: {
+        template: {
+            //  Configuration.
+            linkHref: null,
+            linkAdditionalAttributes: null,
+            iconName: null,
+            onPopupPinDo: null,
+            addToolbarWidget: false,
+            toolbarWidgetLabel: null,
+            inlineWidgetReplacedElementSelector: null,
+            keyCommand: null,
+            additionalSetup: null,
+            additionalWidgetActivation: null,
 
-			//	Defaults.
-			keyCommandSpawnWidgetFlashStayDuration: 3000,
+            //  Defaults.
+            keyCommandSpawnWidgetFlashStayDuration: 3000,
 
-			//	Infrastructure.
-			toolbarWidget: null,
-			virtualWidget: null
-		}
-	},
+            //  Infrastructure.
+            toolbarWidget: null,
+            virtualWidget: null
+        }
+    },
 
-	addWidgetType: (widgetTypeName, widgetTypeSpec) => {
-		return (GW.popFrameSpawnWidgets.widgetTypes[widgetTypeName] = Object.assign({ },
-			GW.popFrameSpawnWidgets.widgetTypes.template,
-			widgetTypeSpec,
-			{ name: widgetTypeName }));
-	},
+    addWidgetType: (widgetTypeName, widgetTypeSpec) => {
+        return (GW.popFrameSpawnWidgets.widgetTypes[widgetTypeName] = Object.assign({ },
+            GW.popFrameSpawnWidgets.widgetTypes.template,
+            widgetTypeSpec,
+            { name: widgetTypeName }));
+    },
 
-	pinPopup: (popup) => {
-		if (popup == null)
-			return;
+    pinPopup: (popup) => {
+        if (popup == null)
+            return;
 
-		let widgetType = GW.popFrameSpawnWidgets.widgetTypes[popup.spawningTarget.closest(".link-widget").dataset.widgetType];
+        let widgetType = GW.popFrameSpawnWidgets.widgetTypes[popup.spawningTarget.closest(".link-widget").dataset.widgetType];
 
-		Popups.pinPopup(popup);
-		Popups.bringPopupToFront(popup);
+        Popups.pinPopup(popup);
+        Popups.bringPopupToFront(popup);
 
-		if (widgetType.onPopupPinDo != null)
-			requestAnimationFrame(() => { widgetType.onPopupPinDo(popup); });
-	},
+        if (widgetType.onPopupPinDo != null)
+            requestAnimationFrame(() => { widgetType.onPopupPinDo(popup); });
+    },
 
-	activateWidget: (widget) => {
-		let widgetType = GW.popFrameSpawnWidgets.widgetTypes[widget.dataset.widgetType];
+    activateWidget: (widget) => {
+        let widgetType = GW.popFrameSpawnWidgets.widgetTypes[widget.dataset.widgetType];
 
-		widget.widgetLink.onclick = () => false;
+        widget.widgetLink.onclick = () => false;
 
         //  Activate pop-frames.
         Extracts.addTargetsWithin(widget);
@@ -2920,280 +2922,280 @@ GW.popFrameSpawnWidgets = {
         if (Extracts.popFrameProvider == Popups) {
             //  Configure popup positioning and click response.
             widget.widgetLink.cancelPopupOnClick = () => false;
-			widget.widgetLink.keepPopupAttachedOnPin = () => true;
+            widget.widgetLink.keepPopupAttachedOnPin = () => true;
             if (   widget == widgetType.toolbarWidget
-            	|| widget == widgetType.virtualWidget)
-	            widget.widgetLink.preferPopupSidePositioning = () => true;
+                || widget == widgetType.virtualWidget)
+                widget.widgetLink.preferPopupSidePositioning = () => true;
 
             //  Pin popup if widget is clicked.
             widget.widgetLink.addActivateEvent((event) => {
-				if (widget.widgetLink.popup == null) {
-					//  When the popup spawns, pin it.
-					GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-						requestAnimationFrame(() => {
-							GW.popFrameSpawnWidgets.pinPopup(info.popup);
-						});
-					}, {
-						once: true,
-						condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
-					});
+                if (widget.widgetLink.popup == null) {
+                    //  When the popup spawns, pin it.
+                    GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+                        requestAnimationFrame(() => {
+                            GW.popFrameSpawnWidgets.pinPopup(info.popup);
+                        });
+                    }, {
+                        once: true,
+                        condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
+                    });
 
-					//  Spawn popup.
-					Popups.spawnPopup(widget.widgetLink);
-				} else {
-					GW.popFrameSpawnWidgets.pinPopup(widget.widgetLink.popup);
-				}
+                    //  Spawn popup.
+                    Popups.spawnPopup(widget.widgetLink);
+                } else {
+                    GW.popFrameSpawnWidgets.pinPopup(widget.widgetLink.popup);
+                }
             });
         }
 
-		//	Run any additional activation code.
-		if (widgetType.additionalWidgetActivation != null)
-			widgetType.additionalWidgetActivation(widget);
-	},
+        //  Run any additional activation code.
+        if (widgetType.additionalWidgetActivation != null)
+            widgetType.additionalWidgetActivation(widget);
+    },
 
-	setup: (widgetType) => {
-		if (widgetType.addToolbarWidget == true) {
-			//	Add.
-			let widgetHTML = `<div
-							   id="${widgetType.name}-widget"
-							   class="link-widget"
-							   data-widget-type="${widgetType.name}">`
-						   + `<a
-						   	   class="${widgetType.name} widget-button no-footer-bar"
-						   	   href="${widgetType.linkHref}" `
-						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
-						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
-						   	  ).join(" "))
-						   + `>`
-						   + `<span class="icon">`
-						   + GW.svg(widgetType.iconName)
-						   + `</span>`
-						   + `<span class="label">${widgetType.toolbarWidgetLabel}</span>`
-						   + `</a></div>`;
-			widgetType.toolbarWidget = GW.pageToolbar.addWidget(widgetHTML);
-			widgetType.toolbarWidget.widgetLink = widgetType.toolbarWidget.querySelector("a");
+    setup: (widgetType) => {
+        if (widgetType.addToolbarWidget == true) {
+            //  Add.
+            let widgetHTML = `<div
+                               id="${widgetType.name}-widget"
+                               class="link-widget"
+                               data-widget-type="${widgetType.name}">`
+                           + `<a
+                               class="${widgetType.name} widget-button no-footer-bar"
+                               href="${widgetType.linkHref}" `
+                           + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+                                ([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+                              ).join(" "))
+                           + `>`
+                           + `<span class="icon">`
+                           + GW.svg(widgetType.iconName)
+                           + `</span>`
+                           + `<span class="label">${widgetType.toolbarWidgetLabel}</span>`
+                           + `</a></div>`;
+            widgetType.toolbarWidget = GW.pageToolbar.addWidget(widgetHTML);
+            widgetType.toolbarWidget.widgetLink = widgetType.toolbarWidget.querySelector("a");
 
-			//	Activate.
-			GW.popFrameSpawnWidgets.activateWidget(widgetType.toolbarWidget);
-		} else if (widgetType.keyCommand != null) {
-			//	Create “virtual widget”.
-			let widgetHTML = `<div
-							   id="${widgetType.name}-widget"
-							   class="link-widget"
-							   data-widget-type="${widgetType.name}">`
-						   + `<a class="${widgetType.name} no-footer-bar"
-								 href="${widgetType.linkHref}" `
-						   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
-						   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
-						   	  ).join(" "))
-						   + `></a></div>`;
-			widgetType.virtualWidget = GW.popFrameSpawnWidgets.virtualWidgetContainer.appendChild(elementFromHTML(widgetHTML));
-			widgetType.virtualWidget.widgetLink = widgetType.virtualWidget.querySelector("a");
+            //  Activate.
+            GW.popFrameSpawnWidgets.activateWidget(widgetType.toolbarWidget);
+        } else if (widgetType.keyCommand != null) {
+            //  Create “virtual widget”.
+            let widgetHTML = `<div
+                               id="${widgetType.name}-widget"
+                               class="link-widget"
+                               data-widget-type="${widgetType.name}">`
+                           + `<a class="${widgetType.name} no-footer-bar"
+                                 href="${widgetType.linkHref}" `
+                           + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+                                ([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+                              ).join(" "))
+                           + `></a></div>`;
+            widgetType.virtualWidget = GW.popFrameSpawnWidgets.virtualWidgetContainer.appendChild(elementFromHTML(widgetHTML));
+            widgetType.virtualWidget.widgetLink = widgetType.virtualWidget.querySelector("a");
 
-			//	Activate.
-			GW.popFrameSpawnWidgets.activateWidget(widgetType.virtualWidget);
-		}
+            //  Activate.
+            GW.popFrameSpawnWidgets.activateWidget(widgetType.virtualWidget);
+        }
 
-		if (widgetType.inlineWidgetReplacedElementSelector != null) {
-			/*	Inject inline mode widgets in already-loaded content, and add
-				rewrite processor to inject any inline widgets in subsequently
-				loaded content.
-			 */
-			processMainContentAndAddRewriteProcessor("addInline_" + widgetType.name + "_widgetsInContainer", (container) => {
-				container.querySelectorAll(widgetType.inlineWidgetReplacedElementSelector).forEach(element => {
-					let widgetHTML = `<span class="link-widget" data-widget-type="${widgetType.name}">`
-								   + `<a class="${widgetType.name} no-footer-bar"
-								   		 href="${widgetType.linkHref}" `
-								   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
-								   		([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
-								   	  ).join(" "))
-								   + `>`
-								   + `<span class="icon-${widgetType.iconName}"></span>`
-								   + `</a>`;
-					let widget = elementFromHTML(widgetHTML);
-					widget.widgetLink = widget.querySelector("a");
-					element.replaceWith(widget);
-					wrapParenthesizedNodes("inline-mode-selector", widget);
+        if (widgetType.inlineWidgetReplacedElementSelector != null) {
+            /*  Inject inline mode widgets in already-loaded content, and add
+                rewrite processor to inject any inline widgets in subsequently
+                loaded content.
+             */
+            processMainContentAndAddRewriteProcessor("addInline_" + widgetType.name + "_widgetsInContainer", (container) => {
+                container.querySelectorAll(widgetType.inlineWidgetReplacedElementSelector).forEach(element => {
+                    let widgetHTML = `<span class="link-widget" data-widget-type="${widgetType.name}">`
+                                   + `<a class="${widgetType.name} no-footer-bar"
+                                         href="${widgetType.linkHref}" `
+                                   + (Object.entries(widgetType.linkAdditionalAttributes ?? { }).map(
+                                        ([ attrName, attrValue ]) => `${attrName}="${attrValue}"`
+                                      ).join(" "))
+                                   + `>`
+                                   + `<span class="icon-${widgetType.iconName}"></span>`
+                                   + `</a>`;
+                    let widget = elementFromHTML(widgetHTML);
+                    widget.widgetLink = widget.querySelector("a");
+                    element.replaceWith(widget);
+                    wrapParenthesizedNodes("inline-mode-selector", widget);
 
-					//	Activate.
-					GW.popFrameSpawnWidgets.activateWidget(widget);
-				});
-			});
-		}
+                    //  Activate.
+                    GW.popFrameSpawnWidgets.activateWidget(widget);
+                });
+            });
+        }
 
-		if (widgetType.additionalSetup != null)
-			widgetType.additionalSetup(widgetType);
-	},
+        if (widgetType.additionalSetup != null)
+            widgetType.additionalSetup(widgetType);
+    },
 };
 
 doWhenPageLoaded(() => {
-	//	Add virtual widget container.
-	GW.popFrameSpawnWidgets.virtualWidgetContainer = document.body.appendChild(newElement("DIV", { id: "virtual-widget-container" }));
+    //  Add virtual widget container.
+    GW.popFrameSpawnWidgets.virtualWidgetContainer = document.body.appendChild(newElement("DIV", { id: "virtual-widget-container" }));
 
-	//	Add event handler for widget key commands.
-	GW.notificationCenter.addHandlerForEvent("GW.keyWasPressed", GW.popFrameSpawnWidgets.keyPressEventHandler = (eventInfo) => {
-		eventInfo.keyUpEvent.preventDefault();
+    //  Add event handler for widget key commands.
+    GW.notificationCenter.addHandlerForEvent("GW.keyWasPressed", GW.popFrameSpawnWidgets.keyPressEventHandler = (eventInfo) => {
+        eventInfo.keyUpEvent.preventDefault();
 
-		let widgetType = Object.values(GW.popFrameSpawnWidgets.widgetTypes).find(widgetType => widgetType.keyCommand == eventInfo.key);
+        let widgetType = Object.values(GW.popFrameSpawnWidgets.widgetTypes).find(widgetType => widgetType.keyCommand == eventInfo.key);
 
-		if (widgetType.toolbarWidget != null) {
-			//  Expand page toolbar.
-			GW.pageToolbar.toggleCollapseState(false, {
-				temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
-			});
+        if (widgetType.toolbarWidget != null) {
+            //  Expand page toolbar.
+            GW.pageToolbar.toggleCollapseState(false, {
+                temp: (GW.pageToolbar.isCollapsed() || GW.pageToolbar.isTempExpanded())
+            });
 
-			//	Flash widget.
-			GW.pageToolbar.flashWidget(widgetType.toolbarWidget.id, {
-				flashStayDuration: widgetType.keyCommandSpawnWidgetFlashStayDuration
-			});
-		}
+            //  Flash widget.
+            GW.pageToolbar.flashWidget(widgetType.toolbarWidget.id, {
+                flashStayDuration: widgetType.keyCommandSpawnWidgetFlashStayDuration
+            });
+        }
 
-		let mainWidgetLink = (widgetType.toolbarWidget ?? widgetType.virtualWidget).widgetLink;
-		if (mainWidgetLink.popup == null) {
-			//  When the popup spawns, pin it.
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				requestAnimationFrame(() => {
-					GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
-				});
-			}, {
-				once: true,
-				condition: (info) => (info.popup.spawningTarget == mainWidgetLink)
-			});
+        let mainWidgetLink = (widgetType.toolbarWidget ?? widgetType.virtualWidget).widgetLink;
+        if (mainWidgetLink.popup == null) {
+            //  When the popup spawns, pin it.
+            GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+                requestAnimationFrame(() => {
+                    GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
+                });
+            }, {
+                once: true,
+                condition: (info) => (info.popup.spawningTarget == mainWidgetLink)
+            });
 
-			//  Spawn popup.
-			Popups.spawnPopup(mainWidgetLink);
-		} else {
-			GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
-		}
-	}, {
-		condition: (info) => (Object.values(GW.popFrameSpawnWidgets.widgetTypes).map(
-			widgetType => widgetType.keyCommand
-		).filter(x => x).includes(info.key))
-	});
+            //  Spawn popup.
+            Popups.spawnPopup(mainWidgetLink);
+        } else {
+            GW.popFrameSpawnWidgets.pinPopup(mainWidgetLink.popup);
+        }
+    }, {
+        condition: (info) => (Object.values(GW.popFrameSpawnWidgets.widgetTypes).map(
+            widgetType => widgetType.keyCommand
+        ).filter(x => x).includes(info.key))
+    });
 
-	//	Set up help widget(s).
-	GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("help", {
-		linkHref: "/help",
-		linkAdditionalAttributes: null,
-		iconName: "question-solid",
-		onPopupPinDo: null,
-		addToolbarWidget: true,
-		toolbarWidgetLabel: "Help",
-		inlineWidgetReplacedElementSelector: ".help-mode-selector-inline",
-		keyCommand: "?"
-	}));
+    //  Set up help widget(s).
+    GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("help", {
+        linkHref: "/help",
+        linkAdditionalAttributes: null,
+        iconName: "question-solid",
+        onPopupPinDo: null,
+        addToolbarWidget: true,
+        toolbarWidgetLabel: "Help",
+        inlineWidgetReplacedElementSelector: ".help-mode-selector-inline",
+        keyCommand: "?"
+    }));
 
-	//	Set up search widget(s).
-	GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("search", {
-		linkHref: "/static/google-search.html",
-		linkAdditionalAttributes: { "aria-label": "Search site with Google Search",
-									"data-link-content-type": "local-document" },
-		iconName: "magnifying-glass",
-		onPopupPinDo: (popup) => { popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus(); },
-		addToolbarWidget: true,
-		toolbarWidgetLabel: "Search",
-		inlineWidgetReplacedElementSelector: ".search-mode-selector-inline",
-		keyCommand: "/",
-		additionalSetup: (widgetType) => {
-			//	Add DNS-prefetch tag.
-			//	See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
-			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
-		},
-		additionalWidgetActivation: (widget) => {
-			//	Function to set the proper mode (auto, light, dark) in the iframe.
-			let updateSearchIframeMode = (iframe) => {
-				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
-			};
+    //  Set up search widget(s).
+    GW.popFrameSpawnWidgets.setup(GW.popFrameSpawnWidgets.addWidgetType("search", {
+        linkHref: "/static/google-search.html",
+        linkAdditionalAttributes: { "aria-label": "Search site with Google Search",
+                                    "data-link-content-type": "local-document" },
+        iconName: "magnifying-glass",
+        onPopupPinDo: (popup) => { popup.document.querySelector("iframe")?.contentDocument?.querySelector("input")?.focus(); },
+        addToolbarWidget: true,
+        toolbarWidgetLabel: "Search",
+        inlineWidgetReplacedElementSelector: ".search-mode-selector-inline",
+        keyCommand: "/",
+        additionalSetup: (widgetType) => {
+            //  Add DNS-prefetch tag.
+            //  See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
+            document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
+        },
+        additionalWidgetActivation: (widget) => {
+            //  Function to set the proper mode (auto, light, dark) in the iframe.
+            let updateSearchIframeMode = (iframe) => {
+                iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
+            };
 
-			//  Event handler for popup spawn / popin inject.
-			let popFrameSpawnEventHandler = (eventInfo) => {
-				let popFrame = (eventInfo.popup ?? eventInfo.popin);
-				let iframe = popFrame.document.querySelector("iframe");
-				iframe.addEventListener("load", (event) => {
-					//	Set proper mode.
-					updateSearchIframeMode(iframe);
+            //  Event handler for popup spawn / popin inject.
+            let popFrameSpawnEventHandler = (eventInfo) => {
+                let popFrame = (eventInfo.popup ?? eventInfo.popin);
+                let iframe = popFrame.document.querySelector("iframe");
+                iframe.addEventListener("load", (event) => {
+                    //  Set proper mode.
+                    updateSearchIframeMode(iframe);
 
-					//	Add handler to update search pop-frame when switching modes.
-					GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
-						updateSearchIframeMode(iframe)
-					});
+                    //  Add handler to update search pop-frame when switching modes.
+                    GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
+                        updateSearchIframeMode(iframe)
+                    });
 
-					let inputBox = iframe.contentDocument.querySelector("input.search");
+                    let inputBox = iframe.contentDocument.querySelector("input.search");
 
-					//  Focus search box on load.
-					inputBox.focus();
-					inputBox.addEventListener("blur", (event) => {
-						inputBox.focus();
-					});
+                    //  Focus search box on load.
+                    inputBox.focus();
+                    inputBox.addEventListener("blur", (event) => {
+                        inputBox.focus();
+                    });
 
-					if (Extracts.popFrameProvider == Popups) {
-						//	Pin popup if text is entered.
-						inputBox.addEventListener("input", (event) => {
-							Popups.pinPopup(popFrame);
-						});
+                    if (Extracts.popFrameProvider == Popups) {
+                        //  Pin popup if text is entered.
+                        inputBox.addEventListener("input", (event) => {
+                            Popups.pinPopup(popFrame);
+                        });
 
-						//	Enable normal popup Esc-key behavior.
-						iframe.contentDocument.addEventListener("keyup", (event) => {
-							let allowedKeys = [ "Escape", "Esc" ];
-							if (allowedKeys.includes(event.key) == false)
-								return;
+                        //  Enable normal popup Esc-key behavior.
+                        iframe.contentDocument.addEventListener("keyup", (event) => {
+                            let allowedKeys = [ "Escape", "Esc" ];
+                            if (allowedKeys.includes(event.key) == false)
+                                return;
 
-							event.preventDefault();
+                            event.preventDefault();
 
-							if (Popups.popupIsPinned(popFrame)) {
-								Popups.unpinPopup(popFrame);
-							} else {
-								Popups.despawnPopup(popFrame);
-							}
-						});
-					}
+                            if (Popups.popupIsPinned(popFrame)) {
+                                Popups.unpinPopup(popFrame);
+                            } else {
+                                Popups.despawnPopup(popFrame);
+                            }
+                        });
+                    }
 
-					//	Enable “search where” functionality.
-					let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
-					searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
-						radioButton.addEventListener("change", (event) => {
-							searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
-								otherRadioButton.removeAttribute("checked");
-							});
-							radioButton.setAttribute("checked", "");
-						});
-					});
-					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
-						event.preventDefault();
+                    //  Enable “search where” functionality.
+                    let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
+                    searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
+                        radioButton.addEventListener("change", (event) => {
+                            searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
+                                otherRadioButton.removeAttribute("checked");
+                            });
+                            radioButton.setAttribute("checked", "");
+                        });
+                    });
+                    iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
+                        event.preventDefault();
 
-						let form = event.target;
-						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
-																+ " "
-																+ form.querySelector("input.search").value;
-						form.submit();
-					});
-				});
-			};
+                        let form = event.target;
+                        form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
+                                                                + " "
+                                                                + form.querySelector("input.search").value;
+                        form.submit();
+                    });
+                });
+            };
 
-			//	Event handler for popup despawn.
-			let popFrameDespawnEventHandler = (eventInfo) => {
-				let popFrame = (eventInfo.popup ?? eventInfo.popin);
-				GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
-			};
+            //  Event handler for popup despawn.
+            let popFrameDespawnEventHandler = (eventInfo) => {
+                let popFrame = (eventInfo.popup ?? eventInfo.popin);
+                GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
+            };
 
-			//  Add pop-frame spawn/despawn event handlers.
-			if (Extracts.popFrameProvider == Popups) {
-				GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
-					condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
-				});
-				GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", popFrameDespawnEventHandler, {
-					condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
-				});
-			} else {
-				GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
-					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
-				});
-				GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
-					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
-				});
-			}
-		}
-	}));
+            //  Add pop-frame spawn/despawn event handlers.
+            if (Extracts.popFrameProvider == Popups) {
+                GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", popFrameSpawnEventHandler, {
+                    condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
+                });
+                GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", popFrameDespawnEventHandler, {
+                    condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
+                });
+            } else {
+                GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
+                    condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+                });
+                GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
+                    condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+                });
+            }
+        }
+    }));
 });
 
 
@@ -3201,47 +3203,47 @@ doWhenPageLoaded(() => {
 /* KEY COMMANDS */
 /****************/
 /*  Proper keypress support (such that keypress sequences work properly for
-	modified keypresses).
+    modified keypresses).
  */
 
 GW.keyCommands = {
-	keysPressed: { },
+    keysPressed: { },
 
-	keyDown: (event) => {
-		GWLog("GW.keyCommands.keyDown", "misc.js", 3);
+    keyDown: (event) => {
+        GWLog("GW.keyCommands.keyDown", "misc.js", 3);
 
-		GW.keyCommands.keysPressed[event.keyCode] = {
-			key: event.key,
-			altKey: event.altKey,
-			ctrlKey: event.altKey,
-			metaKey: event.altKey,
-			shiftKey: event.altKey,
-		};
-	},
+        GW.keyCommands.keysPressed[event.keyCode] = {
+            key: event.key,
+            altKey: event.altKey,
+            ctrlKey: event.altKey,
+            metaKey: event.altKey,
+            shiftKey: event.altKey,
+        };
+    },
 
-	keyUp: (event) => {
-	    GWLog("GW.keyCommands.keyUp", "misc.js", 3);
+    keyUp: (event) => {
+        GWLog("GW.keyCommands.keyUp", "misc.js", 3);
 
-		let keyDownEventInfo = GW.keyCommands.keysPressed[event.keyCode];
-		if (keyDownEventInfo == null)
-			return;
+        let keyDownEventInfo = GW.keyCommands.keysPressed[event.keyCode];
+        if (keyDownEventInfo == null)
+            return;
 
-		GW.notificationCenter.fireEvent("GW.keyWasPressed", {
-			key: keyDownEventInfo.key,
-			altKey: keyDownEventInfo.altKey,
-			ctrlKey: keyDownEventInfo.altKey,
-			metaKey: keyDownEventInfo.altKey,
-			shiftKey: keyDownEventInfo.altKey,
-			keyUpEvent: event
-		});
+        GW.notificationCenter.fireEvent("GW.keyWasPressed", {
+            key: keyDownEventInfo.key,
+            altKey: keyDownEventInfo.altKey,
+            ctrlKey: keyDownEventInfo.altKey,
+            metaKey: keyDownEventInfo.altKey,
+            shiftKey: keyDownEventInfo.altKey,
+            keyUpEvent: event
+        });
 
-		GW.keyCommands.keysPressed[event.keyCode] = null;
-	}
+        GW.keyCommands.keysPressed[event.keyCode] = null;
+    }
 };
 
 doWhenPageLoaded(() => {
-	document.addEventListener("keydown", GW.keyCommands.keyDown);
-	document.addEventListener("keyup", GW.keyCommands.keyUp);
+    document.addEventListener("keydown", GW.keyCommands.keyDown);
+    document.addEventListener("keyup", GW.keyCommands.keyUp);
 });
 
 
