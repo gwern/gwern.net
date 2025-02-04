@@ -1771,6 +1771,7 @@ htmlRewriteFixed =
          , (" UNet", " U-Net")
          , ("PsycArticles", "PsycARTICLES")
          , ("behaviour", "behavior")
+         , (" rigour", " rigor")
          , ("de Novo", "De Novo")
          , ("thususe", "thus use")
          , ("small saple", "small sample")

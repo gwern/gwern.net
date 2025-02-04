@@ -4,7 +4,7 @@
 # text2epositive.py: text style transfer to negation-free "positive" English ("e-positive" or "abs-e")
 # Author: Gwern Branwen
 # Date: 2024-09-26
-# When:  Time-stamp: "2025-01-19 22:39:16 gwern"
+# When:  Time-stamp: "2025-02-01 11:39:14 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python text2epositive.py
@@ -135,7 +135,7 @@ Task:
 def process_text(client, prompt):
     try:
         completion = client.chat.completions.create(
-            model="o1-mini",
+            model="o3-mini",
             messages=[
                 {"role": "system", "content": "You are an editor rewriting for clarity and specificness."},
                 {"role": "user", "content": prompt}
