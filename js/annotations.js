@@ -156,7 +156,8 @@ Annotations = { ...Annotations,
 
 				//	Request the page image thumbnail, to cache it.
 				let pageImage = responseDocument.querySelector(".page-thumbnail");
-				if (pageImage)
+				if (   pageImage != null 
+					&& Images.isSVG(pageImage) == false)
 					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
 				/*	Construct and cache a reference data object, then fire the

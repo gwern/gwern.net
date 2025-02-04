@@ -495,24 +495,27 @@ Images = {
 	},
 
     thumbnailURLForImageURL: (imageSrcURL, size = Images.thumbnailDefaultSize) => {
-        if (typeof imageSrcURL === "string") {
-            imageSrcURL = URLFromString(imageSrcURL);
-        }
         if (imageSrcURL.hostname != location.hostname)
             return null;
-        if (imageSrcURL.pathname.toLowerCase().endsWith('.svg'))
-            return imageSrcURL;
-        return URLFromString(Images.thumbnailBasePath
+
+        return URLFromString(  Images.thumbnailBasePath
                              + size + "px/"
                              + fixedEncodeURIComponent(fixedEncodeURIComponent(imageSrcURL.pathname)));
     },
+
     thumbnailURLForImage: (image, size = Images.thumbnailDefaultSize) => {
+		if (Images.isSVG(image))
+			return null;
+
         return (Images.isThumbnail(image)
         		? URLFromString(image.src)
         		: Images.thumbnailURLForImageURL(URLFromString(image.src)));
     },
 
     thumbnailifyImage: (image) => {
+		if (Images.isSVG(image))
+			return;
+
     	if (Images.isThumbnail(image))
     		return;
 
@@ -522,6 +525,10 @@ Images = {
             image.src = thumbnailURL.href;
         }
     },
+
+	isSVG: (image) => {
+		return (URLFromString(image.src).pathname.toLowerCase().endsWith(".svg"));
+	},
 
 	isThumbnail: (image) => {
 		return (image.dataset.srcSizeFull > "");
