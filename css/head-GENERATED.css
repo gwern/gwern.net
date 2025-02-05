@@ -101,6 +101,7 @@ main {
 }
 @media all and (max-width: 649px) {
 	main {
+		overflow: hidden;
 		padding: 1rem 
 				 var(--GW-body-side-padding) 
 				 4.25rem 
