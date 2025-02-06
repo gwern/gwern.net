@@ -8570,7 +8570,9 @@ Content = {
                                 auxLink.dataset.backlinkTargetUrl = AuxLinks.targetOfAuxLinksLink(sourceURL);
                             });
                         } else if (auxLinksLinkType == "link-bibliography") {
-                        	auxLinksList.querySelector("ol ol").setAttribute("type", "α");
+                        	auxLinksList.querySelectorAll("ol ol").forEach(linkBibSubSection => {
+                        		linkBibSubSection.setAttribute("type", "α");
+                        	});
                         }
                     }
                 }
