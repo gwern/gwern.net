@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-02 11:24:55 gwern"
+# When:  Time-stamp: "2025-02-06 21:26:57 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -13,32 +13,50 @@
 
 # key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, regex-compat-tdfa (Unicode Haskell regexps), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
-# `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, libreoffice, gifsicle, tidy, libxml2-utils…
+# `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils…
 
 cd ~/wiki/
 # shellcheck source=/home/gwern/wiki/static/build/bash.sh
 . ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
 
-DEPENDENCIES=(bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle static/build/anchor-checker.php static/build/generateBacklinks.hs static/build/generateDirectory.hs static/build/generateLinkBibliography.hs static/build/generateSimilarLinks.hs static/build/link-extractor.hs compressJPG2) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
+DEPENDENCIES=(
+  bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox
+  ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice
+  linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping
+  optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
+  anchor-checker.php generateBacklinks.hs generateDirectory.hs
+  generateLinkBibliography.hs generateSimilarLinks.hs link-extractor.hs
+  compressJPG2 openai chromium inkscape node pngnq advpng
+) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
+declare -A ERROR_OUTPUTS
 DEPENDENCIES_MISSING=()
+
 for DEP in "${DEPENDENCIES[@]}"; do
     if ! command -v "$DEP" &> /dev/null; then
         DEPENDENCIES_MISSING+=("$DEP")
+        # Attempt to run the missing command to capture its error output.
+        error_msg=$({ "$DEP" 2>&1; } 2>/dev/null)
+        ERROR_OUTPUTS["$DEP"]="$error_msg"
     fi
 done
+
 if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
     red "Error: missing dependencies!"
-    echo "$DEPENDENCIES_MISSING"
+    for dep in "${DEPENDENCIES_MISSING[@]}"; do
+         echo "Missing: $dep"
+         # Print whatever error output was produced when attempting to run the command.
+         echo "${ERROR_OUTPUTS[$dep]}"
+         echo
+    done
     exit 1
 fi
-# conda activate pytorch # set up virtual environment to get 'beautifulsoup-4' for Python utilities
 
 # cleanup:
 rm --recursive --force -- ./_cache/ ./_site/
 
-MIN_GB="4"
+MIN_GB="6"
 if [ "$(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//')" -lt "$MIN_GB" ]; then
-    red "Error: Less than $MIN_GB GB of free space in home directory; one cannot reliably compile Gwern.net with so little space, so exiting." >&2
+    red "Error: Less than $MIN_GB gigabytes of free space in home directory; one cannot reliably compile Gwern.net with so little space, so exiting." >&2
     exit 2
 fi
 
@@ -53,7 +71,7 @@ else
     ionice --class 3     --pid "$$" &>/dev/null
 
     ## Parallelization: WARNING: post-2022-03 Hakyll uses parallelism which catastrophically slows down at >= # of physical cores; see <https://groups.google.com/g/hakyll/c/5_evK9wCb7M/m/3oQYlX9PAAAJ>
-    N=7
+    N=14
     SLOW="true"
     SKIP_DIRECTORIES=""
     TODAY=$(date '+%F')
@@ -212,7 +230,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N1 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N5 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
@@ -807,7 +825,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
     λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"' | gfv -e ' secs,' -e ' bytes' -e 'it :: ()'; }

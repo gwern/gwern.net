@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-01-31 13:46:28 gwern"
+When:  Time-stamp: "2025-02-06 19:37:35 gwern"
 License: CC-0
 -}
 
@@ -98,6 +98,15 @@ addPageLink x = x
 -- To add 'Gwern' as an author to all local files which have no author & have "-gwern-" in the filename:
 --
 -- > walkAndUpdateLinkMetadata True (\x@(u, (t,aut,d,dc,misc,tags,abst)) -> if (head u == '/' && "-gwern-" `isInfixOf` u && aut == "") then return (u,(t,"Gwern",d,dc,misc,tags,abst)) else return x)
+--
+-- To execute a command read-only over a specific part of the DB, like checking how the title-italicizer works:
+--
+-- > let f = \x@(path,(title,_,_,_,_,_,_)) -> do { title' <- Annotation.processItalicizer title; Control.Monad.when (title /= title')(print title >> print title'); return x; }
+-- > walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"
+--
+-- To test the date-guesser against ground truths:
+--
+-- > let f = \x@(path,(_,_,date,_,_,_,_)) -> if (date == "") then return x else (do { dateGuess <- Metadata.Date.guessDateFromString path; Control.Monad.when (not (dateGuess `isPrefixOf` date)) (print (path ++ " was " ++ date ++ "; but guessed: " ++ dateGuess)); return x; })
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"

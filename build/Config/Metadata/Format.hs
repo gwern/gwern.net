@@ -1323,6 +1323,7 @@ htmlRewriteFixed =
          , ("(p=",     "(<em>p</em> = ")
          , (" n=",     " <em>n</em> = ")
          , ("( n=", "( <em>n</em> = ")
+         , ("Neff ", "<em>n</em><sub>effective</sub> ")
          , ("Neffective", "<em>n</em><sub>effective</sub>")
          , ("Neffective=", "<em>n</em><sub>effective</sub> = ")
          , ("Padjusted", "<em>p</em><sub>adjusted</sub>")

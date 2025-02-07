@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-01-28 11:14:10 gwern"
+# When:  Time-stamp: "2025-02-06 20:54:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -68,12 +68,14 @@ def main():
 
     prompt = """
 Task: Guess the date mentioned in the input.
-The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023'; if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
+The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023' (do not print '2023-01-01' or '2023-01'); if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
 Dates are valid only between 1000AD and """ + current_date + """; any dates outside that date range are probably mistakes, and do not print those.
 (Note also that the World Wide Web was invented in 1989, so web pages cannot predate 1990AD. Web page dates before 2000AD are rare, and dates before 2010AD should be treated with extra scrutiny unless from an archival source.)
 If there is more than one valid date, print only the first one.
 Do not make up dates; if you are unsure, print only the empty string "".
 Do not add any commentary or explanations.
+For Arxiv URLs, only the first 4 numbers are meaningful, in the form: `YYMM`; the numbers after the period are an ID and the date *cannot* be guessed from them!
+For archived URLs such as Internet Archive URLs, the date of the snapshot is *not* the date of publication.
 
 Task examples (with explanations in '#' comments):
 
@@ -140,8 +142,8 @@ Task examples (with explanations in '#' comments):
 ""
 # Invalid first date (April has 30 days)
 - "Looking back at the year 2000 problem (Y2K)"
-""
-# Don't extract Y2K as it's a topic, not a date
+"" # Don't extract Y2K as it's a topic, not a date
+# NOTE: ArXiv IDs are in the form YYMM.NNNNN (since 2015), representing the year, month, and submission index that month​. For example, 1907.07174 = July 2019, 7174th submission. A version suffix (v1, v2, …) may follow for revisions
 - "A paper from arXiv:2401.12345"
 2024-01  # Extract date from arXiv ID
 - "DOI: 10.1234/journal.2024.01.0123"
@@ -499,23 +501,481 @@ Task examples (with explanations in '#' comments):
 - "https://news.ycombinator.com/item?id=36302805 Why sqlite3 temporary files were renamed <code>etilqs_*</code> (2006)"
 ""
 - "https://gianlucaventurini.com/posts/2024/factorio-sat Learning Solver Design: Automating Factorio Balancers"
-"2024"
+2024
 - "https://www.nature.com/articles/s44172-024-00175-7 Automatic design of stigmergy-based behaviors for robot swarms"
-"2024"
+2024
 - "https://curiouscoding.nl/posts/static-search-tree/ Static search trees: 40x faster than binary search"
 ""
 - "They squandered the holy grail https://xeiaso.net/blog/2025/squandered-holy-grail/"
-"2025"
+2025
 - "https://nicholas.carlini.com/writing/2025/regex-chess.html Regex Chess: A 2-ply minimax chess engine in 84,688 regular expressions"
-"2025"
+2025
 - "https://www.openculture.com/2021/01/david-lynchs-projection-instructions-for-mulholland-drive-2001.html David Lynch’s Projection Instructions for <em>Mulholland Drive</em> (2001)"
-"2021-01"
+2021-01
 - "https://www.lesswrong.com/posts/NXTkEiaLA4JdS5vSZ/what-o3-becomes-by-2028 What o3 Becomes by 2028"
 ""
 - "https://en.wikipedia.org/wiki/Angela_L._Duckworth Angela L. Duckworth"
 ""
 - "https://www.lesswrong.com/posts/e8BNKGEgmCeowtRWS/how-different-llms-answered-philpapers-2020-survey How different LLMs answered PhilPapers 2020 survey"
 ""
+- "https://arxiv.org/abs/2308.04445"
+2023-07-31
+- "https://arxiv.org/abs/1809.00946"
+2018-08-26
+- "https://arxiv.org/abs/1907.07174"
+2020-01-08
+- "https://arxiv.org/abs/2009.03300"
+2020-09-07
+- "https://arxiv.org/abs/2010.14571#google"
+2020-10-27
+- "https://arxiv.org/abs/2205.04596#google"
+2022-05-09
+- "https://arxiv.org/abs/2205.09073#google"
+2022-05-18
+- "https://arxiv.org/abs/1808.03715#google"
+2018-08-10
+- "https://arxiv.org/abs/2206.04658#nvidia"
+2022-06-09
+- "https://arxiv.org/abs/1710.05941#google"
+2017-10-16
+- "https://arxiv.org/abs/1805.08974#google"
+2018-05-23
+- "https://arxiv.org/abs/1808.08866"
+2018-08-27
+- "https://arxiv.org/abs/1809.01694"
+2018-09-05
+- "https://arxiv.org/abs/1909.07528#openai"
+2019-09-17
+- "https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/"
+2014-04-06
+- "https://arxiv.org/abs/2006.07733#deepmind"
+2020-06-13
+- "https://arxiv.org/abs/2012.13349#deepmind"
+2020-12-23
+- "https://www.nature.com/articles/s41598-020-79310-1"
+2021-01-11
+- "https://arxiv.org/abs/2103.04689"
+2021-03-08
+- "https://arxiv.org/abs/1609.01596"
+2016-09-06
+- "https://arxiv.org/abs/1703.03664#deepmindopenai"
+2017-03-10
+- "https://arxiv.org/abs/1703.06870#facebook"
+2017-03-20
+- "https://arxiv.org/abs/1802.06416#huawei"
+2018-02-18
+- "https://arxiv.org/abs/1910.11015"
+2019-11-07
+- "https://arxiv.org/abs/2003.02139"
+2020-03-04
+- "https://arxiv.org/abs/2003.10580#google"
+2021-01-05
+- "https://arxiv.org/abs/2004.10802"
+2020-04-22
+- "https://arxiv.org/abs/2006.10029#google"
+2020-06-17
+- "https://arxiv.org/abs/2006.11239"
+2020-06-19
+- "https://arxiv.org/abs/2007.08558#google"
+2020-07-16
+- "https://arxiv.org/abs/2008.09037"
+2020-08-20
+- "https://arxiv.org/abs/2102.09672#openai"
+2021-02-18
+- "https://arxiv.org/abs/2103.06877#facebook"
+2021-03-11
+- "https://arxiv.org/abs/2105.05233#openai"
+2021-05-11
+- "https://arxiv.org/abs/2211.01324#nvidia"
+2022-11-02
+- "https://arxiv.org/abs/2311.09257#google"
+2023-11-14
+- "https://arxiv.org/pdf/2307.01952#page=3&org=stability"
+2023-07-04
+- "https://www.biorxiv.org/content/10.1101/2021.02.02.429430.full"
+2021-04-29
+- "https://arxiv.org/abs/1610.09027#deepmind"
+2016-10-27
+- "https://arxiv.org/abs/1611.02779#openai"
+2016-11-09
+- "https://arxiv.org/abs/1711.06744"
+2017-11-17
+- "https://arxiv.org/abs/1804.01118#deepmind"
+2018-04-03
+- "https://arxiv.org/abs/1804.07209"
+2018-04-19
+- "https://arxiv.org/abs/1806.04498"
+2018-06-12
+- "https://arxiv.org/abs/1810.01365"
+2018-10-02
+- "https://arxiv.org/abs/1812.02353#google"
+2018-12-06
+- "https://arxiv.org/abs/1905.12616#allen"
+2019-05-29
+- "https://arxiv.org/abs/1907.07171"
+2019-07-16
+- "https://arxiv.org/abs/1909.01387#deepmind"
+2019-09-03
+- "https://arxiv.org/abs/1909.05858#salesforce"
+2019-09-11
+- "https://arxiv.org/abs/1911.08265#deepmind"
+2019-11-19
+- "https://arxiv.org/abs/2001.08361#openai"
+2020-01-23
+- "https://arxiv.org/abs/2002.08909#google"
+2020-02-10
+- "https://arxiv.org/abs/2004.10450#google"
+2020-04-22
+- "https://arxiv.org/abs/2006.04768#facebook"
+2020-06-08
+- "https://arxiv.org/abs/2006.06676#nvidia"
+2020-06-11
+- "https://arxiv.org/abs/2006.10738"
+2020-06-18
+- "https://arxiv.org/abs/2006.15720"
+2020-06-28
+- "https://arxiv.org/abs/2007.13657"
+2020-07-27
+- "https://arxiv.org/abs/2010.05315"
+2020-10-11
+- "https://arxiv.org/abs/2101.04702#google"
+2021-01-12
+- "https://arxiv.org/abs/2103.03206#deepmind"
+2021-03-04
+- "https://arxiv.org/abs/2104.14830#google"
+2021-04-30
+- "https://arxiv.org/abs/2106.06981"
+2021-06-13
+- "https://arxiv.org/abs/2106.07477#baidu"
+2021-06-14
+- "https://arxiv.org/abs/2106.09488#amazon"
+2021-06-11
+- "https://arxiv.org/abs/2106.12423#nvidia"
+2021-06-23
+- "https://arxiv.org/abs/2107.01294#allen"
+2021-07-02
+- "https://arxiv.org/abs/2107.07566#facebook"
+2021-07-15
+- "https://arxiv.org/abs/2107.14795#deepmind"
+2021-07-30
+- "https://arxiv.org/abs/2108.07732#google"
+2021-08-16
+- "https://arxiv.org/abs/2203.08913#google"
+2021-10-05
+- "https://arxiv.org/abs/2207.10551#google"
+2022-07-21
+- "https://arxiv.org/pdf/1606.03498#page=3&org=openai"
+2016-06-10
+- "https://arxiv.org/pdf/1809.11096#page=6&org=deepmind"
+2019-08-26
+- "https://arxiv.org/pdf/1809.11096#page=8&org=deepmind"
+2018-09-28
+- "https://web.archive.org/web/20230101012202/https://thispersondoesnotexist.com/"
+2019-02-12
+- "https://www.nature.com/articles/s41467-018-04316-3"
+2018-06-19
+- "https://arxiv.org/abs/1810.01398"
+2018-10-02
+- "https://arxiv.org/abs/2002.12327"
+2020-11-09
+- "https://arxiv.org/abs/2012.12877#facebook"
+2020-12-23
+- "https://arxiv.org/abs/2106.05237#google"
+2021-06-09
+- "https://arxiv.org/abs/1802.02271"
+2018-02-07
+- "https://arxiv.org/abs/1908.10396#google"
+2019-08-27
+- "https://arxiv.org/abs/1910.01055#google"
+2019-10-02
+- "https://arxiv.org/abs/2002.05645#microsoft"
+2020-10-16
+- "https://arxiv.org/abs/2101.03961#google"
+2021-01-11
+- "https://arxiv.org/abs/2104.05158#facebook"
+2021-04-12
+- "https://arxiv.org/abs/1801.10447"
+2018-01-31
+- "https://arxiv.org/abs/2010.10499#amazon"
+2020-10-20
+- "https://arxiv.org/abs/2004.03720"
+2020-04-07
+- "https://arxiv.org/abs/2105.13626#google"
+2021-05-28
+- "https://arxiv.org/abs/2108.11193"
+2021-08-25
+- "https://arxiv.org/pdf/2204.06125#page=16&org=openai"
+2022-04-13
+- "https://arxiv.org/abs/2207.06991"
+2022-07-14
+- "https://arxiv.org/abs/2307.03381"
+2023-07-07
+- "https://arxiv.org/abs/1908.04577#alibaba"
+2019-08-13
+- "https://arxiv.org/abs/2005.12872#facebook"
+2020-05-26
+- "https://arxiv.org/abs/2008.02217"
+2020-07-16
+- "https://arxiv.org/abs/2011.13729#tencent"
+2020-11-27
+- "https://arxiv.org/abs/2012.08508#deepmind"
+2020-12-15
+- "https://arxiv.org/abs/2101.11986"
+2021-01-28
+- "https://arxiv.org/abs/2111.12233#microsoft"
+2021-11-24
+- "https://arxiv.org/abs/1904.10509#openai"
+2019-04-23
+- "https://arxiv.org/abs/1907.00235"
+2019-06-29
+- "https://arxiv.org/abs/1911.04070"
+2019-11-11
+- "https://arxiv.org/abs/2001.04451#google"
+2020-01-13
+- "https://arxiv.org/abs/2003.05997#google"
+2020-03-12
+- "https://arxiv.org/abs/2005.08100#google"
+2020-05-16
+- "https://arxiv.org/abs/2005.14165#openai"
+2020-05-28
+- "https://arxiv.org/abs/2007.14062#google"
+2020-07-28
+- "https://arxiv.org/abs/2009.06732#google"
+2020-09-14
+- "https://arxiv.org/abs/2009.14794#google"
+2020-09-30
+- "https://arxiv.org/abs/2010.10504#google"
+2020-10-20
+- "https://arxiv.org/abs/2010.11929#google"
+2020-09-28
+- "https://arxiv.org/abs/2012.07436"
+2020-12-14
+- "https://arxiv.org/abs/2012.11346"
+2020-12-21
+- "https://arxiv.org/abs/2105.12723"
+2021-05-26
+- "https://arxiv.org/abs/2106.12566"
+2021-06-23
+- "https://arxiv.org/abs/2107.05768#google"
+2021-07-12
+- "https://arxiv.org/abs/2204.05927"
+2022-07-04
+- "https://arxiv.org/pdf/1706.03741#page=15&org=openai"
+2017-06-12
+- "https://arxiv.org/abs/1909.08053#nvidia"
+2019-09-17
+- "https://arxiv.org/abs/1908.09203#openai"
+2019-11-05
+- "https://arxiv.org/abs/2010.14701#openai"
+2020-10-28
+- "https://arxiv.org/abs/2111.11904#microsoft"
+2021-11-23
+- "/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai"
+2020-06-17
+- "https://web.archive.org/web/20191127163535/http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html"
+2019-11-26
+- "https://arxiv.org/abs/2005.09980"
+2020-09-08
+- "https://web.archive.org/web/20210426084422/https://www.stuff.co.nz/technology/103500435/google-deepmind-founder-and-leader-in-artificial-intelligence-returns-to-hamilton"
+2018-05-07
+- "https://arxiv.org/abs/1910.02054#microsoft"
+2019-10-04
+- "https://distill.pub/2020/circuits/zoom-in/#openai"
+2020-03-10
+- "/doc/ai/scaling/2020-bell.pdf#facebook"
+2020-08-22
+- "https://arxiv.org/abs/1907.10641#allen"
+2020-10-16
+- "https://arxiv.org/abs/2103.14586#google"
+2021-03-26
+- "https://web.archive.org/web/20230710000944/https://frc.ri.cmu.edu/~hpm/project.archive/general.articles/1975/Raw.Power.html"
+1976-05-12
+- "/doc/ai/scaling/hardware/2019-roy.pdf"
+2019-11-27
+- "/doc/ai/scaling/hardware/2020-jiang.pdf"
+2020-11-04
+- "https://www.reuters.com/technology/chinas-military-government-acquire-nvidia-chips-despite-us-ban-2024-01-14/"
+2024-01-15
+- "/doc/darknet-market/2020-zhou-2.pdf"
+2020-02-01
+- "https://web.archive.org/web/20190130223039/http://www.animenewsservice.com/archives-dec13/"
+1999-12-20
+- "https://arxiv.org/abs/1104.4322"
+2011-03-17
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0134152"
+2015-08-12
+- "https://msutoday.msu.edu/news/2016/got-kidney-stones-ride-a-roller-coaster"
+2016-09-26
+- "https://www.smithsonianmag.com/history/journal-plague-year-180965222/"
+2017-11
+- "https://www.nature.com/articles/s41598-018-37481-y"
+2019-01-30
+- "https://www.biorxiv.org/content/10.1101/2020.11.21.392720.full"
+2020-11-22
+- "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.568049/full"
+2020-10-13
+- "/doc/darknet-market/2018-wegberg.pdf"
+2018-05-08
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0236635"
+2020-07-10
+- "https://www.frontiersin.org/articles/10.3389/fvets.2019.00477/full"
+2020-01-08
+- "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.941163/full"
+2022-08-05
+- "https://arxiv.org/abs/2308.04445"
+2023-07-31
+- "/doc/ai/anime/danbooru/2018-zhang-2.pdf"
+2018
+- "/doc/ai/anime/danbooru/2019-lee-2.pdf"
+2019-11-17
+- "/doc/ai/anime/danbooru/2020-zheng-2.pdf"
+2020-10
+- "/doc/ai/anime/danbooru/2020-cao-2.pdf"
+2020-10-12
+- "/doc/ai/anime/danbooru/2020-lee-2.pdf"
+2020-11-27
+- "/doc/ai/anime/danbooru/2021-hernandez.pdf"
+2021-04-01
+- "/doc/ai/anime/danbooru/2022-rios.pdf"
+2022-05-27
+- "/doc/ai/anime/danbooru/2022-zhang.pdf"
+2022-12-02
+- "/doc/ai/nn/gan/stylegan/anime/2022-zhou-2.pdf"
+2022-12-16
+- "/doc/ai/nn/diffusion/2018-sharma.pdf#google"
+2018-07-01
+- "/doc/ai/nn/2020-hernandezorallo.pdf"
+2020-11-04
+- "/doc/ai/nn/cnn/2018-choi.pdf"
+2018-02-22
+- "/doc/ai/nn/cnn/2018-choi.pdf"
+2018-02-22
+- "/doc/ai/nn/cnn/2020-leipheimer.pdf"
+2020-01-22
+- "https://distill.pub/2020/growing-ca/#google"
+2020-02-11
+- "https://arxiv.org/abs/2003.10580#google"
+2021-01-05
+- "/doc/ai/nn/fully-connected/2020-bao.pdf"
+2020-06-03
+- "https://arxiv.org/abs/1703.06676"
+2017-03-20
+- "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7861215/"
+2019-07-21
+- "/doc/darknet-market/dnm-archive/2020-zhang.pdf"
+2020-12-01
+- "https://arxiv.org/pdf/1809.11096#page=8&org=deepmind"
+2018-09-28
+- "https://www.justinpinkney.com/blog/2020/stylegan-network-blending/"
+2020-08-25
+- "/doc/ai/nn/gan/stylegan/anime/2022-endo.pdf"
+2022-07-09
+- "https://proceedings.mlr.press/v139/vicol21a.html"
+2021-07-01
+- "/doc/ai/nn/sparsity/knowledge-distillation/2016-luo.pdf"
+2016-03-05
+- "https://arxiv.org/abs/1911.04252#google"
+2019-11-11
+- "https://arxiv.org/abs/2101.03961#google"
+2021-01-11
+- "https://arxiv.org/abs/1911.02972#facebook"
+2019-11-07
+- "/doc/ai/nn/transformer/gpt/2/fiction/2021-davis.pdf"
+2021-04-27
+- "/doc/law/2022-arbel.pdf"
+2022-02
+- "https://mededu.jmir.org/2023/1/e45312/"
+2023
+- "https://www.taxnotes.com/featured-analysis/openai-cribbed-our-tax-example-can-gpt-4-really-do-tax/2023/08/11/7h0hc"
+2023-08-14
+- "/doc/ai/nn/transformer/gpt/lamda/2021-jiang-2.pdf"
+2021-09-07
+- "https://arxiv.org/abs/2111.11904#microsoft"
+2021-11-23
+- "https://web.archive.org/web/20191127163535/http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html"
+2019-11-26
+- "https://web.archive.org/web/20210426084422/https://www.stuff.co.nz/technology/103500435/google-deepmind-founder-and-leader-in-artificial-intelligence-returns-to-hamilton"
+2018-05-07
+- "https://arxiv.org/abs/1911.05289#google"
+2019-11-13
+- "/doc/ai/scaling/2020-bell.pdf#facebook"
+2020-08-22
+- "/doc/ai/scaling/hardware/2020-jouppi.pdf#google"
+2020-06-01
+- "https://arxiv.org/abs/1104.4322"
+2011-03-17
+- "https://www.liebertpub.com/doi/full/10.1089/ast.2017.1783"
+2018-09-12
+- "https://www.biorxiv.org/content/10.1101/2020.11.21.392720.full"
+2020-11-22
+- "/doc/psychiatry/anxiety/lavender/2021-an.pdf"
+2021-09-14
+- "https://www.theatlantic.com/science/archive/2021/11/make-cat-hypoallergenic/620618/"
+2021-11-05
+- "https://www.nature.com/articles/s41598-019-44324-x"
+2019-05-28
+- "https://www.frontiersin.org/journals/veterinary-science/articles/10.3389/fvets.2019.00241/full"
+2019-07-22
+- "/doc/cat/psychology/drug/catnip/2011-birkett.pdf"
+2011
+- "/doc/cat/psychology/drug/catnip/2013-avmf.pdf#page=5"
+2013
+- "/doc/genetics/heritable/correlation/2020-rosenstrom.pdf"
+2020-06-25
+- "/doc/psychiatry/lithium/2020-memon.pdf"
+2020-07-27
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0045086"
+2012-08-17
+- "https://krebsonsecurity.com/2022/03/hackers-gaining-power-of-subpoena-via-fake-emergency-data-requests/"
+2022-03-29
+- "https://pubsonline.informs.org/doi/10.1287/mnsc.2022.4643"
+2023-01-26
+- "https://royalsocietypublishing.org/doi/pdf/10.1098/rstb.2017.0205"
+2018-06-04
+- "https://web.archive.org/web/20100611071828/http://online.wsj.com/article/SB10001424052748704513104575256452390636786.html"
+2010-06-08
+- "https://www.bbc.com/future/article/20160406-we-went-to-nasa-to-float-on-the-worlds-flattest-floor"
+2016-04-07
+- "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2019.02220/full"
+2019-10-03
+- "https://www.frontiersin.org/journals/veterinary-science/articles/10.3389/fvets.2021.760845/full"
+2021-11-07
+- "https://www.nature.com/articles/s41598-020-73426-0"
+2020-10-05
+- "/doc/cryonics/2015-marcojimenez.pdf"
+2015-04-24
+- "/doc/cs/algorithm/2017-zhou.pdf"
+2017-05-01
+- "/doc/darknet-market/2021-bergeron.pdf"
+2021-06-28
+- "/doc/darknet-market/2021-chen.pdf"
+2021-12-07
+- "/doc/darknet-market/2022-lee.pdf"
+2022-04-06
+- "/doc/darknet-market/silk-road/1/2020-ganan.pdf"
+2020
+- "https://academic.oup.com/qje/article/136/4/1993/6124640"
+2021-01-30
+- "https://arstechnica.com/gadgets/2023/01/google-announces-official-android-support-for-risc-v/"
+2023-01-03
+- "https://arxiv.org/abs/1904.09828"
+2019-03-24
+- "https://gki.informatik.uni-freiburg.de/papers/lindner-mattmueller-nebel-xaip2018.pdf"
+2019-07-17
+- "https://googleprojectzero.blogspot.com/2021/12/a-deep-dive-into-nso-zero-click.html"
+2021-12-15
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0019875"
+2011-04-13
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0115253"
+2014-12-26
+- "https://phiresky.github.io/blog/2021/hosting-sqlite-databases-on-github-pages/"
+2021-04-17
+- "https://pure.tue.nl/ws/portalfiles/portal/142614149/J.R.Ubbink_09_09_2019_thesis_final.pdf"
+2019-09
+- "https://www.biorxiv.org/content/10.1101/2021.05.29.446289.full"
+2021-05-30
+- "https://www.liebertpub.com/doi/full/10.1089/rej.2014.1636"
+2015-10-19
 
 Task:
 

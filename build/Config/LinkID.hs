@@ -2028,7 +2028,7 @@ linkIDOverrides =
        , ("https://arxiv.org/abs/2009.07118","schick-sch\252tze-2020-1")
        , ("https://arxiv.org/abs/2001.07676","schick-sch\252tze-2020-2")
        , ("/doc/ai/nn/rnn/1992-schmidhuber.pdf","schmidhuber-1992-1")
-       , ("/doc/ai/nn/rnn/1991-schmidhuber.pdf","schmidhuber-1992-2")
+       , ("/doc/ai/nn/rnn/1992-schmidhuber-2.pdf","schmidhuber-1992-2")
        , ("https://arxiv.org/abs/cs/0207097#schmidhuber","schmidhuber-2002-1")
        , ("/doc/reinforcement-learning/model/2002-schmidhuber.pdf","schmidhuber-2002-2")
        , ("/doc/radiance/2002-scholz-radiance#the-loneliness","scholz-2013-1")
@@ -2913,4 +2913,8 @@ linkIDOverrides =
   , ("https://arxiv.org/abs/2408.11791#databricks","ankner-et-al-2024-1"),("https://arxiv.org/abs/2405.20541","ankner-et-al-2024-2"),("https://lawprofessors.typepad.com/nonprofit/2024/09/openais-c3-bail-out-strategy-is-starting-to-become-clear.html","jones-2024-1"),("/doc/fiction/text-game/2024-jones.pdf","jones-2024-2")
   , ("https://onlinelibrary.wiley.com/doi/10.1111/age.13438","anderson-et-al-2024-1"),("/doc/statistics/decision/2024-anderson.pdf","anderson-et-al-2024-2"),("https://arxiv.org/abs/2410.03755#meituan","chen-et-al-2024-5"),("https://arxiv.org/abs/2403.19135","chen-et-al-2024-6")
   , ("https://www.medrxiv.org/content/10.1101/2020.09.12.20193045.full","qin-et-al-2020-1"),("https://www.biorxiv.org/content/10.1101/2020.12.10.418962.full","qin-et-al-2020-2")
+  , ("https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/OGVWDE","broockman-et-al-2018-data"),("/doc/politics/2018-broockman.pdf","broockman-et-al-2018")
+  ,("https://www.youtube.com/watch?v=tWZOEFvczzA","digital-2023-1"),("https://www.youtube.com/watch?v=jQ_DfORb3kw&t=931","digital-2023-2"),("https://www.youtube.com/watch?v=_9LX9HSQkWo&t=862s","digital-2023-3"),("https://www.youtube.com/watch?v=GVT3WUa-48Y","digital-2023-4")
+  ,("https://arxiv.org/abs/2206.06565","dinh-et-al-2022-1"),("/doc/sociology/2022-dinh.pdf","dinh-et-al-2022-2")
+  ,("https://platform.openai.com/docs/guides/fine-tuning#preference","openai-2025-rlhf"),("https://openai.com/index/introducing-deep-research/","openai-2025-dr")
       ]

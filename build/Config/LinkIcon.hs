@@ -1109,7 +1109,7 @@ linkIconTestUnitsText =
          , ("https://www.thiswaifudoesnotexist.net/", "TWDE", "text,quad,sans", "")
          , ("https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans", blueDM)
          , ("https://www.bloomberg.com/news/features/2018-05-15/google-amazon-and-facebook-owe-j-rgen-schmidhuber-a-fortune","SMDH", "text,quad,sans", "")
-         , ("/doc/ai/nn/rnn/1991-schmidhuber.pdf", "SMDH", "text,quad,sans", "")
+         , ("/doc/ai/nn/rnn/1992-schmidhuber-2.pdf", "SMDH", "text,quad,sans", "")
          , ("https://www.nytimes.com/2016/11/27/technology/artificial-intelligence-pioneer-jurgen-schmidhuber-overlooked.html", "SMDH", "text,quad,sans", "")
          , ("https://people.idsia.ch/~juergen/creativity.html", "SMDH", "text,quad,sans", "")
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans", "")

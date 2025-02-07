@@ -154,7 +154,7 @@ tagsShort2LongRewrites =
    , ("marbling", "paper-marbling"), ("marble", "paper-marbling"), ("marbling-paper", "paper-marbling"), ("marble-paper", "paper-marbling")
    , ("microbion", "microbiome"), ("germfree", "germ-free"), ("selfsinking", "self-sinking")
    , ("dantzig", "stigler-diet"), ("4/nonficton", "4/nonfiction"), ("nonficton", "nonfiction")
-   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation"), ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek")]
+   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation"), ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek"), ("deepsek", "deepseek")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
