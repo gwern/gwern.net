@@ -7305,7 +7305,6 @@ Content = {
 				referenceData = Content.referenceDataFromContent(content, link);
 				Content.cacheReferenceDataForLink(referenceData, link);
 			}
-
 			return referenceData;
         }
     },
@@ -9028,58 +9027,43 @@ Content = {
                 };
             },
 
+			referenceDataCacheKeyForLink: (link) => {
+				let cacheKey = modifiedURL(link, { hash: null, search: null }).href;
+				if (link.dataset.pageSectionId > "")
+					cacheKey += ":::" + link.dataset.pageSectionId;
+				return cacheKey;
+			},
+
             referenceDataFromContent: (pageContent, link) => {
-                //  The page content is the page body plus the metadata block.
-                let bodyContentDocument = newDocument();
-                //  Add the page metadata block.
-                let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
-                if (pageMetadataBlock) {
-                    pageMetadataBlock = bodyContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
-                    pageMetadataBlock.classList.remove("markdownBody");
-                    if (pageMetadataBlock.className == "")
-                        pageMetadataBlock.removeAttribute("class");
-                }
-                //  Add the page main content block.
-                bodyContentDocument.append(newDocument(pageContent.document.querySelector("#markdownBody").childNodes));
+                let pageContentDocument = newDocument();
 
-                //  Find the target element and/or containing block, if any.
-                let element = targetElementInDocument(link, bodyContentDocument);
+				//	If a page section is specified, extract it.
+				if (link.dataset.pageSectionId > "")
+					pageContentDocument.appendChild(pageContent.document.querySelector("#" + link.dataset.pageSectionId)?.cloneNode(true));
 
-                //  Pop-frame title text.
-                let popFrameTitleTextParts = [ ];
-                if (link.pathname != location.pathname)
-                    popFrameTitleTextParts.push(pageContent.title);
+                /*  Otherwise (or if the specified section does not exist), the 
+                	default page content is the page body plus the metadata 
+                	block.
+                 */
+				if (pageContentDocument.childNodes.length == 0) {
+					//  Add the page metadata block.
+					let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
+					if (pageMetadataBlock) {
+						pageMetadataBlock = pageContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
+						pageMetadataBlock.classList.remove("markdownBody");
+						if (pageMetadataBlock.className == "")
+							pageMetadataBlock.removeAttribute("class");
+					}
 
-                //  Section title or block id.
-                if (element) {
-                    let nearestSection = element.closest("section");
-                    let nearestFootnote = element.closest("li.footnote");
-                    if (nearestFootnote) {
-                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
-                        let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
-                        if (identifyingSpan)
-                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
-                    } else if (nearestSection) {
-                        //  Section mark (§) for sections.
-                        popFrameTitleTextParts.push("&#x00a7;");
-                        if (nearestSection.id == "footnotes") {
-                            popFrameTitleTextParts.push("Footnotes");
-                        } else {
-                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
-                        }
-                    } else {
-                        popFrameTitleTextParts.push(link.hash);
-                    }
-                }
+					//  Add the page main content block.
+					pageContentDocument.append(newDocument(pageContent.document.querySelector("#markdownBody").childNodes));
+				}
 
                 return {
-                    content:                 bodyContentDocument,
+                    content:                 pageContentDocument,
                     pageTitle:               pageContent.title,
                     pageBodyClasses:         pageContent.bodyClasses,
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
-                    popFrameTitleLinkHref:   link.href,
-                    popFrameTitle:           popFrameTitleTextParts.join(" "),
-                    popFrameTitleShort:      popFrameTitleTextParts.first,
                     shouldLocalize:          true
                 }
             },
@@ -10371,7 +10355,7 @@ function includeContent(includeLink, content) {
     //  Unwrap.
     unwrap(wrapper);
 
-    //  Prevent race condition, part II.
+   //  Prevent race condition, part II.
     includeLink.swapClasses([ "include-in-progress", "include-complete" ], 1);
 
     //  Fire event, if need be.
@@ -11203,8 +11187,6 @@ Transclude = {
     //  Called by: handleTranscludes (rewrite function)
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
-
-// 		return;
 
 		//	Resolve alias classes.
 		Transclude.resolveIncludeLinkAliasClasses(includeLink);
@@ -13155,7 +13137,7 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleHTML, popFrameTitleLinkHref;
+		let popFrameTitleHTML;
 		if (referenceData == null) {
 			let popFrameTitleText = "";
 			if (target.pathname != location.pathname)
@@ -13163,13 +13145,37 @@ Extracts = { ...Extracts,
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
 			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
-
-			popFrameTitleLinkHref = target.href;
 		} else {
-			popFrameTitleHTML = popFrame.classList.contains("full-page")
-								? referenceData.popFrameTitleShort
-								: referenceData.popFrameTitle;
-			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
+			let popFrameTitleTextParts = [ ];
+			if (target.pathname != location.pathname)
+				popFrameTitleTextParts.push(referenceData.pageTitle);
+			if (popFrame.classList.contains("full-page") == false) {
+                //  Find the target element and/or containing block, if any.
+                let element = targetElementInDocument(target, referenceData.content);
+
+                //  Section title or block id.
+                if (element) {
+                    let nearestSection = element.closest("section");
+                    let nearestFootnote = element.closest("li.footnote");
+                    if (nearestFootnote) {
+                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
+                        let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
+                        if (identifyingSpan)
+                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
+                    } else if (nearestSection) {
+                        //  Section mark (§) for sections.
+                        popFrameTitleTextParts.push("&#x00a7;");
+                        if (nearestSection.id == "footnotes") {
+                            popFrameTitleTextParts.push("Footnotes");
+                        } else {
+                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+                        }
+                    } else {
+                        popFrameTitleTextParts.push(link.hash);
+                    }
+                }
+			}
+			popFrameTitleHTML = popFrameTitleTextParts.join(" ");
 		}
 
 		/*	This is for section backlinks popups for the base page, and any
@@ -13181,7 +13187,7 @@ Extracts = { ...Extracts,
 			popFrameTitleHTML += " (Backlinks)";
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
-			popFrameTitleLinkHref:  popFrameTitleLinkHref,
+			popFrameTitleLinkHref:  target.href,
 			popFrameTitle:          popFrameTitleHTML
 		});
     },
@@ -17190,8 +17196,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
  */
-addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
-    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
+    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
     let allCitations = eventInfo.container.querySelectorAll(".footnote-ref");
 
@@ -17221,7 +17227,7 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 
     if (allCitations.length > 0) {
         //  Add handler to re-bind events if more notes are injected.
-        addContentInjectHandler(GW.contentInjectHandlers.rebindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
+        addContentInjectHandler(GW.contentInjectHandlers.rebindNoteHighlightEventsToCitations = (eventInfo) => {
             allCitations.forEach(bindEventsToCitation);
         }, "eventListeners", (info) => (   info.document == document
                                         || info.document == eventInfo.document));
@@ -17231,8 +17237,8 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 /******************************************/
 /*  Highlight footnote self-links on hover.
  */
-addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
-    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
+    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
 
     //  Highlight footnote on hover over self-link.
     eventInfo.container.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
@@ -20124,6 +20130,7 @@ Sidenotes = { ...Sidenotes,
 				"data-include-selector-not": ".footnote-self-link"
 			});
 			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
+			includeLink.dataset.pageSectionId = "footnotes";
 			sidenote.querySelector(".sidenote-inner-wrapper").append(includeLink);
 
 			//  Add the sidenote to the sidenotes array...
@@ -20291,6 +20298,8 @@ Sidenotes = { ...Sidenotes,
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
+			GWLog("addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery", "sidenotes.js", 1);
+
 			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
 			});
@@ -20303,6 +20312,8 @@ Sidenotes = { ...Sidenotes,
 			case, so we cannot depend on the ‘GW.hashDidChange’ event handler.)
 		 */
 		addContentInjectHandler(Sidenotes.addFauxHashChangeEventsToNoteMetaLinks = (eventInfo) => {
+			GWLog("addFauxHashChangeEventsToNoteMetaLinks", "sidenotes.js", 1);
+
 			let selector = [
 				"a.footnote-ref",
 				"a.sidenote-self-link",
@@ -20344,6 +20355,8 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
+			GWLog("rewriteCitationTargetsInLoadedContent", "sidenotes.js", 1);
+
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
 					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
@@ -20364,7 +20377,7 @@ Sidenotes = { ...Sidenotes,
 
 		//	Add listener to update sidenote positions when media loads.
 		addContentInjectHandler(GW.contentInjectHandlers.addMediaElementLoadEventsInSidenotes = (eventInfo) => {
-			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
+			GWLog("addMediaElementLoadEventsInSidenotes", "sidenotes.js", 1);
 
 			eventInfo.container.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
@@ -20441,6 +20454,8 @@ Sidenotes = { ...Sidenotes,
 				citations are injected (e.g., in a popup).
 			 */
 			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
+				GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
+
 				eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
 					let sidenote = Sidenotes.counterpart(citation);
 					if (sidenote == null)

@@ -2102,8 +2102,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
  */
-addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
-    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
+    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
     let allCitations = eventInfo.container.querySelectorAll(".footnote-ref");
 
@@ -2133,7 +2133,7 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 
     if (allCitations.length > 0) {
         //  Add handler to re-bind events if more notes are injected.
-        addContentInjectHandler(GW.contentInjectHandlers.rebindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
+        addContentInjectHandler(GW.contentInjectHandlers.rebindNoteHighlightEventsToCitations = (eventInfo) => {
             allCitations.forEach(bindEventsToCitation);
         }, "eventListeners", (info) => (   info.document == document
                                         || info.document == eventInfo.document));
@@ -2143,8 +2143,8 @@ addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSe
 /******************************************/
 /*  Highlight footnote self-links on hover.
  */
-addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitations = (eventInfo) => {
-    GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.bindHighlightEventsToFootnoteSelfLinks = (eventInfo) => {
+    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
 
     //  Highlight footnote on hover over self-link.
     eventInfo.container.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {

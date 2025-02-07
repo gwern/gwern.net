@@ -210,7 +210,6 @@ Content = {
 				referenceData = Content.referenceDataFromContent(content, link);
 				Content.cacheReferenceDataForLink(referenceData, link);
 			}
-
 			return referenceData;
         }
     },
@@ -1933,58 +1932,43 @@ Content = {
                 };
             },
 
+			referenceDataCacheKeyForLink: (link) => {
+				let cacheKey = modifiedURL(link, { hash: null, search: null }).href;
+				if (link.dataset.pageSectionId > "")
+					cacheKey += ":::" + link.dataset.pageSectionId;
+				return cacheKey;
+			},
+
             referenceDataFromContent: (pageContent, link) => {
-                //  The page content is the page body plus the metadata block.
-                let bodyContentDocument = newDocument();
-                //  Add the page metadata block.
-                let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
-                if (pageMetadataBlock) {
-                    pageMetadataBlock = bodyContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
-                    pageMetadataBlock.classList.remove("markdownBody");
-                    if (pageMetadataBlock.className == "")
-                        pageMetadataBlock.removeAttribute("class");
-                }
-                //  Add the page main content block.
-                bodyContentDocument.append(newDocument(pageContent.document.querySelector("#markdownBody").childNodes));
+                let pageContentDocument = newDocument();
 
-                //  Find the target element and/or containing block, if any.
-                let element = targetElementInDocument(link, bodyContentDocument);
+				//	If a page section is specified, extract it.
+				if (link.dataset.pageSectionId > "")
+					pageContentDocument.appendChild(pageContent.document.querySelector("#" + link.dataset.pageSectionId)?.cloneNode(true));
 
-                //  Pop-frame title text.
-                let popFrameTitleTextParts = [ ];
-                if (link.pathname != location.pathname)
-                    popFrameTitleTextParts.push(pageContent.title);
+                /*  Otherwise (or if the specified section does not exist), the 
+                	default page content is the page body plus the metadata 
+                	block.
+                 */
+				if (pageContentDocument.childNodes.length == 0) {
+					//  Add the page metadata block.
+					let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
+					if (pageMetadataBlock) {
+						pageMetadataBlock = pageContentDocument.appendChild(pageMetadataBlock.cloneNode(true));
+						pageMetadataBlock.classList.remove("markdownBody");
+						if (pageMetadataBlock.className == "")
+							pageMetadataBlock.removeAttribute("class");
+					}
 
-                //  Section title or block id.
-                if (element) {
-                    let nearestSection = element.closest("section");
-                    let nearestFootnote = element.closest("li.footnote");
-                    if (nearestFootnote) {
-                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
-                        let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
-                        if (identifyingSpan)
-                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
-                    } else if (nearestSection) {
-                        //  Section mark (§) for sections.
-                        popFrameTitleTextParts.push("&#x00a7;");
-                        if (nearestSection.id == "footnotes") {
-                            popFrameTitleTextParts.push("Footnotes");
-                        } else {
-                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
-                        }
-                    } else {
-                        popFrameTitleTextParts.push(link.hash);
-                    }
-                }
+					//  Add the page main content block.
+					pageContentDocument.append(newDocument(pageContent.document.querySelector("#markdownBody").childNodes));
+				}
 
                 return {
-                    content:                 bodyContentDocument,
+                    content:                 pageContentDocument,
                     pageTitle:               pageContent.title,
                     pageBodyClasses:         pageContent.bodyClasses,
                     pageThumbnailHTML:       pageContent.thumbnailHTML,
-                    popFrameTitleLinkHref:   link.href,
-                    popFrameTitle:           popFrameTitleTextParts.join(" "),
-                    popFrameTitleShort:      popFrameTitleTextParts.first,
                     shouldLocalize:          true
                 }
             },

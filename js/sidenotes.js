@@ -690,6 +690,7 @@ Sidenotes = { ...Sidenotes,
 				"data-include-selector-not": ".footnote-self-link"
 			});
 			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
+			includeLink.dataset.pageSectionId = "footnotes";
 			sidenote.querySelector(".sidenote-inner-wrapper").append(includeLink);
 
 			//  Add the sidenote to the sidenotes array...
@@ -857,6 +858,8 @@ Sidenotes = { ...Sidenotes,
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
+			GWLog("addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery", "sidenotes.js", 1);
+
 			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
 			});
@@ -869,6 +872,8 @@ Sidenotes = { ...Sidenotes,
 			case, so we cannot depend on the ‘GW.hashDidChange’ event handler.)
 		 */
 		addContentInjectHandler(Sidenotes.addFauxHashChangeEventsToNoteMetaLinks = (eventInfo) => {
+			GWLog("addFauxHashChangeEventsToNoteMetaLinks", "sidenotes.js", 1);
+
 			let selector = [
 				"a.footnote-ref",
 				"a.sidenote-self-link",
@@ -910,6 +915,8 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
+			GWLog("rewriteCitationTargetsInLoadedContent", "sidenotes.js", 1);
+
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
 					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
@@ -930,7 +937,7 @@ Sidenotes = { ...Sidenotes,
 
 		//	Add listener to update sidenote positions when media loads.
 		addContentInjectHandler(GW.contentInjectHandlers.addMediaElementLoadEventsInSidenotes = (eventInfo) => {
-			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
+			GWLog("addMediaElementLoadEventsInSidenotes", "sidenotes.js", 1);
 
 			eventInfo.container.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
@@ -1007,6 +1014,8 @@ Sidenotes = { ...Sidenotes,
 				citations are injected (e.g., in a popup).
 			 */
 			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
+				GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
+
 				eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
 					let sidenote = Sidenotes.counterpart(citation);
 					if (sidenote == null)

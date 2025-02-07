@@ -1279,7 +1279,7 @@ function includeContent(includeLink, content) {
     //  Unwrap.
     unwrap(wrapper);
 
-    //  Prevent race condition, part II.
+   //  Prevent race condition, part II.
     includeLink.swapClasses([ "include-in-progress", "include-complete" ], 1);
 
     //  Fire event, if need be.
@@ -2111,8 +2111,6 @@ Transclude = {
     //  Called by: handleTranscludes (rewrite function)
     transclude: (includeLink, now = false) => {
         GWLog("Transclude.transclude", "transclude.js", 2);
-
-// 		return;
 
 		//	Resolve alias classes.
 		Transclude.resolveIncludeLinkAliasClasses(includeLink);

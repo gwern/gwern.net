@@ -150,7 +150,7 @@ Extracts = { ...Extracts,
         let target = popFrame.spawningTarget;
         let referenceData = Content.referenceDataForLink(target);
 
-		let popFrameTitleHTML, popFrameTitleLinkHref;
+		let popFrameTitleHTML;
 		if (referenceData == null) {
 			let popFrameTitleText = "";
 			if (target.pathname != location.pathname)
@@ -158,13 +158,37 @@ Extracts = { ...Extracts,
 			if (popFrame.classList.contains("full-page") == false)
 				popFrameTitleText += target.hash;
 			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
-
-			popFrameTitleLinkHref = target.href;
 		} else {
-			popFrameTitleHTML = popFrame.classList.contains("full-page")
-								? referenceData.popFrameTitleShort
-								: referenceData.popFrameTitle;
-			popFrameTitleLinkHref = referenceData.popFrameTitleLinkHref;
+			let popFrameTitleTextParts = [ ];
+			if (target.pathname != location.pathname)
+				popFrameTitleTextParts.push(referenceData.pageTitle);
+			if (popFrame.classList.contains("full-page") == false) {
+                //  Find the target element and/or containing block, if any.
+                let element = targetElementInDocument(target, referenceData.content);
+
+                //  Section title or block id.
+                if (element) {
+                    let nearestSection = element.closest("section");
+                    let nearestFootnote = element.closest("li.footnote");
+                    if (nearestFootnote) {
+                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
+                        let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
+                        if (identifyingSpan)
+                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
+                    } else if (nearestSection) {
+                        //  Section mark (§) for sections.
+                        popFrameTitleTextParts.push("&#x00a7;");
+                        if (nearestSection.id == "footnotes") {
+                            popFrameTitleTextParts.push("Footnotes");
+                        } else {
+                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+                        }
+                    } else {
+                        popFrameTitleTextParts.push(link.hash);
+                    }
+                }
+			}
+			popFrameTitleHTML = popFrameTitleTextParts.join(" ");
 		}
 
 		/*	This is for section backlinks popups for the base page, and any
@@ -176,7 +200,7 @@ Extracts = { ...Extracts,
 			popFrameTitleHTML += " (Backlinks)";
 
 		return Transclude.fillTemplateNamed("pop-frame-title-standard", {
-			popFrameTitleLinkHref:  popFrameTitleLinkHref,
+			popFrameTitleLinkHref:  target.href,
 			popFrameTitle:          popFrameTitleHTML
 		});
     },
