@@ -1232,11 +1232,12 @@ authorLinkDB = M.fromList $
     , ("Stephanie H. Witt", "https://scholar.google.com/citations?user=n8HwFXQAAAAJ")
     , ("Renato Polimanti", "https://scholar.google.com/citations?user=bDHMgDYAAAAJ")
     , ("Rainer Rauramaa", "https://research.com/u/rainer-rauramaa")
-    , ("Peter Welinder", "https://scholar.google.com/citations?user=B76dD7YAAAAJ&hl=en&oi=ao")
-    , ("Peter Lichtner", "https://scholar.google.com/citations?user=eir6jPcAAAAJ&hl=en&oi=ao")
+    , ("Peter Welinder", "https://scholar.google.com/citations?user=B76dD7YAAAAJ")
+    , ("Peter Lichtner", "https://scholar.google.com/citations?user=eir6jPcAAAAJ")
     , ("Paul M. Thompson", "https://en.wikipedia.org/wiki/Paul_Thompson_(neuroscientist)")
     , ("Patricia A. Peyser", "https://scholar.google.com/scholar?q=Patricia%20A.%20Peyser")
     , ("Joshua S. Gans", "https://en.wikipedia.org/wiki/Joshua_Gans")
+    , ("Joshua Clymer", "https://x.com/joshua_clymer")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

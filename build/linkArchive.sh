@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2025-01-02 20:10:08 gwern"
+# When:  Time-stamp: "2025-02-07 22:09:25 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -19,7 +19,7 @@
 # $ linkArchive.sh 'http://www.jacurutu.com/viewtopic.php?p=101694#p101694'
 # /home/gwern/wiki/doc/www/www.jacurutu.com/718b0de585ef3dcd778a196fb2b8c842b42c7bc2.html
 #
-# Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
+# Requires: sha1sum, docker+SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
 URL=""
 CHECK=0

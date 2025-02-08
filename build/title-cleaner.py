@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-01-30 12:13:30 gwern"
+# When:  Time-stamp: "2025-02-07 11:19:33 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -564,6 +564,8 @@ Katri Räikkönen
 "Habitat Chronicles: The Untold History of Toontown’s SpeedChat (or BlockChat™ from Disney finally arrives)"
 - "Jasmine Sun on Substack: “For the First Time—And It Brings Me No Joy to Admit This” https://substack.com/@jasmine/note/c-88814858"
 "For the First Time—And It Brings Me No Joy to Admit This"
+- "https://www.sergey.fyi/articles/gemini-flash-2 Sergey’s Blog"
+""
 
 Task:
 

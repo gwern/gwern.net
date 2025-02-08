@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2024-11-25 09:18:43 gwern"
+When:  Time-stamp: "2025-02-07 20:09:09 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -192,7 +192,7 @@ manualArchive n | n < 1 = error $ "manualArchive called with no work to do (𝑛
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
   unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)
   let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
-  unless (null sortedItems) $ putStrLn ("𝑛 due: " ++ show sortedItems)
+  unless (null sortedItems) $ putStrLn ("n due: " ++ show sortedItems)
   let urlsToArchive = nubOrd $ map fst $ cheapItems ++ sortedItems
   adbExecuted <- mapConcurrently archiveItem urlsToArchive
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
