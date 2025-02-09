@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-01-27 10:38:46 gwern"
+# When:  Time-stamp: "2025-02-08 11:44:18 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -109,7 +109,9 @@ path2File () {
                                  -e 's/\~\//\/home\/gwern\/wiki\//' \
                                  -e 's/^\([a-zA-Z0-9].*\)/\/home\/gwern\/wiki\/\1/' \
                                  -e 's/https:\/\/gwern\.net//g' \
-                                 -e 's/^\/doc/\/home\/gwern\/wiki\/doc/')
+                                 -e 's/#.*$//g' \
+                                 -e 's/^\/doc/\/home\/gwern\/wiki\/doc/'\
+           -e 's/\/\//\//g') # clean up any double-slashes
         echo "$ARG"
         fi
     done
@@ -243,6 +245,8 @@ pdf-append () {
         rm -f "$TARGET"
         return 1
     fi
+    # I usually know before I look at the PDF's metadata that I will be appending to it, because I will have already downloaded the supplementary files etc. So I won't have yet looked to see what I have to add. We'll save a step by assuming that is the case, and running `crossref` on it:
+    crossref "$1"
 }
 
 doc2pdf () {

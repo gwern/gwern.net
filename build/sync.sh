@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-07 19:57:18 gwern"
+# When:  Time-stamp: "2025-02-08 11:44:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -117,7 +117,7 @@ else
           stringReplace '<sup>St</sup>' '<sup>st</sup>' ./metadata/*.gtx; stringReplace '<sup>Nd</sup>' '<sup>nd</sup>' ./metadata/*.gtx; stringReplace '<sup>Rd</sup>' '<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 1st ' ' 1<sup>st</sup> ' ./metadata/*.gtx; stringReplace ' 2nd' ' 2<sup>nd</sup>' ./metadata/*.gtx; stringReplace ' 3rd' ' 3<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 4th' ' 4<sup>th</sup>' ./metadata/*.gtx;
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling';
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling'; s ' colour' ' color'; s ' Colour' ' Color';
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
@@ -140,7 +140,7 @@ else
           s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s '. De novo ' '. <em>De novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>';
           s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
           s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
-          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
+          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s ' degrees Celsius' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
           s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>';
           s 'Cite-Author' 'cite-author'; s 'cite-author-Plural' 'cite-author-plural'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s 'Date-Range' 'date-range'; s 'Inflation-Adjusted' 'inflation-adjusted'; s 'Logotype-Latex-A' 'logotype-latex-a'; s 'Logotype-Latex-E' 'logotype-latex-e'; s 'SUbsup' 'subsup';
@@ -652,7 +652,7 @@ else
             "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
-            "link-bibliography-context" "extract-not"
+            "link-bibliography-context" "extract-not" "fraction"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -722,7 +722,7 @@ else
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
-             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf' -e '/doc/psychology/cognitive-bias/2020-ruggeri.pdf';
+             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf' -e '/doc/psychology/cognitive-bias/2020-ruggeri.pdf' -e 'https://www.buzzfeednews.com/article/stephaniemlee/brian-wansink-cornell-p-hacking';
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
@@ -896,7 +896,7 @@ else
             -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
-            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx | fgv -e 'righto.com/2025/01/'; }
+            -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx | gfv -e 'righto.com/2025/01/'; }
     wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed string matches)."
     λ(){ gfc -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
@@ -925,7 +925,7 @@ else
             -e 'inline-formula' -e 'inline-graphic' -e '<sec' -e '”(' -e '’(' -e '#.' -e 'href="#page=' \
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
             -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' \
-            -e '<n/em>' -- ./metadata/*.gtx | \
+            -e '<n/em>' -e '!=' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
@@ -986,7 +986,7 @@ else
 
     λ(){ grep --color --with-filename --perl-regexp -e "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" $PAGES;
          # Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide
-         grep --color -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com'; }
+         grep --color -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]' $PAGES | gfv -e 'dnm-arrest.md' -e 'unsongbook.com' -e 'א, ג, ה, ז, ט'; }
     wrap λ "Markdown files: garbage or control characters detected?" &
 
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
@@ -1335,8 +1335,9 @@ else
           fi; }
     wrap λ "X-Clacks-Overhead HTTP header check failed."
 
+    wait;
     ## check that the robots-headers are being set appropriately:
-    curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | grep -E -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
+    curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
     curl --silent --head "https://gwern.net/doc/index" | grep -E -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
     ## check that all tag shortcuts are working,

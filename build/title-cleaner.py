@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-02-07 11:19:33 gwern"
+# When:  Time-stamp: "2025-02-08 15:08:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -566,6 +566,10 @@ Katri Räikkönen
 "For the First Time—And It Brings Me No Joy to Admit This"
 - "https://www.sergey.fyi/articles/gemini-flash-2 Sergey’s Blog"
 ""
+- "https://avmajournals.avma.org/view/journals/javma/229/6/javma.229.6.964.xml Aromatherapy for travel-induced excitement in dogs in: <em>Journal of the American Veterinary Medical Association</em> Volume 229 Issue 6"
+"Aromatherapy for travel-induced excitement in dogs"
+- "https://chiraaggohel.com/posts/llms-eda/ Your AI can’t see gorillas—Chiraag Gohel"
+"Your AI can’t see gorillas"
 
 Task:
 

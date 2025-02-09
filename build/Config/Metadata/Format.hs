@@ -268,7 +268,8 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>") -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
          , ("([0-9]+)\\^([0-9\\.]+)", "\\1<sup>\\2</sup>") -- eg '(p<10^4)'
          , ("([0-9]+)\\^[-−]([0-9\\.]+)", "\\1<sup>−\\2</sup>") -- eg '(p<10^-4)'
-         , (" ([0-9]+%?)-([0-9]+) ", " \\1–\\2 ")
+         , (" ([0-9]+)%-([0-9]+%) ", " \\1–\\2 ") -- " of 95%-99%" → " 95–99%"
+         , (" ([0-9]+)-([0-9]+%) ", " \\1–\\2 ") -- " of 95-99%" → " 95–99%"
          , ("([0-9]) %", "\\1%")
          , (" ([0-9]+) out of the ([0-9]+) ", " \\1⁄\\2 ")
          , (" ([0-9]+) out of ([0-9]+) ", " \\1⁄\\2 ") -- need space-separation due to examples like 'smartphones are now used by 5.8 out of 7.0 billion people on earth'

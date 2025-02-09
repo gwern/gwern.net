@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-01-27 17:32:51 gwern"
+# When:  Time-stamp: "2025-02-08 20:32:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -601,6 +601,11 @@ As Large Language Models (LLMs) are increasingly used for a variety of complex a
 Using six LLMs, we analyze responses from play in classical games from behavioral economics (p-Beauty Contest, 11-20 Money Request Game, and Guessing Game) and evaluate their performance through hierarchical models of reasoning (level-k theory and cognitive hierarchy theory). Our findings reveal that while LLMs show understanding of the games, the majority struggle with higher-order strategic reasoning.
 Although most LLMs did demonstrate learning ability with games involving repeated interactions, they still consistently fall short of the reasoning levels demonstrated by typical behavior from human subjects. The exception to these overall findings is with OpenAI's GPT-o1—specifically trained to solve complex reasoning tasks—which consistently outperforms other LLMs and human subjects.
 These findings highlight the challenges and pathways in advancing LLMs toward robust strategic reasoning from the perspective of behavioral economics.
+- <abstract>Anxiety, post-traumatic stress, and depression markedly increased worldwide during the COVID-19 pandemic. People with these conditions experience distressing intrusive thoughts, yet conventional therapies often urge them to avoid suppressing their thoughts because intrusions might rebound in intensity and frequency, worsening the disorders. In contrast, we hypothesized that training thought suppression would improve mental health. One hundred and twenty adults from 16 countries underwent 3 days of online training to suppress either fearful or neutral thoughts. No paradoxical increases in fears occurred. Instead, suppression reduced memory for suppressed fears and rendered them less vivid and anxiety provoking. After training, participants reported less anxiety, negative affect, and depression with the latter benefit persisting at 3 months. Participants high in trait anxiety and pandemic-related post-traumatic stress gained the largest and most durable mental health benefits. These findings challenge century-old wisdom that suppressing thoughts is maladaptive, offering an accessible approach to improving mental health.</abstract>
+Anxiety, post-traumatic stress, and depression markedly increased worldwide during the COVID-19 pandemic. People with these conditions experience distressing intrusive thoughts, yet conventional therapies often urge them to avoid suppressing their thoughts because intrusions might rebound in intensity and frequency, worsening the disorders.
+In contrast, we hypothesized that training thought suppression would improve mental health. One hundred and twenty adults from 16 countries underwent 3 days of online training to suppress either fearful or neutral thoughts.
+No paradoxical increases in fears occurred. Instead, suppression reduced memory for suppressed fears and rendered them less vivid and anxiety provoking. After training, participants reported less anxiety, negative affect, and depression with the latter benefit persisting at 3 months. Participants high in trait anxiety and pandemic-related post-traumatic stress gained the largest and most durable mental health benefits.
+These findings challenge century-old wisdom that suppressing thoughts is maladaptive, offering an accessible approach to improving mental health.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

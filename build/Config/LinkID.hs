@@ -2917,4 +2917,5 @@ linkIDOverrides =
   ,("https://www.youtube.com/watch?v=tWZOEFvczzA","digital-2023-1"),("https://www.youtube.com/watch?v=jQ_DfORb3kw&t=931","digital-2023-2"),("https://www.youtube.com/watch?v=_9LX9HSQkWo&t=862s","digital-2023-3"),("https://www.youtube.com/watch?v=GVT3WUa-48Y","digital-2023-4")
   ,("https://arxiv.org/abs/2206.06565","dinh-et-al-2022-1"),("/doc/sociology/2022-dinh.pdf","dinh-et-al-2022-2")
   ,("https://platform.openai.com/docs/guides/fine-tuning#preference","openai-2025-rlhf"),("https://openai.com/index/introducing-deep-research/","openai-2025-dr")
+  , ("https://cerebras.ai/blog/cerebras-launches-worlds-fastest-deepseek-r1-llama-70b-inference","wang-2025-r1"),("https://cerebras.ai/blog/100x-defect-tolerance-how-cerebras-solved-the-yield-problem","wang-2025-yield")
       ]
