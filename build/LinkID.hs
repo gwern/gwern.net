@@ -1,28 +1,37 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID) where
+module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID, id2URLdb, writeOutID2URLdb) where
 
 import Control.Monad (replicateM)
 import Data.Char (isAlphaNum, isPunctuation, toLower)
-import Data.List (isInfixOf, isPrefixOf, sortOn) -- isSuffixOf
+import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex) -- isSuffixOf
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (null, pack, unpack, take, Text)
-import qualified Data.Map.Strict as M (toList, fromListWith, (!))
+import qualified Data.Map.Strict as M (toList, fromListWith, (!), mapWithKey)
 import Text.Printf (printf)
+import Data.Containers.ListUtils (nubOrd)
+
+import Data.Array (accumArray, assocs, Array)
 
 -- hash IDs:
 import qualified Crypto.Hash.SHA1 as SHA1 (hash)
 import qualified Data.ByteString.Base64.URL as B64URL (encode)
 import qualified Data.ByteString.Char8 as BS (take)
 import qualified Data.Text.Encoding as TE (decodeUtf8, encodeUtf8)
+import qualified Data.ByteString.Lazy.Char8 as LBS (toStrict)
+
+-- serializing the JSON maps for client-side JS browser use:
+import Data.Aeson (object, (.=), encode)
+import qualified Data.Aeson.Key as Key (fromText)
 
 import LinkMetadataTypes (Metadata, MetadataItem, Path)
-import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, simplifiedHtmlToString)
-import Config.Misc (currentYear)
+import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, simplifiedHtmlToString, writeUpdatedFile)
+import Config.Misc (currentYear, cd)
 import qualified Config.LinkID as C (linkIDOverrides)
 
--- Convert a URL/path to a 8-character URL-safe Base64 ID, using SHA-1.
+
+-- Convert a URL/path to a 8-character URL-safe Base64 (the 64-character range [a-zA-Z0-9_-] or "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-") ID, using SHA-1.
 -- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020".
 -- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
 --
@@ -131,3 +140,39 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
         let padding = length (show (length urls))
             sortedUrls = sortOn (metadataItem2ID (T.unpack ident) . (md M.!)) urls
         in zipWith (\url (n :: Int) -> (url, T.unpack ident ++ "-" ++ printf ("%0" ++ show padding ++ "d") n)) sortedUrls [1..]
+
+-- create a mapping of ID → URL for easier search.
+--
+-- Useful for creating the JSON maps to power the client-side /ref/ annotation queries. We split them by the first character of the ID, so that we only need to query 1 small JSON file instead of the entire DB. If necessary, we can split them further, recursively, until the download size is tolerable.
+-- Then the JS can look at the current URL `/ref/$ID`, take the first character of $ID, download the relevant JSON dictionary (<100kb on the wire), look up the corresponding URL, and display its annotation the usual way. (The prefixes are limited to the URL-safe Base-64 subset; any characters not inside that, like Unicode from foreign surnames, is put into the final entry, for '-'.)
+-- This enables stable easy links to arbitrary annotations, which currently can only be awkwardly linked as unstable section anchor-links in tag-directories.
+id2URLdb :: Metadata -> [(String, Path)]
+id2URLdb md = nubOrd $ map (\(url,ident) -> (T.unpack ident,url)) $ M.toList $ M.mapWithKey metadataItem2ID md
+
+shardByCharPrefix :: [(String, Path)] -> [(Char, [(String, Path)])]
+shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]
+  where
+    alphabet :: String
+    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
+
+    arr :: Array Int [(String,Path)]
+    arr = accumArray (\acc t -> t : acc) [] (0, 63)
+          [ (index s, (s, p)) | (s, p) <- xs ]
+
+    index :: String -> Int
+    index []     = error "Key is empty"
+    index (c:_) = case elemIndex c alphabet of
+                     Nothing -> 63  -- dump Unicode-prefix IDs into final fallback entry, '-'
+                     Just i  -> i
+
+tupleList2JSONString :: [(String, Path)] -> T.Text
+tupleList2JSONString xs =
+  TE.decodeUtf8 . LBS.toStrict . encode $
+    object [ Key.fromText (T.pack key) .= T.pack path | (key, path) <- xs ]
+
+writeOutID2URLdb :: Metadata -> IO ()
+writeOutID2URLdb md = do let dbl = id2URLdb md
+                         let sharded = shardByCharPrefix dbl
+                         Config.Misc.cd
+                         mapM_ (\(char,shard) -> writeUpdatedFile "id-shard" ("metadata/annotation/id/" ++ [char] ++ ".json") (tupleList2JSONString shard)) sharded
+

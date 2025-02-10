@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-01-01 15:34:58 gwern"
+When: Time-stamp: "2025-02-10 12:43:37 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -52,6 +52,7 @@ import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOpt
 import Test (testAll)
 import Config.Misc (cd, currentYear)
 import Metadata.Date (dateRangeDuration)
+import LinkID (writeOutID2URLdb)
 
 main :: IO ()
 main =
@@ -78,6 +79,9 @@ main =
                if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations, and one-shot mode specified, so exiting now." else do
 
                  when slow $ preprocess testAll
+
+                 when slow $ preprocess $ writeOutID2URLdb meta
+
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else
                                 else fromGlob $ head args'
