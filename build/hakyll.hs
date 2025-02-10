@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-10 12:43:37 gwern"
+When: Time-stamp: "2025-02-10 18:11:20 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline, completionProgressHTML)
-import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML)
+import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
 import Config.Misc (cd, currentYear)
 import Metadata.Date (dateRangeDuration)
@@ -80,7 +80,9 @@ main =
 
                  when slow $ preprocess testAll
 
-                 when slow $ preprocess $ writeOutID2URLdb meta
+                 -- for '/ref/' cache updating & expiring:
+                 when slow $  preprocess $ writeOutID2URLdb meta
+                 timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
 
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else
@@ -98,7 +100,7 @@ main =
                                 indexpM <- getMetadataField ident "index"
                                 let indexp = fromMaybe "" indexpM
                                 pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
-                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta)
+                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta timestamp)
                                   >>= imgUrls
 
                  let static        = route idRoute >> compile copyFileCompiler
@@ -187,8 +189,8 @@ imgUrls item = do
         Nothing -> return item
         Just _  -> traverse (unsafeCompiler . addImgDimensions) item
 
-postCtx :: Metadata -> Context String
-postCtx md =
+postCtx :: Metadata -> String -> Context String
+postCtx md rts =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     titlePlainField "title-plain" <>
@@ -196,7 +198,8 @@ postCtx md =
     descField False "title" "title" <>
     descField True "description" "description-escaped" <>
     descField False "description" "description" <>
-    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: true` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
+    constField "refMapTimestamp" rts <>
+    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.md as `index: True` to set it to a non-null value.) Likewise, "error404" for generating the 404.html page.
     -- similarly, 'author': default.html has a conditional to set 'Gwern' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
     boolField "backlinks-yes" (check notNewsletterOrIndex getBackLinkCheck)    <>
@@ -316,9 +319,9 @@ descField escape d d' = field d' $ \item -> do
 
 pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
-                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: true' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
+                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
-     let indexp = indexp' == "true"
+     let indexp = indexp' == "True"
      let pw
            = if indexp then convertInterwikiLinks p else
                walk footnoteAnchorChecker $ convertInterwikiLinks $

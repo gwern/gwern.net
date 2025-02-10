@@ -77,14 +77,14 @@
   <noscript>
     <style>
       #markdownBody #noscript-warning-header {
-    	  position: fixed; /* sticky */
-    	  top: 6px; /* at top */
-    	  width: 58%;
-    	  z-index: 99; /* Make sure it is on top */
-    	  background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
-    	  border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
-    	  border-width: 6px 6px 6px 6px;
-    	  border-style: double;
+          position: fixed; /* sticky */
+          top: 6px; /* at top */
+          width: 58%;
+          z-index: 99; /* Make sure it is on top */
+          background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
+          border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
+          border-width: 6px 6px 6px 6px;
+          border-style: double;
       }
       #markdownBody #noscript-warning-header p { margin: 10px; }
       nav#sidebar { padding-top: 160px; } /* avoid overlap with page header */
@@ -157,6 +157,7 @@ $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css
     <!-- FOOTER-END -->
 
   </main>
+
   <script defer src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -165,5 +166,6 @@ $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css
     gtag('config', 'UA-18912926-1');
   </script>
   $if(error404)$<script src="/static/js/404-guesser.js" defer></script>$endif$
+  $if(placeholder)$<script>GW.refMappingFileVersion = "$refMapTimestamp$";</script>$endif$
 </body>
 </html>

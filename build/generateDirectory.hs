@@ -263,7 +263,7 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
              "confidence: log",
              "importance: 0",
              "css-extension: dropcaps-de-zs",
-             "index: true",
+             "index: True",
              "backlink: False",
              "...\n"]
   where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".

@@ -147,7 +147,9 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
 -- Then the JS can look at the current URL `/ref/$ID`, take the first character of $ID, download the relevant JSON dictionary (<100kb on the wire), look up the corresponding URL, and display its annotation the usual way. (The prefixes are limited to the URL-safe Base-64 subset; any characters not inside that, like Unicode from foreign surnames, is put into the final entry, for '-'.)
 -- This enables stable easy links to arbitrary annotations, which currently can only be awkwardly linked as unstable section anchor-links in tag-directories.
 id2URLdb :: Metadata -> [(String, Path)]
-id2URLdb md = nubOrd $ map (\(url,ident) -> (T.unpack ident,url)) $ M.toList $ M.mapWithKey metadataItem2ID md
+id2URLdb md = map (\(url,ident) -> (T.unpack ident,url)) $
+              nubOrd $ -- URLs are much more compressible than random IDs, so we'll sort by the value (URL) instead of key (ID), to let URLs compress better with each other & save some bytes on the wire
+              M.toList $ M.mapWithKey metadataItem2ID md
 
 shardByCharPrefix :: [(String, Path)] -> [(Char, [(String, Path)])]
 shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]

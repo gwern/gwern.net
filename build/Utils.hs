@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Utils where
 
-import Control.Monad (when)
+import Control.Monad (when, forM)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
 import Data.Maybe (fromMaybe)
@@ -10,8 +10,8 @@ import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, member, insert, Set)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference, isRelativeReference, uriToString, escapeURIString, isUnescapedInURI)
-import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
-import System.FilePath (takeDirectory, takeExtension)
+import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile, listDirectory, getModificationTime)
+import System.FilePath (takeDirectory, takeExtension, (</>))
 import System.IO (stderr, hPutStr)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Show.Pretty (ppShow)
@@ -20,10 +20,11 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
 import Control.DeepSeq (deepseq, NFData)
-import System.Posix.Files (touchFile)
+-- import System.Posix.Files (touchFile)
 
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.Calendar (Day, diffDays)
+import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 
 import Text.Regex (subRegex, mkRegex) -- WARNING: for Unicode support, this needs to be 'regex-compat-tdfa' package, otherwise, the search-and-replaces will go badly awry!
 import Control.Exception (catch, evaluate, SomeException)
@@ -49,7 +50,7 @@ writeUpdatedFile template target contentsNew
                if contentsNew /= contentsOld then do tempPath <- emptySystemTempFile ("hakyll-"++template)
                                                      TIO.writeFile tempPath contentsNew
                                                      renameFile tempPath target
-               else touchFile target -- mark as up to date
+               else return () -- touchFile target -- mark as up to date
 
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
@@ -564,6 +565,20 @@ parseDate dateStr
 
 calculateDays :: Day -> Day -> Int
 calculateDays start end = fromInteger $ succ $ diffDays end start  -- succ to make it inclusive
+
+-- return the Unix timestamp ('%D') of the most recently modified file in a given directory:
+getMostRecentlyModifiedDir :: FilePath -> IO String
+getMostRecentlyModifiedDir dir = do
+  files <- listDirectory dir
+  modTimes <- forM files $ \file -> do
+    let path = dir </> file
+    isFile <- doesFileExist path
+    if isFile
+       then Just . round . utcTimeToPOSIXSeconds <$> getModificationTime path
+       else return Nothing
+  let timestamps = [ t | Just t <- modTimes ]
+      mostRecent = if null timestamps then (0::Integer) else maximum timestamps
+  return (show mostRecent)
 
 formatIntWithCommas :: Int -> String
 formatIntWithCommas = reverse . intercalate "," . chunksOf 3 . reverse . show

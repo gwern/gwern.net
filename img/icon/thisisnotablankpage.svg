@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="172.08" height="57.2844"
+     viewBox="-14.34 -4.7737 172.08 57.2844"
+     xmlns:v="https://vecta.io/nano">
+  <path fill="#fff" d="M-178.672-240.016h143.4v47.737h-143.4z"/>
+  <text x="71.328" y="9.984" dominant-baseline="middle" text-anchor="middle"
+        font-family="Source Sans Pro, Adobe Source Sans, sans-serif"
+        font-size="24" fill="#000">
+    <tspan x="71.328" y="9.984" font-weight="bold" font-family="Source Sans Pro">
+      THIS IS NOT A
+    </tspan>
+    <tspan x="69" y="41.151" font-weight="bold" font-size="26" font-family="Source Sans Pro">
+      BLANK  PAGE
+    </tspan>
+  </text>
+</svg>
