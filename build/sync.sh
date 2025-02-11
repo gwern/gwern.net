@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-08 11:44:42 gwern"
+# When:  Time-stamp: "2025-02-10 19:06:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -214,7 +214,7 @@ else
     # Update the directory listing index pages: there are a number of directories we want to avoid,
     # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
     # docs, so we'll blacklist those:
-    DIRECTORY_TAGS="$(find doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ sicp/ zeo/ -type d \
+    DIRECTORY_TAGS="$(find blog/ doc/ fiction/ haskell/ newsletter/ nootropic/ note/ review/ sicp/ zeo/ -type d \
                       | gfv -e 'doc/www' -e 'doc/rotten.com' -e 'doc/genetics/selection/www.mountimprobable.com' \
                                         -e 'doc/biology/2000-iapac-norvir' -e 'doc/gwern.net-gitstats' -e 'doc/reinforcement-learning/armstrong-controlproblem' \
                                         -e 'doc/statistics/order/beanmachine-multistage' -e 'doc/personal/2011-gwern-yourmorals.org/' \
@@ -575,7 +575,7 @@ else
          [ "$BACKLINKS_FILES_N"    -le 28500 ] && echo "$BACKLINKS_FILES_N"; }
     wrap λ "Backlinks files are missing?"
     λ(){ SIMILARLINKS_FILES_N=$(find ./metadata/annotation/similar/ -type f | wc --lines);
-         [ "$SIMILARLINKS_FILES_N" -le 12000 ] && echo "$SIMILARLINKS_FILES_N"; }
+         [ "$SIMILARLINKS_FILES_N" -le 11000 ] && echo "$SIMILARLINKS_FILES_N"; }
     wrap λ "Similar-links files are missing?"
 
     ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/note/lion#history#'/'/note/lion##history'/'/note/lion##'/'/note/lion#history#foo' is in fact valid

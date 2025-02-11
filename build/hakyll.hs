@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-10 18:11:20 gwern"
+When: Time-stamp: "2025-02-10 21:56:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -53,6 +53,7 @@ import Test (testAll)
 import Config.Misc (cd, currentYear)
 import Metadata.Date (dateRangeDuration)
 import LinkID (writeOutID2URLdb)
+import Blog (writeOutBlogEntries)
 
 main :: IO ()
 main =
@@ -83,6 +84,8 @@ main =
                  -- for '/ref/' cache updating & expiring:
                  when slow $  preprocess $ writeOutID2URLdb meta
                  timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
+
+                 when slow $ preprocess $ writeOutBlogEntries meta
 
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else

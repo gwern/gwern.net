@@ -30,7 +30,6 @@ import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, si
 import Config.Misc (currentYear, cd)
 import qualified Config.LinkID as C (linkIDOverrides)
 
-
 -- Convert a URL/path to a 8-character URL-safe Base64 (the 64-character range [a-zA-Z0-9_-] or "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-") ID, using SHA-1.
 -- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020".
 -- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
