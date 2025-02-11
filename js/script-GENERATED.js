@@ -2612,11 +2612,6 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
     });
     GW.backToTop.addEventListener("click", (event) => {
         GW.backToTop.style.transition = "";
-
-		/*	Log usage. (Temporary.)
-				— SA 2024-12-02
-		 */
-		GWServerLogError(location.href + "--used-back-to-top-link");
     });
 });
 
