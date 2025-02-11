@@ -143,7 +143,7 @@ tagsShort2LongRewrites =
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
    , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
-   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution")
+   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution"), ("dnm", "darknet-market")
    , ("fermi", "science/fermi-problem"), ("fermi-estimate", "science/fermi-problem"), ("fermi-calculation", "science/fermi-problem"), ("fermi-problems", "science/fermi-problem")
    , ("clock", "longevity/epigenetics"), ("aging-clock", "longevity/epigenetics"), ("epigenetic-clock", "longevity/epigenetics"), ("clocks", "longevity/epigenetics")
    , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability")
@@ -154,7 +154,10 @@ tagsShort2LongRewrites =
    , ("marbling", "paper-marbling"), ("marble", "paper-marbling"), ("marbling-paper", "paper-marbling"), ("marble-paper", "paper-marbling")
    , ("microbion", "microbiome"), ("germfree", "germ-free"), ("selfsinking", "self-sinking")
    , ("dantzig", "stigler-diet"), ("4/nonficton", "4/nonfiction"), ("nonficton", "nonfiction")
-   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation"), ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek"), ("deepsek", "deepseek"), ("cat/allergy", "cat/biology/allergy"), ("m", "model"), ("mf", "model-free"), ("m-f", "model-free") ]
+   , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation")
+   , ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek"), ("deepsek", "deepseek"), ("cat/allergy", "cat/biology/allergy")
+   , ("m", "model"), ("mf", "model-free"), ("m-f", "model-free")
+   , ("technology/sociology", "sociology/technology"), ("socciology", "sociology")]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++

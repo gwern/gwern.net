@@ -270,7 +270,7 @@ capitalizeAfterHyphen t s = case break (\c -> c == '-' || c == '—' || c == '['
      (before, '[':after) ->
          before ++ "[" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, '(':after) ->
-         before ++ "[" ++ capitalizeFirst (capitalizeAfterHyphen t after)
+         before ++ "(" ++ capitalizeFirst (capitalizeAfterHyphen t after)
      (before, [])        -> before
      _                   -> error $ "Typography.capitalizeAfterHyphen: case failed to match although that should be impossible: " ++ s ++ " ; original: " ++ t
    where

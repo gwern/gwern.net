@@ -562,7 +562,6 @@ parseDate dateStr
                          Just date -> date
                          Nothing   -> error $ "Utils.parseDate: Invalid date format (could not be parsed as YYYY-MM-DD, YYYY-MM, or YYYY): " ++ dateStr
 
-
 calculateDays :: Day -> Day -> Int
 calculateDays start end = fromInteger $ succ $ diffDays end start  -- succ to make it inclusive
 

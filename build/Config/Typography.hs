@@ -73,7 +73,7 @@ titleCaseTestCases = [
             , ("'something is wrong'", "'Something Is Wrong'")
             , ("Simpler doesn't mean what Tesla thinks it means", "Simpler Doesn't Mean What Tesla Thinks It Means")
             , ("Yes, But Can the Steam Engine Do This? [invention of sandwiches]", "Yes, But Can the Steam Engine Do This? [Invention of Sandwiches]")
-            , ("a janken (rock-paper-scissors) playing robot", "A Janken [Rock-Paper-Scissors) Playing Robot")
+            , ("a janken (rock-paper-scissors) playing robot", "A Janken (Rock-Paper-Scissors) Playing Robot")
               ]
 
 -- testing: unique list
