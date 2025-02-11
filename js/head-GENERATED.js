@@ -926,6 +926,7 @@ function isOnlyChild(node) {
 function isNodeEmpty(node, options) {
 	options = Object.assign({
 		excludePredicate: null,
+		alsoExcludePredicate: null,
 		excludeSelector: null,
 		alsoExcludeSelector: null,
 		excludeIdentifiedElements: false
@@ -3453,8 +3454,8 @@ GW.layout = {
 		/*	Exclude elements that have any classes (discounting 
 			classes added by the layout system).
 		 */
-		let classes = Array.from(node.classList);
-		[	"block",
+		let layoutClasses = [
+			"block",
 			"first-block",
 			"empty-graf",
 			"first-graf",
@@ -3463,10 +3464,14 @@ GW.layout = {
 			"in-list",
 			"float",
 			"has-floats",
+			"overlap-not",
+			"force-dropcap",
 			"heading"
-			].forEach(layoutClass => {
-			classes.remove(layoutClass);
-		});
+		];
+		let classes = Array.from(node.classList).filter(cssClass => 
+			   layoutClasses.includes(cssClass) == false
+			&& /^dropcaps?-/.test(cssClass) == false
+		);
 		if (classes.length > 0)
 			return true;
 

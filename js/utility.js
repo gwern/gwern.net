@@ -926,6 +926,7 @@ function isOnlyChild(node) {
 function isNodeEmpty(node, options) {
 	options = Object.assign({
 		excludePredicate: null,
+		alsoExcludePredicate: null,
 		excludeSelector: null,
 		alsoExcludeSelector: null,
 		excludeIdentifiedElements: false

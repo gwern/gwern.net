@@ -1126,7 +1126,7 @@ function includeContent(includeLink, content) {
 	        includeLink.parentNode.removeChild(includeLink.nextSibling);
     }
 
-    //  Remove include-link (along with container, if specified).
+    //  Remove include-link.
     includeLink.remove();
 
     //  Intelligent rectification of surrounding HTML structure.

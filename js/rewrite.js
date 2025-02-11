@@ -1946,6 +1946,12 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventIn
 addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPageTOC = (eventInfo) => {
     GWLog("addRecentlyModifiedDecorationsToPageTOC", "rewrite.js", 1);
 
+	let excludedPaths = [
+		"/blog/"
+	];
+	if (location.pathname.startsWithAnyOf(excludedPaths))
+		return;
+
 	let TOC = document.querySelector("#TOC");
 	if (TOC == null)
 		return;
@@ -2175,7 +2181,7 @@ addContentLoadHandler(GW.contentLoadHandlers.reverseArchivedLinkPolarity = (even
         archivedLink.href = archivedLink.dataset.urlOriginal;
         delete archivedLink.dataset.urlOriginal;
     });
-}, "rewrite");
+}, "<transclude");
 
 /**********************************************************************/
 /*  Qualify anchorlinks in loaded content by rewriting their `pathname`
