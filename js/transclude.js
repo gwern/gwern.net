@@ -1287,6 +1287,7 @@ function includeContent(includeLink, content) {
         GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
             source: "transclude",
             document: containingDocument,
+            includeLink: includeLink,
             nodes: addedNodes,
             where: where
         });
@@ -2387,6 +2388,7 @@ Transclude = {
             GW.notificationCenter.fireEvent("Rewrite.contentDidChange", {
                 source: "transclude.loadingFailed",
                 document: link.eventInfo.document,
+	            includeLink: link,
                 nodes: [ link ]
             });
         }

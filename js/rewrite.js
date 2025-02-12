@@ -57,21 +57,38 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	};
 
 	let injectIdPrefixMatches = (message, mapping, ref) => {
-		let idPrefixMatches = Object.entries(mapping).filter(entry => entry[0].startsWith(ref));
+		let idPrefixMatches = Object.entries(mapping).filter(entry => 
+			   entry[0].startsWith(ref)
+			&& entry[0] != ref
+		);
 		if (idPrefixMatches.length > 0) {
 			injectHelpfulErrorMessage(message);
 			pageContentContainer.appendChild(elementFromHTML(
 				  `<ul>`
 				+ idPrefixMatches.map(entry => (
 					  `<li><p>`
-					+ `<a href="/ref/${entry[0]}"><code>${entry[0]}</code></a>:`
+					+ `<a href="/ref/${entry[0]}">${entry[0]}</a>`
 					+ synthesizeIncludeLink(entry[1], {
 						"class": "link-annotated include-annotation-partial",
 						"data-include-selector-not": ".data-field.date, .aux-links-field-container"
+					  }, {
+					  	innerHTML: "&nbsp;"
 					  }).outerHTML
 					+ `</p></li>`
 				  )).join("")
 				+ `</ul>`));
+
+			//	Add colons to only those entries whose annotations load.
+			idPrefixMatches.forEach(entry => {
+				GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
+					contentDidChangeEventInfo.nodes.first.closest("li").querySelector("p").appendChild(document.createTextNode(":"));
+				}, {
+					condition: (info) => (   info.source == "transclude"
+										  && info.includeLink.href == URLFromString(entry[1]).href),
+					once: true
+				});
+			});
+
 			activateIncludeLinks();
 		}
 	};
@@ -90,6 +107,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				+ `</p></li>`
 			  )).join("")
 			+ `</ul>`));
+
 		activateIncludeLinks();
 	};
 
@@ -168,6 +186,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 		//	Trigger include-link.
 		Transclude.triggerTransclude(searchPageIncludeLink, {
+			source: "loadReferencedIdentifier",
 			container: pageContentContainer,
 			document: eventInfo.document
 		});
@@ -234,7 +253,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						injectHelpfulSuggestion(urlString);
 					}, {
 						condition: (info) => (   info.source == "transclude.loadingFailed"
-											  && info.nodes.first == annotationIncludeLink),
+											  && info.includeLink == annotationIncludeLink),
 						once: true
 					});
 
