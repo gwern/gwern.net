@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-06 19:37:35 gwern"
+When:  Time-stamp: "2025-02-12 11:50:48 gwern"
 License: CC-0
 -}
 
@@ -530,9 +530,10 @@ generateAnnotationBlock am (f, ann) blp slp lb =
            lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
            author = authorCollapse aut
 
-           date = if dt=="" then [] else [Span ("", ["date", "cite-date"],
-                                                 if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
-                                           [Str (T.pack $ take 4 dt)]]
+           dt' = dateTruncateBad dt
+           date = if dt'=="" then [] else [Span ("", ["date", "cite-date"],
+                                                 if length dt' > 4 then [("title",T.pack dt')] else []) -- don't set a redundant title
+                                           [Str (T.pack $ take 4 dt')]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "id-not", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
            similarlink = if slp=="" then [] else (if blp=="" && tags==[] then [] else [Str ";", Space]) ++ [Span ("", ["similars"], []) [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")]]
