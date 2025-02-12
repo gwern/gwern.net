@@ -70,6 +70,7 @@ body {
 
 main {
     position: relative;
+    box-sizing: border-box;
 	min-height: 100vh;
     max-width: var(--GW-body-max-width);
     margin: 0 auto;
