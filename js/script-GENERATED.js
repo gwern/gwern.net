@@ -11491,9 +11491,6 @@ Transclude = {
 		//	Re-enable normal link behavior.
         link.onclick = null;
 
-		console.log(link.outerHTML);
-		console.log(link.savedTitle);
-
 		//	Replace normal tooltip.
 		link.title = link.savedTitle;
 		link.savedTitle = null;
@@ -15200,10 +15197,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	};
 
 	let injectUrlPrefixMatches = (matches) => {
-		injectHelpfulErrorMessage(`${urlPrefixMatches.length} matches found:`);
+		injectHelpfulErrorMessage(`${matches.length} matches found:`);
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<ul>`
-			+ urlPrefixMatches.map(entry => (
+			+ matches.map(entry => (
 				  `<li><p>`
 				+ synthesizeIncludeLink(entry[0], {
 					"class": "link-annotated include-annotation"

@@ -82,10 +82,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	};
 
 	let injectUrlPrefixMatches = (matches) => {
-		injectHelpfulErrorMessage(`${urlPrefixMatches.length} matches found:`);
+		injectHelpfulErrorMessage(`${matches.length} matches found:`);
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<ul>`
-			+ urlPrefixMatches.map(entry => (
+			+ matches.map(entry => (
 				  `<li><p>`
 				+ synthesizeIncludeLink(entry[0], {
 					"class": "link-annotated include-annotation"
