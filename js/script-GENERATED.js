@@ -15135,7 +15135,22 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		pageContentContainer.appendChild(elementFromHTML(`<div class="smallcaps-not"><p>${errorMessageHTML}</p></div>`));
 	};
 
-	let injectHelpfulSuggestion = (url, injectSearchForm = false) => {
+	let injectIdPrefixMatches = (message, mapping, ref) => {
+		let idPrefixMatches = Object.entries(mapping).filter(entry => entry[0].startsWith(ref));
+		if (idPrefixMatches.length > 0) {
+			pageContentContainer.appendChild(elementFromHTML(`<p>${message}</p>`));
+			pageContentContainer.appendChild(elementFromHTML(
+				  `<ul>`
+				+ idPrefixMatches.map(entry => (
+					  `<li><p>`
+					+ `<a href="/ref/${entry[0]}"><code>${entry[0]}</code></a>`
+					+ `</p></li>`
+				  )).join("")
+				+ `</ul>`));
+		}
+	};
+
+	let injectHelpfulSuggestion = (url) => {
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<p>`
 			+ `You can try browsing <a 
@@ -15148,14 +15163,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				   class="link-annotated link-page backlink-not icon-not" 
 				   title="'Essays', Gwern 2009"
 				   >return to the <strong>main page</strong></a>, `
-			+ `or search the site`
-			+ (injectSearchForm
-			   ? `:`
-			   : ` (<span class="search-mode-selector-inline"></span>).`)
+			+ `or search the site:`
 			+ `</p>`));
-
-		if (injectSearchForm == false)
-			return;
 
 		//	Synthesize and inject search page include-link.
 		let searchPageIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink("/static/google-search.html", {
@@ -15174,11 +15183,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			iframe.addEventListener("load", (event) => {
 				let searchField = iframe.contentDocument.querySelector("input.search");
 
-				//	Pre-fill the search field with the URL.
-				searchField.value = url;
-
-				//	Focus the search field.
-				searchField.focus();
+				//	Pre-fill the search field with the URL (if given).
+				if (url)
+					searchField.value = url;
 
 				//	Set proper mode.
 				updateSearchIframeMode(iframe);
@@ -15230,21 +15237,26 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			responseType: "json",
 			onSuccess: (event) => {
 				//	Get all prefix matches.
-				let matches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
-				if (matches.length > 1) {
+				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
+				if (urlPrefixMatches.length > 1) {
 					/*	If multiple matches, list them all, transcluding 
 						annotations where available (attempt in all cases, and
 						those that fail will just become regular links).
 					 */
 					updatePageTitleElements("Unknown Reference");
 
-					//	Inject matches.
+					//	Inject helpful error message.
 					pageContentContainer.appendChild(elementFromHTML(
 						  `<div class="smallcaps-not"><p>`
-						+ `Multiple matches found:`
-						+ `</p><div>`
-						+ `<ul>`
-						+ matches.map(entry => (
+						+ `${urlPrefixMatches.length} matches found:`
+						+ `</p></div>`));
+
+					/*	Inject annotations (if available; links otherwise) of
+						URLs which are prefix matches for the requested URL.
+					 */
+					pageContentContainer.appendChild(elementFromHTML(
+						  `<ul>`
+						+ urlPrefixMatches.map(entry => (
 							  `<li><p>`
 							+ synthesizeIncludeLink(entry[0], {
 								class: "link-annotated include-annotation"
@@ -15261,14 +15273,14 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						container: pageContentContainer,
 						document: eventInfo.document
 					});
-				} else if (matches.length == 1) {
+				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
-					location = URLFromString("/ref/" + matches.first[1]);				
+					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);				
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
 					injectHelpfulErrorMessage(`No annotation found for URL <code>${ref}</code>.`);
-					injectHelpfulSuggestion(ref, true);
+					injectHelpfulSuggestion(ref);
 				}
 			}
 		});
@@ -15282,8 +15294,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				let urlString = event.target.response[ref];
 				if (urlString == null) {
 					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`ID <code>${ref}</code> not found.`);
-					injectHelpfulSuggestion(null, false);
+					injectHelpfulErrorMessage(`ID <code>${ref}</code> does not exist.`);
+					injectIdPrefixMatches("Perhaps you want one of these:", event.target.response, ref);
+					injectHelpfulSuggestion(null);
 				} else {
 					//	Synthesize and inject include-link.
 					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[ref], {
@@ -15295,7 +15308,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						annotationIncludeLink.remove();
 						updatePageTitleElements("Invalid Query");
 						injectHelpfulErrorMessage(`No annotation found for ID <code>${ref}</code> (<a href="${urlString}"><code>${urlString}</code></a>).`);
-						injectHelpfulSuggestion(urlString, true);
+						injectIdPrefixMatches("Perhaps you want one of these instead:", event.target.response, ref);
+						injectHelpfulSuggestion(urlString);
 					}, {
 						condition: (info) => (   info.source == "transclude.loadingFailed"
 											  && info.nodes.first == annotationIncludeLink),
