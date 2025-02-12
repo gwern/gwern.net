@@ -1826,7 +1826,7 @@ May be able at some point to simplify this using regular link underlining, since
  */
 a code {
     border-bottom-width: 0;
-    word-break: normal;
+    word-break: break-all;
     background-color: transparent;
 }
 
