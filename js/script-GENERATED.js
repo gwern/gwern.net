@@ -11440,9 +11440,11 @@ Transclude = {
 		//	Disable normal link functionality.
         link.onclick = () => { return false; };
 
-		//	Set temporary tooltip.
-        link.savedTitle = link.title ?? "";
-        link.title = "Content is loading. Please wait.";
+		//	Save tooltip and set temporary one.
+		if (link.savedTitle == null) {
+			link.savedTitle = link.title ?? "";
+			link.title = "Content is loading. Please wait.";
+		}
     },
 
     //  Called by: Transclude.transclude
@@ -11489,11 +11491,12 @@ Transclude = {
 		//	Re-enable normal link behavior.
         link.onclick = null;
 
+		console.log(link.outerHTML);
+		console.log(link.savedTitle);
+
 		//	Replace normal tooltip.
-        if (link.savedTitle != null) {
-            link.title = link.savedTitle;
-            link.savedTitle = null;
-        }
+		link.title = link.savedTitle;
+		link.savedTitle = null;
 	},
 
 	//	Called by: Transclude.sliceContentFromDocument
@@ -15182,28 +15185,16 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				  `<ul>`
 				+ idPrefixMatches.map(entry => (
 					  `<li><p>`
-					+ `<a href="/ref/${entry[0]}">${entry[0]}</a>`
+					+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
 					+ synthesizeIncludeLink(entry[1], {
 						"class": "link-annotated include-annotation-partial",
 						"data-include-selector-not": ".data-field.date, .aux-links-field-container"
 					  }, {
-					  	innerHTML: "&nbsp;"
+					  	innerHTML: `<code>${entry[1]}</code>`
 					  }).outerHTML
 					+ `</p></li>`
 				  )).join("")
 				+ `</ul>`));
-
-			//	Add colons to only those entries whose annotations load.
-			idPrefixMatches.forEach(entry => {
-				GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
-					contentDidChangeEventInfo.nodes.first.closest("li").querySelector("p").appendChild(document.createTextNode(":"));
-				}, {
-					condition: (info) => (   info.source == "transclude"
-										  && info.includeLink.href == URLFromString(entry[1]).href),
-					once: true
-				});
-			});
-
 			activateIncludeLinks();
 		}
 	};
@@ -15222,7 +15213,6 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				+ `</p></li>`
 			  )).join("")
 			+ `</ul>`));
-
 		activateIncludeLinks();
 	};
 

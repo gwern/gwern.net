@@ -2367,9 +2367,11 @@ Transclude = {
 		//	Disable normal link functionality.
         link.onclick = () => { return false; };
 
-		//	Set temporary tooltip.
-        link.savedTitle = link.title ?? "";
-        link.title = "Content is loading. Please wait.";
+		//	Save tooltip and set temporary one.
+		if (link.savedTitle == null) {
+			link.savedTitle = link.title ?? "";
+			link.title = "Content is loading. Please wait.";
+		}
     },
 
     //  Called by: Transclude.transclude
@@ -2416,11 +2418,12 @@ Transclude = {
 		//	Re-enable normal link behavior.
         link.onclick = null;
 
+		console.log(link.outerHTML);
+		console.log(link.savedTitle);
+
 		//	Replace normal tooltip.
-        if (link.savedTitle != null) {
-            link.title = link.savedTitle;
-            link.savedTitle = null;
-        }
+		link.title = link.savedTitle;
+		link.savedTitle = null;
 	},
 
 	//	Called by: Transclude.sliceContentFromDocument
