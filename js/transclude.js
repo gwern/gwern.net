@@ -2470,11 +2470,17 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelectorNot = ".annotation-abstract, .file-includes, figure, .data-field-separator";
+	includeLink.dataset.includeSelectorNot = [
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		".annotation-abstract",
+		".file-includes",
+		"figure",
+		".data-field-separator"
+	].unique().join(",");
 	includeLink.dataset.templateFields = [
 		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
 		"annotationClassSuffix:$"
-	].join(",");
+	].unique().join(",");
 	includeLink.dataset.annotationClassSuffix = "-partial";
 });
 
@@ -2485,7 +2491,11 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
  */
 Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => {
 	includeLink.classList.add("include-annotation");
-	includeLink.dataset.includeSelector = ".annotation-abstract, .file-includes";
+	includeLink.dataset.includeSelector = [
+		...((includeLink.dataset.includeSelector ?? "").split(",").filter(x => x)),
+		".annotation-abstract",
+		".file-includes"
+	].unique().join(", ");
 });
 
 /*==========================================================*/
@@ -2498,13 +2508,14 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
 		"#footnotes",
 		"#backlinks-section",
 		"#similars-section",
 		"#link-bibliography-section",
 		"#page-metadata .link-tags",
 		"#page-metadata .page-metadata-fields"
-	].join(", ");
+	].unique().join(", ");
 });
 
 /*==========================================================*/
@@ -2515,7 +2526,15 @@ Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
  */
 Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) => {
 	includeLink.classList.add("include-unwrap");
-	includeLink.dataset.includeSelectorNot = "h1, h2, h3, h4, h5, h6";
+	includeLink.dataset.includeSelectorNot = [
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		"h1",
+		"h2",
+		"h3",
+		"h4",
+		"h5",
+		"h6"
+	].unique().join(", ");
 	includeLink.dataset.includeSelectorNotOptions = "first";
 });
 
@@ -2524,5 +2543,8 @@ Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) =
 		`data-include-selector-not=".caption-wrapper"`
  */
 Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
-	includeLink.dataset.includeSelectorNot = ".caption-wrapper";
+	includeLink.dataset.includeSelectorNot = [
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		".caption-wrapper"
+	].unique().join(", ");
 });

@@ -27,6 +27,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 	let pageContentContainer = eventInfo.container.querySelector("#markdownBody") ?? eventInfo.container;
 
+	/********************/
+	/*	Helper functions.
+	 */
+
 	let urlForMappingFile = (basename) => {
 		return URLFromString(  "/metadata/annotation/id/"
 							 + basename 
@@ -44,22 +48,53 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		pageContentContainer.appendChild(elementFromHTML(`<div class="smallcaps-not"><p>${errorMessageHTML}</p></div>`));
 	};
 
+	let activateIncludeLinks = () => {
+		GW.contentInjectHandlers.handleTranscludes({
+			source: "loadReferencedIdentifier",
+			container: pageContentContainer,
+			document: eventInfo.document
+		});
+	};
+
 	let injectIdPrefixMatches = (message, mapping, ref) => {
 		let idPrefixMatches = Object.entries(mapping).filter(entry => entry[0].startsWith(ref));
 		if (idPrefixMatches.length > 0) {
-			pageContentContainer.appendChild(elementFromHTML(`<p>${message}</p>`));
+			injectHelpfulErrorMessage(message);
 			pageContentContainer.appendChild(elementFromHTML(
 				  `<ul>`
 				+ idPrefixMatches.map(entry => (
 					  `<li><p>`
-					+ `<a href="/ref/${entry[0]}"><code>${entry[0]}</code></a>`
+					+ `<a href="/ref/${entry[0]}"><code>${entry[0]}</code></a>:`
+					+ synthesizeIncludeLink(entry[1], {
+						"class": "link-annotated include-annotation-partial",
+						"data-include-selector-not": ".data-field.date, .aux-links-field-container"
+					  }).outerHTML
 					+ `</p></li>`
 				  )).join("")
 				+ `</ul>`));
+			activateIncludeLinks();
 		}
 	};
 
+	let injectUrlPrefixMatches = (matches) => {
+		injectHelpfulErrorMessage(`${urlPrefixMatches.length} matches found:`);
+		pageContentContainer.appendChild(elementFromHTML(
+			  `<ul>`
+			+ urlPrefixMatches.map(entry => (
+				  `<li><p>`
+				+ synthesizeIncludeLink(entry[0], {
+					"class": "link-annotated include-annotation"
+				  }, {
+					innerHTML: `<code>${entry[0]}</code>`
+				  }).outerHTML
+				+ `</p></li>`
+			  )).join("")
+			+ `</ul>`));
+		activateIncludeLinks();
+	};
+
 	let injectHelpfulSuggestion = (url) => {
+		pageContentContainer.appendChild(elementFromHTML("<hr>"));
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<p>`
 			+ `You can try browsing <a 
@@ -88,7 +123,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			};
 
 			let iframe = contentDidInjectEventInfo.container.querySelector("iframe");
-			iframe.style.height = GW.isMobile() ? "6.5rem" : "6.5em";
+			iframe.classList.add("search");
 			iframe.addEventListener("load", (event) => {
 				let searchField = iframe.contentDocument.querySelector("input.search");
 
@@ -138,6 +173,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		});
 	};
 
+	/***************************/
+	/*	Main /ref/ logic begins.
+	 */
+
 	let ref = eventInfo.loadLocation.pathname.slice("/ref/".length);
 	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
 		//	Retrieve the big URL-to-id mapping file.
@@ -153,37 +192,11 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						those that fail will just become regular links).
 					 */
 					updatePageTitleElements("Unknown Reference");
-
-					//	Inject helpful error message.
-					pageContentContainer.appendChild(elementFromHTML(
-						  `<div class="smallcaps-not"><p>`
-						+ `${urlPrefixMatches.length} matches found:`
-						+ `</p></div>`));
-
-					/*	Inject annotations (if available; links otherwise) of
-						URLs which are prefix matches for the requested URL.
-					 */
-					pageContentContainer.appendChild(elementFromHTML(
-						  `<ul>`
-						+ urlPrefixMatches.map(entry => (
-							  `<li><p>`
-							+ synthesizeIncludeLink(entry[0], {
-								class: "link-annotated include-annotation"
-							  }, {
-							  	innerHTML: `<code>${entry[0]}</code>`
-							  }).outerHTML
-							+ `</p></li>`
-						  )).join("")
-						+ `</ul>`));
-
-					//	Activate include-links.
-					GW.contentInjectHandlers.handleTranscludes({
-						source: "loadReferencedIdentifier",
-						container: pageContentContainer,
-						document: eventInfo.document
-					});
+					injectUrlPrefixMatches(urlPrefixMatches);
+					injectHelpfulSuggestion(ref);
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
+					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
 					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);				
 				} else {
 					//	If no matches at all...
@@ -205,7 +218,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					updatePageTitleElements("Invalid Query");
 					injectHelpfulErrorMessage(`ID <code>${ref}</code> does not exist.`);
 					injectIdPrefixMatches("Perhaps you want one of these:", event.target.response, ref);
-					injectHelpfulSuggestion(null);
+					injectHelpfulSuggestion(ref.replace(/-/g, " ").replace(" et al", "").split(" ").filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false).join(" "));
 				} else {
 					//	Synthesize and inject include-link.
 					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[ref], {
@@ -232,6 +245,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					}, {
 						doWhenDidLoad: (info) => {
 							updatePageTitleElements(Annotations.referenceDataForLink(info.includeLink).popFrameTitle);
+							document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlString).href}">`));
 						}
 					});
 				}
