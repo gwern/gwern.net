@@ -354,9 +354,9 @@
 
 		Note that this option is redundant when transcluding into a full page
 		(i.e., a page with a #page-metadata section), because in such a case,
-		all auxiliary content sections, as well as the entire #page-metadata 
+		all auxiliary content sections, as well as the entire #page-metadata
 		section, are stripped from a transcluded page. (The content of some of
-		the stripped sections, such as the backlinks and the footnotes, are 
+		the stripped sections, such as the backlinks and the footnotes, are
 		then integrated into the host page.)
 
 	class="include-content-no-header"
@@ -512,8 +512,8 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 			let expressionTrue = operator == "&"
 								 ? (leftOperandTrue && rightOperandTrue)
 								 : (leftOperandTrue || rightOperandTrue);
-			return (expressionTrue 
-					? "_TRUE_" 
+			return (expressionTrue
+					? "_TRUE_"
 					: "_FALSE_");
 		}
 	).replace(
@@ -572,8 +572,8 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 /*	TEMPLATE SYNTAX REFERENCE
 	=========================
 
-	The following syntactic elements are available in the transclude.js 
-	template syntax (as used, e.g., in the .tmpl files loaded by the build 
+	The following syntactic elements are available in the transclude.js
+	template syntax (as used, e.g., in the .tmpl files loaded by the build
 	scripts); these are listed in order of evaluation.
 
 	1. Line continuations.
@@ -591,12 +591,12 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 		[closing angle bracket (‘>’)]
 		[opening angle bracket (‘<’)]
 
-	   (This allows nicely formatted and readable template source files, 
+	   (This allows nicely formatted and readable template source files,
 	    without introducing undesired whitespace into the rendered HTML.)
 
 	2. Comments.
 
-	   The sequences ‘<(’ and ‘)>’ delineate a template comment. In the 
+	   The sequences ‘<(’ and ‘)>’ delineate a template comment. In the
 	   rendered HTML, any such comment is replaced with the empty string.
 
 	3. Escaped characters.
@@ -607,13 +607,13 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	   last (after conditionals are evaluated and data variable substitutions
 	   performed).
 
-	   The simple form escape syntax is a backslash (‘\’), followed by any 
-	   character. (Note that only a single code point will be escaped, not an 
+	   The simple form escape syntax is a backslash (‘\’), followed by any
+	   character. (Note that only a single code point will be escaped, not an
 	   extended grapheme cluster.)
 
 	   The full form escape syntax is delineated by ‘<[:’ and ‘:]>’, containing
 	   a slash (‘/’) separated sequence of zero or more Unicode code points in
-	   decimal form. (During processing, this is transformed into the string 
+	   decimal form. (During processing, this is transformed into the string
 	   which consists of that sequence of code points.)
 
 	   NOTE on escaping: angle brackets (‘<’ and ‘>’) do not need to be escaped
@@ -647,18 +647,18 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 
 	    <[IF1 $TEMPLATE_CONDITIONAL_EXPRESSION]>foo<[ELSE1]>bar<[IF1END]>
 
-	   The template conditional expression syntax is described in the next 
+	   The template conditional expression syntax is described in the next
 	   section.
 
 	5. Data variable substitutions.
 
 	   The sequences ‘<{’ and ‘}>’ delineate a data variable name. This will
 	   resolve into the stringified form of the value of the variable of that
-	   name. This value is retrieved by using the variable name as an index 
+	   name. This value is retrieved by using the variable name as an index
 	   into template fill context object, else (if no context object is given
 	   or the context object has no non-null value for that variable name) into
-	   the template data object. If the template data object also has no 
-	   non-null value for that index, then the data variable expression 
+	   the template data object. If the template data object also has no
+	   non-null value for that index, then the data variable expression
 	   resolves into the empty string.
 
 
@@ -666,7 +666,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	================================================
 
 	Template conditional expressions always return true or false. They are
-	evaluated recursively. The available operators are listed below, in order 
+	evaluated recursively. The available operators are listed below, in order
 	of evaluation within a single evaluation pass.
 
 	(Note that whitespace is permitted in conditional expressions. Whitespace
@@ -675,22 +675,22 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 
 	0. Constants.
 
-	   The expression “_TRUE_” is evaluated as true. The expression “_FALSE_” 
+	   The expression “_TRUE_” is evaluated as true. The expression “_FALSE_”
 	   is evaluated as false. The empty string likewise evaluates as false.
 
 	1. Quotation.
 
-	   A string wrapped in quotes (these may be single quotes, ‘'’; double 
-	   quotes, ‘"’; or double angle brackets ‘<<’ ‘>>’; note that the latter 
-	   are not the double angle quotation marks ‘«’ ‘»’, but rather pairs of 
+	   A string wrapped in quotes (these may be single quotes, ‘'’; double
+	   quotes, ‘"’; or double angle brackets ‘<<’ ‘>>’; note that the latter
+	   are not the double angle quotation marks ‘«’ ‘»’, but rather pairs of
 	   the ordinary single angle brackets, ‘<’ ‘>’). When used as an operand of
-	   the comparison operator (see below), a quoted string is treated as a 
+	   the comparison operator (see below), a quoted string is treated as a
 	   string literal. Otherwise, evaluates to true if the quoted string is
 	   nonempty, false otherwise.
 
 	2. Brackets.
 
-	   Square brackets (‘[’ and ‘]’) delineate a nested expression, which 
+	   Square brackets (‘[’ and ‘]’) delineate a nested expression, which
 	   evaluates to one of the boolean constants, “_TRUE_” or “_FALSE_”.
 
 	3. Boolean comparison.
@@ -700,7 +700,7 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 
 	4. Boolean negation.
 
-	   The negation operator ‘!’ (NOT) precedes the operand (which must be 
+	   The negation operator ‘!’ (NOT) precedes the operand (which must be
 	   either a quoted string literal, or else a non-quoted-wrapped sequence of
 	   non-whitespace characters), and evaluates as “_FALSE_” if the operand
 	   evalutes to false, as “_TRUE_” otherwise.
@@ -714,15 +714,15 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 
 	   How equality is tested depends on the type of the operands:
 
-	   - If either operand is a boolean constants, then both operands are 
+	   - If either operand is a boolean constants, then both operands are
 	     evaluated and the values (true or false) compared.
 	   - Otherwise, each operand is either unwrapped from quotes (if it is a
-	     quote-wrapped string literal) and URI-decoded, or else treated as a 
-	     data variable name and its value retrieved (see “Data variable 
-	     substitutions” in the previous section); the operands are then tested 
+	     quote-wrapped string literal) and URI-decoded, or else treated as a
+	     data variable name and its value retrieved (see “Data variable
+	     substitutions” in the previous section); the operands are then tested
 	     for equality using the JavaScript ‘==’ operator.
 
-	   Naturally, the comparison expression evaluates as “_TRUE_” if the 
+	   Naturally, the comparison expression evaluates as “_TRUE_” if the
 	   operands are found to be equal, as “_FALSE_” otherwise.
 
 	6. Single term.
@@ -731,11 +731,11 @@ function evaluateTemplateExpression(expr, valueFunction = (() => null)) {
 	   a constant, or a literal, or a data variable name.
 
 	   If the string begins and ends with underscores (‘_’), it is treated as a
-	   constant; if it is equal to one of the boolean constants, the string 
+	   constant; if it is equal to one of the boolean constants, the string
 	   evaluates as that constant; otherwise, as the empty string (and thus
 	   as false).
 
-	   If the string is a quote-wrapped (i.e., double-angle-bracket-wrapped) 
+	   If the string is a quote-wrapped (i.e., double-angle-bracket-wrapped)
 	   string literal, evaluates as true if the quoted string is nonempty,
 	   false otherwise.
 
@@ -783,7 +783,7 @@ function fillTemplate(template, data = null, context = null, options) {
 		data = template;
 
 	/*	If the data source is a string, assume it to be HTML and extract data;
-		likewise, if the data source is a Document or a DocumentFragment, 
+		likewise, if the data source is a Document or a DocumentFragment,
 		extract data.
 	 */
 	if (   typeof data == "string"
@@ -1251,7 +1251,7 @@ function includeContent(includeLink, content) {
 		if (   AuxLinks.auxLinksLinkType(includeLink) == "backlinks"
 			&& wrapper.closest("#backlinks-section") != null)
 			distributeSectionBacklinks(includeLink, wrapper);
-	
+
 		//  Update footnotes, when transcluding localizable content.
 		if (shouldLocalize)
 			updateFootnotesAfterInclusion(includeLink, wrapper);
@@ -1468,7 +1468,7 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 	if (newContentWrapper.closest(".sidenote"))
 		return;
 
-	/*	Get the footnotes section associated with the transcluded content from 
+	/*	Get the footnotes section associated with the transcluded content from
 		the cached full document that the new content was sliced from.
 	 */
 	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
@@ -1761,7 +1761,7 @@ Transclude = {
 		".annotation .data-field"
 	].join(", "),
 
-	blockContextMaximumLength: 200,
+	blockContextMaximumLength: 250,
 
 	//	Called by: Transclude.sliceContentFromDocument
 	blockContext: (element, includeLink) => {
