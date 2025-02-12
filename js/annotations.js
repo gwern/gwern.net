@@ -286,7 +286,7 @@ Annotations = { ...Annotations,
 		//	All the aux-links (tags, backlinks, similars, link link-bib).
 		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(", ") || null);
 		if (auxLinksHTML || tagsHTML)
-			auxLinksHTML = ` (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})`;
+			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].filter(x => x).join("; ") || null)})</span>`;
 
 		//  Combined author, date, & aux-links.
 		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);

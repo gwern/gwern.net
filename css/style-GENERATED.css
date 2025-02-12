@@ -2494,6 +2494,23 @@ iframe.pdf {
     aspect-ratio: 8.5 / 11;
 }
 
+iframe.search {
+	aspect-ratio: unset;
+}
+@media all and (min-width: 650px) {
+	iframe.search {
+		height: 6.5em;
+		width: calc(100% - 4em);
+		margin-left: 2em;
+		margin-right: 2em;
+	}
+}
+@media all and (max-width: 649px) {
+	iframe.search {
+		height: 6.5rem;
+	}
+}
+
 
 /**************/
 /* INTERVIEWS */
