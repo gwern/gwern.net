@@ -15114,7 +15114,11 @@ doWhenDOMContentLoaded(() => {
 addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventInfo) => {
     GWLog("loadReferencedIdentifier", "rewrite.js", 1);
 
+	let pageTitleElements = eventInfo.document.querySelectorAll("title, header h1");
+
 	let id = eventInfo.loadLocation.pathname.slice("/ref/".length);
+
+	//	Retrieve id-to-URL mapping file (sliced by initial character).
 	doAjax({
 		location: URLFromString(  "/metadata/annotation/id/" 
 								+ id.slice(0, 1) 
@@ -15124,6 +15128,46 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		responseType: "json",
 		onSuccess: (event) => {
 			let container = eventInfo.container.querySelector("#markdownBody") ?? eventInfo.container;
+
+			//	Add include-link load fail handler.
+			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
+				//	Remove include-link.
+				contentDidChangeEventInfo.nodes.first.remove();
+
+				//	Update page title.
+				pageTitleElements.forEach(element => {
+					element.innerHTML = "Invalid Query";
+				});
+
+				//	Inject helpful error message.
+				container.appendChild(elementFromHTML(
+					  `<div class="smallcaps-not"><p>`
+					+ `No annotation found for ID <code>${id}</code>`
+					+ ` (<a href="${event.target.response[id]}"><code>${event.target.response[id]}</code></a>).`
+					+ `</p><p>`
+					+ `You can try browsing `
+					+ `<a 
+						href="/doc/index" 
+						id="GveJgTkm" 
+						class="link-annotated link-page backlink-not icon-not" 
+						title="‘Essays’, Gwern 2009"
+						>`
+					+ `documents by <strong>tag</strong></a>, `
+					+ `or search the site (<span class="search-mode-selector-inline"></span>), `
+					+ `or <a 
+						   href="/index" 
+						   id="index" 
+						   class="link-annotated link-page backlink-not icon-not" 
+						   title="'Essays', Gwern 2009"
+						   >`
+					+ `return to the <strong>main page</strong></a>.`
+					+ `</p></div>`));
+			}, {
+				condition: (info) => (info.source == "transclude.loadingFailed"),
+				once: true
+			});
+
+			//	Synthesize, inject, and trigger include-link.
 			Transclude.triggerTransclude(container.appendChild(synthesizeIncludeLink(event.target.response[id], {
 				class: "link-annotated"
 			})), {
@@ -15131,8 +15175,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				document: eventInfo.document
 			}, {
 				doWhenDidLoad: (info) => {
+					//	Update page title.
 					let referenceData = Annotations.referenceDataForLink(info.includeLink);
-					eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
+					pageTitleElements.forEach(element => {
 						element.innerHTML = referenceData.popFrameTitle;
 					});
 				}
