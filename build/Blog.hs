@@ -57,6 +57,7 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified,_,_,_)) =
       ["---"
        , "title: \"" ++ title ++ "\""
        , "author: " ++ author
+       , "description: N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
        , "created: " ++ dateCreated
        , "modified: " ++ dateModified
        , "status: finished"
@@ -64,7 +65,9 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified,_,_,_)) =
        , "confidence: log"
        , "css-extension: dropcaps-de-zs"
        , "backlink: False"
+       , "placeholder: True"
+       , "index: True"
        , "..."
        , ""
-       , "[**Original page**](" ++ url ++ "){.include-strict .include-spinner-not .id-not}"
+       , "[**Original page.**](" ++ url ++ "){.include-annotation .include-strict .include-spinner-not .id-not}"
       ]

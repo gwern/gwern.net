@@ -151,10 +151,15 @@ $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css
 
     </article>
 
+    $if(placeholder)$ $else$
     <!-- SSI: Footer -->
     <!-- FOOTER-BEGIN-->
     <!--#include virtual="/static/include/footer.html" -->
     <!-- FOOTER-END -->
+    $endif$
+    <div id="footer-decoration-container"> <!-- Mandatory element for layout -->
+      <a rel="home me contents" title="Gwern.net homepage" class="footer-logo dark-mode-invert" href="/index">​</a>
+    </div>
 
   </main>
 
