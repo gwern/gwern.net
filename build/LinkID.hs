@@ -4,13 +4,12 @@ module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, me
 
 import Control.Monad (replicateM)
 import Data.Char (isAlphaNum, isPunctuation, toLower)
-import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex) -- isSuffixOf
+import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex, sort)
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (null, pack, unpack, take, Text)
 import qualified Data.Map.Strict as M (toList, fromListWith, (!), mapWithKey)
 import Text.Printf (printf)
-import Data.Containers.ListUtils (nubOrd)
 
 import Data.Array (accumArray, assocs, Array)
 
@@ -143,11 +142,12 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
 -- create a mapping of ID → URL for easier search.
 --
 -- Useful for creating the JSON maps to power the client-side /ref/ annotation queries. We split them by the first character of the ID, so that we only need to query 1 small JSON file instead of the entire DB. If necessary, we can split them further, recursively, until the download size is tolerable.
+-- (We also provide an `all.json` which contains all of them in reversed order, (URL,ID), for the occasional rare query-by-URL rather than query-by-ID.)
 -- Then the JS can look at the current URL `/ref/$ID`, take the first character of $ID, download the relevant JSON dictionary (<100kb on the wire), look up the corresponding URL, and display its annotation the usual way. (The prefixes are limited to the URL-safe Base-64 subset; any characters not inside that, like Unicode from foreign surnames, is put into the final entry, for '-'.)
 -- This enables stable easy links to arbitrary annotations, which currently can only be awkwardly linked as unstable section anchor-links in tag-directories.
 id2URLdb :: Metadata -> [(String, Path)]
 id2URLdb md = map (\(url,ident) -> (T.unpack ident,url)) $
-              nubOrd $ -- URLs are much more compressible than random IDs, so we'll sort by the value (URL) instead of key (ID), to let URLs compress better with each other & save some bytes on the wire
+              sort $ -- URLs are much more compressible than random IDs, so we'll sort by the value (URL) instead of key (ID), to let URLs compress better with each other & save some bytes on the wire
               M.toList $ M.mapWithKey metadataItem2ID md
 
 shardByCharPrefix :: [(String, Path)] -> [(Char, [(String, Path)])]
@@ -174,6 +174,8 @@ tupleList2JSONString xs =
 writeOutID2URLdb :: Metadata -> IO ()
 writeOutID2URLdb md = do let dbl = id2URLdb md
                          let sharded = shardByCharPrefix dbl
+                         let allReversed = sort $ map (\(a,b)->(b,a)) $ dbl
                          Config.Misc.cd
+                         writeUpdatedFile "id-all" ("metadata/annotation/id/all.json") (tupleList2JSONString allReversed)
                          mapM_ (\(char,shard) -> writeUpdatedFile "id-shard" ("metadata/annotation/id/" ++ [char] ++ ".json") (tupleList2JSONString shard)) sharded
 
