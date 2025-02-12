@@ -3160,6 +3160,8 @@ doWhenPageLoaded(() => {
 							radioButton.setAttribute("checked", "");
 						});
 					});
+
+					//	Enable submit override (to make site search work).
 					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
 						event.preventDefault();
 
@@ -15114,76 +15116,205 @@ doWhenDOMContentLoaded(() => {
 addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventInfo) => {
     GWLog("loadReferencedIdentifier", "rewrite.js", 1);
 
-	let pageTitleElements = eventInfo.document.querySelectorAll("title, header h1");
+	let pageContentContainer = eventInfo.container.querySelector("#markdownBody") ?? eventInfo.container;
 
-	let id = eventInfo.loadLocation.pathname.slice("/ref/".length);
+	let urlForMappingFile = (basename) => {
+		return URLFromString(  "/metadata/annotation/id/"
+							 + basename 
+							 + ".json?v="
+							 + GW.refMappingFileVersion);
+	};
 
-	//	Retrieve id-to-URL mapping file (sliced by initial character).
-	doAjax({
-		location: URLFromString(  "/metadata/annotation/id/" 
-								+ id.slice(0, 1) 
-								+ ".json"
-								+ "?v="
-								+ GW.refMappingFileVersion),
-		responseType: "json",
-		onSuccess: (event) => {
-			let container = eventInfo.container.querySelector("#markdownBody") ?? eventInfo.container;
+	let updatePageTitleElements = (newTitleText) => {
+		eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
+			element.innerHTML = newTitleText;
+		});
+	};
 
-			//	Add include-link load fail handler.
-			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
-				//	Remove include-link.
-				contentDidChangeEventInfo.nodes.first.remove();
+	let injectHelpfulErrorMessage = (errorMessageHTML) => {
+		pageContentContainer.appendChild(elementFromHTML(`<div class="smallcaps-not"><p>${errorMessageHTML}</p></div>`));
+	};
 
-				//	Update page title.
-				pageTitleElements.forEach(element => {
-					element.innerHTML = "Invalid Query";
+	let injectHelpfulSuggestion = (url, injectSearchForm = false) => {
+		pageContentContainer.appendChild(elementFromHTML(
+			  `<p>`
+			+ `You can try browsing <a 
+									 href="/doc/index" 
+									 class="link-annotated link-page backlink-not icon-not" 
+									 title="‘Essays’, Gwern 2009"
+									 >documents by <strong>tag</strong></a>, `
+			+ `or <a 
+				   href="/index" 
+				   class="link-annotated link-page backlink-not icon-not" 
+				   title="'Essays', Gwern 2009"
+				   >return to the <strong>main page</strong></a>, `
+			+ `or search the site`
+			+ (injectSearchForm
+			   ? `:`
+			   : ` (<span class="search-mode-selector-inline"></span>).`)
+			+ `</p>`));
+
+		if (injectSearchForm == false)
+			return;
+
+		//	Synthesize and inject search page include-link.
+		let searchPageIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink("/static/google-search.html", {
+			"data-link-content-type": "local-document"
+		}));
+
+		//	Add inject handler.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (contentDidInjectEventInfo) => {
+			//	Function to set the proper mode (auto, light, dark) in the iframe.
+			let updateSearchIframeMode = (iframe) => {
+				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
+			};
+
+			let iframe = contentDidInjectEventInfo.container.querySelector("iframe");
+			iframe.style.height = GW.isMobile() ? "6.5rem" : "6.5em";
+			iframe.addEventListener("load", (event) => {
+				let searchField = iframe.contentDocument.querySelector("input.search");
+
+				//	Pre-fill the search field with the URL.
+				searchField.value = url;
+
+				//	Focus the search field.
+				searchField.focus();
+
+				//	Set proper mode.
+				updateSearchIframeMode(iframe);
+
+				//	Add handler to update search iframe when switching modes.
+				GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
+					updateSearchIframeMode(iframe)
 				});
 
-				//	Inject helpful error message.
-				container.appendChild(elementFromHTML(
-					  `<div class="smallcaps-not"><p>`
-					+ `No annotation found for ID <code>${id}</code>`
-					+ ` (<a href="${event.target.response[id]}"><code>${event.target.response[id]}</code></a>).`
-					+ `</p><p>`
-					+ `You can try browsing `
-					+ `<a 
-						href="/doc/index" 
-						id="GveJgTkm" 
-						class="link-annotated link-page backlink-not icon-not" 
-						title="‘Essays’, Gwern 2009"
-						>`
-					+ `documents by <strong>tag</strong></a>, `
-					+ `or search the site (<span class="search-mode-selector-inline"></span>), `
-					+ `or <a 
-						   href="/index" 
-						   id="index" 
-						   class="link-annotated link-page backlink-not icon-not" 
-						   title="'Essays', Gwern 2009"
-						   >`
-					+ `return to the <strong>main page</strong></a>.`
-					+ `</p></div>`));
-			}, {
-				condition: (info) => (info.source == "transclude.loadingFailed"),
-				once: true
-			});
+				//	Enable “search where” functionality.
+				let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
+				searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
+					radioButton.addEventListener("change", (event) => {
+						searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
+							otherRadioButton.removeAttribute("checked");
+						});
+						radioButton.setAttribute("checked", "");
+					});
+				});
 
-			//	Synthesize, inject, and trigger include-link.
-			Transclude.triggerTransclude(container.appendChild(synthesizeIncludeLink(event.target.response[id], {
-				class: "link-annotated"
-			})), {
-				container: container,
-				document: eventInfo.document
-			}, {
-				doWhenDidLoad: (info) => {
-					//	Update page title.
-					let referenceData = Annotations.referenceDataForLink(info.includeLink);
-					pageTitleElements.forEach(element => {
-						element.innerHTML = referenceData.popFrameTitle;
+				//	Enable submit override (to make site search work).
+				iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
+					event.preventDefault();
+
+					let form = event.target;
+					form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
+															+ " "
+															+ form.querySelector("input.search").value;
+					form.submit();
+				});
+			}, { once: true });
+		}, {
+			condition: (info) => (info.includeLink = searchPageIncludeLink),
+			once: true
+		});
+
+		//	Trigger include-link.
+		Transclude.triggerTransclude(searchPageIncludeLink, {
+			container: pageContentContainer,
+			document: eventInfo.document
+		});
+	};
+
+	let ref = eventInfo.loadLocation.pathname.slice("/ref/".length);
+	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
+		//	Retrieve the big URL-to-id mapping file.
+		doAjax({
+			location: urlForMappingFile("all"),
+			responseType: "json",
+			onSuccess: (event) => {
+				//	Get all prefix matches.
+				let matches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
+				if (matches.length > 1) {
+					/*	If multiple matches, list them all, transcluding 
+						annotations where available (attempt in all cases, and
+						those that fail will just become regular links).
+					 */
+					updatePageTitleElements("Unknown Reference");
+
+					//	Inject matches.
+					pageContentContainer.appendChild(elementFromHTML(
+						  `<div class="smallcaps-not"><p>`
+						+ `Multiple matches found:`
+						+ `</p><div>`
+						+ `<ul>`
+						+ matches.map(entry => (
+							  `<li><p>`
+							+ synthesizeIncludeLink(entry[0], {
+								class: "link-annotated include-annotation"
+							  }, {
+							  	innerHTML: `<code>${entry[0]}</code>`
+							  }).outerHTML
+							+ `</p></li>`
+						  )).join("")
+						+ `</ul>`));
+
+					//	Activate include-links.
+					GW.contentInjectHandlers.handleTranscludes({
+						source: "loadReferencedIdentifier",
+						container: pageContentContainer,
+						document: eventInfo.document
+					});
+				} else if (matches.length == 1) {
+					//	If only one match, redirect to the matching /ref/ page.
+					location = URLFromString("/ref/" + matches.first[1]);				
+				} else {
+					//	If no matches at all...
+					updatePageTitleElements("Invalid Query");
+					injectHelpfulErrorMessage(`No annotation found for URL <code>${ref}</code>.`);
+					injectHelpfulSuggestion(ref, true);
+				}
+			}
+		});
+	} else {
+		//	Retrieve id-to-URL mapping file (sliced by initial character).
+		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(ref.slice(0, 1)) ? ref.slice(0, 1) : "-";
+		doAjax({
+			location: urlForMappingFile(mappingFileBasename),
+			responseType: "json",
+			onSuccess: (event) => {
+				let urlString = event.target.response[ref];
+				if (urlString == null) {
+					updatePageTitleElements("Invalid Query");
+					injectHelpfulErrorMessage(`ID <code>${ref}</code> not found.`);
+					injectHelpfulSuggestion(null, false);
+				} else {
+					//	Synthesize and inject include-link.
+					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[ref], {
+						class: "link-annotated"
+					}));
+
+					//	Add include-link load fail handler.
+					GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
+						annotationIncludeLink.remove();
+						updatePageTitleElements("Invalid Query");
+						injectHelpfulErrorMessage(`No annotation found for ID <code>${ref}</code> (<a href="${urlString}"><code>${urlString}</code></a>).`);
+						injectHelpfulSuggestion(urlString, true);
+					}, {
+						condition: (info) => (   info.source == "transclude.loadingFailed"
+											  && info.nodes.first == annotationIncludeLink),
+						once: true
+					});
+
+					//	Trigger include-link.
+					Transclude.triggerTransclude(annotationIncludeLink, {
+						container: pageContentContainer,
+						document: eventInfo.document
+					}, {
+						doWhenDidLoad: (info) => {
+							updatePageTitleElements(Annotations.referenceDataForLink(info.includeLink).popFrameTitle);
+						}
 					});
 				}
-			});
-		}
-	});
+			}
+		});
+	}
 }, "transclude", (info) => (info.loadLocation?.pathname.startsWith("/ref/") == true));
 
 

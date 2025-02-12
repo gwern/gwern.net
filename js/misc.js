@@ -2603,6 +2603,8 @@ doWhenPageLoaded(() => {
 							radioButton.setAttribute("checked", "");
 						});
 					});
+
+					//	Enable submit override (to make site search work).
 					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
 						event.preventDefault();
 
