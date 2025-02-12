@@ -2418,9 +2418,6 @@ Transclude = {
 		//	Re-enable normal link behavior.
         link.onclick = null;
 
-		console.log(link.outerHTML);
-		console.log(link.savedTitle);
-
 		//	Replace normal tooltip.
 		link.title = link.savedTitle;
 		link.savedTitle = null;
