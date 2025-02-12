@@ -245,7 +245,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
 generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
-             "title: \"‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag\"",
+             "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag'", -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
              "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++

@@ -182,7 +182,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("technology/northpaw", "Northpaw compass")
   , ("technology/self-sinking", "self-sinking waste disposal")
   , ("technology/google/alerts", "Google Alerts")
-  , ("statistics/probability", "probability theory")
+  , ("statistics/probability", "probability")
   , ("statistics/peer-review", "peer review")
   , ("statistics/causality", "causality")
   , ("statistics/bias/publication/miscitation", "miscite bias")

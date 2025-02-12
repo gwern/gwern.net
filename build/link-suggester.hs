@@ -32,9 +32,9 @@ main :: IO ()
 main = do
   (outputTarget:_) <- getArgs
   fs         <- fmap lines getContents
-  printGreen "Parsing all files for links…"
+  printGreen $ "Parsing all files for links… File count: " ++ show (length fs)
   pairs <- fmap concat $ Par.mapM parseURLs fs
-  printGreen "Parsed all files for links."
+  printGreen $ "Parsed all files for links: " ++ show (length pairs)
 
   -- blacklist bad URLs, which don't count
   let db = M.filterWithKey (\k _ -> (k /= "") && (T.head k == '/' || isURI (T.unpack k)) && not (C.filterURLs k)) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]

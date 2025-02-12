@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-08 12:03:34 gwern"
+;;; When:  Time-stamp: "2025-02-11 15:35:08 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -489,6 +489,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("behaviour" . "behavior")
                      (" utilise" . "use")
                      (" utilize" . "use")
+                     ("randomis" . "randomiz")
                      (" utilising" . " using")
                      (" utilizing" . " using")
                      (" utilisation" . " usage")
@@ -616,6 +617,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" d=" . " _d_ = ") ; italicize p-values & sample sizes:
                         (" d = " . " _d_ = ")
                         ("(d = " . "(_d_ = ")
+                        ("(d ≥ " . "(_d_ ≥ ")
                         ("(d < " . "(_d_ < ")
                         ("Cohen’s d" . "Cohen’s _d_")
                         ("<em>P</em>=" . "_p_ = ")

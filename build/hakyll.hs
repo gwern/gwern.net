@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-10 21:56:19 gwern"
+When: Time-stamp: "2025-02-11 18:01:20 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -85,7 +85,7 @@ main =
                  when slow $  preprocess $ writeOutID2URLdb meta
                  timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
 
-                 when slow $ preprocess $ writeOutBlogEntries meta
+                 preprocess $ writeOutBlogEntries meta
 
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else

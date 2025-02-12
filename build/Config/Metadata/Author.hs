@@ -617,7 +617,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll", "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans", "Nathan E. Sanders", "Andrew C. Yao"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll", "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans", "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1245,10 +1245,15 @@ authorLinkDB = M.fromList $
     , ("Pamela Mishkin", "https://scholar.google.com/citations?user=fzLxuAIAAAAJ")
     , ("Noah Constant", "https://scholar.google.com/citations?user=PbgcS6AAAAAJ")
     , ("Michael Stumvoll", "https://www.helmholtz-munich.de/en/hi-mag/pi/michael-stumvoll")
-    , ("Manan Dey", "https://scholar.google.com/citations?user=39CsfP8AAAAJ&hl=en&oi=ao")
+    , ("Manan Dey", "https://scholar.google.com/citations?user=39CsfP8AAAAJ")
     , ("Lynda M. Rose", "https://research.com/u/lynda-m-rose")
-    , ("Julien Bryois", "https://scholar.google.com/citations?user=6EAqNCQAAAAJ&hl=en&oi=ao")
-    , ("Armand Joulin", "https://scholar.google.com/citations?user=kRJkDakAAAAJ&hl=en&oi=ao")
+    , ("Julien Bryois", "https://scholar.google.com/citations?user=6EAqNCQAAAAJ")
+    , ("Armand Joulin", "https://scholar.google.com/citations?user=kRJkDakAAAAJ")
+    , ("Jackson Kernion", "https://jacksonkernion.com/")
+    , ("James L. Kennedy", "https://scholar.google.com/citations?user=L8B57mIAAAAJ&hl=en&oi=ao")
+    , ("Jeffrey Wu", "https://scholar.google.com/citations?user=x4JAvwMAAAAJ&hl=en&oi=ao")
+    , ("Jos Rozen", "https://scholar.google.com/citations?user=OxEDKogAAAAJ&hl=en&oi=ao")
+    , ("Dan Rhatigan", "https://ultrasparky.org/blog/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

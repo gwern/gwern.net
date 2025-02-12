@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-10 19:06:24 gwern"
+# When:  Time-stamp: "2025-02-11 21:28:13 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -117,7 +117,7 @@ else
           stringReplace '<sup>St</sup>' '<sup>st</sup>' ./metadata/*.gtx; stringReplace '<sup>Nd</sup>' '<sup>nd</sup>' ./metadata/*.gtx; stringReplace '<sup>Rd</sup>' '<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 1st ' ' 1<sup>st</sup> ' ./metadata/*.gtx; stringReplace ' 2nd' ' 2<sup>nd</sup>' ./metadata/*.gtx; stringReplace ' 3rd' ' 3<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 4th' ' 4<sup>th</sup>' ./metadata/*.gtx;
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling'; s ' colour' ' color'; s ' Colour' ' Color';
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling'; s ' colour' ' color'; s ' Colour' ' Color'; s 'multicentre' 'multicenter'; s 'Multicentre' 'Multicenter'; s ' Cluster-Randomis' ' Cluster-Randomiz'; s ' Non-Randomis' ' Non-Randomiz'; s ' Non-randomised' ' Non-randomized'; s ' Randomis' ' Randomiz'; s ' cluster-randomis' ' cluster-randomiz'; s ' non-randomis' ' non-randomiz'; s ' non-randomised' ' non-randomized'; s ' nonrandomised' ' non-randomised'; s ' quasi-randomised' ' quasi-randomized'; s ' randomis' ' randomiz'; s 'categoris' 'categoriz';
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
@@ -230,7 +230,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N5 -RTS $DIRECTORY_TAGS
+        ./static/build/generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
@@ -248,7 +248,7 @@ else
     (ping -q -c 5 google.com &> /dev/null && cd ./static/ && git status; git pull; git push --verbose &) || true
 
     # Cleanup pre:
-    rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks || true
+    rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-suggester || true
 
     cd ~/wiki/ # go to site root
     bold "Building site…"
@@ -427,7 +427,7 @@ else
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/metadata/ -maxdepth 1 -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight
+    find _site/metadata/ -maxdepth 1 -type f,l -name "*.html" | gfv -e 'metadata/annotation/id/' | parallel --jobs "$N" syntaxHighlight
     find _site/ -type f,l \
          -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.gtx" -or -name "*.xml" | \
         gfv \
@@ -688,7 +688,7 @@ else
          count '^created: '     $PAGES | notOne
          count '^status: '      $PAGES | notOne
        }
-    wrap λ "Essays missing required metadata field (need exactly one of title/description/confidence/created/status)"
+    wrap λ "Essays missing required metadata field (need exactly one each of title/description/confidence/created/status)"
     λ(){ count '^css-extension: '  $PAGES | moreThanOne
          count '^modified: '       $PAGES | moreThanOne
          count '^thumbnail-css: '  $PAGES | moreThanOne
@@ -718,7 +718,7 @@ else
              `## blacklist of fraudsters or bad papers:` \
              gf \
                   `### authors:` \
-                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' -e 'Changhwan Yoon' -e 'Sam Yoon' -e 'Juan Manuel Corchado' -e 'Adrien Matray' -e 'Ping Dong' \
+                  -e 'Francesca Gino' -e 'Dan Ariely' -e 'Michael LaCour' -e 'David Rosenhan' -e 'Diederik Stapel' -e 'Didier Raoult' -e 'Brian Wansink' -e 'Marc Hauser' -e 'Robert Rosenthal' -e 'J. Hendrik Schön' -e 'Matthew Walker' -e 'Guéguen' -e 'Gueguen' -e 'Stephan Lewandowsky' -e 'Sander van der Linden' -e 'Bharat B. Aggarwal' -e 'Bharat Aggarwal' -e 'Changhwan Yoon' -e 'Sam Yoon' -e 'Juan Manuel Corchado' -e 'Adrien Matray' -e 'Ping Dong' -e 'Sylvain Lesné' \
                   `### papers:` \
                   -e "A Fine is a Price" | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
