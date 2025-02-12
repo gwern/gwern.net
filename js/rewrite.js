@@ -14,6 +14,45 @@ doWhenDOMContentLoaded(() => {
 });
 
 
+/********************/
+/* ID-BASED LOADING */
+/********************/
+
+/***************************************************************************/
+/*	If the URL pathname is in /ref/, load content indicated by the id (i.e., 
+	the rest of the path).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventInfo) => {
+    GWLog("loadReferencedIdentifier", "rewrite.js", 1);
+
+	let id = eventInfo.loadLocation.pathname.slice("/ref/".length);
+	doAjax({
+		location: URLFromString(  "/metadata/annotation/id/" 
+								+ id.slice(0, 1) 
+								+ ".json"
+								+ "?v="
+								+ GW.refMappingFileVersion),
+		responseType: "json",
+		onSuccess: (event) => {
+			let markdownBody = document.querySelector("#markdownBody");
+			Transclude.triggerTransclude(markdownBody.appendChild(synthesizeIncludeLink(event.target.response[id], {
+				class: "link-annotated"
+			})), {
+				container: markdownBody,
+				document: document
+			}, {
+				doWhenDidLoad: (info) => {
+					let referenceData = Annotations.referenceDataForLink(info.includeLink);
+					document.querySelectorAll("title, header h1").forEach(element => {
+						element.innerHTML = referenceData.popFrameTitle;
+					});
+				}
+			});
+		}
+	});
+}, "transclude", (info) => (info.loadLocation?.pathname.startsWith("/ref/") == true));
+
+
 /*************/
 /* AUX-LINKS */
 /*************/
@@ -1947,7 +1986,8 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
     GWLog("addRecentlyModifiedDecorationsToPageTOC", "rewrite.js", 1);
 
 	let excludedPaths = [
-		"/blog/"
+		"/blog/",
+		"/ref/"
 	];
 	if (location.pathname.startsWithAnyOf(excludedPaths))
 		return;

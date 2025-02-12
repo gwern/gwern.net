@@ -2658,6 +2658,21 @@ doWhenMainExists(() => {
 });
 
 
+/*****************/
+/* SPECIAL PAGES */
+/*****************/
+
+/*	Placeholder page for ID-based content loading.
+ */
+doWhenMainExists(() => {
+	if (location.pathname.startsWith("/ref/")) {
+		document.querySelectorAll("title, header h1").forEach(element => {
+			element.innerHTML = "";
+		});
+	}
+});
+
+
 /******************/
 /* BROWSER EVENTS */
 /******************/
