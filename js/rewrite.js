@@ -34,16 +34,16 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 								+ GW.refMappingFileVersion),
 		responseType: "json",
 		onSuccess: (event) => {
-			let markdownBody = document.querySelector("#markdownBody");
-			Transclude.triggerTransclude(markdownBody.appendChild(synthesizeIncludeLink(event.target.response[id], {
+			let container = eventInfo.container.querySelector("#markdownBody") ?? eventInfo.container;
+			Transclude.triggerTransclude(container.appendChild(synthesizeIncludeLink(event.target.response[id], {
 				class: "link-annotated"
 			})), {
-				container: markdownBody,
-				document: document
+				container: container,
+				document: eventInfo.document
 			}, {
 				doWhenDidLoad: (info) => {
 					let referenceData = Annotations.referenceDataForLink(info.includeLink);
-					document.querySelectorAll("title, header h1").forEach(element => {
+					eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
 						element.innerHTML = referenceData.popFrameTitle;
 					});
 				}
