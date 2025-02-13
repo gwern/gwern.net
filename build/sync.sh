@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-12 10:00:32 gwern"
+# When:  Time-stamp: "2025-02-13 11:09:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1134,7 +1134,7 @@ else
                         if ! grep --fixed-strings --line-regexp --quiet "$URL" "$CHECKED_URLS_FILE"; then
                             echo "$URL"
                         fi
-                    done)
+                    done; )
 
    CHECK_RANDOM_PAGE=$(echo "$FILTERED_PAGES" | shuf | head -1)
    echo "$CHECK_RANDOM_PAGE" >> "$CHECKED_URLS_FILE" # update checked-list
@@ -1147,7 +1147,9 @@ else
                        echo "$ANNOTATION_URL"
                      fi
                    done; )
-   CHECK_RANDOM_ANNOTATION_ENCODED=$(echo "$FILTERED_ANNOTATIONS" | shuf | head -1 | xargs urlencode | xargs urlencode | sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/'; ) # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
+   CHECK_RANDOM_ANNOTATION=$(echo "$FILTERED_ANNOTATIONS" | shuf | head -1)
+   CHECK_RANDOM_ANNOTATION_ENCODED=$(echo "$CHECK_RANDOM_ANNOTATION" | xargs urlencode | xargs urlencode | sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/'; ) # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
+   CHECK_REF=$(head -1 metadata/annotation/"$CHECK_RANDOM_ANNOTATION" | tr ' ' '\n' | gf 'id=' | sed -e 's/link-bibliography-//' | cut --delimiter='"' --field=2)
    echo "$CHECK_RANDOM_ANNOTATION_ENCODED" >> "$CHECKED_URLS_FILE"
 
    ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -1159,7 +1161,7 @@ else
        # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
         everyNDays 7 && chromium "https://validator.w3.org/nu/?doc=$CHECK_RANDOM_PAGE_ENCODED" &
         sleep 5s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_PAGE_ENCODED&no_referer=on" &
-        sleep 15s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on" &
+        sleep 15s; chromium "https://validator.w3.org/checklink?uri=$CHECK_RANDOM_ANNOTATION_ENCODED&no_referer=on" "https://gwern.net/ref/$CHECK_REF" &
         if everyNDays 100; then
             # check Google PageSpeed report for any regressions:
             chromium "https://pagespeed.web.dev/report?url=$CHECK_RANDOM_PAGE_ENCODED&form_factor=desktop" &
