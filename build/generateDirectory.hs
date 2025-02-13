@@ -245,8 +245,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
 generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
   = unlines $ filter (not . null) [ "---",
-             "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ tag'", -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
-             "description: \"Bibliography for tag <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
+             "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ "++directoryType++"'", -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
+             "description: \"Bibliography for "++directoryType++" <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN/=0 && annotationN/=0 && linkN/=0) then ", & " else " & ") ++ show linkN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
@@ -266,7 +266,10 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
              "index: True",
              "backlink: False",
              "...\n"]
-  where pl n = if n > 1 || n == 0 then "s" else "" -- pluralize helper: "2 links", "1 link", "0 links".
+  where pl :: Int -> String
+        pl n = if n > 1 || n == 0 then "s" else "" -- pluralization helper: "2 links", "1 link", "0 links".
+        directoryType :: String
+        directoryType = if "/doc/" `isPrefixOf` next then "tag" else "directory" -- for indexes like '/note/index', it doesn't make sense to refer to them as a 'tag', since they are just a directory of essays. There is not necessarily any tag corresponding to that directory.
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
 listFiles m direntries' = do

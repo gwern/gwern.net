@@ -227,6 +227,7 @@ whiteList = [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Facet_(psychology)", ["facet", "facets", "facet-level"])
   , ("https://en.wikipedia.org/wiki/Learning_rate", ["learning rate", "learning rates"])
   , ("https://en.wikipedia.org/wiki/Gregor_Mendel", ["Gregor Mendel", "Mendel"])
   , ("https://en.wikipedia.org/wiki/Comma-separated_values", ["CSV"])

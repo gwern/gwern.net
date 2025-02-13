@@ -5971,4 +5971,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Piaget", "Jean_Piaget")
         , ("Piagetian", "Piaget%27s_theory_of_cognitive_development")
         , ("HFT", "High-frequency_trading")
+        , ("Facet", "Facet_(psychology)")
         ]

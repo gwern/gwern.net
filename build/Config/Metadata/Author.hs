@@ -617,7 +617,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll", "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans", "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll", "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans", "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1250,10 +1250,15 @@ authorLinkDB = M.fromList $
     , ("Julien Bryois", "https://scholar.google.com/citations?user=6EAqNCQAAAAJ")
     , ("Armand Joulin", "https://scholar.google.com/citations?user=kRJkDakAAAAJ")
     , ("Jackson Kernion", "https://jacksonkernion.com/")
-    , ("James L. Kennedy", "https://scholar.google.com/citations?user=L8B57mIAAAAJ&hl=en&oi=ao")
-    , ("Jeffrey Wu", "https://scholar.google.com/citations?user=x4JAvwMAAAAJ&hl=en&oi=ao")
-    , ("Jos Rozen", "https://scholar.google.com/citations?user=OxEDKogAAAAJ&hl=en&oi=ao")
+    , ("James L. Kennedy", "https://scholar.google.com/citations?user=L8B57mIAAAAJ")
+    , ("Jeffrey Wu", "https://scholar.google.com/citations?user=x4JAvwMAAAAJ")
+    , ("Jos Rozen", "https://scholar.google.com/citations?user=OxEDKogAAAAJ")
     , ("Dan Rhatigan", "https://ultrasparky.org/blog/")
+    , ("Ina Giegling", "https://research.com/u/ina-giegling")
+    , ("Ildiko Lingvay", "https://profiles.utsouthwestern.edu/profile/55880/ildiko-lingvay.html")
+    , ("Gal Kaplun", "https://www.galkaplun.com/")
+    , ("Frank Geller", "https://scholargps.com/scholars/75086406967602/frank-geller")
+    , ("Sydney A. Asdell", "https://ecommons.cornell.edu/items/52ad998f-6ad3-485f-93ea-899a0a40fe64")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1426,7 +1431,7 @@ authorWpLinkDB =
     ,"Charles Paul Conn", "Charles Piller", "Charles Poole", "Charles Rotimi", "Charles Spearman"
     ,"Charles Spence", "Charles W. Rees", "Charles ffrench-Constant", "Charlie Manson", "Charlie Snell"
     ,"Charlotta Pisinger", "Charlotte Banks", "Charlotte Blease", "Charlotte Buhler", "Charlotte Drake"
-    ,"Charlotte Harrison", "Chelsea Finn", "Chen Hu", "Chen Zhang", "Chen Zhu"
+    ,"Charlotte Harrison", "Chelsea Finn", "Chen Hu", "Chen Zhang"
     ,"Cheng Chen", "Cheng Li", "Cheng Xu", "Chengxiang Zhai", "Cheryl Dissanayake"
     ,"Chi Chung Lam", "Chi-Hung Hsu", "Chia-Che Chang", "Chiara Sabatti", "Chicago Urban League"
     ,"Ching Fang", "Chip Heath", "Chirag Jain", "Chirag Patel", "Chris Apps"
@@ -1846,7 +1851,7 @@ authorWpLinkDB =
     ,"Joseph W. Kable", "Joseph Wang", "Joseph Wong", "Joseph Zubin", "Joseph de la Vega"
     ,"Josephine Ball", "Josh Abramson", "Josh Arnold", "Josh Bongard", "Josh Hodge"
     ,"Josh Tobin", "Joshua Angrist", "Joshua Aronson", "Joshua C. Denny", "Joshua D. Greene"
-    ,"Joshua D. Rauh", "Joshua Guerrero", "Joshua Hicks", "Joshua M. Pearce", "Joshua M. Tybur"
+    ,"Joshua D. Rauh", "Joshua Hicks", "Joshua M. Pearce", "Joshua M. Tybur"
     ,"Joshua Rauh", "Joshua T. Vogelstein", "Joshua Tybur", "Jos\233 Galindo"
     ,"Jos\233 Maldonado", "Jos\233 Mar\237a Berm\250dez de Castro", "Jos\233 Onuchic", "Jos\233 Scheinkman", "Jos\233-Alain Sahel"
     ,"Jos\233e Dupuis", "Joy Milne", "Joy Wang", "Joyce Carol Oates", "Joyce Lee"
@@ -2101,7 +2106,7 @@ authorWpLinkDB =
     ,"Olivier Fran\231ois", "Olivier Klein", "Olle H\228ggstr\246m", "Olof Johansson", "Olufunmilayo I. Olopade"
     ,"Omar Agha", "Omar Cortes", "Omar Wasow", "Onur G\252nt\252rk\252n", "Open Science Collaboration"
     ,"Ophelia Deroy", "Ophir Klein", "Oren Etzioni", "Oriol Vinyals", "Orrin Devinsky"
-    ,"Oscar Kempthorne", "Oskar van Deventer", "Osvald Nitski", "Oystein Sorensen", "P. A. P. Moran"
+    ,"Oscar Kempthorne", "Oskar van Deventer", "Oystein Sorensen", "P. A. P. Moran"
     ,"P. C. Mahalanobis", "P. Eline Slagboom", "P. N. Suganthan", "P22 Type Foundry", "Pablo Kuri-Morales"
     ,"Pablo Villalobos", "Pak Chung Sham", "Pak Sham", "Pallab Ghosh", "Palwasha Khan"
     ,"Pamela A. Silver", "Pamela B. Davis", "Pamela Herd", "Pamela McCorduck", "Pamela Sklar"
