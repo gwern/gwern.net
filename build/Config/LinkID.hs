@@ -1154,7 +1154,7 @@ linkIDOverrides =
        , ("/doc/economics/advertising/2013-hill-supplement.pdf","hill-et-al-2013-2")
        , ("https://www.biorxiv.org/content/10.1101/043000.full","hill-et-al-2016-1")
        , ("https://arxiv.org/abs/1602.03483","hill-et-al-2016-2")
-       , ("/doc/dual-n-back/2015-hill.pdf","hill-et-al-2016-3")
+       , ("/doc/dual-n-back/2016-hill.pdf","hill-et-al-2016-3")
        , ("https://www.biorxiv.org/content/10.1101/160291.full","hill-et-al-2017-1")
        , ("https://www.biorxiv.org/content/10.1101/146787.full","hill-et-al-2017-4")
        , ("https://www.biorxiv.org/content/10.1101/106203.full","hill-et-al-2017-3")
@@ -3717,5 +3717,5 @@ linkIDOverrides =
   , ("https://www.reddit.com/r/estimation/comments/1f765d/request_in_an_average_lifetime_how_many_of_the/ca85zcl","gwern-2013-bird-poop"),("https://www.reddit.com/r/anime/comments/1cqtae/in_honor_of_kuronekos_birthday_my_favorite_scene/c9ja9a5/","gwern-2013-kirino"),("https://www.reddit.com/r/estimation/comments/2chtft/if_all_the_uss_atomic_bombs_disappeared_assuming/cjfyses/","gwern-2014-nuke-replacement"),("https://www.reddit.com/r/estimation/comments/27i4wq/request_how_long_would_it_take_to_read_every_book/ci1jfno/","gwern-2014-reading-every-book"),("https://github.com/gwern/gwern.net/commit/8761dccc5b3fa4fff468db554813bf20e02702a8#diff-03ea4348bea7a138709946b85053309e32040dae6fd27039008063f290f7f138R102","gwern-2023-replace-once"),("https://github.com/gwern/gwern.net/blob/master/build/markdown.el","gwern-2023-markdown-el")
   ,("https://arxiv.org/abs/1611.08219","hadfield-menell-et-al-2016-1"),("https://arxiv.org/abs/1606.03137","hadfield-menell-et-al-2016-2")
   ,("https://arxiv.org/abs/2311.07237","li-et-al-2023-1"),("https://arxiv.org/abs/2307.12983","li-et-al-2023-2"),("https://arxiv.org/abs/2307.03875#microsoft","li-et-al-2023-3")
-  , ("https://www.sciencedirect.com/science/article/pii/S027656242200018X","baier-et-al-2022-1"),("https://academic.oup.com/esr/article/38/6/959/6534686","baier-et-al-2022-2")
+  , ("https://www.sciencedirect.com/science/article/pii/S027656242200018X","baier-et-al-2022-1"),("https://academic.oup.com/esr/article/38/6/959/6534686","baier-et-al-2022-2"), ("https://qntm.org/devphilo","hughes-2025-1"),("https://publicdomainreview.org/essay/the-cats-meat-man/","hughes-2025-2")
       ]

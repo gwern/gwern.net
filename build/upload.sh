@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-12-12 17:08:07 gwern"
+# When:  Time-stamp: "2025-02-13 18:41:35 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -14,7 +14,7 @@
 # $ upload benter1994.pdf decision # renames to `1994-benter.pdf` and uploads to `/doc/statistics/decision/1994-benter.pdf`
 #
 # Files receive standard optimization, reformatting, compression, metadata-scrubbing etc.
-# This will rename to be globally-unique, reformat, run PDFs through `ocrmypdf`
+# This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
 # (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files.
 # They are then opened in a web browser to verify they uploaded, have permissions, and render.
 
@@ -31,6 +31,17 @@ _upload() {
   (locate "$1" &)
 
   FILENAME="$1"
+  ## Check whether there are any files with the same extension as the upload candidate; if not, it is likely erroneous in some way and we bail out to the user:
+  EXT="${FILENAME##*.}"
+  ext_lower=$(echo "$EXT" | tr '[:upper:]' '[:lower:]')
+  ALLOWED_EXTENSIONS=$(find ~/wiki/ -type f -printf '%f\n' \
+                        | awk --field-separator '.' 'NF>1 {print $NF}' \
+                        | sort --ignore-case --unique | tr '[:upper:]' '[:lower:]')
+
+  if ! echo "$ALLOWED_EXTENSIONS" | grep --word-regexp --quiet "$ext_lower"; then
+    red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'? This extension has never been used before. Please manually add it, to verify that this is a new but valid extension."
+    exit 1
+  fi
   # we don't want to try to compile random Markdown snippets, so rename to `.txt` which will be treated as a static asset:
   if [[ $FILENAME == *.md ]]; then
     NEW_FILENAME="${FILENAME%.md}.txt"

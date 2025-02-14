@@ -178,4 +178,3 @@ writeOutID2URLdb md = do let dbl = id2URLdb md
                          Config.Misc.cd
                          writeUpdatedFile "id-all" ("metadata/annotation/id/all.json") (tupleList2JSONString allReversed)
                          mapM_ (\(char,shard) -> writeUpdatedFile "id-shard" ("metadata/annotation/id/" ++ [char] ++ ".json") (tupleList2JSONString shard)) sharded
-

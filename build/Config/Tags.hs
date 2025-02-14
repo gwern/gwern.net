@@ -157,7 +157,13 @@ tagsShort2LongRewrites =
    , ("seriate", "seriation"), ("seriations", "seriation"), ("series", "seriation")
    , ("longnow", "long-now"), ("deep-seek", "deepseek"), ("ds", "deepseek"), ("deepsek", "deepseek"), ("cat/allergy", "cat/biology/allergy")
    , ("m", "model"), ("mf", "model-free"), ("m-f", "model-free")
-   , ("technology/sociology", "sociology/technology"), ("socciology", "sociology")]
+   , ("technology/sociology", "sociology/technology"), ("socciology", "sociology")
+   , ("open", "openness"), ("openess", "openness"), ("opennes", "openness")
+   , ("neurotic", "neuroticism"), ("instability", "neuroticism"), ("instable", "neuroticism"), ("stable", "neuroticism")
+   , ("agreeable", "psychology/personality/agreeableness"), ("agreeble", "agreeable")
+   , ("intraversion", "extraversion"), ("introversion", "extraversion"), ("introverted", "extraversion"), ("extravert", "extraversion"), ("extroversion", "extraversion"), ("extroverted", "extraversion")
+   , ("O", "openness"), ("C", "conscientiousness"), ("E", "extraversion"), ("A", "agreeableness"), ("N", "neuroticism"), ("IQ", "iq"), ("G", "iq"), ("rg", "genetics/heritable/correlation")
+   ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
 tagsShort2Long = tagsShort2LongRewrites ++
@@ -179,6 +185,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("science/fermi-problem", "Fermi problems")
   , ("science/chemistry/disappearing-polymorph", "disappearing polymorphs (chemistry)")
   , ("science/chemistry", "chemistry")
+  , ("science/physics/astronomy", "astronomy")
+  , ("science/physics", "physics")
   , ("technology/northpaw", "Northpaw compass")
   , ("technology/self-sinking", "self-sinking waste disposal")
   , ("technology/google/alerts", "Google Alerts")
@@ -439,7 +447,11 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychology/energy", "mental energy")
   , ("psychology/novelty", "novelty U-curve")
   , ("psychology/chess", "chess psychology")
-  , ("psychology/personality/conscientiousness", "Conscientiousness")
+  , ("psychology/personality/conscientiousness", "Conscientious")
+  , ("psychology/personality/openness", "Openness")
+  , ("psychology/personality/neuroticism", "Neuroticism")
+  , ("psychology/personality/agreeableness", "Agreeable")
+  , ("psychology/personality/extraversion", "Extraversion")
   , ("psychology/personality", "personality")
   , ("psychology/okcupid", "OKCupid")
   , ("psychology/nature", "psych of nature")

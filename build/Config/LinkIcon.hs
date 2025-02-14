@@ -393,7 +393,7 @@ linkIconRulesQuad u
  | u'' u "www.pnas.org" = ("PNAS", "text,quad", "#1f75b9") -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.] color: blue
  | u'' u "www.rand.org" = ("RAND", "text,quad,sans", "#751ddb") -- color: wine-red; TODO: white-on-red text background
  | u' u ".sagepub.com" = ("SAGE", "text,quad,sans", "#046ff8") -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com; color: dark blue; TODO: white-on-blue text background
- | u'' u "publicdomainreview.org" = ("TPDR", "text,quad", "")
+ | u'' u "publicdomainreview.org" = ("T PDR", "text,quad", "")
  | u' u "xkcd.com" = ("XKCD", "text,quad,sans", "") -- covers explainxkcd.com, what-if.xkcd.com…
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
@@ -921,7 +921,7 @@ linkIconTestUnitsText =
          , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad", "")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad", "")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
-         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad", "")
+         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "T PDR","text,quad", "")
          , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad", "")
          , ("https://read.atavist.com/american-hippopotamus", "Atvt", "text,quad", "")
          , ("https://tasvideos.org/3653M", "TASV", "text,quad", "")

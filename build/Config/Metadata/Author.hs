@@ -617,7 +617,20 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra", "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung", "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton", "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger", "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale", "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte", "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath", "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters", "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk", "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher", "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll", "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans", "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"]
+  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra"
+  , "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung"
+  , "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton"
+  , "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger"
+  , "Eli Ayumi Stahl", "Anne Uriu Jackson", "Andrew Tym Hattersley", "Anders Martin Dale"
+  , "Alan R. Shuldiner", "Aditya A. Ramesh", "Sonja I. Berndt", "Nicholas A. Furlotte"
+  , "Melissa E. Garcia", "Mary F. Feitosa", "John C. Chambers", "John Joseph McGrath"
+  , "Ingrid B. Borecki", "Alfred C. Raphelson", "Thomas G. Schulze", "Raymond K. Walters"
+  , "Narelle K. Hansell", "Pablo V. Gejman", "Lawrence F. Bielak", "Judith M. Vonk"
+  , "Juan Pablo Frias", "Hilary Kiyo Finucane", "Elizabeth G. Holliday", "Devin M. Absher"
+  , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
+  , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
+  , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
+  , "Emma C. Johnson"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1259,6 +1272,13 @@ authorLinkDB = M.fromList $
     , ("Gal Kaplun", "https://www.galkaplun.com/")
     , ("Frank Geller", "https://scholargps.com/scholars/75086406967602/frank-geller")
     , ("Sydney A. Asdell", "https://ecommons.cornell.edu/items/52ad998f-6ad3-485f-93ea-899a0a40fe64")
+    , ("Ethan Perez", "https://ethanperez.net/")
+    , ("Ethan Dyer", "https://scholar.google.com/citations?user=LWeVRdUAAAAJ&hl=en&oi=ao")
+    , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ&hl=en&oi=sra")
+    , ("Emma C. Johnson", "https://www.emmacjohnson.com/")
+    , ("Hunt Allcott", "https://scholar.google.com/citations?hl=en&user=Y1f2unMAAAAJ")
+    , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ&hl=en&oi=ao")
+    , ("Josh McDermott", "https://web.mit.edu/jhm/www/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2503,4 +2523,5 @@ authorWpLinkDB =
     , "Bob Mercer", "Peter Fitzhugh Brown", "Kimberly Kagan", "Georges Rey", "L. Peter Deutsch"
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
-    , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"]
+    , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
+    , "Greg Egan"]
