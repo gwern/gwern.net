@@ -114,7 +114,7 @@ generateCaller md target (caller, callers) =
                        -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                        -- it'll look at '/metadata/annotation/$FOO.html#$ID' instead2 of the actual '/metadata/annotation/$FOO.html'.
                        -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://gwern.net/doc/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/doc/culture/2008-johnson.pdf').
-                       Just (_,aut,dt,_,_,_,_) -> generateID (T.unpack caller) aut dt
+                       Just (_,aut,dt,_,_,_,_) -> generateID md (T.unpack caller) aut dt
      callerDatesTitles = map (\url -> let u = if isPagePath url then T.takeWhile (/='#') url else url
                                           filepathTitle = if T.head u == '/' then "<code>" `T.append` T.tail u `T.append`  "</code>" else u
                                       in

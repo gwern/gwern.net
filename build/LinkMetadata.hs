@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-12 11:50:48 gwern"
+When:  Time-stamp: "2025-02-14 17:04:51 gwern"
 License: CC-0
 -}
 
@@ -362,7 +362,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies…
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock md am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
@@ -432,11 +432,11 @@ hasAnnotation :: Metadata -> Block -> Block
 hasAnnotation md = walk (hasAnnotationOrIDInline md)
 
 hasAnnotationOrIDInline :: Metadata -> Inline -> Inline
-hasAnnotationOrIDInline metadata inline = case inline of
+hasAnnotationOrIDInline md inline = case inline of
     link@(Link (_, classes, _) _ (url, _)) ->
         if hasAnyAnnotatedClass classes
             then link
-            else processLink metadata url link
+            else processLink md url link
     _ -> inline
  where
         hasAnyAnnotatedClass :: [T.Text] -> Bool
@@ -446,12 +446,12 @@ hasAnnotationOrIDInline metadata inline = case inline of
         processLink metadatadb url link =
             let canonicalUrl = linkCanonicalize $ T.unpack url
             in case M.lookup canonicalUrl metadatadb of
-                Nothing                     -> addID Nothing link
-                Just ("","","","",[],[],"") -> addID Nothing link
-                Just metadataItem           -> addID (Just metadataItem) (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem link)
+                Nothing                     -> addID metadatadb Nothing link
+                Just ("","","","",[],[],"") -> addID metadatadb Nothing link
+                Just metadataItem           -> addID metadatadb (Just metadataItem) (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem link)
 
-addID :: Maybe MetadataItem -> Inline -> Inline
-addID maybeMetadataItem inline = case inline of
+addID :: Metadata -> Maybe MetadataItem -> Inline -> Inline
+addID md maybeMetadataItem inline = case inline of
     (Link x@(anchor, classes, _) e (url, title)) ->
         if anchor == "" && "id-not" `notElem` classes
             then Link (generateLinkID x maybeMetadataItem url) e (url, title)
@@ -460,8 +460,8 @@ addID maybeMetadataItem inline = case inline of
  where
         generateLinkID :: (T.Text, [T.Text], [(T.Text, T.Text)]) -> Maybe MetadataItem -> T.Text -> (T.Text, [T.Text], [(T.Text, T.Text)])
         generateLinkID ("", classs, kvs) maybeMetadataItem' url = case maybeMetadataItem' of
-            Nothing                            -> (generateID (T.unpack url) "" "",       classs, kvs)
-            Just (_, author, date, _, _, _, _) -> (generateID (T.unpack url) author date, classs, kvs)
+            Nothing                            -> (generateID md (T.unpack url) "" "",       classs, kvs)
+            Just (_, author, date, _, _, _, _) -> (generateID md (T.unpack url) author date, classs, kvs)
         -- if it has an ID already, avoid overriding?
         generateLinkID a _ _ = a
 
@@ -514,15 +514,15 @@ isAnnotatedInline x = -- let f = inline2Path x in
                             hasClass "link-annotated" x ||
                             hasClass "link-annotated-partial" x
 
-generateAnnotationBlock :: ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock am (f, ann) blp slp lb =
+generateAnnotationBlock :: Metadata -> ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock md am (f, ann) blp slp lb =
   case ann of
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_,_)  -> nonAnnotatedLink
      -- Just (_,    _,_,_,_,_,"") -> nonAnnotatedLink
      Just x@(tle,aut,dt,_,kvs,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else Typography.titleWrap tle
-           lid = let tmpID = generateID f aut dt in
+           lid = let tmpID = generateID md f aut dt in
                    if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
            -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popover the second time.
            lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid

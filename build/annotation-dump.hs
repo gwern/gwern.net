@@ -13,7 +13,7 @@ import Config.Misc as C (root)
 import LinkID (authorsToCite, generateURL)
 import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)
-import LinkMetadataTypes (MetadataItem, MetadataList)
+import LinkMetadataTypes (Metadata, MetadataItem, MetadataList)
 import Utils (anyInfix, replace, sed)
 import Metadata.Author (authorsTruncateString)
 import Tags (validateTagsSyntax)
@@ -27,13 +27,13 @@ main = do full <- readGTXSlow (C.root ++ "metadata/full.gtx") -- for hand create
           let incompleteDB = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
           let finalDB = M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB
-          let finalSingleLine = map toSingleLine final
+          let finalSingleLine = map (toSingleLine incompleteDB) final
 
           stdin <- fmap (nubOrd . lines . T.unpack) TIO.getContents
           if null stdin then putStrLn (unlines finalSingleLine)
             else do let lookups = map (\p -> case M.lookup p incompleteDB of
-                                              Nothing -> toSingleLine (p, (("","","","",[],[],""),""))
-                                              Just a  -> toSingleLine (p,(a,"a"))
+                                              Nothing -> toSingleLine incompleteDB (p, (("","","","",[],[],""),""))
+                                              Just a  -> toSingleLine incompleteDB (p,(a,"a"))
                                       ) stdin
                     let hits = filter (`anyInfix` stdin) finalSingleLine
                     putStrLn $ unlines $ hits ++ lookups
@@ -43,10 +43,10 @@ blacklist sourceLabel = map (\(a,b) -> (a,(b,sourceLabel))) . filter (\(f,(title
                                                                                                   "en.wikipedia.org" `isInfixOf` f ||
                                                                                                   ("/doc/"`isPrefixOf`f && "/index" `isSuffixOf` f)))
 
-toSingleLine :: (Path,(MetadataItem,String)) -> String
-toSingleLine ("",_) = ""
-toSingleLine (f,(("",_,_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
-toSingleLine x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
+toSingleLine :: Metadata -> (Path,(MetadataItem,String)) -> String
+toSingleLine _ ("",_) = ""
+toSingleLine _ (f,(("",_,_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to parallel links with barebones auto-metadata but lacking even a tag; this lets us grep output for all untagged links (as opposed to only being able to grep for the smaller & much more arbitrary subset, 'untagged but has an auto-title')
+toSingleLine md x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
   ([ label,
      authorsToCite f c d,
     "\x1b[32m "++f++" \x1b[0m",
@@ -55,7 +55,7 @@ toSingleLine x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
     " (" ++ authors ++ ")",
     d,
     sed " +" " " $ replace "\n" " " abst] ++
-    (let url = generateURL f mi in if null url then [] else ["\x1b[32m "++url++"\x1b[0m"])
+    (let url = generateURL md f mi in if null url then [] else ["\x1b[32m "++url++"\x1b[0m"])
   )
   where authorsShort = authorsTruncateString c
         authors = if authorsShort == c then authorsShort else authorsShort ++ "…"

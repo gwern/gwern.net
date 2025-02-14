@@ -133,8 +133,8 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
                         -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
                        else sortSimilarsStartingWithNewestWithTag ldb sortDB md' tagSelf titledLinks
 
-  let selfLinksSection = generateSections' am 2 selfTitledLinks
-  let titledLinksSections   = generateSections am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
+  let selfLinksSection = generateSections' md am 2 selfTitledLinks
+  let titledLinksSections   = generateSections md am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)
   let untitledLinksSection  = generateListItems am untitledLinks
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
@@ -369,11 +369,11 @@ generateDirectoryItems parent current ds =
 generateListItems :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> Block
 generateListItems am p = BulletList (map (\(f,a) -> LM.generateAnnotationTransclusionBlock am (f,a)) p)
 
-generateSections :: ArchiveMetadata -> [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
-generateSections am links linksSorted linkswp = (if null links then [] else annotated) ++
+generateSections :: Metadata -> ArchiveMetadata -> [(FilePath, MetadataItem)] -> [(String,[(FilePath, MetadataItem)])] -> [(FilePath, MetadataItem)] -> [Block]
+generateSections md am links linksSorted linkswp = (if null links then [] else annotated) ++
                                                 (if length linksSorted < CGS.minTagAuto then [] else sorted) ++
                                                 (if null linkswp then [] else wp)
-    where annotated = generateSections' am 2 links
+    where annotated = generateSections' md am 2 links
           sorted
             = [Header 2 nullAttr
                  [Str "Sort By Magic"]] ++
@@ -382,7 +382,7 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
                     Para [Str "Beginning with the newest annotation, it uses the embedding of each annotation to attempt to create a list of nearest-neighbor annotations, creating a progression of topics. For more details, see the link."]
                    ]
                  ] ++
-                 concatMap generateReferenceToPreviousSection linksSorted
+                 concatMap (generateReferenceToPreviousSection md) linksSorted
           wp
             = [Header 2 ("titled-links-wikipedia", [], [])
                  [Str "Wikipedia"],
@@ -390,17 +390,17 @@ generateSections am links linksSorted linkswp = (if null links then [] else anno
                  (map (LM.generateAnnotationTransclusionBlock am) linkswp)]
 
 -- for the sorted-by-magic links, they all are by definition already generated as a section; so instead of bloating the page & ToC with even more sections, let's just generate a transclude of the original section!
-generateReferenceToPreviousSection :: (String, [(FilePath, MetadataItem)]) -> [Block]
-generateReferenceToPreviousSection (tag,items) = [Header 3 ("", ["collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
+generateReferenceToPreviousSection :: Metadata -> (String, [(FilePath, MetadataItem)]) -> [Block]
+generateReferenceToPreviousSection md (tag,items) = [Header 3 ("", ["collapse"], [("title","Machine-generated tag name for the following cluster of links.")]) [Code nullAttr (T.pack $ if tag == "" then "N/A" else tag)]] ++
                                              concatMap (\(f,(_,aut,dt,_,_,_,_)) ->
-                                                  let linkId = generateID f aut dt in
+                                                  let linkId = generateID md f aut dt in
                                                     if linkId=="" then [] else
                                                       let sectionID = "#" `T.append` linkId `T.append` "-section"
                                                       in [Para [Link ("", ["include", "include-even-when-collapsed"], []) [Str "[see previous entry]"] (sectionID, "")]]
                                                        ) items
-generateSections' :: ArchiveMetadata -> Int -> [(FilePath, MetadataItem)] -> [Block]
-generateSections' am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
-                                let sectionID = if aut=="" then "" else let linkId = generateID f aut dt in
+generateSections' :: Metadata -> ArchiveMetadata -> Int -> [(FilePath, MetadataItem)] -> [Block]
+generateSections' md am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
+                                let sectionID = if aut=="" then "" else let linkId = generateID md f aut dt in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                     -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.

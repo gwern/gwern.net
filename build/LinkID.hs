@@ -8,7 +8,7 @@ import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex, sort)
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (null, pack, unpack, take, Text)
-import qualified Data.Map.Strict as M (toList, fromListWith, (!), mapWithKey)
+import qualified Data.Map.Strict as M (toList, fromListWith, (!), mapWithKey, lookup)
 import Text.Printf (printf)
 
 import Data.Array (accumArray, assocs, Array)
@@ -42,10 +42,10 @@ url2ID url = T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 byte
     hash = SHA1.hash (TE.encodeUtf8 url)
 
 -- convenience wrapper around `generateID`:
-metadataItem2ID :: Path -> MetadataItem -> T.Text
-metadataItem2ID "" mi = error $ "LinkID.metadataItem2ID: passed an empty URL for an ID; metadata item was: " ++ show mi
+metadataItem2ID :: Metadata -> Path -> MetadataItem -> T.Text
+metadataItem2ID _ "" mi = error $ "LinkID.metadataItem2ID: passed an empty URL for an ID; metadata item was: " ++ show mi
 -- we choose to not require non-empty author/dates, to allow convenient application to the entire metadata database, like to look for colliding IDs:
-metadataItem2ID u (_,author,date,_,_,_,_) = generateID u author date
+metadataItem2ID md u (_,author,date,_,_,_,_) = generateID md u author date
 
 -- To ensure unique-ish links (see /design#backlink on why this is important), duplicate annotation links should be handled:
 --
@@ -60,33 +60,35 @@ metadataItem2ID u (_,author,date,_,_,_,_) = generateID u author date
 -- memorize the previous use in the page, independent instances of links remain independent while back/forward
 -- references pop up the relevant section with the annotated link in context, htmltidy automatically detects links that need to be updated, and a
 -- regexp can warn about citation-text which needs to be linkified.
-generateID :: String -> String -> String -> T.Text
-generateID url author date
+generateID :: Metadata -> String -> String -> String -> T.Text
+generateID md url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) C.linkIDOverrides = fromJust $ lookup url C.linkIDOverrides
+  -- otherwise, the annotation may include an ID key-value which overrides the hash or surname-date
+  | otherwise = case M.lookup url md of
+                 Just (_,_,_,_,kvs,_,_) -> case lookup "id" kvs of
+                                             Nothing    -> generateID'
+                                             Just ident -> T.pack ident
+                 _ -> generateID'
+ where
+  url' :: String
+  url' = delete "https://gwern.net" url
+  generateID' :: T.Text
+  generateID'
   -- indexes or tag-directories shouldn't be cited as they would be often linked many times on a page due to transcludes:
   -- | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- eg. '/face' = '#gwern-face'; `generateID "https://gwern.net/font" "Gwern Branwen" "2021-01-01"` → "gwern-font" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
   -- NOTE: we have hitherto not set IDs on *section* or *anchor* links like '/improvement#microsoft'. Those got no ID, because no authorship metadata is available (unless metadata had been manually added via an annotation for that URL specifically). If we *assume*, no contrary metadata being available, that they were written by me, then they would get an ID like 'gwern-improvement-microsoft'. (Tacking on the hash to the baseline ID of '/improvement' → 'gwern-improvement'.)
-  | ("Gwern Branwen" == author || "gwern" == author || "Gwern" == author || "" == author) &&
-    (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
-  = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
-  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway (forcing use of hashes).
-  -- | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
-  | "#" `isPrefixOf` url = "" -- HACK/TODO: skip self-links: often there's a bunch of them because we may repeatedly refer to a particular section on a page (is this safe? do we actually need self-links to have unique IDs per use?)
-  -- _shikata ga nai_, not enough metadata; we use the hash ID fallback:
-  | author == "" || date == "" = url2ID (T.pack url)
-  -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
-  | otherwise = T.pack $ citeToID $ authorsToCite url author date
-  where
-    url' = delete "https://gwern.net" url
-
--- attempt to guess the URL for a specific annotation somewhere in the tag-directories for easier reference (used in `gwa` dumps)
-generateURL :: Path -> MetadataItem -> String
-generateURL _ (_,_,_,_,_,[],_) = ""
-generateURL url (_,a,d,_,_,ts,_) = let ident = T.unpack $ generateID url a d in
-                                     if null ident then "" else
-                                       "https://gwern.net/doc/" ++ head ts ++ "/index#" ++ ident ++ "-section"
+    | ("Gwern Branwen" == author || "gwern" == author || "Gwern" == author || "" == author) &&
+      (("/" `isPrefixOf` url') && notElem '.' url' && not ("/index"`isInfixOf`url'))
+    = T.pack (trim $ replaceMany [(".", "-"), ("/", "-"), ("#", "--"), ("'", ""), ("https://", "")] $ map toLower $ "gwern-"++tail url')
+    -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway (forcing use of hashes).
+    -- | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
+    | "#" `isPrefixOf` url = "" -- HACK/TODO: skip self-links: often there's a bunch of them because we may repeatedly refer to a particular section on a page (is this safe? do we actually need self-links to have unique IDs per use?)
+    -- _shikata ga nai_, not enough metadata; we use the hash ID fallback:
+    | author == "" || date == "" = url2ID (T.pack url)
+    -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
+    | otherwise = T.pack $ citeToID $ authorsToCite url author date
 
 authorsToCite :: String -> String -> String -> String
 authorsToCite url author date =
@@ -128,7 +130,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
     M.toList $
     M.fromListWith (++) $
     mapMaybe (\(url, item) ->
-        let ident = metadataItem2ID url item
+        let ident = metadataItem2ID md url item
         in if T.null ident then Nothing else Just (ident, [url])
     ) $
     M.toList md
@@ -136,7 +138,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
     processDuplicates :: (T.Text, [Path]) -> [(Path, String)]
     processDuplicates (ident, urls) =
         let padding = length (show (length urls))
-            sortedUrls = sortOn (metadataItem2ID (T.unpack ident) . (md M.!)) urls
+            sortedUrls = sortOn (metadataItem2ID md (T.unpack ident) . (md M.!)) urls
         in zipWith (\url (n :: Int) -> (url, T.unpack ident ++ "-" ++ printf ("%0" ++ show padding ++ "d") n)) sortedUrls [1..]
 
 -- create a mapping of ID → URL for easier search.
@@ -148,7 +150,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
 id2URLdb :: Metadata -> [(String, Path)]
 id2URLdb md = map (\(url,ident) -> (T.unpack ident,url)) $
               sort $ -- URLs are much more compressible than random IDs, so we'll sort by the value (URL) instead of key (ID), to let URLs compress better with each other & save some bytes on the wire
-              M.toList $ M.mapWithKey metadataItem2ID md
+              M.toList $ M.mapWithKey (metadataItem2ID md) md
 
 shardByCharPrefix :: [(String, Path)] -> [(Char, [(String, Path)])]
 shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]
@@ -178,3 +180,10 @@ writeOutID2URLdb md = do let dbl = id2URLdb md
                          Config.Misc.cd
                          writeUpdatedFile "id-all" ("metadata/annotation/id/all.json") (tupleList2JSONString allReversed)
                          mapM_ (\(char,shard) -> writeUpdatedFile "id-shard" ("metadata/annotation/id/" ++ [char] ++ ".json") (tupleList2JSONString shard)) sharded
+
+-- return the /ref/ URL for a specific annotation somewhere for easier linking (used in `gwa` dumps)
+generateURL :: Metadata -> Path -> MetadataItem -> String
+generateURL _ _ (_,_,_,_,_,[],_) = ""
+generateURL md url (_,a,d,_,_,_,_) = let ident = T.unpack $ generateID md url a d in
+                                     if null ident then "" else
+                                       "https://gwern.net/ref/" ++ ident

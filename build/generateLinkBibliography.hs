@@ -163,10 +163,10 @@ linkToAnnotation :: Metadata -> String -> (String,String) -> (String,String,Meta
 linkToAnnotation _ pt ("",ident) = error $ "generateLinkBibliography.linkToAnnotation: empty URL input; identifier: " ++ ident ++ "; parent: " ++ pt
 linkToAnnotation m _ (u,ident) = case M.lookup u m of
                                  Just mi  ->
-                                   let ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID u mi) in
+                                   let ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID m u mi) in
                                      (u,ident',mi)
                                  Nothing -> let mi' = ("","","","",[],[],"")
-                                                ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID u mi')
+                                                ident' = if ident /= "" then ident else T.unpack (LinkID.metadataItem2ID m u mi')
                                             in
                                                   (u,ident',mi')
 

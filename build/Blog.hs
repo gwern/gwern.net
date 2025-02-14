@@ -37,7 +37,7 @@ writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
      let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ (sed ("^"++authorID++"-") "" $
-                                                                  T.unpack $ metadataItem2ID u mi) ++ ".md") writings
+                                                                  T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
      let targets = zip paths writings
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
