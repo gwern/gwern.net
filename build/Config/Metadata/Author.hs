@@ -606,6 +606,7 @@ canonicals = M.fromList
   , ("Quoc Le", "Quoc V. Le")
   , ("Pamela Fine Mishkin", "Pamela Mishkin")
   , ("Marjo-Riitta Jarvelin", "Marjo-Riitta Järvelin")
+  , ("tamaybes", "Tamay Besiroglu")
   ]
 
 -- tests: unique
@@ -630,7 +631,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson"]
+  , "Emma C. Johnson", "Paul D. MacLean"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1279,6 +1280,8 @@ authorLinkDB = M.fromList $
     , ("Hunt Allcott", "https://scholar.google.com/citations?hl=en&user=Y1f2unMAAAAJ")
     , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ&hl=en&oi=ao")
     , ("Josh McDermott", "https://web.mit.edu/jhm/www/")
+    , ("Tamay Besiroglu", "http://tamaybesiroglu.com/")
+    , ("Ken Bertagnolli", "https://www.47g.org/people/ken-bertagnolli/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2524,4 +2527,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan"]
+    , "Greg Egan", "Paul D. MacLean"]

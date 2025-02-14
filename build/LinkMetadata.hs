@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-14 17:04:51 gwern"
+When:  Time-stamp: "2025-02-14 17:43:19 gwern"
 License: CC-0
 -}
 
@@ -107,6 +107,11 @@ addPageLink x = x
 -- To test the date-guesser against ground truths:
 --
 -- > let f = \x@(path,(_,_,date,_,_,_,_)) -> if (date == "") then return x else (do { dateGuess <- Metadata.Date.guessDateFromString path; Control.Monad.when (not (dateGuess `isPrefixOf` date)) (print (path ++ " was " ++ date ++ "; but guessed: " ++ dateGuess)); return x; })
+--
+-- To push hardwired link-ID overrides into the respective metadata database annotation entries:
+--
+-- > let f = \x@(path,(a,b,c,d,e,f,g)) -> return $ case (lookup path Config.LinkID.linkIDOverrides) of { Nothing -> x; Just ident -> (path,(a,b,c,d,e++[("id",T.unpack ident)],f,g)) }
+-- > walkAndUpdateLinkMetadata True f
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"

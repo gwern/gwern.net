@@ -1800,6 +1800,7 @@ htmlRewriteFixed =
          , (" XSUM", " XSum")
          , (" Xsum", " XSum")
          , (" xsum", " XSum")
+         , (" mid ", " mid-")
          , ("CityScapes", "Cityscapes")
          , ("Fr’echet", "Fréchet")
          , ("Frechet", "Fréchet")

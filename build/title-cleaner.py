@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-02-08 15:08:26 gwern"
+# When:  Time-stamp: "2025-02-14 17:52:28 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -570,6 +570,10 @@ Katri Räikkönen
 "Aromatherapy for travel-induced excitement in dogs"
 - "https://chiraaggohel.com/posts/llms-eda/ Your AI can’t see gorillas—Chiraag Gohel"
 "Your AI can’t see gorillas"
+- "https://kenbertagnolli.com/2025/02/09/how-we-achieved-a-1000x-improvement-in-performance/ Three Orders of Magnitude: Transforming PDC Technology at US Synthetic - Ken Bertagnolli"
+"Three Orders of Magnitude: Transforming PDC Technology at US Synthetic"
+- "https://aresluna.org/the-hardest-working-font-in-manhattan/ The hardest working font in Manhattan—Aresluna"
+"The hardest working font in Manhattan"
 
 Task:
 
