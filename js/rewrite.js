@@ -185,6 +185,11 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 	let ref = eventInfo.loadLocation.pathname.slice("/ref/".length);
 	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
+		//	Strip origin from local URLs.
+		let url = URLFromString(ref);
+		if (url.hostname == location.hostname)
+			ref = url.pathname + url.hash;
+
 		//	Retrieve the big URL-to-id mapping file.
 		doAjax({
 			location: urlForMappingFile("all"),
@@ -207,7 +212,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`No annotation found for URL <code>${ref}</code>.`);
+					injectHelpfulErrorMessage(`No annotation exists for URL <code>${ref}</code>.`);
 					injectHelpfulSuggestion(ref);
 				}
 			}
@@ -235,7 +240,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
 						annotationIncludeLink.remove();
 						updatePageTitleElements("Invalid Query");
-						injectHelpfulErrorMessage(`No annotation found for ID <code>${ref}</code> (<a href="${urlString}"><code>${urlString}</code></a>).`);
+						injectHelpfulErrorMessage(`No annotation exists for ID <code>${ref}</code> (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
 						injectIdPrefixMatches("Perhaps you want one of these instead:", event.target.response, ref);
 						injectHelpfulSuggestion(urlString);
 					}, {
