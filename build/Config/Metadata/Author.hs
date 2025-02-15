@@ -607,6 +607,10 @@ canonicals = M.fromList
   , ("Pamela Fine Mishkin", "Pamela Mishkin")
   , ("Marjo-Riitta Jarvelin", "Marjo-Riitta Järvelin")
   , ("tamaybes", "Tamay Besiroglu")
+  , ("Will Highleyman", "Wilbur H. Highleyman")
+  , ("Bill Highleyman", "Wilbur H. Highleyman")
+  , ("William Highleyman", "Wilbur H. Highleyman")
+  , ("William H. Highleyman", "Wilbur H. Highleyman")
   ]
 
 -- tests: unique
@@ -631,7 +635,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1282,6 +1286,7 @@ authorLinkDB = M.fromList $
     , ("Josh McDermott", "https://web.mit.edu/jhm/www/")
     , ("Tamay Besiroglu", "http://tamaybesiroglu.com/")
     , ("Ken Bertagnolli", "https://www.47g.org/people/ken-bertagnolli/")
+    , ("Wilbur H. Highleyman", "https://www.argmin.net/p/revisiting-highleymans-data")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2418,7 +2423,7 @@ authorWpLinkDB =
     ,"Uri Alon", "Uri Gneezy", "Uri Simonsohn", "Uri Zwick", "Urie Bronfenbrenner"
     ,"Urs Egger", "Urs Fischbacher", "Ursula K. Le Guin", "Ursula M. Staudinger", "Ursula Rothlisberger"
     ,"Uwe Scholz", "Uwe Sunde", "V. S. Sundar", "Vadim Borisov", "Vadim N. Gladyshev"
-    ,"Vaibhav Mathur", "Valentin Robu", "Valerie M. Weaver", "Valery N. Soyfer", "Valsamma Eapen"
+    ,"Vaibhav Mathur", "Valerie M. Weaver", "Valery N. Soyfer", "Valsamma Eapen"
     ,"Valter D. Longo", "Vaneet Aggarwal", "Vaughan R. Pratt", "Veena Kumari", "Vegard Skirbekk"
     ,"Venkatesh Rao", "Vera Demberg", "Vera Gorbunova", "Vera John-Steiner", "Vernon L. Smith"
     ,"Vernon Williams", "Vernor Vinge", "Veronica Galvan", "Veselin Stoyanov", "Victor Chan"

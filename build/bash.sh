@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-08 11:44:18 gwern"
+# When:  Time-stamp: "2025-02-14 19:56:13 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -66,8 +66,11 @@ _ghc_ghci_completion () {
 }
 complete -o nospace -F _ghc_ghci_completion ghc ghci
 
+length () { awk '{ print length, $0 }' | sort --general-numeric-sort | \
+                awk '{$1=""; print $0}' | sed -e 's/^ //'; }
+
 # Default Haskell parallelism:
-export N="7"
+export N="14"
 
 set -e
 
