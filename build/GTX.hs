@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2025-01-14 10:59:10 gwern"
+When:  Time-stamp: "2025-02-14 19:31:52 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -76,6 +76,7 @@ module GTX where
 
 import Data.Char (isSpace)
 import Data.Containers.ListUtils (nubOrd)
+import Data.List (sort)
 import Control.Monad (void)
 import qualified Data.Map.Strict as M (fromList, toList)
 import qualified Data.Text.IO as TIO (appendFile, readFile)
@@ -113,7 +114,7 @@ readGTXSlow path = do C.cd
                       if null badEntries then return results' else error ("GTX.readGTXSlow: invalid entries found in " ++ path ++ ": " ++ show badEntries)
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
-                                                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, kvs,
+                                                     (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, sort kvs,
                                                       map (guessTagFromShort allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u (unwords ts), s))
            stripUnicodeWhitespace, reformatTitle :: String -> String
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)

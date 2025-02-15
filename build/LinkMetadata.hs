@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-14 17:43:19 gwern"
+When:  Time-stamp: "2025-02-14 19:06:46 gwern"
 License: CC-0
 -}
 
@@ -37,7 +37,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 import System.IO.Unsafe (unsafePerformIO)
 
 import Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear)
+import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks)
 import Typography (titlecase', typesetHtmlField, titleWrap)
@@ -193,6 +193,7 @@ readLinkMetadataAndCheck = do
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
              -- - annotations must exist and be unique inside full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
+             -- - the key-value list can be empty, but any entries must have non-empty string keys & values
              let urlsC = map fst full
              let normalizedUrlsC = map (delete "https://" . delete "http://") urlsC
              when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
@@ -242,6 +243,9 @@ readLinkMetadataAndCheck = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
+
+             let badKVs = filter (\(_,(_,_,_,_,kvs,_,_)) -> any (\(k,v) -> k `notElem` C.gtxKeyValueKeyNames || k == "" || v == "") kvs) finalL
+             unless (null badKVs) $ error $ "GTX: bad key-values in annotations, with unknown keys (not in the whitelist `Config.Misc.gtxKeyValueKeyNames`), or null keys/values: " ++ show badKVs
 
              let urlsFinal = M.keys final
              let brokenUrlsFinal = filter (\u -> null u ||

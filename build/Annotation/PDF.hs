@@ -38,6 +38,7 @@ pdf md p = do C.cd
                    let title = titleBase ++ (if null pageNumber' || null titleBase then "" else " § pg" ++ pageNumber')
                    let edoi = trim $ U.toString mbDoi
                    let edoi' = if null edoi then "" else processDOI edoi
+                   let edoi'' = if null edoi' then [] else [("doi", edoi')]
                    -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                    let ecreator = filterMeta $ U.toString mbCreator
                    let eauthor' = filterMeta  $ U.toString mbAuthor
@@ -46,7 +47,7 @@ pdf md p = do C.cd
                    printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                    at <- fmap (fromMaybe "") $ doi2Abstract md edoi'
                    if not (null (title ++ author ++ U.toString mbDate ++ edoi')) then
-                     return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), "", [("doi",edoi')], ts, at))
+                     return $ Right (p, (title, author, trim $ replace ":" "-" (U.toString mbDate), "", edoi'', ts, at))
                      else
                      return (Left Permanent)
               else printRed "PDF annotation failed, insufficient data or unreadable file; exiftool returned: " >> putStrLn ("title/author/date: " ++ show mbTitle ++ " ; DOI: " ++ show mbDoi) >> return (Left Permanent)

@@ -207,3 +207,9 @@ arxivAbstractFixedRewrites = [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  
                              , (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)")
                              , ("\\{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**")
                              , ("%we", "We"), (" #", " \\#")]
+
+-- what keys are permitted in the key-value fields of GTX files?
+gtxKeyValueKeyNames :: [String]
+gtxKeyValueKeyNames = ["id", "doi", "title", "description", "created", "modified"
+                      , "status", "importance", "confidence", "css-extension", "invert", "backlink"
+                      , "placeholder", "index"]

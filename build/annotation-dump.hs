@@ -14,7 +14,7 @@ import LinkID (authorsToCite, generateURL)
 import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)
 import LinkMetadataTypes (Metadata, MetadataItem, MetadataList)
-import Utils (anyInfix, replace, sed)
+import Utils (anyInfix, replace, sed, delete)
 import Metadata.Author (authorsTruncateString)
 import Tags (validateTagsSyntax)
 
@@ -49,15 +49,18 @@ toSingleLine _ (f,(("",_,_,_,_,[],_),_)) = f ++ " []" -- we insert '[]' to paral
 toSingleLine md x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
   ([ label,
      authorsToCite f c d,
-    "\x1b[32m "++f++" \x1b[0m",
-    show tags',
-    "\x1b[35m\""++b++"\"\x1b[0m",
-    " (" ++ authors ++ ")",
-    d,
-    sed " +" " " $ replace "\n" " " abst] ++
+     take 4 d,
+     c,
+     urlPrefix ++ "\x1b[32m" ++ delete urlPrefix f ++ " \x1b[0m",
+     show tags',
+     "\x1b[35m\""++b++"\"\x1b[0m",
+     " (" ++ authors ++ ")",
+     d,
+     sed " +" " " $ replace "\n" " " abst] ++
     (let url = generateURL md f mi in if null url then [] else ["\x1b[32m "++url++"\x1b[0m"])
   )
   where authorsShort = authorsTruncateString c
         authors = if authorsShort == c then authorsShort else authorsShort ++ "…"
         tags' = if validateTagsSyntax tags then tags else error $ "annotation-dump: syntactically-invalid tags in item: " ++ show x
+        urlPrefix = if head f == '/' then "/" else if "https://" `isPrefixOf` f then "https" else "http"
 

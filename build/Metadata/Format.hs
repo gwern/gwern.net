@@ -93,8 +93,10 @@ checkURL u = do let doubleURL = u =~ badUrlRegex -- I keep accidentally concaten
                 if not doubleURL then return () else error ("Metadata.Format.checkURL: double URL check failed, was the URL mangled or accidentally duplicated or 2 URLs concatenated? Retry with fixed URL. Input: " ++ u)
 
 processDOI, processDOIArxiv :: String -> String
-processDOI = replaceMany [("–", "-"), ("—", "-"), ("https://doi.org/", "")] . sed "^doi:" ""
+processDOI "" = error "Metadata.Format.processDOI: passed an empty DOI string to clean up, which should never happen."
+processDOI d = replaceMany [("–", "-"), ("—", "-"), ("https://doi.org/", "")] $ sed "^doi:" "" d
  -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
+processDOIArxiv "" = error "Metadata.Format.processDOIArxiv: passed an empty DOI string to clean up, which should never happen."
 processDOIArxiv url = "10.48550/arXiv." ++
                                sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
                                (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
