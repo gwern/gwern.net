@@ -10,13 +10,14 @@
 -- But annotations have their own drawbacks: they are not easily findable or linkable. A regular reader has no idea where to find a list of these annotations, and if they have one in mind, the only URLs they would find are tag-directory section indexes, which are both unstable (the tag might change at any moment) and come with a huge overhead in terms of loading an entire tag-directory page. (Given our problems with making sure transclusion doesn't cause the page to jump around, a link to a section might not even work as far as a reader can tell!)
 --
 -- The `/ref/$ID` feature inspires an alternative: since these off-site writings have to get a unique manual ID to avoid them all being named 'gwern-YYYY', we can simply exploit those useful IDs to create a standalone page for each one, nested in a `/blog/` directory to indicate their lower status; and then each standalone page simply displays the annotation as a standard annotation-transclude.
--- So any time an off-site comment gets saved as an annotation in the natural course of site maintenance, it automatically shows up as a lightweight 'blog' essay. If a LW.com comment at $URL gets saved as an annotation with an ID like `gwern-2025-drl-scaling`, then a page will be created at <https://gwern.net/blog/2025-drl-scaling> which simply does a `[]($URL){.include-annotation)`, in effect. And this page will be nice to read, linkable, findable via <https://gwern.net/blog/index>, can be edited into a proper full essay, etc.
+-- So any time an off-site comment gets saved as an annotation in the natural course of site maintenance, it automatically shows up as a lightweight 'blog' essay. If a LW.com comment at $URL gets saved as an annotation with an ID like `gwern-2025-drl-scaling` (defined in the miscellaneous key-value field like `[("id","gwern-2025-drl-scaling")]`), then a page will be created at <https://gwern.net/blog/2025-drl-scaling> which simply does a `[]($URL){.include-annotation)`, in effect. And this page will be nice to read, linkable, findable via <https://gwern.net/blog/index>, can be edited into a proper full essay, etc.
 --
 -- Future work: Depending on volume, it may make sense to split into subdirectories by year. For multi-user websites, the obvious extension is to split by author-ID.
 
 module Blog (writeOutBlogEntries) where
 
 import Data.List (isPrefixOf)
+import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (toList, filterWithKey)
 import qualified Data.Text as T (pack, unpack)
 
@@ -27,8 +28,8 @@ import Utils (sed, writeUpdatedFile)
 import Config.Misc as C (cd)
 
 prefix, authorU, authorID :: String
-prefix = "blog"
-authorU = "Gwern"
+prefix   = "blog"
+authorU  = "Gwern"
 authorID = "gwern"
 lengthMin :: Int
 lengthMin = 1000
@@ -50,24 +51,30 @@ filterForAuthoredAnnotations md =
 writeOutBlogEntry :: (String, (Path, MetadataItem)) -> IO ()
 writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown m
 
+-- cf. `generateDirectory.generateYAMLHeader`
 annotation2Markdown :: (Path, MetadataItem) -> String
-annotation2Markdown (url, (title, author, dateCreated, dateModified,_,_,_)) =
-     -- cf. `generateDirectory.generateYAMLHeader`
-     unlines
-      ["---"
-       , "title: \"" ++ title ++ "\""
-       , "author: " ++ author
-       , "description: N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
-       , "created: " ++ dateCreated
-       , "modified: " ++ dateModified
-       , "status: finished"
-       , "importance: 0"
-       , "confidence: log"
-       , "css-extension: dropcaps-de-zs"
+annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _)) =
+  let get k def = fromMaybe def (lookup k kvs)
+      description = get "description"   "N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
+      status      = get "status"        "finished"
+      importance  = get "importance"    "0"
+      confidence  = get "confidence"    "log"
+      cssExt      = get "css-extension" "dropcaps-de-zs"
+  in unlines
+       [ "---"
+       , "title: \""             ++ title ++ "\""
+       , "author: "              ++ author
+       , "description: "         ++ description
+       , "created: "             ++ dateCreated
+       , "modified: "            ++ dateModified
+       , "status: "              ++ status
+       , "importance: "          ++ importance
+       , "confidence: "          ++ confidence
+       , "css-extension: "       ++ cssExt
        , "backlink: False"
        , "placeholder: True"
        , "index: True"
        , "..."
        , ""
        , "[**Original page.**](" ++ url ++ "){.include-annotation .include-strict .include-spinner-not .id-not}"
-      ]
+       ]
