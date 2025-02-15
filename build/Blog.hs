@@ -76,5 +76,6 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , "index: True"
        , "..."
        , ""
-       , "[**Original page.**](" ++ url ++ "){.include-annotation .include-strict .include-spinner-not .id-not}"
+       , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
+         "](" ++ url ++ "){.include-annotation .include-strict .include-spinner-not .id-not}"
        ]

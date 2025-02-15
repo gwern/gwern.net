@@ -24,11 +24,11 @@ import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline, Strong), Pandoc(Pandoc))
 import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
-import LinkID (generateID, authorsToCite)
+import LinkID (generateID, authorsToCite, id2URLdb)
 import LinkMetadata as LM (readLinkMetadataSlow, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
@@ -49,7 +49,7 @@ main = do C.cd
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let newestp = any (`isInfixOf` "newest") dirs
-          let dirs' = filter (/="doc/newest/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
+          let dirs' = filter (\d -> d/="doc/newest/" && d/="blog/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
@@ -61,12 +61,64 @@ main = do C.cd
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
           when (length dirs > 5 || newestp) $
             generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+          -- /blog/, for off-site writings which get generated Markdown file stubs to transclude their annotation, is unique enough that we won't try to make the regular generateDirectory cover that case too:
+          generateDirectoryBlog meta
 
           let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
           -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
           Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
+
+generateDirectoryBlog :: Metadata -> IO ()
+generateDirectoryBlog md = do
+  let iddb = id2URLdb md -- [(ID, Path)]
+  direntries <- fmap (filter (/="index.md")) $ -- filter out self
+                listDirectory "blog/" -- eg '2024-writing-online.md'
+  -- print direntries
+  let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg '/blog/2024-writing-online'
+  let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg '("gwern-2024-writing-online", "/blog/2024-writing-online")'
+  -- print idents
+  let paths = map (\(ident,absolute) -> (ident, absolute, fromJust $ lookup ident iddb)) idents -- eg '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform#KAtgQZZyadwMitWtb")'
+  -- print paths
+  let triplets = sortByDatePublished $ map (\x@(_ident,absolute,path) -> case M.lookup path md of
+                        Nothing -> error $ "generateDirectory.generateDirectoryBlog: tried to look up the annotation corresponding to a /blog/ Markdown entry, yet there was none. This should be impossible! Variables: " ++ show x ++ "; " ++ show paths ++ ";" ++ show idents ++ "; " ++ show direntries
+                        Just mi -> (absolute, mi, path)
+                    ) paths
+  -- print triplets
+  when (null triplets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
+  let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head triplets
+  let list = BulletList (map (\(f,mi,_) -> generateBlogLink (f,mi)) triplets)
+  -- print list
+
+  let header = unlines ["---", "title: Blog Posts"
+                       , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
+                       -- N/A: author, thumbnail, thumbnail-text, thumbnail-css
+                       , "created: 2009-01-27"
+                       , "modified: " ++ lastEntryDate
+                       , "status: log"
+                       , "importance: 0"
+                       , "css-extension: dropcaps-de-zs"
+                       , "index: True"
+                       , "backlink: False"
+                       , "...\n"]
+
+  let document = Pandoc nullMeta [list]
+  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+
+  case p of
+    Left e   -> printRed (show e)
+    -- compare with the old version, and update if there are any differences:
+    Right p' -> do let contentsNew = T.pack header `T.append` p'
+                   -- putStrLn $ T.unpack contentsNew
+                   writeUpdatedFile "directory" ("blog/index.md") contentsNew
+
+generateBlogLink :: (FilePath, MetadataItem) -> [Block]
+generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
+  let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not"], [])
+                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
+  in
+    [Para [Str (T.pack (dc++": ")), Strong [link]]]
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory newestp am md ldb sortDB dirs dir'' = do
@@ -244,28 +296,28 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
 
 generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
 generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
-  = unlines $ filter (not . null) [ "---",
-             "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ "++directoryType++"'", -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
-             "description: \"Bibliography for "++directoryType++" <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
+  = unlines $ filter (not . null) [ "---"
+             , "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ "++directoryType++"'" -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
+             , "description: \"Bibliography for "++directoryType++" <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
               (if directoryN == 0 then ""  else "" ++ show directoryN ++ " <a class='icon-not' href='/doc/" ++ (if d=="" then "" else d++"/") ++ "index#see-alsos'>related tag" ++ pl directoryN ++ "</a>") ++
               (if annotationN == 0 then "" else (if directoryN==0 then "" else ", ") ++ show annotationN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#links'>annotation" ++ pl annotationN ++ "</a>") ++
               (if linkN == 0 then ""       else (if (directoryN/=0 && annotationN/=0 && linkN/=0) then ", & " else " & ") ++ show linkN ++ " <a class='icon-not' href='/doc/" ++ d ++ "/index#miscellaneous'>link" ++ pl linkN ++ "</a>") ++
               " (<a href='" ++ parent ++ "' class='link-page link-tag directory-indexes-upwards link-annotated' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to parent directory'>parent</a>)" ++
-               ".\"",
-             thumbnail,
-             thumbnailText,
-             "thumbnail-css: \"outline\"", -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
-             "created: " ++ dateCreated,
-             "modified: " ++ dateModified,
-             "status: in progress",
-             previous,
-             next,
-             "confidence: log",
-             "importance: 0",
-             "css-extension: dropcaps-de-zs",
-             "index: True",
-             "backlink: False",
-             "...\n"]
+               ".\""
+             , thumbnail
+             , thumbnailText
+             , "thumbnail-css: \"outline\"" -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
+             , "created: " ++ dateCreated
+             , "modified: " ++ dateModified
+             , "status: in progress"
+             , previous
+             , next
+             , "confidence: log"
+             , "importance: 0"
+             , "css-extension: dropcaps-de-zs"
+             , "index: True"
+             , "backlink: False"
+             , "...\n"]
   where pl :: Int -> String
         pl n = if n > 1 || n == 0 then "s" else "" -- pluralization helper: "2 links", "1 link", "0 links".
         directoryType :: String
