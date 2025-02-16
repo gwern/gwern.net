@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2025-02-07 20:09:09 gwern"
+When:  Time-stamp: "2025-02-16 17:15:38 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -129,20 +129,20 @@ import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetad
 
 import Config.Misc as CM (cd, todayDay)
 import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen)
-import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
+import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLiveLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescription)) = do
   targetURL' <- fmap T.pack $ rewriteLink adb $ T.unpack targetURL
   let mobileURL = T.pack $ C.transformURLsForMobile  $ T.unpack targetURL
-      cleanURL  = T.pack $ C.transformURLsForLinking $ T.unpack targetURL
+      liveURL  = T.pack $ C.transformURLsForLiveLinking $ T.unpack targetURL
        -- NOTE: because the archive database is checked before the whitelist or `.archive-not` class, the archive database now overrides the whitelist or transforms
       archiveAttributes = if C.whiteList (T.unpack targetURL) || "archive-not" `elem` classes || targetURL == targetURL' then []
                               else [("data-url-archive", "/" `T.append` targetURL'),
                                     ("data-url-original", targetURL)]
       allAttributes = archiveAttributes ++
                           (if mobileURL == targetURL then [] else [("data-href-mobile", mobileURL)]) ++
-                          (if cleanURL  == targetURL then [] else [("data-url-html",    cleanURL)])
+                          (if liveURL  == targetURL then [] else [("data-url-iframe",    liveURL)])
   let archiveAnnotatedLink = Link (identifier, nubOrd classes, nubOrd (sort (pairs++allAttributes)))
                                   b
                                   (if null archiveAttributes then targetURL else ("/"`T.append`targetURL'),
@@ -171,10 +171,10 @@ testLinkRewrites = filterNotEqual $ mapM (\(u, results) -> do
         l url = Link nullAttr [] (url, "")
         l' :: T.Text -> (T.Text, T.Text, T.Text, [T.Text]) -> Inline
         l' url ("", mobile, html, classes) = Link ("", classes,
-                                                        filter (\(_,b) -> b/="") (sort [("data-href-mobile", mobile), ("data-url-html", html)]))
+                                                        filter (\(_,b) -> b/="") (sort [("data-href-mobile", mobile), ("data-url-iframe", html)]))
                                                   [] (url, "")
         l' url (archive, mobile, html, classes) = Link ("", classes,
-                                                        filter (\(_,b) -> b/="") (sort [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-html", html), ("data-url-original", url)]))
+                                                        filter (\(_,b) -> b/="") (sort [("data-url-archive", archive), ("data-href-mobile", mobile), ("data-url-iframe", html), ("data-url-original", url)]))
                                                   [] (archive, "")
 
 -- archive the first _n_ links which are due, and all pending 'cheap' archives.

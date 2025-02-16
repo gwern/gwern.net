@@ -33,7 +33,7 @@ isCheapArchive url = f url || f (transformURLsForArchiving url)
 -- (Hypothetically, we could do Reddit.com → Old.Reddit.com, or LW → GW rewrites this way too.)
 transformURLsForArchiving, -- data-url-archive
   transformURLsForMobile, -- data-href-mobile
-  transformURLsForLinking :: String -> String -- data-url-html
+  transformURLsForLiveLinking :: String -> String -- data-url-iframe
 transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
                             . replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
@@ -49,13 +49,12 @@ transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" 
   sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
   replace "https://x.com" "https://nitter.net"
 
--- `data-url-html`:
-transformURLsForLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
+-- `data-url-iframe`:
+transformURLsForLiveLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by enabling JS, so theater-mode works.
   (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["?view=theater"]) then u ++ "?view=theater" else u)
-  . replace "https://medium.com" "https://www.freedium.cfd"
-  . addAmazonAffiliate
-  . addGithubReadme
+--  . addAmazonAffiliate
+--  . addGithubReadme
   . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
   . transformURItoGW
   . transformWPtoMobileWP

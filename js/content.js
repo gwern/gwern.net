@@ -603,7 +603,7 @@ Content = {
 					let titleLinkHrefForEmbedding = modifiedURL(URLFromString(titleLinkHref), {
 						hostname: articleLink.hostname.replace(".wikipedia.org", ".m.wikipedia.org")
 					}).href;
-					let titleLinkDataAttributes = `data-url-html="${titleLinkHrefForEmbedding}"`;
+					let titleLinkDataAttributes = `data-url-iframe="${titleLinkHrefForEmbedding}"`;
 
 					//	Link icon.
 					let titleLinkIconMetadata = `data-link-icon-type="svg" data-link-icon="wikipedia"`;
@@ -691,7 +691,7 @@ Content = {
 							subsections).
 						 */
 						let entryContentDoc = newDocument(targetSection.innerHTML);
-						entryContentDoc.insertBefore(newDocument(buildArticleTOC(entryContentDoc.querySelectorAll("section"))), 
+						entryContentDoc.insertBefore(newDocument(buildArticleTOC(entryContentDoc.querySelectorAll("section"))),
 													 entryContentDoc.querySelector("section"));
 						entryContentHTML = entryContentDoc.innerHTML;
 
@@ -1052,7 +1052,7 @@ Content = {
 						figure.appendChild(image);
 					});
 
-					let captionHTML = (   figureBlock.querySelector(".thumbcaption") 
+					let captionHTML = (   figureBlock.querySelector(".thumbcaption")
 									   ?? figureBlock.closest(".gallerybox").querySelector(".gallerytext")
 									   )?.innerHTML;
 					if (captionHTML)
@@ -1593,9 +1593,9 @@ Content = {
                     //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
                     contentDocument = newDocument(Content.objectHTMLForURL(videoEmbedURL, {
                         additionalClasses: "youtube",
-                        additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}" 
-                        					   allow="autoplay; fullscreen" 
-                        					   sandbox="allow-scripts allow-same-origin allow-presentation" 
+                        additionalAttributes: `srcdoc="${srcdocStyles}${srcdocHTML}"
+                        					   allow="autoplay; fullscreen"
+                        					   sandbox="allow-scripts allow-same-origin allow-presentation"
                         					   allowfullscreen`
                     }));
                 } else if (Content.contentTypes.remoteVideo.isVimeoLink(link)) {
@@ -1946,8 +1946,8 @@ Content = {
 				if (link.dataset.pageSectionId > "")
 					pageContentDocument.appendChild(pageContent.document.querySelector("#" + link.dataset.pageSectionId)?.cloneNode(true));
 
-                /*  Otherwise (or if the specified section does not exist), the 
-                	default page content is the page body plus the metadata 
+                /*  Otherwise (or if the specified section does not exist), the
+                	default page content is the page body plus the metadata
                 	block.
                  */
 				if (pageContentDocument.childNodes.length == 0) {
