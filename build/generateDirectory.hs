@@ -92,7 +92,7 @@ generateDirectoryBlog md = do
   when (null triplets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
   let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head triplets
   let list1 = BulletList $ generateBlogLinksByYears triplets
-  let list2 = BulletList (map (\(f,mi,_) -> generateBlogLink True  (f,mi)) triplets)
+  let list2 = BulletList (map (\(position,(f,mi,_)) -> generateBlogLink position True (f,mi)) (zip (True:repeat False) triplets))
   -- print list1 >> print list2
 
   let header = unlines ["---", "title: Blog Posts"
@@ -128,16 +128,19 @@ generateBlogLinksByYears triplets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_
   where
     generateBlogLinksByYear :: String -> Block
     generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_), _) -> year `isPrefixOf` dc) triplets
-                                       in BulletList $ map (\(f,mi,_) -> generateBlogLink False (f,mi)) hits
+                                       in BulletList $ map (\(f,mi,_) -> generateBlogLink False False (f,mi)) hits
 
-generateBlogLink :: Bool -> (FilePath, MetadataItem) -> [Block]
-generateBlogLink False (f, (tle,_,dc,_,_,_,_)) =
+generateBlogLink :: Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
+generateBlogLink _ False (f, (tle,_,dc,_,_,_,_)) =
   let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not"], [])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
     [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
-generateBlogLink True (f, (tle,_,_,_,_,_,_)) =
-  let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not", "include-content"], [])
+generateBlogLink firstp True (f, (tle,_,_,_,_,_,_)) =
+  let link = Link (""
+                  , ["link-live", "id-not", "link-annotated-not", "icon-not", "include-content"]++
+                    (if firstp then ["include-even-when-collapsed"] else []) -- Micro-optimization in annotation evaluation order: force the very first entry to be pre-rendered, for a faster popup if they hover over the logical entry in the first section (ie. the first one), or to mask how long it takes to load them all if they uncollapse the second section.
+                  , [])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
     [Para [Strong [link]]]
