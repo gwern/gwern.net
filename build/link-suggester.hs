@@ -41,19 +41,23 @@ main = do
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
   let dbMinimumLess = M.union C.whiteListDB $ M.map (nubOrd . sort . cleanAnchors) $ M.filter (\texts -> length texts >= C.hitsMinimum) db
-  let dbFailedMinimum = ("Did not pass hitsMinimum filter", db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
+  let dbFailedMinimum = ("Did not pass hitsMinimum filter",
+                         db `M.difference` dbMinimumLess) -- NOTE: difference is not symmetrical: "Return elements of the first map not existing in the second map." so need to do OLD `M.difference` NEW
 
   -- We want to filter out any anchor text which is associated with more than 1 URL (those are too ambiguous to be useful), any text which is in the system dictionary, and anything in the blacklist patterns or list.
   let anchorTextsDupes = Utils.repeated $ concat $ M.elems dbMinimumLess
   let dbTextDupeLess = M.union C.whiteListDB $ M.map (filter (`notElem` anchorTextsDupes)) dbMinimumLess
-  let dbFailedDupe = ("Did not pass anchorTextDupes filter"::T.Text,                   dbMinimumLess `M.difference` dbTextDupeLess)
+  let dbFailedDupe = ("Did not pass anchorTextDupes filter"::T.Text,
+                      dbMinimumLess `M.difference` dbTextDupeLess)
 
   dict <- dictionarySystem
   let dbDictLess = M.union C.whiteListDB $ M.map (filter (\t -> not (S.member (T.toLower t) dict))) dbTextDupeLess
-  let dbFailedDict = ("Did not pass system dictionary filter"::T.Text,                          dbTextDupeLess `M.difference` dbDictLess)
+  let dbFailedDict = ("Did not pass system dictionary filter"::T.Text,
+                      dbTextDupeLess `M.difference` dbDictLess)
 
   let dbAnchorLess = M.union C.whiteListDB $ M.map (filter (not . C.filterAnchors)) dbDictLess
-  let dbFailedAnchor = ("Did not pass anchor filter"::T.Text,                 dbDictLess `M.difference` dbAnchorLess)
+  let dbFailedAnchor = ("Did not pass anchor filter"::T.Text,
+                        dbDictLess `M.difference` dbAnchorLess)
 
   let dbClean = M.union C.whiteListDB $ M.filter (not . null) dbAnchorLess
 
@@ -61,11 +65,26 @@ main = do
   let reversedDB = concatMap (\(url,ts) -> zip ts (repeat url)) $ M.toList dbClean
   -- sort by length of anchor text in descending length: longer matches should come first, for greater specificity in doing rewrites.
   let reversedDBSorted = sortBy (\(t1,_) (t2,_) -> if T.length t1 > T.length t2 then LT else if T.length t1 == T.length t2 then if t1 > t2 then GT else LT else GT) reversedDB
-  let elispDB = haskellListToElispList reversedDBSorted
+  let reversedDBSortedMerged = mergeAssocList reversedDBSorted -- eg. `[("Semaglutide", "https://en.wikipedia.org/wiki/Semaglutide"), ..., ("semaglutide" "https://en.wikipedia.org/wiki/Semaglutide")]`
+  let elispDB = haskellListToElispList reversedDBSortedMerged
 
   writeUpdatedFile "linkSuggestions.el.tmp" outputTarget elispDB
   writeUpdatedFile "linkSuggestions-deleted.hs.tmp" "metadata/linkSuggestions-deleted.hs" $ T.pack (ppShow [dbFailedAnchor, dbFailedDupe, dbFailedDict, dbFailedMinimum])
   printGreen "Wrote out link suggestion database."
+
+mergeAssocList :: [(T.Text, a)] -> [(T.Text, a)]
+mergeAssocList xs = M.elems mergedMap
+  where
+    mergedMap = M.fromListWith choose
+                [ (T.toLower k, (k, v)) | (k, v) <- xs ]
+    choose p1@(k1, _) p2@(k2, _) =
+      case (isAllLower k1, isAllLower k2) of
+        (True, False)  -> p2
+        (False, True)  -> p1
+        _              -> p1
+    -- Checks if the string is completely lower-case.
+    isAllLower :: T.Text -> Bool
+    isAllLower s = s == T.toLower s
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
 haskellListToElispList :: [(T.Text, T.Text)] -> T.Text

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-11 15:35:08 gwern"
+;;; When:  Time-stamp: "2025-02-16 13:26:39 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -194,7 +194,7 @@ START and END specify the region to search."
          (when (use-region-p)
            (region-end))))
   (let ((inhibit-read-only t)
-        (case-fold-search nil)
+        ; (case-fold-search nil)
         (search-function (if delimited 're-search-forward-word 're-search-forward))
         (replace-done nil))
     (save-excursion
@@ -803,7 +803,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("tau181" . "tau~181~")
                         ("vitamin D3" . "vitamin D~3~")
                         ("vitamin D4" . "vitamin D~4~")
-                        (" \" . " " \"")
+                        (" \" . " . " \"")
                         (" \\times " . " \cdot ")
                         ("''" . "\"")
                         ("``" . "\"")
@@ -851,6 +851,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("cm--3" . "cm<sup>−3</sup>")
                         (" cm2" . " cm<sup>2</sup>")
                         ("mL/cm2" . "mL⧸cm<sup>2</sup>")
+                        ("mg/week" . "mg⧸week")
                         ("m·h−1" . "m×h<sup>−</sup>")
                         (" </sup>" . "</sup>")
                         ("<sup> " . "<sup>")
@@ -1220,8 +1221,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "\nSearch methods\n\n" "\n\n<strong>Search Method</strong>: ")
          (replace-all " (Methods)" " (<strong>Method</strong>)")
          (replace-all "\nSelection criteria\n\n" "\n\n<strong>Selection Criteria</strong>: ")
-         (replace-all "\nInterventions " "\n**Interventions**: ")
-         (replace-all "\nInterventions\n" "\n**Interventions**: ")
+         (replace-all "\nInterventions " "\n**Intervention**: ")
+         (replace-all "\nInterventions\n" "\n**Intervention**: ")
+         (replace-all "\nIntervention " "\n**Intervention**: ")
          (replace-all "\nMain Outcomes and Measures " "\n**Main Outcomes & Measures**: ")
          (replace-all "\nMain Outcomes and Measures\n" "\n**Main Outcomes & Measures**: ")
          (replace-all "Measurement and Results:" "**Measurement & Results**:")
@@ -2102,7 +2104,7 @@ and it will be updated based on any manually-added links."
                       )
                   ; skip if already done
                   (if (not (buffer-contains-substring replacement))
-                      (let ((case-fold-search t) (search-upper-case t) (case-replace nil))
+                      (let ((case-fold-search t) (search-upper-case nil) (case-replace nil))
                         (query-replace-once original (concat "[" original "](" replacement ")") t begin end)
                         ))))))))
 
