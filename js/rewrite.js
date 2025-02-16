@@ -183,7 +183,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	/*	Main /ref/ logic begins.
 	 */
 
-	let ref = eventInfo.loadLocation.pathname.slice("/ref/".length);
+	let ref = decodeURIComponent(eventInfo.loadLocation.pathname.slice("/ref/".length));
 	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
 		//	Strip origin from local URLs.
 		let url = URLFromString(ref);
@@ -218,21 +218,28 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			}
 		});
 	} else {
+		//	Normalize to lowercase, and update URL bar, if need be.
+		let normalizedRef = ref.toLowerCase();
+		if (normalizedRef != ref)
+			history.replaceState(null, null, "/ref/" + normalizedRef);
+
 		//	Retrieve id-to-URL mapping file (sliced by initial character).
-		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(ref.slice(0, 1)) ? ref.slice(0, 1) : "-";
+		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1)) 
+								  ? normalizedRef.slice(0, 1) 
+								  : "-";
 		doAjax({
 			location: urlForMappingFile(mappingFileBasename),
 			responseType: "json",
 			onSuccess: (event) => {
-				let urlString = event.target.response[ref];
+				let urlString = event.target.response[normalizedRef];
 				if (urlString == null) {
 					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`ID <code>${ref}</code> does not exist.`);
-					injectIdPrefixMatches("Perhaps you want one of these:", event.target.response, ref);
-					injectHelpfulSuggestion(ref.replace(/-/g, " ").replace(" et al", "").split(" ").filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false).join(" "));
+					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
+					injectIdPrefixMatches("Perhaps you want one of these:", event.target.response, normalizedRef);
+					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " ").replace(" et al", "").split(" ").filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false).join(" "));
 				} else {
 					//	Synthesize and inject include-link.
-					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[ref], {
+					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[normalizedRef], {
 						class: "link-annotated"
 					}));
 
@@ -240,8 +247,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (contentDidChangeEventInfo) => {
 						annotationIncludeLink.remove();
 						updatePageTitleElements("Invalid Query");
-						injectHelpfulErrorMessage(`No annotation exists for ID <code>${ref}</code> (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
-						injectIdPrefixMatches("Perhaps you want one of these instead:", event.target.response, ref);
+						injectHelpfulErrorMessage(  `No annotation exists for ID <code>${normalizedRef}</code>`
+												  + ` (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
+						injectIdPrefixMatches("Perhaps you want one of these instead:", event.target.response, normalizedRef);
 						injectHelpfulSuggestion(urlString);
 					}, {
 						condition: (info) => (   info.source == "transclude.loadingFailed"
