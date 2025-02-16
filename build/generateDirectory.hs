@@ -41,6 +41,7 @@ import Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import Config.GenerateSimilar as CGS (minTagAuto)
 import Image (isImageFilename)
+import Blog (writeOutBlogEntries)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -72,14 +73,16 @@ main = do C.cd
 
 generateDirectoryBlog :: Metadata -> IO ()
 generateDirectoryBlog md = do
+  writeOutBlogEntries md -- ensure up to date
+
   let iddb = id2URLdb md -- [(ID, Path)]
   direntries <- fmap (filter (/="index.md")) $ -- filter out self
-                listDirectory "blog/" -- eg '2024-writing-online.md'
+                listDirectory "blog/" -- eg. '2024-writing-online.md'
   -- print direntries
-  let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg '/blog/2024-writing-online'
-  let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg '("gwern-2024-writing-online", "/blog/2024-writing-online")'
+  let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
+  let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
   -- print idents
-  let paths = map (\(ident,absolute) -> (ident, absolute, fromJust $ lookup ident iddb)) idents -- eg '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform#KAtgQZZyadwMitWtb")'
+  let paths = map (\(ident,absolute) -> (ident, absolute, fromJust $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
   -- print paths
   let triplets = sortByDatePublished $ map (\x@(_ident,absolute,path) -> case M.lookup path md of
                         Nothing -> error $ "generateDirectory.generateDirectoryBlog: tried to look up the annotation corresponding to a /blog/ Markdown entry, yet there was none. This should be impossible! Variables: " ++ show x ++ "; " ++ show paths ++ ";" ++ show idents ++ "; " ++ show direntries
@@ -99,8 +102,9 @@ generateDirectoryBlog md = do
                        , "status: log"
                        , "importance: 0"
                        , "css-extension: dropcaps-de-zs"
-                       , "index: True"
                        , "backlink: False"
+                       , "placeholder: True"
+                       , "index: True"
                        , "...\n"]
 
   let document = Pandoc nullMeta [list]
