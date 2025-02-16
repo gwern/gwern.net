@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-14 22:32:53 gwern"
+When:  Time-stamp: "2025-02-15 18:29:37 gwern"
 License: CC-0
 -}
 
@@ -532,7 +532,7 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
      Just x@(tle,aut,dt,_,kvs,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else Typography.titleWrap tle
            lid = let tmpID = generateID md f aut dt in
-                   if tmpID=="" then "" else T.pack "link-bibliography-" `T.append` tmpID
+                   if tmpID=="" then error ("LinkMetadata.generateAnnotationBlock: `generateID` failed to yield a non-empty ID on a link. (I'm not sure whether this should be impossible, so we are currently fatally erroring out on it to see what happens.) Input was: " ++ show x) else T.pack "link-bibliography-" `T.append` tmpID
            -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popover the second time.
            lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
            lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid

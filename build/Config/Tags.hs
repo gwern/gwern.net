@@ -163,6 +163,8 @@ tagsShort2LongRewrites =
    , ("agreeable", "psychology/personality/agreeableness"), ("agreeble", "agreeable")
    , ("intraversion", "extraversion"), ("introversion", "extraversion"), ("introverted", "extraversion"), ("extravert", "extraversion"), ("extroversion", "extraversion"), ("extroverted", "extraversion")
    , ("O", "openness"), ("C", "conscientiousness"), ("E", "extraversion"), ("A", "agreeableness"), ("N", "neuroticism"), ("IQ", "iq"), ("G", "iq"), ("rg", "genetics/heritable/correlation")
+   , ("physic", "physics"), ("pyhsics", "physics")
+   , ("marl", "reinforcement-learning/multi-agent")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

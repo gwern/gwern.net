@@ -608,3 +608,7 @@ isInflationLink :: Inline -> Bool
 isInflationLink (Link _ _ (y, _))         = isInflationURL y
 isInflationLink (Span (_, _, [(k, _)]) _) = k == "inflation"
 isInflationLink _                         = False
+
+interleave :: [a] -> [a] -> [a]
+interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
+interleave _        _        = []

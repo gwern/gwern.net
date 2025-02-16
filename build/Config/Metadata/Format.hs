@@ -1390,6 +1390,7 @@ htmlRewriteFixed =
          , (" p-level ", " <em>p</em>-level ")
          , ("P for linear trend", "<em>p</em><sub>linear trend</sub>")
          , ("P for quadratic trend", "<em>p</em><sub>quadratic trend</sub>")
+         , ("(95% CI, ", "(95% CI: ")
          , ("level-k ", "level-<em>k</em> ")
          , (" level-k", " level-<em>k</em>")
          , ("<em>b</em> = ", "β = ")

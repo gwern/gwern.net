@@ -611,6 +611,12 @@ canonicals = M.fromList
   , ("Bill Highleyman", "Wilbur H. Highleyman")
   , ("William Highleyman", "Wilbur H. Highleyman")
   , ("William H. Highleyman", "Wilbur H. Highleyman")
+  , ("DCM Liewald", "David C. M. Liewald")
+  , ("D.C.M. Liewald", "David C. M. Liewald")
+  , ("D Liewald", "David C. M. Liewald")
+  , ("D C M Liewald", "David C. M. Liewald")
+  , ("DCM. Liewald", "David C. M. Liewald")
+  , ("David Cherry McLachlan Liewald", "David C. M. Liewald")
   ]
 
 -- tests: unique
@@ -635,7 +641,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1278,15 +1284,19 @@ authorLinkDB = M.fromList $
     , ("Frank Geller", "https://scholargps.com/scholars/75086406967602/frank-geller")
     , ("Sydney A. Asdell", "https://ecommons.cornell.edu/items/52ad998f-6ad3-485f-93ea-899a0a40fe64")
     , ("Ethan Perez", "https://ethanperez.net/")
-    , ("Ethan Dyer", "https://scholar.google.com/citations?user=LWeVRdUAAAAJ&hl=en&oi=ao")
-    , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ&hl=en&oi=sra")
+    , ("Ethan Dyer", "https://scholar.google.com/citations?user=LWeVRdUAAAAJ")
+    , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ&oi=sra")
     , ("Emma C. Johnson", "https://www.emmacjohnson.com/")
     , ("Hunt Allcott", "https://scholar.google.com/citations?hl=en&user=Y1f2unMAAAAJ")
-    , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ&hl=en&oi=ao")
+    , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ")
     , ("Josh McDermott", "https://web.mit.edu/jhm/www/")
     , ("Tamay Besiroglu", "http://tamaybesiroglu.com/")
     , ("Ken Bertagnolli", "https://www.47g.org/people/ken-bertagnolli/")
     , ("Wilbur H. Highleyman", "https://www.argmin.net/p/revisiting-highleymans-data")
+    , ("David C. M. Liewald", "https://scholar.google.com/citations?user=ahaYiFMAAAAJ&hl=en&oi=ao")
+    , ("Caroline M. Nievergelt", "https://profiles.ucsd.edu/caroline.nievergelt")
+    , ("Akul Arora", "https://scholar.google.com/citations?user=zjFWUY0AAAAJ&hl=en&oi=ao")
+    , ("Adam Edward Locke", "https://scholar.google.com/citations?user=5ktn7rsAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2532,4 +2542,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean"]
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler"]

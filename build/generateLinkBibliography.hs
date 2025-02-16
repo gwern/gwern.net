@@ -118,7 +118,7 @@ generateLinkBibliographyItem _ pathParent False (f,ident,(t,_,_,_,_,_,""))  = --
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
         -- NOTE: this must include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote', otherwise it will be rewritten incorrectly when transcluded. Like in the link-bib for '/design', a href='#gwern-sidenote' would be rewritten by the transclude JS to point to the 'original within-page anchor', in this case, '/metadata/annotation/link-bibliography/%2fdesign.html', which is of course completely incorrect - we want it to point to the ID anchor in */design*.
-      prefix = if null ident then [] else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank';
+      prefix = if null ident || not (isPagePath (T.pack f)) then [] else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank';
       -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
       -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
       -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'

@@ -109,7 +109,10 @@ generateDirectoryBlog md = do
                        , "...\n"]
 
   let blogSectionTransclude = Header 1 ("", ["display-pop-not", "collapse"], []) [Str "View All Posts"]
-  let document = Pandoc nullMeta [list1, blogSectionTransclude, list2]
+  let document = Pandoc nullMeta [list1,
+                                  blogSectionTransclude,
+                                  Div ("",["abstract-collapse"],[]) [Para [Str "Expand all posts inline (in reverse chronological order):"]],
+                                  list2]
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
   case p of
@@ -126,9 +129,6 @@ generateBlogLinksByYears triplets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_
     generateBlogLinksByYear :: String -> Block
     generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_), _) -> year `isPrefixOf` dc) triplets
                                        in BulletList $ map (\(f,mi,_) -> generateBlogLink False (f,mi)) hits
-    interleave :: [a] -> [a] -> [a]
-    interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
-    interleave _        _        = []
 
 generateBlogLink :: Bool -> (FilePath, MetadataItem) -> [Block]
 generateBlogLink False (f, (tle,_,dc,_,_,_,_)) =

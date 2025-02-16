@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-02-08 20:32:51 gwern"
+# When:  Time-stamp: "2025-02-15 10:50:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -606,6 +606,10 @@ Anxiety, post-traumatic stress, and depression markedly increased worldwide duri
 In contrast, we hypothesized that training thought suppression would improve mental health. One hundred and twenty adults from 16 countries underwent 3 days of online training to suppress either fearful or neutral thoughts.
 No paradoxical increases in fears occurred. Instead, suppression reduced memory for suppressed fears and rendered them less vivid and anxiety provoking. After training, participants reported less anxiety, negative affect, and depression with the latter benefit persisting at 3 months. Participants high in trait anxiety and pandemic-related post-traumatic stress gained the largest and most durable mental health benefits.
 These findings challenge century-old wisdom that suppressing thoughts is maladaptive, offering an accessible approach to improving mental health.
+- <abstract>For decades, scholars in the social sciences and humanities have questioned the appropriateness and utility of prior review of their research by human subjects’ ethics committees. This essay seeks to organize thematically some of their published complaints and to serve as a brief restatement of the major critiques of ethics review. In particular, it argues that (1) ethics committees impose silly restrictions, (2) ethics review is a solution in search of a problem, (3) ethics committees lack expertise, (4) ethics committees apply inappropriate principles, (5) ethics review harms the innocent, and (6) better options exist.</abstract>
+For decades, scholars in the social sciences and humanities have questioned the appropriateness and utility of prior review of their research by human subjects’ ethics committees.
+This essay seeks to organize thematically some of their published complaints and to serve as a brief restatement of the major critiques of ethics review.
+In particular, it argues that (1) ethics committees impose silly restrictions, (2) ethics review is a solution in search of a problem, (3) ethics committees lack expertise, (4) ethics committees apply inappropriate principles, (5) ethics review harms the innocent, and (6) better options exist.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

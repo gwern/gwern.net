@@ -14,7 +14,7 @@ import LinkID (authorsToCite, generateURL)
 import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)
 import LinkMetadataTypes (Metadata, MetadataItem, MetadataList)
-import Utils (anyInfix, replace, sed, delete)
+import Utils (anyInfix, replace, sed)
 import Metadata.Author (authorsTruncateString)
 import Tags (validateTagsSyntax)
 
@@ -51,7 +51,7 @@ toSingleLine md x@(f,(mi@(b,c,d,_,_,tags,abst),label)) = intercalate "; "
      authorsToCite f c d,
      take 4 d,
      c,
-     urlPrefix ++ "\x1b[32m" ++ delete urlPrefix f ++ " \x1b[0m",
+     urlPrefix ++ "\x1b[32m" ++ drop (length urlPrefix) f ++ " \x1b[0m",
      show tags',
      "\x1b[35m\""++b++"\"\x1b[0m",
      " (" ++ authors ++ ")",
