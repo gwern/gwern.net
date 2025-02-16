@@ -147,6 +147,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
 -- (We also provide an `all.json` which contains all of them in reversed order, (URL,ID), for the occasional rare query-by-URL rather than query-by-ID.)
 -- Then the JS can look at the current URL `/ref/$ID`, take the first character of $ID, download the relevant JSON dictionary (<100kb on the wire), look up the corresponding URL, and display its annotation the usual way. (The prefixes are limited to the URL-safe Base-64 subset; any characters not inside that, like Unicode from foreign surnames, is put into the final entry, for '-'.)
 -- This enables stable easy links to arbitrary annotations, which currently can only be awkwardly linked as unstable section anchor-links in tag-directories.
+-- The /ref/ URLs are directly exposed to readers in the popup/popover title-bar, where they replace the original URL (which makes sense conceptually: all the other buttons in the title-bar refer to the popup/annotation itself, rather than to the contents or the URL).
 id2URLdb :: Metadata -> [(String, Path)]
 id2URLdb md = map (\(url,ident) -> (T.unpack ident,url)) $
               sort $ -- URLs are much more compressible than random IDs, so we'll sort by the value (URL) instead of key (ID), to let URLs compress better with each other & save some bytes on the wire
@@ -159,7 +160,7 @@ shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]
     alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 
     arr :: Array Int [(String,Path)]
-    arr = accumArray (\acc t -> t : acc) [] (0, 63)
+    arr = accumArray (flip (:)) [] (0, 63)
           [ (index s, (s, p)) | (s, p) <- xs ]
 
     index :: String -> Int
@@ -171,6 +172,7 @@ shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]
 tupleList2JSONString :: [(String, Path)] -> T.Text
 tupleList2JSONString xs =
   TE.decodeUtf8 . LBS.toStrict . encode $
+    -- we'll pretty-print them later with `jq` in the post-site-compilation reformatting passes
     object [ Key.fromText (T.pack key) .= T.pack path | (key, path) <- xs ]
 
 writeOutID2URLdb :: Metadata -> IO ()
@@ -178,7 +180,7 @@ writeOutID2URLdb md = do let dbl = id2URLdb md
                          let sharded = shardByCharPrefix dbl
                          let allReversed = sort $ map (\(a,b)->(b,a)) $ dbl
                          Config.Misc.cd
-                         writeUpdatedFile "id-all" ("metadata/annotation/id/all.json") (tupleList2JSONString allReversed)
+                         writeUpdatedFile "id-all" "metadata/annotation/id/all.json" (tupleList2JSONString allReversed)
                          mapM_ (\(char,shard) -> writeUpdatedFile "id-shard" ("metadata/annotation/id/" ++ [char] ++ ".json") (tupleList2JSONString shard)) sharded
 
 -- return the /ref/ URL for a specific annotation somewhere for easier linking (used in `gwa` dumps)
