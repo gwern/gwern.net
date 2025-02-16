@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.LinkArchive where
 
-import Data.Maybe (fromMaybe, isJust, fromJust)
+import Data.Char (isAlphaNum)
+import Data.Maybe (fromMaybe, isJust)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf, find, delete)
 import Utils (sed, anyInfix, anyPrefix, anySuffix, replace)
 import Network.URI (parseURI, uriAuthority, uriFragment, uriPath, uriQuery, uriRegName, uriToString, URI, URIAuth)
@@ -91,7 +92,8 @@ localizeLinktestCases = [
     , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",
        ("/doc/www/web.archive.org/6c2b9128766dab38ecadd896845cfe53920c3ea3.html", "", "https://web.archive.org/web/20230718144747if_/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html", []))
     -- LW/GW/EAF:
-    , ("https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=kuKaKje3en6bnhgFD", ("", "", "https://www.greaterwrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist/comment/kuKaKje3en6bnhgFD?format=preview&theme=classic", []))
+    , ("https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist?commentId=123aKje3en6bnhabc", ("", "", "https://www.greaterwrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist/comment/123aKje3en6bnhabc?format=preview&theme=classic", []))
+    , ("https://www.lesswrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist#kuKaKje3en6bnhgFD", ("", "", "https://www.greaterwrong.com/posts/WDcXoMdFxkSXPSrwR/n-back-news-jaeggi-2011-or-is-there-a-psychologist/comment/kuKaKje3en6bnhgFD?format=preview&theme=classic", []))
     , ("https://www.lesswrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was", ("", "", "https://www.greaterwrong.com/posts/mf5LS5pxAy6WxCFNW/what-would-you-do-if-blood-glucose-theory-of-willpower-was?format=preview&theme=classic", []))
     , ("https://www.alignmentforum.org/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than", ("", "", "https://www.greaterwrong.com/posts/PTkd8nazvH9HQpwP8/building-brain-inspired-agi-is-infinitely-easier-than?format=preview&theme=classic", []))
     , ("https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", ("", "", "https://ea.greaterwrong.com/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams?format=preview&theme=classic", []))
@@ -125,6 +127,8 @@ localizeLinkTestDB = M.fromList $
 -- transformURItoGW "https://www.lesswrong.com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar"
 -- → "https://www.greaterwrong.​com/posts/FkgsxrGf3QxhfLWHG/risks-from-learned-optimization-introduction?foo=bar&format=preview&theme=classic"
 -- > transformURItoGW "https://forum.effectivealtruism.org/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure?commentId=RLdntemEyqFLcCeb9"
+-- → "https://ea.greaterwrong​.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
+-- > transformURItoGW "https://forum.effectivealtruism.org/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure#RLdntemEyqFLcCeb9"
 -- → "https://ea.greaterwrong​.com/posts/aFYduhr9pztFCWFpz/preliminary-analysis-of-intervention-to-reduce-lead-exposure/comment/RLdntemEyqFLcCeb9?format=preview&theme=classic"
 -- > Config.LinkArchive.transformURItoGW "https://arbital.com/p/edge_instantiation/"
 -- → "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic"
@@ -166,11 +170,21 @@ transformURItoGW uri = fromMaybe uri $ do
 
     handleCommentId :: URI -> URI
     handleCommentId uri' =
-        let query = parseQuery . C8.pack $ uriQuery uri'
+        let query = parseQuery (C8.pack (uriQuery uri'))
+            frag = uriFragment uri'
+            validFrag = case frag of
+                          ('#':rest) | length rest == 17 && all isAlphaNum rest -> Just (C8.pack rest)
+                          _ -> Nothing
         in case lookup "commentId" query of
-            Just commentId -> uri' { uriPath = uriPath uri' ++ "/comment/" ++ C8.unpack (fromJust commentId)
-                                  , uriQuery = C8.unpack $ renderQuery True $ delete ("commentId", commentId) query }
-            Nothing -> uri'
+             Just (Just cid) ->
+                uri' { uriPath = uriPath uri' ++ "/comment/" ++ C8.unpack cid,
+                       uriQuery = C8.unpack (renderQuery True (delete ("commentId", Just cid) query)),
+                       uriFragment = "" }
+             _ -> case validFrag of
+                    Just cid ->
+                      uri' { uriPath = uriPath uri' ++ "/comment/" ++ C8.unpack cid,
+                             uriFragment = "" }
+                    Nothing -> uri'
 
     shouldTransform :: String -> String -> Bool
     shouldTransform hostname uri'' = isJust (findMirrorPrefix hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
@@ -1117,6 +1131,7 @@ whiteListMatchesFixed = [
       , "https://www.hoodwinked.ai/" -- interactive (game)
       , "https://www.waifu2x.net/" -- interactive (service)
       , "https://guessiclrreviews.com/" -- interactive (game)
+      , "https://www.codingfont.com/" -- interactive (tool)
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage
