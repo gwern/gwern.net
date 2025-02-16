@@ -91,8 +91,9 @@ generateDirectoryBlog md = do
   -- print triplets
   when (null triplets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
   let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head triplets
-  let list = BulletList (map (\(f,mi,_) -> generateBlogLink (f,mi)) triplets)
-  -- print list
+  let list1 = BulletList $ generateBlogLinksByYears triplets
+  let list2 = BulletList (map (\(f,mi,_) -> generateBlogLink True  (f,mi)) triplets)
+  -- print list1 >> print list2
 
   let header = unlines ["---", "title: Blog Posts"
                        , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
@@ -107,7 +108,8 @@ generateDirectoryBlog md = do
                        , "index: True"
                        , "...\n"]
 
-  let document = Pandoc nullMeta [list]
+  let blogSectionTransclude = Header 1 ("", ["display-pop-not", "collapse"], []) [Str "View All Posts"]
+  let document = Pandoc nullMeta [list1, blogSectionTransclude, list2]
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
   case p of
@@ -117,12 +119,28 @@ generateDirectoryBlog md = do
                    -- putStrLn $ T.unpack contentsNew
                    writeUpdatedFile "directory" ("blog/index.md") contentsNew
 
-generateBlogLink :: (FilePath, MetadataItem) -> [Block]
-generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
+generateBlogLinksByYears :: [(FilePath, MetadataItem,a)] -> [[Block]]
+generateBlogLinksByYears triplets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_), _) -> take 4 dc) triplets
+                                       in map (\y -> Para [Strong [Str (T.pack (y))], Str ":"] : [generateBlogLinksByYear y]) years
+  where
+    generateBlogLinksByYear :: String -> Block
+    generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_), _) -> year `isPrefixOf` dc) triplets
+                                       in BulletList $ map (\(f,mi,_) -> generateBlogLink False (f,mi)) hits
+    interleave :: [a] -> [a] -> [a]
+    interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
+    interleave _        _        = []
+
+generateBlogLink :: Bool -> (FilePath, MetadataItem) -> [Block]
+generateBlogLink False (f, (tle,_,dc,_,_,_,_)) =
   let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not"], [])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
-    [Para [Str (T.pack (dc++": ")), Strong [link]]]
+    [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
+generateBlogLink True (f, (tle,_,_,_,_,_,_)) =
+  let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not", "include-content"], [])
+                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
+  in
+    [Para [Strong [link]]]
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory newestp am md ldb sortDB dirs dir'' = do
