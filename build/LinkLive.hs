@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-02-16 20:17:29 gwern"
+When:  Time-stamp: "2025-02-16 22:55:57 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -36,7 +36,7 @@ For an independent JS NPM library implementation, see <https://github.com/Stvad/
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveP, linkLiveString, alreadyLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
+module LinkLive (linkLive, linkLiveP, wikipediaLiveP, linkLiveString, alreadyLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
 
 import Control.Monad (forM_, when, unless)
 import Data.Char (toLower)
@@ -58,7 +58,8 @@ import qualified Config.Misc as CM (userAgent)
 
 linkLiveP :: T.Text -> Bool
 linkLiveP u
-  | u `elem` overrideLinkLive  = True
+  | u `elem` C.overrideLinkLive  = True
+  | u `elem` C.overrideLinkLiveNot  = False
   | "http://" `T.isPrefixOf` u = False -- WARNING: no HTTP page can be live-link loaded by a browser visiting the HTTP*S*-only Gwern.net due to 'mixed security context'
   | "/"    `T.isPrefixOf` u    = False -- local links shouldn't match anything, but to be safe, we'll check anyway.
   | otherwise = case urlLive u of
@@ -68,7 +69,6 @@ linkLiveP u
 linkLive :: Inline -> Inline
 linkLive x@(Link (_, cl, kvs) _ (u, _))
   | "link-live-not" `elem` cl             =    x
-  | u `elem` overrideLinkLive             = aL x
   | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
   -- NOTE: special API-using links like Wikipedia or Github (or formerly Twitter) are handled by the frontend JS
   | linkLiveP u                           = aL x
@@ -84,10 +84,6 @@ alreadyLive = hasClass "link-live"
 linkLiveString :: String -> Inline
 linkLiveString u = linkLive (Link nullAttr [] (T.pack u,""))
 
--- hardwire URLs which should be live
-overrideLinkLive :: [T.Text]
-overrideLinkLive = []
-
 -- Nothing = unknown/untested; Just True = known good; Just False = known bad
 -- precedence for overrides: bad {simple, sub} > good {simple, sub} > WP > misc
 urlLive :: T.Text -> Maybe Bool
@@ -95,8 +91,8 @@ urlLive u | u'     `elem`   C.badDomainsSimple  = Just False
           | anySuffixT u'   C.badDomainsSub     = Just False
           | u'      `elem`  C.goodDomainsSimple = Just True
           | anySuffixT u'   C.goodDomainsSub    = Just True
-          | anyInfixT u C.wikipediaURLs  = wikipedia u
-          | otherwise = C.miscUrlRules u
+          | anyInfixT  u    C.wikipediaURLs     = Just $ wikipediaLiveP u
+          | otherwise                           = C.miscUrlRules u
    where u' = host u
 
 linkLivePrioritize :: IO [(Int, T.Text)]
@@ -119,8 +115,8 @@ linkLivePrioritize = do b <- readBacklinksDB
                                       TIO.appendFile C.testPage $ "\n- <" `T.append` link `T.append` ">{.archive-not .link-annotated-not .link-live}" -- NOTE: we explicitly disable any annotation with `.link-annotated-not` to ensure it pops up as a live link the first time, to save us a little effort when reviewing
 
 -- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) should be live?
-wikipedia :: T.Text -> Maybe Bool
-wikipedia u = Just $ "link-live" `elem` wpPopupClasses u
+wikipediaLiveP :: T.Text -> Bool
+wikipediaLiveP u = "link-live" `elem` wpPopupClasses u
 
 url :: T.Text -> Inline
 url u = linkLive (Link nullAttr [] (u,""))

@@ -12,6 +12,11 @@ linkLivePrioritizeBlacklist = ["omega.albany.edu"]
 linkLivePrioritizeMinimum :: Int
 linkLivePrioritizeMinimum = 3
 
+-- hardwire URLs which should/should not be live
+overrideLinkLive, overrideLinkLiveNot :: [T.Text]
+overrideLinkLive = []
+overrideLinkLiveNot = ["https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308"]
+
 wikipediaURLs :: [T.Text]
 wikipediaURLs = [".wikipedia.org"]
 
@@ -3354,6 +3359,7 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://en.wik%20ipedia.org/wiki/Va%20nishing_bird_cage"
             , "https://en.wikip%20edia.org/wiki/The_%20Prestige_(film)"
             , "https://en.wikipedia.org/wiki/Special:Random"
+            , "https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308"
             , "https://eprints.whiterose.ac.uk/97780/"
             , "https://serendipityrecs.com/"
             , "https://ergodox-ez.com/"
