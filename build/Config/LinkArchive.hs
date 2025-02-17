@@ -8,10 +8,11 @@ import Utils (sed, anyInfix, anyPrefix, anySuffix, replace)
 import Network.URI (parseURI, uriAuthority, uriFragment, uriPath, uriQuery, uriRegName, uriToString, URI, URIAuth)
 import Network.HTTP.Types.URI (parseQuery, renderQuery)
 import qualified Data.ByteString.Char8 as C8 (pack, unpack)
-import qualified Data.Text as T (Text)
+import qualified Data.Text as T (pack, Text)
 import qualified Data.Map.Strict as M (fromList)
 
 import LinkMetadataTypes (ArchiveMetadata, hasHTMLSubstitute)
+import LinkLive (linkLiveP)
 
 archiveDelay :: Integer
 archiveDelay = 60
@@ -31,36 +32,43 @@ isCheapArchive url = f url || f (transformURLsForArchiving url)
 -- In the case of OpenReview, the `forum?id=` is the peer reviews, which are worth reading, but we'd like to provide the
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 -- (Hypothetically, we could do Reddit.com → Old.Reddit.com, or LW → GW rewrites this way too.)
+-- NOTE: for `data-url-iframe`, the URLs *must* be known to be valid
 transformURLsForArchiving, -- data-url-archive
   transformURLsForMobile, -- data-href-mobile
   transformURLsForLiveLinking :: String -> String -- data-url-iframe
-transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
-                            . replace "https://openreview.net/forum" "https://openreview.net/pdf"
+transformURLsForArchiving u   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2"
+                            $ sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3"
+                            $ replace "https://openreview.net/forum" "https://openreview.net/pdf"
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
-                            . replace "https://www.reddit.com" "https://old.reddit.com"
-                            . replace "https://x.com/" "http://localhost:8081/"
-                            . replace "https://medium.com" "https://www.freedium.cfd" -- clean Medium frontend; NOTE: we use <freedium.cfd> instead of <scribe.rip> because Scribe (by design) does not cache or save content, only proxies to Medium, so once a Medium article is unpredictably deleted/paywalled, a working Scribe mirror immediately breaks. Freedium will keep working.
-                            . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
-                            . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
-                            . transformURItoGW
+                            $ replace "https://www.reddit.com" "https://old.reddit.com"
+                            $ replace "https://x.com/" "http://localhost:8081/"
+                            $ replace "https://medium.com" "https://www.freedium.cfd" -- clean Medium frontend; NOTE: we use <freedium.cfd> instead of <scribe.rip> because Scribe (by design) does not cache or save content, only proxies to Medium, so once a Medium article is unpredictably deleted/paywalled, a working Scribe mirror immediately breaks. Freedium will keep working.
+                            $ sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
+                            $ sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
+                            $ transformURItoGW u
 
 -- `data-href-mobile`:
-transformURLsForMobile    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/html/\\1?fallback=original\\2" .
-  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/html/\\1/\\2?fallback=original\\3" . -- handle oddities like hep-ph
-  replace "https://x.com" "https://nitter.net"
+transformURLsForMobile   u    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/html/\\1?fallback=original\\2"
+  $ sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
+  $ replace "https://x.com" "https://nitter.net" u
 
 -- `data-url-iframe`:
-transformURLsForLiveLinking   = replace "https://www.reddit.com" "https://old.reddit.com" . -- Old Reddit is much politer to send people to
+ -- replace "https://www.reddit.com" "https://old.reddit.com" $ -- Old Reddit is much politer to send people to
   -- make IA book/item pages pop up nicer in live-links, by enabling JS, so theater-mode works.
-  (\u -> if u `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u && not (u `anyInfix` ["?view=theater"]) then u ++ "?view=theater" else u)
---  . addAmazonAffiliate
---  . addGithubReadme
-  . sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
-  . transformURItoGW
-  . transformWPtoMobileWP
-  . sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2"
-  -- have HTML substitutes (not syntax-highlighted versions); see LinkMetadata.isDocumentViewable filetypes
-  . (\u -> if not $ hasHTMLSubstitute u then u else u ++ ".html")
+--  $ addAmazonAffiliate
+--  $ addGithubReadme
+transformURLsForLiveLinking u =
+ let urlFinal =
+       archiveTheater
+        $ sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
+        $ transformURItoGW
+        $ transformWPtoMobileWP
+        $ sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2"
+        -- have HTML substitutes (not syntax-highlighted versions); see LinkMetadata.isDocumentViewable filetypes
+        $ if not (hasHTMLSubstitute u) then u else u ++ ".html"
+ in if u == urlFinal || head urlFinal == '/' || linkLiveP (T.pack urlFinal) then urlFinal
+     else error $ "LinkArchive.transformURLsForLiveLinking: link-live testing of a changed URL failed! 'data-url-iframe' URLs are required to be valid live links or else they don't work. Input/output was: " ++ show (u, urlFinal) -- only check the rare modified URL, to avoid the performance hit.
+  where archiveTheater u' = if u' `anyPrefix` ["https://archive.org/details/"]    && '#' `notElem` u' && not (u' `anyInfix` ["?view=theater"]) then u' ++ "?view=theater" else u'
 
 -- called by `LinkArchive.testLinkRewrites`:
 localizeLinktestCases :: [(T.Text, -- original URL
@@ -77,15 +85,15 @@ localizeLinktestCases = [
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://x.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
     , ("https://x.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", []))
-    , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://www.freedium.cfd/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
+--    , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://www.freedium.cfd/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
-    , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
+    -- , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
     , ("https://darkrunescape.fandom.com/wiki/Doubling_money_scam", ("", "", "https://antifandom.com/darkrunescape/wiki/Doubling_money_scam", []))
     , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433?view=theater", []))
-    , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
-    , ("https://github.com/nevesnunes/z80-sans", ("", "", "https://github.com/nevesnunes/z80-sans#readme", []))
-    , ("https://github.com/mame/quine-relay", ("", "", "https://github.com/mame/quine-relay#readme", []))
+--     , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
+--    , ("https://github.com/nevesnunes/z80-sans", ("", "", "https://github.com/nevesnunes/z80-sans#readme", []))
+--    , ("https://github.com/mame/quine-relay", ("", "", "https://github.com/mame/quine-relay#readme", []))
     , ("https://en.wikipedia.org/wiki/George_Washington", ("", "", "https://en.m.wikipedia.org/wiki/George_Washington#bodyContent", []))
     , ("https://web.archive.org/web/20200928174939/http://thismarketingblogdoesnotexist.com/", ("", "", "https://web.archive.org/web/20200928174939if_/http://thismarketingblogdoesnotexist.com/", []))
     , ("https://web.archive.org/web/20230718144747/https://frc.ri.cmu.edu/~hpm/project.archive/robot.papers/2004/Predictions.html",

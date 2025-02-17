@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-01-07 17:39:36 gwern"
+When:  Time-stamp: "2025-02-16 20:17:29 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -36,7 +36,7 @@ For an independent JS NPM library implementation, see <https://github.com/Stvad/
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveString, alreadyLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
+module LinkLive (linkLive, linkLiveP, linkLiveString, alreadyLive, linkLiveTest, linkLiveTestHeaders, urlLive, linkLivePrioritize) where
 
 import Control.Monad (forM_, when, unless)
 import Data.Char (toLower)
@@ -56,19 +56,26 @@ import Utils (addClass, hasClass, host, anySuffixT, printRed, anyInfixT, ensure,
 import qualified Config.LinkLive as C
 import qualified Config.Misc as CM (userAgent)
 
+linkLiveP :: T.Text -> Bool
+linkLiveP u
+  | u `elem` overrideLinkLive  = True
+  | "http://" `T.isPrefixOf` u = False -- WARNING: no HTTP page can be live-link loaded by a browser visiting the HTTP*S*-only Gwern.net due to 'mixed security context'
+  | "/"    `T.isPrefixOf` u    = False -- local links shouldn't match anything, but to be safe, we'll check anyway.
+  | otherwise = case urlLive u of
+                  Just True -> True
+                  _         -> False
+
 linkLive :: Inline -> Inline
-linkLive x@(Link (_,cl,kvs) _ (u, _))
- | "link-live-not" `elem` cl = x
- | u `elem` overrideLinkLive = aL x
- | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
- | "http://" `T.isPrefixOf` u   = x -- WARNING: no HTTP page can be live-link loaded by a browser visiting HTTP*S*-only Gwern.net due to 'mixed security context'
- | "/"    `T.isPrefixOf` u   = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
- -- NOTE: special API-using links like Wikipedia or Github (or formerly Twitter) are handled by the frontend JS
- | otherwise = case urlLive u of
-                 Just True -> aL x
-                 _         -> x
- where aL :: Inline -> Inline
-       aL = addClass "link-live"
+linkLive x@(Link (_, cl, kvs) _ (u, _))
+  | "link-live-not" `elem` cl             =    x
+  | u `elem` overrideLinkLive             = aL x
+  | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
+  -- NOTE: special API-using links like Wikipedia or Github (or formerly Twitter) are handled by the frontend JS
+  | linkLiveP u                           = aL x
+  | otherwise                             =    x
+  where
+    aL :: Inline -> Inline
+    aL = addClass "link-live"
 linkLive x = x
 
 alreadyLive :: Inline -> Bool

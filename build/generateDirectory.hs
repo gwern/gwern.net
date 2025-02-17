@@ -132,13 +132,13 @@ generateBlogLinksByYears triplets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_
 
 generateBlogLink :: Bool -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateBlogLink _ False (f, (tle,_,dc,_,_,_,_)) =
-  let link = Link ("", ["link-live", "id-not", "link-annotated-not", "icon-not"], [])
+  let link = Link ("", ["id-not", "link-annotated-not", "icon-not"], [])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
     [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
 generateBlogLink firstp True (f, (tle,_,_,_,_,_,_)) =
   let link = Link (""
-                  , ["link-live", "id-not", "link-annotated-not", "icon-not", "include-content"]++
+                  , ["id-not", "link-annotated-not", "icon-not", "include-content"]++
                     (if firstp then ["include-even-when-collapsed"] else []) -- Micro-optimization in annotation evaluation order: force the very first entry to be pre-rendered, for a faster popup if they hover over the logical entry in the first section (ie. the first one), or to mask how long it takes to load them all if they uncollapse the second section.
                   , [])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")

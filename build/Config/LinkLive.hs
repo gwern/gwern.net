@@ -186,6 +186,8 @@ goodDomainsSimple =
     , "gpt3demo.com"
     , "gradientscience.org"
     , "greaterwrong.com"
+    , "ea.greaterwrong.com"
+    , "arbital.greaterwrong.com"
     , "gutenberg.ca"
     , "gutenberg.net.au"
     , "guzey.com"
@@ -3091,6 +3093,8 @@ goodLinks =
             , "https://docs.midjourney.com/docs/chaos"
             , "https://www.chiark.greenend.org.uk/~martinh/poems/complete_housman.html"
             , "https://acoup.blog/2020/06/19/collections-the-battle-of-helms-deep-part-viii-the-mind-of-saruman/"
+            , "https://ea.greaterwrong.com/posts/123z5mgQdiv57wabc/ingredients-for-creating-disruptive-research-teams?format=preview&theme=classic"
+            , "https://arbital.greaterwrong.com/p/fake_url/?format=preview&theme=classic"
             ]
 
 badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
