@@ -210,8 +210,8 @@ Annotations = { ...Annotations,
 			"link-annotated-partial"
 		].includes(titleLinkClass) == false)));
 
-		//	Special handling for links with separate ‘HTML’ URLs.
-		if (titleLink.dataset.urlHtml)
+		//	Special handling for links with separate ‘iframe’ URLs.
+		if (titleLink.dataset.urlIframe)
 			titleLinkClasses.push("link-live");
 
 		//	Data attributes for the title link.

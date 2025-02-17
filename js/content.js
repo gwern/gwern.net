@@ -414,7 +414,7 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
+                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
 
                 return (   url.hostname != location.hostname
                         && link.classList.contains("link-live"));
@@ -471,7 +471,7 @@ Content = {
 //              }
                 //  END EXPERIMENTAL SECTION
 
-                let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
+                let embedSrc = link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href;
                 let additionalAttributes = [ ];
 
                 //  Determine sandbox settings.
@@ -1653,7 +1653,7 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href);
+                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
 
                 //  Maybe it’s a foreign link?
                 if (url.hostname != location.hostname)
@@ -1671,7 +1671,7 @@ Content = {
             isSliceable: false,
 
             contentFromLink: (link) => {
-                let embedSrc = link.dataset.urlArchive ?? link.dataset.urlHtml ?? link.href;
+                let embedSrc = link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href;
                 let additionalAttributes = [ ];
 
                 //  Determine sandbox settings.
