@@ -351,7 +351,7 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (delete ".md") . filter ('#' `notElem`)) files
+                   let files'          = (sort . filter (\f -> not $ anySuffix f ["index", ".tar", ".webm-poster.jpg", ".mp4-poster.jpg"]) . map (sed "\\.md$" "") . filter ('#' `notElem`)) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/doc/ai/scaling/hardware/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/doc/ai/scaling/hardware/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/doc/ai/scaling/hardware/2021-norrie.pdf' → `('/doc/ai/scaling/hardware/2021-norrie.pdf#google',_)`. This is also true of PDF page-anchors.
                    linkbiblios  <- mapM (fmap snd . getLinkBibLinkCheck . fst) fileAnnotationsMi
