@@ -10211,21 +10211,27 @@ function includeContent(includeLink, content) {
 		/*	Any kind of transcluded content can be contained within these types
 			of block containers.
 		 */
-        let allowedParentTags = [ "SECTION", "DIV", "BLOCKQUOTE" ];
+        let allowedParentSelector = [
+        	"section",
+        	"blockquote",
+        	"div",
+        	".include-wrapper"
+        ];
 
 		/*	If the transcluded content doesn’t contain entire sections (with
 			headings), then it can be contained within some additional types of
 			block container elements.
 		 */
         if (wrapper.querySelector("section") == null)
-        	allowedParentTags.push("LI", "FIGCAPTION");
+        	allowedParentSelector.push("li", "figcaption");
 
 		/*	If need be, shift the wrapper up until it is no longer contained
 			within a forbidden type of parent element (maintaining strict node
 			sequence in the process).
 		 */
+		allowedParentSelector = allowedParentSelector.join(", ");
         while (   wrapper.parentElement != null
-               && allowedParentTags.includes(wrapper.parentElement.tagName) == false
+               && wrapper.parentElement.matches(allowedParentSelector) == false
                && wrapper.parentElement.parentElement != null) {
 			/*	Retain a reference to where in the node sequence of its current
 				parent element the wrapper is, prior to shifting up.
