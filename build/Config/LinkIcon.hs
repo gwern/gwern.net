@@ -20,34 +20,47 @@ prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
-prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
-                              , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
+prioritizeLinkIconBlackList =
+  ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
+ , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
  , "www.joelonsoftware.com", "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
  , "blog.johantibell.com", "humanvarieties.org", "cognitivefun.net", "annals.org", "www.replicatedtypo.com"
  , "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "www.incompleteideas.net"
  , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "alumni.media.mit.edu", "www.eugenewei.com", "karpathy.github.io", "demos.obormot.net"
+ , "www.wakapoetry.net", "www.standard.co.uk"
+ , "www.links.org", "shkspr.mobi"
+ , "repository.upenn.edu", "latanyasweeney.org", "highnoongmt.wordpress.com"
 
 -- TODO: icon+color:
  , "danwang.co" -- 'D' + red
  , "www.worldcat.org" -- spiral icon + blue
  , "www.buzzfeed.com" -- BF + red
+ , "www.math.uwaterloo.ca" -- UW + red
+ , "sourceforge.net" -- flame-in-diamond + orange-red
+ , "proceedings.neurips.cc", "neurips.cc" -- NIPS + blue
+
 -- color-only:
  , "www.nausicaa.net" -- blue
  , "blog.acolyer.org" -- blue
  , "arbtt.nomeata.de" -- blue
+ , "polisen.se" -- orange?
+
 -- icon-only:
  , "www.thestranger.com" -- thick S - MATHEMATICAL SCRIPT CAPITAL S maybe? 𝒮
+ , "www.wunderground.com" -- wu
+ , "www.rte.ie" -- RTϵ
+ , "www.orlandosentinel.com" -- OS
+ , "www.mercurynews.com" -- 𝔐
+ , "ro.ecu.edu.au" -- ECU
+
  -- TODO:
- , "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com"
- , "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au"
- , "repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com"
  , "ralphmerkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org"
  , "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu"
- , "www.austlii.edu.au", "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live"
+ , "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live"
  , "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu"
  , "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com"
  , "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com"
- , "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org"
+ , "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "esolangs.org"
  , "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu"
  , "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org"
  , "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"
@@ -55,7 +68,7 @@ prioritizeLinkIconBlackList = ["lilianweng.github.io", "www.smartpowders.com", "
  , "mattmahoney.net", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"
  , "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
- , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org", "linkinghub.elsevier.com"
+ , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org"
  , "www.cs.cmu.edu", "minimaxir.com", "dynomight.net", "www.spencergreenberg.com", "www.ed.ac.uk"
  , "www.researchgate.net", "www.chiark.greenend.org.uk", "www.rug.nl", "figshare.com"]
 ------------------------------------------------------------------------------------------
@@ -393,7 +406,7 @@ linkIconRulesQuad u
  | u'' u "www.pnas.org" = ("PNAS", "text,quad", "#1f75b9") -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.] color: blue
  | u'' u "www.rand.org" = ("RAND", "text,quad,sans", "#751ddb") -- color: wine-red; TODO: white-on-red text background
  | u' u ".sagepub.com" = ("SAGE", "text,quad,sans", "#046ff8") -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com; color: dark blue; TODO: white-on-blue text background
- | u'' u "publicdomainreview.org" = ("T PDR", "text,quad", "")
+ | u'' u "publicdomainreview.org" = ("T \8288PDR", "text,quad", "")
  | u' u "xkcd.com" = ("XKCD", "text,quad,sans", "") -- covers explainxkcd.com, what-if.xkcd.com…
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
@@ -921,7 +934,7 @@ linkIconTestUnitsText =
          , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad", "")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad", "")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
-         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "T PDR","text,quad", "")
+         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "T \8288PDR","text,quad", "")
          , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad", "")
          , ("https://read.atavist.com/american-hippopotamus", "Atvt", "text,quad", "")
          , ("https://tasvideos.org/3653M", "TASV", "text,quad", "")

@@ -198,7 +198,7 @@ siteBlackList = [
           "www.alljapaneseallthetime.com", "www.alternatehistory.com", "www.alzchem.com", "www.amazon.co.jp", "www.amazon.com",
           "www.ams.org", "www.anandtech.com", "www.andrew.cmu.edu", "www.andzuck.com", "www.angelfire.com",
           "www.animeigo.com", "www.animenewsnetwork.com", "www.animenewsservice.com", "www.antipope.org", "www.antiquark.com",
-          "www.antonhowes.com", "www.apa.org", "www.archive-it.org", "www.austlii.edu.au", "www.avclub.com",
+          "www.antonhowes.com", "www.apa.org", "www.archive-it.org", "www.avclub.com",
           "www.avmf.org", "www.awe.gov.au", "www.backblaze.com", "www.baen.com", "www.baka-tsuki.org",
           "www.baltimoresun.com", "www.bartleby.com", "www.bayesianinvestor.com", "www.bbc.com", "www.bbc.co.uk",
           "www.behance.net", "www.belfastlive.co.uk", "www.belfasttelegraph.co.uk", "www.bemmu.com", "www.benkuhn.net",
@@ -492,7 +492,7 @@ siteBlackList = [
           , "www.whitehouse.gov","www.yahoo.com","www.cognition.ai","civitai.com"
           , "members.madasafish.com","isfdb.org","cwe.mitre.org","ai.meta.com"
           , "www.sec.gov","www.chess.com", "nlp.stanford.edu", "sashachapin.substack.com", "homes.cs.washington.edu"
-          , "linkinghub.elsevier.com", "fonts.google.com", "www.ed.ac.uk"
+          , "fonts.google.com", "www.ed.ac.uk"
           , "3quarksdaily.com", "research.com", "dynomight.net", "www.mercatus.org"
           , "reactormag.com","pure.au.dk","news.sankakucomplex.com", "ilovetypography.com"
           , "pmc.ncbi.nlm.nih.gov","www.chiark.greenend.org.uk","docs.midjourney.com","www.snopes.com","news.mit.edu","ki.se", "www.mrc-epid.cam.ac.uk", "backend.orbit.dtu.dk", "scholarship.law.upenn.edu"]
