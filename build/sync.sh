@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-16 11:23:56 gwern"
+# When:  Time-stamp: "2025-02-16 18:10:46 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -151,6 +151,17 @@ else
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
+
+          # update all LW comment links from comment ID anchors to explicit '?commentId=' queries, for more reliable linking
+          gf 'https://www.lesswrong.com/' ./metadata/backlinks.hs \
+            | cut --delimiter='"' --field=2 \
+            | sort --unique \
+            | gfv -e '?commentId=' -e '#comments' \
+            | ge '#[A-Za-z0-9]{17}$' | while read -r URL; do
+              NEW_URL="${url/\#/?commentId=}"
+              gwsed "$URL" "$NEW_URL"
+          done
+
         ) &> /dev/null &
     sed -i -e 's/ data-link-?[Tt]ags="[a-z0-9 \/-]\+">/>/' ./metadata/*.gtx;
     fi

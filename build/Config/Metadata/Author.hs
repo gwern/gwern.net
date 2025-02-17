@@ -1285,7 +1285,7 @@ authorLinkDB = M.fromList $
     , ("Sydney A. Asdell", "https://ecommons.cornell.edu/items/52ad998f-6ad3-485f-93ea-899a0a40fe64")
     , ("Ethan Perez", "https://ethanperez.net/")
     , ("Ethan Dyer", "https://scholar.google.com/citations?user=LWeVRdUAAAAJ")
-    , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ&oi=sra")
+    , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ")
     , ("Emma C. Johnson", "https://www.emmacjohnson.com/")
     , ("Hunt Allcott", "https://scholar.google.com/citations?hl=en&user=Y1f2unMAAAAJ")
     , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ")
@@ -1293,10 +1293,14 @@ authorLinkDB = M.fromList $
     , ("Tamay Besiroglu", "http://tamaybesiroglu.com/")
     , ("Ken Bertagnolli", "https://www.47g.org/people/ken-bertagnolli/")
     , ("Wilbur H. Highleyman", "https://www.argmin.net/p/revisiting-highleymans-data")
-    , ("David C. M. Liewald", "https://scholar.google.com/citations?user=ahaYiFMAAAAJ&hl=en&oi=ao")
+    , ("David C. M. Liewald", "https://scholar.google.com/citations?user=ahaYiFMAAAAJ")
     , ("Caroline M. Nievergelt", "https://profiles.ucsd.edu/caroline.nievergelt")
-    , ("Akul Arora", "https://scholar.google.com/citations?user=zjFWUY0AAAAJ&hl=en&oi=ao")
-    , ("Adam Edward Locke", "https://scholar.google.com/citations?user=5ktn7rsAAAAJ&hl=en&oi=ao")
+    , ("Akul Arora", "https://scholar.google.com/citations?user=zjFWUY0AAAAJ")
+    , ("Adam Edward Locke", "https://scholar.google.com/citations?user=5ktn7rsAAAAJ")
+    , ("Zhiyuan Liu", "https://nlp.csai.tsinghua.edu.cn/~lzy/")
+    , ("Yuntao Bai", "https://scholar.google.com/citations?user=r7GUEVsAAAAJ")
+    , ("William Fedus", "https://scholar.google.com/citations?user=-ZfwQOkAAAAJ")
+    , ("Tristan Yang", "https://scholar.google.com/scholar?q=Tristan%20Yang")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

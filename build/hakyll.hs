@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-11 18:01:20 gwern"
+When: Time-stamp: "2025-02-16 19:39:03 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -82,7 +82,7 @@ main =
                  when slow $ preprocess testAll
 
                  -- for '/ref/' cache updating & expiring:
-                 when slow $  preprocess $ writeOutID2URLdb meta
+                 preprocess $ writeOutID2URLdb meta
                  timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
 
                  preprocess $ writeOutBlogEntries meta

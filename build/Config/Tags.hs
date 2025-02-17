@@ -165,6 +165,7 @@ tagsShort2LongRewrites =
    , ("O", "openness"), ("C", "conscientiousness"), ("E", "extraversion"), ("A", "agreeableness"), ("N", "neuroticism"), ("IQ", "iq"), ("G", "iq"), ("rg", "genetics/heritable/correlation")
    , ("physic", "physics"), ("pyhsics", "physics")
    , ("marl", "reinforcement-learning/multi-agent")
+   , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
