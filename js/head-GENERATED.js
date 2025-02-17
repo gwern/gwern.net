@@ -1392,39 +1392,56 @@ if (typeof window.GW == "undefined")
     window.GW = { };
 
 
-/*****************/
-/* MEDIA QUERIES */
-/*****************/
+/***********/
+/* HELPERS */
+/***********/
 
-GW.mediaQueries = {
-    mobileWidth:           matchMedia("(max-width: 649px)"),
-    systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
-    hoverAvailable:        matchMedia("only screen and (hover: hover) and (pointer: fine)"),
-    portraitOrientation:   matchMedia("(orientation: portrait)"),
-    printView:             matchMedia("print")
+/*******************************************************************************/
+/*  Product of two string arrays. (Argument can be a string, which is equivalent
+    to passing an array with a single string member.)
+    Returns array whose members are all results of concatenating each left hand
+    array string with each right hand array string, e.g.:
+
+        [ "a", "b" ].π([ "x", "y" ])
+
+    will return:
+
+        [ "ax", "ay", "bx", "by" ]
+
+    Any non-string argument must be iterable, else null is returned. Any
+    members of a passed array (or other iterable object), whatever their types,
+    are stringified and interpolated into the resulting product strings.
+ */
+Array.prototype.π = function (strings) {
+    if (typeof strings == "string")
+        strings = [ strings ];
+
+    if (!!strings[Symbol.iterator] == "false")
+        return null;
+
+    let product = [ ];
+    for (let lhs of this) {
+        for (let rhs of strings) {
+            product.push(`${lhs}${rhs}`);
+        }
+    }
+    return product;
 };
 
-GW.isMobile = () => {
-    /*  We consider a client to be mobile if one of two conditions obtain:
-        1. JavaScript detects touch capability, AND viewport is narrow; or,
-        2. CSS does NOT detect hover capability.
-     */
-    return (   (   ("ontouchstart" in document.documentElement)
-                && GW.mediaQueries.mobileWidth.matches)
-            || !GW.mediaQueries.hoverAvailable.matches);
-};
+/*****************************************************************************/
+/*  As Array.π, but applies sequentially to each argument. (First argument may
+    be a string, which is impossible with the Array member version.)
+ */
+function _π(...args) {
+    if (args.length == 0)
+        return [ ];
 
-GW.isFirefox = () => {
-    return (navigator.userAgent.indexOf("Firefox") > 0);
-};
+    let product = [ "" ];
+    for (let arg of args)
+        product = product.π(arg);
 
-GW.isTorBrowser = () => {
-	return (("serviceWorker" in navigator) == false);
-};
-
-GW.isX11 = () => {
-    return (navigator.userAgent.indexOf("X11") > 0);
-};
+    return product;
+}
 
 
 /********************/
@@ -1483,6 +1500,41 @@ function GWServerLogError(errorString, errorType) {
     doAjax({ location: `${location.origin}/404-error-` + fixedEncodeURIComponent(errorString) });
     GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
 }
+
+
+/*****************/
+/* MEDIA QUERIES */
+/*****************/
+
+GW.mediaQueries = {
+    mobileWidth:           matchMedia("(max-width: 649px)"),
+    systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
+    hoverAvailable:        matchMedia("only screen and (hover: hover) and (pointer: fine)"),
+    portraitOrientation:   matchMedia("(orientation: portrait)"),
+    printView:             matchMedia("print")
+};
+
+GW.isMobile = () => {
+    /*  We consider a client to be mobile if one of two conditions obtain:
+        1. JavaScript detects touch capability, AND viewport is narrow; or,
+        2. CSS does NOT detect hover capability.
+     */
+    return (   (   ("ontouchstart" in document.documentElement)
+                && GW.mediaQueries.mobileWidth.matches)
+            || !GW.mediaQueries.hoverAvailable.matches);
+};
+
+GW.isFirefox = () => {
+    return (navigator.userAgent.indexOf("Firefox") > 0);
+};
+
+GW.isTorBrowser = () => {
+	return (("serviceWorker" in navigator) == false);
+};
+
+GW.isX11 = () => {
+    return (navigator.userAgent.indexOf("X11") > 0);
+};
 
 
 /************************/
@@ -1546,78 +1598,6 @@ function cancelDoWhenMatchMedia(name) {
         mediaQuery.removeListener(GW.mediaQueryResponders[name]);
 
     GW.mediaQueryResponders[name] = null;
-}
-
-
-/***********/
-/* HELPERS */
-/***********/
-
-/*******************************************************************************/
-/*  Product of two string arrays. (Argument can be a string, which is equivalent
-    to passing an array with a single string member.)
-    Returns array whose members are all results of concatenating each left hand
-    array string with each right hand array string, e.g.:
-
-        [ "a", "b" ].π([ "x", "y" ])
-
-    will return:
-
-        [ "ax", "ay", "bx", "by" ]
-
-    Any non-string argument must be iterable, else null is returned. Any
-    members of a passed array (or other iterable object), whatever their types,
-    are stringified and interpolated into the resulting product strings.
- */
-Array.prototype.π = function (strings) {
-    if (typeof strings == "string")
-        strings = [ strings ];
-
-    if (!!strings[Symbol.iterator] == "false")
-        return null;
-
-    let product = [ ];
-    for (let lhs of this) {
-        for (let rhs of strings) {
-            product.push(`${lhs}${rhs}`);
-        }
-    }
-    return product;
-};
-
-/*****************************************************************************/
-/*  As Array.π, but applies sequentially to each argument. (First argument may
-    be a string, which is impossible with the Array member version.)
- */
-function _π(...args) {
-    if (args.length == 0)
-        return [ ];
-
-    let product = [ "" ];
-    for (let arg of args)
-        product = product.π(arg);
-
-    return product;
-}
-
-
-/*************/
-/* DOCUMENTS */
-/*************/
-
-/*  Return the location (URL) associated with a document.
-    (Document|DocumentFragment) => URL
- */
-function baseLocationForDocument(doc) {
-	if (doc == null) {
-		return null;
-	} else if (doc == document) {
-        return URLFromString(location.href);
-    } else if (doc.baseLocation) {
-        return URLFromString(doc.baseLocation.href);
-    } else {
-        return null;
-    }
 }
 
 
@@ -2618,16 +2598,18 @@ function doWhenDOMContentLoaded(f) {
 
 /*	Run the given function immediately if an element specified by a given
 	selector exists; otherwise, add a mutation observer to run the given 
-	function as soon as such an element is added to the document.
+	function as soon as such an element is added to the document. The element
+	is passed as an argument to the called function.
  */
 function doWhenElementExists(f, selector) {
 	if (document.querySelector(selector) != null) {
 		f();
 	} else {
         let observer = new MutationObserver((mutationsList, observer) => {
-            if (document.querySelector(selector) != null) {
+        	let element = document.querySelector(selector);
+            if (element != null) {
                 observer.disconnect();
-                f();
+                f(element);
             }
         });
 
@@ -2653,23 +2635,8 @@ function doWhenMainExists(f) {
 
 /*	Define convenient alias.
  */
-doWhenMainExists(() => {
-	document.main = document.querySelector("main");
-});
-
-
-/*****************/
-/* SPECIAL PAGES */
-/*****************/
-
-/*	Placeholder page for ID-based content loading.
- */
-doWhenMainExists(() => {
-	if (location.pathname.startsWith("/ref/")) {
-		document.querySelectorAll("title, header h1").forEach(element => {
-			element.innerHTML = "";
-		});
-	}
+doWhenMainExists((main) => {
+	document.main = main;
 });
 
 
@@ -4852,6 +4819,41 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	});
 }, { blockLayout: false });
 
+
+/***************************/
+/* ADDITIONAL EARLY LAYOUT */
+/***************************/
+
+/*************************************************/
+/*	Placeholder page for ID-based content loading.
+ */
+doWhenMainExists(() => {
+	if (location.pathname.startsWith("/ref/")) {
+		document.querySelectorAll("title, header h1").forEach(element => {
+			element.innerHTML = "";
+		});
+	}
+});
+
+/**************************************************************************/
+/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also 
+	hide if one entry.)
+ */
+function updateTOCVisibility(TOC) {
+	if (TOC == null)
+		return;
+
+    let numEntries = TOC.querySelectorAll("li").length;
+    if (   (   TOC.id == "TOC"
+            && numEntries <= 1)
+        || numEntries == 0) {
+        TOC.classList.toggle("hidden", true);
+    } else {
+        TOC.classList.toggle("hidden", false);
+    }
+}
+
+doWhenElementExists(updateTOCVisibility, "#TOC");
 /*	This code is part of dark-mode.js by Said Achmiz.
 	See the file `dark-mode.js` for license and more information.
  */

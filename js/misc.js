@@ -600,6 +600,26 @@ function renderProgressPercentageIcon(progressIndicator) {
 }
 
 
+/*************/
+/* DOCUMENTS */
+/*************/
+
+/*  Return the location (URL) associated with a document.
+    (Document|DocumentFragment) => URL
+ */
+function baseLocationForDocument(doc) {
+	if (doc == null) {
+		return null;
+	} else if (doc == document) {
+        return URLFromString(location.href);
+    } else if (doc.baseLocation) {
+        return URLFromString(doc.baseLocation.href);
+    } else {
+        return null;
+    }
+}
+
+
 /*********/
 /* LINKS */
 /*********/

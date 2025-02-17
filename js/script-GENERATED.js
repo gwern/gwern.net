@@ -1157,6 +1157,26 @@ function renderProgressPercentageIcon(progressIndicator) {
 }
 
 
+/*************/
+/* DOCUMENTS */
+/*************/
+
+/*  Return the location (URL) associated with a document.
+    (Document|DocumentFragment) => URL
+ */
+function baseLocationForDocument(doc) {
+	if (doc == null) {
+		return null;
+	} else if (doc == document) {
+        return URLFromString(location.href);
+    } else if (doc.baseLocation) {
+        return URLFromString(doc.baseLocation.href);
+    } else {
+        return null;
+    }
+}
+
+
 /*********/
 /* LINKS */
 /*********/
@@ -17286,8 +17306,8 @@ addContentLoadHandler(GW.contentLoadHandlers.disableTOCLinkDecoration = (eventIn
 addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventInfo) => {
     GWLog("rewriteDirectoryIndexTOC", "rewrite.js", 1);
 
-    let TOC = eventInfo.container.querySelector("#TOC");
-    let seeAlsoSection = eventInfo.container.querySelector("#see-also");
+    let TOC = document.querySelector("#TOC");
+    let seeAlsoSection = document.querySelector("#see-also");
 
     if (   TOC == null
         || seeAlsoSection == null)
@@ -17364,21 +17384,6 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 		}
 	});
 }, "rewrite", (info) => (info.container == document.main));
-
-/*******************************************************************************/
-/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also hide
-    if one entry.)
- */
-function updateTOCVisibility(TOC) {
-    let numEntries = TOC.querySelectorAll("li").length;
-    if (   (   TOC.id == "TOC"
-            && numEntries <= 1)
-        || numEntries == 0) {
-        TOC.classList.toggle("hidden", true);
-    } else {
-        TOC.classList.toggle("hidden", false);
-    }
-}
 
 /************************************************************************/
 /*  If the table of contents has but one entry (or none at all), hide it.

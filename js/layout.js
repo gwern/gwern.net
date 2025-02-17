@@ -1478,3 +1478,38 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	});
 }, { blockLayout: false });
 
+
+/***************************/
+/* ADDITIONAL EARLY LAYOUT */
+/***************************/
+
+/*************************************************/
+/*	Placeholder page for ID-based content loading.
+ */
+doWhenMainExists(() => {
+	if (location.pathname.startsWith("/ref/")) {
+		document.querySelectorAll("title, header h1").forEach(element => {
+			element.innerHTML = "";
+		});
+	}
+});
+
+/**************************************************************************/
+/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also 
+	hide if one entry.)
+ */
+function updateTOCVisibility(TOC) {
+	if (TOC == null)
+		return;
+
+    let numEntries = TOC.querySelectorAll("li").length;
+    if (   (   TOC.id == "TOC"
+            && numEntries <= 1)
+        || numEntries == 0) {
+        TOC.classList.toggle("hidden", true);
+    } else {
+        TOC.classList.toggle("hidden", false);
+    }
+}
+
+doWhenElementExists(updateTOCVisibility, "#TOC");
