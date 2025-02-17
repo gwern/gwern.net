@@ -4453,7 +4453,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				of documents (the .intro-graf class).
 			 */
 			let introGraf = false;
-			if (   block.matches(".text-center, .margin-notes-block") != true
+			if (   block.matches(".text-center, .margin-notes-block, .data-field") != true
 				&& block.matches(".in-list") != true
 				&& block.closest("#footer, figcaption, table") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true) {

@@ -4495,6 +4495,10 @@ blockquote .TOC,
     --text-hyphenation: none;
 }
 
+.annotation p.data-field.title.intro-graf::first-line {
+    font-variant-caps: unset;
+}
+
 /*  Title link.
  */
 .annotation .data-field.title .title-link,
