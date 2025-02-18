@@ -78,6 +78,12 @@ Extracts = { ...Extracts,
                 return null;
             }
         }
+        /*	Likewise do not spawn annotation popup if the current page is the 
+        	/blog/ page for that same annotation.
+         */
+        if (   location.pathname.startsWith("/blog/")
+        	&& location.pathname.slice("/blog/".length) == popup.spawningTarget.id.slice("gwern-".length))
+        	return null;
 
 		return Extracts.preparePopFrame_ANNOTATION(popup);
     },
