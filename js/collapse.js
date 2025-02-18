@@ -299,12 +299,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			return;
 		}
 
-		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
+		//	Should the collapse block start out already expanded?
+		let startExpanded = (   collapseBlock.contains(getHashTargetedElement()) == true
+							 || collapseBlock.classList.contains("start-expanded") == true);
 
 		//	The collapse block might already be prepared.
-		if (isCollapsed(collapseBlock) != undefined) {
+		if (collapseBlock.classList.containsAnyOf([ "collapse-block", "collapse-inline" ])) {
 			if (isCollapsed(collapseBlock) == startExpanded)
-				collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
+				collapseBlock.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
 
 			return;
 		}
@@ -509,7 +511,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks = (eventInfo) => {
 	GWLog("collapseExpandedCollapseBlocks", "collapse.js", 1);
 
-	eventInfo.container.querySelectorAll(".collapse.expanded").forEach(collapseCollapseBlock);
+	eventInfo.container.querySelectorAll(".collapse.expanded:not(.start-expanded)").forEach(collapseCollapseBlock);
 }, "<eventListeners");
 
 /*****************************************************************************/
