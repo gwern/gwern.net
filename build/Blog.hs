@@ -37,8 +37,8 @@ lengthMin = 1000
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
-     let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ (sed ("^"++authorID++"-") "" $
-                                                                  T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
+     let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ sed ("^"++authorID++"-") ""
+                                                                  (T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
      let targets = zip paths writings
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
@@ -77,5 +77,7 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , "..."
        , ""
        , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
-         "](" ++ url ++ "){.include-annotation .include-strict .include-spinner-not .id-not}"
+         "](" ++ url ++ "){.include-annotation .include-strict data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
+       , ""
+       , "<div class='text-center'>[Return to <a href=\"/blog/index\" class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>blog index</a>]</div>"
        ]
