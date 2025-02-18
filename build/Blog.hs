@@ -79,5 +79,5 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
          "](" ++ url ++ "){.include-annotation .include-strict data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
        , ""
-       , "<div class='text-center'>[Return to <a href=\"/blog/index\" class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>blog index</a>]</div>"
+       , "<div class='text-center' id='return-to-blog-index-link'>[<a href=\"/blog/index\" class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>" -- we set an ID to allow the transclusion calls in /blog/index to hide it
        ]
