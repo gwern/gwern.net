@@ -3474,6 +3474,9 @@ GW.layout = {
 
 		[ "#link-bibliography-section",                 15, false ],
 
+		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
+														 7, false ],
+
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
 
@@ -4833,6 +4836,15 @@ doWhenMainExists(() => {
 			element.innerHTML = "";
 		});
 	}
+});
+
+/**********************************/
+/*	Designate /blog/ pages as such.
+ */
+doWhenBodyExists(() => {
+	if (   location.pathname.startsWith("/blog/")
+		&& location.pathname != "/blog/index")
+		document.body.classList.add("blog-page");
 });
 
 /**************************************************************************/
