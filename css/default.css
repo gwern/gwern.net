@@ -333,7 +333,9 @@ section.highlight-fading::before {
 /*  Collapse block component z-order.
  */
 
-.collapse-block.expanded-not > .abstract-collapse {
+.collapse-block.expanded-not > .abstract-collapse,
+.collapse-block.expanded-not > .abstract-collapse-only {
+    position: relative;
     z-index: 1;
 }
 
@@ -684,10 +686,6 @@ section.collapse > .heading {
 /*  Collapse summary.
  */
 
-.collapse-block > .abstract-collapse {
-    position: relative;
-}
-
 /*  Shift blockquoted abstract so that edge of blockquote is flush with left
     stripe of collapse block (disclosure button click region).
  */
@@ -706,7 +704,8 @@ section.collapse > .heading {
 
 /*  Non-blockquoted collapse summary.
  */
-.collapse-block.expanded-not > .abstract-collapse:not(.abstract) {
+.collapse-block.expanded-not > .abstract-collapse:not(.abstract),
+.collapse-block.expanded-not > .abstract-collapse-only:not(.abstract) {
     padding: 0.5em 0;
 }
 .collapse-block.expanded > .abstract-collapse:not(.abstract) {

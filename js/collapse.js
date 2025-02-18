@@ -365,7 +365,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseAbstract.classList.add("abstract-collapse");
 
 			//	Ensure correct structure and classes of abstracts.
-			collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract-collapse");
+			let collapseAbstractSelector = [
+				".abstract-collapse",
+				".abstract-collapse-only"
+			].map(x => `.collapse > ${x}`).join(", ");
+			collapseAbstract = collapseWrapper.querySelector(collapseAbstractSelector);
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper) {
 				//	Mark those collapse blocks that have abstracts.
 				collapseWrapper.classList.add("has-abstract");
@@ -399,10 +403,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 			//	Designate “bare content” collapse blocks.
 			if (   collapseWrapper.classList.contains("collapse-block") == true
-				&& collapseWrapper.classList.contains("bare-content-not") == false) {
+				&& collapseWrapper.classList.contains("bare-content-not") == false
+				&& collapseWrapper.tagName != "SECTION") {
 				if (   collapseWrapper.firstElementChild.matches(bareContentSelector)
 					|| (   collapseWrapper.classList.contains("has-abstract")
-						&& collapseWrapper.querySelector(".abstract-collapse").firstElementChild.matches(bareContentSelector)))
+						&& collapseWrapper.querySelector(collapseAbstractSelector).firstElementChild.matches(bareContentSelector)))
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
@@ -562,7 +567,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
 				progressPercentage = Math.round(100 * Math.min(1, collapsedContentHeight / contentHeight));
 			} else {
-				let abstractHeight = collapseBlock.querySelector(".abstract-collapse").clientHeight;
+				let abstractHeight = collapseBlock.querySelector(".abstract-collapse, .abstract-collapse-only").clientHeight;
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
 				progressPercentage = Math.round(100 * abstractHeight / (abstractHeight + contentHeight));
 			}
