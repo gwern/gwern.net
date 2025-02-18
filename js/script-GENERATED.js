@@ -18971,7 +18971,7 @@ function containsBlockChildren(element) {
 			return true;
 	}
 
-	return false
+	return false;
 }
 
 /****************************************************************************/
@@ -19348,7 +19348,22 @@ function updateDisclosureButtonState(collapseBlock, options) {
 /***************************************/
 /*	Expand or collapse a collapse block.
  */
-function toggleCollapseBlockState(collapseBlock, expanding) {
+function toggleCollapseBlockState(collapseBlock, expanding, options) {
+	options = Object.assign({
+		triggeredByStateChangeOnElement: null,
+	}, options);
+
+	//	Satisfy selector-based state XOR condition.
+	if (collapseBlock.dataset.collapseXorStateWithSelector > "") {
+		let otherCollapseElement = collapseBlock.getRootNode().querySelector(collapseBlock.dataset.collapseXorStateWithSelector);
+		if (   otherCollapseElement != options.triggeredByStateChangeOnElement
+			&& otherCollapseElement.classList.contains("collapse")) {
+			toggleCollapseBlockState(otherCollapseElement, expanding ? false : true, {
+				triggeredByStateChangeOnElement: collapseBlock
+			});
+		}
+	}
+
 	//	Set proper classes.
 	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
 
