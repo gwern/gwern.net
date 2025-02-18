@@ -18161,7 +18161,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	].map(className => `div.${className}`).join(", ");
 
     eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
-        unwrap(div, { moveClasses: true });
+        unwrap(div, {
+        	moveID: true,
+        	moveClasses: true
+        });
     });
 }, "rewrite");
 
@@ -18971,7 +18974,7 @@ function containsBlockChildren(element) {
 			return true;
 	}
 
-	return false
+	return false;
 }
 
 /****************************************************************************/
@@ -19068,12 +19071,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			return;
 		}
 
-		let startExpanded = (collapseBlock.contains(getHashTargetedElement()) == true);
+		//	Should the collapse block start out already expanded?
+		let startExpanded = (   collapseBlock.contains(getHashTargetedElement()) == true
+							 || collapseBlock.classList.contains("start-expanded") == true);
 
 		//	The collapse block might already be prepared.
-		if (isCollapsed(collapseBlock) != undefined) {
+		if (collapseBlock.classList.containsAnyOf([ "collapse-block", "collapse-inline" ])) {
 			if (isCollapsed(collapseBlock) == startExpanded)
-				collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
+				collapseBlock.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
 
 			return;
 		}
@@ -19132,7 +19137,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				collapseAbstract.classList.add("abstract-collapse");
 
 			//	Ensure correct structure and classes of abstracts.
-			collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract-collapse");
+			let collapseAbstractSelector = [
+				".abstract-collapse",
+				".abstract-collapse-only"
+			].map(x => `.collapse > ${x}`).join(", ");
+			collapseAbstract = collapseWrapper.querySelector(collapseAbstractSelector);
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper) {
 				//	Mark those collapse blocks that have abstracts.
 				collapseWrapper.classList.add("has-abstract");
@@ -19166,10 +19175,11 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 			//	Designate “bare content” collapse blocks.
 			if (   collapseWrapper.classList.contains("collapse-block") == true
-				&& collapseWrapper.classList.contains("bare-content-not") == false) {
+				&& collapseWrapper.classList.contains("bare-content-not") == false
+				&& collapseWrapper.tagName != "SECTION") {
 				if (   collapseWrapper.firstElementChild.matches(bareContentSelector)
 					|| (   collapseWrapper.classList.contains("has-abstract")
-						&& collapseWrapper.querySelector(".abstract-collapse").firstElementChild.matches(bareContentSelector)))
+						&& collapseWrapper.querySelector(collapseAbstractSelector).firstElementChild.matches(bareContentSelector)))
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
@@ -19278,7 +19288,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks = (eventInfo) => {
 	GWLog("collapseExpandedCollapseBlocks", "collapse.js", 1);
 
-	eventInfo.container.querySelectorAll(".collapse.expanded").forEach(collapseCollapseBlock);
+	eventInfo.container.querySelectorAll(".collapse.expanded:not(.start-expanded)").forEach(collapseCollapseBlock);
 }, "<eventListeners");
 
 /*****************************************************************************/
@@ -19329,7 +19339,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
 				progressPercentage = Math.round(100 * Math.min(1, collapsedContentHeight / contentHeight));
 			} else {
-				let abstractHeight = collapseBlock.querySelector(".abstract-collapse").clientHeight;
+				let abstractHeight = collapseBlock.querySelector(".abstract-collapse, .abstract-collapse-only").clientHeight;
 				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
 				progressPercentage = Math.round(100 * abstractHeight / (abstractHeight + contentHeight));
 			}
@@ -19346,7 +19356,22 @@ function updateDisclosureButtonState(collapseBlock, options) {
 /***************************************/
 /*	Expand or collapse a collapse block.
  */
-function toggleCollapseBlockState(collapseBlock, expanding) {
+function toggleCollapseBlockState(collapseBlock, expanding, options) {
+	options = Object.assign({
+		triggeredByStateChangeOnElement: null,
+	}, options);
+
+	//	Satisfy selector-based state XOR condition.
+	if (collapseBlock.dataset.collapseXorStateWithSelector > "") {
+		let otherCollapseElement = collapseBlock.getRootNode().querySelector(collapseBlock.dataset.collapseXorStateWithSelector);
+		if (   otherCollapseElement != options.triggeredByStateChangeOnElement
+			&& otherCollapseElement.classList.contains("collapse")) {
+			toggleCollapseBlockState(otherCollapseElement, expanding ? false : true, {
+				triggeredByStateChangeOnElement: collapseBlock
+			});
+		}
+	}
+
 	//	Set proper classes.
 	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
 
