@@ -18161,7 +18161,10 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	].map(className => `div.${className}`).join(", ");
 
     eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
-        unwrap(div, { moveClasses: true });
+        unwrap(div, {
+        	moveID: true,
+        	moveClasses: true
+        });
     });
 }, "rewrite");
 
