@@ -81,14 +81,16 @@ generateDirectoryBlog md = do
   let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
   let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
   let paths = map (\(ident,absolute) -> (ident, absolute, fromJust $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
-  let triplets = sortByDatePublished $ map (\x@(_ident,absolute,path) -> case M.lookup path md of
+  let doublets = map (\(a,b,_) -> (a,b)) $ -- we don't need 'path' anywhere after AFAICT
+                       sortByDatePublished $
+                       map (\x@(_ident,absolute,path) -> case M.lookup path md of
                         Nothing -> error $ "generateDirectory.generateDirectoryBlog: tried to look up the annotation corresponding to a /blog/ Markdown entry, yet there was none. This should be impossible! Variables: " ++ show x ++ "; " ++ show paths ++ ";" ++ show idents ++ "; " ++ show direntries
                         Just mi -> (absolute, mi, path)
                     ) paths
-  when (null triplets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
-  let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head triplets
-  let list1 = BulletList $ generateBlogLinksByYears triplets
-  let list2 = BulletList (map (\(position,(f,mi,_)) -> generateBlogTransclude position (f,mi)) (zip (True:repeat False) triplets)) -- note: we may at some point want to split by year, and then wrap in a `div.collapse`, to allow selective uncollapsing.
+  when (null doublets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
+  let lastEntryDate = (\(_,(_,_,date,_,_,_,_)) -> date) $ head doublets
+  let list1 = BulletList $ generateBlogLinksByYears doublets
+  let list2 = BulletList $ generateBlogTranscludes (zip (True : repeat False) doublets) -- note: we may at some point want to split by year, and then wrap in a `div.collapse`, to allow selective uncollapsing.
 
   let header = unlines ["---", "title: Blog Posts"
                        , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
@@ -116,23 +118,32 @@ generateDirectoryBlog md = do
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" ("blog/index.md") contentsNew
 
-generateBlogLinksByYears :: [(FilePath, MetadataItem,a)] -> [[Block]]
-generateBlogLinksByYears triplets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_), _) -> take 4 dc) triplets
+generateBlogLinksByYears :: [(FilePath, MetadataItem)] -> [[Block]]
+generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_)) -> take 4 dc) doublets
                                        in map (\y -> Para [Strong [Span (T.pack y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogLinksByYear y]) years
   where
     generateBlogLinksByYear :: String -> Block
-    generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_), _) -> year `isPrefixOf` dc) triplets
+    generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_)) -> year `isPrefixOf` dc) doublets
                                        -- we may at some point want to wrap these sub-lists in a `div.collapse`
-                                       in BulletList $ map (\(f,mi,_) -> generateBlogLink (f,mi)) hits
+                                       in BulletList $ map generateBlogLink hits
 
 generateBlogLink :: (FilePath, MetadataItem) -> [Block]
 generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
-  let link = Link ("", ["id-not", "link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
+  let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
     [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
-generateBlogTransclude :: Bool -> (FilePath, MetadataItem) -> [Block]
-generateBlogTransclude firstp (f, (tle,_,_,_,_,_,_)) =
+
+generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem))] -> [[Block]]
+generateBlogTranscludes doublets = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_))) -> take 4 dc) doublets
+                                       in map (\y -> Para [Strong [Span (T.pack $ "transclude-"++y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogTranscludesByYear y]) years
+  where
+    generateBlogTranscludesByYear :: String -> Block
+    generateBlogTranscludesByYear year = let hits = filter (\(_, (_,(_,_,dc,_,_,_,_))) -> year `isPrefixOf` dc) doublets
+                                       in Div ("",["collapse"],[]) [BulletList $ map generateBlogTransclude hits]
+
+generateBlogTransclude :: (Bool, (FilePath, MetadataItem)) -> [Block]
+generateBlogTransclude (firstp, (f, (tle,_,_,_,_,_,_))) =
   let link = Link (""
                   , ["id-not", "link-annotated-not", "icon-not", "include-content"]++
                     (if firstp then ["include-even-when-collapsed"] else []) -- Micro-optimization in annotation evaluation order: force the very first entry to be pre-rendered, for a faster popup if they hover over the logical entry in the first section (ie. the first one), or to mask how long it takes to load them all if they uncollapse the second section.
