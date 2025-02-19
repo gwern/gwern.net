@@ -16,6 +16,7 @@
 
 module Blog (writeOutBlogEntries) where
 
+import Control.Monad (unless)
 import Data.List (isPrefixOf)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (toList, filterWithKey)
@@ -37,6 +38,11 @@ lengthMin = 1000
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
+     -- Dates are required to be full YYYY-MM-DD dates & unique for IDs; date validity in general is checked in LinkMetadata, so we only need to check for length & uniqueness here:
+     let dates = map (\(_,(_,_,dc,_,_,_,_)) -> dc) writings
+     let badDates = filter (\x -> length x /= 10 || length (filter (== x) dates) > 1) dates
+     let badEntries = filter (\(_,(_,_,dc,_,_,_,_)) -> dc `elem` badDates) writings
+     unless (null badDates) $ error $ "Blog.writeOutBlogEntries: invalid dates of blog posts detected; bad dates were: " ++ show badDates ++ "; entries: " ++ show badEntries
      let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ sed ("^"++authorID++"-") ""
                                                                   (T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
      let targets = zip paths writings
