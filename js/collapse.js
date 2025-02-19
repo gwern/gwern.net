@@ -628,7 +628,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
 			let enclosingContentRect = contentColumn.getBoundingClientRect();
 			let collapseLeftOffsetPx = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
-			let collapseLeftBorderWidthPx = getComputedStyle(collapseBlock).getPropertyValue("border-left");
+			let collapseLeftBorderWidth = parseInt(getComputedStyle(collapseBlock).getPropertyValue("border-left"))
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
@@ -645,7 +645,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 				}
 			}
 
-			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${collapseLeftOffsetPx} + ${floatOffset}px + ${collapseLeftBorderWidthPx})`;
+			collapseBlock.style.marginLeft = `calc(${(enclosingContentRect.x - contentRect.x)}px - ${collapseLeftOffsetPx} + ${floatOffset}px + ${collapseLeftBorderWidth}px)`;
 		} else { // if (collapsing)
 			collapseBlock.style.marginLeft = "";
 		}

@@ -333,10 +333,14 @@ section.highlight-fading::before {
 /*  Collapse block component z-order.
  */
 
+.collapse-block > .abstract-collapse,
+.collapse-block > .abstract-collapse-only {
+    position: relative;
+}
+
 .collapse-block.expanded-not > .abstract-collapse,
 .collapse-block.expanded-not > .abstract-collapse-only {
     position: relative;
-    z-index: 1;
 }
 
 .collapse-block > .disclosure-button {
