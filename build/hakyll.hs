@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-16 19:39:03 gwern"
+When: Time-stamp: "2025-02-17 13:50:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -226,7 +226,7 @@ postCtx md rts =
     imageDimensionWidth "thumbnail-width" <>
     -- for use in templating, `<body class="page-$safe-url$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
     escapedTitleField "safe-url" <>
-    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escaped-url" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escaped-url$"', so 'Bitcoin-is-Worse-is-Better.md' → '/metadata/annotation/backlink/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.md' → '/metadata/annotation/backlink/%2Fnotes%2FFaster.html'
+    (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escaped-url" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escaped-url$"', so 'bitcoin-is-worse-is-better.md' → '/metadata/annotation/backlink/%2Fbitcoin-is-worse-is-better.html', 'note/faster.md' → '/metadata/annotation/backlink/%2Fnote%2Ffaster.html'
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do

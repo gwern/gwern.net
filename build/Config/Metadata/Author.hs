@@ -617,6 +617,13 @@ canonicals = M.fromList
   , ("D C M Liewald", "David C. M. Liewald")
   , ("DCM. Liewald", "David C. M. Liewald")
   , ("David Cherry McLachlan Liewald", "David C. M. Liewald")
+  , ("DeryaTR_", "Derya Unutmaz")
+  , ("Sam Cohen", "Samuel T. Cohen")
+  , ("Thomas J. Bouchard Junior", "Thomas J. Bouchard")
+  , ("Thomas J. Bouchard, Junior", "Thomas J. Bouchard")
+  , ("Thomas J. Bouchard Jr", "Thomas J. Bouchard")
+  , ("Thomas J. Bouchard Jr.", "Thomas J. Bouchard")
+  , ("0xtype", "0xType")
   ]
 
 -- tests: unique
@@ -641,7 +648,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1287,7 +1294,7 @@ authorLinkDB = M.fromList $
     , ("Ethan Dyer", "https://scholar.google.com/citations?user=LWeVRdUAAAAJ")
     , ("Debajyoti Datta", "https://scholar.google.com/citations?user=L6lx408AAAAJ")
     , ("Emma C. Johnson", "https://www.emmacjohnson.com/")
-    , ("Hunt Allcott", "https://scholar.google.com/citations?hl=en&user=Y1f2unMAAAAJ")
+    , ("Hunt Allcott", "https://scholar.google.com/citations?user=Y1f2unMAAAAJ")
     , ("Andrew Francl", "https://scholar.google.com/citations?user=u8APuDkAAAAJ")
     , ("Josh McDermott", "https://web.mit.edu/jhm/www/")
     , ("Tamay Besiroglu", "http://tamaybesiroglu.com/")
@@ -1301,6 +1308,12 @@ authorLinkDB = M.fromList $
     , ("Yuntao Bai", "https://scholar.google.com/citations?user=r7GUEVsAAAAJ")
     , ("William Fedus", "https://scholar.google.com/citations?user=-ZfwQOkAAAAJ")
     , ("Tristan Yang", "https://scholar.google.com/scholar?q=Tristan%20Yang")
+    , ("Derya Unutmaz", "https://scholar.google.com/citations?user=aND7Gh0AAAAJ")
+    , ("Daniel Cook", "https://lostgarden.com/worth-reading/")
+    , ("Tengyu Ma", "https://ai.stanford.edu/~tengyuma/")
+    , ("Swaroop Mishra", "https://swarooprm.github.io/")
+    , ("Steven Gazal", "https://gazal-lab.org/lab-members")
+    , ("0xType", "https://github.com/0xType")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2546,4 +2559,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler"]
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle"]

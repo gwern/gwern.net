@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-02-14 17:52:28 gwern"
+# When:  Time-stamp: "2025-02-17 18:05:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -574,6 +574,8 @@ Katri Räikkönen
 "Three Orders of Magnitude: Transforming PDC Technology at US Synthetic"
 - "https://aresluna.org/the-hardest-working-font-in-manhattan/ The hardest working font in Manhattan—Aresluna"
 "The hardest working font in Manhattan"
+- "Are you a robot?"
+""
 
 Task:
 

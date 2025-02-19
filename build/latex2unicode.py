@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-01-29 20:05:59 gwern"
+# When:  Time-stamp: "2025-02-18 19:42:12 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -240,6 +240,10 @@ lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</e
 _n_⧸(𝜋⧸8 log _n_)<sup>1⁄2</sup>
 - O(\\log n \\operatorname{polyloglog} n)
 𝒪(⟨log⁡<em>n</em>⟩ polyloglog <em>n</em>)
+- r1,... rm
+<em>r</em><sub>1</sub>, ..., <em>r</em><sub><em>m</em></sub>
+- \\(LCSPACE[s,c,e] = CSPACE[\\Theta(s + e \\log c), \\Theta(c)]\\)
+<em>LCSPACE</em>[<em>S</em>, <em>c</em>, <em>e</em>] = <em>CSPACE</em>[Θ(<em>s</em> + <em>e</em> log <em>c</em>), Θ(<em>c</em>)]
 
 Task:
 
@@ -253,4 +257,5 @@ completion = client.chat.completions.create(
   ]
 )
 
-print(completion.choices[0].message.content)
+output = completion.choices[0].message.content.rstrip()
+print(output, end='') # avoid trailing newline because we might be cleaning inline text & want to avoid injecting newlines

@@ -1031,7 +1031,7 @@ custom = [
         , ("[Cc]erebellum", "https://en.wikipedia.org/wiki/Cerebellum")
         , ("enwik8", "https://mattmahoney.net/dc/textdata.html")
         , ("[Pp]areto[ -]front(ier)?", "https://en.wikipedia.org/wiki/Pareto_front")
-        , ("Whisper", "https://openai.com/research/whisper")
+        , ("Whisper", "https://openai.com/index/whisper/")
         , ("F1[- ][Ss]core", "https://en.wikipedia.org/wiki/F-score")
         , ("GSM8K", "https://arxiv.org/abs/2110.14168#openai")
         , ("BM25", "https://en.wikipedia.org/wiki/Okapi_BM25")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-14 19:56:13 gwern"
+# When:  Time-stamp: "2025-02-18 20:06:02 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -200,9 +200,16 @@ pdfcut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments argument
 # (The appended PDFs are soft-deleted by default, by moving them to the used temporary directory, which is not removed afterwards. In case of a rare problem, they can be retrieved from there.)
 pdf-append () {
     if [ $# -lt 2 ]; then red "Not enough arguments" >&2 && return 1; fi
-    ORIGINAL=$(path2File "$1")
-    TARGET=$(mktemp /tmp/XXXXXX.pdf)
-    TEMP_DIR=$(mktemp -d)
+    # Convert all arguments to their true filepaths
+    local updated_args=()
+    for file in "$@"; do
+        updated_args+=( "$(path2File "$file")" )
+    done
+    set -- "${updated_args[@]}"
+
+    ORIGINAL="$1"
+    TARGET="$(mktemp /tmp/XXXXXX.pdf)"
+    TEMP_DIR="$(mktemp --directory)"
 
     # Convert non-PDF files to PDF using doc2pdf
     PDF_FILES=()
@@ -249,7 +256,7 @@ pdf-append () {
         return 1
     fi
     # I usually know before I look at the PDF's metadata that I will be appending to it, because I will have already downloaded the supplementary files etc. So I won't have yet looked to see what I have to add. We'll save a step by assuming that is the case, and running `crossref` on it:
-    crossref "$1"
+    crossref "$ORIGINAL"
 }
 
 doc2pdf () {

@@ -12,7 +12,7 @@ import qualified Data.Text as T (pack, Text)
 import qualified Data.Map.Strict as M (fromList)
 
 import LinkMetadataTypes (ArchiveMetadata, hasHTMLSubstitute)
-import LinkLive (linkLiveP)
+import LinkLive (linkLiveP, wikipediaLiveP)
 
 archiveDelay :: Integer
 archiveDelay = 60
@@ -200,7 +200,7 @@ transformURItoGW uri = fromMaybe uri $ do
 -- > transformWPtoMobileWP "https://en.wikipedia.org/wiki/George_Washington"
 -- → "https://en.​m.​wikipedia.org/wiki/George_Washington#bodyContent"
 transformWPtoMobileWP :: String -> String
-transformWPtoMobileWP uri = fromMaybe uri $ do
+transformWPtoMobileWP uri = if not (wikipediaLiveP (T.pack uri)) then uri else fromMaybe uri $ do
     parsedURI <- parseURI uri
     auth <- uriAuthority parsedURI
     let hostname = uriRegName auth

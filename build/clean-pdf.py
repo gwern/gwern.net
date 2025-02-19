@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-01-31 12:16:26 gwern"
+# When:  Time-stamp: "2025-02-18 09:42:31 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -156,6 +156,8 @@ Amir Mani, Cory Henn, Claire Couch, Sonal Patel, Thora Lieke, Justin T. H. Chan,
 , MS & Robert F. Woolson
 , PhD</text>
 Dana E. King, Arch G. Mainous III, Mark E. Geesey, Robert F. Woolson
+- <text>he hasn't seen my grandpa eat</text>
+He hasn't seen my grandpa eat.
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 
@@ -167,7 +169,7 @@ Input:
 
 content = completion.choices[0].message.content
 
-# Ensure no leakage from the LLM formatting: remove "<text>" and "</text>" tags:
-cleaned_content = re.sub(r'</?text>', '', content)
+# Ensure no leakage from the LLM formatting: remove "<text>" and "</text>" tags, and any whitespace padding:
+cleaned_content = re.sub(r'</?text>', '', content.rstrip())
 
-print(cleaned_content.strip())
+print(cleaned_content.strip(), end='') # avoid trailing newline because we might be cleaning inline text & want to avoid injecting newlines

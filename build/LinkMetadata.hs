@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-15 18:29:37 gwern"
+When:  Time-stamp: "2025-02-18 09:50:23 gwern"
 License: CC-0
 -}
 
@@ -285,7 +285,7 @@ readLinkMetadataAndCheck = do
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
 
-             let authorWhitelist = ["K. U.", "6510#HN", "N. K."] :: [String]
+             let authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType"] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
@@ -670,7 +670,7 @@ fileTranscludesTest md am =
     , (simpleTestT "/doc/economics/2010-mankiw.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "The Optimal Taxation of Height: A Case Study of Utilitarian Income Redistribution"] ("/doc/economics/2010-mankiw.pdf","")]]]])
     , (simpleTestEmpty "https://arxiv.org/abs/1505.03118", [])
     , (simpleTestT "https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon-color","#57a3e8")]) [RawInline (Text.Pandoc.Format "HTML") "If You Don\8217t Change the UI, Nobody Notices: I saw a screenshot a few days ago that made me think Windows 7 Beta might actually be worth checking out."] ("https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/","")]]]])
-    , (simpleTestT "https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","H"),("link-icon-type","text")]) [RawInline (Text.Pandoc.Format "HTML") "Night Shifts: Can technology shape our dreams?"] ("https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/","")]]]])
+    , (simpleTestT "https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","H"),("link-icon-type","text")]) [RawInline (Format "HTML") "Night Shifts: Can technology shape our dreams?"] ("/doc/www/harpers.org/f50360d6a34f28a00f78a7359ed4c3978afd211b.html","")]]]])
     , (simpleTestEmpty "https://news.ycombinator.com/item?id=31274155", [])
     , (simpleTestEmpty "https://founders.archives.gov/documents/Jefferson/03-06-02-0322", [])
     , (simpleTestEmpty "https://arxiv.org/abs/2311.17137", [])

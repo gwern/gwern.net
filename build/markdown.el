@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-16 13:26:39 gwern"
+;;; When:  Time-stamp: "2025-02-18 14:36:02 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -537,6 +537,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" ω 2" . " ω<sup>2</sup>")
                      ("τ2" . "τ<sup>2</sup>")
                      ("ω2" . "ω<sup>2</sup>")
+                     ("TC1" . "TC<sup>1</sup>")
                      ("chi-squared" . "<em>χ</em><sup>2</sup>")
                      ("X2(2)" . "<em>χ</em><sup>2</sup>")
                      ("F1-ATPase" . "F<sub>1</sub>-ATPase")
