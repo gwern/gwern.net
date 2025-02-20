@@ -22,55 +22,92 @@ prioritizeLinkIconMin = 4
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
 prioritizeLinkIconBlackList =
   ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
- , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com"
- , "www.joelonsoftware.com", "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
- , "blog.johantibell.com", "humanvarieties.org", "cognitivefun.net", "annals.org", "www.replicatedtypo.com"
+ , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.joelonsoftware.com"
+ , "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
+ , "blog.johantibell.com", "humanvarieties.org", "cognitivefun.net", "annals.org"
  , "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "www.incompleteideas.net"
- , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "alumni.media.mit.edu", "www.eugenewei.com", "karpathy.github.io", "demos.obormot.net"
- , "www.wakapoetry.net", "www.standard.co.uk"
- , "www.links.org", "shkspr.mobi"
- , "repository.upenn.edu", "latanyasweeney.org", "highnoongmt.wordpress.com"
+ , "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "alumni.media.mit.edu"
+ , "www.eugenewei.com", "karpathy.github.io", "demos.obormot.net", "wiki.obormot.net"
+ , "www.wakapoetry.net", "www.standard.co.uk", "highnoongmt.wordpress.com"
+ , "www.links.org", "shkspr.mobi", "repository.upenn.edu", "latanyasweeney.org"
+ , "www.mentalfloss.com", "agtb.wordpress.com", "digitalcommons.unl.edu", "emilkirkegaard.dk"
+ , "vividness.live", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu"
+ , "bmk.sh", "www.impactcybertrust.org", "esolangs.org", "www.aiweirdness.com", "etherscan.io"
+ , "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu", "www.centauri-dreams.org", "www.eoht.info"
+ , "hal.science", "mattmahoney.net", "projecteuclid.org", "www.sudowrite.com", "geminiprotocol.net"
+ , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "conservancy.umn.edu"
+ , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com"
 
 -- TODO: icon+color:
  , "danwang.co" -- 'D' + red
  , "www.worldcat.org" -- spiral icon + blue
- , "www.buzzfeed.com" -- BF + red
- , "www.math.uwaterloo.ca" -- UW + red
+ , "www.buzzfeed.com" -- 'BF + red
+ , "www.math.uwaterloo.ca" -- 'UW' + red
  , "sourceforge.net" -- flame-in-diamond + orange-red
- , "proceedings.neurips.cc", "neurips.cc" -- NIPS + blue
+ , "proceedings.neurips.cc", "neurips.cc" -- 'NIPS' + blue
+ , "ajp.psychiatryonline.org" -- 'P' dark blue
+ , "gazette.com" -- Fraktur 'G', red
+ , "www.japantimes.co.jp" -- 'jt' red
+ , "www.eetimes.com" -- 'EET', red
+ , "www.aging-us.com" -- 'Ag' red
+ , "philpapers.org" -- 'PP' blue
+ , "mathworld.wolfram.com" -- 'MW' light blue
+ , "soranews24.com" -- 'Sora' red
+ , "members.madasafish.com" -- 'CJ' brown-red
+ , "www.aeaweb.org" -- 'AEA' red
+ , "www.cs.cmu.edu" -- 'CMU red
+ , "itre.cis.upenn.edu" -- 'LL' red
+ , "pubs.acs.org" -- 'ACS' dark blue
+ , "tylervigen.com" -- 'V' red
+ , "www.dafont.com" -- 'd' red
+ , "www.crd.york.ac.uk" -- 'PSRO' blue
+ , "nces.ed.gov" -- 'NCES' orange-yellow
+ , "www.spencergreenberg.com" -- 'SG' blue
+ , "www.researchgate.net" -- 'RG' light blue
+ , "www.rug.nl" -- 'UG' red-orange
+ , "caniuse.com" -- 'CanI' red
+ , "cs.stanford.edu" -- 'S' red
+ , "linuxmafia.com" -- 'LINUX' monospace light blue
+ , "www.marxists.org" -- '☭' red
+ , "takimag.com" -- 'TM' red
+ , "oll.libertyfund.org" -- 'OLL' dark blue
+ , "memteaimports.com" -- 'MemT' red
 
 -- color-only:
  , "www.nausicaa.net" -- blue
  , "blog.acolyer.org" -- blue
  , "arbtt.nomeata.de" -- blue
  , "polisen.se" -- orange?
+ , "www.lightspeedmagazine.com" -- dark red
+ , "aeon.co" -- a dark red
+ , "ohtori.nu" -- salmon orange?
+ , "www.jstatsoft.org" -- blue
+ , "mssprovenance.blogspot.com" -- orange
+ , "super.gluebenchmark.com" -- red
+ , "gluebenchmark.com" -- dark blue
+ , "datacolada.org" -- orange
+ , "pubs.aip.org" -- blue
 
 -- icon-only:
- , "www.thestranger.com" -- thick S - MATHEMATICAL SCRIPT CAPITAL S maybe? 𝒮
- , "www.wunderground.com" -- wu
- , "www.rte.ie" -- RTϵ
- , "www.orlandosentinel.com" -- OS
- , "www.mercurynews.com" -- 𝔐
- , "ro.ecu.edu.au" -- ECU
-
- -- TODO:
- , "ralphmerkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org"
- , "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu"
- , "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live"
- , "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu"
- , "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com"
- , "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com"
- , "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "esolangs.org"
- , "www.aiweirdness.com", "etherscan.io", "www.theringer.com", "cs.stanford.edu", "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu"
- , "www.centauri-dreams.org", "www.alexirpan.com", "linuxmafia.com", "wiki.obormot.net", "www.marxists.org"
- , "takimag.com", "oll.libertyfund.org", "every.to", "www.eoht.info", "mssprovenance.blogspot.com"
- , "www.inverse.com", "hal.science", "www.findarticles.com", "super.gluebenchmark.com", "gluebenchmark.com"
- , "mattmahoney.net", "projecteuclid.org", "datacolada.org", "pubs.aip.org", "nyaa.si", "memteaimports.com"
- , "jetpress.org", "www.sudowrite.com", "tylervigen.com", "pubs.acs.org", "www.dafont.com", "geminiprotocol.net"
- , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "itre.cis.upenn.edu", "conservancy.umn.edu", "www.crd.york.ac.uk"
- , "nces.ed.gov", "www.avclub.com", "members.madasafish.com", "www.aeaweb.org"
- , "www.cs.cmu.edu", "minimaxir.com", "dynomight.net", "www.spencergreenberg.com", "www.ed.ac.uk"
- , "www.researchgate.net", "www.chiark.greenend.org.uk", "www.rug.nl", "figshare.com"]
+ , "www.thestranger.com" -- thick S - MATHEMATICAL SCRIPT CAPITAL S maybe? '𝒮'
+ , "www.wunderground.com" -- 'wu'
+ , "www.rte.ie" -- 'RTϵ'
+ , "www.orlandosentinel.com" -- 'OS'
+ , "www.mercurynews.com" -- '𝔐'
+ , "ro.ecu.edu.au" -- 'ECU'
+ , "ralphmerkle.com" -- 'MKL' quad
+ , "www.chronicle.com" -- 'CHE'
+ , "paulfchristiano.com" -- 'PFC'?
+ , "parahumans.wordpress.com" -- 'W' for all of his stuff, ie. Wildbow?
+ , "www.theringer.com" -- 'TR'?
+ , "www.alexirpan.com" -- 'AI'
+ , "every.to" -- 'ℰ'
+ , "www.inverse.com" -- 'INV'
+ , "nyaa.si" -- 'Nyaa'
+ , "www.avclub.com" -- 'AV'
+ , "minimaxir.com" -- 'MxWf'
+ , "dynomight.net" -- 'D'
+ ]
 ------------------------------------------------------------------------------------------
 
 -- all legal types of link-icon types displays
