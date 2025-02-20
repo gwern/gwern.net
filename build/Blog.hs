@@ -25,7 +25,7 @@ import qualified Data.Text as T (pack, unpack)
 import LinkID (metadataItem2ID)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Test (isUniqueList)
-import Utils (sed, writeUpdatedFile)
+import Utils (sed, writeUpdatedFile, printRed)
 import Config.Misc as C (cd)
 
 prefix, authorU, authorID :: String
@@ -38,11 +38,16 @@ lengthMin = 1000
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
+
      -- Dates are required to be full YYYY-MM-DD dates & unique for IDs; date validity in general is checked in LinkMetadata, so we only need to check for length & uniqueness here:
      let dates = map (\(_,(_,_,dc,_,_,_,_)) -> dc) writings
      let badDates = filter (\x -> length x /= 10 || length (filter (== x) dates) > 1) dates
      let badEntries = filter (\(_,(_,_,dc,_,_,_,_)) -> dc `elem` badDates) writings
      unless (null badDates) $ error $ "Blog.writeOutBlogEntries: invalid dates of blog posts detected; bad dates were: " ++ show badDates ++ "; entries: " ++ show badEntries
+     -- we'd also like titles to not take up >1 line, to maintain the classic blog-index look of 1 line = 1 post
+     let badTitles =  filter (\(_,(t,_,_,_,_,_,_)) -> length t > 74 ) writings
+     unless (null badTitles) $ printRed $ "Blog.writeOutBlogEntries: warning, entry title awkwardly long, please prune down: " ++ show badTitles
+
      let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ sed ("^"++authorID++"-") ""
                                                                   (T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
      let targets = zip paths writings

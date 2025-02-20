@@ -624,6 +624,22 @@ canonicals = M.fromList
   , ("Thomas J. Bouchard Jr", "Thomas J. Bouchard")
   , ("Thomas J. Bouchard Jr.", "Thomas J. Bouchard")
   , ("0xtype", "0xType")
+  , ("maxhodak_", "Max Hodak")
+  , ("ArtIsLight_", "ArtIsLight")
+  , ("_Borriss_", "Borriss")
+  , ("ccanonne_", "Clément Canonne")
+  , ("Clement Canonne", "Clément Canonne")
+  , ("C. Canonne", "Clément Canonne")
+  , ("JosephJacks_", "Joseph Jacks")
+  , ("JoshuaBlake_", "Joshua Blake")
+  , ("_markel___", "Mark Ermolov")
+  , ("__meimiya__", "銘宮")
+  , ("_Soilleir_", "Soilleir")
+  , ("_via_getty_", "Getty")
+  , ("VivaLaPanda_", "Panda")
+  , ("_jasonwei", "Jason Wei")
+  , ("_JeanLannes", "Jean Lannes")
+  , ("michelangemoji", "MichelangEmoji Bot")
   ]
 
 -- tests: unique
@@ -1314,6 +1330,10 @@ authorLinkDB = M.fromList $
     , ("Swaroop Mishra", "https://swarooprm.github.io/")
     , ("Steven Gazal", "https://gazal-lab.org/lab-members")
     , ("0xType", "https://github.com/0xType")
+    , ("RiversHaveWings", "https://github.com/crowsonkb")
+    , ("Riley Goodside", "https://twitter.com/goodside")
+    , ("Stefan Gustafsson", "https://research.com/u/stefan-gustafsson")
+    , ("MichelangEmoji Bot", "https://x.com/somnai_dreams")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

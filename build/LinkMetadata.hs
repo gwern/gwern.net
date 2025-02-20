@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-18 09:50:23 gwern"
+When:  Time-stamp: "2025-02-19 13:44:26 gwern"
 License: CC-0
 -}
 
@@ -289,8 +289,8 @@ readLinkMetadataAndCheck = do
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
-             let authorsBadChars = filter (\a -> a `notElem` authorWhitelist &&
-                                                 (anyInfix a [";", "&", "?", "!"] || (not (last a == '.') && isPunctuation (last a)))) $ filter (not . null) authors
+             let authorsBadChars = nubOrd $ filter (\a -> a `notElem` authorWhitelist &&
+                                                 (anyInfix a [";", "&", "?", "!"] || (last a /= '.' && isPunctuation (last a)))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let yearLimit = show (C.currentYear + 2) -- no entry should be published or created 2+ years in the future!

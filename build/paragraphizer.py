@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-02-15 10:50:09 gwern"
+# When:  Time-stamp: "2025-02-19 09:48:18 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -610,6 +610,10 @@ These findings challenge century-old wisdom that suppressing thoughts is maladap
 For decades, scholars in the social sciences and humanities have questioned the appropriateness and utility of prior review of their research by human subjects’ ethics committees.
 This essay seeks to organize thematically some of their published complaints and to serve as a brief restatement of the major critiques of ethics review.
 In particular, it argues that (1) ethics committees impose silly restrictions, (2) ethics review is a solution in search of a problem, (3) ethics committees lack expertise, (4) ethics committees apply inappropriate principles, (5) ethics review harms the innocent, and (6) better options exist.
+- <abstract>The gravitational effects of a primordial black hole (PBH) passing through the human body are examined, with the goal of determining the minimum mass necessary to produce significant injury or death. Two effects are examined: the damage caused by a shock wave propagating outward from the black hole trajectory, and the dissociation of brain cells from tidal forces produced by the black hole on its passage through the human body. It is found that the former is the dominant effect, with a cutoff mass for serious injury or death of approximately M~PBH~>1.4×10^17^g. The number density of primordial black holes with a mass above this cutoff is far too small to produce any observable effects on the human population.</abstract>
+The gravitational effects of a primordial black hole (PBH) passing through the human body are examined, with the goal of determining the minimum mass necessary to produce significant injury or death. Two effects are examined: the damage caused by a shock wave propagating outward from the black hole trajectory, and the dissociation of brain cells from tidal forces produced by the black hole on its passage through the human body.
+It is found that the former is the dominant effect, with a cutoff mass for serious injury or death of approximately M~PBH~>1.4×10^17^g.
+The number density of primordial black holes with a mass above this cutoff is far too small to produce any observable effects on the human population.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

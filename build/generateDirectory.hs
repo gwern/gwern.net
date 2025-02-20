@@ -105,10 +105,9 @@ generateDirectoryBlog md = do
                        , "index: True"
                        , "...\n"]
 
-  let blogSectionTransclude = Header 1 ("", [], []) [Str "View All Posts"]
+  let blogSectionTransclude = Header 1 ("", [], []) [Str "View Full Posts"]
   let document = Pandoc nullMeta [list1,
                                   blogSectionTransclude,
-                                  Para [Str "Expand all posts inline (in reverse chronological order):"],
                                   list2]
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
