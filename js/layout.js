@@ -1501,8 +1501,7 @@ doWhenMainExists(() => {
 /*	Designate /blog/ pages as such.
  */
 doWhenBodyExists(() => {
-	if (   location.pathname.startsWith("/blog/")
-		&& location.pathname != "/blog/index")
+	if (location.pathname.startsWith("/blog/"))
 		document.body.classList.add("blog-page");
 });
 
