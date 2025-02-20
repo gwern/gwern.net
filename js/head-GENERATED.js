@@ -3474,6 +3474,8 @@ GW.layout = {
 
 		[ "#link-bibliography-section",                 15, false ],
 
+		[ "body.page-blog-index p.data-field.title:not(.first-block)",	
+														10, false ],
 		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
 														 7, false ],
 
