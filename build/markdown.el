@@ -2,12 +2,14 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-18 14:36:02 gwern"
+;;; When:  Time-stamp: "2025-02-19 20:46:00 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
 ;;; Helper files for editing Markdown, HTML, and HTML-in-GTX, particularly reformatting & editing annotations in the Gwern.net house style.
 ;;; Additional functions include error-checking and prettifying confusable characters like dashes.
+
+;;; Code:
 
 ; since I hardly ever write elisp, and often start writing things in the *scratch* buffer, save time by defaulting to Markdown.
 (setq initial-major-mode 'markdown-mode)
@@ -20,6 +22,10 @@
 
 ; I do much of my editing in gwern.net files, so save myself some tab-completion hassle:
 (setq default-directory "~/wiki/")
+
+; the tools & site compilation process frequently modify the Markdown/GTX files, especially during interactive use (like reviewing new annotations), and it is a hassle (and slow) to prompt for an update of the corresponding buffers every time.
+; So, if there are no modifications to a buffer which might need to be saved/merged, we automatically update buffers to match on-disk files without any user interactions.
+(global-auto-revert-mode)
 
 ;;we rely on the Github dev version because the 2017 v2.3 stable release packaged everywhere is missing a bugfix (stable breaks on any Markdown file with HTML comments in it); NOTE: still seems to be true on Ubuntu `elpa-markdown-mode` 2.3+210-1 as of 2023-02-11!
 (add-to-list 'load-path "~/src/markdown-mode/")
@@ -1676,6 +1682,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "−." "−0." nil begin end)
        (query-replace " -." " −0." nil begin end)
        (query-replace "[-." "[−0." nil begin end)
+       (query-replace-regexp "<sup>-+\\([0-9.]+\\)</sup>" "<sup>−\\1</sup>" nil begin end)
        (query-replace "\\$O\\$" "𝒪" nil begin end)
        (query-replace "\\([[:digit:]]\\) %" "\\1%" nil begin end)
        (query-replace-regexp "\\([a-zA-Z,]\\) \\.\\([[:digit:]]\\)" "\\1 0.\\2" nil begin end)
@@ -2252,21 +2259,40 @@ With prefix argument ARG which is not boolean value nil, remove urgency
 ;; Markup editing shortcuts for HTML/Markdown/GTX annotation editing.
 ;; Functions to easily add italics, bold, Wikipedia links, smallcaps, & margin-note syntax.
 (defun surround-region-or-word (start-tag end-tag)
-  "Surround selected region (or next word if no region) with START-TAG and END-TAG."
+  "Surround region (or next word) with START-TAG and END-TAG.
+If the previous command was this command, remove the end tag before point,
+move forward one word (within the same line), and insert only the end tag.
+This allows repeating the keybinding to incrementally mark up a region
+by bubbling the end-tag through the line.."
   (interactive)
-  (let ((begin (if (region-active-p)
-                   (region-beginning)
-                 (point)))
-        (end (if (region-active-p)
-                 (region-end)
-               (progn
-                 (forward-word)
-                 (point)))))
-    (goto-char end)
-    (insert end-tag)
-    (goto-char begin)
-    (insert start-tag)
-    (goto-char (+ end (length start-tag) (length end-tag)))))
+  (if (eq last-command 'surround-region-or-word)
+      ;; Repeated invocation: extend the existing formatted region.
+      (let ((end-tag-len (length end-tag)))
+        ;; Verify the text immediately before point is the end tag.
+        (if (and (>= (point) end-tag-len)
+                 (string= (buffer-substring-no-properties (- (point) end-tag-len) (point))
+                          end-tag))
+            (delete-region (- (point) end-tag-len) (point))
+          (error "Expected end tag not found"))
+        ;; Move forward one word, but avoid crossing a newline.
+        (unless (or (eolp) (looking-at "\n"))
+          (forward-word))
+        (insert end-tag))
+    ;; First invocation: wrap region (or next word) with start and end tags.
+    (let* ((beg (if (use-region-p)
+                    (region-beginning)
+                  (point)))
+           (end (if (use-region-p)
+                    (region-end)
+                  (progn (forward-word) (point)))))
+      (goto-char end)
+      (insert end-tag)
+      (goto-char beg)
+      (insert start-tag)
+      ;; Position point after the inserted tags.
+      (goto-char (+ end (length start-tag) (length end-tag)))
+      (deactivate-mark)))
+  (setq this-command 'surround-region-or-word))
 ;; the wrappers:
 (defun html-insert-emphasis ()
   "Surround selected region (or word) with HTML <em> tags for italics/emphasis (also Markdown, which supports `*FOO*`)."
