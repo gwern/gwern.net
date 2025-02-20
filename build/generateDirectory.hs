@@ -139,7 +139,7 @@ generateBlogTranscludes doublets = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,
   where
     generateBlogTranscludesByYear :: String -> Block
     generateBlogTranscludesByYear year = let hits = filter (\(_, (_,(_,_,dc,_,_,_,_))) -> year `isPrefixOf` dc) doublets
-                                       in Div ("",["collapse"],[]) [BulletList $ map generateBlogTransclude hits]
+                                       in Div ("",["collapse"],[]) $ concatMap generateBlogTransclude hits
 
 generateBlogTransclude :: (Bool, (FilePath, MetadataItem)) -> [Block]
 generateBlogTransclude (firstp, (f, (tle,_,_,_,_,_,_))) =
