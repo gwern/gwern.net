@@ -7033,7 +7033,7 @@ Annotations = { ...Annotations,
 		}
 
 		//	TItle bar link should go to /ref/ page for the annotation.
-		let popFrameTitleLinkHref = "/ref/" + (link.id ?? titleLink.id.slice("link-bibliography-".length));
+		let popFrameTitleLinkHref = "/ref/" + (link.id || titleLink.id.slice("link-bibliography-".length));
 
 		return {
 			document: response,
@@ -15334,7 +15334,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	 */
 
 	let ref = decodeURIComponent(eventInfo.loadLocation.pathname.slice("/ref/".length));
-	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
+	if (ref.length == 0) {
+		injectHelpfulErrorMessage("No URL or ID specified.");
+		injectHelpfulSuggestion();
+	} else if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
 		//	Strip origin from local URLs.
 		let url = URLFromString(ref);
 		if (url.hostname == location.hostname)

@@ -342,7 +342,7 @@ Annotations = { ...Annotations,
 		}
 
 		//	TItle bar link should go to /ref/ page for the annotation.
-		let popFrameTitleLinkHref = "/ref/" + (link.id ?? titleLink.id.slice("link-bibliography-".length));
+		let popFrameTitleLinkHref = "/ref/" + (link.id || titleLink.id.slice("link-bibliography-".length));
 
 		return {
 			document: response,

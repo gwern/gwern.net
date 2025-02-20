@@ -184,7 +184,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	 */
 
 	let ref = decodeURIComponent(eventInfo.loadLocation.pathname.slice("/ref/".length));
-	if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
+	if (ref.length == 0) {
+		injectHelpfulErrorMessage("No URL or ID specified.");
+		injectHelpfulSuggestion();
+	} else if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
 		//	Strip origin from local URLs.
 		let url = URLFromString(ref);
 		if (url.hostname == location.hostname)
