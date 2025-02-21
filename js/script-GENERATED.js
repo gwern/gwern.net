@@ -15206,20 +15206,30 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		});
 	};
 
+	/*	The `message` argument may optionally be a 2-element array of strings 
+		(the first element being the singular-case message, to be used if there 
+		is only one result; the second being the plural-case message, to be 
+		used if there are multiple results). Otherwise, it should be a string.
+	 */
 	let injectIdPrefixMatches = (message, mapping, ref) => {
 		let idPrefixMatches = Object.entries(mapping).filter(entry => 
 			   entry[0].startsWith(ref)
 			&& entry[0] != ref
 		);
 		if (idPrefixMatches.length > 0) {
+			if (typeof message == "object")
+				message = idPrefixMatches.length == 1 ? message[0] : message[1];
 			injectHelpfulErrorMessage(message);
+			let includeLinkClass = idPrefixMatches.length == 1 
+								   ? "include-annotation" 
+								   : "include-annotation-partial";
 			pageContentContainer.appendChild(elementFromHTML(
 				  `<ul>`
 				+ idPrefixMatches.map(entry => (
 					  `<li><p>`
 					+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
 					+ synthesizeIncludeLink(entry[1], {
-						"class": "link-annotated include-annotation-partial",
+						"class": "link-annotated ${includeLinkClass}",
 						"data-include-selector-not": ".data-field.date, .aux-links-field-container"
 					  }, {
 					  	innerHTML: `<code>${entry[1]}</code>`
@@ -15388,7 +15398,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				if (urlString == null) {
 					updatePageTitleElements("Invalid Query");
 					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
-					injectIdPrefixMatches("Perhaps you want one of these:", event.target.response, normalizedRef);
+					injectIdPrefixMatches([ "Perhaps you want this:", "Perhaps you want one of these:" ], event.target.response, normalizedRef);
 					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " ").replace(" et al", "").split(" ").filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false).join(" "));
 				} else {
 					//	Synthesize and inject include-link.
@@ -15402,7 +15412,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						updatePageTitleElements("Invalid Query");
 						injectHelpfulErrorMessage(  `No annotation exists for ID <code>${normalizedRef}</code>`
 												  + ` (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
-						injectIdPrefixMatches("Perhaps you want one of these instead:", event.target.response, normalizedRef);
+						injectIdPrefixMatches([ "Perhaps you want this instead:", "Perhaps you want one of these instead:" ], event.target.response, normalizedRef);
 						injectHelpfulSuggestion(urlString);
 					}, {
 						condition: (info) => (   info.source == "transclude.loadingFailed"
