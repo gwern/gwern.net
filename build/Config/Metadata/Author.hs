@@ -640,6 +640,13 @@ canonicals = M.fromList
   , ("_jasonwei", "Jason Wei")
   , ("_JeanLannes", "Jean Lannes")
   , ("michelangemoji", "MichelangEmoji Bot")
+  , ("_dsevero", "Daniel Severo")
+  , ("_Ryobot", "Ryobot")
+  , ("Ryobot", "Ryo Nakamura")
+  , ("0xfoobar", "foobar")
+  , ("_JeanLannes", "Michael")
+  , ("_aixile", "Aixile")
+  , ("Roel Andre Ophoff", "Roel André Ophoff")
   ]
 
 -- tests: unique
@@ -664,7 +671,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1334,6 +1341,17 @@ authorLinkDB = M.fromList $
     , ("Riley Goodside", "https://twitter.com/goodside")
     , ("Stefan Gustafsson", "https://research.com/u/stefan-gustafsson")
     , ("MichelangEmoji Bot", "https://x.com/somnai_dreams")
+    , ("Daniel Severo", "https://github.com/dsevero")
+    , ("Ryo Nakamura", "https://x.com/_Ryobot")
+    , ("3D_DLW", "https://x.com/3D_DLW")
+    , ("foobar", "https://0xfoobar.substack.com/")
+    , ("Michael", "https://x.com/_JeanLannes")
+    , ("Aixile", "https://x.com/_aixile")
+    , ("Nikhil Gupta", "https://www.linkedin.com/in/gnikhil")
+    , ("Gloria Chang", "https://www.linkedin.com/in/gloria-chang")
+    , ("Sean Wharton", "https://scholar.google.com/citations?user=4C3Th6oAAAAJ&hl=en&oi=ao")
+    , ("Scott Gray", "https://scholar.google.com/citations?user=sRId4vsAAAAJ&hl=en&oi=ao")
+    , ("Sarah E. Bergen", "https://ki.se/en/people/sarah-bergen")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1731,7 +1749,7 @@ authorWpLinkDB =
     ,"Gina Kolata", "Giovanni Sala", "Girardin Jean-Louis", "Girishwar Misra", "Gitte Moos Knudsen"
     ,"Giulio Perugi", "Giulio Tononi", "Giuseppe Gabrielli", "Giuseppe Petrosino", "Giuseppe Soda"
     ,"Gjergji Kasneci", "Glen Baker", "Glen Owen", "Glenn C. Loury", "Glenn Loury"
-    ,"Glenn MacDonald", "Glenn Turner", "Gloria Chang", "Gloria Mark", "Glyn Lewis"
+    ,"Glenn MacDonald", "Glenn Turner", "Gloria Mark", "Glyn Lewis"
     ,"Godfrey Thomson", "Goldine C. Gleser", "Goldine Gleser"
     ,"Gon\231alo Abecasis", "Gon\231alo R. Abecasis", "Google Sheets", "Goran Knezevic", "Gordon Pennycook"
     ,"Gordon W. Schuett", "Grace Akello", "Grace Chu", "Graham Coop", "Graham Finlayson"
@@ -2164,7 +2182,7 @@ authorWpLinkDB =
     ,"Nicky Best", "Nicola Clayton", "Nicola Persico", "Nicolai Rubinstein", "Nicolas Perrin"
     ,"Nicole Boivin", "Nicole Graf", "Nicole Lazar", "Nicole Pratt", "Nicole Schupf"
     ,"Nicole Soranzo", "Nigel Paneth", "Nigel R. Franks", "Nigel Slater", "Nigel Stocks"
-    ,"Nikhil Gupta", "Nikhil Naik", "Nikhil Tandon", "Niklaus Wirth", "Nikolai Fyodorovich Fyodorov"
+    , "Nikhil Naik", "Nikhil Tandon", "Niklaus Wirth", "Nikolai Fyodorovich Fyodorov"
     ,"Nikolaos Makris", "Nikolaos Papanikolopoulos", "Nikolaos Pappas", "Nikolaus Rajewsky", "Nikolay Karpov"
     ,"Nilanjan Chatterjee", "Nilay Patel", "Nils Henriksson", "Nils Lid Hjort", "Nina G. Jablonski"
     ,"Nina Singh", "Nina Wedell", "Ning Ding", "Ning Lu", "Ning Zhang"
@@ -2579,4 +2597,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle"]
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham", "Roel André Ophoff"]

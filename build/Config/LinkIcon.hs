@@ -174,7 +174,7 @@ linkIconRulesOverrides u
  | u' u "deepmind"  = ("deepmind", "svg", blueDM) -- DeepMind; match articles or anchors about DM too. Primary user: <deepmind.com>, <deepmind.google>, DM papers on Arxiv (`#deepmind` & `org=deepmind`)
  | u' u "deepseek"  = ("deepseek", "svg", blueDS) -- DeepSeek; similar. Primary user: <www.deepseek.com>/<chat.deepseek.com>, DS papers on Arxiv (`#deepseek` & `org=deepseek`)
  | u' u "schmidhuber" || u' u "people.idsia.ch/~juergen/" = ("SMDH", "text,quad,sans", "") -- Jürgen Schmidhuber homepage & tagged links; should override Arxiv, Bloomberg, NYT, Facebook etc
- | u' u "facebook" || u' u ".fb.com"  = ("facebook", "svg", blueFB)
+ | u' u "facebook" || u' u ".fb.com"|| u' u ".meta.com"  = ("facebook", "svg", blueFB)
  | u' u "sites.google.com/berkeley.edu" || aU'' u ["ml.berkeley.edu", "people.eecs.berkeley.edu", "bair.berkeley.edu"] = ("BAIR", "text,quad,mono", "") -- Berkeley AI Research: Chelsea Finn, Sergey Levine, robotics, Decision Transformer, etc. Overrides Google Sites.
  | u' u "pandoc" && not (u' u "tufte") = ("PNDC", "text,quad,sans", "") -- general catch-all, overrides Google Groups (`pandoc-discuss`), with a further override for Tufte-related stuff (which get 'ET')
  | aU'' u ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' u ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/doc/design/typography/rubrication/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = ("ET", "text", redTufte) -- override CRAN
@@ -768,7 +768,7 @@ linkIconTestUnitsText =
          , ("https://engineering.fb.com/2014/11/14/production-engineering/solving-the-mystery-of-link-imbalance-a-metastable-failure-state-at-scale/",  "facebook","svg", blueFB)
          , ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg", blueFB)
          , ("/doc/ai/scaling/2020-bell.pdf#facebook",  "facebook","svg", blueFB)
-         , ("https://ai.facebook.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", blueFB)
+         , ("https://ai.meta.com/blog/a-highly-efficient-real-time-text-to-speech-system-deployed-on-cpus/",  "facebook","svg", blueFB)
          , ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans", "#8c1b13")
          , ("https://www.tinyletter.com/",  "\9993","text", "#e72223")
          , ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg", "#ff0033")

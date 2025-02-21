@@ -45,7 +45,7 @@ writeOutBlogEntries md =
      let badEntries = filter (\(_,(_,_,dc,_,_,_,_)) -> dc `elem` badDates) writings
      unless (null badDates) $ error $ "Blog.writeOutBlogEntries: invalid dates of blog posts detected; bad dates were: " ++ show badDates ++ "; entries: " ++ show badEntries
      -- we'd also like titles to not take up >1 line, to maintain the classic blog-index look of 1 line = 1 post
-     let badTitles =  filter (\(_,(t,_,_,_,_,_,_)) -> length t > 74 ) writings
+     let badTitles =  filter (\(_,(t,_,_,_,_,_,_)) -> length t > 73 ) writings
      unless (null badTitles) $ printRed $ "Blog.writeOutBlogEntries: warning, entry title awkwardly long, please prune down: " ++ show badTitles
 
      let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ sed ("^"++authorID++"-") ""

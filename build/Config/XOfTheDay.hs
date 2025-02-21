@@ -28,7 +28,7 @@ siteBlackList = [
           "07th-expansion.fandom.com", "17th-angel.tumblr.com", "2chan.us", "abandonedfootnotes.blogspot.com", "abcnews.go.com",
           "abcnotation.com", "academic.oup.com", "academictorrents.com", "aclanthology.org", "acoup.blog",
           "actavet.vfu.cz", "addons.mozilla.org", "advancedfertility.com", "aeon.co", "ageing.oxfordjournals.org",
-          "ageofem.com", "agtb.wordpress.com", "aidungeon.medium.com", "ai.facebook.com", "ai.google",
+          "ageofem.com", "agtb.wordpress.com", "aidungeon.medium.com", "ai.google",
           "ai.stanford.edu", "ajp.psychiatryonline.org", "alexdanco.com", "algo2.iti.kit.edu", "algorithmsbook.com",
           "altjapan.typepad.com", "alumni.media.mit.edu", "andyljones.com", "andymatuschak.org", "animekritik.wordpress.com",
           "annals.org", "ansuz.sooke.bc.ca", "answers.google.com", "antiagingcentral.com", "antonhowes.tumblr.com",

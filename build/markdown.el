@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-19 20:46:00 gwern"
+;;; When:  Time-stamp: "2025-02-20 13:24:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2261,9 +2261,10 @@ With prefix argument ARG which is not boolean value nil, remove urgency
 (defun surround-region-or-word (start-tag end-tag)
   "Surround region (or next word) with START-TAG and END-TAG.
 If the previous command was this command, remove the end tag before point,
-move forward one word (within the same line), and insert only the end tag.
+skip any leading whitespace, move forward one word (within the same line),
+and insert only the end tag.
 This allows repeating the keybinding to incrementally mark up a region
-by bubbling the end-tag through the line.."
+by bubbling the end-tag through the line."
   (interactive)
   (if (eq last-command 'surround-region-or-word)
       ;; Repeated invocation: extend the existing formatted region.
@@ -2274,17 +2275,21 @@ by bubbling the end-tag through the line.."
                           end-tag))
             (delete-region (- (point) end-tag-len) (point))
           (error "Expected end tag not found"))
+        ;; Skip any whitespace before moving to the next word, for better compatibility with word-level movement like `C-f`:
+        (skip-chars-forward " \t")
         ;; Move forward one word, but avoid crossing a newline.
         (unless (or (eolp) (looking-at "\n"))
           (forward-word))
         (insert end-tag))
     ;; First invocation: wrap region (or next word) with start and end tags.
     (let* ((beg (if (use-region-p)
-                    (region-beginning)
-                  (point)))
+                  (region-beginning)
+                (progn
+                  (skip-chars-forward " \t")
+                  (point))))
            (end (if (use-region-p)
-                    (region-end)
-                  (progn (forward-word) (point)))))
+                  (region-end)
+                (progn (forward-word) (point)))))
       (goto-char end)
       (insert end-tag)
       (goto-char beg)
