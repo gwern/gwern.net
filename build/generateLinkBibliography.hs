@@ -101,43 +101,47 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
 generateLinkBibliographyItems :: ArchiveMetadata -> String -> [(String,String,MetadataItem)] -> Block
 generateLinkBibliographyItems _ _ [] = Para []
 generateLinkBibliographyItems am pathParent items =
-  let itemsWP      = filter (\(u,_,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
-      itemsPrimary =  items \\ itemsWP
-  in OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent False) itemsPrimary ++
-        -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
-        if null itemsWP then [] else [
-                                      [Div ("",["collapse"],[]) [
-                                          -- TODO: make these .include-content links
-                                          Para [Strong [Str "Wikipedia Bibliography:"]],
-                                          OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent True) itemsWP)]]]
+ let itemsWP      = filter (\(u,_,_) -> "https://en.wikipedia.org/wiki/" `isPrefixOf` u) items
+     itemsPrimary =  items \\ itemsWP
+ in OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent False) itemsPrimary ++
+       -- because WP links are so numerous, and so bulky, stick them into a collapsed sub-list at the end:
+       if null itemsWP then [] else [
+                                     [Div ("",["collapse"],[]) [
+                                         -- TODO: make these .include-content links?
+                                         Para [Strong [Str "Wikipedia Bibliography:"]],
+                                         OrderedList (1, DefaultStyle, DefaultDelim) (map (generateLinkBibliographyItem am pathParent True) itemsWP)]]]
                                       )
 generateLinkBibliographyItem  :: ArchiveMetadata -> String -> Bool -> (String,String,MetadataItem) -> [Block]
 generateLinkBibliographyItem _ pathParent False (f,ident,(t,_,_,_,_,_,""))  = -- short:
-  let f'
-        | "http" `isPrefixOf` f = f
-        | "index" `isSuffixOf` f = takeDirectory f
-        | otherwise = takeFileName f
-        -- NOTE: this must include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote', otherwise it will be rewritten incorrectly when transcluded. Like in the link-bib for '/design', a href='#gwern-sidenote' would be rewritten by the transclude JS to point to the 'original within-page anchor', in this case, '/metadata/annotation/link-bibliography/%2fdesign.html', which is of course completely incorrect - we want it to point to the ID anchor in */design*.
-      prefix = if null ident || not (isPagePath (T.pack f)) then [] else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank';
-      -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
-      -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
-      -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
-      -- we try to append a blockquote with the `.include-block-context` class, to make it look like the backlinks approach to transcluding the context
-      -- at a glance:
-      transcludeTarget = if not (isPagePath (T.pack f) && '#' `elem` f) then [] else
-                           [BlockQuote [Para [Link ("", ["backlink-not", "include-block-context", "link-annotated-not", "collapsible"], []) -- TODO: do we need .link-annotated-not if we are explicitly transcluding .include-block-context?
-                                               [Span ("",["abstract-collapse"],[]) [Str "[Transclude the forward-link's context]"]] (T.pack f,"")]]]
-      -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
-  in
+ let f'
+       | "http" `isPrefixOf` f = f
+       | "index" `isSuffixOf` f = takeDirectory f
+       | otherwise = takeFileName f
+       -- NOTE: this must include the parent URL, like '/design#gwern-sidenote' instead of just '#gwern-sidenote', otherwise it will be rewritten incorrectly when transcluded. Like in the link-bib for '/design', a href='#gwern-sidenote' would be rewritten by the transclude JS to point to the 'original within-page anchor', in this case, '/metadata/annotation/link-bibliography/%2fdesign.html', which is of course completely incorrect - we want it to point to the ID anchor in */design*.
+     prefix = if null ident || not (isPagePath (T.pack f)) then [] else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space] -- ZERO WIDTH SPACE to make clear that 'this link intentionally left blank';
+     -- Imagine we link to a target on another Gwern.net page like </question#feynman>. It has no full annotation and never will, not even a title.
+     -- So it would show up in the link-bib as merely eg. '55. `/question#feynman`'. Not very useful! Why can't it simply transclude that snippet instead?
+     -- So, we do that here: if it is a local page path, has an anchor `#` in it, and does not have an annotation ("" pattern-match guarantees that),'
+     -- we try to append a blockquote with the `.include-block-context` class, to make it look like the backlinks approach to transcluding the context
+     -- at a glance:
+     transcludeTarget = if not (isPagePath (T.pack f) && '#' `elem` f) then [] else
+                          [BlockQuote [Para [Link ("", ["backlink-not", "include-block-context", "link-annotated-not", "collapsible"], []) -- TODO: do we need .link-annotated-not if we are explicitly transcluding .include-block-context?
+                                              [Span ("",["abstract-collapse"],[]) [Str "[Transclude the forward-link's context]"]] (T.pack f,"")]]]
+     -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
+ in
     if t=="" then
       Para (prefix ++ [Link ("",["id-not"],[]) [Code nullAttr (T.pack f')] (T.pack f, "")]) : transcludeTarget
     else
       Para (prefix ++ [Link ("",["id-not"],[]) [RawInline (Format "HTML") (T.pack $ titlecase' t)] (T.pack f, "")]) : transcludeTarget
 -- long items:
-generateLinkBibliographyItem am pathParent _ (f,ident,mi) = let prefix = if null ident then [] else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space] in
-                                                 wrapWith prefix $ generateAnnotationTransclusionBlock am (f,mi)
+generateLinkBibliographyItem am pathParent _ (f,ident,mi) =
+  let prefix = if null ident || not (isPagePath (T.pack f)) then []
+               else [Link ("",["id-not", "link-bibliography-context"],[]) [Str "\8203"] ((T.pack $ (takeWhile (/='#') pathParent) ++ "#" ++ ident), "Original context in page."), Space]
+  in
+    wrapWith prefix $ generateAnnotationTransclusionBlock am (f,mi)
    where wrapWith p ((Para x) : xs) = Para (p++x) : xs -- inject the prefix into the first Paragraph which is the regular link generated by the transclusion block
-         wrapWith p x = error $ "generateLinkBibliography.generateLinkBibliographyItem.wrapWith: attempted rewrite of generateAnnotationTransclusionBlock failed because the pattern-match didn't fire like it's always supposed to; did the output '[Block]' change? Inputs were: prefix: " ++ show p ++ " : transclude block: " ++ show x
+         wrapWith p x = error $ "generateLinkBibliography.generateLinkBibliographyItem.wrapWith: attempted rewrite of generateAnnotationTransclusionBlock failed because the pattern-match didn't fire like it's always supposed to; did the output '[Block]' change? Inputs were: prefix: " ++
+                        show p ++ " : transclude block: " ++ show x
 
 -- TODO: refactor out to Query?
 extractLinksFromPage :: String -> IO [(String,String)]
