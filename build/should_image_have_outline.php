@@ -10,50 +10,138 @@
 # Date: 2024-12-18
 # License: CC-0
 
+/** Design rationale:
+ *
+ * Determines whether an image should have an outline, returning "1" (outline) or "0" (no outline).
+ *
+ * Logic:
+ * - For PNG/JPEG, the script checks the 4 corner pixels:
+ * - If corners differ in color, return "1".
+ * - If corners share a single color but have any transparency, return "1".
+ * - If corners share a single fully opaque color other than pure black (#000000) or pure white (#FFFFFF), return "1".
+ * - Otherwise, return "0".
+ * - SVG images always return "0".
+ *   We do not try to support other raster or vector images; see `Image.isImageFilename`: JPG/PNG/SVG cover almost every image displayed on Gwern.net and the rest are too rare to care about.
+ *
+ * Rationale:
+ * Images with varied/transparent corners often benefit from an outline for better contrast.
+ * Uniform black or white corners usually blend well with common page backgrounds.
+ *
+ * Dependencies: GD Library for PNG/JPEG processing.
+ * Usage: $ php should_image_have_outline.php <image_path>
+ *
+ * Exit codes:
+ * 0: Success (outputs "0" (False) or "1" (True), no newline)
+ * 1: Invalid argument count
+ * 2: Unsupported file extension
+ * 3: Image loading failed
+ * 4: Uppercase file extension
+ * 5: File does not exist or size could not be read.
+ * 6: File too small.
+ * 7: File too large.
+ * 8: Image too small.
+ * 9: Image too large.
+ * 10: Image uses too much RAM.
+ * 11: File cannot be read.
+ */
+
+# ---------- CONFIGURATION ----------
+$MAX_FILESIZE_BYTES  = 100 * 1024 * 1024; // 100 MB maximum
+$MIN_FILESIZE_BYTES  = 500;         // 0.5 KB minimum
+$MAX_WIDTH           = 32768;  # Common max texture size
+$MIN_WIDTH           = 25;
+$MAX_HEIGHT          = 32768;
+$MIN_HEIGHT          = 25;
+
+# ---------- MAIN SCRIPT ----------
+
 if ($argc != 2) {
-    echo "Fatal error: 'should_image_have_outline.php' requires exactly 1 image argument.";
+    echo "Fatal error: requires exactly 1 image argument.";
     exit(1);
 }
 
 $image_path = $argv[1];
 $image = null;
 
-// Verify lowercase extension
+// Check file extension is lowercase
 if (preg_match('/[A-Z]/', pathinfo($image_path, PATHINFO_EXTENSION))) {
     echo "Fatal error: Image extensions must be lowercase.";
     exit(4);
 }
 
+// Check file size (existence + min/max)
+if (!file_exists($image_path)) {
+    echo "Fatal error: File does not exist.";
+    exit(5);
+}
+clearstatcache();
+if (!is_readable($image_path)) {
+    echo "Fatal error: Cannot read file.";
+    exit(11);
+}
+$filesize = filesize($image_path);
+if ($filesize === false) {
+    echo "Fatal error: Could not read file size.";
+    exit(5);
+}
+if ($filesize < $MIN_FILESIZE_BYTES) {
+    echo "Fatal error: File is too small (< 0.5 KB).";
+    exit(6);
+}
+if ($filesize > $MAX_FILESIZE_BYTES) {
+    echo "Fatal error: File is too large (> 100 MB).";
+    exit(7);
+}
+
+// Handle images by extension
 if (str_ends_with($image_path, ".svg")) {
+    // SVG always "no outline"
     echo "0";
     exit(0);
-} else if (str_ends_with($image_path, ".png")) {
-    // from 'GD Library'; `sudo apt-get install php-gd`:
+} elseif (str_ends_with($image_path, ".png")) {
     $image = imageCreateFromPng($image_path);
     if ($image === false) {
-        echo "Fatal error: Failed to load PNG image";
+        echo "Fatal error: Failed to load PNG image.";
         exit(3);
     }
-} else if (str_ends_with($image_path, ".jpg") || str_ends_with($image_path, ".jpeg")) {
+} elseif (str_ends_with($image_path, ".jpg") || str_ends_with($image_path, ".jpeg")) {
     $image = imageCreateFromJpeg($image_path);
     if ($image === false) {
-        echo "Fatal error: Failed to load JPEG image";
+        echo "Fatal error: Failed to load JPEG image.";
         exit(3);
     }
 } else {
-    echo "Fatal error: Argument not recognized as having image JPG/PNG/SVG image extension.";
+    echo "Fatal error: Unsupported file extension (use .jpg/.jpeg/.png/.svg).";
     exit(2);
 }
 
+// Check dimensions
 $width = imagesx($image);
 $height = imagesy($image);
+if ($width < $MIN_WIDTH || $height < $MIN_HEIGHT) {
+    echo "Fatal error: Image is too small (must be at least 25×25).";
+    exit(8);
+}
+if ($width > $MAX_WIDTH || $height > $MAX_HEIGHT) {
+    echo "Fatal error: Image dimensions too large (max 32768×32768).";
+    exit(9);
+}
+if ($width * $height > 268435456) { # 16384×16384
+    echo "Fatal error: Image requires too much memory.";
+    exit(10);
+}
+
+// Examine corner pixels
 $corner_colors = [
     imageColorsForIndex($image, imageColorAt($image, 0,          0          )),
     imageColorsForIndex($image, imageColorAt($image, $width - 1, 0          )),
     imageColorsForIndex($image, imageColorAt($image, 0,          $height - 1)),
     imageColorsForIndex($image, imageColorAt($image, $width - 1, $height - 1)),
 ];
+// clean up
+imagedestroy($image)
 
+// Simple corner-based heuristic
 if (!are_all_same($corner_colors)) {
     echo "1";
 } else if (!is_opaque($corner_colors[0])) {
@@ -65,7 +153,8 @@ if (!are_all_same($corner_colors)) {
 }
 exit(0);
 
-## FUNCTIONS
+# ---------- HELPER FUNCTIONS ----------
+
 function is_opaque($color) {
     return ($color["alpha"] == 0);
 }
