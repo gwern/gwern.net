@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-17 13:50:19 gwern"
+When: Time-stamp: "2025-02-20 19:51:00 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -15,7 +15,7 @@ $ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev 
 Demo command (for the full script, with all static checks & generation & optimizations, see `sync.sh`):
 -}
 
-import Control.Monad (when, unless) -- (<=<)
+import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup) -- keys
@@ -38,7 +38,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length)
 
 -- local custom modules:
-import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
+import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet, outlineImageInline)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
@@ -221,7 +221,7 @@ postCtx md rts =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "css-extension" "dropcaps-de-zs" <>
-    constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
+    constField "thumbnail-css" "" <> -- constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
     imageDimensionWidth "thumbnail-height" <>
     imageDimensionWidth "thumbnail-width" <>
     -- for use in templating, `<body class="page-$safe-url$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
@@ -335,7 +335,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
-     walkM imageLinkHeightWidthSet pbth
+     walkM (outlineImageInline <=< imageLinkHeightWidthSet) pbth
 
 -- check that a Gwern.net Pandoc Markdown file has the mandatory metadata fields (title, created, status, confidence), and does not have any unknown fields:
 -- checkEssayPandocMetadata :: Pandoc -> IO ()

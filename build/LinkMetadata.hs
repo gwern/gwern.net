@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-19 13:44:26 gwern"
+When:  Time-stamp: "2025-02-20 22:16:10 gwern"
 License: CC-0
 -}
 
@@ -41,7 +41,7 @@ import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, m
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks)
 import Typography (titlecase', typesetHtmlField, titleWrap)
-import Image (addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
+import Image (addImgDimensions, imageLinkHeightWidthSet, outlineImageInline, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID, getDisambiguatedPairs)
@@ -285,7 +285,7 @@ readLinkMetadataAndCheck = do
              let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
              unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
 
-             let authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType"] :: [String]
+             let authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
@@ -378,7 +378,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
-                                    walkM (imageLinkHeightWidthSet <=< localizeLink am) p
+                                    walkM (outlineImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
 
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
@@ -399,7 +399,7 @@ createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extract
 
 annotateLink :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
-  | anyPrefixT targetT ["/metadata/", "/doc/www/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
+  | anyPrefixT targetT ["/metadata/", "/doc/www/", "/ref/", "/blog/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)

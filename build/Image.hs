@@ -3,7 +3,7 @@
 module Image where
 
 import Control.Exception (onException)
-import Control.Monad (void, when)
+import Control.Monad (void, when, unless)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
@@ -19,14 +19,14 @@ import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
-import qualified Data.Text as T (isSuffixOf, pack, takeWhile, unpack, Text, replace)
+import qualified Data.Text as T (isSuffixOf, pack, takeWhile, unpack, Text, replace, head)
 
 import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(Image, Link))
 
 import LinkMetadataTypes (Metadata)
-import Utils (addClass, printRed, anySuffix, isLocal, kvLookup, delete)
+import Utils (addClass, printRed, anySuffix, isLocal, kvLookup, delete, trim)
 
 -- does the filename claim to be an image-type we support? (ignores hash-anchors, so `/doc/rl/2024-foo.jpg#deepmind` → True)
 -- excludes ".psd"
@@ -109,7 +109,7 @@ invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.d
 
 -- unfortunately, this heuristic often fails, eg. all of </doc/ai/nn/diffusion/midjourney/black-sun/*.jpg>
 invertImageLocal :: FilePath -> IO (Bool, String, String)
-invertImageLocal "" = return (False, "0", "0")
+invertImageLocal "" = error "Image.invertImageLocal called with an empty filename, that should never happen!"
 invertImageLocal f = do let f' = takeWhile (/='#') f
                         if not (anySuffix f' [".png", ".jpg", ".webp"]) then return (False, "0", "0")  else
                          do does <- doesFileExist f'
@@ -143,6 +143,30 @@ imageMagickColor f f' = do let temp = if null f' then f else f'
                                      case color of
                                        Nothing -> printRed ("imageMagickColor: " ++ f ++ " : ImageMagick parsing error: " ++ show (unpack bs) ++ " " ++ temp) >> return 1.0
                                        Just c -> return c
+
+outlineImage :: FilePath -> IO Bool
+outlineImage "" = error "Image.outlineImage called with an empty filename, that should never happen!"
+outlineImage f  = do let f' = (if head f /= '/' then id else tail) $ takeWhile (/='#') f
+                     unless (isImageFilename f) $ error $ "Image.outlineImage called on a non-image filename? " ++ f
+                     does <- doesFileExist f'
+                     unless does $ error $ "Image.outlineImage called on a file which doesn't exist? File was: " ++ f ++ "; converted to: " ++ f'
+                     x@(status,_,bs) <- runShellCommand "./" Nothing "php" ["static/build/should_image_have_outline.php", f']
+                     case status of
+                              ExitFailure _ ->  error $ "Image.outlineImage PHP command returned failure!" ++ show x ++ "; " ++ f
+                              _ -> do
+                                let outline = take 1 $ trim $ unpack bs
+                                when (outline == "") $ error $ "Image.outlineImage called on a file but 'should_image_have_outline.php' returned nothing? File was: " ++ f ++ "; converted to: " ++ f'
+                                return $ outline == "1"
+
+outlineImageInline :: Inline -> IO Inline
+outlineImageInline x@(Image _ _ ("",_)) = error $ "Image.outlineImageInline called with a malformed image with no filename; this should never happen. Argument: " ++ show x
+outlineImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) =
+  if "outline" `elem` classes || "outline-not" `elem` classes then return x else
+       if T.head p /= '/' then return x else
+         do outline <- outlineImage (T.unpack p)
+            let outlineClass = if outline then "outline" else "outline-not"
+            return $ Image (htmlid, outlineClass:classes, kvs) xs (p,t)
+outlineImageInline x = return x
 
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
