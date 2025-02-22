@@ -7492,6 +7492,12 @@ Content = {
 
 				NOTE: If this member function is not present, then reference
 				data will not be cached for links of this content type.
+
+			.referenceDataCacheKeyMatchesLink(string, URL|Element) => boolean
+
+				Used when invalidating cached reference data. Should be supplied
+				if a single loaded content entry may generate multilpe reference
+				data entries, for multiple different reference data cache keys.
      */
 
     contentTypeForLink: (link) => {
@@ -7508,6 +7514,21 @@ Content = {
 
         return null;
     },
+
+	contentTypeNameForLink: (link) => {
+		if (link.dataset?.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentTypeName;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
+            if (contentType.matches(link))
+                return contentTypeName;
+
+        return null;
+	},
 
     contentTypes: {
         dropcapInfo: {
@@ -10056,25 +10077,19 @@ function loadLocationForIncludeLink(includeLink) {
 }
 
 /*******************************************************************************/
-/*	Return appropriate contentType string for given include-link. (May be null.)
+/*	Return appropriate contentType string for given include-link. (May be null,
+	but probably shouldn’t be.)
  */
 function contentTypeIdentifierForIncludeLink(includeLink) {
-	let contentType = null;
-
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		|| (   Content.contentTypes.localFragment.matches(includeLink)
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
-		contentType = "annotation";
+		return "annotation";
 	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
-		contentType = /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
+		return /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
 	} else {
-		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
-		if (   referenceData
-			&& referenceData.contentTypeClass != null)
-			contentType = referenceData.contentTypeClass.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+		return Content.contentTypeNameForLink(includeLink);
 	}
-
-	return contentType;
 }
 
 /*****************************************************************/
@@ -15661,7 +15676,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 	if (eventInfo.document == document)
 		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.document == document
-						 && info.contentType == null));
+						 && info.contentType == "localPage"));
 
 /****************************************************************************/
 /*	When an annotation is transcluded into a page, and some of the backlinks 

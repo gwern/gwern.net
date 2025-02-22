@@ -1269,12 +1269,14 @@ window.addEventListener("DOMContentLoaded", () => {
     let pageURL = URLFromString(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
+        contentType: "localPage",
         container: document.main,
         document: document,
         loadLocation: pageURL
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
+        contentType: "localPage",
         container: document.main,
         document: document,
         loadLocation: pageURL,

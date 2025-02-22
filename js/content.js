@@ -377,6 +377,12 @@ Content = {
 
 				NOTE: If this member function is not present, then reference
 				data will not be cached for links of this content type.
+
+			.referenceDataCacheKeyMatchesLink(string, URL|Element) => boolean
+
+				Used when invalidating cached reference data. Should be supplied
+				if a single loaded content entry may generate multilpe reference
+				data entries, for multiple different reference data cache keys.
      */
 
     contentTypeForLink: (link) => {
@@ -393,6 +399,21 @@ Content = {
 
         return null;
     },
+
+	contentTypeNameForLink: (link) => {
+		if (link.dataset?.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentTypeName;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
+            if (contentType.matches(link))
+                return contentTypeName;
+
+        return null;
+	},
 
     contentTypes: {
         dropcapInfo: {

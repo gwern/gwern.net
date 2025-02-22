@@ -932,25 +932,19 @@ function loadLocationForIncludeLink(includeLink) {
 }
 
 /*******************************************************************************/
-/*	Return appropriate contentType string for given include-link. (May be null.)
+/*	Return appropriate contentType string for given include-link. (May be null,
+	but probably shouldn’t be.)
  */
 function contentTypeIdentifierForIncludeLink(includeLink) {
-	let contentType = null;
-
 	if (   Transclude.isAnnotationTransclude(includeLink)
 		|| (   Content.contentTypes.localFragment.matches(includeLink)
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
-		contentType = "annotation";
+		return "annotation";
 	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
-		contentType = /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
+		return /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
 	} else {
-		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
-		if (   referenceData
-			&& referenceData.contentTypeClass != null)
-			contentType = referenceData.contentTypeClass.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+		return Content.contentTypeNameForLink(includeLink);
 	}
-
-	return contentType;
 }
 
 /*****************************************************************/
