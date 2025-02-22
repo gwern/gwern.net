@@ -897,7 +897,7 @@ custom = [
         , ("[Rr]ule of succession", "https://en.wikipedia.org/wiki/Rule_of_succession")
         , ("[Ss]adis(m|tic|t|ts)", "https://en.wikipedia.org/wiki/Sadistic_personality_disorder")
         , ("[Ss]caling [Hh]ypothesis", "/scaling-hypothesis")
-        , ("[Ss]caling [Ll]aws?", "/note/scaling")
+        , ("[Ss]caling [Ll]aws?", "https://en.wikipedia.org/wiki/Neural_scaling_law")
         , ("([Ss]chizoid|[Ss]chizoid personality)", "https://en.wikipedia.org/wiki/Schizoid_personality_disorder")
         , ("[Ss]ecurity[ -]through[ -]obscurity", "https://en.wikipedia.org/wiki/Security_through_obscurity")
         , ("[Ss]elegiline", "https://en.wikipedia.org/wiki/Selegiline")
