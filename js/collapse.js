@@ -620,6 +620,8 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 		&& collapseBlock.closest("blockquote") == null
 		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
+			let collapseBlockComputedStyle = getComputedStyle(collapseBlock);
+
 			let collapseContentWrapper = collapseBlock.querySelector(".collapse-content-wrapper");
 			let contentColumn = collapseBlock.closest(".sidenote, .markdownBody");
 			if (contentColumn.matches(".sidenote"))
@@ -627,8 +629,8 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 
 			let contentRect = collapseContentWrapper.getBoundingClientRect();
 			let enclosingContentRect = contentColumn.getBoundingClientRect();
-			let collapseLeftOffsetPx = getComputedStyle(collapseBlock).getPropertyValue("--collapse-left-offset");
-			let collapseLeftBorderWidth = parseInt(getComputedStyle(collapseBlock).getPropertyValue("border-left"))
+			let collapseLeftOffsetPx = collapseBlockComputedStyle.getPropertyValue("--collapse-left-offset");
+			let collapseLeftBorderWidth = parseInt(collapseBlockComputedStyle.getPropertyValue("border-left"))
 			let floatOffset = 0;
 
 			//	Compensate for TOC.
@@ -640,7 +642,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 					if (TOCRect.bottom > contentRect.top) {
 						floatOffset = Math.round(  TOCRect.width 
 												 + parseInt(getComputedStyle(TOC).marginRight)
-												 + parseInt(getComputedStyle(collapseBlock).paddingLeft));
+												 + parseInt(collapseBlockComputedStyle.paddingLeft));
 					}
 				}
 			}

@@ -3489,6 +3489,10 @@ GW.layout = {
 														10, false ],
 		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
 														 7, false ],
+		[ "body.blog-page .aux-links-append + .aux-links-append",
+														 4, false ],
+		[ "body.blog-page .aux-links-append + .file-include-collapse",
+														 4, false ],
 
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
@@ -3514,6 +3518,8 @@ GW.layout = {
 		[ ".annotation * + annotation .collapse.bare-content",
 										 6, false ],
 
+		[ ".section-backlinks-container + .section-backlinks-container",
+										 4, false ],
 		[ ".aux-links-append + .aux-links-append",
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + *",
