@@ -42,14 +42,23 @@ Content = {
 
         let content = Content.cachedContentForLink(link);
 
+		let didUpdate = false;
         switch (Content.contentTypeForLink(link)) {
             case Content.contentTypes.localPage:
-                updateFunction(content.document);
+                didUpdate = updateFunction(content.document);
                 break;
             default:
                 break;
         }
+
+		if (didUpdate)
+			Content.invalidateCachedReferenceDataForLink(link);
     },
+
+	invalidateCachedContent: (link) => {
+		Content.cachedContent[Content.contentCacheKeyForLink(link)] = null;
+		Content.invalidateCachedReferenceDataForLink(link);
+	},
 
     /*******************/
     /*  Content loading.
@@ -197,6 +206,21 @@ Content = {
 		let cacheKey = Content.referenceDataCacheKeyForLink(link);
 		if (cacheKey)
 			Content.cachedReferenceData[cacheKey] = referenceData;
+	},
+
+	invalidateCachedReferenceDataForLink: (link) => {
+		let contentType = Content.contentTypeForLink(link);
+		if (contentType?.referenceDataCacheKeyForLink == null)
+			return;
+		for (let [ cacheKey, referenceData ] of Object.entries(Content.cachedReferenceData)) {
+			if (contentType.referenceDataCacheKeyMatchesLink) {
+				if (contentType.referenceDataCacheKeyMatchesLink(cacheKey, link))
+					Content.cachedReferenceData[cacheKey] = null;
+			} else {
+				if (contentType.referenceDataCacheKeyForLink(link) == cacheKey)
+					Content.cachedReferenceData[cacheKey] = null;
+			}
+		}
 	},
 
     referenceDataForLink: (link) => {
@@ -353,10 +377,16 @@ Content = {
 
 				NOTE: If this member function is not present, then reference
 				data will not be cached for links of this content type.
+
+			.referenceDataCacheKeyMatchesLink(string, URL|Element) => boolean
+
+				Used when invalidating cached reference data. Should be supplied
+				if a single loaded content entry may generate multilpe reference
+				data entries, for multiple different reference data cache keys.
      */
 
     contentTypeForLink: (link) => {
-		if (link.dataset.linkContentType) {
+		if (link.dataset?.linkContentType) {
 			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
@@ -370,10 +400,25 @@ Content = {
         return null;
     },
 
+	contentTypeNameForLink: (link) => {
+		if (link.dataset?.linkContentType) {
+			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentType = Content.contentTypes[contentTypeName];
+			if (contentType?.matches(link))
+				return contentTypeName;
+		}
+
+        for (let [ contentTypeName, contentType ] of Object.entries(Content.contentTypes))
+            if (contentType.matches(link))
+                return contentTypeName;
+
+        return null;
+	},
+
     contentTypes: {
         dropcapInfo: {
             matches: (link) => {
-                return link.classList.contains("link-dropcap");
+                return (link.classList?.contains("link-dropcap") == true);
             },
 
             isSliceable: false,
@@ -414,10 +459,10 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
+                let url = URLFromString(link.dataset?.urlArchive ?? link.dataset?.urlIframe ?? link.href);
 
                 return (   url.hostname != location.hostname
-                        && link.classList.contains("link-live"));
+                        && link.classList?.contains("link-live") == true);
             },
 
             isSliceable: false,
@@ -508,9 +553,9 @@ Content = {
 				Wikipedia URLs.
 			 */
 			matches: (link) => {
-				return (   link.classList.contains("content-transform-not") == false
-						&& /(.+?)\.wikipedia\.org/.test(link.hostname)
-						&& link.pathname.startsWith("/wiki/")
+				return (   link.classList?.contains("content-transform-not") != true
+						&& /(.+?)\.wikipedia\.org/.test(link.hostname) == true
+						&& link.pathname.startsWith("/wiki/") == true
 						&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
 			},
 
@@ -1133,9 +1178,9 @@ Content = {
 
 		githubIssue: {
 			matches: (link) => {
-				return (   link.classList.contains("content-transform-not") == false
-						&& /github\.com/.test(link.hostname)
-						&& /\/.+?\/.+?\/issues\/[0-9]+$/.test(link.pathname));
+				return (   link.classList?.contains("content-transform-not") != true
+						&& /github\.com/.test(link.hostname) == true
+						&& /\/.+?\/.+?\/issues\/[0-9]+$/.test(link.pathname) == true);
 			},
 
 			isSliceable: false,
@@ -1185,10 +1230,10 @@ Content = {
 
         tweet: {
             matches: (link) => {
-                return (   link.classList.contains("content-transform-not") == false
-						&& [ "x.com" ].includes(link.hostname)
+                return (   link.classList?.contains("content-transform-not") != true
+						&& [ "x.com" ].includes(link.hostname) == true
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null
-                        && link.dataset.urlArchive != null);
+                        && link.dataset?.urlArchive != null);
             },
 
             isSliceable: false,
@@ -1342,12 +1387,12 @@ Content = {
                     return false;
 
                 //  Maybe it’s an aux-links link?
-                if (link.pathname.startsWith("/metadata/"))
+                if (link.pathname.startsWith("/metadata/") == true)
                     return false;
 
                 //  Maybe it’s a local document link?
-                if (   link.pathname.startsWith("/doc/www/")
-                    || (   link.pathname.startsWith("/doc/")
+                if (   link.pathname.startsWith("/doc/www/") == true
+                    || (   link.pathname.startsWith("/doc/") == true
                         && link.pathname.match(/\.(html|pdf)$/i) != null))
                     return false;
 
@@ -1439,8 +1484,8 @@ Content = {
                 if (link.hostname != location.hostname)
                     return false;
 
-                return (   link.pathname.startsWith("/metadata/")
-                        && link.pathname.endsWith(".html"));
+                return (   link.pathname.startsWith("/metadata/") == true
+                        && link.pathname.endsWith(".html") == true);
             },
 
             isSliceable: true,
@@ -1653,7 +1698,7 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
+                let url = URLFromString(link.dataset?.urlArchive ?? link.dataset?.urlIframe ?? link.href);
 
                 //  Maybe it’s a foreign link?
                 if (url.hostname != location.hostname)
@@ -1661,11 +1706,11 @@ Content = {
 
                 //  On mobile, we cannot embed PDFs.
                 if (   GW.isMobile()
-                    && url.pathname.endsWith(".pdf"))
+                    && url.pathname.endsWith(".pdf") == true)
                     return false;
 
                 return (   url.pathname.startsWith("/metadata/") == false
-                        && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
+                        && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)) == true);
             },
 
             isSliceable: false,
@@ -1855,8 +1900,8 @@ Content = {
                     archived document. Still, we allow for explicit overrides.
                  */
                 return (   link.pathname.match(/\./) == null
-                        || link.pathname.endsWith("/index")
-                        || link.classList.contains("link-page"));
+                        || link.pathname.endsWith("/index") == true
+                        || link.classList?.contains("link-page") == true);
             },
 
             isSliceable: true,
@@ -1933,17 +1978,21 @@ Content = {
             },
 
 			referenceDataCacheKeyForLink: (link) => {
-				let cacheKey = modifiedURL(link, { hash: null, search: null }).href;
-				if (link.dataset.pageSectionId > "")
+				let cacheKey = modifiedURL(link, { hash: "", search: "" }).href;
+				if (link.dataset?.pageSectionId > "")
 					cacheKey += ":::" + link.dataset.pageSectionId;
 				return cacheKey;
+			},
+
+			referenceDataCacheKeyMatchesLink: (cacheKey, link) => {
+				return cacheKey.startsWith(modifiedURL(link, { hash: "", search: "" }).href);
 			},
 
             referenceDataFromContent: (pageContent, link) => {
                 let pageContentDocument = newDocument();
 
 				//	If a page section is specified, extract it.
-				if (link.dataset.pageSectionId > "")
+				if (link.dataset?.pageSectionId > "")
 					pageContentDocument.appendChild(pageContent.document.querySelector("#" + link.dataset.pageSectionId)?.cloneNode(true));
 
                 /*  Otherwise (or if the specified section does not exist), the

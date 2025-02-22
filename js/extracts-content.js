@@ -184,7 +184,7 @@ Extracts = { ...Extracts,
                             popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
                         }
                     } else {
-                        popFrameTitleTextParts.push(link.hash);
+                        popFrameTitleTextParts.push(target.hash);
                     }
                 }
 			}
@@ -222,6 +222,8 @@ Extracts = { ...Extracts,
 					).forEach(includeLink => {
 						Transclude.transclude(includeLink, true);
 					});
+
+					return true;
 				});
 			}, { condition: (info) => (   info.source == "transclude"
 									   && info.document == popFrame.document) });

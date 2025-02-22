@@ -1226,7 +1226,7 @@ function updatePageTOC(container = document) {
                         ? "Footnotes"
                         : section.firstElementChild.querySelector("a").innerHTML;
         entry.innerHTML = `<a
-                            class='link-self decorate-not'
+                            class='decorate-not'
                             id='toc-${section.id}'
                             href='#${fixedEncodeURIComponent(section.id)}'
                                 >${entryText}</a>`;

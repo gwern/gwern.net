@@ -291,6 +291,231 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 /* AUX-LINKS */
 /*************/
 
+/***************************************************/
+/*	Strip IDs from links in backlink context blocks.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.anonymizeLinksInBacklinkContextBlocks = (eventInfo) => {
+    GWLog("anonymizeLinksInBacklinkContextBlocks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a[id]").forEach(link => {
+		link.id = "";
+	});
+}, "rewrite", (info => (   info.container.closest(".backlink-context") != null
+						|| info.container.matches(".section-backlinks-include-wrapper"))));
+
+/******************************************************************************/
+/*	Returns the backlinks block for a section or a footnote (creating and 
+	injecting the backlinks block if one does not already exist). (Note that,
+	in the latter case, a GW.contentDidInject event will need to be fired for
+	the backlinks block, once all modifications to it are complete; and its 
+	wrapper, a div.section-backlinks-include-wrapper, will need to be unwrapped.)
+ */
+function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) {
+	let backlinksBlock = targetBlock.querySelector(".section-backlinks");
+	if (backlinksBlock == null) {
+		//	Backlinks block.
+		backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
+
+		//	Label.
+		let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
+		let sectionLabelHTML = targetBlock.tagName == "SECTION"
+							   ? `“${(targetBlock.firstElementChild.textContent)}”`
+							   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
+		backlinksBlock.append(elementFromHTML(  `<p class="aux-links-list-label backlinks-list-label">`
+											  + `<strong>`
+											  + `<a
+											  	  href="/design#backlink"
+											  	  class="icon-special link-annotated"
+											  	  data-link-icon="arrows-pointing-inwards-to-dot"
+											  	  data-link-icon-type="svg"
+											  	  >Backlinks (<span class="backlink-count">0</span>)</a> for `
+											  + `<a 
+											  	  href="${sectionLabelLinkTarget}" 
+											  	  class="link-page"
+											  	  >${sectionLabelHTML}</a>:`
+											  + `</strong></p>`));
+
+		//	List.
+		backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
+
+		//	Collapse wrapper.
+		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
+		backlinksBlockCollapseWrapper.append(backlinksBlock);
+
+		//	Include wrapper.
+		let backlinksBlockIncludeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
+		backlinksBlockIncludeWrapper.append(backlinksBlockCollapseWrapper);
+		let targetBlockContentContainer = targetBlock.classList.contains("collapse")
+										  ? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
+										  : targetBlock;
+		targetBlockContentContainer.append(backlinksBlockIncludeWrapper);
+	}
+
+	return backlinksBlock;
+}
+
+/**************************************************************************/
+/*	Update the parenthesized count of backlink entries, display in the list 
+	label graf of a backlinks block.
+ */
+function updateBacklinksCountDisplay(backlinksBlock) {
+	let countDisplay = backlinksBlock.querySelector(".backlink-count");
+	if (countDisplay == null)
+		return;
+
+	countDisplay.innerHTML = backlinksBlock.querySelectorAll(".backlinks-list > li").length;
+}
+
+/*************************************/
+/*	Add within-page section backlinks.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSectionBacklinksBlocks = (eventInfo) => {
+    GWLog("addWithinPageBacklinksToSectionBacklinksBlocks", "rewrite.js", 1);
+
+	let excludedContainersSelector = [
+		"#hidden-sidenote-storage",
+		".sidenote-column",
+		".aux-links-list"
+	].join(", ");
+	if (eventInfo.container.closest(excludedContainersSelector) != null)
+		return;
+
+	let excludedLinkContainersSelector = [
+		"#page-metadata",
+		".aux-links-append"
+	].join(", ");
+	let excludedTargetContainersSelector = [
+		"#backlinks-section",
+		"#similars-section",
+		"#link-bibliography-section"
+	].join(", ");
+
+	let backlinksBySectionId = { };
+	let mainContentContainer = eventInfo.document.querySelector("#markdownBody") ?? eventInfo.document.querySelector(".markdownBody");
+	mainContentContainer.querySelectorAll("a.link-self").forEach(link => {
+		if (link.closest(excludedLinkContainersSelector) != null)
+			return;
+
+		let targetBlock = mainContentContainer.querySelector(selectorFromHash(link.hash))?.closest("section, li.footnote");
+		if (   targetBlock != null
+			&& targetBlock.matches(excludedTargetContainersSelector) == false) {
+			if (backlinksBySectionId[targetBlock.id] == null)
+				backlinksBySectionId[targetBlock.id] = [ targetBlock, [ ] ];
+
+			backlinksBySectionId[targetBlock.id][1].push(link);
+		}
+	});
+
+	let pageTitle = Content.referenceDataForLink(eventInfo.loadLocation).pageTitle;
+	for (let [ targetBlock, linksToTargetBlock ] of Object.values(backlinksBySectionId)) {
+		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
+		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+
+		//	Inject the backlink entries...
+		for (let link of linksToTargetBlock) {
+			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
+												+ `<a 
+													href="${link.pathname}" 
+													class="backlink-not link-self link-annotated"
+													>${pageTitle}</a> (`
+												+ `<a 
+													href="#${link.id}"
+													class="backlink-not link-self extract-not"
+													>context</a>`
+												+ `):</p>`
+												+ `<blockquote class="backlink-context"><p>`
+												+ `<a
+													href="${link.pathname}"
+													class="backlink-not include-block-context-expanded collapsible"
+													data-target-id="${link.id}"
+													>[backlink context]</a>`
+												+ `</p></blockquote>`
+												+ `</li>`);
+
+			/*	If we are injecting into an existing section backlinks block, 
+				then a separate inject event must be fired for the created 
+				backlink.
+			 */
+			if (sectionBacklinksBlockIncludeWrapper == null) {
+				let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+				backlinkEntryIncludeWrapper.append(backlinkEntry);
+				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+
+				//	Clear loading state of all include-links.
+				Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+
+				//	Fire inject event.
+				let flags = GW.contentDidInjectEventFlags.clickable;
+				if (eventInfo.document == document)
+					flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+				GW.notificationCenter.fireEvent("GW.contentDidInject", {
+					source: "transclude.section-backlinks",
+					contentType: "backlink",
+					container: backlinkEntryIncludeWrapper,
+					document: eventInfo.document,
+					loadLocation: eventInfo.loadLocation,
+					flags: flags
+				});
+
+				unwrap(backlinkEntryIncludeWrapper);
+			} else {
+				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+			}
+		}
+
+		//	Update displayed count.
+		updateBacklinksCountDisplay(sectionBacklinksBlock);
+
+		if (sectionBacklinksBlockIncludeWrapper != null) {
+			//	Fire load event.
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "transclude.section-backlinks",
+				contentType: "backlink",
+				container: sectionBacklinksBlockIncludeWrapper,
+				document: eventInfo.document,
+				loadLocation: eventInfo.loadLocation
+			});
+
+			//	Fire inject event.
+			let flags = GW.contentDidInjectEventFlags.clickable;
+			if (eventInfo.document == document)
+				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "transclude.section-backlinks",
+				contentType: "backlink",
+				container: sectionBacklinksBlockIncludeWrapper,
+				document: eventInfo.document,
+				loadLocation: eventInfo.loadLocation,
+				flags: flags
+			});
+
+			unwrap(sectionBacklinksBlockIncludeWrapper);
+		}
+	}
+
+	if (eventInfo.document == document)
+		Content.invalidateCachedContent(eventInfo.loadLocation);
+}, "rewrite", (info) => (   info.document == document
+						 && info.contentType == "localPage"));
+
+/****************************************************************************/
+/*	When an annotation is transcluded into a page, and some of the backlinks 
+	for the annotated page are from the page into which the annotation is
+	transcluded, the “full context” links become pointless, and should become
+	just “context” (as in synthesized within-page backlinks), and likewise 
+	should not spawn pop-frames.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContextLinks = (eventInfo) => {
+    GWLog("rectifyLocalizedBacklinkContextLinks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".backlink-source .link-self:not(.link-annotated)").forEach(backlinkContextLink => {
+		backlinkContextLink.innerHTML = "context";
+		backlinkContextLink.classList.add("extract-not");
+	});
+}, "rewrite", (info => (   info.document == document
+						&& info.contentType == "backlink"
+						&& info.source != "transclude.section-backlinks")));
+
 /*************************************************************************/
 /*  Add “backlinks” link to start of section popups, when that section has
     a backlinks block.
@@ -869,7 +1094,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 		return;
 
 	//	Insert page thumbnail into page abstract.
-	let referenceData = Content.referenceDataForLink(newElement("A", { href: eventInfo.loadLocation.href }));
+	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
 	if (referenceData.pageThumbnailHTML != null) {
 		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
 			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
@@ -886,6 +1111,9 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 		//	Invert, or not.
 		applyImageInversionJudgmentNowOrLater(pageThumbnail);
 	}
+
+	if (eventInfo.container == document.main)
+		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.container == document.main
 						 || (   info.context == "popFrame"
 						 	 && Extracts.popFrameProvider == Popups
@@ -2482,7 +2710,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 			link.pathname = eventInfo.loadLocation.pathname;
         }
     });
-}, "rewrite");
+}, "<rewrite");
 
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
@@ -2516,7 +2744,19 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
             link.swapClasses([ "link-self", "link-page" ], 1);
         }
     });
-}, "rewrite");
+}, "<rewrite");
+
+/****************************************/
+/*	Add IDs to un-ID’d within-page links.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.identifyAnchorLinks = (eventInfo) => {
+    GWLog("identifyAnchorLinks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a.link-self").forEach(link => {
+		if (link.id == "")
+			link.id = "gwern-" + (link.href + link.textContent).hashCode();
+	});
+}, "<rewrite");
 
 /******************************************************************************/
 /*  Assign local navigation link icons: directional in-page links, generic

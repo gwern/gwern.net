@@ -1278,6 +1278,9 @@ blockquote figure.outline-not img,
 blockquote figure.outline-not video {
 	outline: 1px solid var(--border-color);
 }
+blockquote figure.outline-not .caption-wrapper {
+    outline: 1px solid var(--border-color);
+}
 
 /*  Image alt-text.
     */
@@ -3409,26 +3412,21 @@ mpact > li::before {
 /* /blog/ */
 /**********/
 
-body.blog-page #markdownBody .annotation {
-	border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
-}
-
 body.blog-page #markdownBody .annotation p.data-field {
 	--text-alignment: center;
 }
 
-body.blog-page #markdownBody .annotation .collapse.aux-links-append .collapse-content-wrapper,
-body.blog-page #markdownBody .annotation .collapse.file-include-collapse .collapse-content-wrapper {
-	padding-left: 1em;
-	padding-right: 0.5em;
-}
 body.blog-page #markdownBody .annotation .collapse.aux-links-append,
 body.blog-page #markdownBody .annotation .collapse.file-include-collapse {
-	--collapse-left-offset: 0px;
-
-	box-sizing: border-box;
-	border-left: 1px solid var(--GW-aux-links-collapse-border-color);
-	border-right: 1px solid var(--GW-aux-links-collapse-border-color);
+	border: none;
+}
+body.blog-page #markdownBody .annotation .collapse.aux-links-append.expanded .collapse-content-wrapper,
+body.blog-page #markdownBody .annotation .collapse.file-include-collapse.expanded .collapse-content-wrapper {
+	padding: 0.5em 0;
+}
+body.blog-page #markdownBody .annotation .collapse.aux-links-append.expanded-not .collapse-content-wrapper,
+body.blog-page #markdownBody .annotation .collapse.file-include-collapse.expanded-not .collapse-content-wrapper {
+	padding: 0.5em 0.5em 0.5em 1em;
 }
 
 body.page-blog-index #markdownBody .collapse.expanded .annotation p.data-field.title {
@@ -3747,7 +3745,7 @@ body.page-blog-index #markdownBody .collapse.expanded .annotation p.data-field.t
 
 @media all and (min-width: 1080px) {
     #back-to-top {
-        right: calc(((100% - (var(--GW-body-max-width) + 2 * var(--GW-body-side-padding))) / 2) - 35px);
+        right: calc(((100% - (var(--GW-body-max-width) + 2 * var(--GW-body-side-padding))) / 2) - 5px);
     }
     #back-to-top a {
         border: 3px double transparent;
@@ -3995,6 +3993,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .popframe-body > .annotation > .annotation-abstract > .file-includes > .collapse-block.file-include-collapse {
     padding-right: 0.5em;
     border-right: 1px solid var(--GW-aux-links-collapse-border-color);
+    border-left: 1px solid var(--GW-aux-links-collapse-border-color);
+    margin-left: calc(-1 * (var(--collapse-left-offset) + 1px));
 }
 .popframe-body > .annotation > .annotation-abstract:last-child > .collapse-block.aux-links-append:last-child,
 .popframe-body > .annotation > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,

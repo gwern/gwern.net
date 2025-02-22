@@ -157,6 +157,17 @@ String.prototype.includesAnyOf = function (substrings) {
     return false;
 }
 
+/*****************************************/
+/*	Returns numeric hash code of a string.
+
+	https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+ */
+String.prototype.hashCode = function () {
+	return (this.split('').reduce((prevHash, currVal) => {
+		return (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0;
+	}, 0) + 2147483648);
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	URL object.
@@ -2657,12 +2668,14 @@ window.addEventListener("DOMContentLoaded", () => {
     let pageURL = URLFromString(location.href);
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
+        contentType: "localPage",
         container: document.main,
         document: document,
         loadLocation: pageURL
     });
     GW.notificationCenter.fireEvent("GW.contentDidInject", {
         source: "DOMContentLoaded",
+        contentType: "localPage",
         container: document.main,
         document: document,
         loadLocation: pageURL,
@@ -3478,6 +3491,10 @@ GW.layout = {
 														10, false ],
 		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
 														 7, false ],
+		[ "body.blog-page .aux-links-append + .aux-links-append",
+														 4, false ],
+		[ "body.blog-page .aux-links-append + .file-include-collapse",
+														 4, false ],
 
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
@@ -3503,6 +3520,8 @@ GW.layout = {
 		[ ".annotation * + annotation .collapse.bare-content",
 										 6, false ],
 
+		[ ".section-backlinks-container + .section-backlinks-container",
+										 4, false ],
 		[ ".aux-links-append + .aux-links-append",
 										 0, false ],
 		[ ".collapse.expanded-not p.aux-links-list-label + *",
