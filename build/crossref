@@ -17,6 +17,11 @@ if [ $# != 1 ]; then echo -e "crossref fatal error: Exactly 1 argument is requir
 
 . ~/wiki/static/build/bash.sh # for path2file
 
+if [[ "$1" == http* ]]; then
+    gwa "$1"
+    exit 0
+fi
+
 TARGET_ORIGINAL="$(path2File "$1")"
 URL="$(file2Path "$1")"
 

@@ -647,6 +647,9 @@ canonicals = M.fromList
   , ("_JeanLannes", "Michael")
   , ("_aixile", "Aixile")
   , ("Roel Andre Ophoff", "Roel André Ophoff")
+  , ("Paul Vitányi", "Paul M. B. Vitányi")
+  , ("Pamela Madden", "Pamela A. F. Madden")
+  , ("Ozren Polasek", "Ozren Polašek")
   ]
 
 -- tests: unique
@@ -671,7 +674,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1349,9 +1352,18 @@ authorLinkDB = M.fromList $
     , ("Aixile", "https://x.com/_aixile")
     , ("Nikhil Gupta", "https://www.linkedin.com/in/gnikhil")
     , ("Gloria Chang", "https://www.linkedin.com/in/gloria-chang")
-    , ("Sean Wharton", "https://scholar.google.com/citations?user=4C3Th6oAAAAJ&hl=en&oi=ao")
-    , ("Scott Gray", "https://scholar.google.com/citations?user=sRId4vsAAAAJ&hl=en&oi=ao")
+    , ("Sean Wharton", "https://scholar.google.com/citations?user=4C3Th6oAAAAJ")
+    , ("Scott Gray", "https://scholar.google.com/citations?user=sRId4vsAAAAJ")
     , ("Sarah E. Bergen", "https://ki.se/en/people/sarah-bergen")
+    , ("Mike Stay", "https://math.ucr.edu/~mike/")
+    , ("Bent Petersen", "https://researchprofiles.ku.dk/en/persons/bent-petersen")
+    , ("Bryne Hobart", "https://www.thediff.co/")
+    , ("Peter A. Holmans", "https://scholar.google.com/citations?user=mOQF3UUAAAAJ&hl=en&oi=ao")
+    , ("Patricia B. Munroe", "https://www.qmul.ac.uk/whri/people/academic-staff/items/munroepatricia.html")
+    , ("Pamela A. F. Madden", "https://psychiatry.wustl.edu/people/pamela-madden-phd/")
+    , ("Ozren Polašek", "https://scholar.google.com/citations?user=d02gBZQAAAAJ&hl=en&oi=ao")
+    , ("Tim Taylor", "https://www.tim-taylor.com/about/")
+    , ("Colm Massey", "https://scholar.google.com/scholar?q=Colm%20Massey")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1469,7 +1481,7 @@ authorWpLinkDB =
     ,"Benjamin B", "Benjamin B. Lahey", "Benjamin Black", "Benjamin Breen", "Benjamin Djulbegovic"
     ,"Benjamin F. Jones", "Benjamin Goldstein", "Benjamin Graham", "Benjamin Hayden", "Benjamin Mako Hill"
     ,"Benjamin McMahon", "Benjamin M. Neale", "Benjamin S. Bloom", "Benjamin Tang", "Benjamin Williams"
-    ,"Benjamin van Niekerk", "Bent Flyvbjerg", "Bent Petersen", "Bernard Zinman", "Bernd Kraemer"
+    ,"Benjamin van Niekerk", "Bent Flyvbjerg", "Bernard Zinman", "Bernd Kraemer"
     ,"Bernd Kr\228mer", "Bernd Weber", "Bernd W\252rsig", "Bernhard Ludvik", "Bernhard Nebel"
     ,"Bernhard Sch\246lkopf", "Bernie Devlin", "Bernt Schiele", "Bert H\246lldobler", "Bertram Gilfoyle"
     ,"Bertrand Meyer", "Bessel van der Kolk", "Beth Martin", "Beth Shapiro", "Beth Stevens"
@@ -2533,7 +2545,7 @@ authorWpLinkDB =
     ,"Xavier Gabaix", "Xi Chen", "Xi Wang", "Xi Yin", "Xia Hu"
     ,"Xia Li", "Xian Yang", "Xiang Chen", "Xiang Cheng", "Xiang Zhang"
     ,"Xiao Feng", "Xiao Wang", "Xiao Xiao", "Xiao-Li Meng", "Xiaojie Wang"
-    ,"Xiaoli Wang", "Xiaoling Zhang", "Xiaoming Liu", "Xiaonan Zhang", "Xiaoou Tang"
+    , "Xiaoling Zhang", "Xiaoming Liu", "Xiaonan Zhang", "Xiaoou Tang"
     ,"Xiaowei Li", "Xiaoxin Chen", "Xie Chen", "Xifeng Wu", "Xihong Lin"
     ,"Xin Di", "Xin Huang", "Xin Jiang", "Xin Meng", "Xin Tong"
     ,"Xin Yu", "Xin Zhang", "Xin Zhou", "Xing Sun", "Xinjun Zhang"
@@ -2597,4 +2609,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham", "Roel André Ophoff"]
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham", "Roel André Ophoff", "Paul M. B. Vitányi"]

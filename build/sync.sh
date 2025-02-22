@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-20 11:18:09 gwern"
+# When:  Time-stamp: "2025-02-21 15:02:00 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -27,6 +27,7 @@ DEPENDENCIES=(
   anchor-checker.php generateBacklinks.hs generateDirectory.hs
   generateLinkBibliography.hs generateSimilarLinks.hs link-extractor.hs
   compressJPG2 openai chromium inkscape node pngnq advpng docker
+  should_image_have_outline.php
 ) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 declare -A ERROR_OUTPUTS
 DEPENDENCIES_MISSING=()

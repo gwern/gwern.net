@@ -16,4 +16,6 @@ affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic"
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides =
   [
+    ("https://en.wikipedia.org/wiki/Donkey", "wp-donkey")
+  , ("https://en.wikipedia.org/wiki/Przewalski%27s_horse", "wp-przewalskishorse")
   ]

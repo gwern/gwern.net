@@ -88,25 +88,15 @@ prioritizeLinkIconBlackList =
  , "datacolada.org" -- orange
  , "pubs.aip.org" -- blue
 
--- icon-only:
- , "www.thestranger.com" -- thick S - MATHEMATICAL SCRIPT CAPITAL S maybe? '𝒮'
- , "www.wunderground.com" -- 'wu'
+-- text-only:
+ , "www.inverse.com" -- 'INV'
  , "www.rte.ie" -- 'RTϵ'
- , "www.orlandosentinel.com" -- 'OS'
- , "www.mercurynews.com" -- '𝔐'
  , "ro.ecu.edu.au" -- 'ECU'
- , "ralphmerkle.com" -- 'MKL' quad
  , "www.chronicle.com" -- 'CHE'
  , "paulfchristiano.com" -- 'PFC'?
- , "parahumans.wordpress.com" -- 'W' for all of his stuff, ie. Wildbow?
- , "www.theringer.com" -- 'TR'?
- , "www.alexirpan.com" -- 'AI'
- , "every.to" -- 'ℰ'
- , "www.inverse.com" -- 'INV'
+ , "ralphmerkle.com" -- 'RMKL' quad
  , "nyaa.si" -- 'Nyaa'
- , "www.avclub.com" -- 'AV'
  , "minimaxir.com" -- 'MxWf'
- , "dynomight.net" -- 'D'
  ]
 ------------------------------------------------------------------------------------------
 
@@ -274,6 +264,11 @@ linkIconRulesSingle u
  | u'' u "www.instructables.com" = ("🤖", "text", "#fac62d") -- Autodesk Instructables: robot logo, color: yellow
  | u'' u "mujoco.org" = ("M", "text,sans", "#0053d6") -- MuJoCo: advanced physics simulator used heavily in reinforcement learning research; logo just a 'M' on dark blue; color: white on blue
  | u'' u "www.artbreeder.com" = ("✤", "text", "#8ccaff") -- Ganbreeder/Artbreeder: three-lobed icon hard to replicate, HEAVY FOUR BALLOON-SPOKED ✱ is closest I got; color: light-blue
+ | u'' u "www.thestranger.com" = ("𝒮", "text", "") -- thick S - MATHEMATICAL SCRIPT CAPITAL S '𝒮'
+ | u'' u "www.mercurynews.com" = ("𝔐", "text", "") -- MATHEMATICAL FRAKTUR CAPITAL M '𝔐'
+ | aU'' u ["parahumans.wordpress.com", "wildbow.wordpress.com", "pactwebserial.wordpress.com", "twigserial.wordpress.com"] = ("W", "text", "") -- Wildbow serial fics: _Worm_, _Pact_, _Twig_; and personal blog posts; if I linked them more, might be more worthwhile to try to make per-fic link-icons.
+ | u'' u "every.to" = ("ℰ", "text", "")
+ | u'' u "dynomight.net" = ("D", "text", "")
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -363,6 +358,11 @@ linkIconRulesDouble u
  | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: white-on-blue text background
  | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none (like The Paris Review, NC seems to try to change color each issue)
  | u'' u "www.rrauction.com" = ("RR", "text,sans", "#29648a") -- RR Auction; color: dark blue
+ | u'' u "www.wunderground.com" = ("wu", "text", "")
+ | u'' u "www.orlandosentinel.com" = ("OS", "text", "")
+ | u'' u "www.theringer.com" = ("TR", "text", "")
+ | u'' u "www.alexirpan.com" = ("AI", "text", "")
+ | u'' u "www.avclub.com" = ("AV" , "text", "")
  | otherwise = ("", "", "")
 
 -- Tri/triple TLAs
@@ -1303,6 +1303,19 @@ linkIconTestUnitsText =
          , ("https://www.cs.virginia.edu/~robins/YouAndYourResearch.html", "internet-archive", "svg", "#e57200")
          , ("https://mujoco.org/", "M", "text,sans", "#0053d6")
          , ("https://www.artbreeder.com/browse", "✤", "text", "#8ccaff")
+         , ("https://www.thestranger.com/features/2012/11/21/15337239/the-lying-disease", "𝒮", "text", "")
+         , ("https://www.mercurynews.com/2011/06/27/buck-institute-study-lithium-may-help-halt-progression-of-parkinsons/", "𝔐", "text", "")
+         , ("https://parahumans.wordpress.com/2011/06/21/gestation-1-4/", "W", "text", "")
+         , ("https://wildbow.wordpress.com/2015/03/07/pact-sealed/", "W", "text", "")
+         , ("https://pactwebserial.wordpress.com/", "W", "text", "")
+         , ("https://twigserial.wordpress.com/", "W", "text", "")
+         , ("https://every.to/napkin-math/6-new-theories-about-ai","ℰ", "text", "")
+         , ("https://dynomight.net/automated/", "D", "text", "")
+         , ("https://www.wunderground.com/?cm_ven=cgi", "wu", "text", "")
+         , ("https://www.orlandosentinel.com/os-xpm-1995-09-05-9509050051-story.html", "OS", "text", "")
+         , ("https://www.theringer.com/nba/2022/8/2/23287000/lebron-james-bronny-james-lakers", "TR", "text", "")
+         , ("https://www.alexirpan.com/2015/09/24/how-an-audio-play-about-a-time-traveling-pony-turned-me-into-a-fanboy.html", "AI", "text", "")
+         , ("https://www.avclub.com/ducktales-invented-a-new-animated-wonderland-that-quick-1798236288", "AV" , "text", "")
         ]
 
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
