@@ -69,12 +69,11 @@ if (preg_match('/[A-Z]/', pathinfo($image_path, PATHINFO_EXTENSION))) {
     exit(4);
 }
 
-// Check file size (existence + min/max)
+// Check file existence, readability, & min/max size
 if (!file_exists($image_path)) {
     echo "Fatal error: File does not exist.";
     exit(5);
 }
-clearstatcache();
 if (!is_readable($image_path)) {
     echo "Fatal error: Cannot read file.";
     exit(11);
@@ -138,7 +137,7 @@ $corner_colors = [
     imageColorsForIndex($image, imageColorAt($image, 0,          $height - 1)),
     imageColorsForIndex($image, imageColorAt($image, $width - 1, $height - 1)),
 ];
-// clean up
+// Clean up
 imagedestroy($image)
 
 // Simple corner-based heuristic
