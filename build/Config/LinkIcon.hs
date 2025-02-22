@@ -36,7 +36,7 @@ prioritizeLinkIconBlackList =
  , "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu", "www.centauri-dreams.org", "www.eoht.info"
  , "hal.science", "mattmahoney.net", "projecteuclid.org", "www.sudowrite.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "conservancy.umn.edu"
- , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com"
+ , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com", "ro.ecu.edu.au"
 
 -- TODO: icon+color:
  , "danwang.co" -- 'D' + red
@@ -72,31 +72,6 @@ prioritizeLinkIconBlackList =
  , "takimag.com" -- 'TM' red
  , "oll.libertyfund.org" -- 'OLL' dark blue
  , "memteaimports.com" -- 'MemT' red
-
--- color-only:
- , "www.nausicaa.net" -- blue
- , "blog.acolyer.org" -- blue
- , "arbtt.nomeata.de" -- blue
- , "polisen.se" -- orange?
- , "www.lightspeedmagazine.com" -- dark red
- , "aeon.co" -- a dark red
- , "ohtori.nu" -- salmon orange?
- , "www.jstatsoft.org" -- blue
- , "mssprovenance.blogspot.com" -- orange
- , "super.gluebenchmark.com" -- red
- , "gluebenchmark.com" -- dark blue
- , "datacolada.org" -- orange
- , "pubs.aip.org" -- blue
-
--- text-only:
- , "www.inverse.com" -- 'INV'
- , "www.rte.ie" -- 'RTϵ'
- , "ro.ecu.edu.au" -- 'ECU'
- , "www.chronicle.com" -- 'CHE'
- , "paulfchristiano.com" -- 'PFC'?
- , "ralphmerkle.com" -- 'RMKL' quad
- , "nyaa.si" -- 'Nyaa'
- , "minimaxir.com" -- 'MxWf'
  ]
 ------------------------------------------------------------------------------------------
 
@@ -181,6 +156,8 @@ linkIconRulesOverrides u
  | u' u "#anthropic" || u' u "x.com/jackclarkSF/" || aU'' u ["transformer-circuits.pub", "www.anthropic.com", "jack-clark.net", "/doc/ai/nn/anthropic/"] = ("anthropic", "svg", brownAnthropic) -- need to override Arxiv; handle Jack Clark (co-founder) newsletter & social media. color: Claude brown
  | u' u "#laion"  || u' u "LAION-AI" || u'' u "laion.ai" = ("laion", "svg", "#1d374e") -- <https://laion.ai/favicon.svg>; need to override Arxiv & Github & Hugging Face; color: dark blue
  | aU'' u ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' u "groups.yahoo.com/group/givewell/" = ("GW", "text", blueYahoo) -- override Yahoo! email; color: light blue
+ | u'' u "hbr.org" = ("HBR", "text,tri,sans", "#a51c30") -- Harvard Business Review (official Harvard crimson: <https://seas.harvard.edu/office-communications/brand-style-guide/color-palette>); TODO: white-on-black text background?
+ | u' u "harvard.edu" = ("H", "text", "#a51c30") -- Harvard catch-all; <https://en.wikipedia.org/wiki/File:Harvard_University_coat_of_arms.svg> is too complex without a custom shield-H icon?
  | otherwise = ("","", "")
 
 linkIconRulesSingle "" = error "Config.LinkIcon.linkIconRulesSingle: passed empty string as the URL; this should never happen!"
@@ -266,9 +243,9 @@ linkIconRulesSingle u
  | u'' u "www.artbreeder.com" = ("✤", "text", "#8ccaff") -- Ganbreeder/Artbreeder: three-lobed icon hard to replicate, HEAVY FOUR BALLOON-SPOKED ✱ is closest I got; color: light-blue
  | u'' u "www.thestranger.com" = ("𝒮", "text", "") -- thick S - MATHEMATICAL SCRIPT CAPITAL S '𝒮'
  | u'' u "www.mercurynews.com" = ("𝔐", "text", "") -- MATHEMATICAL FRAKTUR CAPITAL M '𝔐'
- | aU'' u ["parahumans.wordpress.com", "wildbow.wordpress.com", "pactwebserial.wordpress.com", "twigserial.wordpress.com"] = ("W", "text", "") -- Wildbow serial fics: _Worm_, _Pact_, _Twig_; and personal blog posts; if I linked them more, might be more worthwhile to try to make per-fic link-icons.
+ | aU'' u ["parahumans.wordpress.com", "wildbow.wordpress.com", "pactwebserial.wordpress.com", "twigserial.wordpress.com"] = ("W", "text,sans", "") -- Wildbow serial fics: _Worm_, _Pact_, _Twig_; and personal blog posts; if I linked them more, might be more worthwhile to try to make per-fic link-icons.
  | u'' u "every.to" = ("ℰ", "text", "")
- | u'' u "dynomight.net" = ("D", "text", "")
+ | u'' u "dynomight.net" = ("D", "text,mono", "")
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -358,17 +335,17 @@ linkIconRulesDouble u
  | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: white-on-blue text background
  | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none (like The Paris Review, NC seems to try to change color each issue)
  | u'' u "www.rrauction.com" = ("RR", "text,sans", "#29648a") -- RR Auction; color: dark blue
- | u'' u "www.wunderground.com" = ("wu", "text", "")
+ | u'' u "www.wunderground.com" = ("wu", "text,sans", "")
  | u'' u "www.orlandosentinel.com" = ("OS", "text", "")
- | u'' u "www.theringer.com" = ("TR", "text", "")
- | u'' u "www.alexirpan.com" = ("AI", "text", "")
- | u'' u "www.avclub.com" = ("AV" , "text", "")
+ | u'' u "www.theringer.com" = ("TR", "text,mono", "")
+ | u'' u "www.alexirpan.com" = ("AI", "text,sans", "")
+ | u'' u "www.avclub.com" = ("AV" , "text,sans", "")
  | otherwise = ("", "", "")
 
 -- Tri/triple TLAs
 linkIconRulesTriple "" = error "Config.LinkIcon.linkIconRulesTriple: passed empty string as the URL; this should never happen!"
 linkIconRulesTriple u
- | u'' u "andrewgelman.com" || u'' u "statmodeling.stat.columbia.edu" = ("▅▇▃", "text", "") -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
+ | u'' u "andrewgelman.com" || u'' u "statmodeling.stat.columbia.edu" = ("▅▇▃", "text,tri", "") -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u' u "animenewsnetwork.com" = ("ANN", "text,tri", "#006598") -- color: blue; TODO: color SVG icon for the three-circle green-blue logo
  | u'' u "www.catb.org" || u'' u "esr.ibiblio.org" = ("ESR", "text,tri,sans", "#0000ee") -- color: bright blue (used in weird favicon logo)
  | u'' u "arstechnica.com" = ("ars", "text,tri,sans", "#ff4e00") -- Ars is an orange box, not usable; TODO: white-on-orange text background
@@ -406,8 +383,6 @@ linkIconRulesTriple u
  | u'' u "gameprogrammingpatterns.com" = ("GPP", "text,tri,sans", "#1487c1") -- color: medium blue
  | u'' u "www.metopera.org" = ("Met", "text,tri", "#f5c518") -- color: dark yellow
  | u'' u "www.schneier.com" = ("SOS", "text,tri,sans", "#6b0000") -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says… "SOS"); color: dark red; TODO: white-on-red text background
- | u'' u "hbr.org" = ("HBR", "text,tri,sans", "#a51c30") -- Harvard Business Review (official Harvard crimson: <https://seas.harvard.edu/office-communications/brand-style-guide/color-palette>); TODO: white-on-black text background?
- | u' u "harvard.edu" = ("H", "text", "#a51c30") -- Harvard catch-all; <https://en.wikipedia.org/wiki/File:Harvard_University_coat_of_arms.svg> is too complex without a custom shield-H icon?
  | aU'' u ["dl.acm.org", "queue.acm.org", "cacm.acm.org"] = ("acm", "text,tri,sans", "#3795c4") -- <https://en.wikipedia.org/wiki/File:Association_for_Computing_Machinery_(ACM)_logo.svg> 'acm' sans in a circle inside a diamond; can't fake it with Unicode joiners (they'd only put one character into a circle+diamond), and I probably don't want to bother with a SVG.; color: blue (chosen from bottom of SVG logo)
  | u' u "www.cs.utexas.edu/~EWD/" = ("EWD", "text,tri,sans", "") -- Edsger W. Dijkstra, of course, wrote in sans
  | u'' u "iopscience.iop.org" = ("IOP", "text,tri,sans", "#cc0000") -- <https://en.wikipedia.org/wiki/IOP_Publishing> Institute of Physics Publishing; color: red
@@ -429,7 +404,11 @@ linkIconRulesTriple u
  | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
  | aU'' u ["worksinprogress.co", "www.worksinprogress.news", "books.worksinprogress.co"] = ("WiP", "text,tri,mono", "") -- Works in Progress; color: none (monochrome website with occasional per-issue color theme highlights); icon: the mustached-man is unusable at favicon or link-icon scale and not particularly recognizable either IMO.
  | u'' u "digital.library.unt.edu" = ("UNT", "text,tri", "#00863c") -- University of North Texas library; logo is a <https://en.wikipedia.org/wiki/North_Texas_Mean_Green> green hawk icon, which is cool and would work as a link-icon, but I doubt even sports fans would understand it out of context compared to just the 'UNT' acronym; color: green (black outline)
- | u'' u "infoproc.blogspot.com" || u'' u "www.manifold1.com" = ("Hsu", "text,sans", "") -- Steve Hsu's "Information Processing" blog (defunct) & "Manifold" podcast; no known recognizable icon ('brain network' icon of Manifold is not recognizable, wouldn't work as a link-icon, and overlaps too much with Connected Papers etc); color: none
+ | u'' u "infoproc.blogspot.com" || u'' u "www.manifold1.com" = ("Hsu", "text,tri,sans", "") -- Steve Hsu's "Information Processing" blog (defunct) & "Manifold" podcast; no known recognizable icon ('brain network' icon of Manifold is not recognizable, wouldn't work as a link-icon, and overlaps too much with Connected Papers etc); color: none
+ | u'' u "www.inverse.com" = ("INV", "text,tri,mono", "")
+ | u'' u "www.rte.ie" = ("RTϵ", "text,tri,sans", "")
+ | u'' u "www.chronicle.com" = ("CHE", "text,tri", "")
+ | u'' u "paulfchristiano.com" = ("PFC", "text,tri", "")
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
@@ -495,6 +474,9 @@ linkIconRulesQuad u
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
  | u'' u "www.dwarkeshpatel.com" = ("Dwk h", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
+ | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
+ | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
+ | u'' u "minimaxir.com" = ("MxWf" , "text,quad,sans", "")
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -622,6 +604,18 @@ linkIconRulesColors u
  | u'' u "www.petforums.co.uk" = ("", "", "#295b52") -- dark green
  | u'' u "wellcomecollection.org" = ("", "", "#ffce3c") -- yellow
  | u'' u "www.acpjournals.org" = ("", "", "#007377") -- teal
+ | u'' u "www.nausicaa.net" = ("", "", "#507ea1") -- blue
+ | u'' u "arbtt.nomeata.de" = ("", "", "#445f66") -- blue
+ | u'' u "polisen.se" = ("", "", "#ffcc33") -- yellow
+ | u'' u "www.lightspeedmagazine.com" = ("", "", "#6e220e") -- dark red
+ | u'' u "aeon.co" = ("", "", "#9d1d20") -- dark red
+ | u'' u "ohtori.nu" = ("", "", "#efc266") -- tan yellow
+ | u'' u "www.jstatsoft.org" = ("", "", "#2874ae") -- blue
+ | u'' u "mssprovenance.blogspot.com" = ("", "", "#ccb666") -- mustard-yellow
+ | u'' u "super.gluebenchmark.com" = ("", "", "#bd492a") -- red-orange
+ | u'' u "gluebenchmark.com" = ("", "", "#2b5283") -- dark blue
+ | u'' u "datacolada.org" = ("", "", "#dd9933") -- orange
+ | u'' u "pubs.aip.org" = ("", "", "#0074d9") -- blue
  | otherwise = ("", "", "")
 
 ------------------------------------------------------------------------------------------
@@ -1221,8 +1215,8 @@ linkIconTestUnitsText =
          , ("https://towardsdatascience.com/stylegan2-projection-a-reliable-method-for-image-forensics-700922579236", "\119820","text", "")
          , ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text", "")
          , ("https://beepb00p.xyz/pkm-search.html", "\129302", "text", "")
-         , ("https://statmodeling.stat.columbia.edu/2013/12/17/replication-backlash/",  "\9605\9607\9603","text", "")
-         , ("https://statmodeling.stat.columbia.edu/2004/12/29/type_1_type_2_t/",  "\9605\9607\9603","text", "")
+         , ("https://statmodeling.stat.columbia.edu/2013/12/17/replication-backlash/",  "\9605\9607\9603","text,tri", "")
+         , ("https://statmodeling.stat.columbia.edu/2004/12/29/type_1_type_2_t/",  "\9605\9607\9603","text,tri", "")
          , ("https://www.longecity.org/forum/topic/10464-modalert-is-this-what-modafinil-is-like/?&p=108566#entry108566", "⧖", "text", "")
          , ("https://www.bloomberg.com/businessweek/ap/financialnews/D9KQL7CG0.htm", "\119809","text", "")
          , ("https://www.bloomberg.com/news/articles/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger",  "\119809","text", "")
@@ -1288,8 +1282,8 @@ linkIconTestUnitsText =
          , ("https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext", "UNT", "text,tri", "#00863c")
          , ("https://forums.animesuki.com/showpost.php?p=3996631&postcount=387", "̅□", "text", "#008080")
          , ("https://www.theregister.com/2019/01/29/how_i_caught_silk_road_mastermind/?page=2", "𓅐", "text", "#ff0000")
-         , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,sans", "")
-         , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,sans", "")
+         , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,tri,sans", "")
+         , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,tri,sans", "")
          , ("https://ki.se/en/people/paul-lichtenstein", "☤", "text", "#830154")
          , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwk h", "text,sans,quad", "#f3c016")
          , ("https://ascii.textfiles.com/archives/2229", "ASCI", "text,quad,mono", "#006309")
@@ -1305,19 +1299,37 @@ linkIconTestUnitsText =
          , ("https://www.artbreeder.com/browse", "✤", "text", "#8ccaff")
          , ("https://www.thestranger.com/features/2012/11/21/15337239/the-lying-disease", "𝒮", "text", "")
          , ("https://www.mercurynews.com/2011/06/27/buck-institute-study-lithium-may-help-halt-progression-of-parkinsons/", "𝔐", "text", "")
-         , ("https://parahumans.wordpress.com/2011/06/21/gestation-1-4/", "W", "text", "")
-         , ("https://wildbow.wordpress.com/2015/03/07/pact-sealed/", "W", "text", "")
-         , ("https://pactwebserial.wordpress.com/", "W", "text", "")
-         , ("https://twigserial.wordpress.com/", "W", "text", "")
+         , ("https://parahumans.wordpress.com/2011/06/21/gestation-1-4/", "W", "text,sans", "")
+         , ("https://wildbow.wordpress.com/2015/03/07/pact-sealed/", "W", "text,sans", "")
+         , ("https://pactwebserial.wordpress.com/", "W", "text,sans", "")
+         , ("https://twigserial.wordpress.com/", "W", "text,sans", "")
          , ("https://every.to/napkin-math/6-new-theories-about-ai","ℰ", "text", "")
-         , ("https://dynomight.net/automated/", "D", "text", "")
-         , ("https://www.wunderground.com/?cm_ven=cgi", "wu", "text", "")
+         , ("https://dynomight.net/automated/", "D", "text,mono", "")
+         , ("https://www.wunderground.com/?cm_ven=cgi", "wu", "text,sans", "")
          , ("https://www.orlandosentinel.com/os-xpm-1995-09-05-9509050051-story.html", "OS", "text", "")
-         , ("https://www.theringer.com/nba/2022/8/2/23287000/lebron-james-bronny-james-lakers", "TR", "text", "")
-         , ("https://www.alexirpan.com/2015/09/24/how-an-audio-play-about-a-time-traveling-pony-turned-me-into-a-fanboy.html", "AI", "text", "")
-         , ("https://www.avclub.com/ducktales-invented-a-new-animated-wonderland-that-quick-1798236288", "AV" , "text", "")
-        ]
-
+         , ("https://www.theringer.com/nba/2022/8/2/23287000/lebron-james-bronny-james-lakers", "TR", "text,mono", "")
+         , ("https://www.alexirpan.com/2015/09/24/how-an-audio-play-about-a-time-traveling-pony-turned-me-into-a-fanboy.html", "AI", "text,sans", "")
+         , ("https://www.avclub.com/ducktales-invented-a-new-animated-wonderland-that-quick-1798236288", "AV" , "text,sans", "")
+         , ("https://www.inverse.com/article/53442-this-person-does-not-exist-has-spawned-a-host-of-a-i-powered-copycats", "INV", "text,tri,mono", "")
+         , ("https://www.rte.ie/news/business/2013/1220/494111-silk-road-arrest/", "RTϵ", "text,tri,sans", "")
+         , ("https://www.chronicle.com/article/we-must-stop-the-avalanche-of-low-quality-research/", "CHE", "text,tri", "")
+         , ("https://paulfchristiano.com/", "PFC", "text,tri", "")
+         , ("https://ralphmerkle.com/cryo/cryptoCryo.html", "RMKL", "text,quad", "")
+         , ("https://nyaa.si/view/353745", "Nyaa", "text,quad,sans", "")
+         , ("https://minimaxir.com/2019/09/howto-gpt2/", "MxWf" , "text,quad,sans", "")
+         , ("http://www.nausicaa.net/wiki/2010-01-News#Hideaki_Anno_Appears_on_Ghibli_Asemamire", "", "", "#507ea1")
+         , ("https://arbtt.nomeata.de/#what", "", "", "#445f66")
+         , ("https://polisen.se/Aktuellt/Nyheter/2015/Mars/Polisen-stoppade-droghandel-pa-natet/", "", "", "#ffcc33")
+         , ("https://www.lightspeedmagazine.com/fiction/exhalation/", "", "", "#6e220e")
+         , ("https://aeon.co/essays/why-fake-miniatures-depicting-islamic-science-are-everywhere", "", "", "#9d1d20")
+         , ("https://ohtori.nu/creators/contributors.html", "", "", "#efc266")
+         , ("https://www.jstatsoft.org/article/view/v025i03", "", "", "#2874ae")
+         , ("https://mssprovenance.blogspot.com/2022/12/the-receptio-rossi-affair-vii-more.html?m=1", "", "", "#ccb666")
+         , ("https://super.gluebenchmark.com/leaderboard/", "", "", "#bd492a")
+         , ("https://gluebenchmark.com/", "", "", "#2b5283")
+         , ("https://datacolada.org/72", "", "", "#dd9933")
+         , ("https://pubs.aip.org/physicstoday/Online/4628/The-war-over-supercooled-water", "", "", "#0074d9")
+  ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →
 -- Link ("",["icon-not"],[]) [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905","","")
