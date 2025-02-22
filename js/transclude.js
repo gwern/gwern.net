@@ -941,6 +941,8 @@ function contentTypeIdentifierForIncludeLink(includeLink) {
 		|| (   Content.contentTypes.localFragment.matches(includeLink)
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
 		contentType = "annotation";
+	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
+		contentType = /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
 	} else {
 		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
 		if (   referenceData
@@ -1309,6 +1311,9 @@ function includeContent(includeLink, content) {
  */
 function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 	let containingDocument = includeLink.eventInfo.document;
+	let backlinksLoadLocation = loadLocationForIncludeLink(includeLink);
+
+	let newlyConstructedSectionBacklinksBlockIncludeWrappers = [ ];
 
 	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
 		let id = backlinkContextLink.dataset.targetId.split("--")[1];
@@ -1316,54 +1321,24 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			|| id == undefined)
 			return;
 
-		let targetElement = containingDocument.querySelector(`#${(CSS.escape(id))}`);
-		if (targetElement == null)
-			return;
-
-		let targetBlock = targetElement.closest("section, li.footnote");
+		let targetBlock = containingDocument.querySelector(`#${(CSS.escape(id))}`)?.closest("section, li.footnote");
 		if (targetBlock == null)
 			return;
 
-		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
-		if (backlinksBlock == null) {
-			//	Backlinks block.
-			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
-
-			//	Label.
-			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
-			let sectionLabelHTML = targetBlock.tagName == "SECTION"
-								   ? `“${(targetBlock.firstElementChild.textContent)}”`
-								   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
-			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
-
-			//	List.
-			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
-
-			//	Collapse wrapper.
-			let collapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
-			collapseWrapper.append(backlinksBlock);
-
-			//	Include wrapper.
-			let includeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
-			includeWrapper.append(collapseWrapper);
-			let container = targetBlock.classList.contains("collapse")
-							? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
-							: targetBlock;
-			container.append(includeWrapper);
-		}
-
-		let clonedBacklinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+		let backlinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument);
 
 		/*	If we are injecting into an existing section backlinks block, then
 			a separate inject event must be fired for the distributed backlink.
 		 */
-		if (backlinksBlock.closest(".section-backlinks-include-wrapper") == null) {
-			let includeWrapper = newElement("DIV", { "class": "include-wrapper" });
-			includeWrapper.append(clonedBacklinkEntry);
-			backlinksBlock.querySelector(".backlinks-list").append(includeWrapper);
+		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+		if (sectionBacklinksBlockIncludeWrapper == null) {
+			let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+			backlinkEntryIncludeWrapper.append(backlinkEntry);
+			sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
 
 			//	Clear loading state of all include-links.
-			Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+			Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
 
 			//	Fire inject event.
 			let flags = GW.contentDidInjectEventFlags.clickable;
@@ -1371,32 +1346,39 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "transclude.section-backlinks",
-				container: includeWrapper,
+				contentType: "backlink",
+				container: backlinkEntryIncludeWrapper,
 				document: containingDocument,
-				loadLocation: loadLocationForIncludeLink(includeLink),
+				loadLocation: backlinksLoadLocation,
 				flags: flags
 			});
 
-			unwrap(includeWrapper);
+			unwrap(backlinkEntryIncludeWrapper);
 		} else {
-			backlinksBlock.querySelector(".backlinks-list").append(clonedBacklinkEntry);
+			sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+
+			newlyConstructedSectionBacklinksBlockIncludeWrappers.push(sectionBacklinksBlockIncludeWrapper);
 		}
+
+		//	Update displayed count.
+		updateBacklinksCountDisplay(sectionBacklinksBlock);
 	});
 
 	/*	For any new section backlinks blocks we constructed, we fire load and
 		inject events for the entire section backlinks block (which also takes
 		care of the individual backlink entries within).
 	 */
-	containingDocument.querySelectorAll(".section-backlinks-include-wrapper").forEach(includeWrapper => {
+	newlyConstructedSectionBacklinksBlockIncludeWrappers.forEach(sectionBacklinksBlockIncludeWrapper => {
 		//	Clear loading state of all include-links.
-		Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+		Transclude.allIncludeLinksInContainer(sectionBacklinksBlockIncludeWrapper).forEach(Transclude.clearLinkState);
 
 		//	Fire load event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "transclude.section-backlinks",
-			container: includeWrapper,
+			contentType: "backlink",
+			container: sectionBacklinksBlockIncludeWrapper,
 			document: containingDocument,
-			loadLocation: loadLocationForIncludeLink(includeLink)
+			loadLocation: backlinksLoadLocation
 		});
 
 		//	Fire inject event.
@@ -1405,13 +1387,14 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude.section-backlinks",
-			container: includeWrapper,
+			contentType: "backlink",
+			container: sectionBacklinksBlockIncludeWrapper,
 			document: containingDocument,
-			loadLocation: loadLocationForIncludeLink(includeLink),
+			loadLocation: backlinksLoadLocation,
 			flags: flags
 		});
 
-		unwrap(includeWrapper);
+		unwrap(sectionBacklinksBlockIncludeWrapper);
 	});
 }
 
@@ -1801,11 +1784,13 @@ Transclude = {
 			length limit).
 		 */
 		if (block == null) {
-			for (let selector of generalBlockElementSelectors)
+			for (let selector of generalBlockElementSelectors) {
 				if (   (block = element.closest(selector) ?? block)
-					&& block.textContent.length < Transclude.blockContextMaximumLength
-					&& block.matches(Transclude.notBlockElementSelector) == false)
+					&& block.textContent.trim().length < Transclude.blockContextMaximumLength
+					&& block.matches(Transclude.notBlockElementSelector) == false) {
 					break;
+				}
+			}
 		}
 
 		if (block == null)

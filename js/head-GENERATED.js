@@ -157,6 +157,17 @@ String.prototype.includesAnyOf = function (substrings) {
     return false;
 }
 
+/*****************************************/
+/*	Returns numeric hash code of a string.
+
+	https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+ */
+String.prototype.hashCode = function () {
+	return (this.split('').reduce((prevHash, currVal) => {
+		return (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0;
+	}, 0) + 2147483648);
+}
+
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
 	URL object.

@@ -1783,7 +1783,7 @@ function updatePageTOC(container = document) {
                         ? "Footnotes"
                         : section.firstElementChild.querySelector("a").innerHTML;
         entry.innerHTML = `<a
-                            class='link-self decorate-not'
+                            class='decorate-not'
                             id='toc-${section.id}'
                             href='#${fixedEncodeURIComponent(section.id)}'
                                 >${entryText}</a>`;
@@ -7157,14 +7157,23 @@ Content = {
 
         let content = Content.cachedContentForLink(link);
 
+		let didUpdate = false;
         switch (Content.contentTypeForLink(link)) {
             case Content.contentTypes.localPage:
-                updateFunction(content.document);
+                didUpdate = updateFunction(content.document);
                 break;
             default:
                 break;
         }
+
+		if (didUpdate)
+			Content.invalidateCachedReferenceDataForLink(link);
     },
+
+	invalidateCachedContent: (link) => {
+		Content.cachedContent[Content.contentCacheKeyForLink(link)] = null;
+		Content.invalidateCachedReferenceDataForLink(link);
+	},
 
     /*******************/
     /*  Content loading.
@@ -7312,6 +7321,21 @@ Content = {
 		let cacheKey = Content.referenceDataCacheKeyForLink(link);
 		if (cacheKey)
 			Content.cachedReferenceData[cacheKey] = referenceData;
+	},
+
+	invalidateCachedReferenceDataForLink: (link) => {
+		let contentType = Content.contentTypeForLink(link);
+		if (contentType?.referenceDataCacheKeyForLink == null)
+			return;
+		for (let [ cacheKey, referenceData ] of Object.entries(Content.cachedReferenceData)) {
+			if (contentType.referenceDataCacheKeyMatchesLink) {
+				if (contentType.referenceDataCacheKeyMatchesLink(cacheKey, link))
+					Content.cachedReferenceData[cacheKey] = null;
+			} else {
+				if (contentType.referenceDataCacheKeyForLink(link) == cacheKey)
+					Content.cachedReferenceData[cacheKey] = null;
+			}
+		}
 	},
 
     referenceDataForLink: (link) => {
@@ -7471,7 +7495,7 @@ Content = {
      */
 
     contentTypeForLink: (link) => {
-		if (link.dataset.linkContentType) {
+		if (link.dataset?.linkContentType) {
 			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
@@ -7488,7 +7512,7 @@ Content = {
     contentTypes: {
         dropcapInfo: {
             matches: (link) => {
-                return link.classList.contains("link-dropcap");
+                return (link.classList?.contains("link-dropcap") == true);
             },
 
             isSliceable: false,
@@ -7529,10 +7553,10 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
+                let url = URLFromString(link.dataset?.urlArchive ?? link.dataset?.urlIframe ?? link.href);
 
                 return (   url.hostname != location.hostname
-                        && link.classList.contains("link-live"));
+                        && link.classList?.contains("link-live") == true);
             },
 
             isSliceable: false,
@@ -7623,9 +7647,9 @@ Content = {
 				Wikipedia URLs.
 			 */
 			matches: (link) => {
-				return (   link.classList.contains("content-transform-not") == false
-						&& /(.+?)\.wikipedia\.org/.test(link.hostname)
-						&& link.pathname.startsWith("/wiki/")
+				return (   link.classList?.contains("content-transform-not") != true
+						&& /(.+?)\.wikipedia\.org/.test(link.hostname) == true
+						&& link.pathname.startsWith("/wiki/") == true
 						&& link.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:", "Wikipedia:Wikipedia_Signpost" ])) == false);
 			},
 
@@ -8248,9 +8272,9 @@ Content = {
 
 		githubIssue: {
 			matches: (link) => {
-				return (   link.classList.contains("content-transform-not") == false
-						&& /github\.com/.test(link.hostname)
-						&& /\/.+?\/.+?\/issues\/[0-9]+$/.test(link.pathname));
+				return (   link.classList?.contains("content-transform-not") != true
+						&& /github\.com/.test(link.hostname) == true
+						&& /\/.+?\/.+?\/issues\/[0-9]+$/.test(link.pathname) == true);
 			},
 
 			isSliceable: false,
@@ -8300,10 +8324,10 @@ Content = {
 
         tweet: {
             matches: (link) => {
-                return (   link.classList.contains("content-transform-not") == false
-						&& [ "x.com" ].includes(link.hostname)
+                return (   link.classList?.contains("content-transform-not") != true
+						&& [ "x.com" ].includes(link.hostname) == true
                         && link.pathname.match(/\/.+?\/status\/[0-9]+$/) != null
-                        && link.dataset.urlArchive != null);
+                        && link.dataset?.urlArchive != null);
             },
 
             isSliceable: false,
@@ -8457,12 +8481,12 @@ Content = {
                     return false;
 
                 //  Maybe it’s an aux-links link?
-                if (link.pathname.startsWith("/metadata/"))
+                if (link.pathname.startsWith("/metadata/") == true)
                     return false;
 
                 //  Maybe it’s a local document link?
-                if (   link.pathname.startsWith("/doc/www/")
-                    || (   link.pathname.startsWith("/doc/")
+                if (   link.pathname.startsWith("/doc/www/") == true
+                    || (   link.pathname.startsWith("/doc/") == true
                         && link.pathname.match(/\.(html|pdf)$/i) != null))
                     return false;
 
@@ -8554,8 +8578,8 @@ Content = {
                 if (link.hostname != location.hostname)
                     return false;
 
-                return (   link.pathname.startsWith("/metadata/")
-                        && link.pathname.endsWith(".html"));
+                return (   link.pathname.startsWith("/metadata/") == true
+                        && link.pathname.endsWith(".html") == true);
             },
 
             isSliceable: true,
@@ -8768,7 +8792,7 @@ Content = {
                     return false;
 
                 //  Account for alternate and archive URLs.
-                let url = URLFromString(link.dataset.urlArchive ?? link.dataset.urlIframe ?? link.href);
+                let url = URLFromString(link.dataset?.urlArchive ?? link.dataset?.urlIframe ?? link.href);
 
                 //  Maybe it’s a foreign link?
                 if (url.hostname != location.hostname)
@@ -8776,11 +8800,11 @@ Content = {
 
                 //  On mobile, we cannot embed PDFs.
                 if (   GW.isMobile()
-                    && url.pathname.endsWith(".pdf"))
+                    && url.pathname.endsWith(".pdf") == true)
                     return false;
 
                 return (   url.pathname.startsWith("/metadata/") == false
-                        && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)));
+                        && url.pathname.endsWithAnyOf(Content.contentTypes.localDocument.documentFileExtensions.map(x => `.${x}`)) == true);
             },
 
             isSliceable: false,
@@ -8970,8 +8994,8 @@ Content = {
                     archived document. Still, we allow for explicit overrides.
                  */
                 return (   link.pathname.match(/\./) == null
-                        || link.pathname.endsWith("/index")
-                        || link.classList.contains("link-page"));
+                        || link.pathname.endsWith("/index") == true
+                        || link.classList?.contains("link-page") == true);
             },
 
             isSliceable: true,
@@ -9048,17 +9072,21 @@ Content = {
             },
 
 			referenceDataCacheKeyForLink: (link) => {
-				let cacheKey = modifiedURL(link, { hash: null, search: null }).href;
-				if (link.dataset.pageSectionId > "")
+				let cacheKey = modifiedURL(link, { hash: "", search: "" }).href;
+				if (link.dataset?.pageSectionId > "")
 					cacheKey += ":::" + link.dataset.pageSectionId;
 				return cacheKey;
+			},
+
+			referenceDataCacheKeyMatchesLink: (cacheKey, link) => {
+				return cacheKey.startsWith(modifiedURL(link, { hash: "", search: "" }).href);
 			},
 
             referenceDataFromContent: (pageContent, link) => {
                 let pageContentDocument = newDocument();
 
 				//	If a page section is specified, extract it.
-				if (link.dataset.pageSectionId > "")
+				if (link.dataset?.pageSectionId > "")
 					pageContentDocument.appendChild(pageContent.document.querySelector("#" + link.dataset.pageSectionId)?.cloneNode(true));
 
                 /*  Otherwise (or if the specified section does not exist), the
@@ -10037,6 +10065,8 @@ function contentTypeIdentifierForIncludeLink(includeLink) {
 		|| (   Content.contentTypes.localFragment.matches(includeLink)
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
 		contentType = "annotation";
+	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
+		contentType = /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
 	} else {
 		let referenceData = Transclude.dataProviderForLink(includeLink).referenceDataForLink(includeLink);
 		if (   referenceData
@@ -10405,6 +10435,9 @@ function includeContent(includeLink, content) {
  */
 function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 	let containingDocument = includeLink.eventInfo.document;
+	let backlinksLoadLocation = loadLocationForIncludeLink(includeLink);
+
+	let newlyConstructedSectionBacklinksBlockIncludeWrappers = [ ];
 
 	mainBacklinksBlockWrapper.querySelectorAll(".backlink-context a[data-target-id]").forEach(backlinkContextLink => {
 		let id = backlinkContextLink.dataset.targetId.split("--")[1];
@@ -10412,54 +10445,24 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			|| id == undefined)
 			return;
 
-		let targetElement = containingDocument.querySelector(`#${(CSS.escape(id))}`);
-		if (targetElement == null)
-			return;
-
-		let targetBlock = targetElement.closest("section, li.footnote");
+		let targetBlock = containingDocument.querySelector(`#${(CSS.escape(id))}`)?.closest("section, li.footnote");
 		if (targetBlock == null)
 			return;
 
-		let backlinksBlock = targetBlock.querySelector(".section-backlinks");
-		if (backlinksBlock == null) {
-			//	Backlinks block.
-			backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
-
-			//	Label.
-			let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
-			let sectionLabelHTML = targetBlock.tagName == "SECTION"
-								   ? `“${(targetBlock.firstElementChild.textContent)}”`
-								   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
-			backlinksBlock.append(elementFromHTML(`<p><strong>Backlinks for <a href="${sectionLabelLinkTarget}" class="link-page">${sectionLabelHTML}</a>:</strong></p>`));
-
-			//	List.
-			backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
-
-			//	Collapse wrapper.
-			let collapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
-			collapseWrapper.append(backlinksBlock);
-
-			//	Include wrapper.
-			let includeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
-			includeWrapper.append(collapseWrapper);
-			let container = targetBlock.classList.contains("collapse")
-							? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
-							: targetBlock;
-			container.append(includeWrapper);
-		}
-
-		let clonedBacklinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+		let backlinkEntry = backlinkContextLink.closest("li").cloneNode(true);
+		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument);
 
 		/*	If we are injecting into an existing section backlinks block, then
 			a separate inject event must be fired for the distributed backlink.
 		 */
-		if (backlinksBlock.closest(".section-backlinks-include-wrapper") == null) {
-			let includeWrapper = newElement("DIV", { "class": "include-wrapper" });
-			includeWrapper.append(clonedBacklinkEntry);
-			backlinksBlock.querySelector(".backlinks-list").append(includeWrapper);
+		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+		if (sectionBacklinksBlockIncludeWrapper == null) {
+			let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+			backlinkEntryIncludeWrapper.append(backlinkEntry);
+			sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
 
 			//	Clear loading state of all include-links.
-			Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+			Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
 
 			//	Fire inject event.
 			let flags = GW.contentDidInjectEventFlags.clickable;
@@ -10467,32 +10470,39 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "transclude.section-backlinks",
-				container: includeWrapper,
+				contentType: "backlink",
+				container: backlinkEntryIncludeWrapper,
 				document: containingDocument,
-				loadLocation: loadLocationForIncludeLink(includeLink),
+				loadLocation: backlinksLoadLocation,
 				flags: flags
 			});
 
-			unwrap(includeWrapper);
+			unwrap(backlinkEntryIncludeWrapper);
 		} else {
-			backlinksBlock.querySelector(".backlinks-list").append(clonedBacklinkEntry);
+			sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+
+			newlyConstructedSectionBacklinksBlockIncludeWrappers.push(sectionBacklinksBlockIncludeWrapper);
 		}
+
+		//	Update displayed count.
+		updateBacklinksCountDisplay(sectionBacklinksBlock);
 	});
 
 	/*	For any new section backlinks blocks we constructed, we fire load and
 		inject events for the entire section backlinks block (which also takes
 		care of the individual backlink entries within).
 	 */
-	containingDocument.querySelectorAll(".section-backlinks-include-wrapper").forEach(includeWrapper => {
+	newlyConstructedSectionBacklinksBlockIncludeWrappers.forEach(sectionBacklinksBlockIncludeWrapper => {
 		//	Clear loading state of all include-links.
-		Transclude.allIncludeLinksInContainer(includeWrapper).forEach(Transclude.clearLinkState);
+		Transclude.allIncludeLinksInContainer(sectionBacklinksBlockIncludeWrapper).forEach(Transclude.clearLinkState);
 
 		//	Fire load event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "transclude.section-backlinks",
-			container: includeWrapper,
+			contentType: "backlink",
+			container: sectionBacklinksBlockIncludeWrapper,
 			document: containingDocument,
-			loadLocation: loadLocationForIncludeLink(includeLink)
+			loadLocation: backlinksLoadLocation
 		});
 
 		//	Fire inject event.
@@ -10501,13 +10511,14 @@ function distributeSectionBacklinks(includeLink, mainBacklinksBlockWrapper) {
 			flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 		GW.notificationCenter.fireEvent("GW.contentDidInject", {
 			source: "transclude.section-backlinks",
-			container: includeWrapper,
+			contentType: "backlink",
+			container: sectionBacklinksBlockIncludeWrapper,
 			document: containingDocument,
-			loadLocation: loadLocationForIncludeLink(includeLink),
+			loadLocation: backlinksLoadLocation,
 			flags: flags
 		});
 
-		unwrap(includeWrapper);
+		unwrap(sectionBacklinksBlockIncludeWrapper);
 	});
 }
 
@@ -10897,11 +10908,13 @@ Transclude = {
 			length limit).
 		 */
 		if (block == null) {
-			for (let selector of generalBlockElementSelectors)
+			for (let selector of generalBlockElementSelectors) {
 				if (   (block = element.closest(selector) ?? block)
-					&& block.textContent.length < Transclude.blockContextMaximumLength
-					&& block.matches(Transclude.notBlockElementSelector) == false)
+					&& block.textContent.trim().length < Transclude.blockContextMaximumLength
+					&& block.matches(Transclude.notBlockElementSelector) == false) {
 					break;
+				}
+			}
 		}
 
 		if (block == null)
@@ -13227,7 +13240,7 @@ Extracts = { ...Extracts,
                             popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
                         }
                     } else {
-                        popFrameTitleTextParts.push(link.hash);
+                        popFrameTitleTextParts.push(target.hash);
                     }
                 }
 			}
@@ -13265,6 +13278,8 @@ Extracts = { ...Extracts,
 					).forEach(includeLink => {
 						Transclude.transclude(includeLink, true);
 					});
+
+					return true;
 				});
 			}, { condition: (info) => (   info.source == "transclude"
 									   && info.document == popFrame.document) });
@@ -15441,6 +15456,231 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 /* AUX-LINKS */
 /*************/
 
+/***************************************************/
+/*	Strip IDs from links in backlink context blocks.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.anonymizeLinksInBacklinkContextBlocks = (eventInfo) => {
+    GWLog("anonymizeLinksInBacklinkContextBlocks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a[id]").forEach(link => {
+		link.id = "";
+	});
+}, "rewrite", (info => (   info.container.closest(".backlink-context") != null
+						|| info.container.matches(".section-backlinks-include-wrapper"))));
+
+/******************************************************************************/
+/*	Returns the backlinks block for a section or a footnote (creating and 
+	injecting the backlinks block if one does not already exist). (Note that,
+	in the latter case, a GW.contentDidInject event will need to be fired for
+	the backlinks block, once all modifications to it are complete; and its 
+	wrapper, a div.section-backlinks-include-wrapper, will need to be unwrapped.)
+ */
+function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) {
+	let backlinksBlock = targetBlock.querySelector(".section-backlinks");
+	if (backlinksBlock == null) {
+		//	Backlinks block.
+		backlinksBlock = newElement("DIV", { "class": "section-backlinks", "id": `${targetBlock.id}-backlinks` });
+
+		//	Label.
+		let sectionLabelLinkTarget = baseLocationForDocument(containingDocument).pathname + "#" + targetBlock.id;
+		let sectionLabelHTML = targetBlock.tagName == "SECTION"
+							   ? `“${(targetBlock.firstElementChild.textContent)}”`
+							   : `footnote <span class="footnote-number">${(Notes.noteNumber(targetBlock))}</span>`;
+		backlinksBlock.append(elementFromHTML(  `<p class="aux-links-list-label backlinks-list-label">`
+											  + `<strong>`
+											  + `<a
+											  	  href="/design#backlink"
+											  	  class="icon-special link-annotated"
+											  	  data-link-icon="arrows-pointing-inwards-to-dot"
+											  	  data-link-icon-type="svg"
+											  	  >Backlinks (<span class="backlink-count">0</span>)</a> for `
+											  + `<a 
+											  	  href="${sectionLabelLinkTarget}" 
+											  	  class="link-page"
+											  	  >${sectionLabelHTML}</a>:`
+											  + `</strong></p>`));
+
+		//	List.
+		backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
+
+		//	Collapse wrapper.
+		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
+		backlinksBlockCollapseWrapper.append(backlinksBlock);
+
+		//	Include wrapper.
+		let backlinksBlockIncludeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
+		backlinksBlockIncludeWrapper.append(backlinksBlockCollapseWrapper);
+		let targetBlockContentContainer = targetBlock.classList.contains("collapse")
+										  ? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
+										  : targetBlock;
+		targetBlockContentContainer.append(backlinksBlockIncludeWrapper);
+	}
+
+	return backlinksBlock;
+}
+
+/**************************************************************************/
+/*	Update the parenthesized count of backlink entries, display in the list 
+	label graf of a backlinks block.
+ */
+function updateBacklinksCountDisplay(backlinksBlock) {
+	let countDisplay = backlinksBlock.querySelector(".backlink-count");
+	if (countDisplay == null)
+		return;
+
+	countDisplay.innerHTML = backlinksBlock.querySelectorAll(".backlinks-list > li").length;
+}
+
+/*************************************/
+/*	Add within-page section backlinks.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSectionBacklinksBlocks = (eventInfo) => {
+    GWLog("addWithinPageBacklinksToSectionBacklinksBlocks", "rewrite.js", 1);
+
+	let excludedContainersSelector = [
+		"#hidden-sidenote-storage",
+		".sidenote-column",
+		".aux-links-list"
+	].join(", ");
+	if (eventInfo.container.closest(excludedContainersSelector) != null)
+		return;
+
+	let excludedLinkContainersSelector = [
+		"#page-metadata",
+		".aux-links-append"
+	].join(", ");
+	let excludedTargetContainersSelector = [
+		"#backlinks-section",
+		"#similars-section",
+		"#link-bibliography-section"
+	].join(", ");
+
+	let backlinksBySectionId = { };
+	let mainContentContainer = eventInfo.document.querySelector("#markdownBody") ?? eventInfo.document.querySelector(".markdownBody");
+	mainContentContainer.querySelectorAll("a.link-self").forEach(link => {
+		if (link.closest(excludedLinkContainersSelector) != null)
+			return;
+
+		let targetBlock = mainContentContainer.querySelector(selectorFromHash(link.hash))?.closest("section, li.footnote");
+		if (   targetBlock != null
+			&& targetBlock.matches(excludedTargetContainersSelector) == false) {
+			if (backlinksBySectionId[targetBlock.id] == null)
+				backlinksBySectionId[targetBlock.id] = [ targetBlock, [ ] ];
+
+			backlinksBySectionId[targetBlock.id][1].push(link);
+		}
+	});
+
+	let pageTitle = Content.referenceDataForLink(eventInfo.loadLocation).pageTitle;
+	for (let [ targetBlock, linksToTargetBlock ] of Object.values(backlinksBySectionId)) {
+		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
+		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+
+		//	Inject the backlink entries...
+		for (let link of linksToTargetBlock) {
+			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
+												+ `<a 
+													href="${link.pathname}" 
+													class="backlink-not link-self link-annotated"
+													>${pageTitle}</a> (`
+												+ `<a 
+													href="#${link.id}"
+													class="backlink-not link-self extract-not"
+													>context</a>`
+												+ `):</p>`
+												+ `<blockquote class="backlink-context"><p>`
+												+ `<a
+													href="${link.pathname}"
+													class="backlink-not include-block-context-expanded collapsible"
+													data-target-id="${link.id}"
+													>[backlink context]</a>`
+												+ `</p></blockquote>`
+												+ `</li>`);
+
+			/*	If we are injecting into an existing section backlinks block, 
+				then a separate inject event must be fired for the created 
+				backlink.
+			 */
+			if (sectionBacklinksBlockIncludeWrapper == null) {
+				let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+				backlinkEntryIncludeWrapper.append(backlinkEntry);
+				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+
+				//	Clear loading state of all include-links.
+				Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+
+				//	Fire inject event.
+				let flags = GW.contentDidInjectEventFlags.clickable;
+				if (eventInfo.document == document)
+					flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+				GW.notificationCenter.fireEvent("GW.contentDidInject", {
+					source: "transclude.section-backlinks",
+					contentType: "backlink",
+					container: backlinkEntryIncludeWrapper,
+					document: eventInfo.document,
+					loadLocation: eventInfo.loadLocation,
+					flags: flags
+				});
+
+				unwrap(backlinkEntryIncludeWrapper);
+			} else {
+				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+			}
+		}
+
+		//	Update displayed count.
+		updateBacklinksCountDisplay(sectionBacklinksBlock);
+
+		if (sectionBacklinksBlockIncludeWrapper != null) {
+			//	Fire load event.
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "transclude.section-backlinks",
+				contentType: "backlink",
+				container: sectionBacklinksBlockIncludeWrapper,
+				document: eventInfo.document,
+				loadLocation: eventInfo.loadLocation
+			});
+
+			//	Fire inject event.
+			let flags = GW.contentDidInjectEventFlags.clickable;
+			if (eventInfo.document == document)
+				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+			GW.notificationCenter.fireEvent("GW.contentDidInject", {
+				source: "transclude.section-backlinks",
+				contentType: "backlink",
+				container: sectionBacklinksBlockIncludeWrapper,
+				document: eventInfo.document,
+				loadLocation: eventInfo.loadLocation,
+				flags: flags
+			});
+
+			unwrap(sectionBacklinksBlockIncludeWrapper);
+		}
+	}
+
+	if (eventInfo.document == document)
+		Content.invalidateCachedContent(eventInfo.loadLocation);
+}, "rewrite", (info) => (   info.document == document
+						 && info.contentType == null));
+
+/****************************************************************************/
+/*	When an annotation is transcluded into a page, and some of the backlinks 
+	for the annotated page are from the page into which the annotation is
+	transcluded, the “full context” links become pointless, and should become
+	just “context” (as in synthesized within-page backlinks), and likewise 
+	should not spawn pop-frames.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContextLinks = (eventInfo) => {
+    GWLog("rectifyLocalizedBacklinkContextLinks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".backlink-source .link-self:not(.link-annotated)").forEach(backlinkContextLink => {
+		backlinkContextLink.innerHTML = "context";
+		backlinkContextLink.classList.add("extract-not");
+	});
+}, "rewrite", (info => (   info.document == document
+						&& info.contentType == "backlink"
+						&& info.source != "transclude.section-backlinks")));
+
 /*************************************************************************/
 /*  Add “backlinks” link to start of section popups, when that section has
     a backlinks block.
@@ -16019,7 +16259,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 		return;
 
 	//	Insert page thumbnail into page abstract.
-	let referenceData = Content.referenceDataForLink(newElement("A", { href: eventInfo.loadLocation.href }));
+	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
 	if (referenceData.pageThumbnailHTML != null) {
 		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
 			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
@@ -16036,6 +16276,9 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 		//	Invert, or not.
 		applyImageInversionJudgmentNowOrLater(pageThumbnail);
 	}
+
+	if (eventInfo.container == document.main)
+		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.container == document.main
 						 || (   info.context == "popFrame"
 						 	 && Extracts.popFrameProvider == Popups
@@ -17632,7 +17875,7 @@ addContentInjectHandler(GW.contentInjectHandlers.qualifyAnchorLinks = (eventInfo
 			link.pathname = eventInfo.loadLocation.pathname;
         }
     });
-}, "rewrite");
+}, "<rewrite");
 
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
@@ -17666,7 +17909,19 @@ addContentInjectHandler(GW.contentInjectHandlers.addSpecialLinkClasses = (eventI
             link.swapClasses([ "link-self", "link-page" ], 1);
         }
     });
-}, "rewrite");
+}, "<rewrite");
+
+/****************************************/
+/*	Add IDs to un-ID’d within-page links.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.identifyAnchorLinks = (eventInfo) => {
+    GWLog("identifyAnchorLinks", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("a.link-self").forEach(link => {
+		if (link.id == "")
+			link.id = "gwern-" + (link.href + link.textContent).hashCode();
+	});
+}, "<rewrite");
 
 /******************************************************************************/
 /*  Assign local navigation link icons: directional in-page links, generic
