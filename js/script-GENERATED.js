@@ -10086,10 +10086,12 @@ function contentTypeIdentifierForIncludeLink(includeLink) {
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
 		return "annotation";
 	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
-		return /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
-	} else {
-		return Content.contentTypeNameForLink(includeLink);
+		let auxLinksLinkType = AuxLinks.auxLinksLinkType(includeLink);
+		if (auxLinksLinkType)
+			return auxLinksLinkType;
 	}
+
+	return Content.contentTypeNameForLink(includeLink);
 }
 
 /*****************************************************************/
@@ -15630,7 +15632,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 					flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 				GW.notificationCenter.fireEvent("GW.contentDidInject", {
 					source: "transclude.section-backlinks",
-					contentType: "backlink",
+					contentType: "backlinks",
 					container: backlinkEntryIncludeWrapper,
 					document: eventInfo.document,
 					loadLocation: eventInfo.loadLocation,
@@ -15650,7 +15652,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 			//	Fire load event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "transclude.section-backlinks",
-				contentType: "backlink",
+				contentType: "backlinks",
 				container: sectionBacklinksBlockIncludeWrapper,
 				document: eventInfo.document,
 				loadLocation: eventInfo.loadLocation
@@ -15662,7 +15664,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "transclude.section-backlinks",
-				contentType: "backlink",
+				contentType: "backlinks",
 				container: sectionBacklinksBlockIncludeWrapper,
 				document: eventInfo.document,
 				loadLocation: eventInfo.loadLocation,
@@ -15694,7 +15696,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContext
 		backlinkContextLink.classList.add("extract-not");
 	});
 }, "rewrite", (info => (   info.document == document
-						&& info.contentType == "backlink"
+						&& info.contentType == "backlinks"
 						&& info.source != "transclude.section-backlinks")));
 
 /*************************************************************************/

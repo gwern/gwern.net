@@ -941,10 +941,12 @@ function contentTypeIdentifierForIncludeLink(includeLink) {
 			&& /^\/metadata\/annotation\/[^\/]+$/.test(includeLink.pathname))) {
 		return "annotation";
 	} else if (Content.contentTypes.localFragment.matches(includeLink)) {
-		return /^\/metadata\/annotation\/(.+?)\/.+$/.exec(includeLink.pathname)[1];
-	} else {
-		return Content.contentTypeNameForLink(includeLink);
+		let auxLinksLinkType = AuxLinks.auxLinksLinkType(includeLink);
+		if (auxLinksLinkType)
+			return auxLinksLinkType;
 	}
+
+	return Content.contentTypeNameForLink(includeLink);
 }
 
 /*****************************************************************/

@@ -450,7 +450,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 					flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 				GW.notificationCenter.fireEvent("GW.contentDidInject", {
 					source: "transclude.section-backlinks",
-					contentType: "backlink",
+					contentType: "backlinks",
 					container: backlinkEntryIncludeWrapper,
 					document: eventInfo.document,
 					loadLocation: eventInfo.loadLocation,
@@ -470,7 +470,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 			//	Fire load event.
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "transclude.section-backlinks",
-				contentType: "backlink",
+				contentType: "backlinks",
 				container: sectionBacklinksBlockIncludeWrapper,
 				document: eventInfo.document,
 				loadLocation: eventInfo.loadLocation
@@ -482,7 +482,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
 			GW.notificationCenter.fireEvent("GW.contentDidInject", {
 				source: "transclude.section-backlinks",
-				contentType: "backlink",
+				contentType: "backlinks",
 				container: sectionBacklinksBlockIncludeWrapper,
 				document: eventInfo.document,
 				loadLocation: eventInfo.loadLocation,
@@ -514,7 +514,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContext
 		backlinkContextLink.classList.add("extract-not");
 	});
 }, "rewrite", (info => (   info.document == document
-						&& info.contentType == "backlink"
+						&& info.contentType == "backlinks"
 						&& info.source != "transclude.section-backlinks")));
 
 /*************************************************************************/
