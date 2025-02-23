@@ -15676,7 +15676,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 	if (eventInfo.document == document)
 		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.document == document
-						 && info.contentType == "localPage"));
+						 && info.contentType == "localPage"
+						 && location.pathname.endsWithAnyOf([ "/index", "/" ]) == false));
 
 /****************************************************************************/
 /*	When an annotation is transcluded into a page, and some of the backlinks 
