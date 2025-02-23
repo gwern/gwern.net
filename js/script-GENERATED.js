@@ -15527,10 +15527,15 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 		//	Include wrapper.
 		let backlinksBlockIncludeWrapper = newElement("DIV", { "class": "include-wrapper section-backlinks-include-wrapper" });
 		backlinksBlockIncludeWrapper.append(backlinksBlockCollapseWrapper);
-		let targetBlockContentContainer = targetBlock.classList.contains("collapse")
-										  ? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
-										  : targetBlock;
-		targetBlockContentContainer.append(backlinksBlockIncludeWrapper);
+
+		//	Inject.
+		let targetParentElement = targetBlock.classList.contains("collapse")
+								  ? (targetBlock.querySelector(".collapse-content-wrapper") ?? targetBlock)
+								  : targetBlock;
+		let targetNextSiblingElement = null;
+		if (targetBlock.tagName == "SECTION")
+			targetNextSiblingElement = targetBlock.querySelector("section");
+		targetParentElement.insertBefore(backlinksBlockIncludeWrapper, targetNextSiblingElement);
 	}
 
 	return backlinksBlock;
