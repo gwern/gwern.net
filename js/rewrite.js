@@ -2879,7 +2879,13 @@ function enableLinkIcon(link) {
 
     //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {
-        link.style.setProperty("--link-icon", `"${(link.dataset.linkIcon)}"`);
+		let linkIcon = link.dataset.linkIcon;
+
+		//	Inject newline into quad link icons.
+		if (link.dataset.linkIconType.includes("quad"))
+			linkIcon = linkIcon.slice(0, 2) + "\\a " + linkIcon.slice(2);
+
+        link.style.setProperty("--link-icon", `"${linkIcon}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
         let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
         link.style.setProperty("--link-icon-url",

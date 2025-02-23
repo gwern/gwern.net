@@ -8840,8 +8840,9 @@ a[data-link-icon-type*='quad'] .link-icon-hook::after {
     bottom: 0.3em;
     font-size: 0.52em;
     font-weight: bold;
-    line-height: 0.8;
-    width: 1.5em;
+    letter-spacing: 0.05em;
+    line-height: 0.85;
+    width: 1.7em;
     opacity: 0.83;
 }
 
@@ -8854,8 +8855,7 @@ a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::aft
 /*  Quad-letter square icons in a monospaced face.
     */
 a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
-    letter-spacing: 0.05em;
-    line-height: 0.85;
+    line-height: 0.90;
 }
 
 /******************************/
@@ -9152,21 +9152,6 @@ a[data-link-icon='☯'] { /* Touhou Wiki */
 
 a[data-link-icon='VICE'] {
     --link-icon-offset-x: 0.10em;
-}
-
-a[data-link-icon='PNAS'] .link-icon-hook::after {
-    width: 1.4em;
-}
-
-a[data-link-icon='MDP I'] .link-icon-hook::after,
-a[data-link-icon='EPUB'] .link-icon-hook::after,
-a[data-link-icon='TPDR'] .link-icon-hook::after,
-a[data-link-icon='NBER'] .link-icon-hook::after {
-    width: 1.6em;
-}
-
-a[data-link-icon-type*='quad'][data-link-icon-type*='mono'][data-link-icon='sgfp'] .link-icon-hook::after {
-    line-height: 0.95; /* 'g' overlaps without more line-height */
 }
 
 /*=---------------------------------=*/
