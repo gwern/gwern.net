@@ -474,7 +474,7 @@ linkIconRulesQuad u
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
  | u'' u "www.dwarkeshpatel.com" = ("Dwk h", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
- | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
+ | u'' u "ralphmerkle.com" = ("R\8288MKL", "text,quad", "")
  | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
  | u'' u "minimaxir.com" = ("MxWf" , "text,quad,sans", "")
  | otherwise = ("", "", "")
@@ -1314,7 +1314,7 @@ linkIconTestUnitsText =
          , ("https://www.rte.ie/news/business/2013/1220/494111-silk-road-arrest/", "RTϵ", "text,tri,sans", "")
          , ("https://www.chronicle.com/article/we-must-stop-the-avalanche-of-low-quality-research/", "CHE", "text,tri", "")
          , ("https://paulfchristiano.com/", "PFC", "text,tri", "")
-         , ("https://ralphmerkle.com/cryo/cryptoCryo.html", "RMKL", "text,quad", "")
+         , ("https://ralphmerkle.com/cryo/cryptoCryo.html", "R\8288MKL", "text,quad", "")
          , ("https://nyaa.si/view/353745", "Nyaa", "text,quad,sans", "")
          , ("https://minimaxir.com/2019/09/howto-gpt2/", "MxWf" , "text,quad,sans", "")
          , ("http://www.nausicaa.net/wiki/2010-01-News#Hideaki_Anno_Appears_on_Ghibli_Asemamire", "", "", "#507ea1")

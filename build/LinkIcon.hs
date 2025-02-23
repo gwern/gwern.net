@@ -6,7 +6,7 @@ import Data.Char (isDigit, isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null, toLower)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null, toLower, head)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
@@ -74,12 +74,13 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u == "#similars" || u == "/design#similar-links" || "/metadata/annotation/similar/" `T.isPrefixOf` u = addIcon x ("≈", "text", "") -- ALMOST EQUAL TO: recommendations/similar-links which are 'similar' or 'almost equal to' the current URL; NOTE: hardcoded in `default.html` because the link-icon pass may not run there
  | u == "#backlinks" || u == "/design#backlink" || "/metadata/annotation/backlink/" `T.isPrefixOf` u = addIcon x ("arrows-pointing-inwards-to-dot", "svg", "") -- an 'implosion' arrow icon to indicate multiple links 'in' to the current article (as opposed to the normal forwardlinks 'out')
  | anyPrefixT u ["/metadata/annotation/"] = x
-
  | "directory-indexes-upwards"   `elem` cl = addIcon x ("arrow-up-left", "svg", "")
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg", "")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg", "")
-
- | otherwise = if not (isURLAny (T.unpack originalURL)) then error ("LinkIcon.linkIcon: input was not a valid URL? " ++ show x) else removeIconDuplicate $ addIcon x $ C.linkIconRules originalURL
+ | T.head u == '#' = x
+ | otherwise = if not (isURLAny $ T.unpack originalURL)
+               then error $ "LinkIcon.linkIcon: input was not a valid URL? " ++ show x
+               else removeIconDuplicate $ addIcon x $ C.linkIconRules originalURL
  where originalURL :: T.Text -- NOTE: all rules are defined in terms of the original canonical URL, without local archives in mind. So to cooperate with LinkArchive, we must swap the target if LA swapped it first:
        originalURL = case lookup "data-url-original" attributes of
                        Nothing   -> u

@@ -291,9 +291,13 @@ isURL url = case parseURI (T.unpack $ escapeUnicode $ T.pack url) of
 isURLT :: T.Text -> Bool
 isURLT = isURL . T.unpack
 
+-- check local/external URLs; for weirdo protocols like IRC or email, we default to True.
 isURLAny :: String -> Bool
 isURLAny "" = error "Utils.isURLAny: passed an empty string as a URL. This should never happen!"
-isURLAny url = if head url == '/' then isURILocalT (T.pack url) else isURL url
+isURLAny url
+  | "irc://" `isPrefixOf` url || "mailto:" `isPrefixOf` url || '#' == last url = True
+  | head url == '/' = isURILocalT (T.pack url)
+  | otherwise       = isURL url
 isURLAnyT :: T.Text -> Bool
 isURLAnyT = isURLAny . T.unpack
 
@@ -322,8 +326,8 @@ printGreen  s = putStrGreen (s ++ "\n")
 
 -- print danger or error messages to stderr in red background:
 putStrRed, printRed :: String -> IO ()
-putStrRed s = do when (length s > 2048) $ printRed "Warning: following error message was extremely long & truncated at 2048 characters!"
-                 putStrStdErr $ red $ take 2048 s
+putStrRed s = do when (length s > 1024) $ printRed "Warning: following error message was extremely long & truncated at 1024 characters!"
+                 putStrStdErr $ red $ take 1024 s
 printRed s = putStrRed (s ++ "\n")
 -- special-case: the error message, then useful values:
 printRed' :: String -> String -> IO ()
@@ -332,7 +336,7 @@ printRed' e l = putStrRed e >> printGreen l
 putStrStdErr :: String -> IO ()
 putStrStdErr = hPutStr stderr
 
--- Repeatedly apply `f` to an input until the input stops changing. 'Show' constraint is required for better error reporting on the occasional infinite loop, and 'Ord' constraint is required for easy duplicate-checking via Sets. (If necessary, this could be removed with the Floyd tortoise-and-hare cycle detector <https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare>, although that is more complicated & probably a bit slower for our uses.)
+-- Repeatedly apply `f` to an input until the input stops changing. 'Show' constraint is required for better error reporting on the occasional infinite loop, and 'Ord' constraint is required for easy duplicate-checking via Sets. (If necessary, this could be removed with the Floyd tortoise-and-hare cycle detector <https://en.wikipedia.org/wiki/Cycle_detection#Floyd%27s_tortoise_and_hare>, although that is more complicated & probably a bit slower for our uses.)
 -- Note: set to 5000 iterations by default. However, if you are using a list of _n_ simple rewrite rules, the limit can be set a priori to _n_+1 rewrites
 -- as any more than that implies a cycle/infinite-loop.
 fixedPoint :: (Show a, Eq a, Ord a) => (a -> a) -> a -> a

@@ -1358,10 +1358,10 @@ authorLinkDB = M.fromList $
     , ("Mike Stay", "https://math.ucr.edu/~mike/")
     , ("Bent Petersen", "https://researchprofiles.ku.dk/en/persons/bent-petersen")
     , ("Bryne Hobart", "https://www.thediff.co/")
-    , ("Peter A. Holmans", "https://scholar.google.com/citations?user=mOQF3UUAAAAJ&hl=en&oi=ao")
+    , ("Peter A. Holmans", "https://scholar.google.com/citations?user=mOQF3UUAAAAJ")
     , ("Patricia B. Munroe", "https://www.qmul.ac.uk/whri/people/academic-staff/items/munroepatricia.html")
     , ("Pamela A. F. Madden", "https://psychiatry.wustl.edu/people/pamela-madden-phd/")
-    , ("Ozren Polašek", "https://scholar.google.com/citations?user=d02gBZQAAAAJ&hl=en&oi=ao")
+    , ("Ozren Polašek", "https://scholar.google.com/citations?user=d02gBZQAAAAJ")
     , ("Tim Taylor", "https://www.tim-taylor.com/about/")
     , ("Colm Massey", "https://scholar.google.com/scholar?q=Colm%20Massey")
     ]

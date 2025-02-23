@@ -138,7 +138,7 @@ $corner_colors = [
     imageColorsForIndex($image, imageColorAt($image, $width - 1, $height - 1)),
 ];
 // Clean up
-imagedestroy($image)
+imagedestroy($image);
 
 // Simple corner-based heuristic
 if (!are_all_same($corner_colors)) {
