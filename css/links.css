@@ -236,6 +236,52 @@ a[data-link-icon-type*='overline'] {
     --link-icon-text-decoration: overline;
 }
 
+/*  Triple-letter ‘tri’ initials: too few for quad, but too big for regular
+    font size/offset. Common with TLA orgs.
+ */
+a[data-link-icon-type*='tri'] {
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.40em;
+    --link-icon-opacity: 0.90;
+}
+
+/*	Tri-letter icons in a monospaced face.
+ */
+a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
+    --link-icon-opacity: 0.7;
+}
+
+/*  Quad-letter ‘quad’ square icons.
+ */
+a[data-link-icon-type*='quad'] .link-icon-hook::after {
+    text-indent: 0;
+    overflow-wrap: break-word;
+    display: inline-block;
+    text-align: center;
+    left: 0;
+    bottom: 0.3em;
+    font-size: 0.52em;
+    font-weight: bold;
+    line-height: 0.8;
+    width: 1.5em;
+    opacity: 0.83;
+}
+
+/*  Quad-letter square icons in a sans face.
+    */
+a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
+    margin: 0;
+}
+
+/*  Quad-letter square icons in a monospaced face.
+    */
+a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
+    letter-spacing: 0.05em;
+    line-height: 0.85;
+}
+
+/******************************/
 /*  Colored textual link icons.
  */
 a[data-link-icon-type*='text'][data-link-icon-color]:hover .link-icon-hook::after {
@@ -523,46 +569,9 @@ a[data-link-icon='☯'] { /* Touhou Wiki */
     --link-icon-offset-y: 0.20em;
 }
 
-/**************************************************************************/
-/*  Triple-letter ‘tri’ initials: too few for quad, but too big for regular
-    font size/offset. Common with TLA orgs.
- */
-a[data-link-icon-type*='tri'] {
-    --link-icon-size: 0.65em;
-    --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.40em;
-    --link-icon-opacity: 0.90;
-}
-
 /***********************************/
 /*  Quad-letter ‘quad’ square icons.
  */
-a[data-link-icon-type*='quad'] .link-icon-hook::after {
-    text-indent: 0;
-    overflow-wrap: break-word;
-    display: inline-block;
-    text-align: center;
-    left: 0;
-    bottom: 0.3em;
-    font-size: 0.52em;
-    font-weight: bold;
-    line-height: 0.8;
-    width: 1.5em;
-    opacity: 0.83;
-}
-
-/*  Quad-letter square icons in a sans face.
-    */
-a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
-    margin: 0;
-}
-
-/*  Quad-letter square icons in a monospace face.
-    */
-a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
-    letter-spacing: 0.05em;
-    line-height: 0.85;
-}
 
 a[data-link-icon='VICE'] {
     --link-icon-offset-x: 0.10em;
