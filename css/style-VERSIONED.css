@@ -8823,6 +8823,12 @@ a[data-link-icon-type*='tri'] {
     --link-icon-opacity: 0.90;
 }
 
+/*	Tri-letter icons in a sans face.
+ */
+a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
+	/*	Nothing, for now. */
+}
+
 /*	Tri-letter icons in a monospaced face.
  */
 a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
@@ -8849,7 +8855,7 @@ a[data-link-icon-type*='quad'] .link-icon-hook::after {
 /*  Quad-letter square icons in a sans face.
     */
 a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
-    margin: 0;
+	/*	Nothing, for now. */
 }
 
 /*  Quad-letter square icons in a monospaced face.
