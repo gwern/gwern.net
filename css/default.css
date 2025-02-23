@@ -2268,6 +2268,15 @@ span.denom {
 	left: -0.12em;
 }
 
+/*	Fix for text-shadow “chomping” of adjacent glyphs in fractions in links.
+ */
+a span.frasl {
+	text-shadow: none;
+	z-index: 1;
+	bottom: 0.15em;
+	left: -0.03em;
+}
+
 /*  Inflation adjustments.
 
     Make sure that adjusted prices move as a block: no breaking in the middle
