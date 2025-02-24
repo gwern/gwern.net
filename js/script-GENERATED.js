@@ -6908,7 +6908,7 @@ Annotations = { ...Annotations,
 		//	Data attributes for the title link.
 		let titleLinkDataAttributes = [ ];
 		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
-			titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
+			titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
 		/*	Import link icon data attributes from the annotated link itself 
 			(but do not replace ones already specified by the annotation 
@@ -6917,7 +6917,7 @@ Annotations = { ...Annotations,
 		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
 			if (   attrName.startsWith("linkIcon")
 				&& titleLink.dataset[attrName] == null)
-				titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
+				titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
 		//	Stringify data attributes.
 		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0
@@ -7496,13 +7496,13 @@ Content = {
 			.referenceDataCacheKeyMatchesLink(string, URL|Element) => boolean
 
 				Used when invalidating cached reference data. Should be supplied
-				if a single loaded content entry may generate multilpe reference
+				if a single loaded content entry may generate multiple reference
 				data entries, for multiple different reference data cache keys.
      */
 
     contentTypeForLink: (link) => {
 		if (link.dataset?.linkContentType) {
-			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentTypeName = link.dataset.linkContentType.kebabCaseToCamelCase();
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
 				return contentType;
@@ -7517,7 +7517,7 @@ Content = {
 
 	contentTypeNameForLink: (link) => {
 		if (link.dataset?.linkContentType) {
-			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentTypeName = link.dataset.linkContentType.kebabCaseToCamelCase();
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
 				return contentTypeName;
@@ -15416,7 +15416,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		//	Normalize to lowercase, and update URL bar, if need be.
 		let normalizedRef = ref.toLowerCase();
 		if (normalizedRef != ref)
-			history.replaceState(null, null, "/ref/" + normalizedRef);
+			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve id-to-URL mapping file (sliced by initial character).
 		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1)) 

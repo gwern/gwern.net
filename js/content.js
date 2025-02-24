@@ -381,13 +381,13 @@ Content = {
 			.referenceDataCacheKeyMatchesLink(string, URL|Element) => boolean
 
 				Used when invalidating cached reference data. Should be supplied
-				if a single loaded content entry may generate multilpe reference
+				if a single loaded content entry may generate multiple reference
 				data entries, for multiple different reference data cache keys.
      */
 
     contentTypeForLink: (link) => {
 		if (link.dataset?.linkContentType) {
-			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentTypeName = link.dataset.linkContentType.kebabCaseToCamelCase();
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
 				return contentType;
@@ -402,7 +402,7 @@ Content = {
 
 	contentTypeNameForLink: (link) => {
 		if (link.dataset?.linkContentType) {
-			let contentTypeName = link.dataset.linkContentType.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+			let contentTypeName = link.dataset.linkContentType.kebabCaseToCamelCase();
 			let contentType = Content.contentTypes[contentTypeName];
 			if (contentType?.matches(link))
 				return contentTypeName;

@@ -217,7 +217,7 @@ Annotations = { ...Annotations,
 		//	Data attributes for the title link.
 		let titleLinkDataAttributes = [ ];
 		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
-			titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
+			titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
 		/*	Import link icon data attributes from the annotated link itself 
 			(but do not replace ones already specified by the annotation 
@@ -226,7 +226,7 @@ Annotations = { ...Annotations,
 		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
 			if (   attrName.startsWith("linkIcon")
 				&& titleLink.dataset[attrName] == null)
-				titleLinkDataAttributes.push(`data-${(attrName.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase())}="${attrValue}"`);
+				titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
 		//	Stringify data attributes.
 		titleLinkDataAttributes = (titleLinkDataAttributes.length > 0

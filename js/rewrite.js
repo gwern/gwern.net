@@ -234,7 +234,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		//	Normalize to lowercase, and update URL bar, if need be.
 		let normalizedRef = ref.toLowerCase();
 		if (normalizedRef != ref)
-			history.replaceState(null, null, "/ref/" + normalizedRef);
+			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve id-to-URL mapping file (sliced by initial character).
 		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1)) 

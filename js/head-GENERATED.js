@@ -111,7 +111,7 @@ if (Array.prototype.findLastIndex === undefined) {
  */
 Array.prototype.unique = function () {
 	return this.filter((value, index, array) => array.indexOf(value) == index);
-}
+};
 
 /*********************************************/
 /*	Returns the string with words capitalized.
@@ -135,7 +135,7 @@ String.prototype.startsWithAnyOf = function (prefixes) {
         if (this.startsWith(prefix))
             return true;
     return false;
-}
+};
 
 /******************************************************************/
 /*  Returns true if the string ends with any of the given suffixes.
@@ -145,7 +145,7 @@ String.prototype.endsWithAnyOf = function (suffixes) {
         if (this.endsWith(suffix))
             return true;
     return false;
-}
+};
 
 /*******************************************************************/
 /*  Returns true if the string includes any of the given substrings.
@@ -155,7 +155,7 @@ String.prototype.includesAnyOf = function (substrings) {
         if (this.includes(substring))
             return true
     return false;
-}
+};
 
 /*****************************************/
 /*	Returns numeric hash code of a string.
@@ -166,7 +166,21 @@ String.prototype.hashCode = function () {
 	return (this.split('').reduce((prevHash, currVal) => {
 		return (((prevHash << 5) - prevHash) + currVal.charCodeAt(0))|0;
 	}, 0) + 2147483648);
-}
+};
+
+/**************************************************/
+/*	Returns camelCase version of kebab-case string.
+ */
+String.prototype.kebabCaseToCamelCase = function () {
+	return this.replace(/([a-z])-([a-z])/g, (match, p1, p2) => (p1 + p2.toUpperCase()));
+};
+
+/**************************************************/
+/*	Returns kebab-case version of camelCase string.
+ */
+String.prototype.camelCaseToKebabCase = function () {
+	return this.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()
+};
 
 /***************************************************************************/
 /*	Returns the value of the search param with the given key for a the given
@@ -174,7 +188,7 @@ String.prototype.hashCode = function () {
  */
 URL.prototype.getQueryVariable = function (key) {
 	return this.searchParams.get(key);
-}
+};
 
 /**************************************************************************/
 /*	Set a URL search parameter with the given key to the given value on the
@@ -184,7 +198,7 @@ URL.prototype.setQueryVariable = function (key, value) {
 	let query = new URLSearchParams(this.search);
 	query.set(key, value);
 	this.search = query.toString();
-}
+};
 
 /******************************************************************************/
 /*	Delete a URL search parameter with the given key from the given URL object.
@@ -193,7 +207,7 @@ URL.prototype.deleteQueryVariable = function (key) {
 	let query = new URLSearchParams(this.search);
 	query.delete(key);
 	this.search = query.toString();
-}
+};
 
 /*****************************************************************************/
 /*	Returns a URL constructed from either a fully qualified URL string,
@@ -239,7 +253,7 @@ function modifiedURL(url, mods) {
 HTMLAnchorElement.prototype.getQueryVariable = function (key) {
 	let url = URLFromString(this.href);
 	return url.searchParams.get(key);
-}
+};
 
 /**************************************************************************/
 /*	Set a URL search parameter with the given key to the given value on the
@@ -249,7 +263,7 @@ HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 	let url = URLFromString(this.href);
 	url.setQueryVariable(key, value);
 	this.search = url.search;
-}
+};
 
 /******************************************************************/
 /*	Delete a URL search parameter with the given key from the given 
@@ -259,7 +273,7 @@ HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
 	let url = URLFromString(this.href);
 	url.deleteQueryVariable(key);
 	this.search = url.search;
-}
+};
 
 /****************************************************************************/
 /*  Add an event listener to a button (or other clickable element), attaching
@@ -285,7 +299,7 @@ Element.prototype.addActivateEvent = function(fn, options) {
     this.addEventListener("keyup", ael);
     if (options.includeMouseDown)
         this.addEventListener("mousedown", ael);
-}
+};
 
 /******************************************************************************/
 /*	Removes event listener from a clickable element, automatically detaching it
@@ -376,7 +390,7 @@ DOMTokenList.prototype.containsAnyOf = function (tokens) {
         if (this.contains(token) == true)
             return true;
     return false;
-}
+};
 
 /**************************************************************************/
 /*  Returns true if the list contains all of the tokens in the given array.
@@ -386,7 +400,7 @@ DOMTokenList.prototype.containsAllOf = function (tokens) {
         if (this.contains(token) == false)
             return false;
     return true;
-}
+};
 
 /**************************************************/
 /*	The obvious equivalent of Element’s .innerHTML.
@@ -432,7 +446,7 @@ Selection.prototype.selectNode = function (node) {
 	range.selectNode(node);
 	this.removeAllRanges();
 	this.addRange(range);
-}
+};
 
 /*************************************************************/
 /*	Polyfill for crypto.randomUUID, for older browser versions
@@ -1108,7 +1122,7 @@ function getSelectionAsDocument(doc = document) {
  */
 DocumentFragment.prototype.getSelection = function () {
 	return document.getSelection();
-}
+};
 
 /***********************************************************************/
 /*  Returns true if the point is within the given rect, false otherwise.
