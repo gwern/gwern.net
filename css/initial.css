@@ -1730,6 +1730,20 @@ figure.width-full {
 }
 
 
+/******************/
+/* DISPLAY RANDOM */
+/******************/
+
+[class*='display-random-'],
+[class*='display-random-'] > * {
+	display: none;
+}
+[class*='display-random-'].visible,
+[class*='display-random-'].visible > .visible {
+	display: initial;
+}
+
+
 /*********/
 /* LINKS */
 /*********/
