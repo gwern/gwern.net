@@ -650,6 +650,8 @@ canonicals = M.fromList
   , ("Paul Vitányi", "Paul M. B. Vitányi")
   , ("Pamela Madden", "Pamela A. F. Madden")
   , ("Ozren Polasek", "Ozren Polašek")
+  , ("AaronBergman18", "Aaron Bergman")
+  , ("lishali88", "Lisha Li")
   ]
 
 -- tests: unique
@@ -1364,6 +1366,8 @@ authorLinkDB = M.fromList $
     , ("Ozren Polašek", "https://scholar.google.com/citations?user=d02gBZQAAAAJ")
     , ("Tim Taylor", "https://www.tim-taylor.com/about/")
     , ("Colm Massey", "https://scholar.google.com/scholar?q=Colm%20Massey")
+    , ("Aaron Bergman", "https://x.com/AaronBergman18")
+    , ("Lisha Li", "https://x.com/lishali88")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

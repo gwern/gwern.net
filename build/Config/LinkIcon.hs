@@ -422,7 +422,7 @@ linkIconRulesQuad u
  | u'' u "www.pnas.org" = ("PNAS", "text,quad", "#1f75b9") -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.] color: blue
  | u'' u "www.rand.org" = ("RAND", "text,quad,sans", "#751ddb") -- color: wine-red; TODO: white-on-red text background
  | u' u ".sagepub.com" = ("SAGE", "text,quad,sans", "#046ff8") -- Sage Journals’s logo is a circled S… but would anyone recognize it? Primary user: journals.sagepub.com; color: dark blue; TODO: white-on-blue text background
- | u'' u "publicdomainreview.org" = ("T \8288PDR", "text,quad", "")
+ | u'' u "publicdomainreview.org" = ("TPDR", "text,quad", "")
  | u' u "xkcd.com" = ("XKCD", "text,quad,sans", "") -- covers explainxkcd.com, what-if.xkcd.com…
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
@@ -474,7 +474,7 @@ linkIconRulesQuad u
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
  | u'' u "www.dwarkeshpatel.com" = ("Dwk h", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
- | u'' u "ralphmerkle.com" = ("R\8288MKL", "text,quad", "")
+ | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
  | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
  | u'' u "minimaxir.com" = ("MxWf" , "text,quad,sans", "")
  | otherwise = ("", "", "")
@@ -965,7 +965,7 @@ linkIconTestUnitsText =
          , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad", "")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad", "")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
-         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "T \8288PDR","text,quad", "")
+         , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad", "")
          , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad", "")
          , ("https://read.atavist.com/american-hippopotamus", "Atvt", "text,quad", "")
          , ("https://tasvideos.org/3653M", "TASV", "text,quad", "")
@@ -1314,7 +1314,7 @@ linkIconTestUnitsText =
          , ("https://www.rte.ie/news/business/2013/1220/494111-silk-road-arrest/", "RTϵ", "text,tri,sans", "")
          , ("https://www.chronicle.com/article/we-must-stop-the-avalanche-of-low-quality-research/", "CHE", "text,tri", "")
          , ("https://paulfchristiano.com/", "PFC", "text,tri", "")
-         , ("https://ralphmerkle.com/cryo/cryptoCryo.html", "R\8288MKL", "text,quad", "")
+         , ("https://ralphmerkle.com/cryo/cryptoCryo.html", "RMKL", "text,quad", "")
          , ("https://nyaa.si/view/353745", "Nyaa", "text,quad,sans", "")
          , ("https://minimaxir.com/2019/09/howto-gpt2/", "MxWf" , "text,quad,sans", "")
          , ("http://www.nausicaa.net/wiki/2010-01-News#Hideaki_Anno_Appears_on_Ghibli_Asemamire", "", "", "#507ea1")

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-02-17 18:05:24 gwern"
+# When:  Time-stamp: "2025-02-23 10:12:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -576,6 +576,8 @@ Katri Räikkönen
 "The hardest working font in Manhattan"
 - "Are you a robot?"
 ""
+- "https://ericneyman.wordpress.com/2021/06/05/social-behavior-curves-equilibria-and-radicalism/ Social behavior curves, equilibria, and radicalism - Unexpected Values"
+"Social behavior curves, equilibria, and radicalism"
 
 Task:
 
