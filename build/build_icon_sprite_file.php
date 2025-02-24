@@ -26,11 +26,11 @@ foreach ($icon_file_paths as $path) {
 	preg_match('/([^\/]+)\.svg$/', $path, $m);
 	$icon_file_name = $m[1];
 
-	preg_match('/<svg (.+?)>(.+)<\/svg>/', $icon, $m);
+	preg_match('/<svg (.+?)>(.+)<\/svg>/s', $icon, $m);
 	$svg_attributes = $m[1];
 	$svg_contents = $m[2];
 
-	preg_match_all('/(\S+?)="(.+?)"/', $svg_attributes, $m, PREG_SET_ORDER);
+	preg_match_all('/(\S+?)="(.+?)"/s', $svg_attributes, $m, PREG_SET_ORDER);
 	$viewBox = '';
 	$icon_attributes = array_filter($m,
 									function ($match) use (&$viewBox) { 

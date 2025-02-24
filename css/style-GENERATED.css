@@ -272,17 +272,6 @@
 	font-display: swap;
 }
 
-/*******************/
-/* LIBERTINUS MONO */
-/*******************/
-
-@font-face {
-	font-family: 'Libertinus Mono';
-	font-weight: normal;
-	src: url('/static/font/libertinus/LibertinusMono-Regular.otf?v=') format('opentype');
-	font-display: swap;
-}
-
 /************************/
 /* DEUTSCHE ZIERSCHRIFT */
 /************************/
