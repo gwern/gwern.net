@@ -44,8 +44,8 @@ process_source_files($fonts_and_font_spec, 'build_font_css.php');
 ## Font CSS.
 ## Build the versioned font CSS from the generated font CSS.
 $font_css = [
-	"{$font_dir}/fonts-GENERATED.css",
-	"{$font_dir}/initial-fonts-GENERATED.css"
+	"{$css_dir}/fonts-GENERATED.css",
+	"{$css_dir}/initial-fonts-GENERATED.css"
 ];
 
 process_source_files($font_css, 'build_versioned_font_css.php');
