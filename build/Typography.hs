@@ -198,8 +198,8 @@ breakEquals = id
 -------------------------------------------
 
 -- Annotate body horizontal rulers with a div-class based on global count: '<div class="horizontal-rule-nth-0"> /
--- <hr /> / </div>' / '<div class="horizontal-rule-nth-1"> / <hr /> / </div>' / '<div class="horizontal-rule-nth-2"> /
--- <hr /> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth
+-- <hr> / </div>' / '<div class="horizontal-rule-nth-1"> / <hr> / </div>' / '<div class="horizontal-rule-nth-2"> /
+-- <hr> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth
 -- ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of Gwern.net's visual
 -- design.
 --

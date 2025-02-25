@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-23 12:31:14 gwern"
+When:  Time-stamp: "2025-02-24 13:44:31 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 import Data.Char (isPunctuation, toLower, isNumber)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
+import qualified Data.Text as T (append, isInfixOf, pack, unpack, replace, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -399,7 +399,8 @@ createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extract
 
 annotateLink :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
-  | anyPrefixT targetT ["/metadata/", "/doc/www/", "/ref/", "/blog/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
+  | let targetT' = T.replace "https://gwern.net/" "/" targetT in
+      anyPrefixT targetT' ["/metadata/", "/doc/www/", "/ref/", "/blog/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)

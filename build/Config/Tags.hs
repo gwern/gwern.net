@@ -166,6 +166,7 @@ tagsShort2LongRewrites =
    , ("physic", "physics"), ("pyhsics", "physics")
    , ("marl", "reinforcement-learning/multi-agent"), ("borge", "borges"), ("jlborge", "borges"), ("jlborges", "borges"), ("iq-ses", "iq/ses")
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
+   , ("preference-falsification", "sociology/false-preference")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

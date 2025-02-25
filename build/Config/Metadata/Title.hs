@@ -148,4 +148,4 @@ stringDelete = [" - The Public Domain Review"
             , " | by Merzmensch | Merzazine", " - The Law and Policy Blog", " - Daniel Wirtz"
             , "Machinamenta: ", "Radiator Blog: ", "  Journal of Heredity", " - media.ccc.de"
             , " - UEFConnect", " | Technology", " - Flashback Forum", " - Chiraag Gohel"
-            , " - Ken Bertagnolli", " - Aresluna", " - Unexpected Values"]
+            , " - Ken Bertagnolli", " - Aresluna", " - Unexpected Values", "IQ's Corner: "]

@@ -260,7 +260,7 @@ extension :: T.Text -> T.Text
 extension = T.pack . maybe "" (System.FilePath.takeExtension . uriPath) . parseURIReference . T.unpack
 
 isLocal :: T.Text -> Bool
-isLocal "" = error "LinkIcon: isLocal: Invalid empty string used as link."
+isLocal "" = error "Utils.isLocal: Invalid empty string used as link."
 isLocal s = T.head s == '/'
 
 -- throw a fatal error if any entry in a list fails a test; uses `NFData`/`deepseq` to guarantee that the test gets evaluated

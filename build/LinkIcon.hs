@@ -78,7 +78,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | "directory-indexes-downwards" `elem` cl = addIcon x ("arrow-down-right", "svg", "")
  | "directory-indexes-sideways"  `elem` cl = addIcon x ("arrow-right", "svg", "")
  | T.head u == '#' = x
- | otherwise = if not (isURLAny $ T.unpack originalURL)
+ | otherwise = if "http" `T.isPrefixOf` originalURL && not (isURLAny $ T.unpack originalURL)
                then error $ "LinkIcon.linkIcon: input was not a valid URL? " ++ show x
                else removeIconDuplicate $ addIcon x $ C.linkIconRules originalURL
  where originalURL :: T.Text -- NOTE: all rules are defined in terms of the original canonical URL, without local archives in mind. So to cooperate with LinkArchive, we must swap the target if LA swapped it first:

@@ -156,7 +156,7 @@ formatDoc (path,mi@(t,aut,dt,dtM,_,tags,abst)) =
 
           if null tags then "" else "Keywords: " ++ intercalate ", " tags ++ ".",
 
-          deleteMany ["\n[]\n", "<hr>", "<hr />"] abst]
+          deleteMany ["\n[]\n", "<hr>"] abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
