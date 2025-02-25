@@ -36,6 +36,8 @@ import Text.Pandoc.Walk (walk)
 
 import qualified Debug.Trace as DT (trace)
 
+import Unique (isUniqueList)
+
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
 -- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
@@ -371,8 +373,7 @@ sed before after s = unsafePerformIO $ do
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
-sedMany regexps s = foldr (uncurry sed) s regexps
-
+sedMany regexps s = foldr (uncurry sed) s (isUniqueList regexps)
 
 -- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
 -- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""` or as a shortcut, `delete "foo"`), or 'just in case'.
@@ -406,14 +407,14 @@ hasKeyAL key list = key `elem` map fst list
 
 -- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)
-replaceMany rewrites s = foldr (uncurry replace) s rewrites
+replaceMany rewrites s = foldr (uncurry replace) s (isUniqueList rewrites)
 
 replaceT :: T.Text -> T.Text -> T.Text -> T.Text
 replaceT = T.replace
 
 -- list of fixed string rewrites
 replaceManyT :: [(T.Text,T.Text)] -> (T.Text -> T.Text)
-replaceManyT rewrites s = foldr (uncurry replaceT) s rewrites
+replaceManyT rewrites s = foldr (uncurry replaceT) s (isUniqueList rewrites)
 
 -- specialize the `replace` family to deletion, as is the most common usecase:
 -- Delete a substring from a list
@@ -437,7 +438,7 @@ deleteMixed target str
 
 -- | Apply multiple mixed deletions in sequence
 deleteMixedMany :: [String] -> (String -> String)
-deleteMixedMany xs s = foldr deleteMixed s xs
+deleteMixedMany xs s = foldr deleteMixed s (isUniqueList xs)
 
 -- Delete a substring from a Text
 deleteT :: T.Text -> T.Text -> T.Text
@@ -445,11 +446,11 @@ deleteT x = replaceT x ""
 
 -- Delete multiple substrings from a list
 deleteMany :: [String] -> (String -> String)
-deleteMany xs s = foldr delete s xs
+deleteMany xs s = foldr delete s (isUniqueList xs)
 
 -- Delete multiple substrings from a Text
 deleteManyT :: [T.Text] -> (T.Text -> T.Text)
-deleteManyT xs s = foldr deleteT s xs
+deleteManyT xs s = foldr deleteT s (isUniqueList xs)
 
 kvLookup :: String -> [(String, String)] -> String
 kvLookup key xs = fromMaybe "" (lookup key xs)

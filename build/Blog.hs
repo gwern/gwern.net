@@ -24,7 +24,7 @@ import qualified Data.Text as T (pack, unpack)
 
 import LinkID (metadataItem2ID)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
-import Test (isUniqueList)
+import Unique (isUniqueList)
 import Utils (sed, writeUpdatedFile, printRed)
 import Config.Misc as C (cd)
 
