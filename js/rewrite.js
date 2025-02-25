@@ -2873,6 +2873,53 @@ addContentInjectHandler(GW.contentInjectHandlers.cleanSpuriousLinkIcons = (event
     });
 }, "rewrite");
 
+/******************************************************************************/
+/*	Render an SVG quad-letter link icon for the given link, from the string set
+	in the link’s ‘data-link-icon’ property.
+ */
+function renderQuadLinkIcon(link) {
+	let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 512 640">`;
+	let svgClosingTagSrc = `</svg>`;
+
+	let fontFamilyIdentifier = "serif";
+	if (link.dataset.linkIconType.includes("sans")) {
+		fontFamilyIdentifier = "sans";
+	} else if (link.dataset.linkIconType.includes("mono")) {
+		fontFamilyIdentifier = "mono";
+	}
+
+	let fontFamily = {
+		serif: "Georgia, serif",
+		sans: "Helvetica, Arial, sans-serif",
+		mono: "Courier, monospace"
+	}[fontFamilyIdentifier];
+	let styleSrc = `<style>text { font: bold 288px ${fontFamily}; }</style>`;
+
+	let letterSpacing = {
+		serif: 0,
+		sans: -8,
+		mono: -16
+	}[fontFamilyIdentifier];
+	let positions = [
+		[ 128 - letterSpacing, 116 ],
+		[ 384 + letterSpacing, 116 ],
+		[ 128 - letterSpacing, 396 ],
+		[ 384 + letterSpacing, 396 ]
+	];
+
+	let letters = link.dataset.linkIcon.split("").filter(c => /\S/.test(c));
+	let textElementsSrc = letters.map((letter, index) => 
+		`<text 
+		  x="${positions[index][0]}" 
+		  y="${positions[index][1]}" 
+		  text-anchor="middle"
+		  dominant-baseline="central"
+		  >${letter}</text>`
+	).join("");
+
+	link.dataset.renderedLinkIcon = svgOpeningTagSrc + styleSrc + textElementsSrc + svgClosingTagSrc;
+}
+
 /****************************************************************************/
 /*  Adds HTML and CSS to a link, enabling display of its specified link icon.
  */
@@ -2880,23 +2927,44 @@ function enableLinkIcon(link) {
     if (link.classList.contains("has-icon"))
         return;
 
-    //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
-
     //  Set CSS variable (link icon).
     if (link.dataset.linkIconType.includes("text")) {
 		let linkIcon = link.dataset.linkIcon;
 
 		//	Inject newline into quad link icons.
-		if (link.dataset.linkIconType.includes("quad"))
-			linkIcon = linkIcon.slice(0, 2) + "\\a " + linkIcon.slice(2);
+// 		if (link.dataset.linkIconType.includes("quad"))
+// 			linkIcon = linkIcon.slice(0, 2) + "\\a " + linkIcon.slice(2);
+		/*	NOTE: Currently unused, due to SVG rendering of quad icons.
+				—SA 2025-02-25
+		 */
+
+		/*	Render SVG quad-letter icon, change the link icon type, then call
+			this function again, to enable the newly rendered icon.
+		 */
+		if (link.dataset.linkIconType.includes("quad")) {
+			renderQuadLinkIcon(link);
+
+			link.dataset.linkIconType += ",svg";
+			link.dataset.linkIconType = link.dataset.linkIconType.split(",").filter(x => x != "text").unique().join(",");
+
+			enableLinkIcon(link);
+			return;
+		}
 
         link.style.setProperty("--link-icon", `"${linkIcon}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
-        let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
-        link.style.setProperty("--link-icon-url",
-            `url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
+        if (link.dataset.renderedLinkIcon > "") {
+        	link.style.setProperty("--link-icon-url", 
+        		`url("data:image/svg+xml;utf8,${encodeURIComponent(link.dataset.renderedLinkIcon)}")`);
+        } else {
+	        let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
+			link.style.setProperty("--link-icon-url",
+				`url("${iconFileURL.pathname}${iconFileURL.search}#${(link.dataset.linkIcon)}")`);
+		}
     }
+
+    //  Add hook.
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
 
     //  Set class.
     link.classList.add("has-icon");
@@ -2966,7 +3034,10 @@ function enableLinkIconColor(link) {
 	 */
 	if (link.dataset.linkIconType?.includes("svg")) {
 		doWhenSVGIconsLoaded(() => {
-			let svg = elementFromHTML(GW.svg(link.dataset.linkIcon).replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+			let svgSrc = link.dataset.renderedLinkIcon > ""
+						 ? link.dataset.renderedLinkIcon
+						 : GW.svg(link.dataset.linkIcon);
+			let svg = elementFromHTML(svgSrc.replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
 				(match, colorCode) => {
 					return `"${(transformColor(colorCode))}"`;
 				}));

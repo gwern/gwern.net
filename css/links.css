@@ -139,13 +139,13 @@ a[data-link-icon-color]:hover {
 /*******************/
 /*  Graphical icons.
     */
-a[data-link-icon-type='svg'] {
+a[data-link-icon-type*='svg'] {
     --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.20em;
     --link-icon-offset-y: 0.15em;
     --link-icon-opacity: 0.55;
 }
-a[data-link-icon-type='svg'] .link-icon-hook::after {
+a[data-link-icon-type*='svg'] .link-icon-hook::after {
     --dark-mode-invert-filter: invert(1);
 
     content: "";
@@ -160,13 +160,37 @@ a[data-link-icon-type='svg'] .link-icon-hook::after {
     background-repeat: no-repeat;
     opacity: var(--link-icon-opacity);
 }
-a[data-link-icon-type='svg']:hover .link-icon-hook::after {
+a[data-link-icon-type*='svg']:hover .link-icon-hook::after {
     opacity: calc(var(--link-icon-opacity) * 0.55);
+}
+
+/*	Quad-letter (rendered) SVG icons.
+ */
+a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
+	--link-icon-size: 0.75em;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.35em;
+	--link-icon-opacity: 0.80;
+}
+a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
+    background-position-y: 0.9ex;
+}
+
+/*	Quad-letter (rendered) SVG icons in a sans-serif font.
+ */
+a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] {
+	--link-icon-size: 0.80em;
+}
+
+/*	Quad-letter (rendered) SVG icons in a monospaced font.
+ */
+a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] {
+	--link-icon-size: 0.85em;
 }
 
 /*  Colored graphical link icons.
  */
-a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after {
+a[data-link-icon-type*='svg'][data-link-icon-color]:hover .link-icon-hook::after {
     --dark-mode-invert-filter: none;
 
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
@@ -176,7 +200,7 @@ a[data-link-icon-type='svg'][data-link-icon-color]:hover .link-icon-hook::after 
 /*  When link colors are reversed relative to the rest of the page (e.g., in
     some admonition types), a graphical link icon must also be inverted.
  */
-.markdownBody .colors-invert a[data-link-icon-type='svg'] .link-icon-hook::after {
+.markdownBody .colors-invert a[data-link-icon-type*='svg'] .link-icon-hook::after {
     filter: invert(1);
 }
 
@@ -259,8 +283,11 @@ a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
 }
 
 /*  Quad-letter ‘quad’ square icons.
+
+	NOTE: Currently unused, due to SVG rendering of quad icons.
+		—SA 2025-02-25
  */
-a[data-link-icon-type*='quad'] .link-icon-hook::after {
+a[data-link-icon-type*='text'][data-link-icon-type*='quad'] .link-icon-hook::after {
     text-indent: 0;
     overflow-wrap: break-word;
     display: inline-block;
@@ -276,14 +303,20 @@ a[data-link-icon-type*='quad'] .link-icon-hook::after {
 }
 
 /*  Quad-letter square icons in a sans face.
+
+	NOTE: Currently unused, due to SVG rendering of quad icons.
+		—SA 2025-02-25
     */
-a[data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
+a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
 	/*	Nothing, for now. */
 }
 
 /*  Quad-letter square icons in a monospaced face.
+
+	NOTE: Currently unused, due to SVG rendering of quad icons.
+		—SA 2025-02-25
     */
-a[data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
+a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
     line-height: 0.90;
 }
 
