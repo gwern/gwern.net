@@ -1744,6 +1744,15 @@ figure.width-full {
 }
 
 
+/****************/
+/* OTHER LAYOUT */
+/****************/
+
+.clear-floats {
+	clear: both;
+}
+
+
 /*********/
 /* LINKS */
 /*********/
