@@ -4947,18 +4947,6 @@ body.page-blog-index #markdownBody .collapse.expanded .annotation p.data-field.t
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
 
-/*=------=*/
-/*= /404 =*/
-/*=-------=*/
-
-body.page-404 figure .figure-outer-wrapper {
-    padding: 0 1em;
-}
-
-body.page-404 figure figcaption {
-    margin-top: 0.5em;
-}
-
 /*=--------------=*/
 /*= /review/book =*/
 /*=--------------=*/

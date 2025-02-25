@@ -2359,6 +2359,22 @@ body.page-index #markdownBody section ul ul {
     }
 }
 
+/*=------=*/
+/*= /404 =*/
+/*=-------=*/
+
+@media all and (min-width: 650px) {
+	body.page-404 #markdownBody {
+		margin-top: 2.5em;
+	}
+}
+
+body.page-404 figure {
+	--float-side-margin: 3em;
+}
+body.page-404 figure figcaption {
+    margin-top: 0.5em;
+}
 
 /*=------------=*/
 /*= /doc/index =*/

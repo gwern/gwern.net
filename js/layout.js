@@ -127,7 +127,9 @@ GW.layout = {
 		[ "body.page-index section",					 7, false ],
 		[ "body.page-index section li p + p",			 0, false ],
 
-		[ "body.page-404 section:first-of-type",		30, false ],
+		[ "body.page-404 .display-entry .float + .epigraph",
+														 0, false ],
+		[ "body.page-404 section:first-of-type",		16, false ],
 
 		[ "section#see-also.first-block", 				 4, false ],
 
@@ -760,7 +762,8 @@ function getBlockSpacingMultiplier(block, debug = false) {
 			 */
 			return (block) => (   previousBlockOf(block, {
 									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
-									cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
+									notSkipElements: [ ".float" ],
+									cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
 								  })?.matches(parts[1])
 							   && block.matches(parts[2]));
 		} else {
