@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-24 22:12:00 gwern"
+# When:  Time-stamp: "2025-02-25 18:05:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -380,11 +380,37 @@ else
             local TARGET
             TARGET="$(basename "$FILE")"
             local CONVERSION_OPTION="html"
-            if [[ "$EMBED_IMAGES" == "true" ]]; then
-                CONVERSION_OPTION="html:HTML:EmbedImages"
+
+            # Check if the file is a spreadsheet
+            if [[ "$FILE" =~ \.(xlsx|xls|ods|csv)$ ]]; then
+                # Use specific options for spreadsheets to include all sheets
+                if [[ "$EMBED_IMAGES" == "true" ]]; then
+                    CONVERSION_OPTION="html:HTML:EmbedImages"
+                else
+                    CONVERSION_OPTION="html:HTML"
+                fi
+
+                # Create output directory if it doesn't exist
+                mkdir -p "$(dirname "_site/${FILE}.html")"
+
+                # Use a clean user profile and set output directory
+                timeout 5m libreoffice --headless \
+                    --convert-to "$CONVERSION_OPTION" \
+                    -env:UserInstallation=file:///tmp/LibO_Conversion \
+                    --outdir "$(dirname "$(realpath "$FILE")")" \
+                    "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+
+                # Move the generated file to the correct location
+                mv "$(dirname "$(realpath "$FILE")")/${TARGET%.*}.html" "_site/${FILE}.html" 2>/dev/null || echo "$FILE failed LibreOffice conversion?"
+            else
+                # Original approach for non-spreadsheet files
+                if [[ "$EMBED_IMAGES" == "true" ]]; then
+                    CONVERSION_OPTION="html:HTML:EmbedImages"
+                fi
+
+                timeout 5m libreoffice --headless --convert-to "$CONVERSION_OPTION" "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+                mv "${TARGET%.*}.html" "_site/${FILE}.html" 2>/dev/null || echo "$FILE failed LibreOffice conversion?"
             fi
-            timeout 5m libreoffice --headless --convert-to $CONVERSION_OPTION "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?";
-            mv "${TARGET%.*}.html" "_site/${FILE}.html" || echo "$FILE failed LibreOffice conversion?";
         fi
     }
 
@@ -671,7 +697,7 @@ else
             "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
-            "link-bibliography-context" "extract-not" "fraction" "dark-mode-invert" "clear-floats"
+            "link-bibliography-context" "extract-not" "fraction" "dark-mode-invert"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)

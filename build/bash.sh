@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-18 20:06:02 gwern"
+# When:  Time-stamp: "2025-02-25 17:56:55 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -222,6 +222,20 @@ pdf-append () {
         elif [[ "$file" =~ \.(doc|docx|odt)$ ]]; then
             output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
             doc2pdf "$file" "$output_pdf"
+            PDF_FILES+=("$output_pdf")
+        elif [[ "$file" =~ \.(xlsx|xls|ods|csv)$ ]]; then
+            output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
+            # Use export filter options to include all sheets in the PDF
+            libreoffice --headless --convert-to "pdf:calc_pdf_Export:$TEMP_DIR/$(basename "${file%.*}").pdf" \
+                --outdir "$TEMP_DIR" "$file" \
+                -env:UserInstallation=file:///tmp/LibO_Conversion \
+                >/dev/null 2>&1 || { red "Failed to convert spreadsheet: $file" >&2; continue; }
+
+            # Check if conversion was successful
+            if [ ! -f "$output_pdf" ]; then
+                red "Conversion produced no output for: $file" >&2
+                continue
+            fi
             PDF_FILES+=("$output_pdf")
         else
             red "Skipping unsupported file: $file" >&2
