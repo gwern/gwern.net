@@ -2384,7 +2384,7 @@ body.page-index #markdownBody section ul ul {
 
 @media all and (min-width: 650px) {
 	body.page-404 #markdownBody {
-		margin-top: 2.5em;
+		margin-top: 3em;
 	}
 }
 
