@@ -6,7 +6,7 @@ import Control.Exception (onException)
 import Control.Monad (void, when, unless)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower)
-import Data.List (isPrefixOf, nubBy, sort)
+import Data.List (isInfixOf, isPrefixOf, nubBy, sort)
 import Data.Maybe (isJust, isNothing)
 import qualified Data.Map as M
 import Data.Ratio as R (denominator, numerator, (%))
@@ -202,15 +202,16 @@ imageMagickDimensions f =
 --
 -- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
-addImgDimensions html = do let stream  = parseTags html
-                           dimensionized <- mapM staticImg stream
-                           -- posterized    <- addVideoPoster dimensionized
-                           let stream' = renderTagsOptions renderOptions{optMinimize=whitelist,
-                                                                         optRawTag = (`elem` ["script", "style"]) . map toLower}
-                                         dimensionized
-                           return stream'
-                           -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
-                 where whitelist s = s /= "div" && s /= "script" && s /= "style"
+addImgDimensions html =
+  if not ("<img " `isInfixOf` html) then return html
+  else do let stream  = parseTags html
+          dimensionized <- mapM staticImg stream
+          -- posterized    <- addVideoPoster dimensionized
+          let stream' = renderTagsOptions renderOptions{optMinimize= const False, -- don't minimize anything at all, this seems to just cause a lot of problems later on
+                                                        optRawTag = (`elem` ["script", "style"]) . map toLower}
+                        dimensionized
+          return stream'
+          -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
 
 {- example illustration:
  TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
