@@ -163,8 +163,8 @@ function findSimilarUrls(urls, targetUrl, n = 10,
 // Function to inject suggestions into the page
 function injectSuggestions(current, suggestions) {
     let suggestionsHtml = suggestions.length > 0
-    					  ? suggestions.map(url => `<li><a class="link-live" href="${url}"><code>${url}</code></a></li>`).join("")
-    					  : "<li><strong>None found.</strong></li>";
+    					  ? suggestions.map(url => `<li><p><a class="link-live" href="${url}"><code>${url}</code></a></p></li>`).join("")
+    					  : "<li><p><strong>None found.</strong></p></li>";
     let suggestionsElement = elementFromHTML(`<section class="level1">
         <h1 id="guessed-urls">Guessed URLs</h1>
         <p>Nearest URLs to your current one (<code>${current}</code>):</p>
@@ -172,6 +172,8 @@ function injectSuggestions(current, suggestions) {
     </section>`);
 
 	document.querySelector("#markdownBody").insertBefore(suggestionsElement, document.querySelector("#other-options"));
+
+	Extracts.addTargetsWithin(suggestionsElement);
 }
 
 // Main function
