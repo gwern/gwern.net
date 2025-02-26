@@ -17775,7 +17775,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
-        backlink.innerHTML = GW.svg("arrow-hook-left");
+        backlink.innerHTML = GW.svg("arrow-up");
     });
 }, "rewrite");
 
