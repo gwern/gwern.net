@@ -156,6 +156,25 @@ Sidenotes = { ...Sidenotes,
 			counterpart.classList.add("targeted");
 	},
 
+	updateFootnoteBackArrowOrientationForSidenote: (sidenote, offset = 0) => {
+		if (sidenote.classList.contains("hidden"))
+			return;
+
+		let arrow = sidenote.querySelector(".footnote-back svg");
+		let citation = Sidenotes.counterpart(sidenote);
+
+		if (   arrow == null
+			|| citation == null)
+			return;
+
+		let arrowRect = arrow.getBoundingClientRect();
+		let citationRect = citation.getBoundingClientRect();
+		let x = (citationRect.x + citationRect.width * 0.5) - (arrowRect.x + arrowRect.width * 0.5);
+		let y = (arrowRect.y + arrowRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
+		arrow.style.transform = `rotate(${rotationAngle}deg)`;
+	},
+
 	/*	Queues a sidenote position update on the next available animation frame,
 		if an update is not already queued.
 	 */
@@ -550,6 +569,9 @@ Sidenotes = { ...Sidenotes,
 			//	Re-inject the sidenotes into the page.
 			cell.append(...cell.sidenotes);
 		});
+
+		//	Update footnote-back arrow orientation in sidenotes.
+		Sidenotes.sidenotes.forEach(Sidenotes.updateFootnoteBackArrowOrientationForSidenote);
 
 		//  Un-hide the sidenote columns.
 		Sidenotes.sidenoteColumnLeft.style.visibility = "";
@@ -1174,6 +1196,8 @@ Sidenotes = { ...Sidenotes,
 			if (Sidenotes.displacedSidenotes.includes(sidenote) == false)
 				Sidenotes.displacedSidenotes.push(sidenote);
 		}
+
+		Sidenotes.updateFootnoteBackArrowOrientationForSidenote(sidenote, delta);
 	},
 
 	/*	Un-slide a slid-onto-the-screen sidenote.
@@ -1184,8 +1208,14 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.style.transform == "none")
 			return;
 
+		let delta = sidenote.style.transform > ""
+					? -1 * parseInt(sidenote.style.transform.match(/translateY\((.+?)\)/)[1])
+					: 0;
+
 		sidenote.style.transform = "";
 		sidenote.classList.toggle("displaced", false);
+
+		Sidenotes.updateFootnoteBackArrowOrientationForSidenote(sidenote, delta);
 	},
 
 	/*	Un-slide all sidenotes (possibly except one).

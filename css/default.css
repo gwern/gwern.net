@@ -2778,9 +2778,9 @@ section.footnotes .footnote-self-link {
     font-size: 1em;
     line-height: 0.5;
     border: 1px dotted var(--GW-footnote-backlink-border-color);
-    top: 0.15em;
-    padding: 0.1em 0.25em 0.15em 0.25em;
-    width: 1em;
+    top: 0.10em;
+    padding: 0.25em 0.30em 0.25em 0.30em;
+    width: 0.70em;
     z-index: 1;
 }
 /*  Hide outside of a footnotes section.
@@ -2868,6 +2868,10 @@ a.footnote-back {
     transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
+}
+#markdownBody .sidenote.displaced .footnote-back svg {
+	transition:
+		transform 0.25s ease-out;
 }
 #markdownBody .sidenote.hidden {
     display: none;
