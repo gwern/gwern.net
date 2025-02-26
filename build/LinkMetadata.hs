@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-24 13:44:31 gwern"
+When:  Time-stamp: "2025-02-25 19:34:21 gwern"
 License: CC-0
 -}
 
@@ -694,7 +694,7 @@ fileTranscludesTest md am =
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
-    , (simpleTestF "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [RawInline (Format "HTML") "text-wrap: pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])
+    , (simpleTestF "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","CanI"),("link-icon-type","text,sans"),("link-icon-color","#c75000")]) [RawInline (Format "HTML") "text-wrap: pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])
     , (simpleTestF "https://www.mdpi.com/2073-4409/10/7/1740/htm", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "page"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","MDP I"),("link-icon-type","text,quad,sans")]) [Code ("",[],[]) "https://www.mdpi.com/2073-4409/10/7/1740/htm"] ("https://www.mdpi.com/2073-4409/10/7/1740/htm","")]]]])
     , (simpleTestT "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON Lines"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl"] ("/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl","")]]]])
     , (simpleTestT "/doc/touhou/2013-c85-download.json", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/touhou/2013-c85-download.json"] ("/doc/touhou/2013-c85-download.json","")]]]])

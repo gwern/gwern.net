@@ -202,6 +202,7 @@ isValidCssHexColor color = case T.unpack color of
 
 -- try to detect 'gray'/black/white colors, which have no distinct color as link-icon colors.
 -- To implement this, we try a threshold on the channel differences. If all three channels are very close to each other, it’s effectively a grayish color. For example, define a tolerance and check if the difference between the max and min channel values is small. If it’s below a certain threshold, consider it gray. This considers a color “distinct” only if the range between its darkest and brightest channel is greater than 30. You can adjust the threshold to taste.
+-- eg a maximum gray should be something like '#7a7a99' and a minimum is '#00001f'.
 isDistinctColor :: String -> Bool
 isDistinctColor ['#', r1, r2, g1, g2, b1, b2] =
   let hexVal c = if isDigit c

@@ -653,6 +653,9 @@ canonicals = M.fromList
   , ("AaronBergman18", "Aaron Bergman")
   , ("lishali88", "Lisha Li")
   , ("Mikael Landen", "Mikael Landén")
+  , ("Michael A. Woodley of Menie, Yr.", "Michael A. Woodley")
+  , ("Michael A. Woodley of Menie, Younger", "Michael A. Woodley")
+  , ("Michael A. Woodley of Menie", "Michael A. Woodley")
   ]
 
 -- tests: unique
@@ -677,7 +680,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe", "Michael A. Woodley", "Mark J. Caulfield"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1373,6 +1376,10 @@ authorLinkDB = M.fromList $
     , ("Niek Verweij", "https://scholar.google.com/citations?user=RZ0gMYoAAAAJ")
     , ("Mitchell Wortsman", "https://mitchellnw.github.io/")
     , ("Mikael Landén", "https://ki.se/en/people/mikael-landen")
+    , ("Michael Tschannen", "https://mitscha.github.io/")
+    , ("Michael A. Woodley", "https://scholar.google.com/citations?user=mmoY0-kAAAAJ")
+    , ("Mark J. Caulfield", "https://www.qmul.ac.uk/whri/people/academic-staff/items/caulfieldmark.html")
+    , ("Mark Daly", "https://en.wikipedia.org/wiki/Mark_Daly_(scientist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
