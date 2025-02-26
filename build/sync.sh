@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-25 18:05:52 gwern"
+# When:  Time-stamp: "2025-02-26 16:05:12 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -139,10 +139,10 @@ else
 
           ## HTML/Markdown formatting:
           s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s '. De novo ' '. <em>De novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>';
-          s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br />'; s '<br>' '<br />'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
+          s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br>'; s '<br />' '<br>'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
           s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
-          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s ' degrees Celsius' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br /></li>' '</li>';
-          s ' <br /> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
+          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s ' degrees Celsius' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br></li>' '</li>';
+          s ' <br> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>';
           s 'Cite-Author' 'cite-author'; s 'cite-author-Plural' 'cite-author-plural'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s 'Date-Range' 'date-range'; s 'Inflation-Adjusted' 'inflation-adjusted'; s 'Logotype-Latex-A' 'logotype-latex-a'; s 'Logotype-Latex-E' 'logotype-latex-e'; s 'SUbsup' 'subsup';
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
@@ -375,43 +375,40 @@ else
         fi
     }
     convert_file() {
-        local FILE="$1"
-        if [ ! -f "_site/${FILE}.html" ]; then
-            local TARGET
-            TARGET="$(basename "$FILE")"
-            local CONVERSION_OPTION="html"
+    local FILE="$1"
+    if [ ! -f "_site/${FILE}.html" ]; then
+        local TARGET
+        TARGET="$(basename "$FILE")"
+        local OUTDIR
+        OUTDIR="$(dirname "_site/${FILE}.html")"
+        local CONVERSION_OPTION="html"
 
-            # Check if the file is a spreadsheet
-            if [[ "$FILE" =~ \.(xlsx|xls|ods|csv)$ ]]; then
-                # Use specific options for spreadsheets to include all sheets
-                if [[ "$EMBED_IMAGES" == "true" ]]; then
-                    CONVERSION_OPTION="html:HTML:EmbedImages"
-                else
-                    CONVERSION_OPTION="html:HTML"
-                fi
+        # Create output directory if it doesn't exist
+        mkdir -p "$OUTDIR"
 
-                # Create output directory if it doesn't exist
-                mkdir -p "$(dirname "_site/${FILE}.html")"
+        # Handle file path properly, especially with spaces
+        if [[ "$EMBED_IMAGES" == "true" ]]; then
+            CONVERSION_OPTION="html:HTML:EmbedImages"
+        fi
 
-                # Use a clean user profile and set output directory
-                timeout 5m libreoffice --headless \
-                    --convert-to "$CONVERSION_OPTION" \
-                    -env:UserInstallation=file:///tmp/LibO_Conversion \
-                    --outdir "$(dirname "$(realpath "$FILE")")" \
-                    "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+        # Use quotes around paths and create a clean temporary user profile
+        timeout 5m libreoffice --headless \
+            --convert-to "$CONVERSION_OPTION" \
+            -env:UserInstallation=file:///tmp/LibO_Conversion \
+            --outdir "$OUTDIR" \
+            "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
 
-                # Move the generated file to the correct location
-                mv "$(dirname "$(realpath "$FILE")")/${TARGET%.*}.html" "_site/${FILE}.html" 2>/dev/null || echo "$FILE failed LibreOffice conversion?"
+        # If file wasn't created directly in outdir, try to find it
+        if [ ! -f "$OUTDIR/$(basename "${FILE%.*}").html" ]; then
+            # Try to find the generated HTML file in current directory
+            local GENERATED_HTML="$(find . -maxdepth 1 -name "$(basename "${FILE%.*}").html" -print -quit)"
+            if [ -n "$GENERATED_HTML" ]; then
+                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE%.*}").html" || echo "$FILE failed to move HTML file?"
             else
-                # Original approach for non-spreadsheet files
-                if [[ "$EMBED_IMAGES" == "true" ]]; then
-                    CONVERSION_OPTION="html:HTML:EmbedImages"
-                fi
-
-                timeout 5m libreoffice --headless --convert-to "$CONVERSION_OPTION" "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
-                mv "${TARGET%.*}.html" "_site/${FILE}.html" 2>/dev/null || echo "$FILE failed LibreOffice conversion?"
+                echo "$FILE conversion result not found?"
             fi
         fi
+    fi
     }
 
     # Convert documents with embedded images
@@ -420,7 +417,7 @@ else
     convert_to_html "true" "doc" "docx" # document
     # Convert spreadsheets without embedded images
     # Note: Specifying 'HTML:EmbedImages' for spreadsheets leads to failures despite being unnecessary.
-    convert_to_html "false" "csv" "ods" "xls" "xlsx" && mv ./2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix_html*.png ./_site/doc/cs/hardware/ & # spreadsheet
+    convert_to_html "false" "csv" "ods" "xls" "xlsx" & # spreadsheet; && mv ./2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix_html*.png ./_site/doc/cs/hardware/
     # NOTE: special-case: *very* complex multi-sheet spreadsheet with many images; HACK: LibreOffice also appears to ignore the embed option anyway, so we copy the images manually
     # convert_to_html "false" "./doc/cs/hardware/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx"
 
@@ -492,9 +489,9 @@ else
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
     # WARNING: HTML Tidy by default will wrap & add newlines for cleaner HTML in ways which don't show up in rendered HTML - *except* for when something is an 'inline-block', then the added newlines *will* show up, as excess spaces. <https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#spaces_in_between_inline_and_inline-block_elements> <https://patrickbrosset.medium.com/when-does-white-space-matter-in-html-b90e8a7cdd33> And we use inline-blocks for the #page-metadata block, so naive HTML Tidy use will lead to the links in it having a clear visible prefixed space. We disable wrapping entirely by setting `-wrap 0` to avoid that.
-    tidyUpFragment () { tidy -indent -wrap 0 --merge-divs no --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes --fix-style-tags no --drop-empty-elements no -modify "$@"; }
+    tidyUpFragment () { tidy -indent -wrap 0 --merge-divs no --logical-emphasis yes -quiet --show-warnings no --show-body-only yes --fix-style-tags no --drop-empty-elements no --break-before-br no -modify "$@"; }
     ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
-    tidyUpWhole () {    tidy -indent -wrap 0 --merge-divs no --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no --fix-style-tags no --drop-empty-elements no -modify "$@"; }
+    tidyUpWhole () {    tidy -indent -wrap 0 --merge-divs no --logical-emphasis yes -quiet --show-warnings no --show-body-only no --fix-style-tags no --drop-empty-elements no --break-before-br no -modify "$@"; }
     export -f tidyUpFragment tidyUpWhole
     find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --max-args=100 tidyUpFragment
     find ./ -type f -name "*.md" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | gfv -e '#' -e 'death-note-script' | parallel --max-args=100 tidyUpWhole

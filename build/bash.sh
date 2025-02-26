@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-25 17:56:55 gwern"
+# When:  Time-stamp: "2025-02-26 10:19:42 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -225,18 +225,34 @@ pdf-append () {
             PDF_FILES+=("$output_pdf")
         elif [[ "$file" =~ \.(xlsx|xls|ods|csv)$ ]]; then
             output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
-            # Use export filter options to include all sheets in the PDF
-            libreoffice --headless --convert-to "pdf:calc_pdf_Export:$TEMP_DIR/$(basename "${file%.*}").pdf" \
-                --outdir "$TEMP_DIR" "$file" \
-                -env:UserInstallation=file:///tmp/LibO_Conversion \
-                >/dev/null 2>&1 || { red "Failed to convert spreadsheet: $file" >&2; continue; }
 
-            # Check if conversion was successful
+            # Create output directory
+            mkdir -p "$TEMP_DIR"
+
+            # Clean temp profile for LibreOffice
+            local LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)"
+
+            # Convert spreadsheet to PDF, handling spaces in paths
+            libreoffice --headless \
+                        -env:UserInstallation="$LO_USER_PROFILE" \
+                        --convert-to pdf \
+                        --outdir "$TEMP_DIR" \
+                        "$file" >/dev/null 2>&1 || { red "Failed to convert spreadsheet: $file" >&2; continue; }
+
+            # Check if conversion was successful and find the output file
             if [ ! -f "$output_pdf" ]; then
-                red "Conversion produced no output for: $file" >&2
-                continue
+                # Try to find the generated PDF
+                local FOUND_PDF="$(find "$TEMP_DIR" -maxdepth 1 -name "$(basename "${file%.*}").pdf" -print -quit)"
+                if [ -n "$FOUND_PDF" ]; then
+                    output_pdf="$FOUND_PDF"
+                else
+                    red "Conversion produced no output for: $file" >&2
+                    continue
+                fi
             fi
+
             PDF_FILES+=("$output_pdf")
+
         else
             red "Skipping unsupported file: $file" >&2
         fi

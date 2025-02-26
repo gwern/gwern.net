@@ -326,7 +326,7 @@ We encode the 3 types by putting the figure ID into bold, the short summary into
 
 To avoid the toil of adding linebreaks manually everywhere, we try to detect & add the linebreak automatically.
 I can't find a way to make this work reliably in CSS-only because breaking at italics is unreliable (eg. '**Figure 1**: n= 10.'), can't match on a structure like '<figcaption>first-of(<strong>+text+<em>)'.
-Editing in a <br /> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
+Editing in a <br> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
 So we implement this as a Pandoc AST rewrite on the 'Figure' element that that `![]()` compiles to.
 
 > figureCaptionLinebreak $ Figure nullAttr (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."]) []) []

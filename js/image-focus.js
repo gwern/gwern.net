@@ -57,7 +57,7 @@ ImageFocus = {
 	mouseLastMovedAt: 0,
 
 	currentlyFocusedImage: null,
-	
+
 	imageInFocus: null,
 
 	/************/
@@ -74,7 +74,7 @@ ImageFocus = {
 				<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
 				<p><strong>Space bar:</strong> Reset image size & position</p>
 				<p><strong>Scroll</strong> to zoom in/out</p>
-				<p>(When zoomed in, <strong>drag</strong> to pan;<br /><strong>double-click</strong> to reset size & position)</p>
+				<p>(When zoomed in, <strong>drag</strong> to pan;<br><strong>double-click</strong> to reset size & position)</p>
 			</div>
 			<div class="image-number"></div>
 			<div class="slideshow-buttons">
@@ -315,7 +315,7 @@ ImageFocus = {
 
 		let imageURL = URLFromString(ImageFocus.focusedImgSrcForImage(imageToFocus));
 		if (imageURL.pathname.endsWith(".pdf")) {
-			ImageFocus.imageInFocus = elementFromHTML(Content.objectHTMLForURL(imageURL));		
+			ImageFocus.imageInFocus = elementFromHTML(Content.objectHTMLForURL(imageURL));
 		} else {
 			ImageFocus.imageInFocus = newElement("IMG", {
 				src: ImageFocus.focusedImgSrcForImage(imageToFocus),
@@ -338,7 +338,7 @@ ImageFocus = {
 		//  If image is bigger than viewport, double-click resets size/position.
 		ImageFocus.imageInFocus.addEventListener("dblclick", ImageFocus.doubleClick);
 
-		/*  If this image is part of the main gallery, then mark the overlay as 
+		/*  If this image is part of the main gallery, then mark the overlay as
 			being in slide show mode (to show buttons/count). Otherwise, the
 			overlay should be in single-image mode.
 		 */
@@ -414,8 +414,8 @@ ImageFocus = {
 		//	Set dimensions via CSS.
 		ImageFocus.imageInFocus.style.width = Math.round(imageWidth * shrinkRatio) + "px";
 		ImageFocus.imageInFocus.style.height = Math.round(imageHeight * shrinkRatio) + "px";
-		ImageFocus.imageInFocus.style.aspectRatio = "" + Math.round(imageWidth * shrinkRatio) 
-													   + " / " 
+		ImageFocus.imageInFocus.style.aspectRatio = "" + Math.round(imageWidth * shrinkRatio)
+													   + " / "
 													   + Math.round(imageHeight * shrinkRatio);
 
 		//  Remove modifications to position.
@@ -494,7 +494,7 @@ ImageFocus = {
 	exitImageFocus: () => {
 		GWLog("ImageFocus.exitImageFocus", "image-focus.js", 1);
 
-		/*	If currently focused image is part of the main image gallery, 
+		/*	If currently focused image is part of the main image gallery,
 			preserve state.
 		 */
 		if (   ImageFocus.currentlyFocusedImage
@@ -584,13 +584,13 @@ ImageFocus = {
 				   : urlString;
 		}
 
-		/*	Get the figure caption, the ‘title’ attribute of the image, and the 
+		/*	Get the figure caption, the ‘title’ attribute of the image, and the
 			‘alt’ attribute of the image. Clean each of typographic invisibles
-			and educate quotes. Discard duplicate strings. Wrap all remaining 
+			and educate quotes. Discard duplicate strings. Wrap all remaining
 			(unique) strings in <p> tags, and inject into caption container.
 		 */
 		let figcaption = ImageFocus.currentlyFocusedImage.closest("figure").querySelector("figcaption");
-		ImageFocus.overlay.querySelector(".caption").replaceChildren(newDocument(`<div class="caption-text-wrapper">` 
+		ImageFocus.overlay.querySelector(".caption").replaceChildren(newDocument(`<div class="caption-text-wrapper">`
 		  + [ ...[
 				(figcaption ? figcaption.cloneNode(true) : null),
 				newElement("SPAN", null, { "innerHTML": ImageFocus.currentlyFocusedImage.getAttribute("title") }),
@@ -611,9 +611,9 @@ ImageFocus = {
 				 		otherElement != null
 					 && textContentOf(otherElement) == textContentOf(element))
 					) == index)
-			).map(element => 
+			).map(element =>
 				`<p>${(element.innerHTML.trim())}</p>`
-			)].join("") 
+			)].join("")
 		  + `</div>`
 		  + `<p class="image-url" title="Click to copy image URL to clipboard">`
 		  	  + (ImageFocus.imageInFocus.src.startsWith("data:")
@@ -824,14 +824,14 @@ ImageFocus = {
 		}
 
 		//	On mobile, tap when UI is hidden unhides UI.
-		if (   GW.isMobile() 
+		if (   GW.isMobile()
 			&& imageWasBeingDragged == false) {
 			if (ImageFocus.hideUITimer == null) {
 				//	If the UI was hidden, tap unhides it.
 				ImageFocus.unhideImageFocusUI();
 
-				/*	If caption is locked-unhidden, unlock it now (so that it 
-					will be hidden along with the rest of the UI once the 
+				/*	If caption is locked-unhidden, unlock it now (so that it
+					will be hidden along with the rest of the UI once the
 					timer expires).
 				 */
 				ImageFocus.overlay.querySelector(".caption").classList.remove("locked");
@@ -942,9 +942,9 @@ ImageFocus = {
 
 		let currentDateTime = new Date();
 
-		if ([ ImageFocus.imageInFocus, 
-			  ImageFocus.overlay, 
-			  document.documentElement 
+		if ([ ImageFocus.imageInFocus,
+			  ImageFocus.overlay,
+			  document.documentElement
 			 ].includes(event.target)) {
 			if (ImageFocus.hideUITimer == null)
 				ImageFocus.unhideImageFocusUI();

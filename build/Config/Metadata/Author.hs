@@ -656,6 +656,7 @@ canonicals = M.fromList
   , ("Michael A. Woodley of Menie, Yr.", "Michael A. Woodley")
   , ("Michael A. Woodley of Menie, Younger", "Michael A. Woodley")
   , ("Michael A. Woodley of Menie", "Michael A. Woodley")
+  , ("John W. S. Bradshaw", "John Bradshaw")
   ]
 
 -- tests: unique
@@ -1380,6 +1381,10 @@ authorLinkDB = M.fromList $
     , ("Michael A. Woodley", "https://scholar.google.com/citations?user=mmoY0-kAAAAJ")
     , ("Mark J. Caulfield", "https://www.qmul.ac.uk/whri/people/academic-staff/items/caulfieldmark.html")
     , ("Mark Daly", "https://en.wikipedia.org/wiki/Mark_Daly_(scientist)")
+    , ("Maosong Sun", "https://www.cs.tsinghua.edu.cn/csen/info/1312/4394.htm")
+    , ("Lili Chen", "https://www.lilichen.me/")
+    , ("Laurent Sifre", "https://scholar.google.com/citations?user=0kVh58wAAAAJ&hl=en&oi=ao")
+    , ("John Bradshaw", "https://web.archive.org/web/20190623040230/http://www.bris.ac.uk/vetscience/people/john-w-bradshaw/index.html")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2625,4 +2630,4 @@ authorWpLinkDB =
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham", "Roel André Ophoff", "Paul M. B. Vitányi"]
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz", "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham", "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford"]
