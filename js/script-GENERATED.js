@@ -20346,10 +20346,10 @@ Sidenotes = { ...Sidenotes,
 			|| citation == null)
 			return;
 
-		let arrowRect = arrow.getBoundingClientRect();
+		let sidenoteRect = sidenote.getBoundingClientRect();
 		let citationRect = citation.getBoundingClientRect();
-		let x = (citationRect.x + citationRect.width * 0.5) - (arrowRect.x + arrowRect.width * 0.5);
-		let y = (arrowRect.y + arrowRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+		let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
+		let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
 		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
 		arrow.style.transform = `rotate(${rotationAngle}deg)`;
 	},
