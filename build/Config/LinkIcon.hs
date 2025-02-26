@@ -37,6 +37,7 @@ prioritizeLinkIconBlackList =
  , "hal.science", "mattmahoney.net", "projecteuclid.org", "www.sudowrite.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "conservancy.umn.edu"
  , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com", "ro.ecu.edu.au"
+ , "gazette.com"
  ]
 ------------------------------------------------------------------------------------------
 
@@ -211,7 +212,6 @@ linkIconRulesSingle u
  | aU'' u ["parahumans.wordpress.com", "wildbow.wordpress.com", "pactwebserial.wordpress.com", "twigserial.wordpress.com"] = ("W", "text,sans", "") -- Wildbow serial fics: _Worm_, _Pact_, _Twig_; and personal blog posts; if I linked them more, might be more worthwhile to try to make per-fic link-icons.
  | u'' u "every.to" = ("ℰ", "text", "")
  | u'' u "dynomight.net" = ("D", "text,mono", "")
- | u'' u "gazette.com" = ("𝔊", "text", "#ff0000") -- Fraktur 'G', red
  | u'' u "tylervigen.com" = ("V", "text,sans", "#ba0f27") -- 'V' red
  | u'' u "www.dafont.com" = ("d", "text", "#c20000") -- 'd' red
  | u'' u "cs.stanford.edu" = ("S", "text,mono", "#8c1515") -- 'S' red
@@ -391,12 +391,12 @@ linkIconRulesTriple u
  | u'' u "www.rte.ie" = ("RTϵ", "text,tri,sans", "")
  | u'' u "www.chronicle.com" = ("CHE", "text,tri", "")
  | u'' u "paulfchristiano.com" = ("PFC", "text,tri", "")
- | u'' u "ajp.psychiatryonline.org" = ("AJP", "text,sans", "#415927") -- 'P' dark blue
- | u'' u "www.eetimes.com" = ("EET", "text,sans", "#ff3737") -- 'EET', red
- | u'' u "www.aeaweb.org" = ("AEA", "text", "#611630") -- 'AEA' red
- | u'' u "www.cs.cmu.edu" = ("CMU", "text", "#bb0000") -- 'CMU' red
- | u'' u "pubs.acs.org" = ("ACS", "text", "#0a3d9a") -- 'ACS' dark blue
- | u'' u "oll.libertyfund.org" = ("OLL", "text,sans", "#0095fb") -- 'OLL' dark blue
+ | u'' u "ajp.psychiatryonline.org" = ("AJP", "text,sans,tri", "#415927") -- 'P' dark blue
+ | u'' u "www.eetimes.com" = ("EET", "text,sans,tri", "#ff3737") -- 'EET', red
+ | u'' u "www.aeaweb.org" = ("AEA", "text,tri", "#611630") -- 'AEA' red
+ | u'' u "www.cs.cmu.edu" = ("CMU", "text,tri", "#bb0000") -- 'CMU' red
+ | u'' u "pubs.acs.org" = ("ACS", "text,tri", "#0a3d9a") -- 'ACS' dark blue
+ | u'' u "oll.libertyfund.org" = ("OLL", "text,sans,tri", "#0095fb") -- 'OLL' dark blue
  | otherwise = ("","", "")
 
  -- Quad-letter (square) icons.
@@ -465,12 +465,12 @@ linkIconRulesQuad u
  | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
  | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
  | u'' u "minimaxir.com" = ("MxWf" , "text,quad,sans", "")
- | u'' u "proceedings.neurips.cc" || u'' u "neurips.cc" = ("NIPS", "text,sans", "#0d6efd") -- 'NIPS' + blue
- | u'' u "soranews24.com" = ("Sora", "text,sans", "#e81a00") -- 'Sora' red
+ | u'' u "proceedings.neurips.cc" || u'' u "neurips.cc" = ("NIPS", "text,sans,quad", "#0d6efd") -- 'NIPS' + blue
+ | u'' u "soranews24.com" = ("Sora", "text,sans,quad", "#e81a00") -- 'Sora' red
  | u'' u "www.crd.york.ac.uk" = ("PSRO", "text,sans,quad", "#0d6efd") -- 'PSRO' blue
- | u'' u "nces.ed.gov" = ("NCES", "text", "#fbb03b") -- 'NCES' orange-yellow
- | u'' u "linuxmafia.com" = ("LINUX", "text,mono", "#7a7a99") -- 'LINUX' monospace light blue
- | u'' u "caniuse.com" = ("CanI", "text,sans", "#c75000") -- 'CanI' red
+ | u'' u "nces.ed.gov" = ("NCES", "text,quad", "#fbb03b") -- 'NCES' orange-yellow
+ | u'' u "linuxmafia.com" = ("LINUX", "text,mono,quad", "#7a7a99") -- 'LINUX' monospace light blue
+ | u'' u "caniuse.com" = ("CanI", "text,sans,quad", "#c75000") -- 'CanI' red
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1330,32 +1330,31 @@ linkIconTestUnitsText =
          , ("https://www.buzzfeed.com/joshdean/are-we-warming-up-to-cryonics", "BF", "text,sans", "#ee3322")
          , ("https://www.math.uwaterloo.ca/tsp/pla85900/index.html", "UW", "text,sans", "#a2006e")
          , ("https://gscan2pdf.sourceforge.net/", "sourceforge", "svg", "#ff6600")
-         , ("https://proceedings.neurips.cc/paper/2011/hash/86e8f7ab32cfd12577bc2619bc635690-Abstract.html", "NIPS", "text,sans", "#0d6efd")
-         , ("https://ajp.psychiatryonline.org/doi/10.1176/appi.ajp.2020.20040462", "AJP", "text,sans", "#415927")
-         , ("https://gazette.com/military/witnesses-cadet-got-drugs-from-online-black-market-and-sold-them-in-dorms/article_0c8b524b-99f5-5c9e-ae44-cb57e4d7234e.html", "𝔊", "text", "#ff0000")
+         , ("https://proceedings.neurips.cc/paper/2011/hash/86e8f7ab32cfd12577bc2619bc635690-Abstract.html", "NIPS", "text,sans,quad", "#0d6efd")
+         , ("https://ajp.psychiatryonline.org/doi/10.1176/appi.ajp.2020.20040462", "AJP", "text,sans,tri", "#415927")
          , ("http://www.japantimes.co.jp/news/2014/04/01/national/music-educators-tapping-vocaloid/", "jt", "text", "#c8102e")
-         , ("https://www.eetimes.com/darpa-unveils-100m-eda-project/", "EET", "text,sans", "#ff3737")
+         , ("https://www.eetimes.com/darpa-unveils-100m-eda-project/", "EET", "text,sans,tri", "#ff3737")
          , ("https://philpapers.org/browse/the-reflection-principle", "PP", "text", "#109d49")
          , ("https://mathworld.wolfram.com/ArithmeticSeries.html", "MW", "text,sans", "#0095aa")
-         , ("https://soranews24.com/2015/04/02/evangelion-creator-hideaki-anno-opens-up-about-his-latest-bout-with-depression-movie-delays/", "Sora", "text,sans", "#e81a00")
+         , ("https://soranews24.com/2015/04/02/evangelion-creator-hideaki-anno-opens-up-about-his-latest-bout-with-depression-movie-delays/", "Sora", "text,sans,quad", "#e81a00")
          , ("http://members.madasafish.com/~cj_whitehound/", "CJ", "text", "#9400d3")
-         , ("https://www.aeaweb.org/articles?id=10.1257/app.20170223", "AEA", "text", "#611630")
-         , ("https://www.cs.cmu.edu/~pavlo/blog/2025/01/2024-databases-retrospective.html#licenses", "CMU", "text", "#bb0000")
+         , ("https://www.aeaweb.org/articles?id=10.1257/app.20170223", "AEA", "text,tri", "#611630")
+         , ("https://www.cs.cmu.edu/~pavlo/blog/2025/01/2024-databases-retrospective.html#licenses", "CMU", "text,tri", "#bb0000")
          , ("http://itre.cis.upenn.edu/~myl/languagelog/archives/002379.html", "LL", "text", "#aa0505")
-         , ("https://pubs.acs.org/doi/abs/10.1021/es0719071", "ACS", "text", "#0a3d9a")
+         , ("https://pubs.acs.org/doi/abs/10.1021/es0719071", "ACS", "text,tri", "#0a3d9a")
          , ("https://tylervigen.com/spurious-correlationsspurious-correlations", "V", "text,sans", "#ba0f27")
          , ("https://www.dafont.com/cheshire-initials.font", "d", "text", "#c20000")
          , ("https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=104600", "PSRO", "text,sans,quad", "#0d6efd")
-         , ("https://nces.ed.gov/naal/sample.asp", "NCES", "text", "#fbb03b")
+         , ("https://nces.ed.gov/naal/sample.asp", "NCES", "text,quad", "#fbb03b")
          , ("https://www.spencergreenberg.com/2023/02/doing-what-you-value-as-a-way-of-life-an-introduction-to-valuism/", "SG", "text,sans", "#04a3ed")
          , ("https://www.researchgate.net/profile/Thomas-Muehleisen", "RG", "text,sans", "#006dd9")
          , ("https://www.rug.nl/staff/l.h.franke/cv", "UG", "text", "#dc002d")
          , ("https://www.takimag.com/article/the_second_least_glamorous_job_in_showbiz/", "TM", "text", "#da464f")
          , ("https://cs.stanford.edu/people/karpathy/reinforcejs/","S", "text,mono", "#8c1515")
          , ("https://www.marxists.org/archive/marx/works/1852/18th-brumaire/ch02.htm", "☭", "text", "#c40303")
-         , ("http://linuxmafia.com/~rick/xmas.html", "LINUX", "text,mono", "#7a7a99")
-         , ("https://caniuse.com/?search=hyphenate", "CanI", "text,sans", "#c75000")
-         , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans", "#0095fb")
+         , ("http://linuxmafia.com/~rick/xmas.html", "LINUX", "text,mono,quad", "#7a7a99")
+         , ("https://caniuse.com/?search=hyphenate", "CanI", "text,sans,quad", "#c75000")
+         , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans,tri", "#0095fb")
   ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →
