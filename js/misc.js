@@ -2565,24 +2565,11 @@ doWhenPageLoaded(() => {
 			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
 		},
 		additionalWidgetActivation: (widget) => {
-			//	Function to set the proper mode (auto, light, dark) in the iframe.
-			let updateSearchIframeMode = (iframe) => {
-				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
-			};
-
 			//  Event handler for popup spawn / popin inject.
 			let popFrameSpawnEventHandler = (eventInfo) => {
 				let popFrame = (eventInfo.popup ?? eventInfo.popin);
 				let iframe = popFrame.document.querySelector("iframe");
 				iframe.addEventListener("load", (event) => {
-					//	Set proper mode.
-					updateSearchIframeMode(iframe);
-
-					//	Add handler to update search pop-frame when switching modes.
-					GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
-						updateSearchIframeMode(iframe)
-					});
-
 					let inputBox = iframe.contentDocument.querySelector("input.search");
 
 					//  Focus search box on load.
@@ -2612,28 +2599,6 @@ doWhenPageLoaded(() => {
 							}
 						});
 					}
-
-					//	Enable “search where” functionality.
-					let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
-					searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
-						radioButton.addEventListener("change", (event) => {
-							searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
-								otherRadioButton.removeAttribute("checked");
-							});
-							radioButton.setAttribute("checked", "");
-						});
-					});
-
-					//	Enable submit override (to make site search work).
-					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
-						event.preventDefault();
-
-						let form = event.target;
-						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
-																+ " "
-																+ form.querySelector("input.search").value;
-						form.submit();
-					});
 				});
 			};
 

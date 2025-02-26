@@ -3122,24 +3122,11 @@ doWhenPageLoaded(() => {
 			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
 		},
 		additionalWidgetActivation: (widget) => {
-			//	Function to set the proper mode (auto, light, dark) in the iframe.
-			let updateSearchIframeMode = (iframe) => {
-				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
-			};
-
 			//  Event handler for popup spawn / popin inject.
 			let popFrameSpawnEventHandler = (eventInfo) => {
 				let popFrame = (eventInfo.popup ?? eventInfo.popin);
 				let iframe = popFrame.document.querySelector("iframe");
 				iframe.addEventListener("load", (event) => {
-					//	Set proper mode.
-					updateSearchIframeMode(iframe);
-
-					//	Add handler to update search pop-frame when switching modes.
-					GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
-						updateSearchIframeMode(iframe)
-					});
-
 					let inputBox = iframe.contentDocument.querySelector("input.search");
 
 					//  Focus search box on load.
@@ -3169,28 +3156,6 @@ doWhenPageLoaded(() => {
 							}
 						});
 					}
-
-					//	Enable “search where” functionality.
-					let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
-					searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
-						radioButton.addEventListener("change", (event) => {
-							searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
-								otherRadioButton.removeAttribute("checked");
-							});
-							radioButton.setAttribute("checked", "");
-						});
-					});
-
-					//	Enable submit override (to make site search work).
-					iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
-						event.preventDefault();
-
-						let form = event.target;
-						form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
-																+ " "
-																+ form.querySelector("input.search").value;
-						form.submit();
-					});
 				});
 			};
 
@@ -15196,6 +15161,57 @@ doWhenDOMContentLoaded(() => {
 });
 
 
+/**********/
+/* SEARCH */
+/**********/
+
+/**************************************/
+/*	Set up search iframe when injected.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.setUpSearchIframe = (eventInfo) => {
+    GWLog("setUpSearchIframe", "rewrite.js", 1);
+
+	//	Function to set the proper mode (auto, light, dark) in the iframe.
+	let updateSearchIframeMode = (iframe) => {
+		iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
+	};
+
+	let iframe = eventInfo.container.querySelector("iframe");
+	iframe.classList.add("search");
+	iframe.addEventListener("load", (event) => {
+		//	Set proper mode.
+		updateSearchIframeMode(iframe);
+
+		//	Add handler to update search iframe when switching modes.
+		GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
+			updateSearchIframeMode(iframe)
+		});
+
+		//	Enable “search where” functionality.
+		let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
+		searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
+			radioButton.addEventListener("change", (event) => {
+				searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
+					otherRadioButton.removeAttribute("checked");
+				});
+				radioButton.setAttribute("checked", "");
+			});
+		});
+
+		//	Enable submit override (to make site search work).
+		iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
+			event.preventDefault();
+
+			let form = event.target;
+			form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
+													+ " "
+													+ form.querySelector("input.search").value;
+			form.submit();
+		});
+	}, { once: true });
+}, "rewrite", (info) => (info.includeLink?.pathname == "/static/google-search.html"));
+
+
 /********************/
 /* ID-BASED LOADING */
 /********************/
@@ -15312,56 +15328,19 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			"data-link-content-type": "local-document"
 		}));
 
-		//	Add inject handler.
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (contentDidInjectEventInfo) => {
-			//	Function to set the proper mode (auto, light, dark) in the iframe.
-			let updateSearchIframeMode = (iframe) => {
-				iframe.contentDocument.querySelector("#search-styles-dark").media = DarkMode.mediaAttributeValues[DarkMode.currentMode()];
-			};
-
-			let iframe = contentDidInjectEventInfo.container.querySelector("iframe");
-			iframe.classList.add("search");
-			iframe.addEventListener("load", (event) => {
-				let searchField = iframe.contentDocument.querySelector("input.search");
-
-				//	Pre-fill the search field with the URL (if given).
-				if (url)
-					searchField.value = url;
-
-				//	Set proper mode.
-				updateSearchIframeMode(iframe);
-
-				//	Add handler to update search iframe when switching modes.
-				GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", iframe.darkModeDidSetModeHandler = (info) => {
-					updateSearchIframeMode(iframe)
-				});
-
-				//	Enable “search where” functionality.
-				let searchWhereSelector = iframe.contentDocument.querySelector("#search-where-selector");
-				searchWhereSelector.querySelectorAll("input").forEach(radioButton => {
-					radioButton.addEventListener("change", (event) => {
-						searchWhereSelector.querySelectorAll("input").forEach(otherRadioButton => {
-							otherRadioButton.removeAttribute("checked");
-						});
-						radioButton.setAttribute("checked", "");
-					});
-				});
-
-				//	Enable submit override (to make site search work).
-				iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
-					event.preventDefault();
-
-					let form = event.target;
-					form.querySelector("input.query").value = searchWhereSelector.querySelector("input[checked]").value
-															+ " "
-															+ form.querySelector("input.search").value;
-					form.submit();
-				});
-			}, { once: true });
-		}, {
-			condition: (info) => (info.includeLink = searchPageIncludeLink),
-			once: true
-		});
+		//	Add inject handler (if a URL is given).
+		if (url) {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (contentDidInjectEventInfo) => {
+				let iframe = contentDidInjectEventInfo.container.querySelector("iframe");
+				iframe.addEventListener("load", (event) => {
+					//	Pre-fill the search field with the URL.
+					iframe.contentDocument.querySelector("input.search").value = url;
+				}, { once: true });
+			}, {
+				condition: (info) => (info.includeLink = searchPageIncludeLink),
+				once: true
+			});
+		}
 
 		//	Trigger include-link.
 		Transclude.triggerTransclude(searchPageIncludeLink, {
@@ -15559,6 +15538,18 @@ function updateBacklinksCountDisplay(backlinksBlock) {
 addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSectionBacklinksBlocks = (eventInfo) => {
     GWLog("addWithinPageBacklinksToSectionBacklinksBlocks", "rewrite.js", 1);
 
+	let excludedPageBodyClasses = [
+		"page-placeholder",
+		"page-404"
+	];
+	let excludedPathnameSuffixes = [
+		"/",
+		"/index"
+	];
+	if (   eventInfo.document.body?.classList.containsAnyOf(excludedPageBodyClasses)
+		|| eventInfo.loadLocation?.pathname.endsWithAnyOf(excludedPathnameSuffixes))
+		return;
+
 	let excludedContainersSelector = [
 		"#hidden-sidenote-storage",
 		".sidenote-column",
@@ -15683,8 +15674,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 	if (eventInfo.document == document)
 		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.document == document
-						 && info.contentType == "localPage"
-						 && location.pathname.endsWithAnyOf([ "/index", "/" ]) == false));
+						 && info.contentType == "localPage"));
 
 /****************************************************************************/
 /*	When an annotation is transcluded into a page, and some of the backlinks 
