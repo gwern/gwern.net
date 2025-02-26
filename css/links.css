@@ -164,28 +164,28 @@ a[data-link-icon-type*='svg']:hover .link-icon-hook::after {
     opacity: calc(var(--link-icon-opacity) * 0.55);
 }
 
-/*	Quad-letter (rendered) SVG icons.
+/*  Quad-letter (rendered) SVG icons.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
-	--link-icon-size: 0.75em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.35em;
-	--link-icon-opacity: 0.80;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.35em;
+    --link-icon-opacity: 0.80;
 }
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
     background-position-y: 0.9ex;
 }
 
-/*	Quad-letter (rendered) SVG icons in a sans-serif font.
+/*  Quad-letter (rendered) SVG icons in a sans-serif font.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] {
-	--link-icon-size: 0.80em;
+    --link-icon-size: 0.80em;
 }
 
-/*	Quad-letter (rendered) SVG icons in a monospaced font.
+/*  Quad-letter (rendered) SVG icons in a monospaced font.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] {
-	--link-icon-size: 0.85em;
+    --link-icon-size: 0.85em;
 }
 
 /*  Colored graphical link icons.
@@ -270,13 +270,13 @@ a[data-link-icon-type*='tri'] {
     --link-icon-opacity: 0.90;
 }
 
-/*	Tri-letter icons in a sans face.
+/*  Tri-letter icons in a sans face.
  */
 a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
-	/*	Nothing, for now. */
+    /*  Nothing, for now. */
 }
 
-/*	Tri-letter icons in a monospaced face.
+/*  Tri-letter icons in a monospaced face.
  */
 a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
     --link-icon-opacity: 0.7;
@@ -284,8 +284,8 @@ a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
 
 /*  Quad-letter ‘quad’ square icons.
 
-	NOTE: Currently unused, due to SVG rendering of quad icons.
-		—SA 2025-02-25
+    NOTE: Currently unused, due to SVG rendering of quad icons.
+        —SA 2025-02-25
  */
 a[data-link-icon-type*='text'][data-link-icon-type*='quad'] .link-icon-hook::after {
     text-indent: 0;
@@ -304,17 +304,17 @@ a[data-link-icon-type*='text'][data-link-icon-type*='quad'] .link-icon-hook::aft
 
 /*  Quad-letter square icons in a sans face.
 
-	NOTE: Currently unused, due to SVG rendering of quad icons.
-		—SA 2025-02-25
+    NOTE: Currently unused, due to SVG rendering of quad icons.
+        —SA 2025-02-25
     */
 a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
-	/*	Nothing, for now. */
+    /*  Nothing, for now. */
 }
 
 /*  Quad-letter square icons in a monospaced face.
 
-	NOTE: Currently unused, due to SVG rendering of quad icons.
-		—SA 2025-02-25
+    NOTE: Currently unused, due to SVG rendering of quad icons.
+        —SA 2025-02-25
     */
 a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
     line-height: 0.90;
@@ -607,6 +607,11 @@ a[data-link-icon='☯'] { /* Touhou Wiki */
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.20em;
 }
+
+a[data-link-icon='jt'] { /* Japan Times */
+    --link-icon-offset-x: 0.20em;
+}
+
 
 /***********************************/
 /*  Quad-letter ‘quad’ square icons.
@@ -1073,6 +1078,16 @@ a[data-link-icon='✤'] { /* Ganbreeder/Artbreeder */
 
 a[data-link-icon='☤'] { /* Karolinska */
     --link-icon-opacity: 0.50;
+}
+
+a[data-link-icon='sourceforge'] {
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.10em;
+}
+
+a[data-link-icon='worldcat'] {
+    --link-icon-size: 0.70em;
+    --link-icon-offset-x: 0.10em;
 }
 
 /*=------------------=*/

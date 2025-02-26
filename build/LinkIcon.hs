@@ -6,7 +6,7 @@ import Data.Char (isDigit, isHexDigit)
 import Data.List (sort)
 import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null, toLower, head)
+import qualified Data.Text as T (isInfixOf, isPrefixOf, Text, splitOn, unpack, null, toLower, head, length)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
@@ -178,11 +178,20 @@ linkIconTest = filter (\(url, li, lit, litc) ->
                            linkIcon) (Link nullAttr [] (url,""))
                                           /=
                                           Link ("",[], ((if T.null li then [] else [("link-icon",li)]) ++
-                                                        (if T.null lit then [] else [("link-icon-type", lit)]) ++
+                                                        (if T.null lit then [] else [("link-icon-type", isValidIconType li lit)]) ++
                                                         (if T.null litc then [] else [("link-icon-color",isValidCssHexColor litc)])) -- note: we only call this in `linkIconTest` to avoid runtime overhead.
                                                ) [] (url,"")
                       )
                C.linkIconTestUnitsText
+
+isValidIconType :: T.Text -> T.Text -> T.Text
+isValidIconType _ "" = error "LinkIcon.isValidIconType: passed an empty string for link-icon-type. This should never happen!"
+isValidIconType "" _ = error "LinkIcon.isValidIconType: passed an empty string for link-icon. This should never happen!"
+isValidIconType li lit =
+  let types = T.splitOn "," lit in
+    if "quad" `elem` types && T.length li /= 4 then error $ "LinkIcon.isValidIconType: quad icon's link-text was not exactly 4 characters. Inputs: " ++ show li ++ "; " ++ show lit
+    else if "tri" `elem` types && T.length li /= 3 then error $ "LinkIcon.isValidIconType: tri icon's link-text was not exactly 3 characters. Inputs: " ++ show li ++ "; " ++ show lit
+         else lit
 
 -- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format.
 -- (Note that we allow uppercase 'A–F' but we emit only lowercase 'a–f' for consistency/readability.)
@@ -202,7 +211,7 @@ isValidCssHexColor color = case T.unpack color of
 
 -- try to detect 'gray'/black/white colors, which have no distinct color as link-icon colors.
 -- To implement this, we try a threshold on the channel differences. If all three channels are very close to each other, it’s effectively a grayish color. For example, define a tolerance and check if the difference between the max and min channel values is small. If it’s below a certain threshold, consider it gray. This considers a color “distinct” only if the range between its darkest and brightest channel is greater than 30. You can adjust the threshold to taste.
--- eg a maximum gray should be something like '#7a7a99' and a minimum is '#00001f'.
+-- eg. a maximum gray should be something like '#7a7a99' and a minimum is '#00001f'.
 isDistinctColor :: String -> Bool
 isDistinctColor ['#', r1, r2, g1, g2, b1, b2] =
   let hexVal c = if isDigit c

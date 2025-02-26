@@ -348,7 +348,7 @@ linkIconRulesTriple u
  | u'' u "www.npr.org" || u'' u "text.npr.org" = ("npr", "text,tri,sans", "#237bbd") -- NPR styles it in lowercase in their |n|p|r| logo; color: light-blue from 'r' in 'npr' logo; TODO: color SVG icon logo
  | u'' u "www.filfre.net" = ("TDA", "text,tri,sans", "#692a18") -- Filfre.net/The Digital Antiquarian has no logo or usable substitute… color: dark brown (from background of theme)
  | u'' u "lwn.net" = ("LWN", "text,tri,sans", "#fed050") -- color: yellow (from Tux penguin feet)
- | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("F.ai", "text,tri", "#3399f3") -- color: light blue
+ | u' u ".fast.ai" ||  u' u "github.com/fastai/" = ("Fai", "text,tri", "#3399f3") -- color: light blue
  | u'' u "www.sfgate.com" = ("SFG", "text,tri,sans", "#ff1d46") -- color: bright red
  | u'' u "nypost.com" = ("NYP", "text,tri,sans,italic", "#c60800") -- color: bright dark red; TODO: white-on-red text background
  | u'' u "www.justice.gov" = ("DoJ", "text,tri", "#162e51") -- US federal Department of Justice ; color: dark blue
@@ -415,12 +415,12 @@ linkIconRulesQuad u
  | u'' u "www.imdb.com" = ("IMDb", "text,sans,quad", "#f5c518") -- color: dark yellow
  | u'' u "www.nejm.org" = ("NEJM", "text,quad", "#ff3300") -- color: red
  | u'' u "spectrum.ieee.org" || u'' u "ieeexplore.ieee.org" = ("IEEE", "text,mono,quad", "#006699") -- color: blue; TODO: white-on-blue text background
- | u'' u "rjlipton.com" = ("P = NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALS SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
- | u' u "mitpress.mit.edu/sites/default/files/sicp/" || u' u "mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/" = ("SI CP", "text,quad,sans", "") -- overrides IA
+ | u'' u "rjlipton.com" = ("P=NP", "text,quad", "") -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULLWIDTH EQUALS SIGN' turns out to be *too* big and stack up three high. using 2 HAIR SPACE will separate the '=' slightly from the 'P' while not causing the 3-layer layout.
+ | u' u "mitpress.mit.edu/sites/default/files/sicp/" || u' u "mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/" = ("SICP", "text,quad,sans", "") -- overrides IA
  | u' u "mitpress.mit.edu/" || u' u "people.csail.mit.edu" || u' u "web.mit.edu" = ("MIT", "text,tri,mono", "") -- if it's not _SICP_, fall back.
  | u'' u "jaspervdj.be" = ("JVDJ", "text,quad,mono", "")
  | u'' u "gizmodo.com" = ("GIZM", "text,quad,mono", "")
- | u'' u "www.mdpi.com" = ("MDP I", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
+ | u'' u "www.mdpi.com" = ("MDPI", "text,quad,sans", "") -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be sans
  | u'' u "mattlakeman.org" = ("MATT", "text,quad,sans", "")
  | u'' u "www.poetryfoundation.org" = ("POET", "text,quad,sans", "#ed1c24") -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad; color: red
  | u'' u "papers.ssrn.com" = ("SSRN", "text,quad", "#007398") -- color: dark blue; TODO: white-on-blue text background
@@ -436,7 +436,7 @@ linkIconRulesQuad u
  | u'' u "vndb.org" = ("VNDB", "text,quad,sans", "")
  | u'' u "www.huffpost.com" = ("HUFF", "text,quad,sans", "#0dbe98") -- color: blue-green
  | u'' u "longreads.com" = ("Long", "text,quad", "#cc0000") -- logo: 'L' in a red circle; color: red; TODO: white-on-red text background
- | u'' u "warontherocks.com" = ("WOT R", "text,quad,sans", "")
+ | u'' u "warontherocks.com" = ("WOTR", "text,quad,sans", "")
  | u'' u "krebsonsecurity.com" = ("Krbs", "text,quad,sans", "") -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krbs', so abbreviate that
  | u'' u "www.nextplatform.com" = ("NEXT", "text,quad,sans", "#ff7200") -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable; color: orange
  | u'' u "www.vetta.org" = ("Legg", "text,quad,sans", blueDM) -- Shane Legg (DeepMind)
@@ -460,16 +460,16 @@ linkIconRulesQuad u
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
- | u'' u "www.dwarkeshpatel.com" = ("Dwk h", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
+ | u'' u "www.dwarkeshpatel.com" = ("Dwkh", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
  | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
  | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
  | u'' u "minimaxir.com" = ("MxWf" , "text,quad,sans", "")
  | u'' u "proceedings.neurips.cc" || u'' u "neurips.cc" = ("NIPS", "text,sans,quad", "#0d6efd") -- 'NIPS' + blue
  | u'' u "soranews24.com" = ("Sora", "text,sans,quad", "#e81a00") -- 'Sora' red
- | u'' u "www.crd.york.ac.uk" = ("PSRO", "text,sans,quad", "#0d6efd") -- 'PSRO' blue
+ | u'' u "www.crd.york.ac.uk" = ("PROS", "text,sans,quad", "#0d6efd") -- PROSPERO trial registry; 'PROS' blue
  | u'' u "nces.ed.gov" = ("NCES", "text,quad", "#fbb03b") -- 'NCES' orange-yellow
- | u'' u "linuxmafia.com" = ("LINUX", "text,mono,quad", "#7a7a99") -- 'LINUX' monospace light blue
+ | u'' u "linuxmafia.com" = ("LNUX", "text,mono,quad", "#7a7a99") -- 'LINUX' monospace light blue
  | u'' u "caniuse.com" = ("CanI", "text,sans,quad", "#c75000") -- 'CanI' red
  | otherwise = ("", "", "")
 
@@ -776,8 +776,8 @@ linkIconTestUnitsText =
          , ("https://www.lesswrong.com/posts/37sHjeisS9uJufi4u/scholarship-how-to-do-it-efficiently",  "LW","text", "#7faf83")
          , ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝔐", "text", "#004db3")
          , ("https://aino.bandcamp.com/track/--2",  "audio","svg", "#1da0c3")
-         , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","F.ai", "text,tri", "#3399f3")
-         , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri", "#3399f3")
+         , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","Fai", "text,tri", "#3399f3")
+         , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "Fai", "text,tri", "#3399f3")
          , ("https://www.outsideonline.com/culture/books-media/how-athletes-get-great/", "𝕆", "text", "#ffd204")
          , ("https://yunnansourcing.com/",  "ys","text", "#e99114")
          , ("https://yunnansourcing.us/", "ys","text", "#e99114")
@@ -958,7 +958,7 @@ linkIconTestUnitsText =
          , ("https://www.jneurosci.org/content/32/12/4156.full", "JN", "text", "#104b7d")
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri", "#1a65ad")
          , ("/doc/science/1966-mathematicalassociationofamerica-documentary-maavideoclassics2-johnvonneumanadocumentary.mkv", "file-video", "svg", "#0067ad")
-         , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad", "")
+         , ("https://rjlipton.com/2015/07/28/playing-chess-with-the-devil/", "P=NP", "text,quad", "")
          , ("http://archive.recapthelaw.org/paed/203025/", "PACR", "text,quad", "")
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad", "")
@@ -1155,11 +1155,11 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/1404.7828#schmidhuber", "SMDH", "text,quad,sans", "")
          , ("https://innsbigdata.wordpress.com/2015/02/09/interview-with-juergen-schmidhuber/", "SMDH", "text,quad,sans", "")
          , ("https://people.idsia.ch/~juergen/metalearning.html", "SMDH", "text,quad,sans", "")
-         , ("https://www.mdpi.com/2220-9964/8/5/232", "MDP I","text,quad,sans", "")
-         , ("https://web.archive.org/web/20211105092005/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans", "")
-         , ("https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/sicp.html", "SI CP", "text,quad,sans", "")
+         , ("https://www.mdpi.com/2220-9964/8/5/232", "MDPI","text,quad,sans", "")
+         , ("https://web.archive.org/web/20211105092005/https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SICP", "text,quad,sans", "")
+         , ("https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/sicp.html", "SICP", "text,quad,sans", "")
          , ("https://habr.com/ru/articles/516190/", "Habr", "text,quad,sans", "")
-         , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOT R", "text,quad,sans", "")
+         , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans", "")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Krbs", "text,quad,sans", "")
          , ("https://oeis.org/A001006", "OEIS", "text,quad,sans", "")
          , ("https://mathshistory.st-andrews.ac.uk/Extras/Poincare_Intuition/", "M  T", "text,quad,sans", "")
@@ -1281,7 +1281,7 @@ linkIconTestUnitsText =
          , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,tri,sans", "")
          , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,tri,sans", "")
          , ("https://ki.se/en/people/paul-lichtenstein", "☤", "text", "#830154")
-         , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwk h", "text,sans,quad", "#f3c016")
+         , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
          , ("https://ascii.textfiles.com/archives/2229", "ASCI", "text,quad,mono", "#006309")
          , ("https://www.e-codices.unifr.ch/en/vad/0296/079r", "e", "text,sans", "#e7d7a5")
          , ("https://www.bartleby.com/lit-hub/poetry-of-byron/greece-iv/", "b", "text", "#101269")
@@ -1344,7 +1344,7 @@ linkIconTestUnitsText =
          , ("https://pubs.acs.org/doi/abs/10.1021/es0719071", "ACS", "text,tri", "#0a3d9a")
          , ("https://tylervigen.com/spurious-correlationsspurious-correlations", "V", "text,sans", "#ba0f27")
          , ("https://www.dafont.com/cheshire-initials.font", "d", "text", "#c20000")
-         , ("https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=104600", "PSRO", "text,sans,quad", "#0d6efd")
+         , ("https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=104600", "PROS", "text,sans,quad", "#0d6efd")
          , ("https://nces.ed.gov/naal/sample.asp", "NCES", "text,quad", "#fbb03b")
          , ("https://www.spencergreenberg.com/2023/02/doing-what-you-value-as-a-way-of-life-an-introduction-to-valuism/", "SG", "text,sans", "#04a3ed")
          , ("https://www.researchgate.net/profile/Thomas-Muehleisen", "RG", "text,sans", "#006dd9")
@@ -1352,7 +1352,7 @@ linkIconTestUnitsText =
          , ("https://www.takimag.com/article/the_second_least_glamorous_job_in_showbiz/", "TM", "text", "#da464f")
          , ("https://cs.stanford.edu/people/karpathy/reinforcejs/","S", "text,mono", "#8c1515")
          , ("https://www.marxists.org/archive/marx/works/1852/18th-brumaire/ch02.htm", "☭", "text", "#c40303")
-         , ("http://linuxmafia.com/~rick/xmas.html", "LINUX", "text,mono,quad", "#7a7a99")
+         , ("http://linuxmafia.com/~rick/xmas.html", "LNUX", "text,mono,quad", "#7a7a99")
          , ("https://caniuse.com/?search=hyphenate", "CanI", "text,sans,quad", "#c75000")
          , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans,tri", "#0095fb")
   ]
