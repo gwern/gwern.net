@@ -4030,6 +4030,10 @@ a.footnote-back {
         opacity 0.25s ease-out,
         transform 0.25s ease-out;
 }
+#markdownBody .sidenote.displaced .footnote-back svg {
+	transition:
+		transform 0.25s ease-out;
+}
 #markdownBody .sidenote.hidden {
     display: none;
 }
