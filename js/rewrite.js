@@ -2908,6 +2908,8 @@ function renderQuadLinkIcon(link) {
 	];
 
 	let letters = link.dataset.linkIcon.split("").filter(c => /\S/.test(c));
+	if (letters.length != 4)
+		return;
 	let textElementsSrc = letters.map((letter, index) => 
 		`<text 
 		  x="${positions[index][0]}" 
