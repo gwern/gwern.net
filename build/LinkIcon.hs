@@ -187,11 +187,13 @@ linkIconTest = filter (\(url, li, lit, litc) ->
 isValidIconType :: T.Text -> T.Text -> T.Text
 isValidIconType _ "" = error "LinkIcon.isValidIconType: passed an empty string for link-icon-type. This should never happen!"
 isValidIconType "" _ = error "LinkIcon.isValidIconType: passed an empty string for link-icon. This should never happen!"
-isValidIconType li lit =
-  let types = T.splitOn "," lit in
-    if "quad" `elem` types && T.length li /= 4 then error $ "LinkIcon.isValidIconType: quad icon's link-text was not exactly 4 characters. Inputs: " ++ show li ++ "; " ++ show lit
-    else if "tri" `elem` types && T.length li /= 3 then error $ "LinkIcon.isValidIconType: tri icon's link-text was not exactly 3 characters. Inputs: " ++ show li ++ "; " ++ show lit
-         else lit
+isValidIconType li lit
+ | "quad" `elem` types = if T.length li == 4 then lit else error $ "LinkIcon.isValidIconType: quad icon's link-text was not exactly 4 characters. Inputs: " ++ show li ++ "; " ++ show lit
+ | "tri" `elem` types  = if T.length li == 3 then lit else error $ "LinkIcon.isValidIconType: tri icon's link-text was not exactly 3 characters. Inputs: " ++ show li ++ "; " ++ show lit
+ -- if it's not a text quad/tri, nor an SVG, then it must be a text icon of exactly 1 or 2 letters:
+ | "text" `elem` types = if T.length li == 1 || T.length li == 2 then lit else error $ "LinkIcon.isValidIconType: non-SVG non-tri/quad icon's link-text was not exactly 1 or 2 characters. Inputs: " ++ show li ++ "; " ++ show lit
+ | otherwise           = lit
+ where types = T.splitOn "," lit
 
 -- check that a string is a valid CSS color in either '#RGB' or '#RRGGBB' format.
 -- (Note that we allow uppercase 'A–F' but we emit only lowercase 'a–f' for consistency/readability.)

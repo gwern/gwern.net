@@ -31,13 +31,13 @@ prioritizeLinkIconBlackList =
  , "www.wakapoetry.net", "www.standard.co.uk", "highnoongmt.wordpress.com"
  , "www.links.org", "shkspr.mobi", "repository.upenn.edu", "latanyasweeney.org"
  , "www.mentalfloss.com", "agtb.wordpress.com", "digitalcommons.unl.edu", "emilkirkegaard.dk"
- , "vividness.live", "buddhism-for-vampires.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu"
+ , "vividness.live", "buddhism-for-vampires.com", "thegrandnarrative.com", "srconstantin.wordpress.com"
  , "bmk.sh", "www.impactcybertrust.org", "esolangs.org", "www.aiweirdness.com", "etherscan.io"
  , "mmlab.ie.cuhk.edu.hk", "www.cs.toronto.edu", "www.centauri-dreams.org", "www.eoht.info"
  , "hal.science", "mattmahoney.net", "projecteuclid.org", "www.sudowrite.com", "geminiprotocol.net"
  , "www.1001fonts.com", "andrewmayne.com", "www.benkuhn.net", "sive.rs", "conservancy.umn.edu"
- , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com", "ro.ecu.edu.au"
- , "gazette.com"
+ , "www.ed.ac.uk", "www.chiark.greenend.org.uk", "figshare.com", "www.replicatedtypo.com"
+ , "gazette.com", "penelope.uchicago.edu", "ro.ecu.edu.au", "originstamp.com"
  ]
 ------------------------------------------------------------------------------------------
 
@@ -131,7 +131,7 @@ linkIconRulesSingle u
  | aU'' u ["psyarxiv.com", "files.osf.io", "osf.io"] = ("ψ", "text", "#cf1d35") -- Unicode trickery icons: GREEK SMALL LETTER Ψ. Color: red. TODO: color SVG icon?
  | u'' u "unsongbook.com" = ("ℵ", "text", "#b47810") -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.); color: mustard yellow background; TODO: color SVG icon?
  | u'' u "meltingasphalt.com" = ("▲", "text", "#aa0000") -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE; color: red
- | u'' u "www.tinyletter.com" = ("✉", "text", "#e72223") -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE; color: red (from heart-envelope icon)
+ | u'' u "www.tinyletter.com" || u'' u "mailchi.mp" = ("✉", "text", "#e72223") -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE; color: red (from heart-envelope icon)
  | u'' u "groups.yahoo.com" = ("✉", "text", "#5e21cf") -- color: Yahoo dark purple
  | u'' u "www.mail-archive.com" = ("✉", "text", "#a01e1e") -- color: red
  | u' u "carryiton.net/chain-letter/" = ("✉", "text", "") -- linked only for the archive, so this is an appropriate icon
@@ -154,7 +154,7 @@ linkIconRulesSingle u
  | u' u ".nature.com" = ("n", "text", "") -- Nature; color: none, website sometimes uses blue but not seriously
  | u'' u "www.theverge.com" = ("▽", "text", "#5200ff") -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;. color: purple
  | u'' u "www.quora.com" = ("Q", "text", "#b92b27") -- surprisingly, no one's taken 'Q' yet; color: red
- | aU'' u ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' u "github.com/paul-buerkner/brms" = ("R", "text", redR) -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org; color: red
+ | aU'' u ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com", "rpubs.com"] || u' u "github.com/paul-buerkner/brms" = ("R", "text", redR) -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too… primary user: cran.r-project.org; color: red
  | u'' u "www.science.org" || u'' u "sciencemag.org" = ("S", "text", "#ca2015") -- Science is just typeset in red; color: red; TODO: white-on-red text background
  | u'' u "slate.com" = ("S", "text,sans", "#2c0022") -- color: dark purple; TODO: white-on-purple text background
  | u'' u "www.salon.com" = ("s", "text", "#ed2c1d") -- color: red
@@ -167,7 +167,6 @@ linkIconRulesSingle u
  | u'' u "beepb00p.xyz" = ("\129302", "text", "") -- ROBOT FACE U+1F916
  | u'' u "antilop.cc" = ("෴", "text", "") -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' u "forum.effectivealtruism.org" || u'' u "www.effectivealtruism.org" = ("EA", "text", "#06819a") -- color: blue-green from lightbulb
- | u'' u "boards.fireden.net" || u'' u "archive.foolz.us" || u' u "4channel.org" || u' u "boards.4chan.org"  = ("4CH", "text,sans", "#69ac46") -- color: light green
  | u'' u "www.kaggle.com" = ("k", "text,sans", "#20beff") -- color: blue-green
  | u'' u "www.discovermagazine.com" = ("D", "text", "") -- TODO: white-on-black text background text
  | u'' u "www.mirror.co.uk" = ("M", "text,sans", "#e90e0e") -- color: red; TODO: white-on-red text background
@@ -223,7 +222,7 @@ linkIconRulesDouble u
  | aU'' u ["marginalrevolution.com", "conversationswithtyler.com"] = ("M𝐑", "text", "#00c79f") -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R; color: light green; TODO: color SVG icon for background?
  | u'' u "www.frontiersin.org" = ("FS", "text,sans", "") -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent; color: none, too busy
  | aU'' u ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = ("PG", "text", yellowPG) -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.; color: mustard yellow
- | u'' u "guzey.com" = ("A.G.", "text,sans", "")
+ | u'' u "guzey.com" = ("AG", "text,sans", "")
  | u' u "alignmentforum.org" || (u'' u "www.greaterwrong.com" && u' u "view=alignment-forum") = ("AF", "text,sans", "#3f51b5") -- color: royal blue
  | u'' u "boingboing.net" = ("bb", "text,mono", "#ff0202") -- color: bright red
  | u'' u "nymag.com" = ("𝒩𝒴", "text", "") -- color: none. (It does use rubrication a little but not as part of the branding.)
@@ -258,12 +257,12 @@ linkIconRulesDouble u
  | u'' u "www.thecut.com" = ("TC", "text", "")
  | u'' u "www.scientificamerican.com" = ("SA", "text", "#0376a1") -- color: medium blue
  | u'' u "www.stuff.co.nz" = ("NZ", "text,sans", "#d1a3ff") -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'… color: light purple
- | u'' u "chronopause.com" = ("M.D.", "text,sans", "") -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' u "vitalik.eth.limo" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("V.B.", "text,sans", "#337ab7") -- Vitalik Buterin, similarly; color: light blue (possibly from the Ethereum logo...?)
- | u'' u "unenumerated.blogspot.com" || u' u "szabo.best.vwh.net" || u' u "nick-szabo" = ("N.S.", "text,sans", "") -- Nick Szabo
- | u'' u "scottaaronson.blog" || u'' u "www.scottaaronson.com" = ("S.A.", "text,sans", "#4181b7") -- Scott Aaronson; color: light blue
- | u'' u "www.rifters.com" = ("P.W.", "text,sans", "#737500") -- Peter Watts; color: bright cyberpunk electronic yellow
- | u'' u "www.antipope.org" = ("C.S.", "text,sans", "#921712") -- Charles Stross; color: dark red
+ | u'' u "chronopause.com" = ("MD", "text,sans", "") -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
+ | u'' u "vitalik.eth.limo" || u' u "/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf" = ("VB", "text,sans", "#337ab7") -- Vitalik Buterin, similarly; color: light blue (possibly from the Ethereum logo...?)
+ | u'' u "unenumerated.blogspot.com" || u' u "szabo.best.vwh.net" || u' u "nick-szabo" = ("NS", "text,sans", "") -- Nick Szabo
+ | u'' u "scottaaronson.blog" || u'' u "www.scottaaronson.com" = ("SA", "text,sans", "#4181b7") -- Scott Aaronson; color: light blue
+ | u'' u "www.rifters.com" = ("PW", "text,sans", "#737500") -- Peter Watts; color: bright cyberpunk electronic yellow
+ | u'' u "www.antipope.org" = ("CS", "text,sans", "#921712") -- Charles Stross; color: dark red
  | u'' u "www.ribbonfarm.com" = ("ℝ𝔽", "text,sans", "") -- color: none (too inconsistent over the years)
  | u'' u "www.deviantart.com" = ("DA", "text,sans", "#00fe8c") -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would. color: light green (the brightest lightest green part of the transition fades)
  | u'' u "www.smithsonianmag.com" = ("SM", "text", "")
@@ -299,8 +298,7 @@ linkIconRulesDouble u
  | u'' u "www.research.va.gov" = ("VA", "text,sans", "#112e51") -- US Department of Veterans Affair (mostly linked for Million Veteran Project); color: dark blue
  | u'' u "apnews.com" = ("AP", "text,sans", "") -- TODO: SVG icon for underlined AP black+red logo?
  | aU' u ["www.unz.com/gnxp/", "www.razib.com", "www.razibkhan.com", "www.gnxp.com", "x.com/razibkhan"] = ("RK", "text,sans", "") -- Razib Khan
- | u'' u "jaymans.wordpress.com" = ("J👨🏾", "text,sans", "") -- JayMan
- | u'' u "www.rollingstone.com" = ("𝓡 𝐒", "text", "#d71921") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
+ | u'' u "www.rollingstone.com" = ("𝓡𝐒", "text", "#d71921") -- Rolling Stone <https://www.rollingstone.com/wp-content/uploads/2022/08/cropped-Rolling-Stone-Favicon.png> <https://en.wikipedia.org/wiki/File:Rolling_Stone_2022.svg>
  | u'' u "www.popsci.com" = ("PS", "text,sans", "") -- Popular Science magazine (no usable or recognizable logos); color: none (they are doing orange right now but doesn't seem historical)
  | u'' u "www.crunchbase.com" = ("cb", "text,sans", "#146aff") -- Crunchbase <https://en.wikipedia.org/wiki/Crunchbase> <https://en.wikipedia.org/wiki/File:Crunchbase_wordmark_dark_blue.svg>; TODO: white-on-blue text background
  | u'' u "newcriterion.com" = ("NC", "text", "") -- The New Criterion <https://en.wikipedia.org/wiki/The_New_Criterion>; color: none (like The Paris Review, NC seems to try to change color each issue)
@@ -397,9 +395,12 @@ linkIconRulesTriple u
  | u'' u "www.cs.cmu.edu" = ("CMU", "text,tri", "#bb0000") -- 'CMU' red
  | u'' u "pubs.acs.org" = ("ACS", "text,tri", "#0a3d9a") -- 'ACS' dark blue
  | u'' u "oll.libertyfund.org" = ("OLL", "text,sans,tri", "#0095fb") -- 'OLL' dark blue
+ | u'' u "boards.fireden.net" || u'' u "archive.foolz.us" || u' u "4channel.org" || u' u "boards.4chan.org"  = ("4CH", "text,sans,tri", "#69ac46") -- color: light green
+ | u'' u "jaymans.wordpress.com" = ("J👨🏾", "text,sans,tri", "") -- JayMan
  | otherwise = ("","", "")
 
- -- Quad-letter (square) icons.
+-- Quad-letter (square) icons.
+-- NOTE: quad icons have a tendency to line-break badly when typeset by browsers in their tiny box, and take up 3 lines, ruining the 'square' look, or to look weirdly spaced-out. We used to try to fix this manually with WORD JOINER and THIN/HAIR SPACE (respectively), but this was constant ad hoc toil. As of February 2025, we now render quad icons with a more robust but complicated approach: they are turned into tiny *SVGs*, with each letter positioned at a fixed coordinate, and the SVG is rendered instead. This looks similar, but guarantees the intended look. (Albeit at the cost of looking a bit oddly 'grid'-like, which can be improved by fiddling with the exact layout of the letters in the SVG, but at this point you're kinda re-inventing a font engine from scratch...)
 linkIconRulesQuad "" = error "Config.LinkIcon.linkIconRulesQuad: passed empty string as the URL; this should never happen!"
 linkIconRulesQuad u
  | aU'' u ["jamanetwork.com", "archinte.jamanetwork.com"]  = ("JAMA", "text,sans,quad", "#d71635") -- The Journal of the American Medical Association (JAMA); color: bright red; TODO: white-on-red text background
@@ -524,7 +525,7 @@ linkIconRulesSVG u
  | u' u ".cochrane.org" || aU'' u ["www.cochrane.org.uk", "www.cochranelibrary.com"] = ("cochrane-collaboration", "svg", "#b226b1") -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page); color: red
  | u'' u "www.connectedpapers.com" = ("connected-papers", "svg", "#74b7b8") -- color: green-blue
  | u' u "nasa.gov" = ("nasa", "svg", "#dc3329") -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>; color: red (from <https://commons.wikimedia.org/wiki/Category:NASA_%22worm%22_logotype#/media/File:NASA_Worm_logo.svg>)
- | aU'' u ["link.springer.com", "rd.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg", "")  -- (♘) WHITE CHESS KNIGHT as SVG
+ | aU'' u ["link.springer.com", "rd.springer.com", "static-content.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg", "")  -- (♘) WHITE CHESS KNIGHT as SVG
  | u'' u "www.metaculus.com" = ("metaculus", "svg", "#001935") -- color: dark blue-black
  | u'' u "wandb.ai" = ("wandb", "svg", "#ffcc33") -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon; color: yellow
  | aU'' u ["libgen.li", "libgen.org", "library.bz"] = ("raven", "svg", "") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
@@ -651,7 +652,7 @@ linkIconTestUnitsText =
          , ("https://www.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg", "#ff4500")
          , ("https://soundcloud.com/leggysalad/girls-afternoon-appointments",  "audio","svg", "#ff5500")
          , ("https://www.sciencedirect.com/science/article/pii/S0002929717301076",  "E","text", "#eb6500")
-         , ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans", "#737500")
+         , ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "PW", "text,sans", "#737500")
          , ("https://www.quantamagazine.org/how-the-slowest-computer-programs-illuminate-maths-fundamental-limits-20201210/", "quanta", "svg", "#ff8600")
          , ("https://freakonomics.com/2007/05/what-do-you-have-to-say-about-ron-paul/", "FRK", "text,tri,sans", "#c25700")
          , ("https://nypost.com/2019/06/27/north-carolina-couple-paid-25k-to-clone-their-beloved-pet-cat/", "NYP", "text,tri,sans,italic", "#c60800")
@@ -716,7 +717,7 @@ linkIconTestUnitsText =
          , ("https://www.cambridge.org/core/journals/journal-of-economic-history/article/two-centuries-of-productivity-growth-in-computing/856EC5947A5857296D3328FA154BA3A3", "⛨", "text", "#ce0101")
          , ("https://static.cambridge.org/binary/version/id/urn:cambridge.org:id:binary-alt:20181009171208-81978-mediumThumb-S0033291718001873_fig1g.jpg?pub-status=live", "⛨", "text", "#ce0101")
          , ("/doc/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,quad,sans", "#87ba11")
-         , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡 𝐒", "text", "#d71921")
+         , ("https://www.rollingstone.com/culture/culture-features/elon-musk-the-architect-of-tomorrow-120850/", "𝓡𝐒", "text", "#d71921")
          , ("https://www.metaculus.com/questions/notebooks/8702/the-promise-and-impact-of-the-next-generation-of-weight-loss-drugs/", "metaculus", "svg", "#001935")
          , ("https://www.research.va.gov/", "VA", "text,sans", "#112e51")
          , ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text,tri", "#162e51")
@@ -740,7 +741,7 @@ linkIconTestUnitsText =
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
          , ("/doc/ai/1962-bryson.pdf",  "pdf","svg", redAdobe)
-         , ("https://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans", "#921712")
+         , ("https://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "CS", "text,sans", "#921712")
          , ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans", "#2c0022")
          , ("https://news.ycombinator.com/item?id=10012625",  "hacker-news","svg", "#f26522")
          , ("https://hn.algolia.com/#!/story/forever/prefix/0/gameprogrammingpatterns.com", "hacker-news","svg", "#f26522")
@@ -838,9 +839,9 @@ linkIconTestUnitsText =
          , ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685.full",  "chi-dna","svg", "#bd2736")
          , ("https://www.biorxiv.org/content/10.1101/013896.full",  "chi-dna","svg", "#bd2736")
          , ("https://nap.nationalacademies.org/read/25762/chapter/1", "NAP", "text,tri", "#1d1646")
-         , ("https://archive.foolz.us/a/thread/77196171/#77207238", "4CH", "text,sans", "#69ac46")
-         , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans", "#69ac46")
-         , ("https://boards.4chan.org/jp/", "4CH", "text,sans", "#69ac46")
+         , ("https://archive.foolz.us/a/thread/77196171/#77207238", "4CH", "text,sans,tri", "#69ac46")
+         , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans,tri", "#69ac46")
+         , ("https://boards.4chan.org/jp/", "4CH", "text,sans,tri", "#69ac46")
          , ("https://www.sfgate.com/bayarea/article/test-lab-called-1-billion-over-budget-2921620.php", "SFG", "text,tri,sans", "#ff1d46")
          , ("/doc/creatine/2009-ling-data.xls",  "spreadsheet","svg", "#1ba566")
          , ("/doc/cs/hardware/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg", "#1ba566")
@@ -855,12 +856,12 @@ linkIconTestUnitsText =
          , ("https://www.quora.com/", "Q", "text", "#b92b27")
          , ("/doc/tea/gwern-tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg", "#acd147")
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans", "#45c1a7")
-         , ("https://scottaaronson.blog/?p=1438", "S.A.", "text,sans", "#4181b7")
-         , ("https://www.scottaaronson.com/democritus/", "S.A.", "text,sans", "#4181b7")
+         , ("https://scottaaronson.blog/?p=1438", "SA", "text,sans", "#4181b7")
+         , ("https://www.scottaaronson.com/democritus/", "SA", "text,sans", "#4181b7")
          , ("https://psycnet.apa.org/fulltext/2024-33486-001.html", "APA", "text,tri,sans", "#2c72b7")
          , ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text,tri", "#0057b7")
-         , ("/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf", "V.B.", "text,sans", "#337ab7")
-         , ("https://vitalik.eth.limo/general/2017/09/14/prehistory.html", "V.B.", "text,sans", "#337ab7")
+         , ("/doc/economics/mechanism-design/quadratic-voting/2018-buterin.pdf", "VB", "text,sans", "#337ab7")
+         , ("https://vitalik.eth.limo/general/2017/09/14/prehistory.html", "VB", "text,sans", "#337ab7")
          , ("https://www.reuters.com/article/us-russia-kant-shooting/man-shot-in-russia-in-argument-over-kant-idUSBRE98F0DI20130916", "R", "text,sans", "#e56218")
          , ("https://www.imdb.com/title/tt0923592/", "IMDb", "text,sans,quad", "#f5c518")
          , ("/static/img/icon/video.svg",  "image","svg", "#ffb338")
@@ -1184,14 +1185,14 @@ linkIconTestUnitsText =
          , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "cbs", "svg", "")
          , ("https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/", "OCW", "text,tri,sans", "")
          , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans", "")
-         , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans", "")
+         , ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "MD", "text,sans", "")
          , ("https://www.palladiummag.com/2019/05/09/what-botswana-can-teach-us-about-political-stability/", "Pd", "text,sans", "")
          , ("https://stability.ai/news/stable-diffusion-public-release", "SD", "text,sans", "")
          , ("https://www.ribbonfarm.com/2011/09/23/the-milo-criterion/", "ℝ𝔽", "text,sans", "")
-         , ("https://guzey.com/how-life-sciences-actually-work/", "A.G.", "text,sans", "")
+         , ("https://guzey.com/how-life-sciences-actually-work/", "AG", "text,sans", "")
          , ("https://www.hustwit.com/urbanized", "H", "text,sans", "")
          , ("https://www.motherjones.com/kevin-drum/2018/02/an-updated-lead-crime-roundup-for-2018/",  "MJ","text,sans", "")
-         , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans", "")
+         , ("https://jaymans.wordpress.com/2015/07/04/demography-is-destiny/", "J👨🏾", "text,sans,tri", "")
          , ("https://arankomatsuzaki.wordpress.com/2021/03/04/state-of-the-art-image-generative-models/", "ak", "text,sans", "")
          , ("https://x.com/razibkhan/status/1463204399954776073", "RK", "text,sans", "")
          , ("https://www.unz.com/gnxp/through-the-wormhole-are-we-here-for-a-reason-premier-may-13th/", "RK", "text,sans", "")
@@ -1202,8 +1203,8 @@ linkIconTestUnitsText =
          , ("https://apnews.com/article/ap-top-news-international-news-weekend-reads-china-health-269b3de1af34e17c1941a514f78d764c", "AP", "text,sans", "")
          , ("https://sethroberts.net/2008/10/03/diet-and-acne-continued/", "SR", "text,sans", "")
          , ("https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2011.00134/full", "FS", "text,sans", "")
-         , ("https://web.archive.org/web/20110724123419/szabo.best.vwh.net/bearer_contracts.html", "N.S.", "text,sans", "")
-         , ("http://unenumerated.blogspot.com/2011/01/singularity.html", "N.S.", "text,sans", "")
+         , ("https://web.archive.org/web/20110724123419/szabo.best.vwh.net/bearer_contracts.html", "NS", "text,sans", "")
+         , ("http://unenumerated.blogspot.com/2011/01/singularity.html", "NS", "text,sans", "")
          , ("https://www.newscientist.com/article/2133095-boom-in-human-gene-editing-as-20-crispr-trials-gear-up/", "NS", "text,sans", "")
          , ("https://www.popsci.com/deadly-splinter-antibiotic-resistance/", "PS", "text,sans", "")
          , ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans", "")
