@@ -362,6 +362,7 @@ custom = [
         , ("(GPT-3|Brown[  ]et[  ]al[  ]2020)", "https://arxiv.org/abs/2005.14165#openai") -- Brown et al 2020
         , ("GPT-4-V", "https://openai.com/index/gpt-4v-system-card/")
         , ("GPT-4", "https://openai.com/index/gpt-4-research/")
+        , ("GPT-4\\.5", "https://openai.com/index/introducing-gpt-4-5/")
         , ("ChatGPT", "https://openai.com/blog/chatgpt/")
         , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")
         , ("GPT-f", "https://arxiv.org/abs/2009.03393#openai")

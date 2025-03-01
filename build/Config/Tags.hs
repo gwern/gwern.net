@@ -166,7 +166,7 @@ tagsShort2LongRewrites =
    , ("physic", "physics"), ("pyhsics", "physics")
    , ("marl", "reinforcement-learning/multi-agent"), ("borge", "borges"), ("jlborge", "borges"), ("jlborges", "borges"), ("iq-ses", "iq/ses")
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
-   , ("preference-falsification", "sociology/false-preference")
+   , ("preference-falsification", "sociology/false-preference"), ("4.5", "4-5"), ("45", "4-5"),("54", "4-5"),("5.4", "4-5"), ("5-4", "4-5"), ("gpt-4-5", "ai/nn/transformer/gpt/5/4-5"), ("gpt-45", "ai/nn/transformer/gpt/5/4-5"), ("gpt-4.5", "ai/nn/transformer/gpt/5/4-5"), ("gpt45", "ai/nn/transformer/gpt/5/4-5")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -191,7 +191,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("science/chemistry", "chemistry")
   , ("science/physics/astronomy", "astronomy")
   , ("science/physics", "physics")
-  , ("technology/northpaw", "Northpaw compass")
+  , ("technology/northpaw", "North Paw compass")
   , ("technology/self-sinking", "self-sinking waste disposal")
   , ("technology/google/alerts", "Google Alerts")
   , ("statistics/probability", "probability")
@@ -559,6 +559,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   -- , ("ai/nn/transformer/gpt/2/humor",            "GPT-2 humor")
   , ("ai/nn/transformer/gpt/3/humor",            "GPT-3 humor")
   -- , ("ai/nn/transformer/gpt/4/humor",            "GPT-4 humor")
+  , ("ai/nn/transformer/gpt/5/4-5",              "GPT-4.5")
   , ("ai/nn/transformer/gpt/5",                  "GPT-5")
   , ("ai/nn/transformer/gpt/4/poetry",           "GPT-4 poetry")
   , ("ai/nn/transformer/gpt/4/nonfiction",       "GPT-4 nonfiction")
