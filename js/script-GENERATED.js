@@ -15550,7 +15550,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		"/index"
 	];
 	if (   eventInfo.document.body?.classList.containsAnyOf(excludedPageBodyClasses)
-		|| eventInfo.loadLocation?.pathname.endsWithAnyOf(excludedPathnameSuffixes))
+		|| baseLocationForDocument(eventInfo.document)?.pathname.endsWithAnyOf(excludedPathnameSuffixes))
 		return;
 
 	let excludedContainersSelector = [
