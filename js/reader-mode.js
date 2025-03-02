@@ -197,7 +197,6 @@ ReaderMode = { ...ReaderMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
-			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addWidget(ReaderMode.modeSelectorHTML());
 			ReaderMode.activateModeSelector(modeSelector);

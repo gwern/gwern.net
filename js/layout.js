@@ -1492,6 +1492,29 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	});
 }, { blockLayout: false });
 
+/********************************************/
+/*	Wrap parenthesized inline mode selectors.
+ */
+addLayoutProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => {
+    GWLog("wrapParenthesizedInlineModeSelectors", "layout.js", 2);
+
+	let inlineModeSelectorsSelector = [
+		"dark",
+		"reader",
+		"extracts",
+		"search",
+		"help",
+		"toolbar"
+	].map(x => `.${x}-mode-selector-inline`).join(", ");
+
+	blockContainer.querySelectorAll(inlineModeSelectorsSelector).forEach(modeSelector => {
+		if (modeSelector.closest(".inline-mode-selector") != null)
+			return;
+
+		wrapParenthesizedNodes("inline-mode-selector", modeSelector);
+	});
+}, { blockLayout: false });
+
 
 /***************************/
 /* ADDITIONAL EARLY LAYOUT */

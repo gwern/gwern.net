@@ -116,7 +116,6 @@ Extracts = { ...Extracts,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(Extracts.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
-			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = Extracts.modeSelector = GW.pageToolbar.addWidget(Extracts.modeSelectorHTML());
 			Extracts.activateModeSelector(modeSelector);
