@@ -658,6 +658,10 @@ canonicals = M.fromList
   , ("Michael A. Woodley of Menie", "Michael A. Woodley")
   , ("John W. S. Bradshaw", "John Bradshaw")
   , ("dylan522p", "Dylan Patel")
+  , ("Edward Thompson Jaynes", "E. T. Jaynes")
+  , ("E. Thompson Jaynes", "E. T. Jaynes")
+  , ("Edward T. Jaynes", "E. T. Jaynes")
+  , ("Hill Fung Ip", "Hill F. Ip")
   ]
 
 -- tests: unique
@@ -682,7 +686,7 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe", "Michael A. Woodley", "Mark J. Caulfield"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe", "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip", "Heather M. Stringham"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1387,6 +1391,10 @@ authorLinkDB = M.fromList $
     , ("Laurent Sifre", "https://scholar.google.com/citations?user=0kVh58wAAAAJ")
     , ("John Bradshaw", "https://web.archive.org/web/20190623040230/http://www.bris.ac.uk/vetscience/people/john-w-bradshaw/index.html")
     , ("Joyce Ehrlinger", "https://scholar.google.com/citations?user=m3ORNxEAAAAJ")
+    , ("Iris M. Heid", "https://www.uni-regensburg.de/medizin/epidemiologie-praeventivmedizin/genetische-epidemiologie/unser-team/profdririsheid/index.html")
+    , ("Hill F. Ip", "https://scholar.google.com/scholar?q=Hill%20F.%20Ip")
+    , ("Heather M. Stringham", "https://scholar.google.com/citations?user=wCvT4tMAAAAJ&hl=en&oi=ao")
+    , ("Georg Homuth", "https://research.com/u/georg-homuth")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2634,4 +2642,4 @@ authorWpLinkDB =
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
     , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz"
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
-    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie"]
+    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"]
