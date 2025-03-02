@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-02-20 19:51:00 gwern"
+When: Time-stamp: "2025-03-01 19:53:39 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -17,7 +17,7 @@ Demo command (for the full script, with all static checks & generation & optimiz
 
 import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)
-import Data.List (intercalate, isInfixOf, isSuffixOf)
+import Data.List (intercalate, isInfixOf, isSuffixOf, group, sort)
 import qualified Data.Map.Strict as M (lookup) -- keys
 import Data.Maybe (fromMaybe)
 import System.Environment (getArgs, withArgs, lookupEnv)
@@ -31,11 +31,12 @@ import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta) -- unMeta
-import Text.Pandoc.Walk (walk, walkM)
+import Text.Pandoc.Shared (stringify)
+import Text.Pandoc.Walk (walk, walkM, query)
 import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
 
-import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length)
+import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length, strip)
 
 -- local custom modules:
 import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet, outlineImageInline)
@@ -48,7 +49,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline, completionProgressHTML)
-import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
+import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir, printRed)
 import Test (testAll)
 import Config.Misc (cd, currentYear)
 import Metadata.Date (dateRangeDuration)
@@ -324,6 +325,9 @@ pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
+     let duplicateHeaders = duplicateTopHeaders p in
+       unless (null duplicateHeaders) $
+       printRed "Warning: Duplicate top-level headers found: " >> print duplicateHeaders
      let indexp = indexp' == "True"
      let pw
            = if indexp then convertInterwikiLinks p else
@@ -376,3 +380,20 @@ wrapInParagraphs = walk go
     go :: Block -> Block
     go (Plain strs) = Para strs
     go x = x
+
+-- Look for duplicated top-level headers, which are almost always an error.
+--
+-- Example:
+-- > runIOorExplode (readMarkdown def ("# test\n\n# test\n\n# unique" :: T.Text)) >>= print . duplicateTopHeaders
+-- ["test"]
+duplicateTopHeaders :: Pandoc -> [String]
+duplicateTopHeaders = duplicates . query topHeaderTexts
+  where
+    topHeaderTexts :: Block -> [String]
+    topHeaderTexts (Header 1 _ inls) = [normalize inls]
+    topHeaderTexts _                 = []
+
+    normalize = T.unpack . T.strip . stringify
+
+    duplicates :: Ord a => [a] -> [a]
+    duplicates = map head . filter ((>1) . length) . group . sort
