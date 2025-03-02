@@ -2455,7 +2455,6 @@ GW.pageToolbar = {
 				let widget = elementFromHTML(widgetHTML);
 				element.replaceWith(widget);
 				widget.querySelector("button").addEventListener("click", buttonClickHandler);
-				wrapParenthesizedNodes("inline-mode-selector", widget);
 
 				GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
 					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
@@ -3038,7 +3037,6 @@ GW.popFrameSpawnWidgets = {
 					let widget = elementFromHTML(widgetHTML);
 					widget.widgetLink = widget.querySelector("a");
 					element.replaceWith(widget);
-					wrapParenthesizedNodes("inline-mode-selector", widget);
 
 					//	Activate.
 					GW.popFrameSpawnWidgets.activateWidget(widget);
@@ -14330,7 +14328,6 @@ Extracts = { ...Extracts,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(Extracts.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
-			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = Extracts.modeSelector = GW.pageToolbar.addWidget(Extracts.modeSelectorHTML());
 			Extracts.activateModeSelector(modeSelector);
@@ -22564,7 +22561,6 @@ DarkMode = { ...DarkMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
-			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
 			DarkMode.activateModeSelector(modeSelector);
@@ -22858,7 +22854,6 @@ ReaderMode = { ...ReaderMode,
 		if (replacedElement) {
 			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true));
 			replacedElement.replaceWith(modeSelector);
-			wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 		} else {
 			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addWidget(ReaderMode.modeSelectorHTML());
 			ReaderMode.activateModeSelector(modeSelector);

@@ -7034,9 +7034,8 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     margin-right: -0.1em;
 }
 .reader-mode-selector-inline {
-    width: 8.90em;
+    width: 8.95em;
     margin-left: -0.1em;
-    margin-right: -0.2em;
 }
 .extracts-mode-selector-inline {
     width: 5.60em;
@@ -7044,15 +7043,36 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     margin-right: -0.1em;
 }
 .search-mode-selector-inline {
-    width: 1.1em;
+    width: 1.10em;
 }
 .help-mode-selector-inline {
     width: 0.85em;
 }
 .toolbar-mode-selector-inline {
-    width: 1.5em;
+    width: 1.50em;
     margin-left: -0.15em;
     margin-right: -0.15em;
+}
+
+@media only screen and (max-width: 649px) {
+	.dark-mode-selector-inline {
+		width: 9.625em;
+	}
+	.reader-mode-selector-inline {
+		width: 9.000em;
+	}
+	.extracts-mode-selector-inline {
+		width: 5.590em;
+	}
+	.search-mode-selector-inline {
+		width: 1.100em;
+	}
+	.help-mode-selector-inline {
+		width: 0.850em;
+	}
+	.toolbar-mode-selector-inline {
+		width: 1.500em;
+	}
 }
 
 /*  Special layout fix.

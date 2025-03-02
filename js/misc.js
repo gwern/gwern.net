@@ -1898,7 +1898,6 @@ GW.pageToolbar = {
 				let widget = elementFromHTML(widgetHTML);
 				element.replaceWith(widget);
 				widget.querySelector("button").addEventListener("click", buttonClickHandler);
-				wrapParenthesizedNodes("inline-mode-selector", widget);
 
 				GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
 					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
@@ -2481,7 +2480,6 @@ GW.popFrameSpawnWidgets = {
 					let widget = elementFromHTML(widgetHTML);
 					widget.widgetLink = widget.querySelector("a");
 					element.replaceWith(widget);
-					wrapParenthesizedNodes("inline-mode-selector", widget);
 
 					//	Activate.
 					GW.popFrameSpawnWidgets.activateWidget(widget);
