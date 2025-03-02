@@ -1817,6 +1817,9 @@ GW.pageToolbar = {
 		if (GW.pageToolbar.toolbar == null)
 			return;
 
+		//	Because some phones have weird curved screens :\
+		offset.y = Math.min(offset.y, -18.0);
+
 		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-x", offset.x + "px");
 		GW.pageToolbar.toolbar.style.setProperty("--toolbar-offset-y", offset.y + "px");
 	},

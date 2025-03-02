@@ -5857,7 +5857,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: var(--toolbar-button-size);
     bottom: calc(0.5em - var(--toolbar-offset-y));
     right:  calc(0.5em - var(--toolbar-offset-x));
+	transition:
+		bottom 0.2s ease-out,
+		right 0.2s ease-out;
 }
+
 
 #page-toolbar.mobile .widgets {
     flex-flow: column;
@@ -5908,6 +5912,22 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 #page-toolbar.collapsed:hover {
     transition:
         opacity 0.15s ease;
+}
+
+/****************************************/
+/*	Special case (mobile fade on scroll).
+ */
+#page-toolbar.mobile.collapsed {
+	transition:
+        opacity 2s ease-out,
+		bottom 0.2s ease-out,
+		right 0.2s ease-out;
+}
+#page-toolbar.mobile.collapsed:hover {
+	transition:
+        opacity 0.15s ease,
+		bottom 0.2s ease-out,
+		right 0.2s ease-out;
 }
 
 /**********************/
@@ -6648,7 +6668,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     box-sizing: border-box;
     box-shadow: 0 2px 6px var(--GW-floating-header-box-shadow-color);
     transition:
-        top 0.2s ease-out;
+        bottom 0.2s ease-out;
 }
 
 #floating-header.hidden {
