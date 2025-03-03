@@ -18481,9 +18481,12 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 			or else none remain to display.
 		 */
 		let childElements = Array.from(randomSelectorContainer.children);
+		let startingIndex = Math.round(Date.now() / 3000); // 3 seconds
 		while (   howMany > 0
 			   && childElements.length > 0) {
-			let selectedChildElement = childElements[rollDie(childElements.length) - 1];
+// 			let index = rollDie(childElements.length) - 1;
+			let index = modulo(startingIndex++, childElements.length);
+			let selectedChildElement = childElements[index];
 			selectedChildElement.classList.add("visible");
 			childElements.remove(selectedChildElement);
 			howMany--;
