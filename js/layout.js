@@ -98,6 +98,7 @@ GW.layout = {
 		let layoutClasses = [
 			"block",
 			"first-block",
+			"last-block",
 			"empty-graf",
 			"first-graf",
 			"intro-graf",
@@ -1065,6 +1066,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			alsoBlockElements: [ "section:not(.collapse) > .heading" ],
 			cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
 		}) == null);
+
+		/*	Designate blocks followed by nothing (not counting floats and other
+			elements that do not participate in block flow) in their block
+			container (the .last-block class).
+		 */
+		block.classList.toggle("last-block", nextBlockOf(block) == null);
 
 		//	Designate blocks in lists (the .in-list class).
 		block.classList.toggle("in-list", blockContainerOf(block, {

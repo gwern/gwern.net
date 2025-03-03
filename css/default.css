@@ -925,7 +925,7 @@ blockquote .collapse-block:not(.in-list).expanded {
     margin-left: calc(-1 * var(--blockquote-horizontal-padding) / var(--blockquote-font-size-scaling-factor));
     margin-right: calc(-1 * var(--blockquote-horizontal-padding) / var(--blockquote-font-size-scaling-factor));
 }
-blockquote > .collapse-block:last-child {
+blockquote .collapse-block.last-block {
     margin-bottom: calc(-1 * var(--blockquote-vertical-padding) / var(--blockquote-font-size-scaling-factor));
 }
 
@@ -1005,7 +1005,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     padding: 0.5em 0 0.5em 2px;
 }
 
-.annotation .collapse-block.last-collapse:not(:last-child) {
+.annotation .collapse-block.last-collapse:not(.last-block) {
     border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
@@ -1013,10 +1013,6 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  File includes in link bibliographies, directory indexes, and other
     transcluded (rather than pop-framed) annotations.
  */
-
-.annotation > blockquote > .file-includes:last-child > .collapse-block:last-child {
-    margin-bottom: calc(-1 * var(--blockquote-vertical-padding) / var(--blockquote-font-size-scaling-factor));
-}
 
 .annotation > .data-field.title + .data-field.file-includes .collapse.file-include-collapse {
     border-top: none;
@@ -1444,7 +1440,8 @@ ul.interview .speaker {
 
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
  */
-.epigraph blockquote p:first-child em {
+.epigraph blockquote p:only-child em,
+.epigraph blockquote p:not(:last-child) em {
     font-style: normal;
     margin: 0 0 0 0.125em;
 }
@@ -1456,7 +1453,7 @@ ul.interview .speaker {
 }
 
 .epigraph blockquote blockquote p,
-.epigraph blockquote blockquote p:last-child {
+.epigraph blockquote blockquote p:last-child:not(:only-child) {
     text-align: var(--text-alignment);
 }
 
@@ -4001,9 +3998,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     border-left: 1px solid var(--GW-aux-links-collapse-border-color);
     margin-left: calc(-1 * (var(--collapse-left-offset) + 1px));
 }
-.popframe-body > .annotation > .annotation-abstract:last-child > .collapse-block.aux-links-append:last-child,
-.popframe-body > .annotation > .file-includes:last-child > .collapse-block.file-include-collapse:last-child,
-.popframe-body > .annotation > .annotation-abstract:last-child > .file-includes:last-child > .collapse-block.file-include-collapse:last-child {
+.popframe-body > .annotation .collapse-block.last-block {
     border-bottom: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
