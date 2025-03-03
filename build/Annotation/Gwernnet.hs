@@ -92,7 +92,7 @@ gwern md p
                         when (null thumbnailText) $ printRed ("Warning: no thumbnail-text alt text defined for URL " ++ p)
                         let thumbnailCSS = words $ safeContent $ head $ filter filterThumbnailCSS metas
 
-                        (color,h,w) <- invertImage thumbnail'
+                        (color,h,w) <- if thumbnail' == "" then return (False,"","") else invertImage thumbnail'
                         let color' = if "invert" `elem` thumbnailCSS || "invert-not" `elem` thumbnailCSS then ""
                                          else if color then "invert-auto" else "invert-not"
                         let thumbnailFigure = if thumbnail'=="" then "" else

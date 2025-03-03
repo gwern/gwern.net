@@ -17,7 +17,7 @@
 
     An include-link is a link (<a> tag) which has the `include` class, e.g.:
 
-        <a class="include" href="/Sidenotes#comparisons"></a>
+        <a class="include" href="/sidenotes#comparisons"></a>
 
     At load time, this tag will be replaced with the `#comparisons` section of
     the /Sidenotes page.
@@ -208,9 +208,9 @@
     To use transclude range syntax, an include-link’s URL should have a “double”
     hash, i.e. a hash consisting of two ‘#’-prefixed parts:
 
-        <a class="include" href="/Sidenotes#tufte-css#tables"></a>
+        <a class="include" href="/sidenotes#tufte-css#tables"></a>
 
-    This will include all parts of the "/Sidenotes" page’s content starting from
+    This will include all parts of the "/sidenotes" page’s content starting from
     the element with ID `tufte-css`, all the way up to (but *not* including!)
     the element with ID `tables`.
 

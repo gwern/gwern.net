@@ -81,13 +81,15 @@ invertFile :: T.Text -> IO (Bool, String, String)
 invertFile "" = error "Image.invertFile called with empty filename; that should never happen."
 invertFile p = do let p' = T.unpack p
                   let p'' = if head p' == '/' then tail p' else p'
+                  when (p'' == "") $ error $ "Image.invertFile: file argument became empty string, rendering it invalid; input was: " ++ show p
                   invertImage p''
 
 notInvertP :: [T.Text] -> Bool
 notInvertP classes = "invert-not" `elem` classes
 
 invertImage :: FilePath -> IO (Bool, String, String) -- invert / height / width
-invertImage f | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.delete "https://gwern.net/" f
+invertImage f | "" == f = error "Image.invertImage: argument was empty! This should never happen,"
+              | "https://gwern.net/" `isPrefixOf` f = invertImageLocal $ Utils.delete "https://gwern.net/" f
               | "http" `isPrefixOf` f =
                 -- TODO: after localizing all legacy hotlinked images, remove the download code & replace with a fatal error.
                 do (_,_,mimetype) <- runShellCommand "./" Nothing "curl" ["--silent", "--user-agent", "gwern+imagescraping@gwern.net", f, "--write-out", "'%{content_type}'"]
@@ -198,7 +200,7 @@ imageMagickDimensions f =
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
 
 -- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
--- For convenience, this will also run `addVideoPoster` on the HTML stream as well, to do the equivalent thing for `<video>` files (ie. generate a 'poster' image thumbnail, adding it to the video tags, and including the poster's image dimensions inasmuch as it is not inside a `<img>` & so is not covered by the `<img>`-processing code).
+-- ~~For convenience, this will also run `addVideoPoster` on the HTML stream as well, to do the equivalent thing for `<video>` files (ie. generate a 'poster' image thumbnail, adding it to the video tags, and including the poster's image dimensions inasmuch as it is not inside a `<img>` & so is not covered by the `<img>`-processing code).~~~
 --
 -- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
@@ -207,7 +209,7 @@ addImgDimensions html =
   else do let stream  = parseTags html
           dimensionized <- mapM staticImg stream
           -- posterized    <- addVideoPoster dimensionized
-          let stream' = renderTagsOptions renderOptions{optMinimize= const False, -- don't minimize anything at all, this seems to just cause a lot of problems later on
+          let stream' = renderTagsOptions renderOptions{ -- optMinimize= const False, -- don't minimize anything at all, this seems to just cause a lot of problems later on
                                                         optRawTag = (`elem` ["script", "style"]) . map toLower}
                         dimensionized
           return stream'

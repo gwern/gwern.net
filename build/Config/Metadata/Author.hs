@@ -1393,7 +1393,7 @@ authorLinkDB = M.fromList $
     , ("Joyce Ehrlinger", "https://scholar.google.com/citations?user=m3ORNxEAAAAJ")
     , ("Iris M. Heid", "https://www.uni-regensburg.de/medizin/epidemiologie-praeventivmedizin/genetische-epidemiologie/unser-team/profdririsheid/index.html")
     , ("Hill F. Ip", "https://scholar.google.com/scholar?q=Hill%20F.%20Ip")
-    , ("Heather M. Stringham", "https://scholar.google.com/citations?user=wCvT4tMAAAAJ&hl=en&oi=ao")
+    , ("Heather M. Stringham", "https://scholar.google.com/citations?user=wCvT4tMAAAAJ")
     , ("Georg Homuth", "https://research.com/u/georg-homuth")
     ]
 
