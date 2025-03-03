@@ -1647,6 +1647,8 @@ htmlRewriteFixed =
          , ("y-axis", "<em>y</em>-axis")
          , ("z-axis", "<em>z</em>-axis")
          , (" metre", " meter")
+         , (" centre ", " center ")
+         , (" Centre ", " Center ")
          , ("multicentre", "multicenter")
          , ("Multicentre", "Multicenter")
          , ("categoris", "categoriz")

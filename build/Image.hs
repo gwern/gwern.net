@@ -17,7 +17,7 @@ import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeExtension)
 import System.IO.Temp (emptySystemTempFile)
 import System.Posix.Temp (mkstemp)
-import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
+import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optRawTag, Tag(TagOpen)) -- optMinimize,
 import Text.Read (readMaybe)
 import qualified Data.Text as T (isSuffixOf, pack, takeWhile, unpack, Text, replace, head)
 

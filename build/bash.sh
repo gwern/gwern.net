@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-02-26 10:19:42 gwern"
+# When:  Time-stamp: "2025-03-03 12:47:12 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -304,7 +304,7 @@ doc2pdf () {
 # trim whitespace from around JPG/PNG images
 crop_one () { if [[ "$*" =~ .*\.(jpg|png) ]]; then
         nice convert "$(path2File "$@")" -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
-crop () { export -f crop_one; ls "$(path2File "$@")" | parallel crop_one; }
+crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
 # WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
 export -f crop crop_one
 

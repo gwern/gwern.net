@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2025-01-14 10:58:14 gwern"
+ * When:  Time-stamp: "2025-03-03 12:16:47 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -168,7 +168,9 @@ function injectSuggestions(current, suggestions) {
     let suggestionsElement = elementFromHTML(`<section class="level1">
         <h1 id="guessed-urls">Guessed URLs</h1>
         <p>Nearest URLs to your current one (<code>${current}</code>):</p>
-        <ul>${suggestionsHtml}</ul>
+        <div class="columns">
+         <ul>${suggestionsHtml}</ul>
+        </div>
     </section>`);
 
 	document.querySelector("#markdownBody").insertBefore(suggestionsElement, document.querySelector("#other-options"));

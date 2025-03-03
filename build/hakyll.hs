@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-03-01 19:53:39 gwern"
+When: Time-stamp: "2025-03-03 00:03:13 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -327,7 +327,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
   do
      let duplicateHeaders = duplicateTopHeaders p in
        unless (null duplicateHeaders) $
-       printRed "Warning: Duplicate top-level headers found: " >> print duplicateHeaders
+       error "Warning: Duplicate top-level headers found: " >> print duplicateHeaders
      let indexp = indexp' == "True"
      let pw
            = if indexp then convertInterwikiLinks p else

@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-02-27 12:20:06 gwern"
+# When:  Time-stamp: "2025-03-03 16:48:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -755,6 +755,12 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Clearing up Mysteries—The Original Goal"
 ""
 - "Probability Theory as Logic"
+""
+- "lechmazur/elimination_game: A multi-player tournament benchmark that tests LLMs in social reasoning, strategy, and deception. Players engage in public and private conversations, form alliances, and vote to eliminate each other"
+""
+- "Troubleshooting: The Skill That Never Goes Obsolete"
+""
+- "Decisions under Risk Are Decisions under Complexity: Comment by Daniel Banki, Uri Simonsohn, Robert Walatka, George Wu"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]

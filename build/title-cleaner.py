@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-02-26 21:45:48 gwern"
+# When:  Time-stamp: "2025-03-03 14:13:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -581,6 +581,8 @@ Katri Räikkönen
 - "http://www.iqscorner.com/2007/05/temp.html?m=1 IQ’s Corner: IQ and wealth: The dumb rich and the smart poor"
 "IQ and wealth: The dumb rich and the smart poor"
 - "https://www.inceptionlabs.ai/news Inception Labs"
+""
+- "https://www.mathworks.com/help/images/comparison-of-auto-white-balance-algorithms.html Access Denied"
 ""
 
 Task:

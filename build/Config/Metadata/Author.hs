@@ -1395,6 +1395,7 @@ authorLinkDB = M.fromList $
     , ("Hill F. Ip", "https://scholar.google.com/scholar?q=Hill%20F.%20Ip")
     , ("Heather M. Stringham", "https://scholar.google.com/citations?user=wCvT4tMAAAAJ")
     , ("Georg Homuth", "https://research.com/u/georg-homuth")
+    , ("Curiositry", "https://www.autodidacts.io/about/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
