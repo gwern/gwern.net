@@ -819,6 +819,34 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 }, ">rewrite");
 
 
+/*************/
+/* EPIGRAPHS */
+/*************/
+
+/*************************************************************************/
+/*	Epigraphs are sometimes a single big <p> broken by <br>. Unacceptable.
+	But no problem, we fix.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (eventInfo) => {
+    GWLog("paragraphizeLineBrokenEpigraphs", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".epigraph br").forEach(br => {
+		if (br.parentElement == null)
+			return;
+
+		let graf = br.closest("p");
+		let epigraph = br.closest(".epigraph");
+
+		paragraphizeTextNodesOfElement(graf);
+		graf.appendChild(newElement("P"));
+		unwrap(graf);
+
+		//	We infer that this is a poem. (Sometimes not, but usually yes.)
+		epigraph.classList.add("poem");
+	});
+}, "rewrite");
+
+
 /**********/
 /* TABLES */
 /**********/

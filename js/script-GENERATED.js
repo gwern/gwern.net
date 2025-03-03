@@ -9128,7 +9128,7 @@ Content = {
 
     An include-link is a link (<a> tag) which has the `include` class, e.g.:
 
-        <a class="include" href="/Sidenotes#comparisons"></a>
+        <a class="include" href="/sidenotes#comparisons"></a>
 
     At load time, this tag will be replaced with the `#comparisons` section of
     the /Sidenotes page.
@@ -9319,9 +9319,9 @@ Content = {
     To use transclude range syntax, an include-link’s URL should have a “double”
     hash, i.e. a hash consisting of two ‘#’-prefixed parts:
 
-        <a class="include" href="/Sidenotes#tufte-css#tables"></a>
+        <a class="include" href="/sidenotes#tufte-css#tables"></a>
 
-    This will include all parts of the "/Sidenotes" page’s content starting from
+    This will include all parts of the "/sidenotes" page’s content starting from
     the element with ID `tufte-css`, all the way up to (but *not* including!)
     the element with ID `tables`.
 
@@ -15964,6 +15964,34 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
         setBlockquoteLevel(blockquote, (blockquoteLevel(blockquote.parentElement?.closest("blockquote")) % blockquoteCyclePeriod) + 1);
     });
 }, ">rewrite");
+
+
+/*************/
+/* EPIGRAPHS */
+/*************/
+
+/*************************************************************************/
+/*	Epigraphs are sometimes a single big <p> broken by <br>. Unacceptable.
+	But no problem, we fix.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (eventInfo) => {
+    GWLog("paragraphizeLineBrokenEpigraphs", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".epigraph br").forEach(br => {
+		if (br.parentElement == null)
+			return;
+
+		let graf = br.closest("p");
+		let epigraph = br.closest(".epigraph");
+
+		paragraphizeTextNodesOfElement(graf);
+		graf.appendChild(newElement("P"));
+		unwrap(graf);
+
+		//	We infer that this is a poem. (Sometimes not, but usually yes.)
+		epigraph.classList.add("poem");
+	});
+}, "rewrite");
 
 
 /**********/

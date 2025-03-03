@@ -1496,6 +1496,14 @@ ul.interview .speaker {
     }
 }
 
+/*	“Poem”-style epigraphs.
+ */
+.epigraph.poem p {
+	text-align: left;
+	text-indent: -2.5em;
+	padding-left: 2.5em;
+}
+
 
 /***************/
 /* ADMONITIONS */

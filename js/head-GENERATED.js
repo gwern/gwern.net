@@ -1027,7 +1027,7 @@ function paragraphizeTextNodesOfElement(element, options) {
 
 	options = Object.assign({
 		includeSelector: inlineElementSelector,
-		excludeSelector: "",
+		excludeSelector: null,
 		nodeOmissionOptions: {
 			alsoExcludeSelector: "a, br", 
 			excludeIdentifiedElements: true
