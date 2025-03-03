@@ -15984,6 +15984,16 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (
 		let graf = br.closest("p");
 		let epigraph = br.closest(".epigraph");
 
+		//	Report broken epigraphs.
+		if (epigraph.classList.contains("broken"))
+			return;
+		if (graf == null) {
+			console.log("BROKEN EPIGRAPH!");
+			console.log(epigraph.textContent);
+			epigraph.classList.add("broken");
+			return;
+		}
+
 		paragraphizeTextNodesOfElement(graf);
 		graf.appendChild(newElement("P"));
 		unwrap(graf);
