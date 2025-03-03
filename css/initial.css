@@ -74,9 +74,9 @@ main {
 	min-height: 100vh;
     max-width: var(--GW-body-max-width);
     margin: 0 auto;
-    padding: 1rem 
-    		 var(--GW-body-side-padding) 
-    		 1.25rem 
+    padding: 1rem
+    		 var(--GW-body-side-padding)
+    		 1.25rem
     		 var(--GW-body-side-padding);
 	display: flex;
 	flex-flow: column;
@@ -84,9 +84,9 @@ main {
 @media all and (max-width: 649px) {
 	main {
 		overflow: hidden;
-		padding: 1rem 
-				 var(--GW-body-side-padding) 
-				 4.25rem 
+		padding: 1rem
+				 var(--GW-body-side-padding)
+				 4.25rem
 				 var(--GW-body-side-padding);
 	}
 }
@@ -1883,7 +1883,7 @@ a code {
 }
 
 /*  Inline SVG icons.
-    (These need to be in `initial.css` because some of them are used in the 
+    (These need to be in `initial.css` because some of them are used in the
      opening paragraphs of /index.)
  */
 .inline-icon {
@@ -2348,8 +2348,9 @@ body.page-index #markdownBody section ul ul {
     are unnecessary given the flowing columns; for mobile users, we’ll separate
     sections by rulers because they only get a single very long column to scroll
     through, which lacks a sense of hierarchy/chunking. However, desktop users
-    still get the initial <hr> inserted by sed to divide the two blocks of
-    New/Popular/Notable from all-topics sections (which has no class set on it).
+    still get the initial `<hr class="horizontal-rule-nth-1">` inserted by sed
+    to divide the two blocks of 'New'/'Popular'/'Notable' from all-topics sections
+    (which has no class set on it).
  */
 @media all and (min-width: 650px) {
 	/*  Horizontal ruler on the home page.
