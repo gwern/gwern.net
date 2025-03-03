@@ -1097,11 +1097,17 @@ hr::after {
     background-repeat: no-repeat;
     background-position: center;
     background-origin: content-box;
-    background-size: var(--icon-size);
     opacity: var(--icon-opacity);
 }
-hr,
-.horizontal-rule-nth-0 hr {
+hr {
+    --icon-size: 40px;
+    --icon-opacity: 0.85;
+    --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+hr.horizontal-rule-small {
+	--icon-size: 15px;
+}
+hr.horizontal-rule-nth-0 {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
     --icon-image: var(--GW-image-sun-verginasun-black-svg);
@@ -1109,7 +1115,7 @@ hr,
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-.horizontal-rule-nth-1 hr {
+hr.horizontal-rule-nth-1 {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
 
         NOTE: alternative moon icon is
@@ -1121,7 +1127,7 @@ hr,
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1);
 }
-.horizontal-rule-nth-2 hr {
+hr.horizontal-rule-nth-2 {
     --icon-image: var(--GW-image-asterism-triplewhitestar-svg);
     --icon-size: 38px;
     --icon-opacity: 0.90;
