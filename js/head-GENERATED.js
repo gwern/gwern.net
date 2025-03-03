@@ -3466,6 +3466,7 @@ GW.layout = {
 		let layoutClasses = [
 			"block",
 			"first-block",
+			"last-block",
 			"empty-graf",
 			"first-graf",
 			"intro-graf",
@@ -3570,6 +3571,7 @@ GW.layout = {
 		[ "section.footnotes",			14 ],
 		[ ".footnote",					 6 ],
 
+		[ "hr.horizontal-rule-small",    6 ],
 		[ "hr",							10 ],
 
 		[ ".aux-links-append .columns",	 4 ],
@@ -3618,6 +3620,8 @@ GW.layout = {
 											(bsm, block) => bsm + 2 ],
 
 		[ "figcaption *",					(bsm, block) => bsm - 2 ],
+
+		[ "hr.horizontal-rule-small + *",	(bsm, block) => bsm - 4 ],
 
 		[ ".TOC + .collapse-block",		 	(bsm, block) => bsm - 4 ],
 	]
@@ -4434,6 +4438,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			cacheKey: "alsoBlocks_nonCollapseSectionHeadings"
 		}) == null);
 
+		/*	Designate blocks followed by nothing (not counting floats and other
+			elements that do not participate in block flow) in their block
+			container (the .last-block class).
+		 */
+		block.classList.toggle("last-block", nextBlockOf(block) == null);
+
 		//	Designate blocks in lists (the .in-list class).
 		block.classList.toggle("in-list", blockContainerOf(block, {
 			alsoBlockContainers: [ "li" ],
@@ -4857,6 +4867,35 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 
 	blockContainer.querySelectorAll("hr").forEach(hr => {
 		hr.classList.add("dark-mode-invert");
+
+		/*	Designate horizontal rule type class.
+		 */
+		let hrTypeClassPrefix = "horizontal-rule-";
+
+		let classBearerBlock = hr.closest("[class*='horizontal-rule-']");
+		if (classBearerBlock == null) {
+			hr.classList.add(hrTypeClassPrefix + "nth-0");
+			return;
+		}
+
+		if (classBearerBlock != hr)
+			unwrap(classBearerBlock, { moveID: true, moveClasses: true });
+
+		let specialHRTypeClasses = [
+			"horizontal-rule-small"
+		];
+		let hrTypeClass = Array.from(hr.classList).find(cssClass => 
+			(   cssClass.startsWith(hrTypeClassPrefix)  == true
+			 && specialHRTypeClasses.includes(cssClass) == false)
+		)?.slice(hrTypeClassPrefix.length);
+		if (hrTypeClass.startsWith("nth-")) {
+			hr.classList.add(hrTypeClass);
+			return;
+		}
+
+		/*	Type class specifies a custom image; set the CSS property.
+		 */
+		hr.style.setProperty("--icon-image", `var(--GW-image-${hrTypeClass})`);
 	});
 }, { blockLayout: false });
 

@@ -2352,9 +2352,9 @@ body.page-index #markdownBody section ul ul {
     New/Popular/Notable from all-topics sections (which has no class set on it).
  */
 @media all and (min-width: 650px) {
-/*  Horizontal ruler on the home page.
-    */
-    body.page-index div[class^='horizontal-rule'] {
+	/*  Horizontal ruler on the home page.
+     */
+    body.page-index section hr {
         display: none;
     }
 }
