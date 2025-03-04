@@ -33,8 +33,8 @@ Annotations = { ...Annotations,
      */
 	targetIdentifier: (target) => {
 		return (target.hostname == location.hostname
-			   ? (target.pathname.endsWith("/") 
-			   	  ? target.pathname + "index" 
+			   ? (target.pathname.endsWith("/")
+			   	  ? target.pathname + "index"
 			   	  : target.pathname) + target.hash
 			   : (target instanceof HTMLAnchorElement
 			   	  ? target.getAttribute("href")
@@ -156,7 +156,7 @@ Annotations = { ...Annotations,
 
 				//	Request the page image thumbnail, to cache it.
 				let pageImage = responseDocument.querySelector(".page-thumbnail");
-				if (   pageImage != null 
+				if (   pageImage != null
 					&& Images.isSVG(pageImage) == false)
 					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
@@ -202,7 +202,7 @@ Annotations = { ...Annotations,
 		//	Construct title link class.
 		let titleLinkClasses = [ "title-link" ];
 
-		/*  Import link classes (excluding the ones that designate annotated 
+		/*  Import link classes (excluding the ones that designate annotated
 			links, lest we have infinite recursion of annotation popups).
 		 */
 		titleLinkClasses.push(...(Array.from(titleLink.classList).filter(titleLinkClass => [
@@ -219,8 +219,8 @@ Annotations = { ...Annotations,
 		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
 			titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
-		/*	Import link icon data attributes from the annotated link itself 
-			(but do not replace ones already specified by the annotation 
+		/*	Import link icon data attributes from the annotated link itself
+			(but do not replace ones already specified by the annotation
 			 title-link).
 		 */
 		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
@@ -341,7 +341,7 @@ Annotations = { ...Annotations,
 				fileIncludesHTML = fileIncludesElement.innerHTML;
 		}
 
-		//	TItle bar link should go to /ref/ page for the annotation.
+		//	Title bar link should go to /ref/ page for the annotation.
 		let popFrameTitleLinkHref = "/ref/" + (link.id || titleLink.id.slice("link-bibliography-".length));
 
 		return {

@@ -209,6 +209,7 @@ breakEquals = id
 ---
 -- (NOTE: As a rewrite pass, this does not affect the horizontal ruler in the endnotes section, nor
 -- any horizontal rulers in the outer HTML document.)
+-- TODO: should this be one-indexed instead? Will anyone remember .horizontal-rule-nth-0? HTML/CSS/JS names are usually one-index, isn't it?
 rulersCycle :: Int -> Pandoc -> Pandoc
 rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
  where addHrNth :: Block -> State Int Block
@@ -316,7 +317,7 @@ titlecaseInline       x = x
 -- double-quote a title only if it is not italicized, indicating a book title:
 titleWrap :: String -> String
 titleWrap "" = error "Typography.titleWrap: called on an empty title, this should never happen!"
-titleWrap t = let t' = titlecase' t in if "<em>" `isPrefixOf` t && "</em>" `isSuffixOf` t then t' else "“" ++ t' ++ "”"
+titleWrap t = let t' = titlecase' t in if "<em>" `isPrefixOf` t && "</em>" `isSuffixOf` t then t' else "“" ++ t' ++ " ”" -- add a HAIR SPACE for padding-right to avoid link-chomping problems
 
 {-
 Figure figcaption style:

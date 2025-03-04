@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-02-26 18:06:10 gwern"
+When:  Time-stamp: "2025-03-04 11:34:30 gwern"
 License: CC-0
 -}
 
@@ -594,7 +594,9 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
                                       [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
 
                                     fileTransclude = if wasAnnotated link then [] else generateFileTransclusionBlock am False (f, ("",undefined,undefined,undefined,undefined,undefined,undefined))
-                                    linkColon = if wasAnnotated link || null fileTransclude then [] else [Str " \8202:"] -- HAIR SPACE to avoid link chomping
+                                    linkColon = if wasAnnotated link || null fileTransclude then [] else
+                                                  if ".pdf" `isInfixOf` f && not (wasAnnotated link) then [Span ("",["mobile-not"],[]) [Str " \8202:"]] -- if there is nothing like a bl/sl/abstract and it's a PDF, then the transcluded PDF will be invisible on mobile, and we will see a weird section like 'PDF title:\n[blank space]', because the PDF transclude will be hidden as useless on mobile but the colon will still be implying it's there
+                                                  else [Str " \8202:"] -- HAIR SPACE to avoid link chomping
                                 in Para [Strong (link:linkColon)] : fileTransclude
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)

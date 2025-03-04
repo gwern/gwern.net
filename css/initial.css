@@ -2054,6 +2054,10 @@ span.date-range {
     white-space: nowrap;
     font-variant-numeric: oldstyle-nums;
 }
+/* Unless in a link, for the usual reasons: */
+a span.date-range {
+    font-variant-numeric: tabular-nums;
+}
 span.date-range .subsup {
     align-items: center;
     bottom: 0;
@@ -2264,7 +2268,7 @@ body.page-index #markdownBody #notable {
 		}
 		body.page-404 div#new-popular-notable .columns ul {
 			column-gap: 2em;
-		}	
+		}
 	}
     /*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
         the initial row being ‘meta’ blocks, we leave #notable visible
