@@ -3498,7 +3498,8 @@ GW.layout = {
 
 		[ "body.page-404 .display-entry .float + .epigraph",
 														 0, false ],
-		[ "body.page-404 section:first-of-type",		16, false ],
+		[ "body.page-404 section#other-options",		16, false ],
+		[ "body.page-404 #new-popular-notable section",	13, false ],
 
 		[ "section#see-also.first-block", 				 4, false ],
 

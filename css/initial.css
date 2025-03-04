@@ -2244,39 +2244,26 @@ body.page-index #markdownBody #notable {
     display: none;
 }
 @media all and (min-width: 961px) {
-    body.page-index #markdownBody {
+    body.page-index #markdownBody,
+    body.page-404 div#new-popular-notable {
         display: grid;
+		grid-template-columns: 1fr 1fr;
         grid-row-gap: 0.5em;
-    }
-    @media all and (max-width: 1040px) {
-        body.page-index #markdownBody {
-            grid-template-columns: 1fr;
-        }
-        body.page-index #markdownBody section > ul {
-            column-count: 2;
-            column-gap: 3em;
-        }
-        body.page-index #markdownBody section > ul li {
-            break-inside: avoid;
-        }
-    }
-    @media all and (min-width: 1041px) {
-        body.page-index #markdownBody {
-            grid-template-columns: 1fr 1fr;
-            grid-column-gap: 2em;
-        }
-        body.page-index #markdownBody .abstract,
-        body.page-index #markdownBody hr {
-            grid-column-start: 1;
-            grid-column-end: -1;
-        }
-    }
+		grid-column-gap: 2em;
+	}
+	body.page-index #markdownBody .abstract,
+	body.page-index #markdownBody hr,
+	body.page-404 div#new-popular-notable hr {
+		grid-column-start: 1;
+		grid-column-end: -1;
+	}
     /*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
         the initial row being ‘meta’ blocks, we leave #notable visible
         (for a newest/popular/notable triplet)
      */
     @media all and (min-width: 1761px) {
-        body.page-index #markdownBody {
+        body.page-index #markdownBody,
+	    body.page-404 div#new-popular-notable {
             grid-template-columns: 45ch 45ch 45ch;
             margin-left: -20ch;
         }
@@ -2289,6 +2276,9 @@ body.page-index #markdownBody #notable {
         }
         body.page-index #markdownBody hr {
             margin-left: -5ch;
+        }
+	    body.page-404 div#new-popular-notable hr {
+            margin-left: -13.5ch;
         }
     }
 }
