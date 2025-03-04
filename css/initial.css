@@ -2257,6 +2257,15 @@ body.page-index #markdownBody #notable {
 		grid-column-start: 1;
 		grid-column-end: -1;
 	}
+	@media all and (max-width: 1760px) {
+		body.page-404 div#new-popular-notable #notable {
+			grid-column-start: 1;
+			grid-column-end: -1;
+		}
+		body.page-404 div#new-popular-notable .columns ul {
+			column-gap: 2em;
+		}	
+	}
     /*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
         the initial row being ‘meta’ blocks, we leave #notable visible
         (for a newest/popular/notable triplet)

@@ -132,6 +132,8 @@ GW.layout = {
 														 0, false ],
 		[ "body.page-404 section#other-options",		16, false ],
 		[ "body.page-404 #new-popular-notable section",	13, false ],
+		[ "body.page-404 #new-popular-notable section li p + p",
+														 0, false ],
 
 		[ "section#see-also.first-block", 				 4, false ],
 
