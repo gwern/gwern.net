@@ -662,6 +662,7 @@ canonicals = M.fromList
   , ("E. Thompson Jaynes", "E. T. Jaynes")
   , ("Edward T. Jaynes", "E. T. Jaynes")
   , ("Hill Fung Ip", "Hill F. Ip")
+  , ("TsviBT", "Tsvi Benson-Tilsen")
   ]
 
 -- tests: unique
@@ -1396,6 +1397,10 @@ authorLinkDB = M.fromList $
     , ("Heather M. Stringham", "https://scholar.google.com/citations?user=wCvT4tMAAAAJ")
     , ("Georg Homuth", "https://research.com/u/georg-homuth")
     , ("Curiositry", "https://www.autodidacts.io/about/")
+    , ("Frank J. A. van Rooij", "https://orcid.org/0000-0002-8600-9852")
+    , ("Francesco Cucca", "https://irgb.cnr.it/people/francesco-cucca/")
+    , ("Dhruv Batra", "https://dhruvbatra.com/")
+    , ("Denny Zhou", "https://dennyzhou.github.io/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
