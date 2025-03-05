@@ -1090,6 +1090,12 @@ a[data-link-icon='worldcat'] {
     --link-icon-offset-x: 0.10em;
 }
 
+a[data-link-icon='pdf'] { /* Adobe Acrobat */
+    --link-icon-size: 0.45em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-opacity: 0.50;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
