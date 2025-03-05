@@ -856,6 +856,23 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (
 	});
 }, "rewrite");
 
+/******************************************************************************/
+/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that 
+	they must be squeezed to an unusually small width, such that their internal
+	layout and styling may be adjusted accordingly.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateNarrowEpigraphs = (eventInfo) => {
+    GWLog("designateNarrowEpigraphs", "rewrite.js", 1);
+
+	let narrowEpigraphsSelector = [
+		".float-left + .epigraph",
+		".float-right + .epigraph"
+	].join(", ");
+	eventInfo.container.querySelectorAll(".epigraph").forEach(epigraph => {
+		epigraph.classList.toggle("narrow", epigraph.matches(narrowEpigraphsSelector));
+	});
+}, "rewrite", (info) => (GW.mediaQueries.mobileWidth.matches == false));
+
 
 /**********/
 /* TABLES */

@@ -1496,6 +1496,20 @@ ul.interview .speaker {
     }
 }
 
+/*	Narrow epigraphs (desktop only).
+ */
+.epigraph.narrow {
+	padding: 1.5em 0.75em;
+}
+.epigraph.narrow > blockquote::before {
+	left: -0.3em;
+	top: -0.9em;
+}
+.epigraph.narrow > blockquote::after {
+	right: -0.3em;
+	bottom: -1.4em;
+}
+
 /*	“Poem”-style epigraphs.
  */
 .epigraph.poem p {

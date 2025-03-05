@@ -6690,8 +6690,8 @@ Annotations = { ...Annotations,
      */
 	targetIdentifier: (target) => {
 		return (target.hostname == location.hostname
-			   ? (target.pathname.endsWith("/") 
-			   	  ? target.pathname + "index" 
+			   ? (target.pathname.endsWith("/")
+			   	  ? target.pathname + "index"
 			   	  : target.pathname) + target.hash
 			   : (target instanceof HTMLAnchorElement
 			   	  ? target.getAttribute("href")
@@ -6813,7 +6813,7 @@ Annotations = { ...Annotations,
 
 				//	Request the page image thumbnail, to cache it.
 				let pageImage = responseDocument.querySelector(".page-thumbnail");
-				if (   pageImage != null 
+				if (   pageImage != null
 					&& Images.isSVG(pageImage) == false)
 					doAjax({ location: Images.thumbnailURLForImage(pageImage) });
 
@@ -6859,7 +6859,7 @@ Annotations = { ...Annotations,
 		//	Construct title link class.
 		let titleLinkClasses = [ "title-link" ];
 
-		/*  Import link classes (excluding the ones that designate annotated 
+		/*  Import link classes (excluding the ones that designate annotated
 			links, lest we have infinite recursion of annotation popups).
 		 */
 		titleLinkClasses.push(...(Array.from(titleLink.classList).filter(titleLinkClass => [
@@ -6876,8 +6876,8 @@ Annotations = { ...Annotations,
 		for (let [ attrName, attrValue ] of Object.entries(titleLink.dataset))
 			titleLinkDataAttributes.push(`data-${(attrName.camelCaseToKebabCase())}="${attrValue}"`);
 
-		/*	Import link icon data attributes from the annotated link itself 
-			(but do not replace ones already specified by the annotation 
+		/*	Import link icon data attributes from the annotated link itself
+			(but do not replace ones already specified by the annotation
 			 title-link).
 		 */
 		for (let [ attrName, attrValue ] of Object.entries(link.dataset))
@@ -6998,7 +6998,7 @@ Annotations = { ...Annotations,
 				fileIncludesHTML = fileIncludesElement.innerHTML;
 		}
 
-		//	TItle bar link should go to /ref/ page for the annotation.
+		//	Title bar link should go to /ref/ page for the annotation.
 		let popFrameTitleLinkHref = "/ref/" + (link.id || titleLink.id.slice("link-bibliography-".length));
 
 		return {
@@ -16002,6 +16002,23 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (
 		epigraph.classList.add("poem");
 	});
 }, "rewrite");
+
+/******************************************************************************/
+/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that 
+	they must be squeezed to an unusually small width, such that their internal
+	layout and styling may be adjusted accordingly.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateNarrowEpigraphs = (eventInfo) => {
+    GWLog("designateNarrowEpigraphs", "rewrite.js", 1);
+
+	let narrowEpigraphsSelector = [
+		".float-left + .epigraph",
+		".float-right + .epigraph"
+	].join(", ");
+	eventInfo.container.querySelectorAll(".epigraph").forEach(epigraph => {
+		epigraph.classList.toggle("narrow", epigraph.matches(narrowEpigraphsSelector));
+	});
+}, "rewrite", (info) => (GW.mediaQueries.mobileWidth.matches == false));
 
 
 /**********/
