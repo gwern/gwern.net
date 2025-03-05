@@ -14,7 +14,7 @@ import Data.Time (parseTimeM, defaultTimeLocale, Day)
 
 import Utils (sed, split, trim, printRed, delete, formatIntWithCommas, calculateDateSpan, formatDaysInLargestUnit)
 import Config.Misc as CD (cd)
-import Config.Typography as C (dateRangeDurationTestCases)
+import Config.Typography as C (dateRangeDurationTestCases, minRange, minDuration, maxDateSecond, minDateFirst)
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
@@ -82,7 +82,7 @@ dateRangeDurationRaw todayYear x s =
  in if '$' `T.elem` s then x else -- HACK: patch over the regexps not doing a full job of excluding comma-less currencies
   case singleYearMatch of
    [[_original,before,year,after]] -> let oldYearInt = read (T.unpack year) :: Int
-                                          in if oldYearInt < minDateFirst then x else
+                                          in if oldYearInt < C.minDateFirst then x else
                                           Span nullAttr [dateRangeDurationRaw todayYear (Str before) before,
                                                      dateDurationSingle todayYear oldYearInt,
                                                      dateRangeDurationRaw todayYear (Str after) after]
@@ -106,9 +106,9 @@ dateRangeDurationRaw todayYear x s =
                                           T.pack (if not dateLongP then "" else (if dateRangeDaysInt < 365 then (" " ++ dateRangeDays ++ " days") else (" (" ++ dateRangeDays ++ " days)"))),
                                          if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
                                         ]
-               rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < minRange)
-               durationP = todayYear < dateSecondInt || dateDuration < minDuration || dateSecondInt > maxDateSecond
-           in if rangeP && durationP || dateFirstInt > dateSecondInt || dateFirstInt < minDateFirst || dateSecondInt > maxDateSecond then x
+               rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < C.minRange)
+               durationP = todayYear < dateSecondInt || dateDuration < C.minDuration || dateSecondInt > C.maxDateSecond
+           in if rangeP && durationP || dateFirstInt > dateSecondInt || dateFirstInt < C.minDateFirst || dateSecondInt > C.maxDateSecond then x
               else Span nullAttr $ [ -- usual anonymous Span trick for Inline type-safety; the redundant Spans are cleaned up in later passes
                     dateRangeDuration todayYear $ Str before, -- workaround Text.Regex.TDFA lack of lazy/non-greedy matches like `(.*?)`, which means it always matches the *last* date-range
                       Span ("", ["date-range"], [("title", description)]) -- overall wrapper
@@ -124,21 +124,15 @@ dateRangeDurationRaw todayYear x s =
                    if T.null after then [] else [dateRangeDuration todayYear $ Str after]
          z -> error $ "Typography:dateRangeDuration: dateRangeRegex matched an unexpected number of results: " ++ show z
 
-minRange, minDuration, maxDateSecond, minDateFirst :: Int
-minRange = 2
-minDuration = 11
-maxDateSecond = 2100 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk. But dates past 2100 AD are too rare to care about, and much more likely to be an ordinary number
-minDateFirst = 1501 -- too many ordinary numbers <1,500 which are not comma-separated
-
 dateDurationSingle :: Int -> Int -> Inline
 -- dateDurationSingle todayYear "" = error $ "Typography.dateDurationSingle: passed an empty string year to update, with current year " ++ show todayYear
 dateDurationSingle todayYear oldYear
-  | todayYear < minDateFirst    = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
+  | todayYear < C.minDateFirst    = error $ "Typography.dateDurationSingle: passed an absurdly old 'current' date: " ++ show todayYear ++ "; intended to update old year " ++ show todayYear
   | otherwise = let oldYearT = T.pack $ show $ oldYear
                     yearsSince  = todayYear - oldYear
                     yearsSinceT = T.pack $ formatIntWithCommas yearsSince
                 in
-                  if yearsSince < minDuration || oldYear < minDateFirst then Str oldYearT else
+                  if yearsSince < C.minDuration || oldYear < C.minDateFirst then Str oldYearT else
                     Span ("", ["date-range"], []) [Str oldYearT,
                                                    Subscript [Span ("", [], [("title", oldYearT`T.append`" was "`T.append`yearsSinceT`T.append`" years ago.")]) [Str (yearsSinceT`T.append`"ya")]]
                                                   ]
