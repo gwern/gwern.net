@@ -2015,6 +2015,9 @@ function scrollContainerOf(element) {
 /*  Returns page scroll position, as integer (percentage).
  */
 function getPageScrollPosition() {
+	if (document.documentElement.offsetHeight <= window.innerHeight)
+		return 0;
+
     return Math.round(100 * (window.pageYOffset / (document.documentElement.offsetHeight - window.innerHeight)));
 }
 
