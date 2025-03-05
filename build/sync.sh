@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-03 17:53:52 gwern"
+# When:  Time-stamp: "2025-03-05 17:15:31 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -341,7 +341,7 @@ else
     ## on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for
     ## making the rule a block dividing the two halves just doesn't work in any other way, but
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
-    sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-0" \/> <section id="statistics"/' ./_site/index
+    sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1" \/> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
@@ -622,7 +622,7 @@ else
     wrap λ "Similar-links files are missing?"
 
     ## NOTE: transclude.js supports some special 'range' syntax for transclusions, so a link like '/note/lion#history#'/'/note/lion##history'/'/note/lion##'/'/note/lion#history#foo' is in fact valid
-    λ(){ ge -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.gtx metadata/*.hs | gev -e '#[[:alnum:]-]+#$'; }
+    λ(){ ge -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.gtx metadata/*.hs | gev -e '#[[:alnum:]-]+#$' | gfv -e '/index#newest#statistics'; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
     λ(){ ge -- '^http.*/[[:graph:]]+[0-9]–[0-9]' ./metadata/*.gtx ./metadata/*.hs || true;
@@ -652,7 +652,7 @@ else
             "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
             "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
-            "haskell" "header" "heading" "horizontal-rule-nth-0" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "icon-not" "icon-special"
+            "haskell" "header" "heading" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "horizontal-rule-nth-3" "icon-not" "icon-special"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right"
             "icon-book-open-solid" "icon-gear-solid" "icon-magnifying-glass" "icon-message-slash-solid" "icon-moon-solid" "icon-sun-solid" "icon-eye-slash-solid"
             "inline" "invert" "invert-auto" "invert-not"
@@ -751,7 +751,7 @@ else
          gf -e \\ ./metadata/archive.hs ./metadata/backlinks.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
-    λ(){ echo "$PAGES_ALL" | xargs grep --fixed-strings --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-0" />' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
+    λ(){ echo "$PAGES_ALL" | xargs grep --fixed-strings --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e '<div class="horizontal-rule-nth-3" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
     λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep --fixed-strings --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'collapse}' -e 'interview}' -e 'cssExtension' -e 'thumbnailText' -e 'thumbnailCSS' -e '!Margin' -e '{.include-annotation' -e ' .backlink-not ' -e '<div id="abstract">'; }
@@ -1066,9 +1066,6 @@ else
 
     λ(){ gfc -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!" &
-
-    λ(){ gec -e '#[[:alnum:]]+#[[:alnum:]]+' -- ./metadata/*.hs ./metadata/*.gtx; }
-    wrap λ "Bad paths in metadata databases: redundant anchors" &
 
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
     wrap λ "Broken anchors in directory indexes." &

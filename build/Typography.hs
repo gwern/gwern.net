@@ -4,7 +4,7 @@
 -- 1. add link-live (cross-domain iframe popups) & link icon classes to links: split out to LinkIcon.hs
 -- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a
---    cycling pattern, like `<div class="horizontal-rule-nth-0"><hr></div>`/`class="horizontal-rule-nth-1"`/`class="horizontal-rule-nth-2"`/`class="horizontal-rule-nth-0"`..., (the div wrapper is necessary because Pandoc's 'HorizontalRule' Block element supports no attributes)
+--    cycling pattern, like `<div class="horizontal-rule-nth-1"><hr></div>`/`class="horizontal-rule-nth-2"`/`class="horizontal-rule-nth-3"`/`class="horizontal-rule-nth-1"`..., (the div wrapper is necessary because Pandoc's 'HorizontalRule' Block element supports no attributes)
 --    like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
@@ -197,8 +197,8 @@ breakEquals = id
 
 -------------------------------------------
 
--- Annotate body horizontal rulers with a div-class based on global count: '<div class="horizontal-rule-nth-0"> /
--- <hr> / </div>' / '<div class="horizontal-rule-nth-1"> / <hr> / </div>' / '<div class="horizontal-rule-nth-2"> /
+-- Annotate body horizontal rulers with a div-class based on global count: '<div class="horizontal-rule-nth-1"> /
+-- <hr> / </div>' / '<div class="horizontal-rule-nth-2"> / <hr> / </div>' / '<div class="horizontal-rule-nth-3"> /
 -- <hr> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth
 -- ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of Gwern.net's visual
 -- design.
@@ -209,9 +209,8 @@ breakEquals = id
 ---
 -- (NOTE: As a rewrite pass, this does not affect the horizontal ruler in the endnotes section, nor
 -- any horizontal rulers in the outer HTML document.)
--- TODO: should this be one-indexed instead? Will anyone remember .horizontal-rule-nth-0? HTML/CSS/JS names are usually one-index, isn't it?
 rulersCycle :: Int -> Pandoc -> Pandoc
-rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
+rulersCycle modulus doc = evalState (walkM addHrNth doc) 1
  where addHrNth :: Block -> State Int Block
        addHrNth HorizontalRule = do
          count <- get
