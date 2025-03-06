@@ -2585,14 +2585,13 @@ body.special-halloween-dark hr::after {
 	filter: none;
     opacity: 1;
 }
-body.special-halloween-dark hr::after,
-body.special-halloween-dark .horizontal-rule-nth-0 hr::after {
+body.special-halloween-dark .horizontal-rule-nth-1 hr::after {
     background-image: url('/static/img/ornament/halloween/sun-verginasun-black.svg');
 }
-body.special-halloween-dark .horizontal-rule-nth-1 hr::after {
+body.special-halloween-dark .horizontal-rule-nth-2 hr::after {
     background-image: url('/static/img/ornament/halloween/japanesecrest-tsukinihoshi-dottedmoon.svg');
 }
-body.special-halloween-dark .horizontal-rule-nth-2 hr::after {
+body.special-halloween-dark .horizontal-rule-nth-3 hr::after {
     background-image: url('/static/img/ornament/halloween/asterism-triplewhitestar.svg');
 }
 

@@ -1500,22 +1500,23 @@ addLayoutProcessor("designateListStyles", (blockContainer) => {
 addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
     GWLog("designateHorizontalRuleStyles", "layout.js", 2);
 
+	let hrTypeClassPrefix = "horizontal-rule-";
+
 	blockContainer.querySelectorAll("hr").forEach(hr => {
 		hr.classList.add("dark-mode-invert");
 
-		/*	Designate horizontal rule type class.
-		 */
-		let hrTypeClassPrefix = "horizontal-rule-";
-
+		//	If there is no type class, just add the default one and return.
 		let classBearerBlock = hr.closest("[class*='horizontal-rule-']");
 		if (classBearerBlock == null) {
-			hr.classList.add(hrTypeClassPrefix + "nth-0");
+			hr.classList.add(hrTypeClassPrefix + "nth-1");
 			return;
 		}
 
+		//	If the type class is on a containing div, unwrap, moving attributes.
 		if (classBearerBlock != hr)
 			unwrap(classBearerBlock, { moveID: true, moveClasses: true });
 
+		//	If the type class is a sequence designator, do nothing.
 		let specialHRTypeClasses = [
 			"horizontal-rule-small"
 		];
@@ -1523,13 +1524,10 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 			(   cssClass.startsWith(hrTypeClassPrefix)  == true
 			 && specialHRTypeClasses.includes(cssClass) == false)
 		)?.slice(hrTypeClassPrefix.length);
-		if (hrTypeClass.startsWith("nth-")) {
-			hr.classList.add(hrTypeClass);
+		if (hrTypeClass.startsWith("nth-"))
 			return;
-		}
 
-		/*	Type class specifies a custom image; set the CSS property.
-		 */
+		//	Type class specifies a custom image; set the CSS property.
 		hr.style.setProperty("--icon-image", `var(--GW-image-${hrTypeClass})`);
 	});
 }, { blockLayout: false });

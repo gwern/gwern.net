@@ -2268,7 +2268,7 @@ hr {
 hr.horizontal-rule-small {
 	--icon-size: 15px;
 }
-hr.horizontal-rule-nth-0 {
+hr.horizontal-rule-nth-1 {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
     --icon-image: var(--GW-image-sun-verginasun-black-svg);
@@ -2276,7 +2276,7 @@ hr.horizontal-rule-nth-0 {
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-hr.horizontal-rule-nth-1 {
+hr.horizontal-rule-nth-2 {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
 
         NOTE: alternative moon icon is
@@ -2288,7 +2288,7 @@ hr.horizontal-rule-nth-1 {
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1);
 }
-hr.horizontal-rule-nth-2 {
+hr.horizontal-rule-nth-3 {
     --icon-image: var(--GW-image-asterism-triplewhitestar-svg);
     --icon-size: 38px;
     --icon-opacity: 0.90;
