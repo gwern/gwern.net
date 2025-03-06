@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-02-21 10:06:30 gwern"
+# When:  Time-stamp: "2025-03-05 19:30:13 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -15,7 +15,7 @@
 #
 # Files receive standard optimization, reformatting, compression, metadata-scrubbing etc.
 # This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
-# (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files.
+# (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files (or if too large to be safe to version-control, added to `.gitignore` instead).
 # They are then opened in a web browser to verify they uploaded, have permissions, and render.
 
 . ~/wiki/static/build/bash.sh
@@ -175,10 +175,22 @@ _upload() {
                       compressPdf "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so ignore errors
                       chmod a+r "$TARGET";
                   fi
-                  (git add "$TARGET" &)
-                  # TODO: add back in `--mkpath`
-                  (rsync --chmod='a+r' -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
-                      rsync --chmod='a+r' -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
+                  # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
+                  # Check file size and add to .gitignore if large.
+                  FILESIZE=$(stat -c%s "$TARGET")
+                  if [ "$FILESIZE" -gt 262144000 ]; then  # 250MB = 262144000 bytes; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
+                      if ! git check-ignore --quiet "$TARGET"; then # check if ignored by previous rules, such as filetype-level ignores
+                          echo "$TARGET" >> ./.gitignore
+                      else
+                          # We will document every file ignored this way, to look at usage later & make it easy to rollback or switch to an alternative:
+                          echo "# Large-file ignored: \"$TARGET\"" >> ./.gitignore
+                      fi
+                      bold "Added large file $TARGET to .gitignore (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
+                  else
+                      (git add "$TARGET" &)
+                  fi
+                  (rsync --chmod='a+r' --mkpath -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
+                      rsync --chmod='a+r' --mkpath -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
                   cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
                   curl --head "$URL" > /dev/null # verify it's downloadable
