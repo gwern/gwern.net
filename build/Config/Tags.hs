@@ -73,7 +73,7 @@ tagsShort2LongRewrites =
    , ("japan/anime", "anime"), ("psychology/bird", "psychology/animal/bird"), ("psychology/birds/neuroscience", "psychology/animal/bird/neuroscience")
    , ("psychology/birds", "psychology/animal/bird"), ("dalle", "dall-e/3"), ("dall-e", "ai/nn/transformer/gpt/dall-e/3"), ("dall-e-3", "ai/nn/transformer/gpt/dall-e/3"), ("dalle3", "ai/nn/transformer/gpt/dall-e/3"), ("dalle-3", "ai/nn/transformer/gpt/dall-e/3"), ("dall-1", "ai/nn/transformer/gpt/dall-e/1"), ("dall-e-1", "ai/nn/transformer/gpt/dall-e/1"), ("dall-2", "ai/nn/transformer/gpt/dall-e/2"), ("dall-e-2", "ai/nn/transformer/gpt/dall-e/2"), ("dall-3", "ai/nn/transformer/gpt/dall-e/3"), ("ai/gpt/dall-e", "ai/nn/transformer/gpt/dall-e/3")
    , ("darknet-markets", "darknet-market"), ("silk-road-1", "darknet-market/silk-road/1"), ("sr1", "darknet-market/silk-road/1"), ("sr-1", "darknet-market/silk-road/1"), ("sr-2", "darknet-market/silk-road/2")
-   , ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1")
+   , ("silk-road-2", "darknet-market/silk-road/2"), ("sr2", "darknet-market/silk-road/2"), ("sr/1", "darknet-market/silk-road/1"), ("silkroad-2", "silk-road/2"), ("silkroad2", "silk-road/2")
    , ("sr/2", "darknet-market/silk-road/2"), ("sr", "darknet-market/silk-road"), ("psychology/neuroscience/bird", "psychology/animal/bird/neuroscience"), ("bird-brain", "psychology/animal/bird/neuroscience"), ("bird/brain", "psychology/animal/bird/neuroscience"), ("brain/bird", "psychology/animal/bird/neuroscience")
    , ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd")
    , ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness")
@@ -168,6 +168,7 @@ tagsShort2LongRewrites =
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
    , ("preference-falsification", "sociology/false-preference"), ("4.5", "4-5"), ("45", "4-5"),("54", "4-5"),("5.4", "4-5"), ("5-4", "4-5"), ("gpt-4-5", "ai/nn/transformer/gpt/5/4-5"), ("gpt-45", "ai/nn/transformer/gpt/5/4-5"), ("gpt-4.5", "ai/nn/transformer/gpt/5/4-5"), ("gpt45", "ai/nn/transformer/gpt/5/4-5")
    , ("vr", "virtual-reality"), ("v-r", "virtual-reality"), ("virtualreality", "virtual-reality"), ("oculus", "virtual-reality"), ("vrhmd", "virtual-reality")
+   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -534,6 +535,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/video", "AI video")
   , ("ai/text-style-transfer", "text style transfer")
   , ("exercise/gravitostat", "gravitostat")
+  , ("longevity/glp/retatrutide", "retatrutide")
   , ("longevity/glp/psychology", "GLP agonist (psych)")
   , ("longevity/glp/semaglutide", "semaglutide")
   , ("longevity/glp/tirzepatide", "tirzepatide")

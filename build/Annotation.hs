@@ -53,7 +53,7 @@ reformatTitle t = do
 
 linkDispatcherURL :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL md l
-  | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/", "/ref/", "irc://", "mailto:"] =
+  | anyPrefix l ["/metadata/annotation/backlink/", "/metadata/annotation/similar/", "/doc/www/", "/ref/", "/blog/", "irc://", "mailto:"] =
       return (Left Permanent)
   -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for tags.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return $ Right (l, (wikipediaURLToTitle l, "", "", "", [], [], ""))

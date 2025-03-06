@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-05 19:30:13 gwern"
+# When:  Time-stamp: "2025-03-05 23:31:03 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -183,7 +183,7 @@ _upload() {
                           echo "$TARGET" >> ./.gitignore
                       else
                           # We will document every file ignored this way, to look at usage later & make it easy to rollback or switch to an alternative:
-                          echo "# Large-file ignored: \"$TARGET\"" >> ./.gitignore
+                          echo "# $(date --iso-8601) Large-file ignored: $(sha1sum $TARGET)" >> ./.gitignore
                       fi
                       bold "Added large file $TARGET to .gitignore (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
                   else

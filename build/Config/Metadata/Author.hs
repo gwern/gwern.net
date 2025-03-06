@@ -80,6 +80,11 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
                     ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi"
                     , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
 
+-- Odd author names which look like a typo or error, but are real or the best that can be done. Used in `LinkMetadata.readLinkMetadataAndCheck`.
+-- Config tests: unique list
+authorWhitelist :: [String]
+authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"]
+
 -- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
 -- Config tests: unique keys, no loops
 canonicals :: M.Map String String
@@ -687,7 +692,11 @@ canonicalsWithInitials =
   , "Albertine J. Oldehinkel", "Olav B. Smeland", "Timo A. Lakka", "Steven A. McCarroll"
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
-  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt", "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner", "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe", "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip", "Heather M. Stringham"]
+  , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt"
+  , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
+  , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
+  , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1401,6 +1410,11 @@ authorLinkDB = M.fromList $
     , ("Francesco Cucca", "https://irgb.cnr.it/people/francesco-cucca/")
     , ("Dhruv Batra", "https://dhruvbatra.com/")
     , ("Denny Zhou", "https://dennyzhou.github.io/")
+    , ("Katelyn Brown", "https://scholar.google.com/citations?user=8vR9KJ8AAAAJ")
+    , ("Deep Ganguli", "https://dganguli.github.io/pweb/")
+    , ("Christopher A. Haiman", "https://keck.usc.edu/faculty-search/christopher-haiman/")
+    , ("Catharina A. Hartman", "https://scholar.google.com/citations?user=tNp9BUsAAAAJ&hl=en&oi=ao")
+    , ("Bryan Catanzaro", "https://scholar.google.com/citations?user=UZ6kI2AAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2022,7 +2036,7 @@ authorWpLinkDB =
     ,"Karl Friston", "Karl J. Friston", "Karl J. Holzinger", "Karl Pearson", "Karl Popper"
     ,"Karl Zilles", "Karla Miller", "Karsten M\252ller", "Karthik Muralidharan", "Karthik Raman"
     ,"Katalin Karik\243", "Katalin Susztak", "Kate Devlin", "Kate Tchanturia"
-    ,"Kate Tilling", "Katelyn Brown", "Katerina Douka", "Kath Smith", "Katherine A. Rawson"
+    ,"Kate Tilling", "Katerina Douka", "Kath Smith", "Katherine A. Rawson"
     ,"Katherine Baicker", "Katherine Baker", "Katherine Belov", "Katherine Harvey", "Katherine Kirk"
     ,"Katherine L. Milkman", "Katherine Martin", "Katherine S. Brehme", "Katherine S. Pollard", "Kathleen D. Vohs"
     ,"Kathleen Kenealy", "Kathleen McGarry", "Kathleen Merikangas", "Kathleen Mullan Harris", "Kathryn Fox"

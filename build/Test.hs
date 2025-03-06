@@ -49,7 +49,7 @@ import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.Metadata.Format (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
-import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite)
+import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
 
 import Text.Regex.Base.RegexLike (makeRegexM)
@@ -125,7 +125,7 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
               , length $ isUniqueAll Config.Metadata.Author.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
-              , length $ isUniqueKeys (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist
+              , length $ isUniqueKeys (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist, length $ isUniqueList Config.Metadata.Author.authorWhitelist
               , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.Metadata.Author.authorLinkDB)

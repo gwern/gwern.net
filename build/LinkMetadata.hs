@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-04 11:34:30 gwern"
+When:  Time-stamp: "2025-03-05 18:04:39 gwern"
 License: CC-0
 -}
 
@@ -13,7 +13,7 @@ module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMeta
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
-import Data.Char (isPunctuation, toLower, isNumber)
+import Data.Char (isPunctuation, isNumber)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, replace, Text)
@@ -57,7 +57,7 @@ import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
 import Metadata.Author (authorCollapse)
-import Config.Metadata.Author (authorLinkDB)
+import Config.Metadata.Author (authorLinkDB, authorWhitelist)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -281,11 +281,11 @@ readLinkMetadataAndCheck = do
              let urlsDuplicateAffiliation = findDuplicatesURLsByAffiliation final
              unless (null urlsDuplicateAffiliation) $ printRed "Duplicated URLs by affiliation:" >> printGreen (show urlsDuplicateAffiliation)
 
-             let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
-             let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
-             unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
+             -- TODO: there are way too many duplicate titles to deal with right now:
+             -- let titlesSimilar = sort $ map (\(u,(t,_,_,_,_,_,_)) -> (u, map toLower t)) $ filter (\(u,_) -> '.' `elem` u && not ("wikipedia.org" `isInfixOf` u)) $ M.toList final
+             -- let titles = filter (\title -> length title > 10) $ map snd titlesSimilar
+             -- unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
 
-             let authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"] :: [String]
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
@@ -295,7 +295,9 @@ readLinkMetadataAndCheck = do
 
              let yearLimit = show (C.currentYear + 2) -- no entry should be published or created 2+ years in the future!
              let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc) ||
-                                                              (if not (null dt) then take 4 dt > yearLimit || take 4 dc > yearLimit else False)) finalL
+                                                              (dt /= "" && (let y = take 4 dt
+                                                                            in y > yearLimit || y > yearLimit))
+                                   ) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): " >> printGreen (show datesBad))
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
@@ -455,6 +457,7 @@ hasAnnotationOrIDInline md inline = case inline of
         processLink :: Metadata -> T.Text -> Inline -> Inline
         processLink metadatadb url link =
             let canonicalUrl = linkCanonicalize $ T.unpack url
+                -- NOTE: we do not implement any blacklists or exclusion here, but defer it to the Metadata database, which will or will not have a Nothing vs Just entry; so all that logic is handled by `linkDispatcherURL` creating them in the first place.
             in case M.lookup canonicalUrl metadatadb of
                 Nothing                     -> addID metadatadb Nothing link
                 Just ("","","","",[],[],"") -> addID metadatadb Nothing link
