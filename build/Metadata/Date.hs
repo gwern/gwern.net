@@ -106,7 +106,7 @@ dateRangeDurationRaw todayYear x s =
                                           T.pack (if not dateLongP then "" else (if dateRangeDaysInt < 365 then (" " ++ dateRangeDays ++ " days") else (" (" ++ dateRangeDays ++ " days)"))),
                                          if dateDuration < 2 then "." else T.concat [", ending ", dateDurationT, " years ago."]
                                         ]
-               rangeP    = not dateLongP && (dateFirst == dateSecond || dateRangeInt < C.minRange)
+               rangeP    = (dateFirst == dateSecond || dateRangeInt < C.minRange)
                durationP = todayYear < dateSecondInt || dateDuration < C.minDuration || dateSecondInt > C.maxDateSecond
            in if rangeP && durationP || dateFirstInt > dateSecondInt || dateFirstInt < C.minDateFirst || dateSecondInt > C.maxDateSecond then x
               else Span nullAttr $ [ -- usual anonymous Span trick for Inline type-safety; the redundant Spans are cleaned up in later passes
