@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-05 23:31:03 gwern"
+# When:  Time-stamp: "2025-03-06 22:58:14 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -29,9 +29,10 @@ _upload() {
   wait
 
   (locate "$1" &)
-
   FILENAME="$1"
+
   ## Check whether there are any files with the same extension as the upload candidate; if not, it is likely erroneous in some way and we bail out to the user:
+  ## TODO: allow an override `--force` option: in the case of large-files, we have no easy way to 'manually' add files, we're supposed to always go through `upload.sh`.
   EXT="${FILENAME##*.}"
   ext_lower=$(echo "$EXT" | tr '[:upper:]' '[:lower:]')
   ALLOWED_EXTENSIONS=$(find ~/wiki/ -type f -printf '%f\n' \
@@ -39,9 +40,11 @@ _upload() {
                         | sort --ignore-case --unique | tr '[:upper:]' '[:lower:]')
 
   if ! echo "$ALLOWED_EXTENSIONS" | grep --word-regexp --quiet "$ext_lower"; then
-    red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'? This extension has never been used before. Please manually add it, to verify that this is a new but valid extension."
+    red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'?"
+    bold "This extension has never been used before. Please manually add it, to verify that this is a new but valid extension."
     exit 1
   fi
+
   # we don't want to try to compile random Markdown snippets, so rename to `.txt` which will be treated as a static asset:
   if [[ $FILENAME == *.md ]]; then
     NEW_FILENAME="${FILENAME%.md}.txt"
@@ -176,30 +179,34 @@ _upload() {
                       chmod a+r "$TARGET";
                   fi
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
-                  # Check file size and add to .gitignore if large.
+                  # Check file size and add to '.gitignore' if large.
                   FILESIZE=$(stat -c%s "$TARGET")
-                  if [ "$FILESIZE" -gt 262144000 ]; then  # 250MB = 262144000 bytes; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
-                      if ! git check-ignore --quiet "$TARGET"; then # check if ignored by previous rules, such as filetype-level ignores
-                          echo "$TARGET" >> ./.gitignore
-                      else
+                  SIZE_THRESHOLD=262144000  # 250MB; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
+                  IS_SMALL_FILE=$([[ "$FILESIZE" -le "$SIZE_THRESHOLD" ]] && echo true || echo false)
+                  $IS_SMALL_FILE && (git add "$TARGET" &) || {
+                      # Only add to '.gitignore' if not already ignored
+                      git check-ignore --quiet "$TARGET" || {
                           # We will document every file ignored this way, to look at usage later & make it easy to rollback or switch to an alternative:
-                          echo "# $(date --iso-8601) Large-file ignored: $(sha1sum $TARGET)" >> ./.gitignore
-                      fi
-                      bold "Added large file $TARGET to .gitignore (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
-                  else
-                      (git add "$TARGET" &)
-                  fi
+                          echo "# $(date --iso-8601) Large-file ignored: $(sha1sum $TARGET) ($(git rev-parse HEAD)):" >> ./.gitignore
+                          echo "$TARGET" >> ./.gitignore
+                      }
+                      bold "Added large file /$TARGET to '.gitignore' (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
+                  }
+
                   (rsync --chmod='a+r' --mkpath -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                       rsync --chmod='a+r' --mkpath -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
-                  cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
                   curl --head "$URL" > /dev/null # verify it's downloadable
                   echo ""
                   echo "/$TARGET $URL"
 
-                  if [[ "$TARGET" =~ .*\.png ]]; then png2JPGQualityCheck ~/wiki/"$TARGET"; fi
-
-                  "$BROWSER" "$URL" 2> /dev/null) &
+                  # Check PNG and preview in browser only for small files
+                  $IS_SMALL_FILE && {
+                      [[ "$TARGET" =~ .*\.png ]] && png2JPGQualityCheck ~/wiki/"$TARGET"
+                      cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
+                      ("$BROWSER" "$URL" 2> /dev/null) &
+                  } || bold "File is too large to preview in browser ($(numfmt --to=iec-i --suffix=B $FILESIZE)). Access directly at $URL"
+                  ) &
 
               else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo
