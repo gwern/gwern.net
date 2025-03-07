@@ -513,6 +513,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("darknet-market/atlantis", "Atlantis DNM")
   , ("darknet-market/alphabay", "AlphaBay DNM")
   , ("darknet-market/agora", "Agora DNM")
+  , ("darknet-market/dnm-archive/file", "DNM Archives (files)")
   , ("darknet-market/dnm-archive", "DNM Archives")
   , ("darknet-market", "DNMs")
   , ("nootropic/quantified-self/weather", "weather & mood")

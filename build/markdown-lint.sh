@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2024-07-06 20:50:37 gwern"
+# When:  Time-stamp: "2025-03-06 20:33:58 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -26,7 +26,7 @@ do
                  -e 'sci-hub.cc/' -e "papers.nber.org/" -e '](!wikipedia' -e '](!wikipedia)'"'s" -e 'https://wwww.' -e 'http://wwww.' \
                  -e 'http://33bits.org' -e 'https://gwern.net' -e 'https://gwern.net' -e 'web.archive.org/web/2' \
                  -e 'webarchive.org.uk/wayback/' -e 'webcitation.org' -e 'plus.google.com' -e 'www.deepdotweb.com' -e 'raikoth.net' \
-                 -e 'drive.google.com/file' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
+                 -e 'drive.google.com/' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
                  -e 'wellcomelibrary.org/item/' -e 'dlcs.io/pdf/' -e 'secure.wikimedia.org' \
                  -e 'https://biorxiv.org' \
                  -e 'fbclid=' -e '?gid=' -e 'x.com/#!' -e 'pay.reddit.com' -e 'europepmc.org' -e 'drugcite.com' \

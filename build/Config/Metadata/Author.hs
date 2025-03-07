@@ -668,6 +668,7 @@ canonicals = M.fromList
   , ("Edward T. Jaynes", "E. T. Jaynes")
   , ("Hill Fung Ip", "Hill F. Ip")
   , ("TsviBT", "Tsvi Benson-Tilsen")
+  , ("Anna Vinkhuyzen", "Anna A. E. Vinkhuyzen")
   ]
 
 -- tests: unique
@@ -696,7 +697,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1413,8 +1414,16 @@ authorLinkDB = M.fromList $
     , ("Katelyn Brown", "https://scholar.google.com/citations?user=8vR9KJ8AAAAJ")
     , ("Deep Ganguli", "https://dganguli.github.io/pweb/")
     , ("Christopher A. Haiman", "https://keck.usc.edu/faculty-search/christopher-haiman/")
-    , ("Catharina A. Hartman", "https://scholar.google.com/citations?user=tNp9BUsAAAAJ&hl=en&oi=ao")
-    , ("Bryan Catanzaro", "https://scholar.google.com/citations?user=UZ6kI2AAAAAJ&hl=en&oi=ao")
+    , ("Catharina A. Hartman", "https://scholar.google.com/citations?user=tNp9BUsAAAAJ")
+    , ("Bryan Catanzaro", "https://scholar.google.com/citations?user=UZ6kI2AAAAAJ")
+    , ("Bernhard T. Baune", "https://www.uni-muenster.de/OCCMuenster/members/bernhard-baune.html")
+    , ("Barbara Franke", "https://www.ru.nl/en/people/franke-b")
+    , ("Anna A. E. Vinkhuyzen", "https://scholar.google.com/citations?user=CLXR124AAAAJ&hl=en&oi=ao")
+    , ("Adam Santoro", "https://scholar.google.com/citations?user=evIkDWoAAAAJ&hl=en&oi=ao")
+    , ("Mun Hou Won", "https://blog.munhou.com/")
+    , ("Patrick McKenzie", "https://www.kalzumeus.com/start-here-if-youre-new/")
+    , ("Nicolas Toper", "https://www.linkedin.com/in/nicolas/")
+    , ("David Hugh-Jones", "https://wyclif.substack.com/about")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2277,7 +2286,7 @@ authorWpLinkDB =
     ,"Patrick Esser", "Patrick F. Sullivan", "Patrick Fournier", "Patrick J. Curran", "Patrick J. McGrath"
     ,"Patrick J. Morris", "Patrick J. Stover", "Patrick Kline", "Patrick Kruger", "Patrick Leahy"
     ,"Patrick Markey", "Patrick Maynard Stuart Blackett", "Patrick McClure", "Patrick McDaniel", "Patrick McGorry"
-    ,"Patrick McKenzie", "Patrick Phillips", "Patrick Reed", "Patrick Thiran", "Patrick Wyatt"
+    , "Patrick Phillips", "Patrick Reed", "Patrick Thiran", "Patrick Wyatt"
     ,"Patrik Magnusson", "Pattie Maes", "Paul A. David", "Paul A. Johnson", "Paul A. Samuelson"
     ,"Paul B. Baltes", "Paul Barham", "Paul Christiano", "Paul Covington", "Paul D. Adams"
     ,"Paul E. Meehl", "Paul E. Peterson", "Paul F. Lazarsfeld", "Paul Fussell", "Paul G. Kwiat"
@@ -2662,4 +2671,4 @@ authorWpLinkDB =
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
     , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz"
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
-    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"]
+    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes", "Kenneth E. Boulding"]

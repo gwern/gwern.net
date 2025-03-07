@@ -2857,7 +2857,6 @@ goodLinks =
             , "https://www.grandforksherald.com/news/crime-and-courts/3704033-oregon-man-indicted-fatal-grand-forks-overdose-case"
             , "https://www.gutenberg.org/files/5978/5978-h/5978-h.htm#c15"
             , "https://www.harrowell.org.uk/blog/2018/01/31/in-the-eternal-inferno-fiends-torment-ronald-coase-with-the-fate-of-his-ideas/"
-            , "https://www.hbs.edu/faculty/Pages/default.aspx"
             , "https://www.heraldsun.com.au/news/law-order/man-faces-jail-after-2700-drug-tablets-on-notorious-site-silk-road/news-story/4ec3a87919d9d591057f3d7494336dd0"
             , "https://www.hsx.com/security/feature.php?type=opening"
             , "https://www.html-tidy.org/"
@@ -3310,7 +3309,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://dnd.wizards.com/articles/news/dungeons-dragons-teams-my-little-pony"
             , "https://docs.ankiweb.net/filtered-decks.html#filtered-decks--cramming"
             , "https://donate.torproject.org/"
-            , "https://drive.google.com/drive/folders/1NY3MTkOSodz_5eCkjtoHUGYSulR25QGU"
             , "https://droitwichstandard.co.uk/news/droitwich-student-jailed-two-years-importing-cocaine-costa-rica/"
             , "https://drugs-forum.com/threads/116671/"
             , "https://dspace.mit.edu/handle/1721.1/10589"
@@ -4616,5 +4614,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://www.dhammawiki.com/index.php/Buddha%27s_Lists"
             , "https://docs.midjourney.com/hc/en-us/articles/32099348346765-Chaos-Variety"
             , "https://reactormag.com/day-of-the-kraken/"
+            , "https://drive.google.com/file/d/0B4wY8oEgAUnjX3NzSUJCNVZHbmc/view" -- NOTE: deliberately dead link used, as it will never need to be search-and-replaced
             ]
 

@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-02-20 13:24:17 gwern"
+;;; When:  Time-stamp: "2025-03-06 22:45:59 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -441,11 +441,12 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("∼" . "~")
                      ("Previous article in issue\nNext article in issue\nKeywords\n" . "[**Keywords**: ")
                      ("Previous article in issue\nKeywords\n" . "[**Keywords**: ")
-                     ("•\n\n    " . "- ")
-                     ("     ● " . "- ")
+                     ("•\n\n    " . " · ")
+                     ("\n• " . " · ")
+                     ("     ● " . " · ")
                      ("eta≠analys" . "eta-analys") ; odd typo in some PDFs: "meta≠analyses"
-                     ("\n•\n" . "- ")
-                     ("    •\n    " . "- ")
+                     ("\n•\n" . " · ")
+                     ("    •\n    " . " · ")
                      ("<p> " . "<p>")
                      (" </p>" . "</p>")
                      ("View ORCID Profile" . "")
@@ -500,7 +501,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" utilizing" . " using")
                      (" utilisation" . " usage")
                      (" utilization" . " usage")
-                     ("\n• " . "\n- ")
+                     ("\n• " . " · ")
                      (" colour" . " color")
                      ("](/docs/" . "](/doc/")
                      ("href=\"/docs/" . "href=\"/doc/")
@@ -769,20 +770,20 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("CH4" . "CH~4~")
                         ("PH3" . "PH~3~")
                         ("PM2.5" . "PM<sub>2.5</sub>")
-                        ("μg/m3" . "μg⁄m<sup>3</sup>")
+                        ("μg/m3" . "μg⧸m<sup>3</sup>")
                         ("H2" . "H~2~")
                         ("H2O" . "H~2~O")
                         ("cm-2" . "cm^−2^")
                         ("cm−2" . "cm^−2^")
                         ("cm3" . "cm^3^")
                         (" m3" . " m^3^")
-                        ("kg/m2" . "kg⁄m^2^")
+                        ("kg/m2" . "kg⧸m^2^")
                         (" m2" . "m^2^")
                         (" m^2 " . "m^2^ ")
                         ("×1−1×min" . " × 1<sup>−1</sup> × min")
                         ("t1/2" . "t<sub>1⁄2</sub>")
-                        (" m/s" . " m⁄s")
-                        (" km/s" . " km⁄s")
+                        (" m/s" . " m⧸s")
+                        (" km/s" . " km⧸s")
                         ("km2" . "km^2^")
                         ("µm3" . "µm^3^")
                         (" ug" . " μg")
@@ -822,8 +823,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("Ntotal" . "_N_~total~")
                         (" Ne " . " <em>N<sub>e</sub></em> ")
                         ("$N_e$" . "_N_~_e_~")
-                        ("$\frac{n}{2}$" . "_n_⁄2")
-                        ("$\frac{N}{2}$" . "_n_⁄2")
+                        ("$\frac{n}{2}$" . "_n_⧸2")
+                        ("$\frac{N}{2}$" . "_n_⧸2")
                         ("<em>b</em> = " . "β = ")
                         ("<em>b</em> = −" . "β = −")
                         ("_b_ = " . "β = ")
@@ -1667,7 +1668,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
-       (query-replace-regexp "pg?\\. \\([0-9]\\)" "pg\\1") ; page citations: 'p. 50', 'pg. 50' → 'pg50'
+       (query-replace-regexp "pg?\\.? \\([0-9]\\)" "pg\\1") ; page citations: 'p. 50', 'pg. 50', 'pg 50' → 'pg50'
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-05 17:15:31 gwern"
+# When:  Time-stamp: "2025-03-06 22:56:17 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -122,14 +122,15 @@ else
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al ';
+          s 'pg 1' 'pg1'; s 'pg 2' 'pg2'; s 'pg 3' 'pg3'; s 'pg 4' 'pg4'; s 'pg 5' 'pg5'; s 'pg 6' 'pg6'; s 'pg 7' 'pg7'; s 'pg 8' 'pg8'; s 'pg 9' 'pg9';
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep --extended-regexp`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
           for file in $(find . -type f -name "*.md" -or -name "*.gtx"); do
-              if grep -qE "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if grep -E --quiet "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
               fi
 
-              if grep -qE "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if grep -E --quiet "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g' "$file"
               fi
           done
@@ -986,7 +987,7 @@ else
                  -e 'sci-hub.cc/' -e "papers.nber.org/" -e '](!wikipedia' -e '](!wikipedia)'"'s" -e 'https://wwww.' -e 'http://wwww.' \
                  -e 'http://33bits.org' -e 'https://gwern.net' -e 'https://gwern.net' -e 'web.archive.org/web/2' \
                  -e 'webarchive.org.uk/wayback/' -e 'webcitation.org' -e 'plus.google.com' -e 'www.deepdotweb.com' -e 'raikoth.net' \
-                 -e 'drive.google.com/file' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
+                 -e 'drive.google.com/' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
                  -e 'wellcomelibrary.org/item/' -e 'dlcs.io/pdf/' -e 'secure.wikimedia.org' \
                  -e 'https://biorxiv.org' \
                  -e 'fbclid=' -e '?gid=' -e 'x.com/#!' -e 'pay.reddit.com' -e 'europepmc.org' -e 'drugcite.com' \
@@ -1383,17 +1384,16 @@ else
     curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
     curl --silent --head "https://gwern.net/doc/index" | grep -E -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
-    ## check that all tag shortcuts are working,
-    λ() {
-    find ./doc/ -type f -name "index.md" | sort | while read -r file; do
+    ## check that all tag shortcuts are working, and create missing ones:
+    ( find ./doc/ -type f -name "index.md" | sort | while read -r file; do
         dir=$(basename "$(dirname "$file")")
         fullpath="$(echo "${file#./}" | sed 's/\.md$//')"
         url="https://gwern.net/$dir"
-        if timeout 30s curl --silent --output /dev/null --write "%{http_code}" "$url" | grep -q "404"; then
-            echo "\"~^/$dir\$\" \"/$fullpath\";"
+        if timeout 30s curl --silent --output /dev/null --write "%{http_code}" "$url" | \
+                gf --quiet "404"; then
+            echo "\"~^/$dir\$\" \"/$fullpath\";" >> ./static/nginx/nginx.conf
         fi
-    done; }
-    wrap λ "Need new tag-directory shortcut redirects set up." &
+    done; ) &
 
     ## did any of the key pages mysteriously vanish from the live version?
     linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/index' &
