@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-06 22:56:17 gwern"
+# When:  Time-stamp: "2025-03-07 17:55:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -27,7 +27,7 @@ DEPENDENCIES=(
   anchor-checker.php generateBacklinks.hs generateDirectory.hs
   generateLinkBibliography.hs generateSimilarLinks.hs link-extractor.hs
   compressJPG2 openai chromium inkscape node pngnq advpng docker
-  should_image_have_outline.php
+  should_image_have_outline.php mp3val
 ) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 declare -A ERROR_OUTPUTS
 DEPENDENCIES_MISSING=()
@@ -393,6 +393,7 @@ else
         fi
 
         # Use quotes around paths and create a clean temporary user profile
+        # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
         timeout 5m libreoffice --headless \
             --convert-to "$CONVERSION_OPTION" \
             -env:UserInstallation=file:///tmp/LibO_Conversion \
@@ -400,11 +401,11 @@ else
             "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
 
         # If file wasn't created directly in outdir, try to find it
-        if [ ! -f "$OUTDIR/$(basename "${FILE%.*}").html" ]; then
+        if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
             # Try to find the generated HTML file in current directory
-            local GENERATED_HTML="$(find . -maxdepth 1 -name "$(basename "${FILE%.*}").html" -print -quit)"
+            local GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
             if [ -n "$GENERATED_HTML" ]; then
-                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE%.*}").html" || echo "$FILE failed to move HTML file?"
+                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
             else
                 echo "$FILE conversion result not found?"
             fi
@@ -1391,7 +1392,7 @@ else
         url="https://gwern.net/$dir"
         if timeout 30s curl --silent --output /dev/null --write "%{http_code}" "$url" | \
                 gf --quiet "404"; then
-            echo "\"~^/$dir\$\" \"/$fullpath\";" >> ./static/nginx/nginx.conf
+            echo "\"~^/$dir\$\" \"/$fullpath\";" >> ./static/redirect/nginx.conf
         fi
     done; ) &
 
@@ -1476,6 +1477,12 @@ else
 
     λ(){ find ./doc/www/ -type f | gfv -e '.html' -e '.pdf' -e '.txt' -e 'www/misc/' -e '.gif' -e '.mp4' -e '.png' -e '.jpg' -e '.dat' -e '.bak' -e '.woff' -e '.webp' -e '.ico' -e '.svg' -e '.ttf' -e '.otf' -e '.js' -e '.mp3' -e '.ogg' -e '.wav' -e '.webm' -e '.bmp' -e '.m4a' -e '.mov'; }
     wrap λ "Unexpected filetypes in /doc/www/ WWW archives."
+
+    λ(){ find ./ -type f -name "*.ogg" | gfv -e '/doc/www/'; }
+    wrap λ "OGG files need to be converted to MP3 for compatibility with Apple devices (which refuses to support OGG to push its own monopoly file formats)."
+
+    λ(){ find ./ -type f -name "*.mp3" | parallel 'output=$(mp3val {} 2>&1); if echo "$output" | gf -q "ERROR"; then echo "Corrupt file: {}"; echo "$output" | gf "ERROR"; fi'; }
+    wrap λ "Corrupted MP3 files detected! Maybe try fixing in-place with 'mp3val -f'?"
 
     λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
     wrap λ "Corrupted text file (either CRLF or not a text file at all eg a misnamed PDF)? use 'file' or 'dos2unix' on it."
