@@ -163,7 +163,7 @@ Extracts = { ...Extracts,
 			//	Reset label text to unselected state.
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.unselectedLabel;
+				label.replaceChildren(label.dataset.unselectedLabel);
 			}
 
 			//	Clear accesskey.
@@ -179,7 +179,7 @@ Extracts = { ...Extracts,
 			//	Set label text to selected state.
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.selectedLabel;
+				label.replaceChildren(label.dataset.selectedLabel);
 			}
 		});
 

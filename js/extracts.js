@@ -333,7 +333,7 @@ Extracts = {
     //  Called by: many functions, all in extracts.js
     targetTypeInfo: (target) => {
         let info = { };
-        for (definition of Extracts.targetTypeDefinitions) {
+        for (let definition of Extracts.targetTypeDefinitions) {
             [   info.typeName,
                 info.predicateFunctionName,
                 info.targetClasses,

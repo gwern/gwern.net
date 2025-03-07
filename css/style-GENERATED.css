@@ -8230,7 +8230,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     width: 1.10em;
 }
 .help-mode-selector-inline {
-    width: 0.80em;
+    width: 0.75em;
 }
 .toolbar-mode-selector-inline {
     width: 1.50em;
@@ -9734,6 +9734,12 @@ a[data-link-icon='sourceforge'] {
 a[data-link-icon='worldcat'] {
     --link-icon-size: 0.70em;
     --link-icon-offset-x: 0.10em;
+}
+
+a[data-link-icon='pdf'] { /* Adobe Acrobat */
+    --link-icon-size: 0.45em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-opacity: 0.50;
 }
 
 /*=------------------=*/

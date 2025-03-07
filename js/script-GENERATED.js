@@ -591,28 +591,26 @@ function observeInjectedElementsInDocument(doc) {
             return;
 
         let doTrigger = (element, f) => {
+			if (f == null)
+				return;
+
             GW.defunctElementInjectTriggers[element.dataset.uuid] = f;
             delete GW.elementInjectTriggers[element.dataset.uuid];
             f(element);
         };
 
-        for (mutationRecord of mutationsList) {
-            for (let [ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
-                for (node of mutationRecord.addedNodes) {
-                    if (node instanceof HTMLElement) {
-                        if (node.dataset.uuid == uuid) {
-                            doTrigger(node, f);
-                            break;
-                        } else {
-                            let nestedNode = node.querySelector(`[data-uuid='${uuid}']`);
-                            if (nestedNode) {
-                                doTrigger(nestedNode, f);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        for (let mutationRecord of mutationsList) {
+			for (let node of mutationRecord.addedNodes) {
+				if (node instanceof HTMLElement) {
+					if (node.hasAttribute("data-uuid")) {
+						doTrigger(node, GW.elementInjectTriggers[node.dataset.uuid]);
+					} else {
+						node.querySelectorAll(`[data-uuid]`).forEach(nestedNode => {
+							doTrigger(nestedNode, GW.elementInjectTriggers[nestedNode.dataset.uuid]);
+						});
+					}
+				}
+			}
         }
     });
 
@@ -825,7 +823,7 @@ function getAssetPathname(assetPathnamePattern, options) {
 
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let matchingAssetPathnames = [ ];
-    for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
+    for (let versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
             matchingAssetPathnames.push(versionedAssetPathname);
     }
@@ -12138,7 +12136,7 @@ Extracts = {
     //  Called by: many functions, all in extracts.js
     targetTypeInfo: (target) => {
         let info = { };
-        for (definition of Extracts.targetTypeDefinitions) {
+        for (let definition of Extracts.targetTypeDefinitions) {
             [   info.typeName,
                 info.predicateFunctionName,
                 info.targetClasses,
@@ -14378,7 +14376,7 @@ Extracts = { ...Extracts,
 			//	Reset label text to unselected state.
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.unselectedLabel;
+				label.replaceChildren(label.dataset.unselectedLabel);
 			}
 
 			//	Clear accesskey.
@@ -14394,7 +14392,7 @@ Extracts = { ...Extracts,
 			//	Set label text to selected state.
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.selectedLabel;
+				label.replaceChildren(label.dataset.selectedLabel);
 			}
 		});
 
@@ -14567,7 +14565,7 @@ Typography = {
 		];
 		for (let [ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
-				for (replacement of replacementGroup)
+				for (let replacement of replacementGroup)
 					specifiedReplacements.push(replacement);
 		}
 		return specifiedReplacements;
@@ -15239,9 +15237,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 							 + GW.refMappingFileVersion);
 	};
 
-	let updatePageTitleElements = (newTitleText) => {
+	let updatePageTitleElements = (newTitleHTML) => {
 		eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
-			element.innerHTML = newTitleText;
+			element.replaceChildren(elementFromHTML(newTitleHTML));
 		});
 	};
 
@@ -15532,7 +15530,7 @@ function updateBacklinksCountDisplay(backlinksBlock) {
 	if (countDisplay == null)
 		return;
 
-	countDisplay.innerHTML = backlinksBlock.querySelectorAll(".backlinks-list > li").length;
+	countDisplay.replaceChildren("" + backlinksBlock.querySelectorAll(".backlinks-list > li").length);
 }
 
 /*************************************/
@@ -15690,7 +15688,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContext
     GWLog("rectifyLocalizedBacklinkContextLinks", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".backlink-source .link-self:not(.link-annotated)").forEach(backlinkContextLink => {
-		backlinkContextLink.innerHTML = "context";
+		backlinkContextLink.replaceChildren("context");
 		backlinkContextLink.classList.add("extract-not");
 	});
 }, "rewrite", (info => (   info.document == document
@@ -17094,9 +17092,9 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFractionMarkup = (eventInfo)
     GWLog("rectifyFractionMarkup", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("span.fraction").forEach(fraction => {
-		fraction.innerHTML = fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
+		fraction.replaceChildren(elementFromHTML(fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
 			return `<span class="num">${num}</span><span class="frasl">&#x2044;</span><span class="denom">${denom}</span>`;
-		});
+		})));
 	});
 }, "rewrite");
 
@@ -17165,7 +17163,7 @@ addCopyProcessor((event, selection) => {
      */
     selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
         citeJoiner.style.display = "initial";
-        citeJoiner.innerHTML = ` ${citeJoiner.innerHTML} `;
+        citeJoiner.replaceChildren(elementFromHTML(` ${citeJoiner.innerHTML} `));
     });
 
     /*  Inject preceding space when a span.cite-date follows immediately after
@@ -17173,7 +17171,7 @@ addCopyProcessor((event, selection) => {
         are no more than two authors).
      */
     selection.querySelectorAll(".cite-author + .cite-date").forEach(citeDateAfterAuthor => {
-        citeDateAfterAuthor.innerHTML = ` ${citeDateAfterAuthor.innerHTML}`;
+        citeDateAfterAuthor.replaceChildren(elementFromHTML(` ${citeDateAfterAuthor.innerHTML}`));
     });
 
     return true;
@@ -17823,7 +17821,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
-        backlink.innerHTML = GW.svg("arrow-up");
+        backlink.replaceChildren(elementFromHTML(GW.svg("arrow-up")));
     });
 }, "rewrite");
 
@@ -18456,7 +18454,7 @@ addCopyProcessor((event, selection) => {
         unadjustedText = unadjustedText.replace("m", ",000,000");
         unadjustedText = unadjustedText.replace("b", ",000,000,000");
 
-        infAdj.innerHTML = `${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`;
+        infAdj.replaceChildren(`${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`);
     });
 
     return true;
@@ -19042,7 +19040,7 @@ addCopyProcessor((event, selection) => {
     }
 
     selection.querySelectorAll(".mjx-chtml").forEach(mathElement => {
-        mathElement.innerHTML = " " + mathElement.querySelector(".mjx-math").getAttribute("aria-label") + " ";
+        mathElement.replaceChildren(" " + mathElement.querySelector(".mjx-math").getAttribute("aria-label") + " ");
     });
 
     return true;
@@ -19430,7 +19428,7 @@ function isWithinCollapsedBlock(element) {
 	elements.
  */
 function containsBlockChildren(element) {
-	for (child of element.children) {
+	for (let child of element.children) {
 		if ([ "DIV", "P", "UL", "LI", "SECTION", "BLOCKQUOTE", "FIGURE" ].includes(child.tagName))
 			return true;
 		if (   child.tagName == "A"
@@ -19784,7 +19782,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
 		disclosureButton.querySelectorAll(".part .label").forEach(label => {
-			label.innerHTML = labelText;
+			label.replaceChildren(labelText);
 		});
 
 		disclosureButton.classList.toggle("labels-visible", options.showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
@@ -19794,7 +19792,28 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		});
 	}
 
+	//	Update iceberg indicator (if needed).
+	updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock);
+}
+
+/****************************************************************************/
+/*	Clears the calculated progress percentage for the given collapse block
+	(forcing the value to be recalculated, and the iceberg indicator to be
+	re-rendered, the next time the collapse block’s button state is updated).
+ */
+function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
+	collapseBlock.querySelector(".collapse-iceberg-indicator").dataset.progressPercentage = "";
+}
+
+/************************************************************************/
+/*	Update the “iceberg indicator” (display of how much of the content is 
+	hidden) for the collapse block.
+ */
+function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
+	if (icebergIndicator.dataset.progressPercentage > "")
+		return;
+
 	let progressPercentage = 100;
 	if (isCollapsed(collapseBlock)) {
 		if (collapseBlock.classList.contains("collapse-block")) {
@@ -19813,6 +19832,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 			progressPercentage = Math.round(100 * abstractLength / (abstractLength + contentLength));
 		}
 	}
+
 	icebergIndicator.dataset.progressPercentage = progressPercentage;
 	renderProgressPercentageIcon(icebergIndicator);
 }
@@ -19838,11 +19858,6 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 
 	//	Set proper classes.
 	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
-
-	//	Update label text and other HTML-based UI state.
-	updateDisclosureButtonState(collapseBlock, {
-		showLabels: GW.collapse.showCollapseInteractionHintsOnHover
-	});
 
 	/*	Compensate for block indentation due to nesting (e.g., lists).
 
@@ -19888,6 +19903,14 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 			collapseBlock.style.marginLeft = "";
 		}
 	}
+
+	//	Invalidate calculated “iceberg indicator” value.
+	invalidateCollapseBlockIcebergIndicator(collapseBlock);
+
+	//	Update label text and other HTML-based UI state.
+	updateDisclosureButtonState(collapseBlock, {
+		showLabels: GW.collapse.showCollapseInteractionHintsOnHover
+	});
 }
 
 /*************************************************/
@@ -20656,7 +20679,7 @@ Sidenotes = { ...Sidenotes,
 		};
 
 		//	Assign sidenotes to layout cells.
-		for (citation of Sidenotes.citations) {
+		for (let citation of Sidenotes.citations) {
 			let sidenote = Sidenotes.counterpart(citation);
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its
@@ -22043,7 +22066,7 @@ ImageFocus = {
 	getIndexOfFocusedImage: () => {
 		let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 		let indexOfFocusedImage = -1;
-		for (i = 0; i < images.length; i++) {
+		for (let i = 0; i < images.length; i++) {
 			if (images[i].classList.contains("focused")) {
 				indexOfFocusedImage = i;
 				break;
@@ -22675,7 +22698,7 @@ DarkMode = { ...DarkMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Reset label text to unselected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.unselectedLabel;
+				label.replaceChildren(label.dataset.unselectedLabel);
 			}
 
 			//	Clear accesskey.
@@ -22693,7 +22716,7 @@ DarkMode = { ...DarkMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Set label text to selected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.selectedLabel;
+				label.replaceChildren(label.dataset.selectedLabel);
 			}
 		});
 
@@ -22963,7 +22986,7 @@ ReaderMode = { ...ReaderMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Reset label text to unselected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.unselectedLabel;
+				label.replaceChildren(label.dataset.unselectedLabel);
 			}
 
 			//	Clear accesskey.
@@ -22979,7 +23002,7 @@ ReaderMode = { ...ReaderMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Set label text to selected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.selectedLabel;
+				label.replaceChildren(label.dataset.selectedLabel);
 			}
 		});
 

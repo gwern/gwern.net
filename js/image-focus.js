@@ -544,7 +544,7 @@ ImageFocus = {
 	getIndexOfFocusedImage: () => {
 		let images = document.querySelectorAll(ImageFocus.galleryImagesSelector);
 		let indexOfFocusedImage = -1;
-		for (i = 0; i < images.length; i++) {
+		for (let i = 0; i < images.length; i++) {
 			if (images[i].classList.contains("focused")) {
 				indexOfFocusedImage = i;
 				break;

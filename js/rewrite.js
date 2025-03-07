@@ -89,9 +89,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 							 + GW.refMappingFileVersion);
 	};
 
-	let updatePageTitleElements = (newTitleText) => {
+	let updatePageTitleElements = (newTitleHTML) => {
 		eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
-			element.innerHTML = newTitleText;
+			element.replaceChildren(elementFromHTML(newTitleHTML));
 		});
 	};
 
@@ -382,7 +382,7 @@ function updateBacklinksCountDisplay(backlinksBlock) {
 	if (countDisplay == null)
 		return;
 
-	countDisplay.innerHTML = backlinksBlock.querySelectorAll(".backlinks-list > li").length;
+	countDisplay.replaceChildren("" + backlinksBlock.querySelectorAll(".backlinks-list > li").length);
 }
 
 /*************************************/
@@ -540,7 +540,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContext
     GWLog("rectifyLocalizedBacklinkContextLinks", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".backlink-source .link-self:not(.link-annotated)").forEach(backlinkContextLink => {
-		backlinkContextLink.innerHTML = "context";
+		backlinkContextLink.replaceChildren("context");
 		backlinkContextLink.classList.add("extract-not");
 	});
 }, "rewrite", (info => (   info.document == document
@@ -1944,9 +1944,9 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFractionMarkup = (eventInfo)
     GWLog("rectifyFractionMarkup", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("span.fraction").forEach(fraction => {
-		fraction.innerHTML = fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
+		fraction.replaceChildren(elementFromHTML(fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
 			return `<span class="num">${num}</span><span class="frasl">&#x2044;</span><span class="denom">${denom}</span>`;
-		});
+		})));
 	});
 }, "rewrite");
 
@@ -2015,7 +2015,7 @@ addCopyProcessor((event, selection) => {
      */
     selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
         citeJoiner.style.display = "initial";
-        citeJoiner.innerHTML = ` ${citeJoiner.innerHTML} `;
+        citeJoiner.replaceChildren(elementFromHTML(` ${citeJoiner.innerHTML} `));
     });
 
     /*  Inject preceding space when a span.cite-date follows immediately after
@@ -2023,7 +2023,7 @@ addCopyProcessor((event, selection) => {
         are no more than two authors).
      */
     selection.querySelectorAll(".cite-author + .cite-date").forEach(citeDateAfterAuthor => {
-        citeDateAfterAuthor.innerHTML = ` ${citeDateAfterAuthor.innerHTML}`;
+        citeDateAfterAuthor.replaceChildren(elementFromHTML(` ${citeDateAfterAuthor.innerHTML}`));
     });
 
     return true;
@@ -2673,7 +2673,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
-        backlink.innerHTML = GW.svg("arrow-up");
+        backlink.replaceChildren(elementFromHTML(GW.svg("arrow-up")));
     });
 }, "rewrite");
 
@@ -3306,7 +3306,7 @@ addCopyProcessor((event, selection) => {
         unadjustedText = unadjustedText.replace("m", ",000,000");
         unadjustedText = unadjustedText.replace("b", ",000,000,000");
 
-        infAdj.innerHTML = `${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`;
+        infAdj.replaceChildren(`${unadjustedText} [${yearText}; ${adjustedText} in ${GW.currentYear}]`);
     });
 
     return true;
@@ -3892,7 +3892,7 @@ addCopyProcessor((event, selection) => {
     }
 
     selection.querySelectorAll(".mjx-chtml").forEach(mathElement => {
-        mathElement.innerHTML = " " + mathElement.querySelector(".mjx-math").getAttribute("aria-label") + " ";
+        mathElement.replaceChildren(" " + mathElement.querySelector(".mjx-math").getAttribute("aria-label") + " ");
     });
 
     return true;

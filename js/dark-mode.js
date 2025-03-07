@@ -212,7 +212,7 @@ DarkMode = { ...DarkMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Reset label text to unselected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.unselectedLabel;
+				label.replaceChildren(label.dataset.unselectedLabel);
 			}
 
 			//	Clear accesskey.
@@ -230,7 +230,7 @@ DarkMode = { ...DarkMode,
 			if (modeSelector.classList.contains("mode-selector-inline") == false) {
 				//	Set label text to selected state.
 				let label = button.querySelector(".label");
-				label.innerHTML = label.dataset.selectedLabel;
+				label.replaceChildren(label.dataset.selectedLabel);
 			}
 		});
 

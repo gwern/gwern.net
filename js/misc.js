@@ -34,28 +34,26 @@ function observeInjectedElementsInDocument(doc) {
             return;
 
         let doTrigger = (element, f) => {
+			if (f == null)
+				return;
+
             GW.defunctElementInjectTriggers[element.dataset.uuid] = f;
             delete GW.elementInjectTriggers[element.dataset.uuid];
             f(element);
         };
 
-        for (mutationRecord of mutationsList) {
-            for (let [ uuid, f ] of Object.entries(GW.elementInjectTriggers)) {
-                for (node of mutationRecord.addedNodes) {
-                    if (node instanceof HTMLElement) {
-                        if (node.dataset.uuid == uuid) {
-                            doTrigger(node, f);
-                            break;
-                        } else {
-                            let nestedNode = node.querySelector(`[data-uuid='${uuid}']`);
-                            if (nestedNode) {
-                                doTrigger(nestedNode, f);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        for (let mutationRecord of mutationsList) {
+			for (let node of mutationRecord.addedNodes) {
+				if (node instanceof HTMLElement) {
+					if (node.hasAttribute("data-uuid")) {
+						doTrigger(node, GW.elementInjectTriggers[node.dataset.uuid]);
+					} else {
+						node.querySelectorAll(`[data-uuid]`).forEach(nestedNode => {
+							doTrigger(nestedNode, GW.elementInjectTriggers[nestedNode.dataset.uuid]);
+						});
+					}
+				}
+			}
         }
     });
 
@@ -268,7 +266,7 @@ function getAssetPathname(assetPathnamePattern, options) {
 
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let matchingAssetPathnames = [ ];
-    for (versionedAssetPathname of Object.keys(GW.assetVersions)) {
+    for (let versionedAssetPathname of Object.keys(GW.assetVersions)) {
         if (assetPathnameRegExp.test(versionedAssetPathname))
             matchingAssetPathnames.push(versionedAssetPathname);
     }

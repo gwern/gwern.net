@@ -194,7 +194,7 @@ function isWithinCollapsedBlock(element) {
 	elements.
  */
 function containsBlockChildren(element) {
-	for (child of element.children) {
+	for (let child of element.children) {
 		if ([ "DIV", "P", "UL", "LI", "SECTION", "BLOCKQUOTE", "FIGURE" ].includes(child.tagName))
 			return true;
 		if (   child.tagName == "A"
@@ -548,7 +548,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
 		disclosureButton.querySelectorAll(".part .label").forEach(label => {
-			label.innerHTML = labelText;
+			label.replaceChildren(labelText);
 		});
 
 		disclosureButton.classList.toggle("labels-visible", options.showLabels || GW.collapse.alwaysShowCollapseInteractionHints);
@@ -558,7 +558,28 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		});
 	}
 
+	//	Update iceberg indicator (if needed).
+	updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock);
+}
+
+/****************************************************************************/
+/*	Clears the calculated progress percentage for the given collapse block
+	(forcing the value to be recalculated, and the iceberg indicator to be
+	re-rendered, the next time the collapse block’s button state is updated).
+ */
+function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
+	collapseBlock.querySelector(".collapse-iceberg-indicator").dataset.progressPercentage = "";
+}
+
+/************************************************************************/
+/*	Update the “iceberg indicator” (display of how much of the content is 
+	hidden) for the collapse block.
+ */
+function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
+	if (icebergIndicator.dataset.progressPercentage > "")
+		return;
+
 	let progressPercentage = 100;
 	if (isCollapsed(collapseBlock)) {
 		if (collapseBlock.classList.contains("collapse-block")) {
@@ -577,6 +598,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 			progressPercentage = Math.round(100 * abstractLength / (abstractLength + contentLength));
 		}
 	}
+
 	icebergIndicator.dataset.progressPercentage = progressPercentage;
 	renderProgressPercentageIcon(icebergIndicator);
 }
@@ -602,11 +624,6 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 
 	//	Set proper classes.
 	collapseBlock.swapClasses([ "expanded", "expanded-not" ], expanding ? 0 : 1);
-
-	//	Update label text and other HTML-based UI state.
-	updateDisclosureButtonState(collapseBlock, {
-		showLabels: GW.collapse.showCollapseInteractionHintsOnHover
-	});
 
 	/*	Compensate for block indentation due to nesting (e.g., lists).
 
@@ -652,6 +669,14 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 			collapseBlock.style.marginLeft = "";
 		}
 	}
+
+	//	Invalidate calculated “iceberg indicator” value.
+	invalidateCollapseBlockIcebergIndicator(collapseBlock);
+
+	//	Update label text and other HTML-based UI state.
+	updateDisclosureButtonState(collapseBlock, {
+		showLabels: GW.collapse.showCollapseInteractionHintsOnHover
+	});
 }
 
 /*************************************************/

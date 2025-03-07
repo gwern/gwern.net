@@ -416,7 +416,7 @@ Sidenotes = { ...Sidenotes,
 		};
 
 		//	Assign sidenotes to layout cells.
-		for (citation of Sidenotes.citations) {
+		for (let citation of Sidenotes.citations) {
 			let sidenote = Sidenotes.counterpart(citation);
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its

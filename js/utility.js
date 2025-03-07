@@ -131,7 +131,7 @@ String.prototype.trimQuotes = function () {
 /*  Returns true if the string begins with any of the given prefixes.
  */
 String.prototype.startsWithAnyOf = function (prefixes) {
-    for (prefix of prefixes)
+    for (let prefix of prefixes)
         if (this.startsWith(prefix))
             return true;
     return false;
@@ -141,7 +141,7 @@ String.prototype.startsWithAnyOf = function (prefixes) {
 /*  Returns true if the string ends with any of the given suffixes.
  */
 String.prototype.endsWithAnyOf = function (suffixes) {
-    for (suffix of suffixes)
+    for (let suffix of suffixes)
         if (this.endsWith(suffix))
             return true;
     return false;
@@ -151,7 +151,7 @@ String.prototype.endsWithAnyOf = function (suffixes) {
 /*  Returns true if the string includes any of the given substrings.
  */
 String.prototype.includesAnyOf = function (substrings) {
-    for (substring of substrings)
+    for (let substring of substrings)
         if (this.includes(substring))
             return true
     return false;
@@ -386,7 +386,7 @@ Object.defineProperty(Node.prototype, "lastTextNode", {
 /*  Returns true if the list contains any of the tokens in the given array.
  */
 DOMTokenList.prototype.containsAnyOf = function (tokens) {
-    for (token of tokens)
+    for (let token of tokens)
         if (this.contains(token) == true)
             return true;
     return false;
@@ -396,7 +396,7 @@ DOMTokenList.prototype.containsAnyOf = function (tokens) {
 /*  Returns true if the list contains all of the tokens in the given array.
  */
 DOMTokenList.prototype.containsAllOf = function (tokens) {
-    for (token of tokens)
+    for (let token of tokens)
         if (this.contains(token) == false)
             return false;
     return true;
@@ -985,7 +985,7 @@ function isNodeEmpty(node, options) {
     if (node.childNodes.length == 0)
         return true;
 
-    for (childNode of node.childNodes)
+    for (let childNode of node.childNodes)
         if (isNodeEmpty(childNode, options) == false)
             return false;
 

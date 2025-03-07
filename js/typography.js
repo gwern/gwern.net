@@ -32,7 +32,7 @@ Typography = {
 		];
 		for (let [ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
 			if (types & replacementTypeCode)
-				for (replacement of replacementGroup)
+				for (let replacement of replacementGroup)
 					specifiedReplacements.push(replacement);
 		}
 		return specifiedReplacements;
