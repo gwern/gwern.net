@@ -3026,11 +3026,14 @@ function enableLinkIcon(link) {
 		if (link.dataset.linkIconType.includes("quad")) {
 			renderQuadLinkIcon(link);
 
-			link.dataset.linkIconType += ",svg";
-			link.dataset.linkIconType = link.dataset.linkIconType.split(",").filter(x => x != "text").unique().join(",");
+			//	Check whether rendering the quad worked.
+			if (link.dataset.renderedLinkIcon > "") {
+				link.dataset.linkIconType += ",svg";
+				link.dataset.linkIconType = link.dataset.linkIconType.split(",").filter(x => x != "text").unique().join(",");
 
-			enableLinkIcon(link);
-			return;
+				enableLinkIcon(link);
+				return;
+			}
 		}
 
         link.style.setProperty("--link-icon", `"${linkIcon}"`);
