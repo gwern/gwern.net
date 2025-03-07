@@ -91,7 +91,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 	let updatePageTitleElements = (newTitleHTML) => {
 		eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
-			element.replaceChildren(elementFromHTML(newTitleHTML));
+			element.replaceChildren(newDocument(newTitleHTML));
 		});
 	};
 
@@ -1944,7 +1944,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFractionMarkup = (eventInfo)
     GWLog("rectifyFractionMarkup", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("span.fraction").forEach(fraction => {
-		fraction.replaceChildren(elementFromHTML(fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
+		fraction.replaceChildren(newDocument(fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
 			return `<span class="num">${num}</span><span class="frasl">&#x2044;</span><span class="denom">${denom}</span>`;
 		})));
 	});
@@ -2015,7 +2015,7 @@ addCopyProcessor((event, selection) => {
      */
     selection.querySelectorAll(".cite-joiner").forEach(citeJoiner => {
         citeJoiner.style.display = "initial";
-        citeJoiner.replaceChildren(elementFromHTML(` ${citeJoiner.innerHTML} `));
+        citeJoiner.replaceChildren(newDocument(` ${citeJoiner.innerHTML} `));
     });
 
     /*  Inject preceding space when a span.cite-date follows immediately after
@@ -2023,7 +2023,7 @@ addCopyProcessor((event, selection) => {
         are no more than two authors).
      */
     selection.querySelectorAll(".cite-author + .cite-date").forEach(citeDateAfterAuthor => {
-        citeDateAfterAuthor.replaceChildren(elementFromHTML(` ${citeDateAfterAuthor.innerHTML}`));
+        citeDateAfterAuthor.replaceChildren(newDocument(` ${citeDateAfterAuthor.innerHTML}`));
     });
 
     return true;
@@ -2673,7 +2673,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
         if (backlink.querySelector("svg, .placeholder"))
             return;
 
-        backlink.replaceChildren(elementFromHTML(GW.svg("arrow-up")));
+        backlink.replaceChildren(newDocument(GW.svg("arrow-up")));
     });
 }, "rewrite");
 
