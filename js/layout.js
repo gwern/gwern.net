@@ -110,12 +110,10 @@ GW.layout = {
 			"force-dropcap",
 			"heading"
 		];
-		let classes = Array.from(node.classList).filter(cssClass => 
-			   layoutClasses.includes(cssClass) == false
-			&& /^dropcaps?-/.test(cssClass) == false
-		);
-		if (classes.length > 0)
-			return true;
+		for (let cssClass of node.classList)
+			if (   layoutClasses.includes(cssClass) == false
+				&& /^dropcaps?-/.test(cssClass) == false)
+				return true;
 
 		//	Exclude elements that have any data attributes.
 		if (Object.keys(node.dataset).length > 0)
