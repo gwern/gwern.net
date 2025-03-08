@@ -20587,12 +20587,11 @@ Sidenotes = { ...Sidenotes,
 			return;
 
 		//	Update the disposition of sidenotes.
-		Sidenotes.sidenotes.forEach(sidenote => {
+		for (let [ index, sidenote ] of Sidenotes.sidenotes.entries()) {
 			/*  Hide sidenotes within currently-collapsed collapse blocks. Show
 				sidenotes not within currently-collapsed collapse blocks.
 			 */
-			let citation = Sidenotes.counterpart(sidenote);
-			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
+			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(Sidenotes.citations[index]));
 
 			//  On which side should the sidenote go?
 			let sidenoteNumber = Notes.noteNumber(sidenote);
@@ -20615,12 +20614,13 @@ Sidenotes = { ...Sidenotes,
 
 			//  Inject the sidenote into the column (provisionally).
 			if (sidenote.classList.contains("hidden")) {
-				Sidenotes.hiddenSidenoteStorage.append(sidenote);
+				if (sidenote.parentElement != Sidenotes.hiddenSidenoteStorage)
+					Sidenotes.hiddenSidenoteStorage.append(sidenote);
 			} else if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
 					   || sidenote.parentElement == null) {
 				side.append(sidenote);
 			}
-		});
+		}
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
@@ -20733,8 +20733,8 @@ Sidenotes = { ...Sidenotes,
 		};
 
 		//	Assign sidenotes to layout cells.
-		for (let citation of Sidenotes.citations) {
-			let sidenote = Sidenotes.counterpart(citation);
+		for (let [ index, citation ] of Sidenotes.citations.entries()) {
+			let sidenote = Sidenotes.sidenotes[index];
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., its
 				citation is within a currently-collapsed collapse block)?
@@ -20798,7 +20798,7 @@ Sidenotes = { ...Sidenotes,
 			//	Add the sidenote to the selected cell.
 			closestFittingLayoutCell.room -= (sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing);
 			closestFittingLayoutCell.sidenotes.push(sidenote);
-		};
+		}
 
 		//	Function to compute distance between two successive sidenotes.
 		let getDistance = (noteA, noteB) => {
