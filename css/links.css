@@ -140,52 +140,52 @@ a[data-link-icon-color]:hover {
 /*  Graphical icons.
     */
 a[data-link-icon-type*='svg'] {
-    --link-icon-size: 0.55em;
-    --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.15em;
-    --link-icon-opacity: 0.55;
+    --link-icon-size-default: 0.55em;
+    --link-icon-offset-x-default: 0.20em;
+    --link-icon-offset-y-default: 0.15em;
+    --link-icon-opacity-default: 0.55;
 }
 a[data-link-icon-type*='svg'] .link-icon-hook::after {
     --dark-mode-invert-filter: invert(1);
 
     content: "";
     position: relative;
-    bottom: var(--link-icon-offset-y);
-    padding: 0 var(--link-icon-size) 0 0;
-    margin: 0 0 0 var(--link-icon-offset-x);
+    bottom: var(--link-icon-offset-y, var(--link-icon-offset-y-default));
+    padding: 0 var(--link-icon-size, var(--link-icon-size-default)) 0 0;
+    margin: 0 0 0 var(--link-icon-offset-x, var(--link-icon-offset-x-default));
     background-image: var(--link-icon-url);
-    background-size: var(--link-icon-size);
+    background-size: var(--link-icon-size, var(--link-icon-size-default));
     background-position-x: center;
     background-position-y: 1ex;
     background-repeat: no-repeat;
-    opacity: var(--link-icon-opacity);
+    opacity: var(--link-icon-opacity, var(--link-icon-opacity-default));
 }
 a[data-link-icon-type*='svg']:hover .link-icon-hook::after {
-    opacity: calc(var(--link-icon-opacity) * 0.55);
+    opacity: calc(var(--link-icon-opacity, var(--link-icon-opacity-default)) * 0.55);
 }
 
 /*  Quad-letter (rendered) SVG icons.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.35em;
-    --link-icon-opacity: 0.80;
+    --link-icon-size-default: 0.75em;
+    --link-icon-offset-x-default: 0.15em;
+    --link-icon-offset-y-default: 0.30em;
+    --link-icon-opacity-default: 0.80;
 }
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
-    background-position-y: 0.9ex;
+    background-position-y: 0.75ex;
 }
 
 /*  Quad-letter (rendered) SVG icons in a sans-serif font.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] {
-    --link-icon-size: 0.80em;
+    --link-icon-size-default: 0.80em;
 }
 
 /*  Quad-letter (rendered) SVG icons in a monospaced font.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] {
-    --link-icon-size: 0.85em;
+    --link-icon-size-default: 0.85em;
 }
 
 /*  Colored graphical link icons.
@@ -208,27 +208,27 @@ a[data-link-icon-type*='svg'][data-link-icon-color]:hover .link-icon-hook::after
 /*  Textual icons.
     */
 a[data-link-icon-type*='text'] {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.12em;
-    --link-icon-offset-y: 0.25em;
-    --link-icon-font: Noto Emoji, Quivira, var(--GW-serif-font-stack);
-    --link-icon-font-weight: 600;
-    --link-icon-font-style: normal;
-    --link-icon-text-decoration: none;
-    --link-icon-opacity: 0.83;
+    --link-icon-size-default: 0.75em;
+    --link-icon-offset-x-default: 0.12em;
+    --link-icon-offset-y-default: 0.25em;
+    --link-icon-opacity-default: 0.83;
+    --link-icon-font-default: Noto Emoji, Quivira, var(--GW-serif-font-stack);
+    --link-icon-font-weight-default: 600;
+    --link-icon-font-style-default: normal;
+    --link-icon-text-decoration-default: none;
 }
 a[data-link-icon-type*='text'] .link-icon-hook::after {
     content: var(--link-icon);
-    font-size: var(--link-icon-size);
-    font-weight: var(--link-icon-font-weight);
-    font-style: var(--link-icon-font-style);
-    font-family: var(--link-icon-font);
-    text-decoration: var(--link-icon-text-decoration);
-    margin: 0 0 0 var(--link-icon-offset-x);
+    font-size: var(--link-icon-size, var(--link-icon-size-default));
+    font-weight: var(--link-icon-font-weight, var(--link-icon-font-weight-default));
+    font-style: var(--link-icon-font-style, var(--link-icon-font-style-default));
+    font-family: var(--link-icon-font, var(--link-icon-font-default));
+    text-decoration: var(--link-icon-text-decoration, var(--link-icon-text-decoration-default));
+    margin: 0 0 0 var(--link-icon-offset-x, var(--link-icon-offset-x-default));
     vertical-align: baseline;
     position: relative;
-    bottom: var(--link-icon-offset-y);
-    opacity: var(--link-icon-opacity);
+    bottom: var(--link-icon-offset-y, var(--link-icon-offset-y-default));
+    opacity: var(--link-icon-opacity, var(--link-icon-opacity-default));
     padding: 0;
     background-image: none;
     background-size: unset;
@@ -237,37 +237,37 @@ a[data-link-icon-type*='text'] .link-icon-hook::after {
 }
 
 a[data-link-icon-type*='sans'] {
-    --link-icon-font: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
+    --link-icon-font-default: Noto Emoji, Quivira, var(--GW-sans-serif-font-stack);
 }
 
 a[data-link-icon-type*='mono'] {
-    --link-icon-opacity: 0.7;
-    --link-icon-font: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
+    --link-icon-opacity-default: 0.7;
+    --link-icon-font-default: Noto Emoji, Quivira, var(--GW-monospaced-font-stack);
 }
 
 a[data-link-icon-type*='bold'] {
-    --link-icon-font-weight: 700;
+    --link-icon-font-weight-default: 700;
 }
 
 a[data-link-icon-type*='italic'] {
-    --link-icon-size: 0.80em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-font-style: italic;
+    --link-icon-size-default: 0.80em;
+    --link-icon-offset-x-default: 0.10em;
+    --link-icon-font-style-default: italic;
 }
 
 a[data-link-icon-type*='overline'] {
-    --link-icon-offset-y: 0.20em;
-    --link-icon-text-decoration: overline;
+    --link-icon-offset-y-default: 0.20em;
+    --link-icon-text-decoration-default: overline;
 }
 
 /*  Triple-letter ‘tri’ initials: too few for quad, but too big for regular
     font size/offset. Common with TLA orgs.
  */
 a[data-link-icon-type*='tri'] {
-    --link-icon-size: 0.65em;
-    --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.40em;
-    --link-icon-opacity: 0.90;
+    --link-icon-size-default: 0.65em;
+    --link-icon-offset-x-default: 0.20em;
+    --link-icon-offset-y-default: 0.40em;
+    --link-icon-opacity-default: 0.90;
 }
 
 /*  Tri-letter icons in a sans face.
@@ -279,7 +279,7 @@ a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
 /*  Tri-letter icons in a monospaced face.
  */
 a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
-    --link-icon-opacity: 0.7;
+    --link-icon-opacity-default: 0.7;
 }
 
 /*  Quad-letter ‘quad’ square icons.
@@ -340,8 +340,8 @@ a[data-link-icon='¶'] {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.35em;
-    --link-icon-font-weight: 400;
     --link-icon-opacity: 0.7;
+    --link-icon-font-weight: 400;
 }
 
 a[data-link-icon='arrow-up'],
