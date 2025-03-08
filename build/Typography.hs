@@ -51,7 +51,8 @@ typesetHtmlFieldPermanent permanent t = let fieldPandocMaybe = runPure $ readHtm
 
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = let year = currentYear in typographyTransformPermanent . walk (dateRangeDuration year)
+typographyTransform = let year = currentYear in parseRawAllClean . walk (dateRangeDuration year) . -- ensure 'citefyInline' gets to run first
+                                                typographyTransformPermanent
 
 -- subset of transforms which are safe to store permanently eg. in the metadata database, and which won't change (this excludes primarily the date-range duration adjuster, which by definition will change every year; this doesn't need to exclude the inflation adjuster, because it is not included in the set of typography transforms, although perhaps it should be?)
 typographyTransformPermanent :: Pandoc -> Pandoc

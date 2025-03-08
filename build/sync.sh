@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-07 17:55:24 gwern"
+# When:  Time-stamp: "2025-03-07 18:09:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1144,7 +1144,7 @@ else
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
-    SPEED=""; if [ "$SLOW" ] || everyNDays 60; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
+    SPEED=""; if [ "$SLOW" ] && everyNDays 7; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
     ## note we use `--copy-links` here, which pulls in all the symlinked static documents:
     rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ "$REMOTE" || true
     wait

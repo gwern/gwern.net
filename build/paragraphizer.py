@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-02-19 09:48:18 gwern"
+# When:  Time-stamp: "2025-03-07 09:18:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -614,6 +614,11 @@ In particular, it argues that (1) ethics committees impose silly restrictions, (
 The gravitational effects of a primordial black hole (PBH) passing through the human body are examined, with the goal of determining the minimum mass necessary to produce significant injury or death. Two effects are examined: the damage caused by a shock wave propagating outward from the black hole trajectory, and the dissociation of brain cells from tidal forces produced by the black hole on its passage through the human body.
 It is found that the former is the dominant effect, with a cutoff mass for serious injury or death of approximately M~PBH~>1.4×10^17^g.
 The number density of primordial black holes with a mass above this cutoff is far too small to produce any observable effects on the human population.
+- <abstract>This article examines similar poetic conventions in Early Irish and Japanese nature poetry. The first section focuses on associations of the seasons, often used in both literatures to explore cycles of rulership, rituals both societal and personal, and phases in human experiences. The second section examines the use of dindṡenchas in Early Irish lyrics and a comparable device, the utamakura, in Japanese poetry. Dindṡenchas and utamakura add historical and literary depth to nature poetry</abstract>
+This article examines similar poetic conventions in Early Irish and Japanese nature poetry.
+The first section focuses on associations of the seasons, often used in both literatures to explore cycles of rulership, rituals both societal and personal, and phases in human experiences.
+The second section examines the use of dindṡenchas in Early Irish lyrics and a comparable device, the utamakura, in Japanese poetry.
+Dindṡenchas and utamakura add historical and literary depth to nature poetry
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

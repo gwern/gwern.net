@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-06 19:12:25 gwern"
+# When:  Time-stamp: "2025-03-07 09:12:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -588,6 +588,8 @@ Katri Räikkönen
 ""
 - "https://deviantabstraction.com/2024/05/02/analyzing-poems-with-llm/ Analyzing poems with LLMs - Deviant/Abstraction"
 "Analyzing poems with LLMs"
+- "https://archive.org/details/Computer_Games_Vol_3_No_2_1984-06_Carnegie_Publications_US/page/n34/mode/1up Computer Games\8212Vol 3 No 2 (1984-06)(Carnegie Publications)(US)"
+"Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)"
 
 Task:
 

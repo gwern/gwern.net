@@ -54,9 +54,18 @@ gwern _ "doc/index"  = gwerntoplevelDocAbstract
 gwern md p
         | p == "/" || p == "" = return (Left Permanent)
         | ".pdf" `isInfixOf` p = pdf md p
-        | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".md", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".zip"] = return (Left Permanent) -- skip potentially very large archives
+        | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub"
+                     , ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img"
+                     , ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht"
+                     , ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".md", ".patch"
+                     , ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt"
+                     , ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".zip", ".sqlite"
+                     , ".par2"] = return (Left Permanent) -- skip potentially very large archives
         | anyPrefix p ["metadata", "/metadata"] ||
-          anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix", "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media", "#writings", "#filmtv", "#music", "#books"] ||
+          anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1"
+                      , "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix"
+                      , "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media"
+                      , "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent)
         | "/newsletter/" `isPrefixOf` p && '#' `elem` p = return (Left Permanent) -- newsletter sections like '/newsletter/2022/01#fiction' do not have abstracts

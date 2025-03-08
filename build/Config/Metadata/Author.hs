@@ -697,7 +697,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1418,12 +1418,13 @@ authorLinkDB = M.fromList $
     , ("Bryan Catanzaro", "https://scholar.google.com/citations?user=UZ6kI2AAAAAJ")
     , ("Bernhard T. Baune", "https://www.uni-muenster.de/OCCMuenster/members/bernhard-baune.html")
     , ("Barbara Franke", "https://www.ru.nl/en/people/franke-b")
-    , ("Anna A. E. Vinkhuyzen", "https://scholar.google.com/citations?user=CLXR124AAAAJ&hl=en&oi=ao")
-    , ("Adam Santoro", "https://scholar.google.com/citations?user=evIkDWoAAAAJ&hl=en&oi=ao")
+    , ("Anna A. E. Vinkhuyzen", "https://scholar.google.com/citations?user=CLXR124AAAAJ")
+    , ("Adam Santoro", "https://scholar.google.com/citations?user=evIkDWoAAAAJ")
     , ("Mun Hou Won", "https://blog.munhou.com/")
     , ("Patrick McKenzie", "https://www.kalzumeus.com/start-here-if-youre-new/")
     , ("Nicolas Toper", "https://www.linkedin.com/in/nicolas/")
     , ("David Hugh-Jones", "https://wyclif.substack.com/about")
+    , ("Amit Anand", "https://scholar.google.com/citations?user=tC0Q9doAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2671,4 +2672,5 @@ authorWpLinkDB =
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
     , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz"
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
-    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes", "Kenneth E. Boulding"]
+    , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
+    , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton"]
