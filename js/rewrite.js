@@ -2981,10 +2981,10 @@ function renderQuadLinkIcon(link) {
 		mono: -16
 	}[fontFamilyIdentifier];
 	let positions = [
-		[ 128 - letterSpacing, 116 ],
-		[ 384 + letterSpacing, 116 ],
-		[ 128 - letterSpacing, 396 ],
-		[ 384 + letterSpacing, 396 ]
+		[ 128 - letterSpacing, 112 ],
+		[ 384 + letterSpacing, 112 ],
+		[ 128 - letterSpacing, 400 ],
+		[ 384 + letterSpacing, 400 ]
 	];
 
 	let letters = link.dataset.linkIcon.split("").filter(c => /\S/.test(c));

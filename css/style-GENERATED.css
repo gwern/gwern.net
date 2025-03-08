@@ -8815,11 +8815,11 @@ a[data-link-icon-type*='svg']:hover .link-icon-hook::after {
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
     --link-icon-size-default: 0.75em;
     --link-icon-offset-x-default: 0.15em;
-    --link-icon-offset-y-default: 0.35em;
+    --link-icon-offset-y-default: 0.30em;
     --link-icon-opacity-default: 0.80;
 }
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
-    background-position-y: 0.9ex;
+    background-position-y: 0.75ex;
 }
 
 /*  Quad-letter (rendered) SVG icons in a sans-serif font.
