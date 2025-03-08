@@ -2297,20 +2297,20 @@ body.page-index #markdownBody #notable {
         body.page-index #markdownBody,
 	    body.page-404 div#new-popular-notable {
             grid-template-columns: 45ch 45ch 45ch;
-            margin-left: -20ch;
+            margin-left: -22ch;
         }
         body.page-index #markdownBody #notable {
             display: block;
         }
         body.page-index #markdownBody .abstract {
-            max-width: 935px;
-            margin-left: 20ch;
+			max-width: calc(var(--GW-body-max-width) - 2 * var(--GW-body-side-padding));
+            margin-left: 22ch;
         }
         body.page-index #markdownBody hr {
             margin-left: -5ch;
         }
 	    body.page-404 div#new-popular-notable hr {
-            margin-left: -13.5ch;
+            margin-left: -9.5ch;
         }
     }
 }
@@ -2321,7 +2321,7 @@ body.page-index #markdownBody #notable {
 
 /*  Headings.
  */
-body.page-index #markdownBody section h1 {
+body.page-index #markdownBody section .heading {
     font-size: 1.5em;
     line-height: 1.125;
     text-align: left;
@@ -2330,9 +2330,13 @@ body.page-index #markdownBody section h1 {
     padding: 0;
     border-bottom: 1px dotted currentColor;
 }
+body.page-404 div#new-popular-notable section .heading {
+	margin-left: 0;
+}
 /*  No pilcrows.
  */
-body.page-index #markdownBody section h1 a::after {
+body.page-index #markdownBody section .heading a::after,
+body.page-404 div#new-popular-notable section .heading a::after {
     display: none;
 }
 
@@ -2343,19 +2347,22 @@ body.page-index #markdownBody section h1 a::after {
    it looks rather overwhelming due to the sheer number of black stars, distracting from the essay titles and
    wrecking the 'color'. Since there is currently no three-level nesting, we don't need to worry about cycling,
    and just lighten the color of the first/second level markers by overriding them. */
-body.page-index #markdownBody section ul {
+body.page-index #markdownBody section ul,
+body.page-404 div#new-popular-notable section ul {
     --list-left-padding: 1.375em;
     --text-alignment: left;
     --list-bullet: var(--GW-image-single-white-star-svg);
     --list-bullet-opacity: 0.85;
 }
-body.page-index #markdownBody section ul ul {
+body.page-index #markdownBody section ul ul,
+body.page-404 div#new-popular-notable section ul ul {
     --list-bullet: var(--GW-image-single-white-star-rotated-svg);
     --list-bullet-opacity: 0.85;
 }
 
 @media all and (max-width: 649px) {
-    body.page-index #markdownBody section ul p {
+    body.page-index #markdownBody section ul p,
+    body.page-404 div#new-popular-notable section ul p {
         margin-bottom: 0.15em;
         line-height: 1.65;
         overflow-wrap: break-word;
