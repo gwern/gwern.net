@@ -838,15 +838,23 @@ function stripStyles(element, options) {
 
 	rootMargin
 		See IntersectionObserver documentation.
+
+	checkPositionImmediately
+		Default is true. If false, skips the “short-circuit” check for whether
+		the target is already visible within the scroll container. Disabling
+		this option may improve performance.
  */
 function lazyLoadObserver(f, target, options) {
-	options = Object.assign({ }, options);
+	options = Object.assign({
+		checkPositionImmediately: true
+	}, options);
 
     if (target == null)
         return;
 
 	requestAnimationFrame(() => {
-		if (   (options.threshold ?? 0) == 0
+		if (   options.checkPositionImmediately == true
+			&& (options.threshold ?? 0) == 0
 			&& (options.rootMargin ?? "0px").includes("-") == false
 			&& isWithinRectOf(target, options.root)) {
 			f();

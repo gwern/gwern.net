@@ -2378,7 +2378,8 @@ Transclude = {
                 source: "transclude.loadingFailed",
                 document: link.eventInfo.document,
 	            includeLink: link,
-                nodes: [ link ]
+                nodes: [ link ],
+                where: link.parentElement
             });
         }
     },

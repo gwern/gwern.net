@@ -11490,7 +11490,8 @@ Transclude = {
                 source: "transclude.loadingFailed",
                 document: link.eventInfo.document,
 	            includeLink: link,
-                nodes: [ link ]
+                nodes: [ link ],
+                where: link.parentElement
             });
         }
     },
@@ -19795,8 +19796,39 @@ function updateDisclosureButtonState(collapseBlock, options) {
 		});
 	}
 
-	//	Update iceberg indicator (if needed).
-	updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock);
+	//	Set collapse block iceberg indicator to update when needed.
+	setCollapseBlockIcebergIndicatorUpdateWhenNeeded(collapseBlock);
+}
+
+/*****************************************************************************/
+/*	Returns true if the given collapse block’s iceberg indicator needs update.
+ */
+function collapseBlockIcebergIndicatorNeedsUpdate(collapseBlock) {
+	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
+	return (icebergIndicator.dataset.progressPercentage > ""
+			? false
+			: true);
+}
+
+/****************************************************************************/
+/*	Adds an IntersectionObserver to update the given collapse block’s iceberg
+	indicator when the collapse block is scrolled to.
+ */
+function setCollapseBlockIcebergIndicatorUpdateWhenNeeded(collapseBlock) {
+	if (collapseBlock.icebergIndicatorUpdateScheduled == true)
+		return;
+
+	lazyLoadObserver(() => {
+		updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock);
+
+		collapseBlock.icebergIndicatorUpdateScheduled = null;
+	}, collapseBlock, {
+		root: scrollContainerOf(collapseBlock),
+		rootMargin: "100%",
+		checkPositionImmediately: false
+	});
+
+	collapseBlock.icebergIndicatorUpdateScheduled = true;
 }
 
 /****************************************************************************/
@@ -19813,8 +19845,7 @@ function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
 	hidden) for the collapse block.
  */
 function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
-	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
-	if (icebergIndicator.dataset.progressPercentage > "")
+	if (collapseBlockIcebergIndicatorNeedsUpdate(collapseBlock) == false)
 		return;
 
 	let progressPercentage = 100;
@@ -19836,6 +19867,7 @@ function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 		}
 	}
 
+	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
 	icebergIndicator.dataset.progressPercentage = progressPercentage;
 	renderProgressPercentageIcon(icebergIndicator);
 }
@@ -20262,6 +20294,25 @@ document.addEventListener("selectionchange", GW.selectionChangedRevealElement = 
 					   : newSelection.anchorNode.parentElement);
 		if (isWithinCollapsedBlock(element))
 			revealElement(element);
+	}
+});
+
+/**************************************************************************/
+/*	When content changes (e.g., due to include-links firing and transcluded
+	content being injected), schedule an iceberg indicator update for any
+	containing collapse blocks of the changed content.
+ */
+GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", GW.collapse.updateIcebergIndicatorsOnContentChangeWithinCollapseBlocks = (eventInfo) => {
+	let where = eventInfo.where;
+	if (where == null)
+		return;
+
+	let containingCollapseBlock;
+	while ((containingCollapseBlock = where.closest(".collapse"))) {
+		invalidateCollapseBlockIcebergIndicator(containingCollapseBlock);
+		setCollapseBlockIcebergIndicatorUpdateWhenNeeded(containingCollapseBlock);
+
+		where = containingCollapseBlock.parentElement;
 	}
 });
 /*	sidenotes.js: standalone JS library for parsing HTML documents with
