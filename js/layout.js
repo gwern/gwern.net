@@ -486,15 +486,26 @@ function useLayoutCache(element, action, options, f) {
 
 	let cacheKey = `${action} ${options.cacheKey}`;
 
-	if (  (element.layoutCache?.time ?? 0) < GW.layout.currentPassBegin
-		|| element.layoutCache[cacheKey] == null) {
-		if ((element.layoutCache?.time ?? 0) < GW.layout.currentPassBegin)
-			element.layoutCache = { time: GW.layout.currentPassBegin };
-
-		element.layoutCache[cacheKey] = f(element, options);
+	let layoutCache = element.layoutCache;
+	let cacheInvalid = false;
+	if (layoutCache == null) {
+		layoutCache = element.layoutCache = new Map();
+		cacheInvalid = true;
 	}
 
-	return element.layoutCache[cacheKey];
+	if (   cacheInvalid
+		|| (layoutCache.get("time") ?? 0) < GW.layout.currentPassBegin) {
+		layoutCache.clear();
+		layoutCache.set("time", GW.layout.currentPassBegin);
+		cacheInvalid = true;
+	}
+
+	if (   cacheInvalid
+		|| layoutCache.has(cacheKey) == false) {
+		layoutCache.set(cacheKey, f(element, options));
+	}
+
+	return layoutCache.get(cacheKey);
 }
 
 /***************************************************************************/
