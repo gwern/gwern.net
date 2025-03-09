@@ -3574,13 +3574,15 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
 		}
 	};
 
-	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
-		GW.layout.TOCAdjacentBlockLayoutNeedsRectification = true;
+	requestIdleCallback(() => {
+		GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
+			GW.layout.TOCAdjacentBlockLayoutNeedsRectification = true;
 
-		requestAnimationFrame(rectifyTOCAdjacentBlockLayoutIfNeeded);
-	}, {
-		condition: (layoutEventInfo) => (   layoutEventInfo.container == document.main
-										 && layoutEventInfo.processorName == "applyBlockSpacingInContainer")
+			requestAnimationFrame(rectifyTOCAdjacentBlockLayoutIfNeeded);
+		}, {
+			condition: (layoutEventInfo) => (   layoutEventInfo.container == document.main
+											 && layoutEventInfo.processorName == "applyBlockSpacingInContainer")
+		});
 	});
 }, "rewrite", (info) => info.container == document.main);
 
