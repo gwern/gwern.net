@@ -59,10 +59,11 @@ typographyTransformPermanent :: Pandoc -> Pandoc
 typographyTransformPermanent = let year = currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk imageCaptionLinebreak .
-                        walk (citefyInline year . linkLive . linkIcon) .
+                        walk (linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
+                        walk (citefyInline year) .
                         parseRawAllClean -- clean up all anonymous or empty spans/divs so we have a clean AST to rewrite
 
 linebreakingTransform :: Pandoc -> Pandoc

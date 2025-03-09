@@ -697,7 +697,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1425,6 +1425,10 @@ authorLinkDB = M.fromList $
     , ("Nicolas Toper", "https://www.linkedin.com/in/nicolas/")
     , ("David Hugh-Jones", "https://wyclif.substack.com/about")
     , ("Amit Anand", "https://scholar.google.com/citations?user=tC0Q9doAAAAJ")
+    , ("Adam Roberts", "https://scholar.google.com/citations?user=U5UpKq8AAAAJ&hl=en&oi=ao")
+    , ("Xiaohua Zhai", "https://sites.google.com/view/xzhai")
+    , ("Xiaogang Wang", "https://scholar.google.com/citations?user=-B5JgjsAAAAJ&hl=en&oi=ao")
+    , ("Tom B. Brown", "https://scholar.google.com/citations?user=RLvsC94AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

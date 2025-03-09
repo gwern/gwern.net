@@ -206,7 +206,7 @@ arxivAbstractRegexps = [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt\\{\\1})")
 arxivAbstractFixedRewrites = [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")
                              , (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)")
                              , ("\\{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**")
-                             , ("%we", "We"), (" #", " \\#")]
+                             , ("%we", "We"), (" #", " \\#"), ("\\sigma\\ ", "σ ")]
 
 -- what keys are permitted in the key-value fields of GTX files?
 gtxKeyValueKeyNames :: [String]

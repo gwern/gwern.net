@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-06 22:58:14 gwern"
+# When:  Time-stamp: "2025-03-08 19:24:41 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -181,13 +181,13 @@ _upload() {
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
                   # Check file size and add to '.gitignore' if large.
                   FILESIZE=$(stat -c%s "$TARGET")
-                  SIZE_THRESHOLD=262144000  # 250MB; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
+                  SIZE_THRESHOLD=200000000  # 200MB; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
                   IS_SMALL_FILE=$([[ "$FILESIZE" -le "$SIZE_THRESHOLD" ]] && echo true || echo false)
                   $IS_SMALL_FILE && (git add "$TARGET" &) || {
                       # Only add to '.gitignore' if not already ignored
                       git check-ignore --quiet "$TARGET" || {
                           # We will document every file ignored this way, to look at usage later & make it easy to rollback or switch to an alternative:
-                          echo "# $(date --iso-8601) Large-file ignored: $(sha1sum $TARGET) ($(git rev-parse HEAD)):" >> ./.gitignore
+                          echo "# $(date --iso-8601) Large-file ignored: $(numfmt --to=iec-i --suffix=B $FILESIZE) $(sha1sum $TARGET) ($(git rev-parse HEAD)):" >> ./.gitignore
                           echo "$TARGET" >> ./.gitignore
                       }
                       bold "Added large file /$TARGET to '.gitignore' (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"

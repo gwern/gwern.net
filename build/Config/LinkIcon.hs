@@ -815,7 +815,7 @@ linkIconTestUnitsText =
          , ("https://magenta.tensorflow.org/music-transformer", "alphabet", "svg", blueG)
          , ("https://norvig.com/experiment-design.html", "N", "text,sans", blueG)
          , ("https://groups.google.com/group/ankisrs/",  "\9993","text", blueG)
-         , ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg", "#dd1405")
+         , ("https://mega.nz/#!2NFEUSjQ!XW-RJpYFoB2J4nE4VWrpvrcbPxFnPY-1QE8gFlsXm7A",  "mega","svg", "#dd1405")
          , ("https://abcnews.go.com/Health/MedicalMysteries/story?id=3679532&page=1", "ABC", "text,tri,sans", "#fdc605")
          , ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,tri,sans", "#fdc605")
          , ("https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty", "SCM", "text,tri", "#ffca05")
