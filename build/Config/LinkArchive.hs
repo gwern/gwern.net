@@ -1139,6 +1139,7 @@ whiteListMatchesFixed = [
       , "https://www.waifu2x.net/" -- interactive (service)
       , "https://guessiclrreviews.com/" -- interactive (game)
       , "https://www.codingfont.com/" -- interactive (tool)
+      , "https://eieio.games/blog/bad-apple-with-regex-in-vim/" -- video
       ]
       -- TODO: add either regexp or full-string match versions so we can archive pages *inside* the subreddit but not the raw subreddit homepage itself
       -- , "https://www.reddit.com/r/politics/" -- homepage

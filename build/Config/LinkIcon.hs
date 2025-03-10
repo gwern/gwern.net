@@ -482,7 +482,7 @@ linkIconRulesSVG u
  | u'' u "en.bitcoin.it" || u'' u "bitcointalk.org" || u'' u "www.blockchain.com" = ("bitcoin", "svg", "#ef8e19") -- <https://en.wikipedia.org/wiki/File:Bitcoin.svg>
  | u'' u "www.biorxiv.org" || u'' u "www.medrxiv.org" = ("chi-dna", "svg", "#bd2736") -- BioRxiv (custom icon: italic Chi with DNA cross-strands).; color: red
  | u'' u "distill.pub" = ("distillpub", "svg", "") -- Distill ML journal.
- | u'' u "www.dropbox.com" || u'' u "dl.dropboxusercontent.com" = ("dropbox", "svg", "#0061fe") -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com; color: blue
+ | u'' u "www.dropbox.com" || u'' u "dropbox.tech" = ("dropbox", "svg", "#0061fe") -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. color: blue
  | u'' u "www.erowid.org" || u'' u "www.drugsdata.org" = ("erowid", "svg", "#a06929") -- color: copper-orange (<https://www.erowid.org/general/about/about_article10.shtml>)
  | aU' u [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = ("tensorflow", "svg", "#ff6f00") -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | aU'' u ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = ("github", "svg", "") -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
@@ -990,7 +990,7 @@ linkIconTestUnitsText =
          , ("/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods",  "spreadsheet","svg", "#0586ce")
          , ("https://aiimpacts.org/2019-recent-trends-in-gpu-price-per-flops/", "AII", "text,tri", "#2396ce")
          , ("http://esr.ibiblio.org/?p=7183", "ESR","text,tri,sans", "#0000ee")
-         , ("https://dl.dropboxusercontent.com/u/182368464/umineko-compress.tar.xz",  "dropbox","svg", "#0061fe")
+         , ("https://dropbox.tech/machine-learning/prompt-injection-with-control-characters-openai-chatgpt-llm",  "dropbox","svg", "#0061fe")
          , ("https://memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans", "#951d1f")
          , ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text,tri", "#011d3f")
          , ("https://academic.oup.com/ageing/article/36/5/507/40586", "OUP", "text,tri", "#011d3f")

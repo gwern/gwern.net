@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-03 12:47:12 gwern"
+# When:  Time-stamp: "2025-03-09 14:49:48 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -433,8 +433,8 @@ gw () {
     fi
 }
 
-## file names only
-gwf () { (cd ~/wiki/ && find . -type f | grep --fixed-strings -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
+## file names only (include home-directory in case of duplicate or not-yet-uploaded files)
+gwf () { (cd ~/wiki/ && (find ~/ -maxdepth 1 -type f; find . -type f) | grep --fixed-strings -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
 ## Newsletter only:
 gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
         find ~/wiki/newsletter/ -type f -name "*.md" | \

@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-02-18 09:42:31 gwern"
+# When:  Time-stamp: "2025-03-09 14:52:12 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -158,6 +158,12 @@ Amir Mani, Cory Henn, Claire Couch, Sonal Patel, Thora Lieke, Justin T. H. Chan,
 Dana E. King, Arch G. Mainous III, Mark E. Geesey, Robert F. Woolson
 - <text>he hasn't seen my grandpa eat</text>
 He hasn't seen my grandpa eat.
+- <text>Meyer, Katie A.*; Williams, Paige†; Hernandez-Diaz, Sonia‡; Cnattingius, Sven§</text>
+Katie A. Meyer, Paige Williams, Sonia Hernandez-Diaz, Sven Cnattingius
+- <text>Lambe, Mats*; Hultman, Christina*; Torrång, Anna*; MacCabe, James†; Cnattingius, Sven*</text>
+Mats Lambe, Christina Hultman, Anna Torrång, James MacCabe, Sven Cnattingius
+- <text>Vance, Todd PhD*; Maes, Hermine H. PhD†‡; Kendler, Kenneth S. MD†‡</text>
+Todd Vance, Hermine H. Maes, Kenneth S. Kendler
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 
