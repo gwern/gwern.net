@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID, id2URLdb, writeOutID2URLdb) where
+module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID, id2URLdb, writeOutID2URLdb, isValidID) where
 
 import Control.Monad (replicateM)
-import Data.Char (isAlphaNum, isPunctuation, toLower)
-import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex, sort)
+import Data.Char (isAlphaNum, isPunctuation, toLower, isDigit, isLetter, isAsciiLower, isAsciiUpper, ord)
+import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex, sort, isSuffixOf)
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
 import qualified Data.Text as T (null, pack, unpack, take, Text)
@@ -40,6 +40,29 @@ url2ID "" = error "LinkID.url2ID: passed empty string as a URL/path to hash into
 url2ID url = T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
   where
     hash = SHA1.hash (TE.encodeUtf8 url)
+
+-- | Validates whether a string is a valid ID
+-- Valid IDs are either:
+-- 1. Exactly 8 URL-safe Base64 characters [a-zA-Z0-9_-]
+-- 2. Structured IDs with letters (including Unicode), digits, and hyphens; double-hyphens are permitted to encode page-sections.
+isValidID :: String -> Bool
+isValidID s
+    | length s == 8 = all isBase64Char s || isStructuredID s
+    | otherwise     = isStructuredID s
+  where
+    -- URL-safe Base64 character set [a-zA-Z0-9_-]
+    isBase64Char c = isAsciiLower c || isAsciiUpper c || isDigit c || c == '_' || c == '-'
+
+    -- Structured ID validation
+    isStructuredID str =
+        let nonEmpty = not (null str)
+            noLeadingHyphen = not (isPrefixOf "-" str)
+            noTrailingHyphen = not (isSuffixOf "-" str)
+            validChars = all isValidStructuredChar str
+        in nonEmpty && validChars && noLeadingHyphen && noTrailingHyphen
+
+    -- Allow any letter (including Unicode), digits, and hyphens; we accept all non-ASCII Unicode characters because it's quite difficult to define invalid Unicode characters given all the surnames floating around; we also have to permit '_' because too many usernames include it as a space separator...
+    isValidStructuredChar c = isLetter c || isDigit c || c == '-' || c == '_' || ord c >= 128
 
 -- convenience wrapper around `generateID`:
 metadataItem2ID :: Metadata -> Path -> MetadataItem -> T.Text
@@ -186,6 +209,9 @@ writeOutID2URLdb md = do let dbl = id2URLdb md
 -- return the /ref/ URL for a specific annotation somewhere for easier linking (used in `gwa` dumps)
 generateURL :: Metadata -> Path -> MetadataItem -> String
 generateURL _ _ (_,_,_,_,_,[],_) = ""
-generateURL md url (_,a,d,_,_,_,_) = let ident = T.unpack $ generateID md url a d in
-                                     if null ident then "" else
-                                       "https://gwern.net/ref/" ++ ident
+generateURL md url x@(_,a,d,_,_,_,_) =
+  let ident = T.unpack $ generateID md url a d in
+    if null ident then "" else
+      if not (isValidID ident) then
+        error $ "LinkID.generateURL: invalid ID generated? ID was: " ++ show ident ++ "; " ++ show url ++ show x
+      else "https://gwern.net/ref/" ++ ident
