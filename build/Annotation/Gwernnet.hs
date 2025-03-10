@@ -1,15 +1,16 @@
 module Annotation.Gwernnet where
 
 import Control.Monad (when)
-import Data.Char (toUpper)
+import Data.Char (toUpper, toLower)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
+import qualified Data.ByteString.Lazy.Char8 as Char8 (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 -- import Text.HTML.TagSoup (isTagOpenName, parseTags, renderOptions, renderTags, renderTagsOptions, Tag(TagClose, TagOpen, TagText))
 import qualified Data.Text as T (pack, unpack)
 import System.Exit (ExitCode(ExitFailure))
 -- import Text.Pandoc (runPure, nullMeta, writeHtml5String, Pandoc(..))
 import Data.FileStore.Utils (runShellCommand)
-import System.FilePath (takeDirectory)
+import System.FilePath (takeDirectory, takeExtension)
 import Text.Regex.TDFA ((=~))
 
 import Annotation.PDF (pdf)
@@ -53,14 +54,17 @@ gwern _ "/doc/index" = gwerntoplevelDocAbstract -- special-case ToC generation o
 gwern _ "doc/index"  = gwerntoplevelDocAbstract
 gwern md p
         | p == "/" || p == "" = return (Left Permanent)
-        | ".pdf" `isInfixOf` p = pdf md p
-        | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub"
-                     , ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img"
-                     , ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht"
-                     , ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".md", ".patch"
-                     , ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt"
-                     , ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".zip", ".sqlite"
-                     , ".par2"] = return (Left Permanent) -- skip potentially very large archives
+        | ext == ".pdf"  = pdf md p
+        -- skip potentially very large archives or files which cannot be parsed as HTML later on
+        -- REMINDER: add new formats to LinkIcon!
+        | ext `elem` ["avi", "bmp", "conf", "css", "csv", "doc", "docx", "ebt", "epub"
+                     , "gif", "hi", "hs", "htm", "html", "ico", "idx", "img"
+                     , "jpeg", "jpg", "js", "json", "jsonl", "maff", "mdb", "mht"
+                     , "mp3", "mp4", "mkv", "o", "ods", "opml", "pack", "md", "patch"
+                     , "php", "png", "r", "rm", "sh", "svg", "swf", "tar", "ttf", "txt"
+                     , "wav", "webm", "xcf", "xls", "xlsx", "xml", "xz", "zip", "sqlite"
+                     , "par2", "pkl", "h5", "t7", "weights"
+                     ] = return (Left Permanent)
         | anyPrefix p ["metadata", "/metadata"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1"
                       , "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix"
@@ -71,15 +75,17 @@ gwern md p
         | "/newsletter/" `isPrefixOf` p && '#' `elem` p = return (Left Permanent) -- newsletter sections like '/newsletter/2022/01#fiction' do not have abstracts
         | p =~ sectionAnonymousRegex = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
         | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
+        | '.' `elem` p = error $ "Annotation.Gwernnet: attempted to scrape a file, as indicated by a period in its URL? This should be impossible as all file-types should be excluded, and essays aren't allowed to have periods in their name. Look into this. Path was: " ++ p
         | otherwise =
             do let p' = sed "^/" "" $ delete "https://gwern.net/" p
                let indexP = "doc/" `isPrefixOf` p' && "/index" `isInfixOf` p'
                printGreen p'
                checkURL p
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
+               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "--max-filesize", "100000000", "https://gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
                case status of
                  ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
+                        when (Char8.length bs > 100000000) $ error $ "Annotation.Gwernnet.gwern: downloaded a file >100,000,000 characters in length? This probably shouldn’t’ve happened (maybe a new filetype needs to be excluded?). File was: " ++ show p'
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
@@ -127,6 +133,9 @@ gwern md p
                           return (Left Permanent) -- NOTE: special-case: if a new essay or a tag hasn't been uploaded yet, make a stub entry; the stub entry will eventually be updated via a `updateGwernEntries` scrape. (A Temporary error has the drawback that it throws changeTag.hs into an infinite loop as it keeps trying to fix the temporary error.)
                           else return $ Right (p, (title', author', date, dateModified, doi, keywordTags, combinedAnnotation))
         where
+          ext :: String
+          ext =  map toLower $ delete "." $ takeExtension p
+
           filterThumbnail, filterThumbnailText, filterThumbnailCSS :: Tag String -> Bool
           filterThumbnail     = isMetaTag "og:image"
           filterThumbnailText = isMetaTag "og:image:alt"

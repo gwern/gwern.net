@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-07 18:09:01 gwern"
+# When:  Time-stamp: "2025-03-10 11:48:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1234,7 +1234,7 @@ else
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
-    c () { curl --compressed --silent --output /dev/null --head "$@"; }
+    c () { curl --max-filesize 200000000 --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://gwern.net/DNM-archives' 'https://gwern.net/dnm-archive'
          cr 'https://gwern.net/doc/dnb/1978-zimmer.pdf' 'https://gwern.net/doc/psychology/music/distraction/1978-zimmer.pdf'
@@ -1481,6 +1481,9 @@ else
     λ(){ find ./ -type f -name "*.ogg" | gfv -e '/doc/www/'; }
     wrap λ "OGG files need to be converted to MP3 for compatibility with Apple devices (which refuses to support OGG to push its own monopoly file formats)."
 
+    λ(){ find ./ -type f | gf -e ".pkl.xz" -e ".h5.xz" -e ".weights.xz" -e ".t7.xz"; }
+    wrap λ "There is no point in XZ-compressing these sorts of binary archives."
+
     λ(){ find ./ -type f -name "*.mp3" | parallel 'output=$(mp3val {} 2>&1); if echo "$output" | gf -q "ERROR"; then echo "Corrupt file: {}"; echo "$output" | gf "ERROR"; fi'; }
     wrap λ "Corrupted MP3 files detected! Maybe try fixing in-place with 'mp3val -f'?"
 
@@ -1673,12 +1676,12 @@ else
     if [ "$(date +"%d")" == "1" ]; then
 
         bold "Checking all MIME types…"
-        c () { curl --compressed --silent --output /dev/null --head "$@"; }
+        c () { curl --max-filesize 200000000 --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
             MIME=$(c --max-redirs 0 --write-out '%{content_type}' "https://gwern.net/$PAGE")
             if [ "$MIME" != "text/html; charset=utf-8" ]; then red "$PAGE : $MIME"; fi
 
-            SIZE=$(curl --max-redirs 0 --compressed --silent "https://gwern.net/$PAGE" | wc --bytes)
+            SIZE=$(curl --max-filesize 200000000 --max-redirs 0 --compressed --silent "https://gwern.net/$PAGE" | wc --bytes)
             if [ "$SIZE" -lt 7500 ]; then red "$PAGE : $SIZE : $MIME"; fi
         done
 
@@ -1698,13 +1701,13 @@ else
         for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^/' | cut --delimiter=' ' --field=1 | sort --unique); do
             echo "$URL"
-            MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
+            MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
         for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^https://gwern.net' | sort --unique); do
-            MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
+            MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
     fi

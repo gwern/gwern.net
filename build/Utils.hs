@@ -537,7 +537,10 @@ hasAny search (x:xs) = x `elem` search || hasAny search xs
 
 -- Data.Text equivalent of System.FilePath.takeExtension
 takeExtension :: T.Text -> T.Text
-takeExtension = T.reverse . T.takeWhile ((/=) '.') . T.reverse
+takeExtension f = T.reverse $
+                  T.takeWhile ((/=) '.') $
+                  (if '#' `T.elem` f then T.dropWhile (/='#') else id) $
+                  T.reverse f
 
 -- | 'repeated' finds only the elements that are present more than once in the list.
 -- Example:

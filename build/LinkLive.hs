@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-02-16 22:55:57 gwern"
+When:  Time-stamp: "2025-03-10 10:22:58 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -139,7 +139,7 @@ linkLiveTest = filter (\(u, bool) -> bool /=
 -- check the live test-cases with curl for `X-Frame` HTTPS headers; the presence of these guarantees liveness no longer works and they need to be updated.
 linkLiveTestHeaders :: IO ()
 linkLiveTestHeaders = forM_ C.goodLinks
-  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--compressed", "--insecure", "--user-agent", CM.userAgent, "--location", "--silent", "--head", T.unpack u]
+  (\u -> do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--max-filesize", "100000000", "--compressed", "--insecure", "--user-agent", CM.userAgent, "--location", "--silent", "--head", T.unpack u]
             case status of
                 ExitFailure _ -> printRed "Error: curl download failed on URL " >> print (T.unpack u ++ " : " ++ show status ++ " : " ++ show bs)
                 _ -> do let s = map toLower $ U.toString bs
