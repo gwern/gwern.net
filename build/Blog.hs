@@ -57,7 +57,10 @@ writeOutBlogEntries md =
 filterForAuthoredAnnotations :: Metadata -> MetadataList
 filterForAuthoredAnnotations md =
   M.toList $ M.filterWithKey (\url (_,aut,_,_,_,_,abst) ->
-                                 head url /= '/' && authorU `isPrefixOf` aut && length abst > lengthMin) md
+                                 (head url /= '/' || "/blog/" `isPrefixOf` url) &&
+                                  authorU `isPrefixOf` aut &&
+                                  length abst > lengthMin)
+  md
 
 writeOutBlogEntry :: (String, (Path, MetadataItem)) -> IO ()
 writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown m
