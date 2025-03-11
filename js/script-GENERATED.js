@@ -8594,7 +8594,7 @@ Content = {
                 if (link.hostname != location.hostname)
                     return false;
 
-                return (   link.pathname.startsWith("/metadata/") == true
+                return (   link.pathname.startsWithAnyOf([ "/metadata/", "/static/template/" ]) == true
                         && link.pathname.endsWith(".html") == true);
             },
 
