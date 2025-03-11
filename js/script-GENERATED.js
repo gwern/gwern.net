@@ -1505,26 +1505,54 @@ Notes = {
         }
     },
 
+	/*************/
+	/*	Structure:
+
+		.notesForCitations has keys which are pathnames and values which are
+		objects, each of which has keys that are IDs and values that are arrays 
+		of elements.
+	 */
+	notesForCitations: { },
+
+	//	Invalidate cached notes for the given pathname.
+	invalidateCachedNotesForPathname: (pathname) => {
+		Notes.notesForCitations[pathname] = null;
+	},
+
     /**************************************************************************/
     /*  Return all {side|foot}note elements associated with the given citation.
      */
     allNotesForCitation: (citation) => {
-        if (!citation.classList.contains("footnote-ref"))
+        if (citation.classList.contains("footnote-ref") == false)
             return null;
 
-        let citationNumber = Notes.noteNumber(citation);
-        let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+		if (Notes.notesForCitations[citation.pathname] == null) {
+			let notes = Notes.notesForCitations[citation.pathname] = { };
 
-        let allNotes = Array.from(document.querySelectorAll(selector)
-                       ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
-                       ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame =>
-                                    Array.from(popFrame.document.querySelectorAll(selector)))
-                       ).unique();
-        /*  We must check to ensure that the note in question is from the same
-            page as the citation (to distinguish between main document and any
-            full-page embeds that may be spawned).
-         */
-        return allNotes.filter(note => (note.querySelector(".footnote-back")?.pathname == citation.pathname));
+			[ document,
+			  citation.getRootNode(),
+			  ...(Extracts.popFrameProvider.allSpawnedPopFrames().map(popFrame => popFrame.document))
+			].unique().flatMap(doc => 
+				Array.from(doc.querySelectorAll("li.footnote, div.sidenote"))
+			).filter(note => {
+				/*  We must check to ensure that the note in question is from the 
+					same page as the citation (to distinguish between main document 
+					and any full-page embeds that may be spawned).
+				 */
+				if (note.footnoteBackLink == null)
+					note.footnoteBackLink = note.querySelector(".footnote-back");
+
+				return (note.footnoteBackLink?.pathname == citation.pathname);
+			}).forEach(note => {
+				let noteNumber = note.footnoteBackLink.hash.slice("#fnref".length);
+				if (notes[noteNumber] == null)
+					notes[noteNumber] = [ ];
+
+				notes[noteNumber].push(note);
+			});
+		}
+
+        return (Notes.notesForCitations[citation.pathname][Notes.noteNumber(citation)] ?? [ ]);
     }
 };
 
@@ -10127,10 +10155,7 @@ function includeContent(includeLink, content) {
 		"include-complete"
 	])) return;
 
-    /*  Just in case, do nothing if the element-to-be-replaced (either the
-    	include-link itself, or its container, as appropriate) isn’t attached
-    	to anything.
-     */
+    //  Just in case, do nothing if the include-link isn’t attached to anything.
     if (includeLink.parentNode == null)
         return;
 
@@ -10223,7 +10248,8 @@ function includeContent(includeLink, content) {
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
 		flags: flags,
-		includeLink: includeLink
+		includeLink: includeLink,
+		willUpdateFootnotes: (transcludingIntoFullPage && shouldLocalize)
 	});
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
@@ -10571,7 +10597,6 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 	 */
 	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
 	let newContentFootnotesSection = newContentSourceDocument?.querySelector("#footnotes");
-
     let citationsInNewContent = newContentWrapper.querySelectorAll(".footnote-ref");
     if (   citationsInNewContent.length == 0
         || newContentFootnotesSection == null)
@@ -10671,6 +10696,7 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 
 		let footnote = citation.footnote ?? footnotesSection.querySelector("#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 		if (footnote.parentElement == newFootnotesWrapper) {
+			//	Duplicate citations for a footnote that was already counted.
 			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));
 		} else {
 			Notes.setCitationNumber(citation, footnoteNumber);
@@ -11378,16 +11404,17 @@ Transclude = {
     /*  Misc. helpers.
      */
 
-    //  Called by: "beforeprint" listener (rewrite.js)
-    triggerTranscludesInContainer: (container, eventInfo) => {
+    //  Called by: ‘beforeprint’ listener (rewrite.js)
+    triggerTranscludesInContainer: (container, eventInfo, options) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-        	Transclude.triggerTransclude(includeLink, eventInfo);
+        	Transclude.triggerTransclude(includeLink, eventInfo, options);
         });
     },
 
 
 	/*	Available option fields (all optional):
 
+		immediately (defaults to true)
 		doWhenDidLoad
 		doWhenDidLoadOptions
 		doWhenDidInject
@@ -11395,8 +11422,11 @@ Transclude = {
 	 */
 	triggerTransclude: (includeLink, eventInfo, options) => {
 		options = Object.assign({
+			immediately: true,
 			doWhenDidLoad: null,
-			doWhenDidInject: null
+			doWhenDidLoadOptions: null,
+			doWhenDidInject: null,
+			doWhenDidInjectOptions: null
 		}, options);
 
 		if (eventInfo)
@@ -11423,7 +11453,7 @@ Transclude = {
 			}
 		}
 
-		Transclude.transclude(includeLink, true);
+		Transclude.transclude(includeLink, options.immediately);
 	},
 
     /********************/
@@ -13583,7 +13613,7 @@ Extracts = { ...Extracts,
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
             visible.
          */
-        if (Array.from(Notes.allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) !== -1)
+        if (Notes.allNotesForCitation(target).findIndex(note => Popups.isVisible(note)) !== -1)
             return null;
 
         /*  Add event listeners to highlight citation when its footnote
@@ -15673,7 +15703,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		}
 	}
 
-	if (eventInfo.document == document)
+	if (eventInfo.container == document.main)
 		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.document == document
 						 && info.contentType == "localPage"));
@@ -17826,6 +17856,21 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     });
 }, "rewrite");
 
+/*****************************************************************************/
+/*	Invalidate cached {foot|side}notes for the target document if the injected 
+	content contains {foot|side}notes.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.invalidateCachedNotesIfNeeded = (eventInfo) => {
+    GWLog("invalidateCachedNotesIfNeeded", "rewrite.js", 1);
+
+    let baseLocation = baseLocationForDocument(eventInfo.document);
+    if (baseLocation == null)
+        return;
+
+	if (eventInfo.container.querySelector("li.footnote") != null)
+		Notes.invalidateCachedNotesForPathname(baseLocation.pathname);
+}, ">rewrite");
+
 /***************************************************************************/
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
@@ -17842,8 +17887,12 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
         if (citation.citationMouseLeave)
             citation.removeEventListener("mouseleave", citation.citationMouseLeave);
 
-        //  Bind events.
         let notesForCitation = Notes.allNotesForCitation(citation);
+		if (   notesForCitation == null
+			|| notesForCitation.length == 0)
+			return;
+
+        //  Bind events.
         citation.addEventListener("mouseenter", citation.citationMouseEnter = (event) => {
             notesForCitation.forEach(note => {
                 note.classList.toggle("highlighted", true);
@@ -20997,9 +21046,17 @@ Sidenotes = { ...Sidenotes,
 		//  The footnote references (citations).
 		Sidenotes.citations.push(...newCitations);
 
+		//	Sort citations array by citation number.
+		Sidenotes.citations.sort((citationA, citationB) => (Notes.noteNumber(citationA) - Notes.noteNumber(citationB)));
+
+		//	Remove existing sidenotes.
+		Sidenotes.sidenotes.forEach(sidenote => {
+			sidenote.remove();
+		});
+		Sidenotes.sidenotes = [ ];
+
 		//  Create and inject the sidenotes.
-		let newSidenotes = [ ];
-		newCitations.forEach(citation => {
+		Sidenotes.citations.forEach(citation => {
 			let noteNumber = Notes.noteNumber(citation);
 
 			//  Create the sidenote outer containing block...
@@ -21027,27 +21084,25 @@ Sidenotes = { ...Sidenotes,
 
 			//	Inject the sidenote contents into the sidenote.
 			let includeLink = synthesizeIncludeLink(citation, {
-				"class": "include-strict include-unwrap",
-				"data-include-selector-not": ".footnote-self-link"
+				"class": "include-unwrap",
+				"data-include-selector-not": ".footnote-self-link",
+				"data-page-section-id": "footnotes"
 			});
 			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
-			includeLink.dataset.pageSectionId = "footnotes";
+			includeLink.classList.remove("footnote-ref");
 			sidenote.querySelector(".sidenote-inner-wrapper").append(includeLink);
 
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenotes.push(sidenote);
-
-			//	Track newly added sidenotes.
-			newSidenotes.push(sidenote);
 		});
 
 		//	Inject the sidenotes into the page.
-		Sidenotes.hiddenSidenoteStorage.append(...newSidenotes);
+		Sidenotes.hiddenSidenoteStorage.append(...(Sidenotes.sidenotes));
 
 		/*  Bind sidenote mouse-hover events.
 		 */
-		newCitations.forEach(citation => {
-			let sidenote = Sidenotes.counterpart(citation);
+		for (let [ index, citation ] of Sidenotes.citations.entries()) {
+			let sidenote = Sidenotes.sidenotes[index];
 
 			//	Unbind existing events, if any.
 			if (sidenote.onSidenoteMouseEnterHighlightCitation)
@@ -21066,6 +21121,8 @@ Sidenotes = { ...Sidenotes,
 				sidenote.outerWrapper.removeEventListener("scroll", sidenote.scrollListener);
 
 			//	Bind new events.
+
+			//	Highlight both sidenote and citation on sidenote hover.
 			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", true);
 				sidenote.classList.toggle("hovering", true);
@@ -21075,6 +21132,15 @@ Sidenotes = { ...Sidenotes,
 				sidenote.classList.toggle("hovering", false);
 			});
 
+			/*	NOTE: The absence of event bindings here to highlight the 
+				citation and the sidenote when the *citation* is hovered over 
+				is not an oversight. Those events are bound elsewhere (see
+				rewrite.js).
+			 */
+
+			/*	Slide sidenote into view when hovering over either sidenote or
+				citation.
+			 */
 			citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
 				Sidenotes.putAllSidenotesBack(sidenote);
 				requestAnimationFrame(() => {
@@ -21091,19 +21157,26 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.putSidenoteBack(sidenote);
 			});
 
+			/*	Hide the “there is more hidden content below the fold”
+				(ellipsis) indicator when client scrolls to the bottom of a 
+				cut-off sidenote; show it otherwise.
+			 */
 			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
 			}, {
 				target: sidenote.outerWrapper
 			});
-		});
+		}
+
+		//	Invalidate cached notes.
+		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
 
 		//	Trigger transcludes.
 		Transclude.triggerTranscludesInContainer(Sidenotes.hiddenSidenoteStorage, {
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
 			source: "Sidenotes.constructSidenotes"
-		});
+		}, { immediately: false });
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
@@ -21436,12 +21509,35 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotes(eventInfo);
-		}, "rewrite", (info) => (   info.document == document
-								 && info.container.closest(".sidenote") == null
-								 && (   (   info.localize == true
-								 		 && info.container.querySelector("a.footnote-ref") != null)
-								 	 || info.container.closest("li.footnote") != null)));
+			if (eventInfo.willUpdateFootnotes == true) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (footnotesInjectEventInfo) => {
+					Sidenotes.constructSidenotes(eventInfo);
+				}, {
+					once: true,
+					condition: (info) => (   info.source == "transclude.footnotes"
+										  && info.document == document
+										  && (        info.loadLocation.pathname +      info.loadLocation.hash
+										  	  == eventInfo.loadLocation.pathname + eventInfo.loadLocation.hash))
+				});
+			} else {
+				Sidenotes.constructSidenotes(eventInfo);
+			}
+		}, ">rewrite", (info) => (   info.document == document
+								  && info.container.closest(".sidenote") == null
+								  && (   (   info.localize == true
+								 		  && info.container.querySelector("a.footnote-ref") != null)
+								 	  || info.container.closest("li.footnote") != null)));
+
+		/*	Invalidate cached notes for the base location pathname of the 
+			injected content when a sidenote loads.
+		 */
+		addContentInjectHandler(GW.contentInjectHandlers.invalidateNotesForCitationWhenSidenoteDidInject = (eventInfo) => {
+			GWLog("invalidateNotesForCitationWhenSidenoteDidInject", "sidenotes.js", 1);
+
+			if (eventInfo.container.querySelector(".footnote-back") != null)	
+				Notes.invalidateCachedNotesForPathname(eventInfo.loadLocation.pathname);
+		}, "<rewrite", (info) => (   info.document == document
+								  && info.container.closest(".sidenote") != null));
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");

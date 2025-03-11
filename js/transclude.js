@@ -1015,10 +1015,7 @@ function includeContent(includeLink, content) {
 		"include-complete"
 	])) return;
 
-    /*  Just in case, do nothing if the element-to-be-replaced (either the
-    	include-link itself, or its container, as appropriate) isn’t attached
-    	to anything.
-     */
+    //  Just in case, do nothing if the include-link isn’t attached to anything.
     if (includeLink.parentNode == null)
         return;
 
@@ -1111,7 +1108,8 @@ function includeContent(includeLink, content) {
 		document: containingDocument,
 		loadLocation: loadLocationForIncludeLink(includeLink),
 		flags: flags,
-		includeLink: includeLink
+		includeLink: includeLink,
+		willUpdateFootnotes: (transcludingIntoFullPage && shouldLocalize)
 	});
 
 	//	WITHIN-WRAPPER MODIFICATIONS END; OTHER MODIFICATIONS BEGIN
@@ -1459,7 +1457,6 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 	 */
 	let newContentSourceDocument = Content.cachedDocumentForLink(includeLink);
 	let newContentFootnotesSection = newContentSourceDocument?.querySelector("#footnotes");
-
     let citationsInNewContent = newContentWrapper.querySelectorAll(".footnote-ref");
     if (   citationsInNewContent.length == 0
         || newContentFootnotesSection == null)
@@ -1559,6 +1556,7 @@ function updateFootnotesAfterInclusion(includeLink, newContentWrapper) {
 
 		let footnote = citation.footnote ?? footnotesSection.querySelector("#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 		if (footnote.parentElement == newFootnotesWrapper) {
+			//	Duplicate citations for a footnote that was already counted.
 			Notes.setCitationNumber(citation, Notes.noteNumber(footnote));
 		} else {
 			Notes.setCitationNumber(citation, footnoteNumber);
@@ -2266,16 +2264,17 @@ Transclude = {
     /*  Misc. helpers.
      */
 
-    //  Called by: "beforeprint" listener (rewrite.js)
-    triggerTranscludesInContainer: (container, eventInfo) => {
+    //  Called by: ‘beforeprint’ listener (rewrite.js)
+    triggerTranscludesInContainer: (container, eventInfo, options) => {
         Transclude.allIncludeLinksInContainer(container).forEach(includeLink => {
-        	Transclude.triggerTransclude(includeLink, eventInfo);
+        	Transclude.triggerTransclude(includeLink, eventInfo, options);
         });
     },
 
 
 	/*	Available option fields (all optional):
 
+		immediately (defaults to true)
 		doWhenDidLoad
 		doWhenDidLoadOptions
 		doWhenDidInject
@@ -2283,8 +2282,11 @@ Transclude = {
 	 */
 	triggerTransclude: (includeLink, eventInfo, options) => {
 		options = Object.assign({
+			immediately: true,
 			doWhenDidLoad: null,
-			doWhenDidInject: null
+			doWhenDidLoadOptions: null,
+			doWhenDidInject: null,
+			doWhenDidInjectOptions: null
 		}, options);
 
 		if (eventInfo)
@@ -2311,7 +2313,7 @@ Transclude = {
 			}
 		}
 
-		Transclude.transclude(includeLink, true);
+		Transclude.transclude(includeLink, options.immediately);
 	},
 
     /********************/

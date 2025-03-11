@@ -948,26 +948,54 @@ Notes = {
         }
     },
 
+	/*************/
+	/*	Structure:
+
+		.notesForCitations has keys which are pathnames and values which are
+		objects, each of which has keys that are IDs and values that are arrays 
+		of elements.
+	 */
+	notesForCitations: { },
+
+	//	Invalidate cached notes for the given pathname.
+	invalidateCachedNotesForPathname: (pathname) => {
+		Notes.notesForCitations[pathname] = null;
+	},
+
     /**************************************************************************/
     /*  Return all {side|foot}note elements associated with the given citation.
      */
     allNotesForCitation: (citation) => {
-        if (!citation.classList.contains("footnote-ref"))
+        if (citation.classList.contains("footnote-ref") == false)
             return null;
 
-        let citationNumber = Notes.noteNumber(citation);
-        let selector = `#fn${citationNumber}, #sn${citationNumber}`;
+		if (Notes.notesForCitations[citation.pathname] == null) {
+			let notes = Notes.notesForCitations[citation.pathname] = { };
 
-        let allNotes = Array.from(document.querySelectorAll(selector)
-                       ).concat(Array.from(citation.getRootNode().querySelectorAll(selector))
-                       ).concat(Extracts.popFrameProvider.allSpawnedPopFrames().flatMap(popFrame =>
-                                    Array.from(popFrame.document.querySelectorAll(selector)))
-                       ).unique();
-        /*  We must check to ensure that the note in question is from the same
-            page as the citation (to distinguish between main document and any
-            full-page embeds that may be spawned).
-         */
-        return allNotes.filter(note => (note.querySelector(".footnote-back")?.pathname == citation.pathname));
+			[ document,
+			  citation.getRootNode(),
+			  ...(Extracts.popFrameProvider.allSpawnedPopFrames().map(popFrame => popFrame.document))
+			].unique().flatMap(doc => 
+				Array.from(doc.querySelectorAll("li.footnote, div.sidenote"))
+			).filter(note => {
+				/*  We must check to ensure that the note in question is from the 
+					same page as the citation (to distinguish between main document 
+					and any full-page embeds that may be spawned).
+				 */
+				if (note.footnoteBackLink == null)
+					note.footnoteBackLink = note.querySelector(".footnote-back");
+
+				return (note.footnoteBackLink?.pathname == citation.pathname);
+			}).forEach(note => {
+				let noteNumber = note.footnoteBackLink.hash.slice("#fnref".length);
+				if (notes[noteNumber] == null)
+					notes[noteNumber] = [ ];
+
+				notes[noteNumber].push(note);
+			});
+		}
+
+        return (Notes.notesForCitations[citation.pathname][Notes.noteNumber(citation)] ?? [ ]);
     }
 };
 
