@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-10 18:27:18 gwern"
+# When:  Time-stamp: "2025-03-11 11:32:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -699,6 +699,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "dark-mode-invert"
+            "prefetch" "prefetch-not"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -712,7 +713,7 @@ else
             fi
         done | less
     }
-    wrap λ "Mysterious HTML classes in compiled HTML?"
+    wrap λ "Mysterious HTML classes in compiled HTML? (Add to whitelist or fix.)"
 
     λ(){ echo "$PAGES_ALL" | gfv 'hafu' | xargs grep --fixed-strings --with-filename --invert-match -e ' tell what Asahina-san' -e 'contributor to the Global Fund to Fight AIDS' -e 'collective name of the project' -e 'model resides in the' -e '{.cite-' -e '<span class="op">?' -e '<td class="c' -e '<td style="text-align: left;">?' -e '>?</span>' -e '<pre class="sourceCode xml">' | \
              gfc -e ")'s " -e "}'s " -e '">?' -e '</a>s';

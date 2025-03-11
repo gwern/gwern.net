@@ -4,19 +4,19 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-10 18:54:41 gwern"
+When:  Time-stamp: "2025-03-11 11:55:43 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, lookupFallback, sortItemPathDateCreated, fileTranscludesTest) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, isNumber)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member) -- traverseWithKey, union, Map
-import qualified Data.Text as T (append, isInfixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, replace, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -380,7 +380,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                                                   walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
-                                    walkM (outlineImageInline <=< imageLinkHeightWidthSet <=< localizeLink am) p
+                                    walkM (outlineImageInline <=< imageLinkHeightWidthSet <=< addCanPrefetch <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
 
                       when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
@@ -485,6 +485,20 @@ addID md maybeMetadataItem inline = case inline of
             " annotation and a non-Link Inline element:" ++
             show inlineBad ++
             "; This should never happen."
+
+-- the prefetch JS defaults to assuming all URLs can be prefetched; however, for local large-files or files that can't be viewed in-browser and so there's little point in prefetching them, we want to explicitly disable them by adding a '.prefetch-not' class:
+addCanPrefetch :: Inline -> IO Inline
+addCanPrefetch x@(Link (_,classes,_) _ (f,_))
+ | "prefetch" `elem` classes || "prefetch-not" `elem` classes = return x
+ | not (isLocal f) = return x
+ | "/metadata/" `T.isPrefixOf` f = return x
+ | isLocal f && not (isFileViewable f') = return $ addClass "prefetch-not" x
+ | otherwise = do size <- getFileSize $ takeWhile (/='#') $ tail f'
+                  if size < 10000000 then return x else
+                    -- >10MB seems a bit too much to spend speculatively, even these days
+                    return $ addClass "prefetch-not" x
+  where f' = T.unpack f
+addCanPrefetch x = return x
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
 addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
@@ -607,8 +621,9 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 -- Collapse behavior: media types are displayed by default everywhere (the user wants to see them immediately because it's easy to see an image etc, and performance-wise they are cheap, because they are either small like images or set to their equivalents of 'lazy loading' like video/audio); document types are collapsed by default everywhere (many users will have no interest and documents like PDFs or HTML can be almost arbitrarily large, like a HTML mirror of "The Forgotten Pixel Art Masterpieces of the PlayStation 1 Era" which due to the animations is fully 183MB!).
 -- We want to display media (particularly images) by default, so tag-directories can serve as informal 'galleries'; many images will never be seen in pages/annotations, nor do I want to constantly update a 'gallery' page with every single minimally-interesting image, and images are highly suitable for browsing very rapidly through, so it is fine to display all images for scrolling through.
 --
--- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>
--- Supported: documents/code (most, see `isDocumentViewable`/`isCodeViewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none)
+-- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>.
+-- Supported: documents/code (most, see `isDocumentPreviewable`/`isCodePreviewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none).
+-- Views: for the purposes of popups & prefetches, we distinguish between a document being 'viewable' and 'previewable'. A 'viewable' document is itself, the raw original literal file, 'viewable' in-browser, like a PDF; a 'previewable' document may not be viewable (because that doesn't work at all, or it looks bad, or it is too large etc), but there is some version of it which can be 'viewable' (eg. a HTML-rendered export of a spreadsheet). A key performance difference here is that a 'viewable' file, like a PDF, can be worth prefetching, because if the reader wants to read it, that saves time; however, for a 'previewable' file, that is *not* the case---prefetching the file doesn't prefetch the preview-version and so the reader still has to wait on that.
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock _  _            x@("",                _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
 -- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
@@ -638,10 +653,10 @@ generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null
     | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
       [Para [Link ("",["id-not", "include-content"],dataArguments) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
-    | isDocumentViewable f' || isCodeViewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
+    | isDocumentPreviewable f' || isCodePreviewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-lazy"], []) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
     -- image/video/audio:
-    | Image.isImageFilename f' || Image.isVideoFilename f' || hasExtensionS ".mp3" f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
+    | isMediaViewable f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
       -- multimedia can be annotated; if it is (has a title & author etc), we don't need to display additional metadata, and we just display it immediately literally:
         [Para $ (if alwaysLabelP then [Strong [Str "View ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "width-full"],[]) [title] (T.pack f', "")]]
     | otherwise = if not liveP then [] else
@@ -649,13 +664,16 @@ generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null
           [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-lazy"], []) [title] (T.pack f', "")]]]
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
-isDocumentViewable, isCodeViewable :: FilePath -> Bool
-isDocumentViewable f = (isLocal $ T.pack f) &&
+isDocumentPreviewable, isCodePreviewable, isMediaViewable, isFileViewable :: FilePath -> Bool
+isDocumentPreviewable f = (isLocal $ T.pack f) &&
                        (hasExtensionS ".html" f ||
                         anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
                         hasHTMLSubstitute f) -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
-isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+isCodePreviewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+
+isMediaViewable f = Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f
+isFileViewable f = isLocal (T.pack f) && (anySuffix f [".html", ".pdf", ".txt"] || isMediaViewable f)
 
 -- config testing: none? too many overlaps
 fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
