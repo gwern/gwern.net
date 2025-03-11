@@ -33,6 +33,16 @@ function modulo(n, d) {
 	return (((n % d) + d) % d);
 }
 
+/**************************************************************************/
+/*	Returns true if an iterable object has no enumerable string properties.
+ */
+function isIterableEmpty(x) {
+	for (k in x)
+		return false;
+
+	return true;
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */
@@ -3492,7 +3502,7 @@ GW.layout = {
 				return true;
 
 		//	Exclude elements that have any data attributes.
-		if (Object.keys(node.dataset).length > 0)
+		if (isIterableEmpty(node.dataset) == false)
 			return true;
 
 		return false;
@@ -3924,6 +3934,18 @@ function isBlock(element, options) {
 	});
 }
 
+/******************************************************************/
+/*	Returns true if the element is empty (accounting for metadata).
+ */
+function isEmpty(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "isEmpty", options, (element, options) => {
+		return isNodeEmpty_metadataAware(element);
+	});
+}
+
 /***************************************************************************/
 /*	Returns true if element is an always-not-empty element, false otherwise.
  */
@@ -3977,7 +3999,7 @@ function sequentialBlockOf(element, direction, options) {
 	}
 
 	//	Skip empty elements.
-	if (   isNodeEmpty_metadataAware(element[siblingKey]) == true
+	if (   isEmpty(element[siblingKey], options) == true
 		&& isNonEmpty(element[siblingKey], options) == false)
 		return sequentialBlockOf(element[siblingKey], direction, options);
 
@@ -4043,7 +4065,7 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 			if (   terminalBlock
 				&& isSkipped(terminalBlock, options) == false
-				&& (   isNodeEmpty_metadataAware(terminalBlock) == false
+				&& (   isEmpty(terminalBlock, options) == false
 					|| isNonEmpty(terminalBlock, options) == true))
 				return terminalBlock;
 		}
@@ -4473,7 +4495,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isNodeEmpty_metadataAware(block);
+			let emptyGraf = isEmpty(block);
 			block.classList.toggle("empty-graf", emptyGraf);
 			if (emptyGraf)
 				return;

@@ -33,6 +33,16 @@ function modulo(n, d) {
 	return (((n % d) + d) % d);
 }
 
+/**************************************************************************/
+/*	Returns true if an iterable object has no enumerable string properties.
+ */
+function isIterableEmpty(x) {
+	for (k in x)
+		return false;
+
+	return true;
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */
