@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-10 14:26:34 gwern"
+# When:  Time-stamp: "2025-03-10 22:31:36 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -18,6 +18,8 @@
 # This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
 # (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files (or if too large to be safe to version-control, added to `.gitignore` instead).
 # They are then opened in a web browser to verify they uploaded, have permissions, and render.
+
+set -x
 
 . ~/wiki/static/build/bash.sh
 
@@ -172,20 +174,17 @@ _upload() {
       TARGET_DIR=doc/"$2"
 
       if [ ! -d ~/wiki/"$TARGET_DIR"  ]; then
-          # try to guess a target:
           GUESS=$(cd ~/wiki/ && ./static/build/guessTag "$2")
           if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
-              # the guess failed too, so bail out entirely:
-              ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
               red "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
               return 2
           else
-              # Use the guessed directory instead
               bold "Using guessed directory \"$GUESS\" instead of \"$2\"..."
               TARGET_DIR="doc/$GUESS"
           fi
-      else
-          if [ -a "$FILENAME" ]; then
+      fi
+
+      if [ -a "$FILENAME" ]; then
               ## automatically rename a file like 'benter1994.pdf' (Libgen) to '1994-benter.pdf' (gwern.net):
               FILE="$FILENAME"
               if [[ "$FILE" =~ ([a-zA-Z]+)([0-9][0-9][0-9][0-9])\.pdf ]];
@@ -260,7 +259,7 @@ _upload() {
                return 1
           fi
       fi
-  fi
+
 }
 
 # `upload` main loop, calling `upload` as appropriate:

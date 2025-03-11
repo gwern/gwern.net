@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-06 21:24:29 gwern"
+When:  Time-stamp: "2025-03-10 18:54:41 gwern"
 License: CC-0
 -}
 
@@ -650,9 +650,10 @@ generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null
 
 -- document types excluded: ebt, epub, mdb, mht, ttf, docs.google.com; cannot be viewed easily in-browser (yet?)
 isDocumentViewable, isCodeViewable :: FilePath -> Bool
-isDocumentViewable f = (isLocal (T.pack f) && hasExtensionS ".html" f) ||
-                       anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
-                       hasHTMLSubstitute f -- these are converted by LibreOffice to clean HTML versions for preview
+isDocumentViewable f = (isLocal $ T.pack f) &&
+                       (hasExtensionS ".html" f ||
+                        anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
+                        hasHTMLSubstitute f) -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
 isCodeViewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
 
@@ -700,7 +701,7 @@ fileTranscludesTest md am =
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
     , (simpleTestF "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","CanI"),("link-icon-type","text,sans,quad"),("link-icon-color","#c75000")]) [RawInline (Format "HTML") "text-wrap: pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])
-    , (simpleTestF "https://www.mdpi.com/2073-4409/10/7/1740/htm", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "page"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","MDPI"),("link-icon-type","text,quad,sans")]) [Code ("",[],[]) "https://www.mdpi.com/2073-4409/10/7/1740/htm"] ("https://www.mdpi.com/2073-4409/10/7/1740/htm","")]]]])
+    , (simpleTestF "https://www.mdpi.com/2073-4409/10/7/1740/htm", [])
     , (simpleTestT "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON Lines"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl"] ("/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl","")]]]])
     , (simpleTestT "/doc/touhou/2013-c85-download.json", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/touhou/2013-c85-download.json"] ("/doc/touhou/2013-c85-download.json","")]]]])
     , (simpleTestT "/doc/personal/rss-subscriptions.opml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "OPML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/personal/rss-subscriptions.opml"] ("/doc/personal/rss-subscriptions.opml","")]]]])

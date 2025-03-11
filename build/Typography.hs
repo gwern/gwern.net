@@ -11,7 +11,7 @@
 --    like with blockquotes/lists).
 module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
-import Control.Monad.State.Lazy (evalState, get, put, State)
+import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
 import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text, head, null)
@@ -212,13 +212,13 @@ breakEquals = id
 -- (NOTE: As a rewrite pass, this does not affect the horizontal ruler in the endnotes section, nor
 -- any horizontal rulers in the outer HTML document.)
 rulersCycle :: Int -> Pandoc -> Pandoc
-rulersCycle modulus doc = evalState (walkM addHrNth doc) 1
+rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
  where addHrNth :: Block -> State Int Block
        addHrNth HorizontalRule = do
+         modify (+1)
          count <- get
-         put (count + 1)
-         let nth = count `mod` modulus
-         let nthClass = T.pack $ "horizontal-rule" ++ "-nth-" ++ show nth
+         let nth = (count - 1) `mod` modulus + 1  -- ensures cycling starts from 1
+         let nthClass = T.pack $ "horizontal-rule-nth-" ++ show nth
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
 
