@@ -558,7 +558,7 @@ linkIconRulesSVG u
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
 linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passed empty string as the URL; this should never happen!"
 linkIconRulesFiletypes u
- | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt"] = ("archive", "svg", "")
+ | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights"] = ("archive", "svg", "")
  | iE u ["maff"] = ("archive", "svg", "#e66000") -- Mozilla Archive File Format; color: Firefox orange
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
@@ -1073,6 +1073,9 @@ linkIconTestUnitsText =
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg", "")
          , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb.xz",  "archive","svg", "")
          , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg", "")
+         , ("/doc/ai/anime/danbooru/2018-07-05-gwern-densenet101-sfwdanbooru-85percent.h5",  "archive","svg", "")
+         , ("/doc/ai/nn/gan/stylegan/2020-06-07-aydao-stylegan2-configf-ffhq-512-avg-tpurun1.pkl",  "archive","svg", "")
+         , ("/doc/ai/anime/2020-06-08-gwern-palm-yolov3-handdetector126.weights",  "archive","svg", "")
          , ("https://www.telegraph.co.uk/culture/books/3601644/Adultery-was-his-thing.html", "the-telegraph", "svg", "")
          , ("https://chatgpt.com/share/261034ff-f5d5-404c-b354-c9d58e3af509", "openai","svg", "")
          , ("https://gptprompts.wikidot.com/context-stuffing",                "openai","svg", "")

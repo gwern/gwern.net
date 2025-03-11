@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-10 11:48:30 gwern"
+# When:  Time-stamp: "2025-03-10 18:27:18 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1078,7 +1078,7 @@ else
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }
     wrap λ "Malformed filenames: dangerous strings in them?" &
 
-    λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | gfv -e 'cattleya幻想写景' -e '緑華野菜子'; }
+    λ(){ find ./ -type f -wholename '*[^-a-zA-Z0-9_./~%#]*' | gfv -e 'cattleya幻想写景' -e '緑華野菜子' -e '.par2'; }
     wrap λ "Malformed filenames: dangerous characters in them?" &
 
     λ(){ find . -type f | grep --perl-regexp -e "[^\x21-\x7E]" | gfv -e 'cattleya幻想写景' -e '緑華野菜子'; }
@@ -1467,7 +1467,7 @@ else
                                                 -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
                                                 -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                                                 -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
-                                                -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' \
+                                                -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' \
              | parallel --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
     wrap λ "Corrupted filetype: HTML" &
 
@@ -1519,7 +1519,7 @@ else
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' -e '2012-kirk.pdf' | parallel checkSpamHeader
+        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' -e '2012-kirk.pdf' -e '1929-tolmachoff.pdf' | parallel checkSpamHeader
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy first pages to the end, and 'pdfcut-last' to remove the last page.)" &
 

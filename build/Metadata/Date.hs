@@ -62,7 +62,6 @@ guessDateFromString u  =
                _ -> let dateNew = delete "\"\"" $ trim $ U.toString mb in
                       if isDate dateNew then return dateNew else error $ "Metadata.Format.guessDateFromString: date-guesser.py returned an invalid date: " ++ dateNew ++ "; input: " ++ u
 
-
 -- annotate 'YYYY--YYYY'/'YYYY-MM-DD--YYYY-MM-DD' date ranges with their range & duration since then; they are detected automatically, or can be constructed/manually written as span wrappers with the `date-range` class: eg. `<span class="date-range">1939–1945</span>` or
 -- `<span class="date-range" title="The date range 2020-09-27–2023-05-17 lasted 3 years (963 days), ending 2 years ago.">2020-09-27<span class="subsup"><sup>–</sup><sub>2y</sub></span>2023-05-17</span>`
 -- See </lorem-inline#date-subscripts>, </subscript#date-ranges>.

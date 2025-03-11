@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-07 09:12:07 gwern"
+# When:  Time-stamp: "2025-03-10 20:58:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -590,6 +590,10 @@ Katri Räikkönen
 "Analyzing poems with LLMs"
 - "https://archive.org/details/Computer_Games_Vol_3_No_2_1984-06_Carnegie_Publications_US/page/n34/mode/1up Computer Games\8212Vol 3 No 2 (1984-06)(Carnegie Publications)(US)"
 "Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)"
+- "http://news.bbc.co.uk/2/hi/uk_news/7954876.stm UK"
+""
+https://archive.org/details/innocentassassin00kurt <em>The innocent assassins : biological essays on life in the present and distant past</em> : Kurtén, Björn
+<em>The innocent assassins: biological essays on life in the present and distant past</em>, Björn Kurtén
 
 Task:
 
