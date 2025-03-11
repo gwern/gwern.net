@@ -3508,6 +3508,8 @@ GW.layout = {
 		return false;
 	},
 
+	siblingCombinatorRegExp: /^(.+) \+ (.+)$/,
+
 	blockSpacing: [
 		[ "body.page-index section",					 7, false ],
 		[ "body.page-index section li p + p",			 0, false ],
@@ -3645,6 +3647,32 @@ GW.layout = {
 		[ ".TOC + .collapse-block",		 	(bsm, block) => bsm - 4 ],
 	]
 };
+
+//	Preprocess selectors with faux-sibling-combinators.
+function preprocessSelector(selector) {
+	let parts = selector.match(GW.layout.siblingCombinatorRegExp);
+	if (parts) {
+		return {
+			combinatorType: "+",
+			before: parts[1],
+			after: parts[2]
+		};
+	} else {
+		return selector;
+	}
+}
+GW.layout.blockSpacing.forEach(entry => {
+	let [ selector, result, adjustable = true ] = entry;
+	entry.splice(0, 1, preprocessSelector(selector));
+});
+GW.layout.blockSpacingAdjustments.forEach(entry => {
+	let [ selectorOrSelectorArray, adjustmentFunction ] = entry;
+	if (typeof selectorOrSelectorArray == "string") {
+		entry.splice(0, 1, preprocessSelector(selectorOrSelectorArray));
+	} else {
+		entry.splice(0, 1, selectorOrSelectorArray.map(selector => preprocessSelector(selector)));
+	}
+});
 
 //	Add support for .desktop-not and .mobile-not classes.
 GW.layout.skipElements.push(GW.mediaQueries.mobileWidth.matches ? ".mobile-not" : ".desktop-not");
@@ -3870,7 +3898,9 @@ function processLayoutOptions(options) {
 function useLayoutCache(element, action, options, f) {
 	options = processLayoutOptions(options);
 
-	let cacheKey = `${action} ${options.cacheKey}`;
+	let cacheKey = action;
+	if (options.cacheKey)
+		cacheKey += (" " + options.cacheKey);
 
 	let layoutCache = element.layoutCache;
 	let cacheInvalid = false;
@@ -4168,33 +4198,35 @@ function elementSummaryString(element) {
  */
 function getBlockSpacingMultiplier(block, debug = false) {
 	let predicateFromSelector = (selector) => {
-		let parts = selector.match(/^(.+) \+ (.+)$/);
-		if (parts) {
+		if (typeof selector == "string") {
+			return (block) => block.matches(selector);
+		} else {
 			/*	Headings do not normally count as layout blocks, but they do
 				here (unless it’s a heading of a collapse section, in which case
 				it still doesn’t count as a layout block).
 			 */
-			return (block) => (   previousBlockOf(block, {
-									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
-									notSkipElements: [ ".float" ],
-									cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
-								  })?.matches(parts[1])
-							   && block.matches(parts[2]));
-		} else {
-			return (block) => block.matches(selector);
+			return (block) => {
+				let previousBlock = previousBlockOf(block, {
+										alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+										notSkipElements: [ ".float" ],
+										cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
+									});
+				return (   previousBlock?.matches(selector.before)
+						&& block.matches(selector.after));
+			};
 		}
 	};
 
-	let predicateMatches = (predicate, block) => {
-		if (typeof predicate == "string")
-			predicate = predicateFromSelector(predicate);
-
-		if (   typeof predicate == "object"
-			&& predicate instanceof Array) {
-			let predicateArray = predicate;
+	let predicateMatches = (selectorOrSelectorArray, block) => {
+		let predicate;
+		if (   typeof selectorOrSelectorArray == "object"
+			&& selectorOrSelectorArray.combinatorType == undefined
+			&& selectorOrSelectorArray instanceof Array) {
 			predicate = (block) => {
-				return (predicateArray.findIndex(x => predicateMatches(x, block)) != -1);
+				return (selectorOrSelectorArray.findIndex(x => predicateMatches(x, block)) != -1);
 			};
+		} else {
+			predicate = predicateFromSelector(selectorOrSelectorArray);
 		}
 
 		return (predicate(block) == true);
@@ -4202,19 +4234,19 @@ function getBlockSpacingMultiplier(block, debug = false) {
 
 	if (debug)
 		console.log(block);
-	for (let [ predicate, result, adjustable = true ] of GW.layout.blockSpacing) {
-		if (predicateMatches(predicate, block)) {
+	for (let [ selector, result, adjustable = true ] of GW.layout.blockSpacing) {
+		if (predicateMatches(selector, block)) {
 			if (debug)
-				console.log(predicate);
+				console.log(selector);
 			let bsm = (typeof result == "function")
 					  ? result(block)
 					  : result;
 
 			if (adjustable) {
-				for (let [ predicate, transform ] of GW.layout.blockSpacingAdjustments)
-					if (predicateMatches(predicate, block)) {
+				for (let [ selectorOrSelectorArray, transform ] of GW.layout.blockSpacingAdjustments)
+					if (predicateMatches(selectorOrSelectorArray, block)) {
 						if (debug)
-							console.log(predicate);
+							console.log(selectorOrSelectorArray);
 						bsm = Math.max(0, transform(bsm, block));
 					}
 			}
