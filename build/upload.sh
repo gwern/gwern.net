@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-08 19:24:41 gwern"
+# When:  Time-stamp: "2025-03-10 14:26:34 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -12,6 +12,7 @@
 # $ upload file directory-name # uploaded to /doc/$directory-name/$file if that is unique, otherwise the tag rewrite system guesses
 # $ upload 1994-benter.pdf statistics/decision # uploads to `/doc/statistics/decision/1994-benter.pdf`
 # $ upload benter1994.pdf decision # renames to `1994-benter.pdf` and uploads to `/doc/statistics/decision/1994-benter.pdf`
+# $ upload --force file # allows uploading files with extensions not previously used on the site
 #
 # Files receive standard optimization, reformatting, compression, metadata-scrubbing etc.
 # This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
@@ -22,11 +23,27 @@
 
 set -e
 
+# Check for --force option
+FORCE=false
+if [[ "$1" == "--force" ]]; then
+  FORCE=true
+  shift
+fi
+
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
+
+# Check for required dependencies upfront
+for cmd in firefox chromium exiftool fold rsync curl git compressPdf cloudflare-expire png2JPGQualityCheck convert locate; do
+    command -v "$cmd" >/dev/null 2>&1 || { missing="${missing:+$missing, }$cmd"; }
+done
+[ -n "$missing" ] && { red "Missing required tools: $missing"; exit 10; }
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {
   wait
+
+  # Pass force flag to the function
+  local force_flag=$3
 
   (locate "$1" &)
   FILENAME="$1"
@@ -39,9 +56,10 @@ _upload() {
                         | awk --field-separator '.' 'NF>1 {print $NF}' \
                         | sort --ignore-case --unique | tr '[:upper:]' '[:lower:]')
 
-  if ! echo "$ALLOWED_EXTENSIONS" | grep --word-regexp --quiet "$ext_lower"; then
+  if ! grep -Fxq "$ext_lower" <<< "$ALLOWED_EXTENSIONS" && [ "$force_flag" != "true" ]; then
     red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'?"
     bold "This extension has never been used before. Please manually add it, to verify that this is a new but valid extension."
+    bold "Or use the --force option to bypass this check."
     exit 1
   fi
 
@@ -82,7 +100,12 @@ _upload() {
 
     # if filename already exists, try to rename it
     if [[ -n "$new_file_path" ]]; then
-      for ((i=2; i<=20; i++)); do
+      for ((i=2; i<=100; i++)); do
+          if [[ $i -eq 100 ]]; then
+              red "Failed to find unique filename after 100 attempts."
+              return 5
+          fi
+
         new_filename="${base_name}-${i}.${extension}"
         # avoid spurious collisions with temporary/working files in the infrastructure repo or the scratch directory:
         new_file_path=$(find ~/wiki/ -type f ! -path "~/wiki/static/*" ! -path "~/wiki/doc/www/*" -name "$new_filename" -print -quit)
@@ -98,7 +121,7 @@ _upload() {
 
     # if filename after possible renaming does not exist, that means we're using a new filename
     if [[ ! -e "$filename" ]]; then
-      red "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
+      red "Error: File '$filename' disappeared after renaming..." >&2
       return 1
     fi
 
@@ -108,10 +131,12 @@ _upload() {
   rename_file "$FILENAME"
 
   BROWSER=""
-  if [ -n "$(pgrep firefox)" ]; then BROWSER="firefox"; else BROWSER="chromium"; fi
+  # Firefox is the default browser, but we only want to use FF if it is already running. We don't want to boot up a fresh FF session just to look at an upload. (FF was presumably killed or shut down for a reason, like OOMing!) If FF is unavailable, we use an alternative 'temporary' browser, like Chromium.
+  if [ -n "$(pgrep firefox)" ]; then BROWSER="firefox"; else BROWSER=${BROWSER:-$(command -v chromium google-chrome brave-browser | head --lines=1)}; fi
 
   if [[ $# -eq 1 || "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
+      # We define the timestamp as 'today' to encode when it was uploaded & shared, which is not necessarily when it was originally created.
       if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
           DIRNAME=$(dirname "$FILENAME")  # Extract the directory path
           BASENAME=$(basename "$FILENAME")  # Extract the filename
@@ -129,8 +154,11 @@ _upload() {
       TARGET=$(basename "$FILENAME")
       if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
-      TEMPFILE=$(mktemp /tmp/text.XXXXX)
-      if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=80 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
+      TEMPFILE=$(mktemp -t text.XXXXXX)
+      trap 'rm -f "$TEMPFILE"' EXIT
+      if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then
+          # 'prettier' is not installed and I don't like Pandoc's default formatting choices for text or Markdown, so we'll just do a simple 'fold' to avoid unreadably-long newlines:
+          fold --spaces --width=80 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
 
       mv "$TARGET" ~/wiki/doc/www/misc/
       cd ~/wiki/ || exit
@@ -152,9 +180,9 @@ _upload() {
               red "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
               return 2
           else
-              # restart with fixed directory
-              bold "Retrying as \"upload $FILENAME $GUESS\"…"
-              upload "$FILENAME" "$GUESS"
+              # Use the guessed directory instead
+              bold "Using guessed directory \"$GUESS\" instead of \"$2\"..."
+              TARGET_DIR="doc/$GUESS"
           fi
       else
           if [ -a "$FILENAME" ]; then
@@ -169,13 +197,21 @@ _upload() {
                   FILE="$SWAP"
               fi
               TARGET=$TARGET_DIR/$(basename "$FILE")
+              # NOTE: Unlike the initial `rename_file()` function which auto-renames files with
+              # numeric suffixes when there's a collision, for convenience in uploading files with
+              # colliding surnames but unlikely to be the same because different topics,
+              # here we deliberately do NOT auto-rename if the exact target path already exists.
+              # This is because a collision at this specific path is likely a true duplicate upload attempt
+              # rather than just a filename coincidence, so we require manual intervention
+              # to prevent accidental duplicates.
               if [ ! -e ~/wiki/"$TARGET" ]; then
                   mv "$FILE" ~/wiki/"$TARGET"
                   cd ~/wiki/ || return 3
                   chmod a+r "$TARGET"
                   if [[ "$TARGET" =~ .*\.pdf ]]; then
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
-                      compressPdf "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so ignore errors
+                      # run ocrmypdf to try to shrink the PDF w/JBIG2, convert it to PDF/A format for archival longevity, and otherwise generally ensure its validity; we modify the PDF only if it saves X% size to avoid excessive churn from trivial improvements like 1% file size savings (or even getting *larger*!).
+                      compressPdf "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPdf' wrapper
                       chmod a+r "$TARGET";
                   fi
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
@@ -183,20 +219,27 @@ _upload() {
                   FILESIZE=$(stat -c%s "$TARGET")
                   SIZE_THRESHOLD=200000000  # 200MB; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
                   IS_SMALL_FILE=$([[ "$FILESIZE" -le "$SIZE_THRESHOLD" ]] && echo true || echo false)
-                  $IS_SMALL_FILE && (git add "$TARGET" &) || {
-                      # Only add to '.gitignore' if not already ignored
-                      git check-ignore --quiet "$TARGET" || {
-                          # We will document every file ignored this way, to look at usage later & make it easy to rollback or switch to an alternative:
-                          echo "# $(date --iso-8601) Large-file ignored: $(numfmt --to=iec-i --suffix=B $FILESIZE) $(sha1sum $TARGET) ($(git rev-parse HEAD)):" >> ./.gitignore
-                          echo "$TARGET" >> ./.gitignore
-                      }
+                  $IS_SMALL_FILE && (flock ~/.gitlock git add "$TARGET" &) || {
+                      # Only add to '.gitignore' if not already ignored; lock it in case of other uploads:
+                      GITIGNORE_LOCK=~/.gitignore.lock
+                      flock ~/.gitignore.lock bash -c '
+                        TARGET="$1"
+                        FILESIZE="$2"
+                        if ! git check-ignore --quiet "$TARGET"; then
+                          {
+                            echo "# $(date --iso-8601) Large-file ignored: $(numfmt --to=iec-i --suffix=B "$FILESIZE") $(sha1sum "$TARGET") ($(git rev-parse HEAD)):"
+                            echo "$TARGET"
+                          } >> .gitignore
+                        fi
+                      ' _ "$TARGET" "$FILESIZE"
+
                       bold "Added large file /$TARGET to '.gitignore' (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
                   }
 
                   (rsync --chmod='a+r' --mkpath -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                       rsync --chmod='a+r' --mkpath -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
-                  curl --head "$URL" > /dev/null # verify it's downloadable
+                  curl --head --max-filesize 200000000 "$URL" > /dev/null # verify it's downloadable
                   echo ""
                   echo "/$TARGET $URL"
 
@@ -210,7 +253,7 @@ _upload() {
 
               else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo
-                   crossref "$TARGET"
+                   crossref "$TARGET" # print out the metadata for the user to sanity-check & modify
                    return 4
               fi
           else red "First argument $FILENAME is not a file?"
@@ -230,12 +273,24 @@ else
     files=("$@")
 fi
 
+# Track overall success
+success=true
+
 for file in "${files[@]}"; do
     if [[ -n "$dir" ]]; then
-        (_upload "$file" "$dir")
+        _upload "$file" "$dir" "$FORCE" || {
+            red "Upload failed for '$file' to directory '$dir'"
+            success=false
+        }
     else
-        (_upload "$file")
+        _upload "$file" "" "$FORCE" || {
+            red "Upload failed for '$file'"
+            success=false
+        }
     fi
 done
 
 wait
+
+# Exit with error if any upload failed
+$success || exit 1

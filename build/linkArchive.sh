@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2025-02-07 22:09:25 gwern"
+# When:  Time-stamp: "2025-03-10 10:26:30 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -68,14 +68,14 @@ else
 
     URL=$(echo "$URL" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/doc/www/arxiv.org/`).
     ## 404? NOTE: Infuriatingly, Nitter domains will lie to curl when we use `--head` GET requests to be bandwidth-efficient, and will return 404 hits for *everything*. Jerks. So we can't use `--head` to be efficient, we have to do a full request just to be sure we aren't being lied to about the status. (Jerks.)
-    HTTP_STATUS=$(timeout 80s curl --user-agent "$USER_AGENT" --compressed -H 'Accept-Language: en-US,en;q=0.5' \
+    HTTP_STATUS=$(timeout 80s curl --max-filesize 200000000 --user-agent "$USER_AGENT" --compressed -H 'Accept-Language: en-US,en;q=0.5' \
                           -H "Accept: */*" --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $URL $HASH" 1>&2 && exit 1)
     if [[ "$HTTP_STATUS" == "404" ]] || [[ "$HTTP_STATUS" == "403" ]]; then
         echo "Unsuccessful: $URL $HASH" 1>&2
         exit 2
     else
         # Remote HTML, which might actually be a PDF:
-        MIME_REMOTE=$(timeout 80s curl -H "Accept: */*" --user-agent "$USER_AGENT" \
+        MIME_REMOTE=$(timeout 80s curl --max-filesize 200000000 -H "Accept: */*" --user-agent "$USER_AGENT" \
                           --head --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $URL $HASH" 1>&2 && exit 3)
 
         if [[ "$MIME_REMOTE" =~ "application/pdf".* || "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
@@ -108,7 +108,7 @@ else
             # Some websites break snapshots if any JS is left in them: the content will display briefly, but then the JS will refresh to an error page. This can be poorly written JS or deliberate anti-archiving. For such websites, we need single-file to remove JS from the snapshot entirely.
             # However, we cannot simply match on the domain, because a major offender here is Substack, which is often used under a custom domain and not just 'foo.substack.com' subdomains.
             # So we must do a quick cheap fingerprint check.
-            if curl -s "$URL" | grep -q -e "https://substackcdn.com" -e "https://your.substack.com" || [[ "$URL" == *".substack.com"* ]]; then
+            if curl --max-filesize 200000000 --silent "$URL" | grep -F --quiet -e "https://substackcdn.com" -e "https://your.substack.com" || [[ "$URL" == *".substack.com"* ]]; then
                 REMOVE_SCRIPTS="true"
             else
                 REMOVE_SCRIPTS="false"

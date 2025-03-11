@@ -68,7 +68,7 @@ if [ "${*##*.}" = "pdf" ]; then
 
     echo # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
 
-    timeout 8s curl -s -L 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
+    timeout 8s curl --silent --location 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
     echo ""
 
         ( if [ -z "$(pgrep annotation-dump)" ]; then
@@ -90,7 +90,7 @@ else
           echo "Error: Tried to call this on an invalid (non-PDF) file?" && exit 2;
       else
           # assume that it's a DOI and try querying Crossref
-          timeout 9s curl -s -L 'https://api.crossref.org/works/'"$TARGET" 2> /dev/null | \
+          timeout 9s curl --silent --location 'https://api.crossref.org/works/'"$TARGET" 2> /dev/null | \
               jq --compact-output '.message.title, .message.author, .message.issued, .message.DOI, .message.abstract' 2> /dev/null || true
       fi
 fi

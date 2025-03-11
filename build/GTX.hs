@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2025-02-14 19:31:52 gwern"
+When:  Time-stamp: "2025-03-09 21:33:11 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -21,11 +21,13 @@ A GTX is a newline-delimited format of records delimited by '---\n' separators. 
 
     - OPTIONAL: a GTX implementation must guarantee that date values are either valid ISO 8601 dates or the empty string; it may however attempt to heuristically parse invalid dates into valid ones, for user convenience (eg. accepting 'September 1st, 1981' and rewriting it to '1981-09-01').
       If a GTX implementation does this, and a pseudo-date field cannot be successfully parsed, it should error out rather than return an empty string, as that indicates a serious error in the GTX metadata which needs to be fixed by hand.
-5. a 'naked DOI' or a Haskell key-value dictionary
+5. a 'naked DOI' or a 'naked ID' or a Haskell key-value dictionary
 
     A line for key-value dictionaries (association-lists), for storing miscellaneous information. The most common case is a DOI global identifier. This line must parse by GHC Haskell as a `[(String, String)]` list. It is written out as a blank line for empty lists `[]`, and as a sorted, unique, key-value association list otherwise.
 
-    A naked DOI must be: UTF-8 text, no white-space, must contain one '/' forward slash. It must not start with a LEFT SQUARE BRACKET character (which may be technically allowed by the DOI standard), or it will be misparsed as a K-V. Naked DOIs can be read, but will be written out as a key-value list. The purpose of this is to allow convenient writing, without having to generate all of the wrapper like `[("doi", "...")]`; it is then converted to the canonical list at some point later to enable easier editing, like inserting an additional entry.
+    A naked DOI must be: UTF-8 text, no white-space, must contain one '/' forward slash. It must not start with a LEFT SQUARE BRACKET character (which may be technically allowed by the DOI standard), or it will be misparsed as a K-V. Naked DOIs can be read, but will be written out as a key-value list. Similarly, a naked ID must be a valid text ID which is the only contents of that line. (IDs cannot have '/', while DOIs must have it, and so there is no possible ambiguity about which a line might be if it does not start with '[' & end with ']'.) There can only be 0, 1, or 2 naked values.
+
+    The purpose of this is to allow convenient writing, without having to generate all of the wrapper like `[("doi", "...")]`; it is then converted to the canonical list at some point later to enable easier editing, like inserting an additional entry.
 6. tags (space-separated alpha-numerical strings, which *must* correspond to on-disk directories in `doc/*`); parses into a list of strings. (Tags are semi-mandatory on Gwern.net: ideally every URL would have at least one tag.)
 7. an 'abstract': an 'abstract' is all HTML (TODO: permit Markdown as well, as defined by whether the abstract begins with '<' or not) text after the tags and until the next '---\n' separator; it, and no other field, may contain arbitrarily many lines.
 
@@ -92,6 +94,7 @@ import Tags (listTagsAll, guessTagFromShort, uniqTags, pages2Tags, tag2TagsWithD
 import Metadata.Author (authorsCanonicalize, cleanAuthors)
 import Metadata.Date (guessDateFromLocalSchema, guessDateFromString, isDate)
 import Utils (sed, printGreen, printRed, replace, writeUpdatedFile)
+import LinkID (isValidID)
 
 readGTX :: FilePath -> IO MetadataList
 readGTX      f = do f' <- do filep <- doesFileExist f
@@ -142,7 +145,7 @@ tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
                                          T.unpack a,
                                          T.unpack d,
                                          T.unpack dc,
-                                         doiOrKV x $ T.unpack kvs,
+                                         doiOrIDorKV x $ T.unpack kvs,
                                          map T.unpack $ T.words tags,
                                          if abstract==[""] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "GTX.tuplize: empty list"
@@ -166,12 +169,44 @@ untupleize today (f, (t, aut, d, dc, kvs, tags, abstract)) =
                          , abstract
                          ]
 
-doiOrKV :: [T.Text] -> String -> [(String,String)]
-doiOrKV mi s | s == ""       = []
+doiOrIDorKV :: [T.Text] -> String -> [(String,String)]
+doiOrIDorKV mi s
+             | s == ""       = []
              | s == "[]"     = []
-             | head s == '[' = read s
-             | '/' `elem` s  = [("doi",s)]
-             | otherwise     = error $ "GTX.doiOrKV parsing fell through: " ++ s ++ " : " ++ show mi
+             | s == "[\"\"]" || s == "[(\"\",\"\")]"    = error $ "GTX.doiOrIDorKV: key-value parsing failed, empty KV? Input was: " ++ s ++ " : " ++ show mi
+             | head s == '[' = if last s == ']'
+                               then validateKVList (read s)
+                               else error $ "GTX.doiOrIDorKV: key-value parsing failed, field started with '[' like a valid KV, but did not end with ']' like it must. Input was: " ++ s ++ " : " ++ show mi
+             | otherwise     = let parts = words s
+                                   isDOI part = '/' `elem` part
+
+                                   -- Categorize each part
+                                   dois = filter isDOI parts
+                                   ids = filter isValidID parts
+
+                                   -- Check constraints
+                                   _ = if length parts > 2
+                                       then error $ "GTX.doiOrIDorKV: too many parts, expected at most 2 (one DOI and/or one ID): " ++ s ++ " : " ++ show mi
+                                       else ()
+                                   _ = if length dois > 1
+                                       then error $ "GTX.doiOrIDorKV: multiple DOIs found: " ++ s ++ " : " ++ show mi
+                                       else ()
+                                   _ = if length ids > 1
+                                       then error $ "GTX.doiOrIDorKV: multiple IDs found: " ++ s ++ " : " ++ show mi
+                                       else ()
+
+                                   -- Build the result
+                                   doiKVs = if null dois then [] else [("doi", head dois)]
+                                   idKVs = if null ids then [] else [("id", head ids)]
+                               in doiKVs ++ idKVs
+  where
+    validateKVList :: [(String, String)] -> [(String, String)]
+    validateKVList kvs =
+      let idKVs = filter (\(k, _) -> k == "id") kvs
+          invalidIDs = filter (\(_, v) -> not (isValidID v)) idKVs
+      in if null invalidIDs
+         then kvs
+         else error $ "GTX.doiOrIDorKV: invalid ID in key-value list: " ++ show invalidIDs ++ " : " ++ show mi
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()

@@ -669,6 +669,7 @@ canonicals = M.fromList
   , ("Hill Fung Ip", "Hill F. Ip")
   , ("TsviBT", "Tsvi Benson-Tilsen")
   , ("Anna Vinkhuyzen", "Anna A. E. Vinkhuyzen")
+  , ("Steve_Yegge", "Steve Yegge")
   ]
 
 -- tests: unique

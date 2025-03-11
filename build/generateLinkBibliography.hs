@@ -148,7 +148,7 @@ extractLinksFromPage :: String -> IO [(String,String)]
 extractLinksFromPage "" = error "generateLinkBibliography.extractLinksFromPage: called with an empty '' string argument—this should never happen!"
 extractLinksFromPage path =
   do existsp <- doesFileExist path
-     if not existsp then error $ "generateLinkBibliography.extractLinksFromPage: file argument does not exist? tried to read: " ++ path
+     if not existsp then printRed ("generateLinkBibliography.extractLinksFromPage: file argument does not exist? tried to read: " ++ path) >> return [] -- new '/blog/' posts may not exist yet on-disk, so we warn but don't fatally error out.
        else
         do f <- TIO.readFile path
            let pE = runPure $ readMarkdown def{readerExtensions=pandocExtensions} f

@@ -2,7 +2,7 @@
 # download-title.sh
 # Author: Gwern Branwen
 # Date: 2024-06-10
-# When:  Time-stamp: "2024-06-30 17:44:06 gwern"
+# When:  Time-stamp: "2025-03-10 10:23:56 gwern"
 # License: CC-0
 #
 # download-title.sh: download a URL, and if it is a parseable HTML page, print out the contents of the title tag, `<title>TITLE</title>`.
@@ -31,7 +31,7 @@ extract_title() {
     TEMP_FILE=$(mktemp) || { echo "Failed to create temp file" >&2; return 1; }
 
     # Fetch the URL content and save to a temporary file
-    timeout 20s curl --silent -L "$URL" > "$TEMP_FILE"
+    timeout 20s curl --max-filesize 100000000 --silent --location "$URL" > "$TEMP_FILE"
 
     # Use perl to decode the HTML entities and extract the title
     perl -MHTML::Entities -MHTML::TreeBuilder -e '
