@@ -524,7 +524,7 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		}
 	}
 
-	if (eventInfo.document == document)
+	if (eventInfo.container == document.main)
 		Content.invalidateCachedContent(eventInfo.loadLocation);
 }, "rewrite", (info) => (   info.document == document
 						 && info.contentType == "localPage"));
@@ -2677,6 +2677,21 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
     });
 }, "rewrite");
 
+/*****************************************************************************/
+/*	Invalidate cached {foot|side}notes for the target document if the injected 
+	content contains {foot|side}notes.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.invalidateCachedNotesIfNeeded = (eventInfo) => {
+    GWLog("invalidateCachedNotesIfNeeded", "rewrite.js", 1);
+
+    let baseLocation = baseLocationForDocument(eventInfo.document);
+    if (baseLocation == null)
+        return;
+
+	if (eventInfo.container.querySelector("li.footnote") != null)
+		Notes.invalidateCachedNotesForPathname(baseLocation.pathname);
+}, ">rewrite");
+
 /***************************************************************************/
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
@@ -2693,8 +2708,12 @@ addContentInjectHandler(GW.contentInjectHandlers.bindNoteHighlightEventsToCitati
         if (citation.citationMouseLeave)
             citation.removeEventListener("mouseleave", citation.citationMouseLeave);
 
-        //  Bind events.
         let notesForCitation = Notes.allNotesForCitation(citation);
+		if (   notesForCitation == null
+			|| notesForCitation.length == 0)
+			return;
+
+        //  Bind events.
         citation.addEventListener("mouseenter", citation.citationMouseEnter = (event) => {
             notesForCitation.forEach(note => {
                 note.classList.toggle("highlighted", true);

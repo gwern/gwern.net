@@ -542,7 +542,7 @@ Extracts = { ...Extracts,
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
             visible.
          */
-        if (Array.from(Notes.allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) !== -1)
+        if (Notes.allNotesForCitation(target).findIndex(note => Popups.isVisible(note)) !== -1)
             return null;
 
         /*  Add event listeners to highlight citation when its footnote

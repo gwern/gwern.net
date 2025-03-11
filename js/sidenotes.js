@@ -678,9 +678,17 @@ Sidenotes = { ...Sidenotes,
 		//  The footnote references (citations).
 		Sidenotes.citations.push(...newCitations);
 
+		//	Sort citations array by citation number.
+		Sidenotes.citations.sort((citationA, citationB) => (Notes.noteNumber(citationA) - Notes.noteNumber(citationB)));
+
+		//	Remove existing sidenotes.
+		Sidenotes.sidenotes.forEach(sidenote => {
+			sidenote.remove();
+		});
+		Sidenotes.sidenotes = [ ];
+
 		//  Create and inject the sidenotes.
-		let newSidenotes = [ ];
-		newCitations.forEach(citation => {
+		Sidenotes.citations.forEach(citation => {
 			let noteNumber = Notes.noteNumber(citation);
 
 			//  Create the sidenote outer containing block...
@@ -708,27 +716,25 @@ Sidenotes = { ...Sidenotes,
 
 			//	Inject the sidenote contents into the sidenote.
 			let includeLink = synthesizeIncludeLink(citation, {
-				"class": "include-strict include-unwrap",
-				"data-include-selector-not": ".footnote-self-link"
+				"class": "include-unwrap",
+				"data-include-selector-not": ".footnote-self-link",
+				"data-page-section-id": "footnotes"
 			});
 			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
-			includeLink.dataset.pageSectionId = "footnotes";
+			includeLink.classList.remove("footnote-ref");
 			sidenote.querySelector(".sidenote-inner-wrapper").append(includeLink);
 
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenotes.push(sidenote);
-
-			//	Track newly added sidenotes.
-			newSidenotes.push(sidenote);
 		});
 
 		//	Inject the sidenotes into the page.
-		Sidenotes.hiddenSidenoteStorage.append(...newSidenotes);
+		Sidenotes.hiddenSidenoteStorage.append(...(Sidenotes.sidenotes));
 
 		/*  Bind sidenote mouse-hover events.
 		 */
-		newCitations.forEach(citation => {
-			let sidenote = Sidenotes.counterpart(citation);
+		for (let [ index, citation ] of Sidenotes.citations.entries()) {
+			let sidenote = Sidenotes.sidenotes[index];
 
 			//	Unbind existing events, if any.
 			if (sidenote.onSidenoteMouseEnterHighlightCitation)
@@ -747,6 +753,8 @@ Sidenotes = { ...Sidenotes,
 				sidenote.outerWrapper.removeEventListener("scroll", sidenote.scrollListener);
 
 			//	Bind new events.
+
+			//	Highlight both sidenote and citation on sidenote hover.
 			sidenote.addEventListener("mouseenter", sidenote.onSidenoteMouseEnterHighlightCitation = (event) => {
 				citation.classList.toggle("highlighted", true);
 				sidenote.classList.toggle("hovering", true);
@@ -756,6 +764,15 @@ Sidenotes = { ...Sidenotes,
 				sidenote.classList.toggle("hovering", false);
 			});
 
+			/*	NOTE: The absence of event bindings here to highlight the 
+				citation and the sidenote when the *citation* is hovered over 
+				is not an oversight. Those events are bound elsewhere (see
+				rewrite.js).
+			 */
+
+			/*	Slide sidenote into view when hovering over either sidenote or
+				citation.
+			 */
 			citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
 				Sidenotes.putAllSidenotesBack(sidenote);
 				requestAnimationFrame(() => {
@@ -772,19 +789,26 @@ Sidenotes = { ...Sidenotes,
 				Sidenotes.putSidenoteBack(sidenote);
 			});
 
+			/*	Hide the “there is more hidden content below the fold”
+				(ellipsis) indicator when client scrolls to the bottom of a 
+				cut-off sidenote; show it otherwise.
+			 */
 			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
 				sidenote.classList.toggle("hide-more-indicator", sidenote.outerWrapper.scrollTop + sidenote.outerWrapper.clientHeight == sidenote.outerWrapper.scrollHeight);
 			}, {
 				target: sidenote.outerWrapper
 			});
-		});
+		}
+
+		//	Invalidate cached notes.
+		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
 
 		//	Trigger transcludes.
 		Transclude.triggerTranscludesInContainer(Sidenotes.hiddenSidenoteStorage, {
 			container: Sidenotes.hiddenSidenoteStorage,
 			document: document,
 			source: "Sidenotes.constructSidenotes"
-		});
+		}, { immediately: false });
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
@@ -1117,12 +1141,35 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
 			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
 
-			Sidenotes.constructSidenotes(eventInfo);
-		}, "rewrite", (info) => (   info.document == document
-								 && info.container.closest(".sidenote") == null
-								 && (   (   info.localize == true
-								 		 && info.container.querySelector("a.footnote-ref") != null)
-								 	 || info.container.closest("li.footnote") != null)));
+			if (eventInfo.willUpdateFootnotes == true) {
+				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (footnotesInjectEventInfo) => {
+					Sidenotes.constructSidenotes(eventInfo);
+				}, {
+					once: true,
+					condition: (info) => (   info.source == "transclude.footnotes"
+										  && info.document == document
+										  && (        info.loadLocation.pathname +      info.loadLocation.hash
+										  	  == eventInfo.loadLocation.pathname + eventInfo.loadLocation.hash))
+				});
+			} else {
+				Sidenotes.constructSidenotes(eventInfo);
+			}
+		}, ">rewrite", (info) => (   info.document == document
+								  && info.container.closest(".sidenote") == null
+								  && (   (   info.localize == true
+								 		  && info.container.querySelector("a.footnote-ref") != null)
+								 	  || info.container.closest("li.footnote") != null)));
+
+		/*	Invalidate cached notes for the base location pathname of the 
+			injected content when a sidenote loads.
+		 */
+		addContentInjectHandler(GW.contentInjectHandlers.invalidateNotesForCitationWhenSidenoteDidInject = (eventInfo) => {
+			GWLog("invalidateNotesForCitationWhenSidenoteDidInject", "sidenotes.js", 1);
+
+			if (eventInfo.container.querySelector(".footnote-back") != null)	
+				Notes.invalidateCachedNotesForPathname(eventInfo.loadLocation.pathname);
+		}, "<rewrite", (info) => (   info.document == document
+								  && info.container.closest(".sidenote") != null));
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
