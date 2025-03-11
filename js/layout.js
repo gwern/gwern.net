@@ -262,14 +262,31 @@ GW.layout = {
 	]
 };
 
-//	Preprocess selectors with faux-sibling-combinators.
+//	Preprocess selectors.
+function blockMatchesSelector(block, selector) {
+	if (typeof selector == "string")
+		return block.matches(selector);
+	else
+		return selector.matches(block);
+}
 function preprocessSelector(selector) {
 	let parts = selector.match(GW.layout.siblingCombinatorRegExp);
 	if (parts) {
+		let selectorParts = parts.slice(1, 3).map(part => preprocessSelector(part));
 		return {
-			combinatorType: "+",
-			before: parts[1],
-			after: parts[2]
+			isGWSelector: true,
+			matches: (block) => {
+				let previousBlock = previousBlockOf(block, {
+										alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+										notSkipElements: [ ".float" ],
+										cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
+									});
+				if (previousBlock == null)
+					return null;
+
+				return (   blockMatchesSelector(previousBlock, selectorParts[0])
+						&& blockMatchesSelector(block, selectorParts[1]));
+			}
 		};
 	} else {
 		return selector;
@@ -811,36 +828,13 @@ function elementSummaryString(element) {
 /*	Returns block spacing multiplier for the given block.
  */
 function getBlockSpacingMultiplier(block, debug = false) {
-	let predicateFromSelector = (selector) => {
-		if (typeof selector == "string") {
-			return (block) => block.matches(selector);
-		} else {
-			/*	Headings do not normally count as layout blocks, but they do
-				here (unless it’s a heading of a collapse section, in which case
-				it still doesn’t count as a layout block).
-			 */
-			return (block) => {
-				let previousBlock = previousBlockOf(block, {
-										alsoBlockElements: [ "section:not(.collapse) > .heading" ],
-										notSkipElements: [ ".float" ],
-										cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
-									});
-				return (   previousBlock?.matches(selector.before)
-						&& block.matches(selector.after));
-			};
-		}
-	};
-
 	let predicateMatches = (selectorOrSelectorArray, block) => {
 		let predicate;
-		if (   typeof selectorOrSelectorArray == "object"
-			&& selectorOrSelectorArray.combinatorType == undefined
-			&& selectorOrSelectorArray instanceof Array) {
-			predicate = (block) => {
-				return (selectorOrSelectorArray.findIndex(x => predicateMatches(x, block)) != -1);
-			};
+		if (   typeof selectorOrSelectorArray == "string"
+			|| selectorOrSelectorArray.isGWSelector == true) {
+			predicate = (block) => (blockMatchesSelector(block, selectorOrSelectorArray));
 		} else {
-			predicate = predicateFromSelector(selectorOrSelectorArray);
+			predicate = (block) => (selectorOrSelectorArray.findIndex(x => predicateMatches(x, block)) != -1);
 		}
 
 		return (predicate(block) == true);
