@@ -1169,7 +1169,7 @@ function includeContent(includeLink, content) {
 				altered by the up-shift, so nothing remains to do in this
 				iteration.
 			 */
-            if (isNodeEmpty_metadataAware(wrapper.previousSibling)) {
+            if (isEmpty(wrapper.previousSibling)) {
                 wrapper.previousSibling.remove();
                 continue;
             }
@@ -1209,7 +1209,7 @@ function includeContent(includeLink, content) {
 				sibling (i.e., it was the first non-empty node within its
 				former parent element), delete the empty previous sibling.
 			 */
-            if (isNodeEmpty_metadataAware(firstPart) == true)
+            if (isEmpty(firstPart) == true)
                 firstPart.remove();
 
 			/*	If the nodes that came after the wrapper within its former
@@ -1217,7 +1217,7 @@ function includeContent(includeLink, content) {
 				wrapper’s next sibling) end up adding to no substantive content,
 				delete them.
 			 */
-            if (isNodeEmpty_metadataAware(secondPart) == false)
+            if (isEmpty(secondPart) == false)
                 wrapper.parentElement.insertBefore(secondPart, wrapper.nextSibling);
 
 			/*	If the transcluded content contains block elements, and the

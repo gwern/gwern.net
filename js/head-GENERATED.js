@@ -33,6 +33,16 @@ function modulo(n, d) {
 	return (((n % d) + d) % d);
 }
 
+/**************************************************************************/
+/*	Returns true if an iterable object has no enumerable string properties.
+ */
+function isIterableEmpty(x) {
+	for (k in x)
+		return false;
+
+	return true;
+}
+
 /***********************************************************/
 /*  The first item of the array (or null if array is empty).
  */
@@ -3492,11 +3502,13 @@ GW.layout = {
 				return true;
 
 		//	Exclude elements that have any data attributes.
-		if (Object.keys(node.dataset).length > 0)
+		if (isIterableEmpty(node.dataset) == false)
 			return true;
 
 		return false;
 	},
+
+	siblingCombinatorRegExp: /^(.+) \+ (.+)$/,
 
 	blockSpacing: [
 		[ "body.page-index section",					 7, false ],
@@ -3635,6 +3647,49 @@ GW.layout = {
 		[ ".TOC + .collapse-block",		 	(bsm, block) => bsm - 4 ],
 	]
 };
+
+//	Preprocess selectors.
+function blockMatchesSelector(block, selector) {
+	if (typeof selector == "string")
+		return block.matches(selector);
+	else
+		return selector.matches(block);
+}
+function preprocessSelector(selector) {
+	let parts = selector.match(GW.layout.siblingCombinatorRegExp);
+	if (parts) {
+		let selectorParts = parts.slice(1, 3).map(part => preprocessSelector(part));
+		return {
+			isGWSelector: true,
+			matches: (block) => {
+				let previousBlock = previousBlockOf(block, {
+										alsoBlockElements: [ "section:not(.collapse) > .heading" ],
+										notSkipElements: [ ".float" ],
+										cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
+									});
+				if (previousBlock == null)
+					return null;
+
+				return (   blockMatchesSelector(previousBlock, selectorParts[0])
+						&& blockMatchesSelector(block, selectorParts[1]));
+			}
+		};
+	} else {
+		return selector;
+	}
+}
+GW.layout.blockSpacing.forEach(entry => {
+	let [ selector, result, adjustable = true ] = entry;
+	entry.splice(0, 1, preprocessSelector(selector));
+});
+GW.layout.blockSpacingAdjustments.forEach(entry => {
+	let [ selectorOrSelectorArray, adjustmentFunction ] = entry;
+	if (typeof selectorOrSelectorArray == "string") {
+		entry.splice(0, 1, preprocessSelector(selectorOrSelectorArray));
+	} else {
+		entry.splice(0, 1, selectorOrSelectorArray.map(selector => preprocessSelector(selector)));
+	}
+});
 
 //	Add support for .desktop-not and .mobile-not classes.
 GW.layout.skipElements.push(GW.mediaQueries.mobileWidth.matches ? ".mobile-not" : ".desktop-not");
@@ -3860,7 +3915,9 @@ function processLayoutOptions(options) {
 function useLayoutCache(element, action, options, f) {
 	options = processLayoutOptions(options);
 
-	let cacheKey = `${action} ${options.cacheKey}`;
+	let cacheKey = action;
+	if (options.cacheKey)
+		cacheKey += (" " + options.cacheKey);
 
 	let layoutCache = element.layoutCache;
 	let cacheInvalid = false;
@@ -3924,6 +3981,18 @@ function isBlock(element, options) {
 	});
 }
 
+/******************************************************************/
+/*	Returns true if the element is empty (accounting for metadata).
+ */
+function isEmpty(element, options) {
+	if (element == null)
+		return null;
+
+	return useLayoutCache(element, "isEmpty", options, (element, options) => {
+		return isNodeEmpty_metadataAware(element);
+	});
+}
+
 /***************************************************************************/
 /*	Returns true if element is an always-not-empty element, false otherwise.
  */
@@ -3977,7 +4046,7 @@ function sequentialBlockOf(element, direction, options) {
 	}
 
 	//	Skip empty elements.
-	if (   isNodeEmpty_metadataAware(element[siblingKey]) == true
+	if (   isEmpty(element[siblingKey], options) == true
 		&& isNonEmpty(element[siblingKey], options) == false)
 		return sequentialBlockOf(element[siblingKey], direction, options);
 
@@ -4043,7 +4112,7 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 			if (   terminalBlock
 				&& isSkipped(terminalBlock, options) == false
-				&& (   isNodeEmpty_metadataAware(terminalBlock) == false
+				&& (   isEmpty(terminalBlock, options) == false
 					|| isNonEmpty(terminalBlock, options) == true))
 				return terminalBlock;
 		}
@@ -4145,34 +4214,13 @@ function elementSummaryString(element) {
 /*	Returns block spacing multiplier for the given block.
  */
 function getBlockSpacingMultiplier(block, debug = false) {
-	let predicateFromSelector = (selector) => {
-		let parts = selector.match(/^(.+) \+ (.+)$/);
-		if (parts) {
-			/*	Headings do not normally count as layout blocks, but they do
-				here (unless it’s a heading of a collapse section, in which case
-				it still doesn’t count as a layout block).
-			 */
-			return (block) => (   previousBlockOf(block, {
-									alsoBlockElements: [ "section:not(.collapse) > .heading" ],
-									notSkipElements: [ ".float" ],
-									cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
-								  })?.matches(parts[1])
-							   && block.matches(parts[2]));
+	let predicateMatches = (selectorOrSelectorArray, block) => {
+		let predicate;
+		if (   typeof selectorOrSelectorArray == "string"
+			|| selectorOrSelectorArray.isGWSelector == true) {
+			predicate = (block) => (blockMatchesSelector(block, selectorOrSelectorArray));
 		} else {
-			return (block) => block.matches(selector);
-		}
-	};
-
-	let predicateMatches = (predicate, block) => {
-		if (typeof predicate == "string")
-			predicate = predicateFromSelector(predicate);
-
-		if (   typeof predicate == "object"
-			&& predicate instanceof Array) {
-			let predicateArray = predicate;
-			predicate = (block) => {
-				return (predicateArray.findIndex(x => predicateMatches(x, block)) != -1);
-			};
+			predicate = (block) => (selectorOrSelectorArray.findIndex(x => predicateMatches(x, block)) != -1);
 		}
 
 		return (predicate(block) == true);
@@ -4180,19 +4228,19 @@ function getBlockSpacingMultiplier(block, debug = false) {
 
 	if (debug)
 		console.log(block);
-	for (let [ predicate, result, adjustable = true ] of GW.layout.blockSpacing) {
-		if (predicateMatches(predicate, block)) {
+	for (let [ selector, result, adjustable = true ] of GW.layout.blockSpacing) {
+		if (predicateMatches(selector, block)) {
 			if (debug)
-				console.log(predicate);
+				console.log(selector);
 			let bsm = (typeof result == "function")
 					  ? result(block)
 					  : result;
 
 			if (adjustable) {
-				for (let [ predicate, transform ] of GW.layout.blockSpacingAdjustments)
-					if (predicateMatches(predicate, block)) {
+				for (let [ selectorOrSelectorArray, transform ] of GW.layout.blockSpacingAdjustments)
+					if (predicateMatches(selectorOrSelectorArray, block)) {
 						if (debug)
-							console.log(predicate);
+							console.log(selectorOrSelectorArray);
 						bsm = Math.max(0, transform(bsm, block));
 					}
 			}
@@ -4473,7 +4521,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isNodeEmpty_metadataAware(block);
+			let emptyGraf = isEmpty(block);
 			block.classList.toggle("empty-graf", emptyGraf);
 			if (emptyGraf)
 				return;

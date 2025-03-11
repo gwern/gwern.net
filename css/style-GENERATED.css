@@ -1217,6 +1217,8 @@
     --GW-page-toolbar-widget-flash-filter-inverse: invert(0.7) brightness(1.33) contrast(1.33);
 
     --GW-floating-header-scroll-indicator-thickness: 3px;
+
+	--GW-search-iframe-height: 128px;
 }
 @supports (-moz-appearance: none) {
     :root {
@@ -2504,18 +2506,13 @@ iframe.pdf {
 
 iframe.search {
     aspect-ratio: unset;
+    height: var(--GW-search-iframe-height);
 }
 @media all and (min-width: 650px) {
     iframe.search {
-        height: 6.5em;
         width: calc(100% - 4em);
         margin-left: 2em;
         margin-right: 2em;
-    }
-}
-@media all and (max-width: 649px) {
-    iframe.search {
-        height: 6.5rem;
     }
 }
 
