@@ -21905,13 +21905,7 @@ ImageFocus = {
 			imageSrcURL.pathname = parts[1] + parts[2];
 			return imageSrcURL.href;
 		} else if (image.srcset > "") {
-			return Array.from(image.srcset.matchAll(/(\S+?)\s+(\S+?)(,|$)/g)).sort((a, b) => {
-				if (parseFloat(a[2]) < parseFloat(b[2]))
-					return -1;
-				if (parseFloat(a[2]) > parseFloat(b[2]))
-					return 1;
-				return 0;
-			}).last[1];
+			return Array.from(image.srcset.matchAll(/(\S+?)\s+(\S+?)(,|$)/g)).sort((a, b) => (parseFloat(a[2]) - parseFloat(b[2]))).last[1];
 		} else if (image.dataset.srcSizeFull > "") {
 			return image.dataset.srcSizeFull;
 		} else {
