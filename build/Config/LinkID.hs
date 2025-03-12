@@ -18,4 +18,5 @@ linkIDOverrides =
   [
     ("https://en.wikipedia.org/wiki/Donkey", "wp-donkey")
   , ("https://en.wikipedia.org/wiki/Przewalski%27s_horse", "wp-przewalskishorse")
+  , ("/gpt-2-music", "gwern-presser-2019-music")
   ]

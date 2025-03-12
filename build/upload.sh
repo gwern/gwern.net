@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-10 22:31:36 gwern"
+# When:  Time-stamp: "2025-03-11 20:43:12 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -18,8 +18,6 @@
 # This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
 # (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files (or if too large to be safe to version-control, added to `.gitignore` instead).
 # They are then opened in a web browser to verify they uploaded, have permissions, and render.
-
-set -x
 
 . ~/wiki/static/build/bash.sh
 
@@ -248,7 +246,7 @@ _upload() {
                       cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
                       ("$BROWSER" "$URL" 2> /dev/null) &
                   } || bold "File is too large to preview in browser ($(numfmt --to=iec-i --suffix=B $FILESIZE)). Access directly at $URL"
-                  ) &
+                  )
 
               else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo
@@ -265,31 +263,37 @@ _upload() {
 # `upload` main loop, calling `upload` as appropriate:
 ## If last argument is not a file, it's a directory, and we call `_upload` repeatedly with `_upload $file_n $directory`.
 ## This keeps the logic simpler than trying to handle many variable-length arguments in `_upload`.
+CURRENT_DIR=$(pwd)
+
 if [[ ! -f "${!#}" ]]; then
     dir="${!#}"
-    files=("${@:1:$(($#-1))}")
+    mapfile -t files < <(find "$CURRENT_DIR" -maxdepth 1 -type f -printf '%P\n')
 else
     files=("$@")
 fi
 
-# Track overall success
 success=true
-
 for file in "${files[@]}"; do
+    file_path="$CURRENT_DIR/$file"
     if [[ -n "$dir" ]]; then
-        _upload "$file" "$dir" "$FORCE" || {
-            red "Upload failed for '$file' to directory '$dir'"
-            success=false
-        }
+        if [ -e "$file_path" ]; then
+            _upload "$file_path" "$dir" "$FORCE" || {
+                red "Upload failed for '$file' to directory '$dir'"
+                success=false
+            }
+        else
+            red "File '$file' no longer exists at path '$file_path', skipping..."
+        fi
     else
-        _upload "$file" "" "$FORCE" || {
-            red "Upload failed for '$file'"
-            success=false
-        }
+        if [ -e "$file_path" ]; then
+            _upload "$file_path" "" "$FORCE" || {
+                red "Upload failed for '$file'"
+                success=false
+            }
+        else
+            red "File '$file' no longer exists at path '$file_path', skipping..."
+        fi
     fi
 done
-
-wait
-
 # Exit with error if any upload failed
 $success || exit 1

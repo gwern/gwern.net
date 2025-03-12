@@ -4,10 +4,10 @@
 # so one can run '$ gwa foo bar' for the equivalent of 'gwa | egrep --ignore-case "foo bar"`
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2023-12-27 13:35:21 gwern"
+# When:  Time-stamp: "2025-03-11 20:30:29 gwern"
 # License: CC-0
 
-QUERY="$(echo $* | sed -e 's/https:\/\/gwern\.net//g')"
+QUERY="$(echo $* | sed -e 's/https:\/\/gwern\.net//g' -e 's/^\///')" # strip the leading '/' because that is syntax-highlighted in the 'annotation-dump' format now
 if [ $# != 1 ]; then
     # paste into a single string, so we can drop the need to quote everything
     echo "" | annotation-dump | grep -E --ignore-case "$QUERY";

@@ -670,6 +670,8 @@ canonicals = M.fromList
   , ("TsviBT", "Tsvi Benson-Tilsen")
   , ("Anna Vinkhuyzen", "Anna A. E. Vinkhuyzen")
   , ("Steve_Yegge", "Steve Yegge")
+  , ("Sara Hagg", "Sara Hägg")
+  , ("Oleg", "Oleg Kiselyov")
   ]
 
 -- tests: unique
@@ -698,7 +700,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1430,11 +1432,16 @@ authorLinkDB = M.fromList $
     , ("Xiaohua Zhai", "https://sites.google.com/view/xzhai")
     , ("Xiaogang Wang", "https://scholar.google.com/citations?user=-B5JgjsAAAAJ")
     , ("Tom B. Brown", "https://scholar.google.com/citations?user=RLvsC94AAAAJ")
-    , ("Thomas D. Als", "https://scholar.google.com/citations?user=X-SsyNoAAAAJ&hl=en&oi=ao")
+    , ("Thomas D. Als", "https://scholar.google.com/citations?user=X-SsyNoAAAAJ")
     , ("Susanne Lucae", "https://pure.mpg.de/cone/persons/resource/persons80426")
     , ("Seena Fazel", "https://www.psych.ox.ac.uk/team/seena-fazel")
-    , ("Saskia P. Hagenaars", "https://scholar.google.com/citations?user=urYMTkYAAAAJ&hl=en&oi=ao")
+    , ("Saskia P. Hagenaars", "https://scholar.google.com/citations?user=urYMTkYAAAAJ")
     , ("R. S. Richardson", "https://en.wikipedia.org/wiki/Robert_S._Richardson")
+    , ("Sara Hägg", "https://ki.se/en/people/sara-hagg")
+    , ("Rosanne Liu", "https://rosanneliu.com/")
+    , ("Pim van der Harst", "https://research.umcutrecht.nl/researchers/pim-van-der-harst/")
+    , ("Philip R. Jansen", "https://drphilipjansen.com/index.html")
+    , ("Oleg Kiselyov", "https://okmij.org/ftp/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2683,4 +2690,5 @@ authorWpLinkDB =
     , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz"
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
-    , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén"]
+    , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
+    , "Milton Rokeach"]
