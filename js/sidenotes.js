@@ -295,14 +295,9 @@ Sidenotes = { ...Sidenotes,
 						: Sidenotes.sidenoteColumnRight);
 			}
 
-			//  Inject the sidenote into the column (provisionally).
-			if (sidenote.classList.contains("hidden")) {
-				if (sidenote.parentElement != Sidenotes.hiddenSidenoteStorage)
-					Sidenotes.hiddenSidenoteStorage.append(sidenote);
-			} else if (   sidenote.parentElement == Sidenotes.hiddenSidenoteStorage
-					   || sidenote.parentElement == null) {
+			//  Inject the sidenote into the column, if need be.
+			if (sidenote.parentElement != side)
 				side.append(sidenote);
-			}
 		}
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
@@ -373,35 +368,30 @@ Sidenotes = { ...Sidenotes,
 			sidenote.lastKnownHeight = sidenote.offsetHeight;
 		});
 
-		//	Clean up old layout cells, if any.
-		[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
-			column.querySelectorAll(".sidenote-layout-cell").forEach(cell => cell.remove());
-		});
-
 		//	Construct new layout cells.
 		let layoutCells = [ ];
-		let sides = [ ];
+		let columnSpecs = [ ];
 		if (Sidenotes.useLeftColumn())
-			sides.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
+			columnSpecs.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
 		if (Sidenotes.useRightColumn())
-			sides.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
-		sides.forEach(side => {
-			let [ column, rect, ranges ] = side;
+			columnSpecs.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
+		columnSpecs.forEach(columnSpec => {
+			let [ column, columnRect, proscribedVerticalRanges ] = columnSpec;
 			let prevRangeBottom = 0;
 
-			ranges.forEach(range => {
-				let cell = newElement("DIV", {
-					"class": "sidenote-layout-cell"
-				}, {
-					"sidenotes": [ ],
-					"container": column,
-					"room": (range.top - prevRangeBottom),
-					"style": `top: ${prevRangeBottom + "px"}; height: ${(range.top - prevRangeBottom) + "px"}`
+			proscribedVerticalRanges.forEach(range => {
+				layoutCells.push({
+					sidenotes: [ ],
+					column: column,
+					columnRect: columnRect,
+					left: columnRect.left,
+					right: columnRect.right,
+					width: columnRect.width,
+					top: (columnRect.top + prevRangeBottom),
+					bottom: (columnRect.top + range.top),
+					height: (range.top - prevRangeBottom),
+					room: (range.top - prevRangeBottom),
 				});
-
-				column.append(cell);
-				cell.rect = cell.getBoundingClientRect();
-				layoutCells.push(cell);
 
 				prevRangeBottom = range.bottom;
 			});
@@ -412,7 +402,7 @@ Sidenotes = { ...Sidenotes,
 			cell, whichever is lower.
 		 */
 		let defaultNotePosInCellForCitation = (cell, citation) => {
-			return Math.max(0, Math.round((citation.getBoundingClientRect().top - cell.rect.top) + 4));
+			return Math.max(0, Math.round((citation.getBoundingClientRect().top - cell.top) + 4));
 		};
 
 		//	Assign sidenotes to layout cells.
@@ -441,12 +431,12 @@ Sidenotes = { ...Sidenotes,
 			 */
 			let citationBoundingRect = citation.getBoundingClientRect();
 			let vDistanceToCell = (cell) => {
-				if (   citationBoundingRect.top > cell.rect.top
-					&& citationBoundingRect.top < cell.rect.bottom)
+				if (   citationBoundingRect.top > cell.top
+					&& citationBoundingRect.top < cell.bottom)
 					return 0;
-				return (citationBoundingRect.top < cell.rect.top
-						? Math.abs(citationBoundingRect.top - cell.rect.top)
-						: Math.abs(citationBoundingRect.top - cell.rect.bottom));
+				return (citationBoundingRect.top < cell.top
+						? Math.abs(citationBoundingRect.top - cell.top)
+						: Math.abs(citationBoundingRect.top - cell.bottom));
 			};
 			let hDistanceToCell = (cell) => {
 				return Math.abs(citationBoundingRect.left - (cell.left + (cell.width / 2)));
@@ -457,10 +447,10 @@ Sidenotes = { ...Sidenotes,
 				let otherNoteCitation = Sidenotes.counterpart(note);
 				let otherNotePosInCell = defaultNotePosInCellForCitation(cell, otherNoteCitation);
 
-				return (   otherNotePosInCell > notePosInCell + sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing
+				return (   otherNotePosInCell > notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing
 						|| notePosInCell      > otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing)
 					   ? 0
-					   : Math.max(notePosInCell + sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
+					   : Math.max(notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
 					   			  otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing - notePosInCell);
 			};
 			let cellCrowdedness = (cell) => {
@@ -476,7 +466,7 @@ Sidenotes = { ...Sidenotes,
 							- (vDistanceToCell(cellB) + cellCrowdedness(cellB)))
 						|| (hDistanceToCell(cellA) - hDistanceToCell(cellB)));
 			});
-			let closestFittingLayoutCell = fittingLayoutCells[0];
+			let closestFittingLayoutCell = fittingLayoutCells.first;
 
 			//	Add the sidenote to the selected cell.
 			closestFittingLayoutCell.room -= (sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing);
@@ -502,7 +492,7 @@ Sidenotes = { ...Sidenotes,
 			//	Sort the cell’s sidenotes vertically (secondarily by number).
 			cell.sidenotes.sort((noteA, noteB) => {
 				return (   (noteA.posInCell - noteB.posInCell)
-						|| (parseInt(noteA.id.substr(2)) - parseInt(noteB.id.substr(2))));
+						|| (parseInt(noteA.id.slice(2)) - parseInt(noteB.id.slice(2))));
 			});
 
 			//	Called in pushNotesUp().
@@ -557,17 +547,14 @@ Sidenotes = { ...Sidenotes,
 				if so, push it (and any sidenotes above it that it bumps into)
 				upward.
 			 */
-			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - parseInt(cell.style.height));
+			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - cell.height);
 			if (overlapOfBottom > 0)
 				pushNotesUp([ (cell.sidenotes.length - 1) ], overlapOfBottom, true);
 
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
-				sidenote.style.top = Math.round(sidenote.posInCell) + "px";
+				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
 			});
-
-			//	Re-inject the sidenotes into the page.
-			cell.append(...cell.sidenotes);
 		});
 
 		//	Update footnote-back arrow orientation in sidenotes.

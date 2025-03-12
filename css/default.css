@@ -2831,20 +2831,12 @@ a.footnote-back {
 /* SIDENOTES */
 /*************/
 
-.sidenote-layout-cell {
-    position: absolute;
-    width: 100%;
-    pointer-events: none;
-}
-.sidenote-layout-cell > * {
-    pointer-events: auto;
-}
-
 #sidenote-column-left,
 #sidenote-column-right,
 #hidden-sidenote-storage {
     width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
     max-width: var(--GW-sidenotes-max-width);
+    pointer-events: none;
 }
 
 #sidenote-column-left,
@@ -2885,6 +2877,7 @@ a.footnote-back {
     transition:
         opacity 0.25s ease-in,
         transform 0.25s ease-in;
+    pointer-events: auto;
 }
 #markdownBody .sidenote.displaced {
     transition:
