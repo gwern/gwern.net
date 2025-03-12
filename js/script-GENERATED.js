@@ -18573,6 +18573,18 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 			howMany--;
 		}
 
+		/*	If class ‘disable-the-not-chosen’ is set on the randomizer 
+			container (i.e., the element with the ‘display-random-<whatever>’ 
+			class), then all but the chosen entries should be removed from the 
+			page, and not merely hidden via `display: none`. (This is relevant 
+			when randomizing between elements like image-map <area>s, which can
+			have effects even when they are not displayed.)
+		 */
+		if (randomSelectorContainer.classList.contains("disable-the-not-chosen"))
+			for (let childElement of randomSelectorContainer.children)
+				if (childElement.matches(".display-entry:not(.visible)"))
+					childElement.remove();
+
 		//	Make the container visible.
 		randomSelectorContainer.classList.add("visible");
 	});
