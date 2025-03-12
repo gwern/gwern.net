@@ -66,7 +66,7 @@ Color = {
 		//	Apply transforms.
 		transforms.forEach(transform => {
 			if (transform.type == Color.ColorTransform.COLORIZE) {
-				let workingColorSpace = (   transform.colorSpace 
+				let workingColorSpace = (   transform.colorSpace
 										 ?? Color.ColorTransformSettings[transform.type].defaultColorSpace);
 				let referenceColorRGBA = Color.rgbaFromString(transform.referenceColor);
 				let subjectColorInWorkingColorSpace = Color.fromRGB(transformedValueRGBA, workingColorSpace);
@@ -86,7 +86,7 @@ Color = {
 				: Color.rgbaStringFromRGBA(transformedValueRGBA));
 	},
 
-	/*	In L*a*b* or Oklab, retain lightness (L*) but set color (a* and b*) 
+	/*	In L*a*b* or Oklab, retain lightness (L*) but set color (a* and b*)
 		from the specified reference color.
 
 		In Oklch, retain lightness (L) but set chroma (C) and hue (h°) from the
@@ -196,8 +196,8 @@ Color = {
 	},
 
 	rgbaStringFromRGBA: (rgba) => {
-		return (  "rgba(" 
-				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ") 
+		return (  "rgba("
+				+ [ rgba.red, rgba.green, rgba.blue ].map(value => Math.round(value).toString().padStart(3, " ")).join(", ")
 				+ ", " + Math.round(rgba.alpha ?? 1.0).toString()
 				+ ")");
 	},
@@ -361,7 +361,7 @@ Color = {
 
 			hue /= 6.0;
 		}
-	
+
 		return {
 			hue:        hue,
 			saturation: saturation,
@@ -430,7 +430,7 @@ Color = {
 			     if (hue < 0.0) hue += 1.0;
 			else if (hue > 1.0) hue -= 1.0;
 		}
-	
+
 		return {
 			hue:        hue,
 			saturation: saturation,
@@ -449,7 +449,7 @@ Color = {
 			let value1 = hsv.value * (1.0 - hsv.saturation);
 			let value2 = hsv.value * (1.0 - hsv.saturation * (h - i));
 			let value3 = hsv.value * (1.0 - hsv.saturation * (1.0 - (h - i)));
-		
+
 			red = green = blue = 0.0;
 
 			     if (i == 0.0) { red = hsv.value; green = value3;    blue = value1;    }
@@ -461,7 +461,7 @@ Color = {
 		} else {
 			red = green = blue = hsv.value;
 		}
-	
+
 		return {
 			red:   red   * 255.0,
 			green: green * 255.0,
@@ -474,7 +474,7 @@ Color = {
 
 		for (let [ i, value ] of Object.entries(rgbValues)) {
 			value /= 255.0;
-			rgbValues[i] = value > 0.04045 
+			rgbValues[i] = value > 0.04045
 						   ? Math.pow(((value + 0.055) / 1.055), 2.4)
 						   : value / 12.92;
 		}
@@ -501,7 +501,7 @@ Color = {
 
 		for (let [ i, value ] of Object.entries(rgbValues)) {
 			value = value > 0.0031308
-					? 1.055 * Math.pow(value, (1.0/2.4)) - 0.055 
+					? 1.055 * Math.pow(value, (1.0/2.4)) - 0.055
 					: 12.92 * value;
 			rgbValues[i] = Math.min(Math.max(value, 0.0), 1.0) * 255.0;
 		}
@@ -543,8 +543,8 @@ Color = {
 		let xyzValues = [ x, y, z ];
 
 		for (let [ i, value ] of Object.entries(xyzValues)) {
-			xyzValues[i] = Math.pow(value, 3) > 0.008856 
-						   ? Math.pow(value, 3) 
+			xyzValues[i] = Math.pow(value, 3) > 0.008856
+						   ? Math.pow(value, 3)
 						   : (value - 0.16/1.16) / 7.787;
 		}
 
@@ -1509,7 +1509,7 @@ Notes = {
 	/*	Structure:
 
 		.notesForCitations has keys which are pathnames and values which are
-		objects, each of which has keys that are IDs and values that are arrays 
+		objects, each of which has keys that are IDs and values that are arrays
 		of elements.
 	 */
 	notesForCitations: { },
@@ -1532,11 +1532,11 @@ Notes = {
 			[ document,
 			  citation.getRootNode(),
 			  ...(Extracts.popFrameProvider.allSpawnedPopFrames().map(popFrame => popFrame.document))
-			].unique().flatMap(doc => 
+			].unique().flatMap(doc =>
 				Array.from(doc.querySelectorAll("li.footnote, div.sidenote"))
 			).filter(note => {
-				/*  We must check to ensure that the note in question is from the 
-					same page as the citation (to distinguish between main document 
+				/*  We must check to ensure that the note in question is from the
+					same page as the citation (to distinguish between main document
 					and any full-page embeds that may be spawned).
 				 */
 				if (note.footnoteBackLink == null)
@@ -3553,7 +3553,7 @@ Popups = {
     updatePageScrollState: () => {
         GWLog("Popups.updatePageScrollState", "popups.js", 2);
 
-        if (Popups.allSpawnedPopups().findIndex(popup => 
+        if (Popups.allSpawnedPopups().findIndex(popup =>
         		(   Popups.popupIsMaximized(popup) == true
         		 && Popups.popupIsMinimized(popup) == false)
         	) == -1)
@@ -4180,7 +4180,7 @@ Popups = {
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (   popup.titleBar 
+        if (   popup.titleBar
         	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
 
@@ -4212,7 +4212,7 @@ Popups = {
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (   popup.titleBar 
+        if (   popup.titleBar
         	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
 
@@ -5451,9 +5451,9 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-        /*  Make sure that this is a left-click; that we’re clicking on the 
-        	popup (i.e. its edge) and not on any of the popup’s contained 
-        	elements; and that the popup is resizeable (i.e., that it is pinned 
+        /*  Make sure that this is a left-click; that we’re clicking on the
+        	popup (i.e. its edge) and not on any of the popup’s contained
+        	elements; and that the popup is resizeable (i.e., that it is pinned
         	or zoomed, and not minimized).
          */
         if (   event.button != 0
@@ -5649,9 +5649,9 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-		/*	Make sure that this is a left-click; that we’re clicking on an 
+		/*	Make sure that this is a left-click; that we’re clicking on an
 			empty part of the title bar or else on the title itself (but not on
-			a title bar button); and the the popup is draggable (i.e., that it 
+			a title bar button); and the the popup is draggable (i.e., that it
 			is not minimized).
 		 */
 		if (   event.button != 0
@@ -5718,10 +5718,10 @@ Popups = {
 			popup.linkDragTarget.onclick = (event) => { return false; };
 
 		//  Set new viewport rect; clamp to screen.
-		Popups.setPopupViewportRect(popup, 
+		Popups.setPopupViewportRect(popup,
 									new DOMRect(popup.viewportRect.x + (event.clientX - popup.dragStartMouseCoordX),
 												popup.viewportRect.y + (event.clientY - popup.dragStartMouseCoordY),
-												0, 0), 
+												0, 0),
 									{ clampPositionToScreen: true });
 	},
 
@@ -5790,7 +5790,7 @@ Popups = {
         event.stopPropagation();
 
         let popup = Popups.containingPopFrame(event.target);
-	
+
 		if (Popups.popupIsMinimized(popup)) {
 			if (event.altKey == true) {
 				Popups.allMinimizedPopups().forEach(Popups.unminimizePopup);
@@ -6041,9 +6041,9 @@ GW.notificationCenter.fireEvent("Popups.didLoad");
 	https://ignorethecode.net/blog/2010/04/20/footnotes/ for details.
 
 	Original author:  Lukas Mathis (2010-04-20)
-	License: public domain (“And some people have asked me about a license for 
-	this piece of code. I think it’s far too short to get its own license, so 
-	I’m relinquishing any copyright claims. Consider the code to be public 
+	License: public domain (“And some people have asked me about a license for
+	this piece of code. I think it’s far too short to get its own license, so
+	I’m relinquishing any copyright claims. Consider the code to be public
 	domain. No attribution is necessary.")
  */
 
@@ -6411,8 +6411,8 @@ Popins = {
 			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
 
 			/*	If popin is still loading (or has failed to load), and the
-				`inheritInitialHeight` option is enabled, then set the new 
-				popin’s initial height to the height of the parent popin (to be 
+				`inheritInitialHeight` option is enabled, then set the new
+				popin’s initial height to the height of the parent popin (to be
 				adjusted after the new popin finishes loading, if ever).
 			 */
 			if (   options.inheritInitialHeight
@@ -6431,7 +6431,7 @@ Popins = {
 		//	Designate ancestors.
 		let ancestor = popin.parentElement;
 		do { ancestor.classList.add("popin-ancestor"); }
-		while (   (ancestor = ancestor.parentElement) 
+		while (   (ancestor = ancestor.parentElement)
 			   && [ "MAIN", "ARTICLE" ].includes(ancestor.tagName) == false);
 
 		//  Mark target as having an open popin associated with it.
@@ -6505,12 +6505,12 @@ Popins = {
 
 			let scrollWindowBy = 0;
 			if (popinViewportRect.bottom > window.innerHeight - Popins.windowBottomPopinPositionMargin) {
-				scrollWindowBy = Math.round(  window.innerHeight * -0.95 
-											+ Popins.windowBottomPopinPositionMargin 
+				scrollWindowBy = Math.round(  window.innerHeight * -0.95
+											+ Popins.windowBottomPopinPositionMargin
 											+ popinViewportRect.bottom);
 			} else if (popinViewportRect.top < 0 + Popins.windowTopPopinPositionMargin) {
-				scrollWindowBy = Math.round(  window.innerHeight * -0.10 
-											- Popins.windowTopPopinPositionMargin 
+				scrollWindowBy = Math.round(  window.innerHeight * -0.10
+											- Popins.windowTopPopinPositionMargin
 											+ popinViewportRect.top);
 			}
 
@@ -11683,7 +11683,7 @@ Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}>">
 	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
-		<a 
+		<a
 		   class="<{titleLinkClass}>"
 		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
@@ -11714,7 +11714,7 @@ Transclude.templates = {
 	<{thumbnailFigure}>
 	<[IFEND]>
 	<p class="data-field title">
-		<a 
+		<a
 		   class="<{titleLinkClass}>"
 		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
@@ -11737,7 +11737,7 @@ Transclude.templates = {
 	<{thumbnailFigure}>
 	<[IFEND]>
 	<p class="data-field title">
-		<a 
+		<a
 		   class="<{titleLinkClass}>"
 		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
@@ -11769,7 +11769,7 @@ Transclude.templates = {
 		><{popFrameTitle}></a>`,
 	"tweet-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
-		<a 
+		<a
 		   class="<{authorLinkClass}>"
 		   title="Open <<{authorLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{titleLinkHref}>"
@@ -11778,10 +11778,10 @@ Transclude.templates = {
 			   ><{authorPlusAvatar}></a>\\
 		on \\
 		<a
-		   class="<{tweetLinkClass}>" 
+		   class="<{tweetLinkClass}>"
 		   title="Open <<{tweetLinkHref>> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{tweetLinkHref}>" 
-		   <{archivedTweetURLDataAttribute}> 
+		   href="<{tweetLinkHref}>"
+		   <{archivedTweetURLDataAttribute}>
 		   <{tweetLinkIconMetadata}>
 		   	   ><{tweetDate}></a>
 	</p>
@@ -11789,7 +11789,7 @@ Transclude.templates = {
 </div>`,
 	"tweet-blockquote-outside": `<blockquote class="content-transform <{contentTypeClass}>">
 	<p class="data-field tweet-links">
-		<a 
+		<a
 		   class="<{authorLinkClass}>"
 		   title="Open <<{authorLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
 		   href="<{authorLinkHref}>"
@@ -11798,10 +11798,10 @@ Transclude.templates = {
 			   ><{authorPlusAvatar}></a>\\
 		on \\
 		<a
-		   class="<{tweetLinkClass}>" 
+		   class="<{tweetLinkClass}>"
 		   title="Open <<{tweetLinkHref>> in <{whichTab}> <{tabOrWindow}>"
-		   href="<{tweetLinkHref}>" 
-		   <{archivedTweetURLDataAttribute}> 
+		   href="<{tweetLinkHref}>"
+		   <{archivedTweetURLDataAttribute}>
 		   <{tweetLinkIconMetadata}>
 		   	   ><{tweetDate}></a>
 	</p>
@@ -11902,7 +11902,7 @@ Extracts = {
 					two hooks.
 				 */
 				if (indicatorHook.previousSibling.textContent == "\u{2060}")
-					indicatorHook.previousSibling.remove();	
+					indicatorHook.previousSibling.remove();
 			} else {
 				/*	Remove U+2060 WORD JOINER from first text content of link.
 				 */
@@ -11972,13 +11972,13 @@ Extracts = {
 			/*	Inject indicator hook span.
 				(If the link already has a recently-modified icon hook, we must,
 				 firstly, inject the indicator hook after the recently-modified
-				 icon hook, and secondly, inject a text node containing a 
+				 icon hook, and secondly, inject a text node containing a
 				 U+2060 WORD JOINER between the two hooks. This ensures that the
-				 two link styling elements are arranged properly, and do not 
+				 two link styling elements are arranged properly, and do not
 				 span a line break.)
 			 */
 			let recentlyModifiedIconHook = link.querySelector(".recently-modified-icon-hook");
-			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), 
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }),
 							  recentlyModifiedIconHook?.nextSibling ?? link.firstChild);
 			if (recentlyModifiedIconHook)
 				link.insertBefore(document.createTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
@@ -12290,7 +12290,7 @@ Extracts = {
     //  Called by: Extracts.preparePopin
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
-        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame) 
+        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame)
         		 || Extracts.popFrameProvider.popFrameStateLoadingFailed(popFrame)) == false);
     },
 
@@ -12465,8 +12465,8 @@ Extracts = {
         //  Import the class(es) of the target.
         Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
-        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
-        	"uri", "has-annotation", "has-annotation-partial", "has-content", 
+        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame,
+        	"uri", "has-annotation", "has-annotation-partial", "has-content",
         	"link-self", "link-annotated", "link-page",
         	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
         	"spawns-popup", "spawns-popin",
@@ -12490,7 +12490,7 @@ Extracts = {
 
         //  Special handling for certain pop-frame types.
         let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
-        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
+        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`]
         							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
         if (specialPrepareFunction)
             if ((popFrame = specialPrepareFunction(popFrame)) == null)
@@ -12561,7 +12561,7 @@ Extracts = {
 			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 
 			//	Type-specific updates.
-			(   Extracts[`updatePop${suffix}_${targetTypeName}`] 
+			(   Extracts[`updatePop${suffix}_${targetTypeName}`]
 			 ?? Extracts[`updatePopFrame_${targetTypeName}`]
 			 )?.(popFrame);
 		}, {
@@ -12574,7 +12574,7 @@ Extracts = {
 		//	Rewrite pop-frame content when it’s injected.
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			//  Type-specific rewrites.
-			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`] 
+			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`]
 			 ?? Extracts[`rewritePopFrameContent_${targetTypeName}`]
 			 )?.(popFrame, info.container);
 
@@ -12854,7 +12854,7 @@ Extracts = { ...Extracts,
                 return null;
             }
         }
-        /*	Likewise do not spawn annotation popup if the current page is the 
+        /*	Likewise do not spawn annotation popup if the current page is the
         	/blog/ page for that same annotation.
          */
         if (   location.pathname.startsWith("/blog/")
@@ -12880,11 +12880,11 @@ Extracts = { ...Extracts,
 			itself follows the abstract (but precedes the aux-links), and the
 			caption is not unnecessarily duplicated.
 		 */
-		if ([ "remoteImage", 
+		if ([ "remoteImage",
 			  "remoteVideo",
-			  "localImage", 
-			  "localVideo", 
-			  "localAudio" 
+			  "localImage",
+			  "localVideo",
+			  "localAudio"
 			  ].findIndex(x => Content.contentTypes[x].matches(popFrame.spawningTarget)) !== -1) {
 			let annotationAbstract = contentContainer.querySelector(".annotation-abstract");
 			let fileIncludes = contentContainer.querySelector(".file-includes");
@@ -14146,7 +14146,7 @@ Extracts = { ...Extracts,
 
 		/*	Allow media popups to squeeze the same maximum screen area (defined
 			by the --GW-popups-popup-max-width and --GW-popups-popup-max-height
-			CSS variables) into more horizontal or vertical space (useful for 
+			CSS variables) into more horizontal or vertical space (useful for
 			images that deviate from the standard ~4:3 aspect ratio of popups).
 		 */
 		if (options.loosenSizeConstraints) {
@@ -14296,7 +14296,7 @@ Extracts = { ...Extracts,
 			let label = inline
 						? shortLabel
 						: (name == currentMode
-						   ? selectedLabel 
+						   ? selectedLabel
 						   : unselectedLabel);
 			return `<button
 					 type="button"
@@ -14834,7 +14834,7 @@ Typography = {
 				if (isWBR(node) && prevNodeIsWBR == false) {
 					prevNodeIsWBR = true;
 				} else if (prevNodeIsWBR) {
-					if (   isWBR(node) 
+					if (   isWBR(node)
 						|| isEmptyTextNode(node)) {
 						node.remove();
 						i--;
@@ -15249,7 +15249,7 @@ addContentInjectHandler(GW.contentInjectHandlers.setUpSearchIframe = (eventInfo)
 /********************/
 
 /***************************************************************************/
-/*	If the URL pathname is in /ref/, load content indicated by the id (i.e., 
+/*	If the URL pathname is in /ref/, load content indicated by the id (i.e.,
 	the rest of the path).
  */
 addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventInfo) => {
@@ -15263,7 +15263,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 	let urlForMappingFile = (basename) => {
 		return URLFromString(  "/metadata/annotation/id/"
-							 + basename 
+							 + basename
 							 + ".json?v="
 							 + GW.refMappingFileVersion);
 	};
@@ -15286,13 +15286,13 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		});
 	};
 
-	/*	The `message` argument may optionally be a 2-element array of strings 
-		(the first element being the singular-case message, to be used if there 
-		is only one result; the second being the plural-case message, to be 
+	/*	The `message` argument may optionally be a 2-element array of strings
+		(the first element being the singular-case message, to be used if there
+		is only one result; the second being the plural-case message, to be
 		used if there are multiple results). Otherwise, it should be a string.
 	 */
 	let injectIdPrefixMatches = (message, mapping, ref) => {
-		let idPrefixMatches = Object.entries(mapping).filter(entry => 
+		let idPrefixMatches = Object.entries(mapping).filter(entry =>
 			   entry[0].startsWith(ref)
 			&& entry[0] != ref
 		);
@@ -15300,8 +15300,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			if (typeof message == "object")
 				message = idPrefixMatches.length == 1 ? message[0] : message[1];
 			injectHelpfulErrorMessage(message);
-			let includeLinkClass = idPrefixMatches.length == 1 
-								   ? "include-annotation" 
+			let includeLinkClass = idPrefixMatches.length == 1
+								   ? "include-annotation"
 								   : "include-annotation-partial";
 			pageContentContainer.appendChild(elementFromHTML(
 				  `<ul>`
@@ -15342,14 +15342,14 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		pageContentContainer.appendChild(elementFromHTML("<hr>"));
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<p>`
-			+ `You can try browsing <a 
-									 href="/doc/index" 
-									 class="link-annotated link-page backlink-not icon-not" 
+			+ `You can try browsing <a
+									 href="/doc/index"
+									 class="link-annotated link-page backlink-not icon-not"
 									 title="‘Essays’, Gwern 2009"
 									 >documents by <strong>tag</strong></a>, `
-			+ `or <a 
-				   href="/index" 
-				   class="link-annotated link-page backlink-not icon-not" 
+			+ `or <a
+				   href="/index"
+				   class="link-annotated link-page backlink-not icon-not"
 				   title="'Essays', Gwern 2009"
 				   >return to the <strong>main page</strong></a>, `
 			+ `or search the site:`
@@ -15404,7 +15404,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				//	Get all prefix matches.
 				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
 				if (urlPrefixMatches.length > 1) {
-					/*	If multiple matches, list them all, transcluding 
+					/*	If multiple matches, list them all, transcluding
 						annotations where available (attempt in all cases, and
 						those that fail will just become regular links).
 					 */
@@ -15414,7 +15414,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
 					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
-					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);				
+					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
@@ -15430,8 +15430,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve id-to-URL mapping file (sliced by initial character).
-		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1)) 
-								  ? normalizedRef.slice(0, 1) 
+		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1))
+								  ? normalizedRef.slice(0, 1)
 								  : "-";
 		doAjax({
 			location: urlForMappingFile(mappingFileBasename),
@@ -15497,10 +15497,10 @@ addContentInjectHandler(GW.contentInjectHandlers.anonymizeLinksInBacklinkContext
 						|| info.container.matches(".section-backlinks-include-wrapper"))));
 
 /******************************************************************************/
-/*	Returns the backlinks block for a section or a footnote (creating and 
+/*	Returns the backlinks block for a section or a footnote (creating and
 	injecting the backlinks block if one does not already exist). (Note that,
 	in the latter case, a GW.contentDidInject event will need to be fired for
-	the backlinks block, once all modifications to it are complete; and its 
+	the backlinks block, once all modifications to it are complete; and its
 	wrapper, a div.section-backlinks-include-wrapper, will need to be unwrapped.)
  */
 function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) {
@@ -15522,8 +15522,8 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 											  	  data-link-icon="arrows-pointing-inwards-to-dot"
 											  	  data-link-icon-type="svg"
 											  	  >Backlinks (<span class="backlink-count">0</span>)</a> for `
-											  + `<a 
-											  	  href="${sectionLabelLinkTarget}" 
+											  + `<a
+											  	  href="${sectionLabelLinkTarget}"
 											  	  class="link-page"
 											  	  >${sectionLabelHTML}</a>:`
 											  + `</strong></p>`));
@@ -15553,7 +15553,7 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 }
 
 /**************************************************************************/
-/*	Update the parenthesized count of backlink entries, display in the list 
+/*	Update the parenthesized count of backlink entries, display in the list
 	label graf of a backlinks block.
  */
 function updateBacklinksCountDisplay(backlinksBlock) {
@@ -15624,11 +15624,11 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		//	Inject the backlink entries...
 		for (let link of linksToTargetBlock) {
 			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
-												+ `<a 
-													href="${link.pathname}" 
+												+ `<a
+													href="${link.pathname}"
 													class="backlink-not link-self link-annotated"
 													>${pageTitle}</a> (`
-												+ `<a 
+												+ `<a
 													href="#${link.id}"
 													class="backlink-not link-self extract-not"
 													>context</a>`
@@ -15642,8 +15642,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 												+ `</p></blockquote>`
 												+ `</li>`);
 
-			/*	If we are injecting into an existing section backlinks block, 
-				then a separate inject event must be fired for the created 
+			/*	If we are injecting into an existing section backlinks block,
+				then a separate inject event must be fired for the created
 				backlink.
 			 */
 			if (sectionBacklinksBlockIncludeWrapper == null) {
@@ -15709,10 +15709,10 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 						 && info.contentType == "localPage"));
 
 /****************************************************************************/
-/*	When an annotation is transcluded into a page, and some of the backlinks 
+/*	When an annotation is transcluded into a page, and some of the backlinks
 	for the annotated page are from the page into which the annotation is
 	transcluded, the “full context” links become pointless, and should become
-	just “context” (as in synthesized within-page backlinks), and likewise 
+	just “context” (as in synthesized within-page backlinks), and likewise
 	should not spawn pop-frames.
  */
 addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContextLinks = (eventInfo) => {
@@ -16036,7 +16036,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (
 }, "rewrite");
 
 /******************************************************************************/
-/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that 
+/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that
 	they must be squeezed to an unusually small width, such that their internal
 	layout and styling may be adjusted accordingly.
  */
@@ -16183,14 +16183,14 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 }, "eventListeners");
 
 /******************************************************************************/
-/*  Request image inversion and outlining judgments for images in the loaded 
-	content. (We omit from this load handler those GW.contentDidLoad events 
-	which are fired when we construct templated content from already extracted 
-	reference data, as by then it is already too late; there is no time to send 
-	an invertOrNot / outlineOrNot API request and receive a response, before 
-	the image must be displayed. Instead, requesting inversion and outlining 
-	judgments for images in templated content is handled by the data source 
-	object for that content (either Content, in content.js, or Annotations, in 
+/*  Request image inversion and outlining judgments for images in the loaded
+	content. (We omit from this load handler those GW.contentDidLoad events
+	which are fired when we construct templated content from already extracted
+	reference data, as by then it is already too late; there is no time to send
+	an invertOrNot / outlineOrNot API request and receive a response, before
+	the image must be displayed. Instead, requesting inversion and outlining
+	judgments for images in templated content is handled by the data source
+	object for that content (either Content, in content.js, or Annotations, in
 	annotations.js).)
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (eventInfo) => {
@@ -16211,7 +16211,7 @@ function applyImageInversionJudgmentNowOrLater(image) {
 	if (   applyImageInversionJudgment(image) == false
 		&& image.inversionJudgmentAvailabilityHandler == null) {
 		/*	If no inversion judgment has been applied, there may yet be hope
-			for this image; add another listener to wait for additional 
+			for this image; add another listener to wait for additional
 			image inversion judgments to become available in the future.
 		 */
 		GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
@@ -16237,7 +16237,7 @@ function applyImageOutliningJudgmentNowOrLater(image) {
 	} else if (   outliningJudgmentHasBeenAppliedToImage(image) == false
 			   && image.outliningJudgmentAvailabilityHandler == null) {
 		/*	If no outlining judgment has been applied, there may yet be hope
-			for this image; add another listener to wait for additional 
+			for this image; add another listener to wait for additional
 			image outlining judgments to become available in the future.
 		 */
 		GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
@@ -16252,7 +16252,7 @@ function applyImageOutliningJudgmentNowOrLater(image) {
 
 /***************************************************************************/
 /*  Apply image inversion judgments (received from the invertOrNot API) and
-	image outlining judgments (received from the outlineOrNot API) to images 
+	image outlining judgments (received from the outlineOrNot API) to images
 	in the loaded content, if available.
  */
 addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutliningJudgments = (eventInfo) => {
@@ -16550,7 +16550,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
 
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
 		if (mediaElement.matches("audio")) {
-			mediaElement.classList.add("dark-mode-invert");		
+			mediaElement.classList.add("dark-mode-invert");
 		} else {
 			let wrapper = mediaElement.closest(".image-wrapper");
 			if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
@@ -16857,7 +16857,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 /************/
 
 /**********************************************************************/
-/*	On main page, inject into section headings buttons that copy to the 
+/*	On main page, inject into section headings buttons that copy to the
 	clipboard the link to that section.
  */
 addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = (eventInfo) => {
@@ -16875,7 +16875,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = 
 			title: "Copy section link to clipboard",
 			tabindex: "-1"
 		}, {
-			innerHTML: GW.svg("link-simple-solid")	
+			innerHTML: GW.svg("link-simple-solid")
 		}));
 
 		button.addEventListener("mouseup", (event) => {
@@ -16977,7 +16977,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
         innerWrapper.append(...marginnote.childNodes);
         marginnote.append(innerWrapper);
 
-		/*	Designate those margin notes which consist of just an icon (e.g. 
+		/*	Designate those margin notes which consist of just an icon (e.g.
 			manicule).
 		 */
 		if (innerWrapper.textContent.trim().length <= 1)
@@ -17736,7 +17736,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 		document: annotationDoc
 	}, {
 		doWhenDidInject: (info) => {
-			/*	Copy `link-modified-recently` class from entries in annotation 
+			/*	Copy `link-modified-recently` class from entries in annotation
 				TOC to corresponding entries in main page TOC.
 			 */
 			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
@@ -17857,7 +17857,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
 }, "rewrite");
 
 /*****************************************************************************/
-/*	Invalidate cached {foot|side}notes for the target document if the injected 
+/*	Invalidate cached {foot|side}notes for the target document if the injected
 	content contains {foot|side}notes.
  */
 addContentInjectHandler(GW.contentInjectHandlers.invalidateCachedNotesIfNeeded = (eventInfo) => {
@@ -18188,10 +18188,10 @@ function renderQuadLinkIcon(link) {
 	let letters = link.dataset.linkIcon.split("").filter(c => /\S/.test(c));
 	if (letters.length != 4)
 		return;
-	let textElementsSrc = letters.map((letter, index) => 
-		`<text 
-		  x="${positions[index][0]}" 
-		  y="${positions[index][1]}" 
+	let textElementsSrc = letters.map((letter, index) =>
+		`<text
+		  x="${positions[index][0]}"
+		  y="${positions[index][1]}"
 		  text-anchor="middle"
 		  dominant-baseline="central"
 		  >${letter}</text>`
@@ -18237,7 +18237,7 @@ function enableLinkIcon(link) {
         link.style.setProperty("--link-icon", `"${linkIcon}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
         if (link.dataset.renderedLinkIcon > "") {
-        	link.style.setProperty("--link-icon-url", 
+        	link.style.setProperty("--link-icon-url",
         		`url("data:image/svg+xml;utf8,${encodeURIComponent(link.dataset.renderedLinkIcon)}")`);
         } else {
 	        let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
@@ -18320,7 +18320,7 @@ function enableLinkIconColor(link) {
 			let svgSrc = link.dataset.renderedLinkIcon > ""
 						 ? link.dataset.renderedLinkIcon
 						 : GW.svg(link.dataset.linkIcon);
-			let svg = elementFromHTML(svgSrc.replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+			let svg = elementFromHTML(svgSrc.replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g,
 				(match, colorCode) => {
 					return `"${(transformColor(colorCode))}"`;
 				}));
@@ -18339,7 +18339,7 @@ function disableLinkIconColor(link) {
 }
 
 /*********************************************************************/
-/*	Enable link hover colorization, for those links which have a color 
+/*	Enable link hover colorization, for those links which have a color
 	specified via the data-link-icon-color attribute.
  */
 addContentInjectHandler(GW.contentInjectHandlers.setLinkHoverColors = (eventInfo) => {
@@ -18359,9 +18359,9 @@ function addRecentlyModifiedIconToLink(link) {
 	link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
 
 	if (link.classList.contains("has-indicator-hook")) {
-		/*	If the link has an indicator hook, we must inject a text node 
-			containing a U+2060 WORD JOINER between the two hooks. This ensures 
-			that the two link styling elements are arranged properly, and do not 
+		/*	If the link has an indicator hook, we must inject a text node
+			containing a U+2060 WORD JOINER between the two hooks. This ensures
+			that the two link styling elements are arranged properly, and do not
 			span a line break.
 		 */
 		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
@@ -18396,7 +18396,7 @@ function removeRecentlyModifiedIconFromLink(link) {
 
 	link.classList.remove("has-recently-modified-icon");
 
-	/*	If this link has an indicator hook, then we must remove the text node 
+	/*	If this link has an indicator hook, then we must remove the text node
 		containing U+2060 WORD JOINER between the two hooks.
 	 */
 	if (   link.classList.contains("has-indicator-hook")
@@ -18573,13 +18573,14 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 			howMany--;
 		}
 
-		/*	If class ‘disable-if-not-chosen’ is set on the randomizer container,
-			then all but the chosen entries should be removed from the page, and
-			not merely hidden via `display: none`. (This is relevant when 
-			randomizing between elements like image-map <area>s, which can have
-			effects even when they are not displayed.)
+		/*	If class ‘disable-the-not-chosen’ is set on the randomizer
+			container (i.e., the element with the ‘display-random-<whatever>’
+			class), then all but the chosen entries should be removed from the
+			page, and not merely hidden via `display: none`. (This is relevant
+			when randomizing between elements like image-map <area>s, which can
+			have effects even when they are not displayed.)
 		 */
-		if (randomSelectorContainer.classList.contains("disable-if-not-chosen"))
+		if (randomSelectorContainer.classList.contains("disable-the-not-chosen"))
 			for (let childElement of randomSelectorContainer.children)
 				if (childElement.matches(".display-entry:not(.visible)"))
 					childElement.remove();
@@ -18707,7 +18708,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 }, "rewrite");
 
 /**********************************************************/
-/*	Inject progress indicator icons into any element with a 
+/*	Inject progress indicator icons into any element with a
 	data-progress-percentage attribute.
  */
 addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) => {
@@ -19167,7 +19168,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
                 class: "copy",
                 tabindex: "-1",
                 title: (  "Copy LaTeX source of this equation to clipboard"
-                		+ ": " 
+                		+ ": "
                 		+ mathBlock.querySelector(".mjx-math").getAttribute("aria-label"))
             }, {
                 innerHTML: GW.svg("copy-regular")
@@ -19302,11 +19303,11 @@ let pls="a:not(.has-content):not(.prefetch-not)";let t,e;const n=new Set,o=docum
 /*	Configuration / state.
  */
 GW.collapse = {
-	/*	Visibility of block collapse labels depends on how many times the user 
+	/*	Visibility of block collapse labels depends on how many times the user
 		has used them already.
 	 */
 	alwaysShowCollapseInteractionHints: (getSavedCount("clicked-to-expand-collapse-block-count") < (GW.isMobile() ? 6 : 3)),
-	showCollapseInteractionHintsOnHover: (   GW.isMobile() == false 
+	showCollapseInteractionHintsOnHover: (   GW.isMobile() == false
 										  && getSavedCount("clicked-to-expand-collapse-block-count") < 6),
 
 	/*	Hover events (see below).
@@ -19344,15 +19345,15 @@ if (GW.collapse.hoverEventsEnabled) {
 }
 
 /******************************************************************************/
-/*  Expand all collapse blocks containing the given node, if any (including the 
+/*  Expand all collapse blocks containing the given node, if any (including the
 	node itself, if it is a collapse block). Returns true if any such expansion
-	occurred. 
+	occurred.
 
 	Available option fields:
 
 	fireStateChangedEvent (boolean)
-		Fire a `Collapse.collapseStateDidChange` event after all (possibly 
-		recursive) expansion is completed. (Only one event fired per 
+		Fire a `Collapse.collapseStateDidChange` event after all (possibly
+		recursive) expansion is completed. (Only one event fired per
 		non-recursive call to expandCollapseBlocksToReveal(), even if recursive
 		expansion occurred.)
  */
@@ -19391,7 +19392,7 @@ function expandCollapseBlocksToReveal(node, options) {
 		//	Expand nearest collapse block.
 		toggleCollapseBlockState(collapseBlock, expand);
 
-		/*	Fire state change event only if we will not have to do any more 
+		/*	Fire state change event only if we will not have to do any more
 			expansion (otherwise we’ll do redundant layout).
 		 */
 		if (options.fireStateChangedEvent) {
@@ -19407,14 +19408,14 @@ function expandCollapseBlocksToReveal(node, options) {
 }
 
 /******************************************************************************/
-/*	Collapse the specified collapse block and all collapse blocks nested within 
+/*	Collapse the specified collapse block and all collapse blocks nested within
 	it, if any.
 
 	Available option fields:
 
 	fireStateChangedEvent (boolean)
-		Fire a `Collapse.collapseStateDidChange` event after all (possibly 
-		recursive) collapsing is completed. (Only one event fired per 
+		Fire a `Collapse.collapseStateDidChange` event after all (possibly
+		recursive) collapsing is completed. (Only one event fired per
 		non-recursive call to expandCollapseBlocksToReveal(), even if recursive
 		collapsing occurred.)
  */
@@ -19429,8 +19430,8 @@ function collapseCollapseBlock(collapseBlock, options) {
 		return;
 
 	/*	Collapse any nested collapse blocks. Fire no state change events when
-		doing so; we will fire a single event, once we’ve collapsed the 
-		specified collapse block, after all of its nested collapse blocks are 
+		doing so; we will fire a single event, once we’ve collapsed the
+		specified collapse block, after all of its nested collapse blocks are
 		collapsed.
 	 */
 	collapseBlock.querySelectorAll(".collapse").forEach(nestedCollapseBlock => {
@@ -19457,10 +19458,10 @@ function collapseCollapseBlock(collapseBlock, options) {
 function isCollapsed(collapseBlock) {
 	if (collapseBlock.classList.contains("expanded"))
 		return false;
-		
+
 	if (collapseBlock.classList.contains("expanded-not"))
 		return true;
-		
+
     return undefined;
 }
 
@@ -19490,7 +19491,7 @@ function isWithinCollapsedBlock(element) {
 }
 
 /************************************************************************/
-/*	Returns true iff element’s immediate children include any block-level 
+/*	Returns true iff element’s immediate children include any block-level
 	elements.
  */
 function containsBlockChildren(element) {
@@ -19515,8 +19516,8 @@ function containsBlockChildren(element) {
 		the button is for an inline collapse.
 
 	start (boolean)
-		If `true`, the button is for placement at the start of an inline 
-		collapse; otherwise, the button is for placement at the end of an 
+		If `true`, the button is for placement at the start of an inline
+		collapse; otherwise, the button is for placement at the end of an
 		inline collapse. (Ignored for block collapse buttons.)
  */
 function newDisclosureButton(options) {
@@ -19554,10 +19555,10 @@ function newDisclosureButton(options) {
 }
 
 /****************************************************************************/
-/*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
-	namely cases where a div.abstract (or a section.abstract, etc.) has a 
-	span.abstract-collapse; also fix erroneous HTML structure caused by 
-	well-meaning but misguided Pandoc HTML structure rectification (namely, 
+/*	Before preparing collapse blocks, rectify collapse abstract tag mismatch,
+	namely cases where a div.abstract (or a section.abstract, etc.) has a
+	span.abstract-collapse; also fix erroneous HTML structure caused by
+	well-meaning but misguided Pandoc HTML structure rectification (namely,
 	wrapping a span.collapse in a <p>) applied to such cases.
  */
 addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = (eventInfo) => {
@@ -19567,7 +19568,7 @@ addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = 
 		"div",
 		"section"
 	];
-	let possiblyMismatchedAbstractSelector = possiblyMismatchedAbstractCollapseBlockTags.map(tagSelector => 
+	let possiblyMismatchedAbstractSelector = possiblyMismatchedAbstractCollapseBlockTags.map(tagSelector =>
 		`${tagSelector}.collapse span.abstract-collapse`
 	).join(", ");
 
@@ -19616,10 +19617,10 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		let collapseWrapper;
 		let wrapOptions = {
-			useExistingWrapper: true, 
+			useExistingWrapper: true,
 			moveClasses: [ "collapse", "expand-on-hover" ]
 		};
-		let bareContentSelector = [ 
+		let bareContentSelector = [
 			"p",
 			".list"
 		].join(", ");
@@ -19634,7 +19635,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			//	Check for empty collapses; if empty, log error and do nothing.
 			if (isNodeEmpty(collapseWrapper)) {
 				let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
-				GWServerLogError(eventInfo.loadLocation.href + `--empty-collapse-${collapseWrapperTagName}`, 
+				GWServerLogError(eventInfo.loadLocation.href + `--empty-collapse-${collapseWrapperTagName}`,
 								 `empty collapse element (${collapseWrapperTagName})`);
 
 				return;
@@ -19711,8 +19712,8 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					collapseWrapper.classList.add("bare-content");
 			}
 		} else {
-			/*	Additional wrapper is required for most tag types. We use a 
-				block collapse here. Collapse blocks of this type never have 
+			/*	Additional wrapper is required for most tag types. We use a
+				block collapse here. Collapse blocks of this type never have
 				abstracts.
 			 */
 			collapseWrapper = wrapElement(collapseBlock, "div.collapse-block.no-abstract", wrapOptions);
@@ -19734,7 +19735,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
 		let childNodesArray = Array.from(collapseWrapper.childNodes);
 		collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
-			return (   node instanceof Element 
+			return (   node instanceof Element
 					&& node.matches(".heading, .abstract-collapse, .abstract-collapse-only"));
 		}) + 1));
 		collapseWrapper.append(collapseContentWrapper);
@@ -19743,7 +19744,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 		if (collapseWrapper.classList.contains("collapse-inline")) {
 			//	Additional wrapper for inline collapses.
 			let collapseContentOuterWrapper = wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
-			
+
 			//	Button at start.
 			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }),
 													 collapseContentOuterWrapper.firstChild);
@@ -19825,11 +19826,11 @@ addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks 
 	Available option fields:
 
 	showLabels (boolean)
-		If `true`, disclosure button labels are visible by default. (Applies 
+		If `true`, disclosure button labels are visible by default. (Applies
 		only to block collapses, as inline collapses have no disclosure button
-		labels.) 
+		labels.)
 
-		NOTE: This option is ignored if 
+		NOTE: This option is ignored if
 		GW.collapse.alwaysShowCollapseInteractionHints is `true`.
  */
 function updateDisclosureButtonState(collapseBlock, options) {
@@ -19903,7 +19904,7 @@ function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
 }
 
 /************************************************************************/
-/*	Update the “iceberg indicator” (display of how much of the content is 
+/*	Update the “iceberg indicator” (display of how much of the content is
 	hidden) for the collapse block.
  */
 function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
@@ -19988,7 +19989,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();
 					if (TOCRect.bottom > contentRect.top) {
-						floatOffset = Math.round(  TOCRect.width 
+						floatOffset = Math.round(  TOCRect.width
 												 + parseInt(getComputedStyle(TOC).marginRight)
 												 + parseInt(collapseBlockComputedStyle.paddingLeft));
 					}
@@ -20182,7 +20183,7 @@ function expandLockCollapseBlock(collapseBlock) {
 		".collapse-content-wrapper",
 		".abstract-collapse:not(.abstract)"
 	].join(", "))).forEach(unwrap);
-	
+
 	//	Unwrap collapse block itself if it’s a bare wrapper.
 	if (   isBareWrapper(collapseBlock)
 		&& isOnlyChild(collapseBlock.firstElementChild))
@@ -20214,12 +20215,12 @@ addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eve
 	the revealElement() function instead, as otherwise, if the element is inside
 	a collapsed block, it will be scrolled into view but not actually visible on
 	the screen, frustrating the user.
-		Outside of this file (where scrollElementIntoView() is used in the 
-	collapse code itself), this function should generally be called directly 
-	only if (a) expansion of any collapse blocks involved is explicitly *not* 
-	desired, or (b) expansion is being done separately (i.e., by calling 
+		Outside of this file (where scrollElementIntoView() is used in the
+	collapse code itself), this function should generally be called directly
+	only if (a) expansion of any collapse blocks involved is explicitly *not*
+	desired, or (b) expansion is being done separately (i.e., by calling
 	revealElement() and passing `false` as the value of the `scrollIntoView`
-	option; generally, this should be done *before* scrolling an element into 
+	option; generally, this should be done *before* scrolling an element into
 	view!), with some other operations intervening between revealing and
 	scrolling into view.
 
@@ -20238,11 +20239,11 @@ function scrollElementIntoView(element, options) {
 		offset: 0
 	}, options);
 
-	if (   Extracts 
+	if (   Extracts
 		&& Extracts.popFrameProvider
 		&& Extracts.popFrameProvider.containingPopFrame(element)) {
 		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
-	} else {	
+	} else {
 		doWhenPageLayoutComplete(() => {
 			element.scrollIntoView();
 			if (options.offset != 0)
@@ -20262,7 +20263,7 @@ function scrollElementIntoView(element, options) {
 		view.
 
 	offset (float)
-		If `scrollIntoView` is `true`, then `offset` is passed to 
+		If `scrollIntoView` is `true`, then `offset` is passed to
 		scrollElementIntoView() as an option.
  */
 function revealElement(element, options) {
@@ -20280,7 +20281,7 @@ function revealElement(element, options) {
 			requestAnimationFrame(() => {
 				scrollElementIntoView(element, {
 					offset: options.offset
-				});		
+				});
 			});
 		} else {
 			scrollElementIntoView(element, {
@@ -21143,8 +21144,8 @@ Sidenotes = { ...Sidenotes,
 				sidenote.classList.toggle("hovering", false);
 			});
 
-			/*	NOTE: The absence of event bindings here to highlight the 
-				citation and the sidenote when the *citation* is hovered over 
+			/*	NOTE: The absence of event bindings here to highlight the
+				citation and the sidenote when the *citation* is hovered over
 				is not an oversight. Those events are bound elsewhere (see
 				rewrite.js).
 			 */
@@ -21169,7 +21170,7 @@ Sidenotes = { ...Sidenotes,
 			});
 
 			/*	Hide the “there is more hidden content below the fold”
-				(ellipsis) indicator when client scrolls to the bottom of a 
+				(ellipsis) indicator when client scrolls to the bottom of a
 				cut-off sidenote; show it otherwise.
 			 */
 			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
@@ -21235,8 +21236,8 @@ Sidenotes = { ...Sidenotes,
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
 			if (   Notes.hashMatchesFootnote()
 				|| Notes.hashMatchesSidenote()) {
-				relocate("#" + (mediaQuery.matches 
-								? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash()) 
+				relocate("#" + (mediaQuery.matches
+								? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash())
 								: Notes.footnoteIdForNumber(Notes.noteNumberFromHash())));
 
 				//	Update targeting.
@@ -21266,9 +21267,9 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.setMarginNoteStyle = (eventInfo) => {
 			GWLog("setMarginNoteStyle", "sidenotes.js", 1);
 
-			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on 
+			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on
 				what mode the page is in (based on viewport width), whether each
-				margin note is in a constrained block, and whether it’s on the 
+				margin note is in a constrained block, and whether it’s on the
 				main page or in something like a pop-frame.
 			 */
 			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
@@ -21279,7 +21280,7 @@ Sidenotes = { ...Sidenotes,
 			});
 		}, ">rewrite");
 
-		/*	When the main content loads, update the margin note style; and add 
+		/*	When the main content loads, update the margin note style; and add
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
@@ -21328,7 +21329,7 @@ Sidenotes = { ...Sidenotes,
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.hash = "#" + (mediaQuery.matches 
+					citation.hash = "#" + (mediaQuery.matches
 										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
 										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 			});
@@ -21344,7 +21345,7 @@ Sidenotes = { ...Sidenotes,
 
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
+					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
 										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
 										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 			});
@@ -21539,13 +21540,13 @@ Sidenotes = { ...Sidenotes,
 								 		  && info.container.querySelector("a.footnote-ref") != null)
 								 	  || info.container.closest("li.footnote") != null)));
 
-		/*	Invalidate cached notes for the base location pathname of the 
+		/*	Invalidate cached notes for the base location pathname of the
 			injected content when a sidenote loads.
 		 */
 		addContentInjectHandler(GW.contentInjectHandlers.invalidateNotesForCitationWhenSidenoteDidInject = (eventInfo) => {
 			GWLog("invalidateNotesForCitationWhenSidenoteDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container.querySelector(".footnote-back") != null)	
+			if (eventInfo.container.querySelector(".footnote-back") != null)
 				Notes.invalidateCachedNotesForPathname(eventInfo.loadLocation.pathname);
 		}, "<rewrite", (info) => (   info.document == document
 								  && info.container.closest(".sidenote") != null));
@@ -22647,35 +22648,35 @@ ImageFocus.focusImageSpecifiedByURL();
 // When: Time-stamp: "2022-01-05 11:31:32 gwern"
 // license: PD
 
-/*	Experimental ‘dark mode’: Mac OS (Safari) lets users specify via an OS 
-	widget ‘dark’/‘light’ to make everything appear bright-white or darker (e.g. 
-	for darker at evening to avoid straining eyes & disrupting circadian 
-	rhyhms); this then is exposed by Safari as a CSS variable which can be 
-	selected on. This is also currently supported by Firefox weakly as an 
-	about:config variable. Hypothetically, iOS in the future might use its 
-	camera or the clock to set ‘dark mode’ automatically. 
+/*	Experimental ‘dark mode’: Mac OS (Safari) lets users specify via an OS
+	widget ‘dark’/‘light’ to make everything appear bright-white or darker (e.g.
+	for darker at evening to avoid straining eyes & disrupting circadian
+	rhyhms); this then is exposed by Safari as a CSS variable which can be
+	selected on. This is also currently supported by Firefox weakly as an
+	about:config variable. Hypothetically, iOS in the future might use its
+	camera or the clock to set ‘dark mode’ automatically.
 
 	https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme
 	https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/
 	https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
 
-	Images are handled specially: images are *not* inverted/negated by default; 
-	images with a special class, `.invert-auto` (set on images by automated 
-	tools like ImageMagick scripts counting colors) or `.invert` 
-	(set manually), will be inverted. (This is intended to allow inversion of 
+	Images are handled specially: images are *not* inverted/negated by default;
+	images with a special class, `.invert-auto` (set on images by automated
+	tools like ImageMagick scripts counting colors) or `.invert`
+	(set manually), will be inverted. (This is intended to allow inversion of
 	images which would invert well, like statistical graphs or charts, which are
 	typically black-on-white, and are much more pleasant to read in dark mode
-	when inverted to white-on-black.) Inversion is removed on image hover or 
+	when inverted to white-on-black.) Inversion is removed on image hover or
 	image-focus.js click-to-zoom.
 
-	Because many users do not have access to a browser/OS which explicitly 
-	supports dark mode, cannot modify the browser/OS setting without undesired 
-	side-effects, wish to opt in only for specific websites, or simply forget 
-	that they turned on dark mode & dislike it, we make dark mode controllable 
+	Because many users do not have access to a browser/OS which explicitly
+	supports dark mode, cannot modify the browser/OS setting without undesired
+	side-effects, wish to opt in only for specific websites, or simply forget
+	that they turned on dark mode & dislike it, we make dark mode controllable
 	by providing a widget at the top of the page.
  */
 
-DarkMode = { ...DarkMode, 
+DarkMode = { ...DarkMode,
 	/*****************/
 	/*	Configuration.
 	 */
@@ -22738,7 +22739,7 @@ DarkMode = { ...DarkMode,
 			let label = inline
 						? shortLabel
 						: (name == currentMode
-						   ? selectedLabel 
+						   ? selectedLabel
 						   : unselectedLabel);
 			return `<button
 					 type="button"
@@ -22749,7 +22750,7 @@ DarkMode = { ...DarkMode,
 					 title="${desc}"
 					 >`
 						+ `<span class="icon">${(GW.svg(iconName))}</span>`
-						+ `<span 
+						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
 							data-unselected-label="${unselectedLabel}"
@@ -22772,9 +22773,9 @@ DarkMode = { ...DarkMode,
 		//	Determine which setting was chosen (ie. which button was clicked).
 		let selectedMode = button.dataset.name;
 
-		/*	We don’t want clicks to go through if the transition 
-			between modes has not completed yet, so we disable the 
-			button temporarily while we’re transitioning between 
+		/*	We don’t want clicks to go through if the transition
+			between modes has not completed yet, so we disable the
+			button temporarily while we’re transitioning between
 			modes.
 		 */
 		doIfAllowed(() => {
@@ -22824,7 +22825,7 @@ DarkMode = { ...DarkMode,
 		/*	Add active media query to update mode selector state when system dark
 			mode setting changes. (This is relevant only for the ‘auto’ setting.)
 		 */
-		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.updateModeSelectorStateForSystemDarkMode", () => { 
+		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.updateModeSelectorStateForSystemDarkMode", () => {
 			DarkMode.updateModeSelectorState(modeSelector);
 		});
 	},
@@ -22881,12 +22882,12 @@ DarkMode = { ...DarkMode,
 		let buttons = Array.from(modeSelector.querySelectorAll("button"));
 		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "d";
 
-		/*	Ensure the right button (light or dark) has the “currently active” 
+		/*	Ensure the right button (light or dark) has the “currently active”
 			indicator, if the current mode is ‘auto’.
 		 */
 		if (currentMode == "auto") {
-			let activeMode = GW.mediaQueries.systemDarkModeActive.matches 
-							 ? "dark" 
+			let activeMode = GW.mediaQueries.systemDarkModeActive.matches
+							 ? "dark"
 							 : "light";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
 		}
@@ -22896,7 +22897,7 @@ DarkMode = { ...DarkMode,
 GW.notificationCenter.fireEvent("DarkMode.didLoad");
 
 DarkMode.setup();
-ReaderMode = { ...ReaderMode, 
+ReaderMode = { ...ReaderMode,
 	/*****************/
 	/*	Configuration.
 	 */
@@ -23031,7 +23032,7 @@ ReaderMode = { ...ReaderMode,
 			let label = inline
 						? shortLabel
 						: (name == currentMode
-						   ? selectedLabel 
+						   ? selectedLabel
 						   : unselectedLabel);
 			return `<button
 					 type="button"
@@ -23042,7 +23043,7 @@ ReaderMode = { ...ReaderMode,
 					 title="${desc}"
 					 >`
 						+ `<span class="icon">${(GW.svg(iconName))}</span>`
-						+ `<span 
+						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
 							data-unselected-label="${unselectedLabel}"
@@ -23065,9 +23066,9 @@ ReaderMode = { ...ReaderMode,
 		// Determine which setting was chosen (ie. which button was clicked).
 		let selectedMode = button.dataset.name;
 
-		/*	We don’t want clicks to go through if the transition 
-			between modes has not completed yet, so we disable the 
-			button temporarily while we’re transitioning between 
+		/*	We don’t want clicks to go through if the transition
+			between modes has not completed yet, so we disable the
+			button temporarily while we’re transitioning between
 			modes.
 		 */
 		doIfAllowed(() => {
@@ -23171,8 +23172,8 @@ ReaderMode = { ...ReaderMode,
 			indicator, if the current mode is ‘auto’.
 		 */
 		if (currentMode == "auto") {
-			let activeMode = ReaderMode.enabled() 
-							 ? "on" 
+			let activeMode = ReaderMode.enabled()
+							 ? "on"
 							 : "off";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
 		}
@@ -23277,7 +23278,7 @@ ReaderMode = { ...ReaderMode,
 		ReaderMode.deactivateOnScrollDownObserver = null;
 	},
 
-	/*	Unmasks links and reveal other elements, as appropriate. (This will 
+	/*	Unmasks links and reveal other elements, as appropriate. (This will
 		also un-hide pop-frame indicators.)
 	 */
 	//	Called by: ReaderMode.setMode
@@ -23421,7 +23422,7 @@ ReaderMode = { ...ReaderMode,
 
 GW.notificationCenter.fireEvent("ReaderMode.didLoad");
 
-/*	Ensure that we run setup only after Extracts have completed their setups. 
+/*	Ensure that we run setup only after Extracts have completed their setups.
 	(This is so that the onclick handlers and so on are already in place.)
  */
 if (window.Extracts) {

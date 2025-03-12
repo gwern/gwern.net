@@ -70,7 +70,7 @@ addContentInjectHandler(GW.contentInjectHandlers.setUpSearchIframe = (eventInfo)
 /********************/
 
 /***************************************************************************/
-/*	If the URL pathname is in /ref/, load content indicated by the id (i.e., 
+/*	If the URL pathname is in /ref/, load content indicated by the id (i.e.,
 	the rest of the path).
  */
 addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventInfo) => {
@@ -84,7 +84,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 
 	let urlForMappingFile = (basename) => {
 		return URLFromString(  "/metadata/annotation/id/"
-							 + basename 
+							 + basename
 							 + ".json?v="
 							 + GW.refMappingFileVersion);
 	};
@@ -107,13 +107,13 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		});
 	};
 
-	/*	The `message` argument may optionally be a 2-element array of strings 
-		(the first element being the singular-case message, to be used if there 
-		is only one result; the second being the plural-case message, to be 
+	/*	The `message` argument may optionally be a 2-element array of strings
+		(the first element being the singular-case message, to be used if there
+		is only one result; the second being the plural-case message, to be
 		used if there are multiple results). Otherwise, it should be a string.
 	 */
 	let injectIdPrefixMatches = (message, mapping, ref) => {
-		let idPrefixMatches = Object.entries(mapping).filter(entry => 
+		let idPrefixMatches = Object.entries(mapping).filter(entry =>
 			   entry[0].startsWith(ref)
 			&& entry[0] != ref
 		);
@@ -121,8 +121,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			if (typeof message == "object")
 				message = idPrefixMatches.length == 1 ? message[0] : message[1];
 			injectHelpfulErrorMessage(message);
-			let includeLinkClass = idPrefixMatches.length == 1 
-								   ? "include-annotation" 
+			let includeLinkClass = idPrefixMatches.length == 1
+								   ? "include-annotation"
 								   : "include-annotation-partial";
 			pageContentContainer.appendChild(elementFromHTML(
 				  `<ul>`
@@ -163,14 +163,14 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		pageContentContainer.appendChild(elementFromHTML("<hr>"));
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<p>`
-			+ `You can try browsing <a 
-									 href="/doc/index" 
-									 class="link-annotated link-page backlink-not icon-not" 
+			+ `You can try browsing <a
+									 href="/doc/index"
+									 class="link-annotated link-page backlink-not icon-not"
 									 title="‘Essays’, Gwern 2009"
 									 >documents by <strong>tag</strong></a>, `
-			+ `or <a 
-				   href="/index" 
-				   class="link-annotated link-page backlink-not icon-not" 
+			+ `or <a
+				   href="/index"
+				   class="link-annotated link-page backlink-not icon-not"
 				   title="'Essays', Gwern 2009"
 				   >return to the <strong>main page</strong></a>, `
 			+ `or search the site:`
@@ -225,7 +225,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				//	Get all prefix matches.
 				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
 				if (urlPrefixMatches.length > 1) {
-					/*	If multiple matches, list them all, transcluding 
+					/*	If multiple matches, list them all, transcluding
 						annotations where available (attempt in all cases, and
 						those that fail will just become regular links).
 					 */
@@ -235,7 +235,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
 					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
-					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);				
+					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
@@ -251,8 +251,8 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve id-to-URL mapping file (sliced by initial character).
-		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1)) 
-								  ? normalizedRef.slice(0, 1) 
+		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1))
+								  ? normalizedRef.slice(0, 1)
 								  : "-";
 		doAjax({
 			location: urlForMappingFile(mappingFileBasename),
@@ -318,10 +318,10 @@ addContentInjectHandler(GW.contentInjectHandlers.anonymizeLinksInBacklinkContext
 						|| info.container.matches(".section-backlinks-include-wrapper"))));
 
 /******************************************************************************/
-/*	Returns the backlinks block for a section or a footnote (creating and 
+/*	Returns the backlinks block for a section or a footnote (creating and
 	injecting the backlinks block if one does not already exist). (Note that,
 	in the latter case, a GW.contentDidInject event will need to be fired for
-	the backlinks block, once all modifications to it are complete; and its 
+	the backlinks block, once all modifications to it are complete; and its
 	wrapper, a div.section-backlinks-include-wrapper, will need to be unwrapped.)
  */
 function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) {
@@ -343,8 +343,8 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 											  	  data-link-icon="arrows-pointing-inwards-to-dot"
 											  	  data-link-icon-type="svg"
 											  	  >Backlinks (<span class="backlink-count">0</span>)</a> for `
-											  + `<a 
-											  	  href="${sectionLabelLinkTarget}" 
+											  + `<a
+											  	  href="${sectionLabelLinkTarget}"
 											  	  class="link-page"
 											  	  >${sectionLabelHTML}</a>:`
 											  + `</strong></p>`));
@@ -374,7 +374,7 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 }
 
 /**************************************************************************/
-/*	Update the parenthesized count of backlink entries, display in the list 
+/*	Update the parenthesized count of backlink entries, display in the list
 	label graf of a backlinks block.
  */
 function updateBacklinksCountDisplay(backlinksBlock) {
@@ -445,11 +445,11 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		//	Inject the backlink entries...
 		for (let link of linksToTargetBlock) {
 			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
-												+ `<a 
-													href="${link.pathname}" 
+												+ `<a
+													href="${link.pathname}"
 													class="backlink-not link-self link-annotated"
 													>${pageTitle}</a> (`
-												+ `<a 
+												+ `<a
 													href="#${link.id}"
 													class="backlink-not link-self extract-not"
 													>context</a>`
@@ -463,8 +463,8 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 												+ `</p></blockquote>`
 												+ `</li>`);
 
-			/*	If we are injecting into an existing section backlinks block, 
-				then a separate inject event must be fired for the created 
+			/*	If we are injecting into an existing section backlinks block,
+				then a separate inject event must be fired for the created
 				backlink.
 			 */
 			if (sectionBacklinksBlockIncludeWrapper == null) {
@@ -530,10 +530,10 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 						 && info.contentType == "localPage"));
 
 /****************************************************************************/
-/*	When an annotation is transcluded into a page, and some of the backlinks 
+/*	When an annotation is transcluded into a page, and some of the backlinks
 	for the annotated page are from the page into which the annotation is
 	transcluded, the “full context” links become pointless, and should become
-	just “context” (as in synthesized within-page backlinks), and likewise 
+	just “context” (as in synthesized within-page backlinks), and likewise
 	should not spawn pop-frames.
  */
 addContentInjectHandler(GW.contentInjectHandlers.rectifyLocalizedBacklinkContextLinks = (eventInfo) => {
@@ -857,7 +857,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (
 }, "rewrite");
 
 /******************************************************************************/
-/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that 
+/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that
 	they must be squeezed to an unusually small width, such that their internal
 	layout and styling may be adjusted accordingly.
  */
@@ -1004,14 +1004,14 @@ addContentInjectHandler(GW.contentInjectHandlers.addSwapOutThumbnailEvents = (ev
 }, "eventListeners");
 
 /******************************************************************************/
-/*  Request image inversion and outlining judgments for images in the loaded 
-	content. (We omit from this load handler those GW.contentDidLoad events 
-	which are fired when we construct templated content from already extracted 
-	reference data, as by then it is already too late; there is no time to send 
-	an invertOrNot / outlineOrNot API request and receive a response, before 
-	the image must be displayed. Instead, requesting inversion and outlining 
-	judgments for images in templated content is handled by the data source 
-	object for that content (either Content, in content.js, or Annotations, in 
+/*  Request image inversion and outlining judgments for images in the loaded
+	content. (We omit from this load handler those GW.contentDidLoad events
+	which are fired when we construct templated content from already extracted
+	reference data, as by then it is already too late; there is no time to send
+	an invertOrNot / outlineOrNot API request and receive a response, before
+	the image must be displayed. Instead, requesting inversion and outlining
+	judgments for images in templated content is handled by the data source
+	object for that content (either Content, in content.js, or Annotations, in
 	annotations.js).)
  */
 addContentLoadHandler(GW.contentLoadHandlers.requestImageInversionJudgments = (eventInfo) => {
@@ -1032,7 +1032,7 @@ function applyImageInversionJudgmentNowOrLater(image) {
 	if (   applyImageInversionJudgment(image) == false
 		&& image.inversionJudgmentAvailabilityHandler == null) {
 		/*	If no inversion judgment has been applied, there may yet be hope
-			for this image; add another listener to wait for additional 
+			for this image; add another listener to wait for additional
 			image inversion judgments to become available in the future.
 		 */
 		GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
@@ -1058,7 +1058,7 @@ function applyImageOutliningJudgmentNowOrLater(image) {
 	} else if (   outliningJudgmentHasBeenAppliedToImage(image) == false
 			   && image.outliningJudgmentAvailabilityHandler == null) {
 		/*	If no outlining judgment has been applied, there may yet be hope
-			for this image; add another listener to wait for additional 
+			for this image; add another listener to wait for additional
 			image outlining judgments to become available in the future.
 		 */
 		GW.notificationCenter.addHandlerForEvent("GW.imageOutliningJudgmentsAvailable", image.outliningJudgmentAvailabilityHandler = (info) => {
@@ -1073,7 +1073,7 @@ function applyImageOutliningJudgmentNowOrLater(image) {
 
 /***************************************************************************/
 /*  Apply image inversion judgments (received from the invertOrNot API) and
-	image outlining judgments (received from the outlineOrNot API) to images 
+	image outlining judgments (received from the outlineOrNot API) to images
 	in the loaded content, if available.
  */
 addContentInjectHandler(GW.contentInjectHandlers.applyImageInversionAndOutliningJudgments = (eventInfo) => {
@@ -1371,7 +1371,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateImageBackdropInversion
 
 	eventInfo.container.querySelectorAll(mediaSelector).forEach(mediaElement => {
 		if (mediaElement.matches("audio")) {
-			mediaElement.classList.add("dark-mode-invert");		
+			mediaElement.classList.add("dark-mode-invert");
 		} else {
 			let wrapper = mediaElement.closest(".image-wrapper");
 			if (mediaElement.classList.containsAnyOf([ "invert", "invert-auto" ]) == false)
@@ -1678,7 +1678,7 @@ addContentInjectHandler(GW.contentInjectHandlers.applyIframeScrollFix = (eventIn
 /************/
 
 /**********************************************************************/
-/*	On main page, inject into section headings buttons that copy to the 
+/*	On main page, inject into section headings buttons that copy to the
 	clipboard the link to that section.
  */
 addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = (eventInfo) => {
@@ -1696,7 +1696,7 @@ addContentInjectHandler(GW.contentInjectHandlers.injectCopySectionLinkButtons = 
 			title: "Copy section link to clipboard",
 			tabindex: "-1"
 		}, {
-			innerHTML: GW.svg("link-simple-solid")	
+			innerHTML: GW.svg("link-simple-solid")
 		}));
 
 		button.addEventListener("mouseup", (event) => {
@@ -1798,7 +1798,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
         innerWrapper.append(...marginnote.childNodes);
         marginnote.append(innerWrapper);
 
-		/*	Designate those margin notes which consist of just an icon (e.g. 
+		/*	Designate those margin notes which consist of just an icon (e.g.
 			manicule).
 		 */
 		if (innerWrapper.textContent.trim().length <= 1)
@@ -2557,7 +2557,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 		document: annotationDoc
 	}, {
 		doWhenDidInject: (info) => {
-			/*	Copy `link-modified-recently` class from entries in annotation 
+			/*	Copy `link-modified-recently` class from entries in annotation
 				TOC to corresponding entries in main page TOC.
 			 */
 			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
@@ -2678,7 +2678,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteFootnoteBackLinks = (eventIn
 }, "rewrite");
 
 /*****************************************************************************/
-/*	Invalidate cached {foot|side}notes for the target document if the injected 
+/*	Invalidate cached {foot|side}notes for the target document if the injected
 	content contains {foot|side}notes.
  */
 addContentInjectHandler(GW.contentInjectHandlers.invalidateCachedNotesIfNeeded = (eventInfo) => {
@@ -3009,10 +3009,10 @@ function renderQuadLinkIcon(link) {
 	let letters = link.dataset.linkIcon.split("").filter(c => /\S/.test(c));
 	if (letters.length != 4)
 		return;
-	let textElementsSrc = letters.map((letter, index) => 
-		`<text 
-		  x="${positions[index][0]}" 
-		  y="${positions[index][1]}" 
+	let textElementsSrc = letters.map((letter, index) =>
+		`<text
+		  x="${positions[index][0]}"
+		  y="${positions[index][1]}"
 		  text-anchor="middle"
 		  dominant-baseline="central"
 		  >${letter}</text>`
@@ -3058,7 +3058,7 @@ function enableLinkIcon(link) {
         link.style.setProperty("--link-icon", `"${linkIcon}"`);
     } else if (link.dataset.linkIconType.includes("svg")) {
         if (link.dataset.renderedLinkIcon > "") {
-        	link.style.setProperty("--link-icon-url", 
+        	link.style.setProperty("--link-icon-url",
         		`url("data:image/svg+xml;utf8,${encodeURIComponent(link.dataset.renderedLinkIcon)}")`);
         } else {
 	        let iconFileURL = versionedAssetURL("/static/img/icon/icons.svg");
@@ -3141,7 +3141,7 @@ function enableLinkIconColor(link) {
 			let svgSrc = link.dataset.renderedLinkIcon > ""
 						 ? link.dataset.renderedLinkIcon
 						 : GW.svg(link.dataset.linkIcon);
-			let svg = elementFromHTML(svgSrc.replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+			let svg = elementFromHTML(svgSrc.replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g,
 				(match, colorCode) => {
 					return `"${(transformColor(colorCode))}"`;
 				}));
@@ -3160,7 +3160,7 @@ function disableLinkIconColor(link) {
 }
 
 /*********************************************************************/
-/*	Enable link hover colorization, for those links which have a color 
+/*	Enable link hover colorization, for those links which have a color
 	specified via the data-link-icon-color attribute.
  */
 addContentInjectHandler(GW.contentInjectHandlers.setLinkHoverColors = (eventInfo) => {
@@ -3180,9 +3180,9 @@ function addRecentlyModifiedIconToLink(link) {
 	link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
 
 	if (link.classList.contains("has-indicator-hook")) {
-		/*	If the link has an indicator hook, we must inject a text node 
-			containing a U+2060 WORD JOINER between the two hooks. This ensures 
-			that the two link styling elements are arranged properly, and do not 
+		/*	If the link has an indicator hook, we must inject a text node
+			containing a U+2060 WORD JOINER between the two hooks. This ensures
+			that the two link styling elements are arranged properly, and do not
 			span a line break.
 		 */
 		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
@@ -3217,7 +3217,7 @@ function removeRecentlyModifiedIconFromLink(link) {
 
 	link.classList.remove("has-recently-modified-icon");
 
-	/*	If this link has an indicator hook, then we must remove the text node 
+	/*	If this link has an indicator hook, then we must remove the text node
 		containing U+2060 WORD JOINER between the two hooks.
 	 */
 	if (   link.classList.contains("has-indicator-hook")
@@ -3394,13 +3394,14 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 			howMany--;
 		}
 
-		/*	If class ‘disable-if-not-chosen’ is set on the randomizer container,
-			then all but the chosen entries should be removed from the page, and
-			not merely hidden via `display: none`. (This is relevant when 
-			randomizing between elements like image-map <area>s, which can have
-			effects even when they are not displayed.)
+		/*	If class ‘disable-the-not-chosen’ is set on the randomizer
+			container (i.e., the element with the ‘display-random-<whatever>’
+			class), then all but the chosen entries should be removed from the
+			page, and not merely hidden via `display: none`. (This is relevant
+			when randomizing between elements like image-map <area>s, which can
+			have effects even when they are not displayed.)
 		 */
-		if (randomSelectorContainer.classList.contains("disable-if-not-chosen"))
+		if (randomSelectorContainer.classList.contains("disable-the-not-chosen"))
 			for (let childElement of randomSelectorContainer.children)
 				if (childElement.matches(".display-entry:not(.visible)"))
 					childElement.remove();
@@ -3528,7 +3529,7 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
 }, "rewrite");
 
 /**********************************************************/
-/*	Inject progress indicator icons into any element with a 
+/*	Inject progress indicator icons into any element with a
 	data-progress-percentage attribute.
  */
 addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) => {
@@ -3988,7 +3989,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addBlockButtonsToMathBlocks = (even
                 class: "copy",
                 tabindex: "-1",
                 title: (  "Copy LaTeX source of this equation to clipboard"
-                		+ ": " 
+                		+ ": "
                 		+ mathBlock.querySelector(".mjx-math").getAttribute("aria-label"))
             }, {
                 innerHTML: GW.svg("copy-regular")
