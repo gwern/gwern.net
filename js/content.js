@@ -1926,7 +1926,7 @@ Content = {
                 let pageBodyClasses = contentDocument.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
 
                 //  Get the page title.
-                let pageTitle = contentDocument.querySelector("title").innerHTML.match(Content.contentTypes.localPage.pageTitleRegexp)[1];
+                let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
                 //  Get the page thumbnail URL and metadata.
                 let pageThumbnailHTML;
@@ -1938,7 +1938,7 @@ Content = {
                     let pageThumbnailAltMetaTag = contentDocument.querySelector("meta[property='og:image:alt']");
                     let pageThumbnailAltText = (pageThumbnailAltMetaTag
                                                 ? pageThumbnailAltMetaTag.getAttribute("content")
-                                                : `Thumbnail image for “${pageTitle}”`
+                                                : `Thumbnail image for “${pageTitleHTML}”`
                                                 ).replace(/"/g, "&quot;");
 
                     //  Image dimensions.
@@ -1971,7 +1971,7 @@ Content = {
 
                 return {
                     document:       contentDocument,
-                    title:          pageTitle,
+                    title:          pageTitleHTML,
                     bodyClasses:    pageBodyClasses,
                     thumbnailHTML:  pageThumbnailHTML
                 };
@@ -2023,7 +2023,6 @@ Content = {
             },
 
             permittedContentTypes: [ "text/html" ],
-            pageTitleRegexp: /^(.+?) · Gwern\.net( \(reader mode\))?$/,
             defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-"
         }
     }

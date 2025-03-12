@@ -9036,7 +9036,7 @@ Content = {
                 let pageBodyClasses = contentDocument.querySelector("meta[name='page-body-classes']").getAttribute("content").trim().split(" ");
 
                 //  Get the page title.
-                let pageTitle = contentDocument.querySelector("title").innerHTML.match(Content.contentTypes.localPage.pageTitleRegexp)[1];
+                let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
                 //  Get the page thumbnail URL and metadata.
                 let pageThumbnailHTML;
@@ -9048,7 +9048,7 @@ Content = {
                     let pageThumbnailAltMetaTag = contentDocument.querySelector("meta[property='og:image:alt']");
                     let pageThumbnailAltText = (pageThumbnailAltMetaTag
                                                 ? pageThumbnailAltMetaTag.getAttribute("content")
-                                                : `Thumbnail image for “${pageTitle}”`
+                                                : `Thumbnail image for “${pageTitleHTML}”`
                                                 ).replace(/"/g, "&quot;");
 
                     //  Image dimensions.
@@ -9081,7 +9081,7 @@ Content = {
 
                 return {
                     document:       contentDocument,
-                    title:          pageTitle,
+                    title:          pageTitleHTML,
                     bodyClasses:    pageBodyClasses,
                     thumbnailHTML:  pageThumbnailHTML
                 };
@@ -9133,7 +9133,6 @@ Content = {
             },
 
             permittedContentTypes: [ "text/html" ],
-            pageTitleRegexp: /^(.+?) · Gwern\.net( \(reader mode\))?$/,
             defaultPageThumbnailPathnamePrefix: "/static/img/logo/logo-"
         }
     }
@@ -13230,9 +13229,9 @@ Extracts = { ...Extracts,
 				popFrameTitleText += target.hash;
 			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
 		} else {
-			let popFrameTitleTextParts = [ ];
+			let popFrameTitleHTMLParts = [ ];
 			if (target.pathname != location.pathname)
-				popFrameTitleTextParts.push(referenceData.pageTitle);
+				popFrameTitleHTMLParts.push(referenceData.pageTitle);
 			if (popFrame.classList.contains("full-page") == false) {
                 //  Find the target element and/or containing block, if any.
                 let element = targetElementInDocument(target, referenceData.content);
@@ -13242,24 +13241,24 @@ Extracts = { ...Extracts,
                     let nearestSection = element.closest("section");
                     let nearestFootnote = element.closest("li.footnote");
                     if (nearestFootnote) {
-                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
+                        popFrameTitleHTMLParts.push("Footnote", Notes.noteNumber(nearestFootnote));
                         let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
                         if (identifyingSpan)
-                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
+                            popFrameTitleHTMLParts.push(`(#${(identifyingSpan.id)})`);
                     } else if (nearestSection) {
                         //  Section mark (§) for sections.
-                        popFrameTitleTextParts.push("&#x00a7;");
+                        popFrameTitleHTMLParts.push("&#x00a7;");
                         if (nearestSection.id == "footnotes") {
-                            popFrameTitleTextParts.push("Footnotes");
+                            popFrameTitleHTMLParts.push("Footnotes");
                         } else {
-                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+                            popFrameTitleHTMLParts.push(nearestSection.firstElementChild.textContent);
                         }
                     } else {
-                        popFrameTitleTextParts.push(target.hash);
+                        popFrameTitleHTMLParts.push(target.hash);
                     }
                 }
 			}
-			popFrameTitleHTML = popFrameTitleTextParts.join(" ");
+			popFrameTitleHTML = popFrameTitleHTMLParts.join(" ");
 		}
 
 		/*	This is for section backlinks popups for the base page, and any

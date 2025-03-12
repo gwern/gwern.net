@@ -159,9 +159,9 @@ Extracts = { ...Extracts,
 				popFrameTitleText += target.hash;
 			popFrameTitleHTML = `<code>${popFrameTitleText}</code>`;
 		} else {
-			let popFrameTitleTextParts = [ ];
+			let popFrameTitleHTMLParts = [ ];
 			if (target.pathname != location.pathname)
-				popFrameTitleTextParts.push(referenceData.pageTitle);
+				popFrameTitleHTMLParts.push(referenceData.pageTitle);
 			if (popFrame.classList.contains("full-page") == false) {
                 //  Find the target element and/or containing block, if any.
                 let element = targetElementInDocument(target, referenceData.content);
@@ -171,24 +171,24 @@ Extracts = { ...Extracts,
                     let nearestSection = element.closest("section");
                     let nearestFootnote = element.closest("li.footnote");
                     if (nearestFootnote) {
-                        popFrameTitleTextParts.push("Footnote", Notes.noteNumber(nearestFootnote));
+                        popFrameTitleHTMLParts.push("Footnote", Notes.noteNumber(nearestFootnote));
                         let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
                         if (identifyingSpan)
-                            popFrameTitleTextParts.push(`(#${(identifyingSpan.id)})`);
+                            popFrameTitleHTMLParts.push(`(#${(identifyingSpan.id)})`);
                     } else if (nearestSection) {
                         //  Section mark (§) for sections.
-                        popFrameTitleTextParts.push("&#x00a7;");
+                        popFrameTitleHTMLParts.push("&#x00a7;");
                         if (nearestSection.id == "footnotes") {
-                            popFrameTitleTextParts.push("Footnotes");
+                            popFrameTitleHTMLParts.push("Footnotes");
                         } else {
-                            popFrameTitleTextParts.push(nearestSection.firstElementChild.textContent);
+                            popFrameTitleHTMLParts.push(nearestSection.firstElementChild.textContent);
                         }
                     } else {
-                        popFrameTitleTextParts.push(target.hash);
+                        popFrameTitleHTMLParts.push(target.hash);
                     }
                 }
 			}
-			popFrameTitleHTML = popFrameTitleTextParts.join(" ");
+			popFrameTitleHTML = popFrameTitleHTMLParts.join(" ");
 		}
 
 		/*	This is for section backlinks popups for the base page, and any
