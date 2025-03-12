@@ -3402,7 +3402,7 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 			have effects even when they are not displayed.)
 		 */
 		if (randomSelectorContainer.classList.contains("disable-the-not-chosen"))
-			for (let childElement of randomSelectorContainer.children)
+			for (let childElement of Array.from(randomSelectorContainer.children))
 				if (childElement.matches(".display-entry:not(.visible)"))
 					childElement.remove();
 
