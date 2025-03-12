@@ -786,15 +786,12 @@ function childBlocksOf(element, options) {
 	return useLayoutCache(element, "childBlocks", options, (element, options) => {
 		options = processLayoutOptions(options);
 
-		let childBlocks = Array.from(element.children);
-
-		for (let i = 0; i < childBlocks.length; i++) {
-			if (isWrapper(childBlocks[i], "downIn", options)) {
-				childBlocks.splice(i, 1, ...childBlocks[i].children);
-				i--;
-			} else if (isBlock(childBlocks[i], options) == false) {
-				childBlocks.splice(i, 1);
-				i--;
+		let childBlocks = [ ];
+		for (let block of element.children) {
+			if (isWrapper(block, "downIn", options)) {
+				childBlocks.push(...(childBlocksOf(block)));
+			} else if (isBlock(block, options)) {
+				childBlocks.push(block);
 			}
 		}
 
