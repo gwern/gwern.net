@@ -672,6 +672,11 @@ canonicals = M.fromList
   , ("Steve_Yegge", "Steve Yegge")
   , ("Sara Hagg", "Sara Hägg")
   , ("Oleg", "Oleg Kiselyov")
+  , ("linear", "nearcyan")
+  , ("Linear", "nearcyan")
+  , ("near", "nearcyan")
+  , ("Near", "nearcyan")
+  , ("Nearcyan", "nearcyan")
   ]
 
 -- tests: unique
@@ -1442,6 +1447,10 @@ authorLinkDB = M.fromList $
     , ("Pim van der Harst", "https://research.umcutrecht.nl/researchers/pim-van-der-harst/")
     , ("Philip R. Jansen", "https://drphilipjansen.com/index.html")
     , ("Oleg Kiselyov", "https://okmij.org/ftp/")
+    , ("Orhan Firat", "https://orhanfirat.com/")
+    , ("Noam Brown", "https://scholar.google.com/citations?user=RLDbLcUAAAAJ")
+    , ("Niklas Muennighoff", "https://muennighoff.github.io/")
+    , ("nearcyan", "https://near.blog/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

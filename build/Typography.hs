@@ -64,6 +64,7 @@ typographyTransformPermanent = let year = currentYear in
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
                         walk (citefyInline year) .
+                        walk mergeSpaces .
                         parseRawAllClean -- clean up all anonymous or empty spans/divs so we have a clean AST to rewrite
 
 linebreakingTransform :: Pandoc -> Pandoc
