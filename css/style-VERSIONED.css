@@ -3993,8 +3993,7 @@ a.footnote-back {
 /*************/
 
 #sidenote-column-left,
-#sidenote-column-right,
-#hidden-sidenote-storage {
+#sidenote-column-right {
     width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px));
     max-width: var(--GW-sidenotes-max-width);
     pointer-events: none;
@@ -4076,6 +4075,10 @@ a.footnote-back {
     height: calc(100% + 2 * var(--sidenote-padding));
     top: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
     left: calc(-1 * (var(--sidenote-padding) + var(--sidenote-border-width)));
+    border: 0px solid var(--background-color);
+    transition:
+        border-color 0.15s ease 0.05s,
+        border-style 0.15s ease 0.05s;
 }
 #markdownBody .sidenote:hover::after,
 #markdownBody .sidenote.targeted::after,
@@ -4216,6 +4219,9 @@ a.footnote-back {
     align-items: center;
     justify-content: center;
     z-index: 1;
+    transition:
+        border-color 0.15s ease 0.05s,
+        border-style 0.15s ease 0.05s;
 }
 #markdownBody #sidenote-column-left .sidenote > .sidenote-self-link {
     right: 0;
@@ -4248,6 +4254,9 @@ a.footnote-back {
     width: calc(50vw - (var(--GW-body-max-width) / 2 + 96px) + 10px);
     max-width: var(--GW-sidenotes-max-width);
     border-bottom: 3px double var(--GW-sidenote-self-link-border-color);
+    transition:
+        border-color 0.15s ease 0.05s,
+        border-style 0.15s ease 0.05s;
 }
 #markdownBody #sidenote-column-left .sidenote.targeted > .sidenote-self-link::before,
 #markdownBody #sidenote-column-left .sidenote > .sidenote-self-link:hover::before {

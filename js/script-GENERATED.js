@@ -823,9 +823,9 @@ function getAssetPathname(assetPathnamePattern, options) {
 
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let matchingAssetPathnames = [ ];
-    for (let versionedAssetPathname of Object.keys(GW.assetVersions)) {
-        if (assetPathnameRegExp.test(versionedAssetPathname))
-            matchingAssetPathnames.push(versionedAssetPathname);
+    for (let assetPathname of Object.keys(GW.assetVersions)) {
+        if (assetPathnameRegExp.test(assetPathname))
+            matchingAssetPathnames.push(assetPathname);
     }
 
 	if (matchingAssetPathnames.length == 0) {
@@ -2044,7 +2044,7 @@ function getPageScrollPosition() {
 	if (document.documentElement.offsetHeight <= window.innerHeight)
 		return 0;
 
-    return Math.round(100 * (GW.scrollState.newScrollTop / (document.documentElement.offsetHeight - window.innerHeight)));
+    return Math.round(100 * (GW.scrollState.lastScrollTop / (document.documentElement.offsetHeight - window.innerHeight)));
 }
 
 /*********************************************************************/
@@ -2712,7 +2712,7 @@ GW.floatingHeader = {
 
         //  Show/hide the entire header.
         GW.floatingHeader.header.classList.toggle("hidden",
-            GW.scrollState.newScrollTop < GW.floatingHeader.minimumYOffset);
+            GW.scrollState.lastScrollTop < GW.floatingHeader.minimumYOffset);
 
         //  Update scroll indicator bar.
         GW.floatingHeader.scrollIndicator.dataset.scrollPosition = getPageScrollPosition();
@@ -2887,7 +2887,7 @@ GW.floatingHeader = {
                                ? GW.floatingHeader.pageHeader
                                : document.querySelector("#sidebar");
         GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
-                                         + GW.scrollState.newScrollTop
+                                         + GW.scrollState.lastScrollTop
                                          + thresholdElement.offsetHeight;
 
         //  Show/hide the back-to-top link on scroll up/down.
@@ -15582,7 +15582,6 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		return;
 
 	let excludedContainersSelector = [
-		"#hidden-sidenote-storage",
 		".sidenote-column",
 		".aux-links-list"
 	].join(", ");
@@ -17713,7 +17712,8 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 
 	let excludedPaths = [
 		"/blog/",
-		"/ref/"
+		"/ref/",
+		"/index"
 	];
 	if (location.pathname.startsWithAnyOf(excludedPaths))
 		return;
@@ -17738,10 +17738,11 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 			/*	Copy `link-modified-recently` class from entries in annotation
 				TOC to corresponding entries in main page TOC.
 			 */
-			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLink => {
-				TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id)).classList.add("link-modified-recently");
+			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLinkInAnnotation => {
+				let recentlyModifiedTOCLinkInMainDocument = TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id));
+				recentlyModifiedTOCLinkInMainDocument.classList.add("link-modified-recently");
+				addRecentlyModifiedIconToLink(recentlyModifiedTOCLinkInMainDocument);
 			});
-			GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons({ container: TOC });
 		}
 	});
 }, "rewrite", (info) => (info.container == document.main));
@@ -18345,71 +18346,6 @@ addContentInjectHandler(GW.contentInjectHandlers.setLinkHoverColors = (eventInfo
     GWLog("setLinkIconStates", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("a[data-link-icon-color]").forEach(enableLinkIconColor);
-}, "rewrite");
-
-/**********************************************************************/
-/*	Adds recently-modified icon (white star on black circle) to a link.
- */
-function addRecentlyModifiedIconToLink(link) {
-	if (link.classList.contains("has-recently-modified-icon") == true)
-		return;
-
-	//  Inject indicator hook span.
-	link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
-
-	if (link.classList.contains("has-indicator-hook")) {
-		/*	If the link has an indicator hook, we must inject a text node
-			containing a U+2060 WORD JOINER between the two hooks. This ensures
-			that the two link styling elements are arranged properly, and do not
-			span a line break.
-		 */
-		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
-	} else {
-		/*  Inject U+2060 WORD JOINER at start of first text node of the
-			link. (It _must_ be injected as a Unicode character into the
-			existing text node; injecting it within the .indicator-hook
-			span, or as an HTML escape code into the text node, or in
-			any other fashion, creates a separate text node, which
-			causes all sorts of problems - text shadow artifacts, etc.)
-		 */
-		let linkFirstTextNode = link.firstTextNode;
-		if (   linkFirstTextNode
-			&& linkFirstTextNode.textContent.startsWith("\u{2060}") == false)
-			linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
-	}
-
-	link.classList.add("has-recently-modified-icon");
-}
-
-/***************************************************************************/
-/*	Removes recently-modified icon (white star on black circle) from a link.
- */
-function removeRecentlyModifiedIconFromLink(link) {
-	if (link.classList.contains("has-recently-modified-icon") == false)
-		return;
-
-	let iconHook = link.querySelector(".recently-modified-icon-hook");
-	if (iconHook.nextSibling.firstTextNode.textContent.startsWith("\u{2060}"))
-		iconHook.nextSibling.firstTextNode.textContent = iconHook.nextSibling.firstTextNode.textContent.slice(1);
-	iconHook.remove();
-
-	link.classList.remove("has-recently-modified-icon");
-
-	/*	If this link has an indicator hook, then we must remove the text node
-		containing U+2060 WORD JOINER between the two hooks.
-	 */
-	if (   link.classList.contains("has-indicator-hook")
-		&& link.firstTextNode.textContent == "\u{2060}")
-		link.firstTextNode.remove();
-}
-
-/****************************************************************************/
-/*  Enable special icons for recently modified links (that are not in lists).
- */
-addContentInjectHandler(GW.contentInjectHandlers.enableRecentlyModifiedLinkIcons = (eventInfo) => {
-    GWLog("enableRecentlyModifiedLinkIcons", "rewrite.js", 1);
-
-    eventInfo.container.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(addRecentlyModifiedIconToLink);
 }, "rewrite");
 
 
@@ -20456,8 +20392,6 @@ Sidenotes = { ...Sidenotes,
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
 
-	hiddenSidenoteStorage: null,
-
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
@@ -20544,7 +20478,8 @@ Sidenotes = { ...Sidenotes,
 		if an update is not already queued.
 	 */
 	updateSidenotePositionsIfNeeded: () => {
-		if (Sidenotes.hiddenSidenoteStorage == null)
+		if (   Sidenotes.sidenoteColumnLeft  == null
+			&& Sidenotes.sidenoteColumnRight == null)
 			return;
 
 		if (Sidenotes.positionUpdateQueued)
@@ -20623,18 +20558,10 @@ Sidenotes = { ...Sidenotes,
 			Sidenotes.hideInterferingUIElements();
 	},
 
-	/*  This function actually calculates and sets the positions of all sidenotes.
+	/*	Place all sidenotes in the appropriate column; hide or un-hide each
+		sidenote as appropriate.
 	 */
-	updateSidenotePositions: () => {
-		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
-
-		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
-			don’t do anything.
-		 */
-		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
-			return;
-
-		//	Update the disposition of sidenotes.
+	updateSidenoteDispositions: () => {
 		for (let [ index, sidenote ] of Sidenotes.sidenotes.entries()) {
 			/*  Hide sidenotes within currently-collapsed collapse blocks. Show
 				sidenotes not within currently-collapsed collapse blocks.
@@ -20664,6 +20591,21 @@ Sidenotes = { ...Sidenotes,
 			if (sidenote.parentElement != side)
 				side.append(sidenote);
 		}
+	},
+
+	/*  This function actually calculates and sets the positions of all sidenotes.
+	 */
+	updateSidenotePositions: () => {
+		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
+
+		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
+			don’t do anything.
+		 */
+		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
+			return;
+
+		//	Update the disposition of sidenotes.
+		Sidenotes.updateSidenoteDispositions();
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
@@ -20728,9 +20670,6 @@ Sidenotes = { ...Sidenotes,
 			//  Mark sidenotes which are cut off vertically.
 			let sidenoteOuterWrapper = sidenote.firstElementChild;
 			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
-
-			//	Store layout height.
-			sidenote.lastKnownHeight = sidenote.offsetHeight;
 		});
 
 		//	Construct new layout cells.
@@ -20782,7 +20721,7 @@ Sidenotes = { ...Sidenotes,
 				continue;
 
 			//	Get all the cells that the sidenote can fit into.
-			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.lastKnownHeight);
+			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.offsetHeight);
 			if (fittingLayoutCells.length == 0) {
 				GWLog("TOO MUCH SIDENOTES. GIVING UP. :(", "sidenotes.js");
 				Sidenotes.sidenotes.forEach(sidenote => {
@@ -20812,11 +20751,11 @@ Sidenotes = { ...Sidenotes,
 				let otherNoteCitation = Sidenotes.counterpart(note);
 				let otherNotePosInCell = defaultNotePosInCellForCitation(cell, otherNoteCitation);
 
-				return (   otherNotePosInCell > notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing
-						|| notePosInCell      > otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing)
+				return (   otherNotePosInCell > notePosInCell +  sidenote.offsetHeight + Sidenotes.sidenoteSpacing
+						|| notePosInCell      > otherNotePosInCell + note.offsetHeight + Sidenotes.sidenoteSpacing)
 					   ? 0
-					   : Math.max(notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
-					   			  otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing - notePosInCell);
+					   : Math.max(notePosInCell +  sidenote.offsetHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
+					   			  otherNotePosInCell + note.offsetHeight + Sidenotes.sidenoteSpacing - notePosInCell);
 			};
 			let cellCrowdedness = (cell) => {
 				return cell.sidenotes.reduce((totalOverlap, note) => { return (totalOverlap + overlapWithNote(cell, note)); }, 0);
@@ -20834,13 +20773,13 @@ Sidenotes = { ...Sidenotes,
 			let closestFittingLayoutCell = fittingLayoutCells.first;
 
 			//	Add the sidenote to the selected cell.
-			closestFittingLayoutCell.room -= (sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing);
+			closestFittingLayoutCell.room -= (sidenote.offsetHeight + Sidenotes.sidenoteSpacing);
 			closestFittingLayoutCell.sidenotes.push(sidenote);
 		}
 
 		//	Function to compute distance between two successive sidenotes.
 		let getDistance = (noteA, noteB) => {
-			return (noteB.posInCell - (noteA.posInCell + noteA.lastKnownHeight + Sidenotes.sidenoteSpacing));
+			return (noteB.posInCell - (noteA.posInCell + noteA.offsetHeight + Sidenotes.sidenoteSpacing));
 		};
 
 		//	Position sidenotes within layout cells.
@@ -20912,13 +20851,14 @@ Sidenotes = { ...Sidenotes,
 				if so, push it (and any sidenotes above it that it bumps into)
 				upward.
 			 */
-			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - cell.height);
+			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.offsetHeight) - cell.height);
 			if (overlapOfBottom > 0)
 				pushNotesUp([ (cell.sidenotes.length - 1) ], overlapOfBottom, true);
 
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
+				sidenote.style.visibility = "";
 			});
 		});
 
@@ -20948,10 +20888,6 @@ Sidenotes = { ...Sidenotes,
 		if (Sidenotes.sidenoteColumnRight)
 			Sidenotes.sidenoteColumnRight.remove();
 		Sidenotes.sidenoteColumnRight = null;
-
-		if (Sidenotes.hiddenSidenoteStorage)
-			Sidenotes.hiddenSidenoteStorage.remove();
-		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -20961,24 +20897,18 @@ Sidenotes = { ...Sidenotes,
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
 		//	Ensure that infrastructure is constructed if need be.
-		if (Sidenotes.hiddenSidenoteStorage == null) {
+		if (   Sidenotes.sidenoteColumnLeft  == null
+			&& Sidenotes.sidenoteColumnRight == null) {
 			let markdownBody = document.querySelector("#markdownBody");
 
 			//  Add the sidenote columns.
-			Sidenotes.sidenoteColumnLeft = newElement("DIV", { "id": "sidenote-column-left" });
+			Sidenotes.sidenoteColumnLeft  = newElement("DIV", { "id": "sidenote-column-left" });
 			Sidenotes.sidenoteColumnRight = newElement("DIV", { "id": "sidenote-column-right" });
 			[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
 				column.classList.add("footnotes", "sidenote-column");
 				column.style.visibility = "hidden";
 				markdownBody.append(column);
 			});
-
-			//	Add the hidden sidenote storage.
-			markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
-				"id": "hidden-sidenote-storage",
-				"class": "footnotes",
-				"style": "display:none"
-			}));
 
 			Sidenotes.sidenotes = [ ];
 			Sidenotes.citations = [ ];
@@ -21046,7 +20976,8 @@ Sidenotes = { ...Sidenotes,
 			//  Create the sidenote outer containing block...
 			let sidenote = newElement("DIV", {
 				class: "sidenote",
-				id: Notes.sidenoteIdForNumber(noteNumber)
+				id: Notes.sidenoteIdForNumber(noteNumber),
+				style: "visibility: hidden"
 			});
 
 			//  Wrap the contents of the footnote in two wrapper divs...
@@ -21081,7 +21012,7 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		//	Inject the sidenotes into the page.
-		Sidenotes.hiddenSidenoteStorage.append(...(Sidenotes.sidenotes));
+		Sidenotes.updateSidenoteDispositions();
 
 		/*  Bind sidenote mouse-hover events.
 		 */
@@ -21156,11 +21087,18 @@ Sidenotes = { ...Sidenotes,
 		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
 
 		//	Trigger transcludes.
-		Transclude.triggerTranscludesInContainer(Sidenotes.hiddenSidenoteStorage, {
-			container: Sidenotes.hiddenSidenoteStorage,
-			document: document,
-			source: "Sidenotes.constructSidenotes"
-		}, { immediately: false });
+		let columns = [ ];
+		if (Sidenotes.useLeftColumn())
+			columns.push(Sidenotes.sidenoteColumnLeft);
+		if (Sidenotes.useRightColumn())
+			columns.push(Sidenotes.sidenoteColumnRight);
+		columns.forEach(column => {
+			Transclude.triggerTranscludesInContainer(column, {
+				container: column,
+				document: document,
+				source: "Sidenotes.constructSidenotes"
+			}, { immediately: false });
+		});
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
