@@ -1487,12 +1487,77 @@ addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
 	});
 }, { blockLayout: false });
 
+/**********************************************************************/
+/*	Adds recently-modified icon (white star on black circle) to a link.
+ */
+function addRecentlyModifiedIconToLink(link) {
+	if (link.classList.contains("has-recently-modified-icon") == true)
+		return;
+
+	//  Inject indicator hook span.
+	link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
+
+	if (link.classList.contains("has-indicator-hook")) {
+		/*	If the link has an indicator hook, we must inject a text node
+			containing a U+2060 WORD JOINER between the two hooks. This ensures
+			that the two link styling elements are arranged properly, and do not
+			span a line break.
+		 */
+		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
+	} else {
+		/*  Inject U+2060 WORD JOINER at start of first text node of the
+			link. (It _must_ be injected as a Unicode character into the
+			existing text node; injecting it within the .indicator-hook
+			span, or as an HTML escape code into the text node, or in
+			any other fashion, creates a separate text node, which
+			causes all sorts of problems - text shadow artifacts, etc.)
+		 */
+		let linkFirstTextNode = link.firstTextNode;
+		if (   linkFirstTextNode
+			&& linkFirstTextNode.textContent.startsWith("\u{2060}") == false)
+			linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
+	}
+
+	link.classList.add("has-recently-modified-icon");
+}
+
+/***************************************************************************/
+/*	Removes recently-modified icon (white star on black circle) from a link.
+ */
+function removeRecentlyModifiedIconFromLink(link) {
+	if (link.classList.contains("has-recently-modified-icon") == false)
+		return;
+
+	let iconHook = link.querySelector(".recently-modified-icon-hook");
+	if (iconHook.nextSibling.firstTextNode.textContent.startsWith("\u{2060}"))
+		iconHook.nextSibling.firstTextNode.textContent = iconHook.nextSibling.firstTextNode.textContent.slice(1);
+	iconHook.remove();
+
+	link.classList.remove("has-recently-modified-icon");
+
+	/*	If this link has an indicator hook, then we must remove the text node
+		containing U+2060 WORD JOINER between the two hooks.
+	 */
+	if (   link.classList.contains("has-indicator-hook")
+		&& link.firstTextNode.textContent == "\u{2060}")
+		link.firstTextNode.remove();
+}
+
+/****************************************************************************/
+/*  Enable special icons for recently modified links (that are not in lists).
+ */
+addLayoutProcessor("enableRecentlyModifiedLinkIcons", (blockContainer) => {
+    GWLog("enableRecentlyModifiedLinkIcons", "layout.js", 2);
+
+    blockContainer.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(addRecentlyModifiedIconToLink);
+}, { blockLayout: false });
+
 /**************************************************************************/
 /*  Enable special list icons for list items that contain recently modified
     links.
  */
 addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
-    GWLog("enableRecentlyModifiedLinkIcons", "layout.js", 2);
+    GWLog("enableRecentlyModifiedLinkListIcons", "layout.js", 2);
 
     blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
         let inList = false;

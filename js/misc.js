@@ -266,9 +266,9 @@ function getAssetPathname(assetPathnamePattern, options) {
 
     let assetPathnameRegExp = new RegExp(assetPathnamePattern.replace("%R", "[0-9]+"));
     let matchingAssetPathnames = [ ];
-    for (let versionedAssetPathname of Object.keys(GW.assetVersions)) {
-        if (assetPathnameRegExp.test(versionedAssetPathname))
-            matchingAssetPathnames.push(versionedAssetPathname);
+    for (let assetPathname of Object.keys(GW.assetVersions)) {
+        if (assetPathnameRegExp.test(assetPathname))
+            matchingAssetPathnames.push(assetPathname);
     }
 
 	if (matchingAssetPathnames.length == 0) {
