@@ -483,8 +483,8 @@ generateReferenceToPreviousSection md (tag,items) = [Header 3 ("", ["collapse"],
                                                        ) items
 generateSections' :: Metadata -> ArchiveMetadata -> Int -> [(FilePath, MetadataItem)] -> [Block]
 generateSections' md am headerLevel = concatMap (\(f,a@(t,aut,dt,_,_,_,_)) ->
-                                let sectionID = if aut=="" then "" else let linkId = generateID md f aut dt in
-                                                                          if linkId=="" then "" else linkId `T.append` "-section"
+                                let sectionID = let linkId = generateID md f aut dt in
+                                                  if linkId=="" then error ("generateDirectory.generateSection': generateID generated empty ID, even though IDs should always exist now; crashed on: " ++ show f ++ "; " ++ show a) else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                     -- for tag-directory purposes (but nowhere else), we simplify tweet titles to just 'USER @ DATE' if possible.
                                     sectionTitle = if "https://x.com/" `isPrefixOf` f then T.pack $ twitterTitle f dt else
