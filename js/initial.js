@@ -1119,7 +1119,7 @@ GW.scrollState = {
 function updateScrollState(event) {
     GWLog("updateScrollState", "inline.js", 3);
 
-    GW.scrollState.newScrollTop = window.pageYOffset;
+    GW.scrollState.newScrollTop = document.documentElement.scrollTop;
     GW.scrollState.unbrokenDownScrollDistance = GW.scrollState.newScrollTop > GW.scrollState.lastScrollTop
         										? (  GW.scrollState.unbrokenDownScrollDistance
         										   + GW.scrollState.newScrollTop
