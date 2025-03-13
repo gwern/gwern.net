@@ -2044,7 +2044,7 @@ function getPageScrollPosition() {
 	if (document.documentElement.offsetHeight <= window.innerHeight)
 		return 0;
 
-    return Math.round(100 * (GW.scrollState.newScrollTop / (document.documentElement.offsetHeight - window.innerHeight)));
+    return Math.round(100 * (GW.scrollState.lastScrollTop / (document.documentElement.offsetHeight - window.innerHeight)));
 }
 
 /*********************************************************************/
@@ -2712,7 +2712,7 @@ GW.floatingHeader = {
 
         //  Show/hide the entire header.
         GW.floatingHeader.header.classList.toggle("hidden",
-            GW.scrollState.newScrollTop < GW.floatingHeader.minimumYOffset);
+            GW.scrollState.lastScrollTop < GW.floatingHeader.minimumYOffset);
 
         //  Update scroll indicator bar.
         GW.floatingHeader.scrollIndicator.dataset.scrollPosition = getPageScrollPosition();
@@ -2887,7 +2887,7 @@ GW.floatingHeader = {
                                ? GW.floatingHeader.pageHeader
                                : document.querySelector("#sidebar");
         GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
-                                         + GW.scrollState.newScrollTop
+                                         + GW.scrollState.lastScrollTop
                                          + thresholdElement.offsetHeight;
 
         //  Show/hide the back-to-top link on scroll up/down.
