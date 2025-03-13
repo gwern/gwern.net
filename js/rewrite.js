@@ -404,7 +404,6 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 		return;
 
 	let excludedContainersSelector = [
-		"#hidden-sidenote-storage",
 		".sidenote-column",
 		".aux-links-list"
 	].join(", ");

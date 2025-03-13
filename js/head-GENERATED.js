@@ -3465,8 +3465,7 @@ GW.layout = {
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
 		".TOC > *",
-		".popframe",
-		"#hidden-sidenote-storage"
+		".popframe"
 	].join(", "),
 
 	//	Isolate layout within these elements.

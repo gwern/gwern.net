@@ -91,8 +91,6 @@ Sidenotes = { ...Sidenotes,
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
 
-	hiddenSidenoteStorage: null,
-
 	positionUpdateQueued: false,
 
 	sidenoteOfNumber: (number) => {
@@ -179,7 +177,8 @@ Sidenotes = { ...Sidenotes,
 		if an update is not already queued.
 	 */
 	updateSidenotePositionsIfNeeded: () => {
-		if (Sidenotes.hiddenSidenoteStorage == null)
+		if (   Sidenotes.sidenoteColumnLeft  == null
+			&& Sidenotes.sidenoteColumnRight == null)
 			return;
 
 		if (Sidenotes.positionUpdateQueued)
@@ -258,18 +257,10 @@ Sidenotes = { ...Sidenotes,
 			Sidenotes.hideInterferingUIElements();
 	},
 
-	/*  This function actually calculates and sets the positions of all sidenotes.
+	/*	Place all sidenotes in the appropriate column; hide or un-hide each
+		sidenote as appropriate.
 	 */
-	updateSidenotePositions: () => {
-		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
-
-		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
-			don’t do anything.
-		 */
-		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
-			return;
-
-		//	Update the disposition of sidenotes.
+	updateSidenoteDispositions: () => {
 		for (let [ index, sidenote ] of Sidenotes.sidenotes.entries()) {
 			/*  Hide sidenotes within currently-collapsed collapse blocks. Show
 				sidenotes not within currently-collapsed collapse blocks.
@@ -299,6 +290,21 @@ Sidenotes = { ...Sidenotes,
 			if (sidenote.parentElement != side)
 				side.append(sidenote);
 		}
+	},
+
+	/*  This function actually calculates and sets the positions of all sidenotes.
+	 */
+	updateSidenotePositions: () => {
+		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
+
+		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
+			don’t do anything.
+		 */
+		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false)
+			return;
+
+		//	Update the disposition of sidenotes.
+		Sidenotes.updateSidenoteDispositions();
 
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
@@ -363,9 +369,6 @@ Sidenotes = { ...Sidenotes,
 			//  Mark sidenotes which are cut off vertically.
 			let sidenoteOuterWrapper = sidenote.firstElementChild;
 			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
-
-			//	Store layout height.
-			sidenote.lastKnownHeight = sidenote.offsetHeight;
 		});
 
 		//	Construct new layout cells.
@@ -417,7 +420,7 @@ Sidenotes = { ...Sidenotes,
 				continue;
 
 			//	Get all the cells that the sidenote can fit into.
-			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.lastKnownHeight);
+			let fittingLayoutCells = layoutCells.filter(cell => cell.room >= sidenote.offsetHeight);
 			if (fittingLayoutCells.length == 0) {
 				GWLog("TOO MUCH SIDENOTES. GIVING UP. :(", "sidenotes.js");
 				Sidenotes.sidenotes.forEach(sidenote => {
@@ -447,11 +450,11 @@ Sidenotes = { ...Sidenotes,
 				let otherNoteCitation = Sidenotes.counterpart(note);
 				let otherNotePosInCell = defaultNotePosInCellForCitation(cell, otherNoteCitation);
 
-				return (   otherNotePosInCell > notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing
-						|| notePosInCell      > otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing)
+				return (   otherNotePosInCell > notePosInCell +  sidenote.offsetHeight + Sidenotes.sidenoteSpacing
+						|| notePosInCell      > otherNotePosInCell + note.offsetHeight + Sidenotes.sidenoteSpacing)
 					   ? 0
-					   : Math.max(notePosInCell +  sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
-					   			  otherNotePosInCell + note.lastKnownHeight + Sidenotes.sidenoteSpacing - notePosInCell);
+					   : Math.max(notePosInCell +  sidenote.offsetHeight + Sidenotes.sidenoteSpacing - otherNotePosInCell,
+					   			  otherNotePosInCell + note.offsetHeight + Sidenotes.sidenoteSpacing - notePosInCell);
 			};
 			let cellCrowdedness = (cell) => {
 				return cell.sidenotes.reduce((totalOverlap, note) => { return (totalOverlap + overlapWithNote(cell, note)); }, 0);
@@ -469,13 +472,13 @@ Sidenotes = { ...Sidenotes,
 			let closestFittingLayoutCell = fittingLayoutCells.first;
 
 			//	Add the sidenote to the selected cell.
-			closestFittingLayoutCell.room -= (sidenote.lastKnownHeight + Sidenotes.sidenoteSpacing);
+			closestFittingLayoutCell.room -= (sidenote.offsetHeight + Sidenotes.sidenoteSpacing);
 			closestFittingLayoutCell.sidenotes.push(sidenote);
 		}
 
 		//	Function to compute distance between two successive sidenotes.
 		let getDistance = (noteA, noteB) => {
-			return (noteB.posInCell - (noteA.posInCell + noteA.lastKnownHeight + Sidenotes.sidenoteSpacing));
+			return (noteB.posInCell - (noteA.posInCell + noteA.offsetHeight + Sidenotes.sidenoteSpacing));
 		};
 
 		//	Position sidenotes within layout cells.
@@ -547,13 +550,14 @@ Sidenotes = { ...Sidenotes,
 				if so, push it (and any sidenotes above it that it bumps into)
 				upward.
 			 */
-			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.lastKnownHeight) - cell.height);
+			let overlapOfBottom = Math.max(0, (cell.sidenotes.last.posInCell + cell.sidenotes.last.offsetHeight) - cell.height);
 			if (overlapOfBottom > 0)
 				pushNotesUp([ (cell.sidenotes.length - 1) ], overlapOfBottom, true);
 
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
+				sidenote.style.visibility = "";
 			});
 		});
 
@@ -583,10 +587,6 @@ Sidenotes = { ...Sidenotes,
 		if (Sidenotes.sidenoteColumnRight)
 			Sidenotes.sidenoteColumnRight.remove();
 		Sidenotes.sidenoteColumnRight = null;
-
-		if (Sidenotes.hiddenSidenoteStorage)
-			Sidenotes.hiddenSidenoteStorage.remove();
-		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -596,24 +596,18 @@ Sidenotes = { ...Sidenotes,
 		GWLog("Sidenotes.constructSidenotes", "sidenotes.js", 1);
 
 		//	Ensure that infrastructure is constructed if need be.
-		if (Sidenotes.hiddenSidenoteStorage == null) {
+		if (   Sidenotes.sidenoteColumnLeft  == null
+			&& Sidenotes.sidenoteColumnRight == null) {
 			let markdownBody = document.querySelector("#markdownBody");
 
 			//  Add the sidenote columns.
-			Sidenotes.sidenoteColumnLeft = newElement("DIV", { "id": "sidenote-column-left" });
+			Sidenotes.sidenoteColumnLeft  = newElement("DIV", { "id": "sidenote-column-left" });
 			Sidenotes.sidenoteColumnRight = newElement("DIV", { "id": "sidenote-column-right" });
 			[ Sidenotes.sidenoteColumnLeft, Sidenotes.sidenoteColumnRight ].forEach(column => {
 				column.classList.add("footnotes", "sidenote-column");
 				column.style.visibility = "hidden";
 				markdownBody.append(column);
 			});
-
-			//	Add the hidden sidenote storage.
-			markdownBody.append(Sidenotes.hiddenSidenoteStorage = newElement("DIV", {
-				"id": "hidden-sidenote-storage",
-				"class": "footnotes",
-				"style": "display:none"
-			}));
 
 			Sidenotes.sidenotes = [ ];
 			Sidenotes.citations = [ ];
@@ -681,7 +675,8 @@ Sidenotes = { ...Sidenotes,
 			//  Create the sidenote outer containing block...
 			let sidenote = newElement("DIV", {
 				class: "sidenote",
-				id: Notes.sidenoteIdForNumber(noteNumber)
+				id: Notes.sidenoteIdForNumber(noteNumber),
+				style: "visibility: hidden"
 			});
 
 			//  Wrap the contents of the footnote in two wrapper divs...
@@ -716,7 +711,7 @@ Sidenotes = { ...Sidenotes,
 		});
 
 		//	Inject the sidenotes into the page.
-		Sidenotes.hiddenSidenoteStorage.append(...(Sidenotes.sidenotes));
+		Sidenotes.updateSidenoteDispositions();
 
 		/*  Bind sidenote mouse-hover events.
 		 */
@@ -791,11 +786,18 @@ Sidenotes = { ...Sidenotes,
 		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
 
 		//	Trigger transcludes.
-		Transclude.triggerTranscludesInContainer(Sidenotes.hiddenSidenoteStorage, {
-			container: Sidenotes.hiddenSidenoteStorage,
-			document: document,
-			source: "Sidenotes.constructSidenotes"
-		}, { immediately: false });
+		let columns = [ ];
+		if (Sidenotes.useLeftColumn())
+			columns.push(Sidenotes.sidenoteColumnLeft);
+		if (Sidenotes.useRightColumn())
+			columns.push(Sidenotes.sidenoteColumnRight);
+		columns.forEach(column => {
+			Transclude.triggerTranscludesInContainer(column, {
+				container: column,
+				document: document,
+				source: "Sidenotes.constructSidenotes"
+			}, { immediately: false });
+		});
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
