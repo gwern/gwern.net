@@ -18533,29 +18533,15 @@ addContentInjectHandler(GW.contentInjectHandlers.addDoubleClickListenersToInflat
 
 /******************************************************************************/
 /*	Resolve random element selectors (i.e., containers with a class like
-	“display-random-one”) by uniform-randomly selecting the requisite number of
+	“display-random-1”) by uniform-randomly selecting the requisite number of
 	child elements and making them visible.
  */
 addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors = (eventInfo) => {
     GWLog("resolveRandomElementSelectors", "rewrite.js", 1);
 
-	let wordsToNumbersMapping = {
-		"one":    1,
-		"two":    2,
-		"three":  3,
-		"four":   4,
-		"five":   5,
-		"six":    6,
-		"seven":  7,
-		"eight":  8,
-		"nine":   9,
-		"ten":   10,
-	};
-
 	eventInfo.container.querySelectorAll("[class*='display-random-']:not(.visible)").forEach(randomSelectorContainer => {
 		//	Determine how many elements to display.
-		let howMany = Array.from(randomSelectorContainer.classList).find(cssClass => /^display-random-/.test(cssClass))?.slice("display-random-".length);
-		howMany = wordsToNumbersMapping[howMany];
+		let howMany = parseInt(Array.from(randomSelectorContainer.classList).find(cssClass => /^display-random-/.test(cssClass))?.slice("display-random-".length));
 
 		/*	Select elements to display, until as many as needed are displayed,
 			or else none remain to display.
@@ -18573,11 +18559,11 @@ addContentInjectHandler(GW.contentInjectHandlers.resolveRandomElementSelectors =
 		}
 
 		/*	If class ‘disable-the-not-chosen’ is set on the randomizer
-			container (i.e., the element with the ‘display-random-<whatever>’
-			class), then all but the chosen entries should be removed from the
-			page, and not merely hidden via `display: none`. (This is relevant
-			when randomizing between elements like image-map <area>s, which can
-			have effects even when they are not displayed.)
+			container (i.e., the element with the ‘display-random-X’ class), 
+			then all but the chosen entries should be removed from the page, 
+			and not merely hidden via `display: none`. (This is relevant when 
+			randomizing between elements like image-map <area>s, which can have 
+			effects even when they are not displayed.)
 		 */
 		if (randomSelectorContainer.classList.contains("disable-the-not-chosen"))
 			for (let childElement of Array.from(randomSelectorContainer.children))
