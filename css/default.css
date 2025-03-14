@@ -3439,14 +3439,16 @@ blockquote .TOC,
 ol.link-bibliography-list-compact {
     --list-left-padding: 2.25em;
 }
-ol.link-bibliography-list-co
-mpact > li::before {
+ol.link-bibliography-list-compact > li::before {
     font-family: var(--GW-monospaced-font-stack);
 }
 @media all and (max-width: 649px) {
     ol.link-bibliography-list-compact {
         --list-left-padding: 1.75em;
     }
+}
+ol.link-bibliography-list-compact blockquote.data-field.annotation-abstract.in-list {
+	margin-right: -1px;
 }
 
 
