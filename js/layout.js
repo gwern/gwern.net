@@ -124,7 +124,7 @@ GW.layout = {
 	siblingCombinatorRegExp: /^(.+) \+ (.+)$/,
 
 	blockSpacing: [
-		[ "body.page-index section",					 7, false ],
+		[ "body.page-index section",					 9, false ],
 		[ "body.page-index section li p + p",			 0, false ],
 
 		[ "body.page-404 .display-entry .float + .epigraph",
