@@ -21,8 +21,9 @@ $head_css = [
 $head_js = [
 	'utility.js',
 	'initial.js',
-	'special-occasions.js',
 	'layout.js',
+	'rewrite-initial.js',
+	'special-occasions.js',
 	'dark-mode-initial.js',
 	'reader-mode-initial.js',
 	'asset-versions-GENERATED.js'

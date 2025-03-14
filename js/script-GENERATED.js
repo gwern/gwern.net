@@ -17374,6 +17374,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
 
+/**********************************************/
+/*	Designate injected “blog post” annotations.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateBlogPosts = (eventInfo) => {
+    GWLog("designateBlogPosts", "rewrite.js", 1);
+
+	if (eventInfo.container.closest(".blog-post") != null)
+		return;
+
+	eventInfo.container.querySelector(".annotation").classList.add("blog-post");
+}, "rewrite", (info) => (   info.contentType == "annotation"
+						 && baseLocationForDocument(info.document)?.pathname.startsWith("/blog")));
+
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.
  */
