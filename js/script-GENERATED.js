@@ -13244,7 +13244,7 @@ Extracts = { ...Extracts,
                         popFrameTitleHTMLParts.push("Footnote", Notes.noteNumber(nearestFootnote));
                         let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
                         if (identifyingSpan)
-                            popFrameTitleHTMLParts.push(`(#${(identifyingSpan.id)})`);
+                            popFrameTitleHTMLParts.push(`(<code>#${(identifyingSpan.id)}</code>)`);
                     } else if (nearestSection) {
                         //  Section mark (§) for sections.
                         popFrameTitleHTMLParts.push("&#x00a7;");
@@ -21394,6 +21394,12 @@ Sidenotes = { ...Sidenotes,
 						return;
 
 					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+						/*  Do not slide sidenote if the footnote the citation
+							points to is visible.
+						 */
+						if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
+							return null;
+
 						Sidenotes.putAllSidenotesBack(sidenote);
 						requestAnimationFrame(() => {
 							Sidenotes.slideSidenoteIntoView(sidenote, true);

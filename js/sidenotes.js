@@ -1065,6 +1065,12 @@ Sidenotes = { ...Sidenotes,
 						return;
 
 					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+						/*  Do not slide sidenote if the footnote the citation
+							points to is visible.
+						 */
+						if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
+							return null;
+
 						Sidenotes.putAllSidenotesBack(sidenote);
 						requestAnimationFrame(() => {
 							Sidenotes.slideSidenoteIntoView(sidenote, true);

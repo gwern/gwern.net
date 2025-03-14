@@ -174,7 +174,7 @@ Extracts = { ...Extracts,
                         popFrameTitleHTMLParts.push("Footnote", Notes.noteNumber(nearestFootnote));
                         let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
                         if (identifyingSpan)
-                            popFrameTitleHTMLParts.push(`(#${(identifyingSpan.id)})`);
+                            popFrameTitleHTMLParts.push(`(<code>#${(identifyingSpan.id)}</code>)`);
                     } else if (nearestSection) {
                         //  Section mark (§) for sections.
                         popFrameTitleHTMLParts.push("&#x00a7;");
