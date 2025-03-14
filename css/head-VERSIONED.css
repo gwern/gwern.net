@@ -2296,6 +2296,11 @@ body.page-index #markdownBody #notable {
         body.page-index #markdownBody,
 	    body.page-404 div#new-popular-notable {
             grid-template-columns: 45ch 45ch 45ch;
+        }
+        body.page-index #markdownBody {
+            margin-left: -20ch;
+        }
+	    body.page-404 div#new-popular-notable {
             margin-left: -22ch;
         }
         body.page-index #markdownBody #notable {
@@ -2303,10 +2308,10 @@ body.page-index #markdownBody #notable {
         }
         body.page-index #markdownBody .abstract {
 			max-width: calc(var(--GW-body-max-width) - 2 * var(--GW-body-side-padding));
-            margin-left: 22ch;
+            margin-left: 20ch;
         }
         body.page-index #markdownBody hr {
-            margin-left: -8ch;
+            margin-left: -10ch;
         }
 	    body.page-404 div#new-popular-notable hr {
             margin-left: -9.5ch;

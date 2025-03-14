@@ -2198,12 +2198,31 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
 addContentInjectHandler(GW.contentInjectHandlers.designateBlogPosts = (eventInfo) => {
     GWLog("designateBlogPosts", "rewrite.js", 1);
 
+	let baseLocation = baseLocationForDocument(eventInfo.document);
+	if (baseLocation?.pathname.startsWith("/blog/") == false)
+		return;
+
 	if (eventInfo.container.closest(".blog-post") != null)
 		return;
 
 	eventInfo.container.querySelector(".annotation").classList.add("blog-post");
-}, "rewrite", (info) => (   info.contentType == "annotation"
-						 && baseLocationForDocument(info.document)?.pathname.startsWith("/blog")));
+}, "rewrite", (info) => (info.contentType == "annotation"));
+
+/************************************/
+/*	Rectify blog post layout/content.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyBlogPosts = (eventInfo) => {
+    GWLog("rectifyBlogPosts", "rewrite.js", 1);
+
+	let baseLocation = baseLocationForDocument(eventInfo.document);
+	if (   baseLocation?.pathname == "/blog/"
+		|| baseLocation?.pathname == "/blog/index"
+		|| baseLocation?.pathname.startsWith("/blog/") == false)
+		return;
+
+	eventInfo.container.querySelector(".annotation.blog-post > .data-field.title")?.remove();
+}, "rewrite", (info) => (   info.document == document
+						 || info.document instanceof ShadowRoot));
 
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.

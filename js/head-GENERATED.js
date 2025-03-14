@@ -3365,31 +3365,33 @@ function sequentialBlockOf(element, direction, options) {
 
 	options = processLayoutOptions(options);
 
-	let siblingKey = direction + "ElementSibling";
+	let elementSibling = direction == "next"
+						 ? element.nextElementSibling
+						 : element.previousElementSibling;
 	let wrapperDirection = (direction == "next" ? "down" : "up");
 	let wrapperInType = wrapperDirection + "In";
 	let wrapperOutType = wrapperDirection + "Out";
 	let terminus = (direction == "next" ? "first" : "last");
 
 	//	Skip elements that don’t participate in block flow.
-	if (isSkipped(element[siblingKey], options))
-		return sequentialBlockOf(element[siblingKey], direction, options);
+	if (isSkipped(elementSibling, options))
+		return sequentialBlockOf(elementSibling, direction, options);
 
 	//	Look inside “transparent” wrappers (that don’t affect layout).
-	if (isWrapper(element[siblingKey], wrapperInType, options)) {
-		let terminalBlock = terminalBlockOf(element[siblingKey], terminus, options);
+	if (isWrapper(elementSibling, wrapperInType, options)) {
+		let terminalBlock = terminalBlockOf(elementSibling, terminus, options);
 		if (terminalBlock)
 			return terminalBlock;
 	}
 
 	//	Skip empty elements.
-	if (   isEmpty(element[siblingKey], options) == true
-		&& isNonEmpty(element[siblingKey], options) == false)
-		return sequentialBlockOf(element[siblingKey], direction, options);
+	if (   isEmpty(elementSibling, options) == true
+		&& isNonEmpty(elementSibling, options) == false)
+		return sequentialBlockOf(elementSibling, direction, options);
 
 	//	An actual block element (the base case).
-	if (isBlock(element[siblingKey], options))
-		return element[siblingKey];
+	if (isBlock(elementSibling, options))
+		return elementSibling;
 
 	/*	If we’re asked for the sequential block of the terminal child of a
 		transparent wrapper, we return the sequential block of that wrapper
@@ -4037,11 +4039,6 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 		let firstBlockWithin = firstBlockOf(listItem);
 		let bsm = firstBlockWithin?.style.getPropertyValue("--bsm");
 
-		//	Apply list item BSM modifier.
-		if (   bsm > ""
-			&& listItem.dataset.bsmMod > "")
-			bsm = "" + (parseInt(bsm) + parseInt(listItem.dataset.bsmMod));
-
 		//	Apply BSM.
 		if (bsm > "") {
 			/*	We must propagate the spacing of the first block within the
@@ -4055,10 +4052,6 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 				&& firstBlockWithin != listItem)
 				firstBlockWithin.style.setProperty("--bsm", 0);
 		}
-
-		//	Delete now-extraneous data attribute.
-		if (listItem.dataset.bsmMod)
-			delete listItem.dataset.bsmMod;
 	});
 
 	//	Floats require special treatment on non-mobile layouts.
