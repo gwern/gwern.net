@@ -54,6 +54,9 @@ dayStringFromToday offset = do
 todayDayString :: IO String
 todayDayString = dayStringFromToday 0
 
+todayDayStringUnsafe :: String
+todayDayStringUnsafe = unsafePerformIO $ dayStringFromToday 0
+
 yesterdayDayString :: IO String
 yesterdayDayString = dayStringFromToday (-1)
 

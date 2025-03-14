@@ -19,7 +19,7 @@ import LinkID (url2ID)
 import Unique
 
 -- module self-tests:
-import Annotation (tooltipToMetadata)
+import Annotation (tooltipToMetadata, testGuessAuthorDate)
 import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
@@ -210,6 +210,9 @@ testAll = do Config.Misc.cd
 
              let tooltipResults = filter (\((t1, t2), goodResult) -> Annotation.tooltipToMetadata t1 t2 /= goodResult) Config.Misc.tooltipToMetadataTestcases
              unless (null tooltipResults) $ printRed ("Tooltip-parsing rules have errors in: " ++ show tooltipResults)
+
+             let fileGuessResults = testGuessAuthorDate
+             unless (null fileGuessResults) $ printRed ("File metadata-guessing unit-tests have errors in: " ++ show fileGuessResults)
 
              printGreen ("Testing LinkAuto rewrites…" :: String)
              unless (null linkAutoTest) $ printRed ("LinkAuto test-cases have errors in: " ++ show linkAutoTest)

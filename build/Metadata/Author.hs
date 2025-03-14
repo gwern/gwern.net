@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-01-21 12:34:56 gwern"
+When:  Time-stamp: "2025-03-13 21:07:17 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -106,7 +106,6 @@ cleanAuthors = trim . replaceMany CA.cleanAuthorsFixedRewrites . sedMany CA.clea
 cleanAuthorsTest :: [(String,String,String)]
 cleanAuthorsTest = testInfixRewriteLoops CA.cleanAuthorsFixedRewrites cleanAuthors
 
-
 -- A Twitter username is a 1–15 character alphanumeric/underscore string:
 -- must handle both "https://x.com/grantslatton/status/1703913578036904431" and "https://x.com/grantslatton":
 -- Unit-tests in `Config.Metadata.Format.extractTwitterUsernameTestSuite`.
@@ -185,7 +184,16 @@ authorCollapse aut
 -- authorsCanonicalizeT :: T.Text -> T.Text
 -- authorsCanonicalizeT = T.intercalate ", " . replaceExact (map (\(a,b) -> (T.pack a, T.pack b)) CA.canonicals) . T.splitOn ", "
 authorsCanonicalize :: String -> String
-authorsCanonicalize = intercalate ", " . map (\a -> fromMaybe a $ M.lookup a authorDB) . split ", "
+authorsCanonicalize = intercalate ", " . map authorCanonicalize . split ", "
+
+authorCanonicalize :: String -> String
+authorCanonicalize a = fromMaybe a $ M.lookup a authorDB
+
+isAuthor :: String -> Bool
+isAuthor "" = False
+isAuthor a = case M.lookup a authorDB of
+               Nothing -> isJust $ M.lookup (T.pack a) CA.authorLinkDB
+               Just _ -> True
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.

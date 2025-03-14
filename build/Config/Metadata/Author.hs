@@ -677,6 +677,14 @@ canonicals = M.fromList
   , ("near", "nearcyan")
   , ("Near", "nearcyan")
   , ("Nearcyan", "nearcyan")
+  , ("Robert A. Heinlein", "Robert Heinlein")
+  , ("hippke", "Michael Hippke")
+  , ("kundu", "Bornali Kundu")
+  , ("gpt2", "GPT-2")
+  , ("wrangham", "Richard W. Wrangham")
+  , ("skylion", "Aaron Gokaslan")
+  , ("Skylion", "Aaron Gokaslan")
+  , ("SkyLi0n", "Aaron Gokaslan")
   ]
 
 -- tests: unique
@@ -705,7 +713,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1451,6 +1459,13 @@ authorLinkDB = M.fromList $
     , ("Noam Brown", "https://scholar.google.com/citations?user=RLDbLcUAAAAJ")
     , ("Niklas Muennighoff", "https://muennighoff.github.io/")
     , ("nearcyan", "https://near.blog/")
+    , ("Piotr Stanczyk", "https://scholar.google.com/citations?user=fKVK0dYAAAAJ&hl=en")
+    , ("Nathan A. Gillespie", "https://vipbg.vcu.edu/people/nathan-gillespie/")
+    , ("Matt Lakeman", "https://mattlakeman.org/")
+    , ("Marian L. Hamshere", "https://profiles.cardiff.ac.uk/staff/hamshereml")
+    , ("Loic Le Marchand", "https://www.uhcancercenter.org/le-marchand-loic")
+    , ("Michael Hippke", "https://www.lesswrong.com/users/hippke")
+    , ("Aaron Gokaslan", "https://x.com/SkyLi0n")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2352,7 +2367,7 @@ authorWpLinkDB =
     ,"Philippe Autier", "Philippe Charlier", "Philippe Ciais", "Philippe Flajolet", "Philippe Froguel"
     ,"Philippe Kruchten", "Phillip A. Sharp", "Phyllis Chesler", "Pierre Baldi", "Pierre Desrochers"
     ,"Pierre Pinson", "Pierre-Simon Laplace", "Pierre-Yves Oudeyer", "Pieter Abbeel", "Pietro De Camilli"
-    ,"Pietro Perona", "Pinchas Cohen", "Piotr Stanczyk", "Planet Money", "Polina Anikeeva"
+    ,"Pietro Perona", "Pinchas Cohen", "Planet Money", "Polina Anikeeva"
     , "Pontiano Kaleebu", "Pontus Skoglund", "Pony Preservation Project"
     , "Poul-Henning Kamp", "Pradeep Dubey", "Pradeep Sharma", "Pranab Bardhan", "Prateek Jain"
     ,"Preslav Nakov", "Price V. Fishback", "Priya Krishna", "Przemyslaw Prusinkiewicz", "Psychiatric Genomics Consortium"
@@ -2403,7 +2418,7 @@ authorWpLinkDB =
     ,"Richard O. Duda", "Richard P. Bentall", "Richard P. Ebstein", "Richard P. Feynman", "Richard P. Lifton"
     ,"Richard Peto", "Richard S. Bird", "Richard S. Cooper", "Richard S. Sutton", "Richard Sandford"
     ,"Richard Schmalensee", "Richard Villems", "Richard W. Grant", "Richard W. Hamming", "Richard W. Murray"
-    ,"Richard W. Wrangham", "Richard Wiseman", "Richard Wrangham", "Richard Zeckhauser", "Richard Zemel"
+    ,"Richard W. Wrangham", "Richard Wiseman", "Richard Zeckhauser", "Richard Zemel"
     ,"Richie Poulton", "Rick A. Kittles", "Rick Dale", "Rick Kittles", "Rik Vandenberghe"
     ,"Rishi Sharma", "Risto Miikkulainen", "Rita Patel", "Roald Dahl", "Rob M. van Dam"
     ,"Rob Reich", "Rob Stein", "Robb Willer", "Robert A. Baker", "Robert A. Baron"
@@ -2700,4 +2715,4 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach"]
+    , "Milton Rokeach", "Robert Heinlein"]
