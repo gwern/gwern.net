@@ -4036,7 +4036,8 @@ a.footnote-back {
     line-height: calc(1.3 / 0.85);
     transition:
         opacity 0.25s ease-in,
-        transform 0.25s ease-in;
+        transform 0.25s ease-in,
+        top 0.15s ease-out;
     pointer-events: auto;
 }
 #markdownBody .sidenote.displaced {
@@ -4614,24 +4615,24 @@ mpact > li::before {
 /* /blog/ */
 /**********/
 
-body.blog-page #markdownBody .annotation p.data-field {
+body.blog-page .annotation.blog-post > p.data-field {
     --text-alignment: center;
 }
 
-body.blog-page #markdownBody .annotation .collapse.aux-links-append,
-body.blog-page #markdownBody .annotation .collapse.file-include-collapse {
-    border: none;
+body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append,
+body.blog-page .annotation.blog-post > .collapse.file-include-collapse {
+    border: 1px solid var(--GW-aux-links-collapse-border-color);
 }
-body.blog-page #markdownBody .annotation .collapse.aux-links-append.expanded .collapse-content-wrapper,
-body.blog-page #markdownBody .annotation .collapse.file-include-collapse.expanded .collapse-content-wrapper {
+body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded .collapse-content-wrapper,
+body.blog-page .annotation.blog-post > .collapse.file-include-collapse.expanded .collapse-content-wrapper {
     padding: 0.5em 0;
 }
-body.blog-page #markdownBody .annotation .collapse.aux-links-append.expanded-not .collapse-content-wrapper,
-body.blog-page #markdownBody .annotation .collapse.file-include-collapse.expanded-not .collapse-content-wrapper {
+body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded-not .collapse-content-wrapper,
+body.blog-page .annotation.blog-post > .collapse.file-include-collapse.expanded-not .collapse-content-wrapper {
     padding: 0.5em 0.5em 0.5em 1em;
 }
 
-body.page-blog-index #markdownBody .collapse.expanded .annotation p.data-field.title {
+body.page-blog-index .collapse.expanded .annotation.blog-post > p.data-field.title {
     font-size: 1.25em;
 }
 

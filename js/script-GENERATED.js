@@ -13244,7 +13244,7 @@ Extracts = { ...Extracts,
                         popFrameTitleHTMLParts.push("Footnote", Notes.noteNumber(nearestFootnote));
                         let identifyingSpan = nearestFootnote.querySelector("span[id]:empty");
                         if (identifyingSpan)
-                            popFrameTitleHTMLParts.push(`(#${(identifyingSpan.id)})`);
+                            popFrameTitleHTMLParts.push(`(<code>#${(identifyingSpan.id)}</code>)`);
                     } else if (nearestSection) {
                         //  Section mark (§) for sections.
                         popFrameTitleHTMLParts.push("&#x00a7;");
@@ -13705,12 +13705,16 @@ Extracts = { ...Extracts,
         popup.document.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
+
         //  In the popup, the citation for which context is being shown.
         let citationInPopup = targetElementInDocument(popup.spawningTarget, popup.document);
-        //  Highlight the citation.
-        citationInPopup.classList.add("targeted");
-        //	Remove class that would interfere with styling.
-        citationInPopup.classList.remove("block-context-highlighted");
+
+		if (citationInPopup.matches(".footnote-ref")) {
+			//  Highlight the citation.
+			citationInPopup.classList.add("targeted");
+			//	Remove class that would interfere with styling.
+			citationInPopup.classList.remove("block-context-highlighted");
+		}
 
         //  Scroll to the citation.
         Extracts.scrollToTargetedElementInPopFrame(popup);
@@ -15616,41 +15620,96 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 
 	let pageTitle = Content.referenceDataForLink(eventInfo.loadLocation).pageTitle;
 	for (let [ targetBlock, linksToTargetBlock ] of Object.values(backlinksBySectionId)) {
-		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
-		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+		if (targetBlock.matches("li.footnote")) {
+			/*	We treat within-page backlinks of footnotes specially, by 
+				simply appending a link which looks and acts exactly like a 
+				Pandoc-generated footnote-back link. In effect, this is (along
+				with ID-bearing <span>s within the footnote, and links to it)
+				a hacky way of enabling support for a many-to-one relationship
+				of citations to footnotes: many links within a page can link to
+				a footnote, and the footnote itself links back up to all of 
+				them. From the reader’s perspective, this should be seamless.
 
-		//	Inject the backlink entries...
-		for (let link of linksToTargetBlock) {
-			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
-												+ `<a
-													href="${link.pathname}"
-													class="backlink-not link-self link-annotated"
-													>${pageTitle}</a> (`
-												+ `<a
-													href="#${link.id}"
-													class="backlink-not link-self extract-not"
-													>context</a>`
-												+ `):</p>`
-												+ `<blockquote class="backlink-context"><p>`
-												+ `<a
-													href="${link.pathname}"
-													class="backlink-not include-block-context-expanded collapsible"
-													data-target-id="${link.id}"
-													>[backlink context]</a>`
-												+ `</p></blockquote>`
-												+ `</li>`);
-
-			/*	If we are injecting into an existing section backlinks block,
-				then a separate inject event must be fired for the created
-				backlink.
+				This also means that if a footnote has *only* within-page 
+				backlinks, it will not have a collapsed section-backlinks block
+				(as the footnote-back links replace its functionality). Of 
+				course, if a footnote has *cross*-page backlinks, then there 
+				will still be a backlinks block, as usual.
 			 */
-			if (sectionBacklinksBlockIncludeWrapper == null) {
-				let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
-				backlinkEntryIncludeWrapper.append(backlinkEntry);
-				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+			let lastCitationBackLink = Array.from(targetBlock.querySelectorAll(".footnote-back")).last;
+			for (let link of linksToTargetBlock) {
+				let newCitationBackLink = lastCitationBackLink.cloneNode(true);
+				newCitationBackLink.href = `#${link.id}`;
+				lastCitationBackLink.parentElement.appendChild(newCitationBackLink);
+			}
+		} else {
+			let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
+			let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
 
-				//	Clear loading state of all include-links.
-				Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+			//	Inject the backlink entries...
+			for (let link of linksToTargetBlock) {
+				let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
+													+ `<a
+														href="${link.pathname}"
+														class="backlink-not link-self link-annotated"
+														>${pageTitle}</a> (`
+													+ `<a
+														href="#${link.id}"
+														class="backlink-not link-self extract-not"
+														>context</a>`
+													+ `):</p>`
+													+ `<blockquote class="backlink-context"><p>`
+													+ `<a
+														href="${link.pathname}"
+														class="backlink-not include-block-context-expanded collapsible"
+														data-target-id="${link.id}"
+														>[backlink context]</a>`
+													+ `</p></blockquote>`
+													+ `</li>`);
+
+				/*	If we are injecting into an existing section backlinks block,
+					then a separate inject event must be fired for the created
+					backlink.
+				 */
+				if (sectionBacklinksBlockIncludeWrapper == null) {
+					let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+					backlinkEntryIncludeWrapper.append(backlinkEntry);
+					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+
+					//	Clear loading state of all include-links.
+					Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+
+					//	Fire inject event.
+					let flags = GW.contentDidInjectEventFlags.clickable;
+					if (eventInfo.document == document)
+						flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+					GW.notificationCenter.fireEvent("GW.contentDidInject", {
+						source: "transclude.section-backlinks",
+						contentType: "backlinks",
+						container: backlinkEntryIncludeWrapper,
+						document: eventInfo.document,
+						loadLocation: eventInfo.loadLocation,
+						flags: flags
+					});
+
+					unwrap(backlinkEntryIncludeWrapper);
+				} else {
+					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+				}
+			}
+
+			//	Update displayed count.
+			updateBacklinksCountDisplay(sectionBacklinksBlock);
+
+			if (sectionBacklinksBlockIncludeWrapper != null) {
+				//	Fire load event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "transclude.section-backlinks",
+					contentType: "backlinks",
+					container: sectionBacklinksBlockIncludeWrapper,
+					document: eventInfo.document,
+					loadLocation: eventInfo.loadLocation
+				});
 
 				//	Fire inject event.
 				let flags = GW.contentDidInjectEventFlags.clickable;
@@ -15659,45 +15718,14 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 				GW.notificationCenter.fireEvent("GW.contentDidInject", {
 					source: "transclude.section-backlinks",
 					contentType: "backlinks",
-					container: backlinkEntryIncludeWrapper,
+					container: sectionBacklinksBlockIncludeWrapper,
 					document: eventInfo.document,
 					loadLocation: eventInfo.loadLocation,
 					flags: flags
 				});
 
-				unwrap(backlinkEntryIncludeWrapper);
-			} else {
-				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+				unwrap(sectionBacklinksBlockIncludeWrapper);
 			}
-		}
-
-		//	Update displayed count.
-		updateBacklinksCountDisplay(sectionBacklinksBlock);
-
-		if (sectionBacklinksBlockIncludeWrapper != null) {
-			//	Fire load event.
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "transclude.section-backlinks",
-				contentType: "backlinks",
-				container: sectionBacklinksBlockIncludeWrapper,
-				document: eventInfo.document,
-				loadLocation: eventInfo.loadLocation
-			});
-
-			//	Fire inject event.
-			let flags = GW.contentDidInjectEventFlags.clickable;
-			if (eventInfo.document == document)
-				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "transclude.section-backlinks",
-				contentType: "backlinks",
-				container: sectionBacklinksBlockIncludeWrapper,
-				document: eventInfo.document,
-				loadLocation: eventInfo.loadLocation,
-				flags: flags
-			});
-
-			unwrap(sectionBacklinksBlockIncludeWrapper);
 		}
 	}
 
@@ -17345,6 +17373,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteTruncatedAnnotations = (even
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
                           && info.contentType == "annotation"));
+
+/**********************************************/
+/*	Designate injected “blog post” annotations.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateBlogPosts = (eventInfo) => {
+    GWLog("designateBlogPosts", "rewrite.js", 1);
+
+	if (eventInfo.container.closest(".blog-post") != null)
+		return;
+
+	eventInfo.container.querySelector(".annotation").classList.add("blog-post");
+}, "rewrite", (info) => (   info.contentType == "annotation"
+						 && baseLocationForDocument(info.document)?.pathname.startsWith("/blog")));
 
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.
@@ -20459,19 +20500,23 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.classList.contains("hidden"))
 			return;
 
-		let arrow = sidenote.querySelector(".footnote-back svg");
-		let citation = Sidenotes.counterpart(sidenote);
+		sidenote.querySelectorAll(".footnote-back").forEach(footnoteBackLink => {
+			let arrow = footnoteBackLink.querySelector(".footnote-back svg");
+			let citation = Notes.hashMatchesCitation(footnoteBackLink.hash)
+						   ? Sidenotes.counterpart(sidenote)
+						   : document.querySelector(selectorFromHash(footnoteBackLink.hash));
 
-		if (   arrow == null
-			|| citation == null)
-			return;
+			if (   arrow == null
+				|| citation == null)
+				return;
 
-		let sidenoteRect = sidenote.getBoundingClientRect();
-		let citationRect = citation.getBoundingClientRect();
-		let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
-		let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
-		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
-		arrow.style.transform = `rotate(${rotationAngle}deg)`;
+			let sidenoteRect = sidenote.getBoundingClientRect();
+			let citationRect = Array.from(citation.getClientRects()).first;
+			let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
+			let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+			let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
+			arrow.style.transform = `rotate(${rotationAngle}deg)`;
+		});
 	},
 
 	/*	Queues a sidenote position update on the next available animation frame,
@@ -20610,7 +20655,7 @@ Sidenotes = { ...Sidenotes,
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
 		 */
-		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
+		let leftColumnBoundingRect  = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
 		/*  Examine all potentially overlapping elements (ie. non-sidenote
@@ -20624,15 +20669,15 @@ Sidenotes = { ...Sidenotes,
 
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
-			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > leftColumnBoundingRect.right
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
-				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
+				proscribedVerticalRangesLeft.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													element: potentiallyOverlappingElement });
 
-			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > rightColumnBoundingRect.right
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
-				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
+				proscribedVerticalRangesRight.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 element: potentiallyOverlappingElement });
 		});
@@ -20657,7 +20702,7 @@ Sidenotes = { ...Sidenotes,
 				let thisRange = ranges[i];
 				let nextRange = ranges[i + 1];
 
-				if (nextRange.top <= thisRange.bottom) {
+				if (nextRange.top   <= thisRange.bottom) {
 					thisRange.bottom = nextRange.bottom;
 					ranges.splice(i + 1, 1);
 					i++;
@@ -20676,7 +20721,7 @@ Sidenotes = { ...Sidenotes,
 		let layoutCells = [ ];
 		let columnSpecs = [ ];
 		if (Sidenotes.useLeftColumn())
-			columnSpecs.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
+			columnSpecs.push([ Sidenotes.sidenoteColumnLeft,  leftColumnBoundingRect,  proscribedVerticalRangesLeft  ]);
 		if (Sidenotes.useRightColumn())
 			columnSpecs.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
 		columnSpecs.forEach(columnSpec => {
@@ -20858,7 +20903,6 @@ Sidenotes = { ...Sidenotes,
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
-				sidenote.style.visibility = "";
 			});
 		});
 
@@ -21097,7 +21141,12 @@ Sidenotes = { ...Sidenotes,
 				container: column,
 				document: document,
 				source: "Sidenotes.constructSidenotes"
-			}, { immediately: false });
+			}, {
+				immediately: false,
+				doWhenDidInject: (info) => {
+					info.container.closest(".sidenote").style.visibility = "";
+				}
+			});
 		});
 
 		//	Fire event.
@@ -21358,6 +21407,12 @@ Sidenotes = { ...Sidenotes,
 						return;
 
 					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+						/*  Do not slide sidenote if the footnote the citation
+							points to is visible.
+						 */
+						if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
+							return null;
+
 						Sidenotes.putAllSidenotesBack(sidenote);
 						requestAnimationFrame(() => {
 							Sidenotes.slideSidenoteIntoView(sidenote, true);

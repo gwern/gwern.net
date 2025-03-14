@@ -158,19 +158,23 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.classList.contains("hidden"))
 			return;
 
-		let arrow = sidenote.querySelector(".footnote-back svg");
-		let citation = Sidenotes.counterpart(sidenote);
+		sidenote.querySelectorAll(".footnote-back").forEach(footnoteBackLink => {
+			let arrow = footnoteBackLink.querySelector(".footnote-back svg");
+			let citation = Notes.hashMatchesCitation(footnoteBackLink.hash)
+						   ? Sidenotes.counterpart(sidenote)
+						   : document.querySelector(selectorFromHash(footnoteBackLink.hash));
 
-		if (   arrow == null
-			|| citation == null)
-			return;
+			if (   arrow == null
+				|| citation == null)
+				return;
 
-		let sidenoteRect = sidenote.getBoundingClientRect();
-		let citationRect = citation.getBoundingClientRect();
-		let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
-		let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
-		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
-		arrow.style.transform = `rotate(${rotationAngle}deg)`;
+			let sidenoteRect = sidenote.getBoundingClientRect();
+			let citationRect = Array.from(citation.getClientRects()).first;
+			let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
+			let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+			let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
+			arrow.style.transform = `rotate(${rotationAngle}deg)`;
+		});
 	},
 
 	/*	Queues a sidenote position update on the next available animation frame,
@@ -309,7 +313,7 @@ Sidenotes = { ...Sidenotes,
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
 		 */
-		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
+		let leftColumnBoundingRect  = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
 		/*  Examine all potentially overlapping elements (ie. non-sidenote
@@ -323,15 +327,15 @@ Sidenotes = { ...Sidenotes,
 
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
-			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > leftColumnBoundingRect.right
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
-				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
+				proscribedVerticalRangesLeft.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													element: potentiallyOverlappingElement });
 
-			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > rightColumnBoundingRect.right
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
-				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
+				proscribedVerticalRangesRight.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 element: potentiallyOverlappingElement });
 		});
@@ -356,7 +360,7 @@ Sidenotes = { ...Sidenotes,
 				let thisRange = ranges[i];
 				let nextRange = ranges[i + 1];
 
-				if (nextRange.top <= thisRange.bottom) {
+				if (nextRange.top   <= thisRange.bottom) {
 					thisRange.bottom = nextRange.bottom;
 					ranges.splice(i + 1, 1);
 					i++;
@@ -375,7 +379,7 @@ Sidenotes = { ...Sidenotes,
 		let layoutCells = [ ];
 		let columnSpecs = [ ];
 		if (Sidenotes.useLeftColumn())
-			columnSpecs.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
+			columnSpecs.push([ Sidenotes.sidenoteColumnLeft,  leftColumnBoundingRect,  proscribedVerticalRangesLeft  ]);
 		if (Sidenotes.useRightColumn())
 			columnSpecs.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
 		columnSpecs.forEach(columnSpec => {
@@ -557,7 +561,6 @@ Sidenotes = { ...Sidenotes,
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
-				sidenote.style.visibility = "";
 			});
 		});
 
@@ -796,7 +799,12 @@ Sidenotes = { ...Sidenotes,
 				container: column,
 				document: document,
 				source: "Sidenotes.constructSidenotes"
-			}, { immediately: false });
+			}, {
+				immediately: false,
+				doWhenDidInject: (info) => {
+					info.container.closest(".sidenote").style.visibility = "";
+				}
+			});
 		});
 
 		//	Fire event.
@@ -1057,6 +1065,12 @@ Sidenotes = { ...Sidenotes,
 						return;
 
 					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+						/*  Do not slide sidenote if the footnote the citation
+							points to is visible.
+						 */
+						if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
+							return null;
+
 						Sidenotes.putAllSidenotesBack(sidenote);
 						requestAnimationFrame(() => {
 							Sidenotes.slideSidenoteIntoView(sidenote, true);
