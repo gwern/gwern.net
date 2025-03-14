@@ -635,12 +635,16 @@ Extracts = { ...Extracts,
         popup.document.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
+
         //  In the popup, the citation for which context is being shown.
         let citationInPopup = targetElementInDocument(popup.spawningTarget, popup.document);
-        //  Highlight the citation.
-        citationInPopup.classList.add("targeted");
-        //	Remove class that would interfere with styling.
-        citationInPopup.classList.remove("block-context-highlighted");
+
+		if (citationInPopup.matches(".footnote-ref")) {
+			//  Highlight the citation.
+			citationInPopup.classList.add("targeted");
+			//	Remove class that would interfere with styling.
+			citationInPopup.classList.remove("block-context-highlighted");
+		}
 
         //  Scroll to the citation.
         Extracts.scrollToTargetedElementInPopFrame(popup);

@@ -13705,12 +13705,16 @@ Extracts = { ...Extracts,
         popup.document.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
+
         //  In the popup, the citation for which context is being shown.
         let citationInPopup = targetElementInDocument(popup.spawningTarget, popup.document);
-        //  Highlight the citation.
-        citationInPopup.classList.add("targeted");
-        //	Remove class that would interfere with styling.
-        citationInPopup.classList.remove("block-context-highlighted");
+
+		if (citationInPopup.matches(".footnote-ref")) {
+			//  Highlight the citation.
+			citationInPopup.classList.add("targeted");
+			//	Remove class that would interfere with styling.
+			citationInPopup.classList.remove("block-context-highlighted");
+		}
 
         //  Scroll to the citation.
         Extracts.scrollToTargetedElementInPopFrame(popup);
@@ -15616,41 +15620,96 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 
 	let pageTitle = Content.referenceDataForLink(eventInfo.loadLocation).pageTitle;
 	for (let [ targetBlock, linksToTargetBlock ] of Object.values(backlinksBySectionId)) {
-		let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
-		let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
+		if (targetBlock.matches("li.footnote")) {
+			/*	We treat within-page backlinks of footnotes specially, by 
+				simply appending a link which looks and acts exactly like a 
+				Pandoc-generated footnote-back link. In effect, this is (along
+				with ID-bearing <span>s within the footnote, and links to it)
+				a hacky way of enabling support for a many-to-one relationship
+				of citations to footnotes: many links within a page can link to
+				a footnote, and the footnote itself links back up to all of 
+				them. From the reader’s perspective, this should be seamless.
 
-		//	Inject the backlink entries...
-		for (let link of linksToTargetBlock) {
-			let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
-												+ `<a
-													href="${link.pathname}"
-													class="backlink-not link-self link-annotated"
-													>${pageTitle}</a> (`
-												+ `<a
-													href="#${link.id}"
-													class="backlink-not link-self extract-not"
-													>context</a>`
-												+ `):</p>`
-												+ `<blockquote class="backlink-context"><p>`
-												+ `<a
-													href="${link.pathname}"
-													class="backlink-not include-block-context-expanded collapsible"
-													data-target-id="${link.id}"
-													>[backlink context]</a>`
-												+ `</p></blockquote>`
-												+ `</li>`);
-
-			/*	If we are injecting into an existing section backlinks block,
-				then a separate inject event must be fired for the created
-				backlink.
+				This also means that if a footnote has *only* within-page 
+				backlinks, it will not have a collapsed section-backlinks block
+				(as the footnote-back links replace its functionality). Of 
+				course, if a footnote has *cross*-page backlinks, then there 
+				will still be a backlinks block, as usual.
 			 */
-			if (sectionBacklinksBlockIncludeWrapper == null) {
-				let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
-				backlinkEntryIncludeWrapper.append(backlinkEntry);
-				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+			let lastCitationBackLink = Array.from(targetBlock.querySelectorAll(".footnote-back")).last;
+			for (let link of linksToTargetBlock) {
+				let newCitationBackLink = lastCitationBackLink.cloneNode(true);
+				newCitationBackLink.href = `#${link.id}`;
+				lastCitationBackLink.parentElement.appendChild(newCitationBackLink);
+			}
+		} else {
+			let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
+			let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
 
-				//	Clear loading state of all include-links.
-				Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+			//	Inject the backlink entries...
+			for (let link of linksToTargetBlock) {
+				let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
+													+ `<a
+														href="${link.pathname}"
+														class="backlink-not link-self link-annotated"
+														>${pageTitle}</a> (`
+													+ `<a
+														href="#${link.id}"
+														class="backlink-not link-self extract-not"
+														>context</a>`
+													+ `):</p>`
+													+ `<blockquote class="backlink-context"><p>`
+													+ `<a
+														href="${link.pathname}"
+														class="backlink-not include-block-context-expanded collapsible"
+														data-target-id="${link.id}"
+														>[backlink context]</a>`
+													+ `</p></blockquote>`
+													+ `</li>`);
+
+				/*	If we are injecting into an existing section backlinks block,
+					then a separate inject event must be fired for the created
+					backlink.
+				 */
+				if (sectionBacklinksBlockIncludeWrapper == null) {
+					let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
+					backlinkEntryIncludeWrapper.append(backlinkEntry);
+					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
+
+					//	Clear loading state of all include-links.
+					Transclude.allIncludeLinksInContainer(backlinkEntryIncludeWrapper).forEach(Transclude.clearLinkState);
+
+					//	Fire inject event.
+					let flags = GW.contentDidInjectEventFlags.clickable;
+					if (eventInfo.document == document)
+						flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
+					GW.notificationCenter.fireEvent("GW.contentDidInject", {
+						source: "transclude.section-backlinks",
+						contentType: "backlinks",
+						container: backlinkEntryIncludeWrapper,
+						document: eventInfo.document,
+						loadLocation: eventInfo.loadLocation,
+						flags: flags
+					});
+
+					unwrap(backlinkEntryIncludeWrapper);
+				} else {
+					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+				}
+			}
+
+			//	Update displayed count.
+			updateBacklinksCountDisplay(sectionBacklinksBlock);
+
+			if (sectionBacklinksBlockIncludeWrapper != null) {
+				//	Fire load event.
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "transclude.section-backlinks",
+					contentType: "backlinks",
+					container: sectionBacklinksBlockIncludeWrapper,
+					document: eventInfo.document,
+					loadLocation: eventInfo.loadLocation
+				});
 
 				//	Fire inject event.
 				let flags = GW.contentDidInjectEventFlags.clickable;
@@ -15659,45 +15718,14 @@ addContentInjectHandler(GW.contentInjectHandlers.addWithinPageBacklinksToSection
 				GW.notificationCenter.fireEvent("GW.contentDidInject", {
 					source: "transclude.section-backlinks",
 					contentType: "backlinks",
-					container: backlinkEntryIncludeWrapper,
+					container: sectionBacklinksBlockIncludeWrapper,
 					document: eventInfo.document,
 					loadLocation: eventInfo.loadLocation,
 					flags: flags
 				});
 
-				unwrap(backlinkEntryIncludeWrapper);
-			} else {
-				sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
+				unwrap(sectionBacklinksBlockIncludeWrapper);
 			}
-		}
-
-		//	Update displayed count.
-		updateBacklinksCountDisplay(sectionBacklinksBlock);
-
-		if (sectionBacklinksBlockIncludeWrapper != null) {
-			//	Fire load event.
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "transclude.section-backlinks",
-				contentType: "backlinks",
-				container: sectionBacklinksBlockIncludeWrapper,
-				document: eventInfo.document,
-				loadLocation: eventInfo.loadLocation
-			});
-
-			//	Fire inject event.
-			let flags = GW.contentDidInjectEventFlags.clickable;
-			if (eventInfo.document == document)
-				flags |= GW.contentDidInjectEventFlags.fullWidthPossible;
-			GW.notificationCenter.fireEvent("GW.contentDidInject", {
-				source: "transclude.section-backlinks",
-				contentType: "backlinks",
-				container: sectionBacklinksBlockIncludeWrapper,
-				document: eventInfo.document,
-				loadLocation: eventInfo.loadLocation,
-				flags: flags
-			});
-
-			unwrap(sectionBacklinksBlockIncludeWrapper);
 		}
 	}
 
@@ -20459,19 +20487,23 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.classList.contains("hidden"))
 			return;
 
-		let arrow = sidenote.querySelector(".footnote-back svg");
-		let citation = Sidenotes.counterpart(sidenote);
+		sidenote.querySelectorAll(".footnote-back").forEach(footnoteBackLink => {
+			let arrow = footnoteBackLink.querySelector(".footnote-back svg");
+			let citation = Notes.hashMatchesCitation(footnoteBackLink.hash)
+						   ? Sidenotes.counterpart(sidenote)
+						   : document.querySelector(selectorFromHash(footnoteBackLink.hash));
 
-		if (   arrow == null
-			|| citation == null)
-			return;
+			if (   arrow == null
+				|| citation == null)
+				return;
 
-		let sidenoteRect = sidenote.getBoundingClientRect();
-		let citationRect = citation.getBoundingClientRect();
-		let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
-		let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
-		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
-		arrow.style.transform = `rotate(${rotationAngle}deg)`;
+			let sidenoteRect = sidenote.getBoundingClientRect();
+			let citationRect = Array.from(citation.getClientRects()).first;
+			let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
+			let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+			let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
+			arrow.style.transform = `rotate(${rotationAngle}deg)`;
+		});
 	},
 
 	/*	Queues a sidenote position update on the next available animation frame,

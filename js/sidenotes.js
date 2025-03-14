@@ -158,19 +158,23 @@ Sidenotes = { ...Sidenotes,
 		if (sidenote.classList.contains("hidden"))
 			return;
 
-		let arrow = sidenote.querySelector(".footnote-back svg");
-		let citation = Sidenotes.counterpart(sidenote);
+		sidenote.querySelectorAll(".footnote-back").forEach(footnoteBackLink => {
+			let arrow = footnoteBackLink.querySelector(".footnote-back svg");
+			let citation = Notes.hashMatchesCitation(footnoteBackLink.hash)
+						   ? Sidenotes.counterpart(sidenote)
+						   : document.querySelector(selectorFromHash(footnoteBackLink.hash));
 
-		if (   arrow == null
-			|| citation == null)
-			return;
+			if (   arrow == null
+				|| citation == null)
+				return;
 
-		let sidenoteRect = sidenote.getBoundingClientRect();
-		let citationRect = citation.getBoundingClientRect();
-		let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
-		let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
-		let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
-		arrow.style.transform = `rotate(${rotationAngle}deg)`;
+			let sidenoteRect = sidenote.getBoundingClientRect();
+			let citationRect = Array.from(citation.getClientRects()).first;
+			let x = (citationRect.x + citationRect.width * 0.5) - (sidenoteRect.x + sidenoteRect.width * 0.5);
+			let y = (sidenoteRect.y + sidenoteRect.height * 0.5) + offset - (citationRect.y + citationRect.height * 0.5);
+			let rotationAngle = -1 * (modulo(Math.atan2(y, x) * (180 / Math.PI), 360) - 90);
+			arrow.style.transform = `rotate(${rotationAngle}deg)`;
+		});
 	},
 
 	/*	Queues a sidenote position update on the next available animation frame,
