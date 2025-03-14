@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-12 18:50:32 gwern"
+# When:  Time-stamp: "2025-03-13 18:43:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -596,6 +596,10 @@ Katri Räikkönen
 <em>The innocent assassins: biological essays on life in the present and distant past</em>, Björn Kurtén
 - "https://www.talkchess.com/forum/viewtopic.php?t=48733 Scaling at 2× nodes (or doubling time control).—TalkChess.com"
 "Scaling at 2× nodes (or doubling time control)."
+- "https://reddit.com/r/EuropeanCulture/comments/ozpsxv/inside_intourist_robert_a_heinlein_1960/ Heart of the internet"
+""
+- https://worksinprogress.co/issue/steam-networks/ Steam networks—Works in Progress"
+"Steam networks"
 
 Task:
 

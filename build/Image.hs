@@ -216,7 +216,7 @@ addImgDimensions html =
           -- fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg <=< addVideoPoster . parseTags
 
 {- example illustration:
- TagOpen "img" [("src","/doc/traffic/201201-201207-gwern-traffic-history.png")
+ TagOpen "img" [("src","/doc/traffic/2012-01-02-2012-07-02-gwern-gwern-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
  TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
  TagClose "figcaption",TagText "\n",TagClose "figure" -}

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-09 14:49:48 gwern"
+# When:  Time-stamp: "2025-03-13 10:17:01 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -146,8 +146,9 @@ pdf () {
         (evince "$TARGET" &);
     done; }
 
-# delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdfcut` repeatedly quickly with <Up> arrow in bash, of course.)
-pdfcut () { for PDF in "$@"; do
+# delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdf-cut` repeatedly quickly with <Up> arrow in bash, of course.)
+alias pdfcut="pdf-cut"
+pdf-cut () { for PDF in "$@"; do
                 ORIGINAL=$(path2File "$PDF")
                 TARGET=$(mktemp /tmp/XXXXXX.pdf);
                 pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
@@ -157,10 +158,10 @@ pdfcut () { for PDF in "$@"; do
                 (crossref "$ORIGINAL" &);
           done
           }
-# delete the last page of the PDF, similar to `pdfcut`:
-pdfcut-last () {
+# delete the last page of the PDF, similar to `pdf-cut`:
+pdf-cut-last () {
     if [ $# -ne 1 ]; then
-        red "Usage: pdfcut-last <pdf-file>" >&2
+        red "Usage: pdf-cut-last <pdf-file>" >&2
         return 1
     fi
 
@@ -185,7 +186,8 @@ pdfcut-last () {
     (crossref "$ORIGINAL" &)
 }
 # sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
-pdfcut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments arguments; 'pdfcut-append' moves the first page to the end. To delete the first page, use 'pdfcut'." >&2 && return 1; fi
+alias pdfcut-append="pdf-cut-append"
+pdf-cut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments arguments; 'pdf-cut-append' moves the first page to the end. To delete the first page, use 'pdf-cut'." >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&

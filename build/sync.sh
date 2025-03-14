@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-13 11:09:44 gwern"
+# When:  Time-stamp: "2025-03-13 11:13:15 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -911,7 +911,7 @@ else
     λ(){ gev '^- - http' ./metadata/*.gtx | ge '[a-zA-Z0-9>]-$'; }
     wrap λ "Look for GTX line breaking at a hyphen." &
 
-    λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | ge -e '[.,:;-<]</a>'; }
+    λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | gec -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside." &
 
     λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple'; } # need to exclude 'A* search'
