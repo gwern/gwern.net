@@ -2875,7 +2875,8 @@ a.footnote-back {
     line-height: calc(1.3 / 0.85);
     transition:
         opacity 0.25s ease-in,
-        transform 0.25s ease-in;
+        transform 0.25s ease-in,
+        top 0.15s ease-out;
     pointer-events: auto;
 }
 #markdownBody .sidenote.displaced {

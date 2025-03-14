@@ -20610,7 +20610,7 @@ Sidenotes = { ...Sidenotes,
 		/*  Determine proscribed vertical ranges (ie. bands of the page from which
 			sidenotes are excluded, by the presence of, eg. a full-width table).
 		 */
-		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
+		let leftColumnBoundingRect  = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
 		/*  Examine all potentially overlapping elements (ie. non-sidenote
@@ -20624,15 +20624,15 @@ Sidenotes = { ...Sidenotes,
 
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
-			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > leftColumnBoundingRect.right
 				  || elementBoundingRect.right < leftColumnBoundingRect.left))
-				proscribedVerticalRangesLeft.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
+				proscribedVerticalRangesLeft.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - leftColumnBoundingRect.top,
 													element: potentiallyOverlappingElement });
 
-			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right
+			if (!(   elementBoundingRect.left  > rightColumnBoundingRect.right
 				  || elementBoundingRect.right < rightColumnBoundingRect.left))
-				proscribedVerticalRangesRight.push({ top: (elementBoundingRect.top - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
+				proscribedVerticalRangesRight.push({ top:    (elementBoundingRect.top    - Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 bottom: (elementBoundingRect.bottom + Sidenotes.sidenoteSpacing) - rightColumnBoundingRect.top,
 													 element: potentiallyOverlappingElement });
 		});
@@ -20657,7 +20657,7 @@ Sidenotes = { ...Sidenotes,
 				let thisRange = ranges[i];
 				let nextRange = ranges[i + 1];
 
-				if (nextRange.top <= thisRange.bottom) {
+				if (nextRange.top   <= thisRange.bottom) {
 					thisRange.bottom = nextRange.bottom;
 					ranges.splice(i + 1, 1);
 					i++;
@@ -20676,7 +20676,7 @@ Sidenotes = { ...Sidenotes,
 		let layoutCells = [ ];
 		let columnSpecs = [ ];
 		if (Sidenotes.useLeftColumn())
-			columnSpecs.push([ Sidenotes.sidenoteColumnLeft, leftColumnBoundingRect, proscribedVerticalRangesLeft ]);
+			columnSpecs.push([ Sidenotes.sidenoteColumnLeft,  leftColumnBoundingRect,  proscribedVerticalRangesLeft  ]);
 		if (Sidenotes.useRightColumn())
 			columnSpecs.push([ Sidenotes.sidenoteColumnRight, rightColumnBoundingRect, proscribedVerticalRangesRight ]);
 		columnSpecs.forEach(columnSpec => {
@@ -20858,7 +20858,6 @@ Sidenotes = { ...Sidenotes,
 			//	Set the sidenote positions via inline styles.
 			cell.sidenotes.forEach(sidenote => {
 				sidenote.style.top = (Math.round(sidenote.posInCell) + (cell.top - cell.columnRect.top)) + "px";
-				sidenote.style.visibility = "";
 			});
 		});
 
@@ -21097,7 +21096,12 @@ Sidenotes = { ...Sidenotes,
 				container: column,
 				document: document,
 				source: "Sidenotes.constructSidenotes"
-			}, { immediately: false });
+			}, {
+				immediately: false,
+				doWhenDidInject: (info) => {
+					info.container.closest(".sidenote").style.visibility = "";
+				}
+			});
 		});
 
 		//	Fire event.
