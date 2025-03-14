@@ -2221,8 +2221,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyBlogPosts = (eventInfo) 
 		return;
 
 	eventInfo.container.querySelector(".annotation.blog-post > .data-field.title")?.remove();
-}, "rewrite", (info) => (   info.document == document
-						 || info.document instanceof ShadowRoot));
+}, "rewrite", (info) => (info.document == document));
 
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.
