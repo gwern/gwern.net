@@ -1281,12 +1281,20 @@ function doAjax(options) {
 		serialization: "URL",
 		responseType: null,
 		headers: null,
+		onLoadStart: null,
+		onProgress: null,
 		onSuccess: null,
 		onFailure: null
 	}, options);
 
     let req = new XMLHttpRequest();
 
+    req.addEventListener("loadstart", (event) => {
+		options.onLoadStart?.(event);
+    });
+    req.addEventListener("progress", (event) => {
+		options.onProgress?.(event);
+    });
     req.addEventListener("load", (event) => {
         if (event.target.status < 400) {
 			options.onSuccess?.(event);
@@ -1298,12 +1306,12 @@ function doAjax(options) {
 		options.onFailure?.(event);
     });
 
-    let location = options.location
-    			 + ((   options.params != null
-    			 	 && options.method == "GET") 
-    			 	? "?" + urlEncodeQuery(options.params)
-    			 	: "");
-    req.open(options.method, location);
+    let url = options.location
+    		  + ((   options.params != null
+    		  	  && options.method == "GET") 
+    		  	 ? "?" + urlEncodeQuery(options.params)
+    		  	 : "");
+    req.open(options.method, url);
 
     if (options.responseType)
 	    req.responseType = options.responseType;
