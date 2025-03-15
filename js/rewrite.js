@@ -2199,7 +2199,7 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlogPosts = (eventInfo
     GWLog("designateBlogPosts", "rewrite.js", 1);
 
 	let baseLocation = baseLocationForDocument(eventInfo.document);
-	if (baseLocation?.pathname.startsWith("/blog/") == false)
+	if (baseLocation?.pathname.startsWith("/blog/") != true)
 		return;
 
 	if (eventInfo.container.closest(".blog-post") != null)
