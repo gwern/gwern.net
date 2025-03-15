@@ -123,6 +123,7 @@ $disparate_assets = [
 	"{$js_dir}/utility.js",
 	"{$js_dir}/initial.js",
 	"{$js_dir}/layout.js",
+	"{$js_dir}/color.js",
 	"{$js_dir}/rewrite-initial.js",
 	"{$js_dir}/special-occasions.js",
 	"{$js_dir}/dark-mode-initial.js",
@@ -135,7 +136,6 @@ $disparate_assets = [
 	"{$css_dir}/initial-fonts-VERSIONED.css",
 	"{$css_dir}/reader-mode-initial.css",
 
-	"{$js_dir}/color.js",
 	"{$js_dir}/misc.js",
 	"{$js_dir}/popups.js",
 	"{$js_dir}/popins.js",

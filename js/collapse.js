@@ -599,7 +599,9 @@ function setCollapseBlockIcebergIndicatorUpdateWhenNeeded(collapseBlock) {
 	re-rendered, the next time the collapse block’s button state is updated).
  */
 function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
-	collapseBlock.querySelector(".collapse-iceberg-indicator").dataset.progressPercentage = "";
+	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
+	icebergIndicator.dataset.progressPercentage = "";
+	invalidateProgressPercentageIconForElement(icebergIndicator);
 }
 
 /************************************************************************/
@@ -631,7 +633,7 @@ function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 
 	let icebergIndicator = collapseBlock.querySelector(".collapse-iceberg-indicator");
 	icebergIndicator.dataset.progressPercentage = progressPercentage;
-	renderProgressPercentageIcon(icebergIndicator);
+	renderProgressPercentageIconIfNeeded(icebergIndicator);
 }
 
 /***************************************/

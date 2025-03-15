@@ -22,6 +22,7 @@ $head_js = [
 	'utility.js',
 	'initial.js',
 	'layout.js',
+	'color.js',
 	'rewrite-initial.js',
 	'special-occasions.js',
 	'dark-mode-initial.js',
@@ -37,7 +38,6 @@ $css = [
 ];
 
 $js = [
-	'color.js',
 	'misc.js',
 	'popups.js',
 	'popins.js',

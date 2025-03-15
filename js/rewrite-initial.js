@@ -1,8 +1,102 @@
+/***********************/
+/* PROGRESS INDICATORS */
+/***********************/
+
+/**************************************************************************/
+/*	Returns SVG source for a progress-indicator SVG icon, given a specified
+	progress percentage (in [0,100]).
+ */
+function arcSVGForProgressPercent (percent) {
+	let svgOpeningTagSrc = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">`;
+	let svgClosingTagSrc = `</svg>`;
+
+	let strokeWidth = GW.isMobile() ? 64.0 : 56.0;
+	let boxRadius = 256.0;
+	let radius = boxRadius - (strokeWidth * 0.5);
+
+	let backdropCircleGray = (GW.isMobile() ? 110.0 : 170.0) + (percent * 0.64);
+	let backdropCircleColor = Color.hexStringFromRGB({
+		red: backdropCircleGray,
+		green: backdropCircleGray,
+		blue: backdropCircleGray
+	});
+	let backdropCircleSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}"`
+						  + ` stroke-width="${strokeWidth}" stroke="${backdropCircleColor}" fill="none"/>`;
+
+	let arcAttributesSrc = `fill="none" stroke="#000" stroke-width="${strokeWidth}" stroke-linecap="round"`;
+	let arcSrc;
+	if (percent == 100) {
+		arcSrc = `<circle cx="${boxRadius}" cy="${boxRadius}" r="${radius}" ${arcAttributesSrc}/>`;
+	} else {
+		let angle = 2.0 * Math.PI * ((percent / 100.0) - 0.25);
+		let y = (radius * Math.sin(angle)) + boxRadius;
+		let x = (radius * Math.cos(angle)) + boxRadius;
+		let largeArc = percent > 50 ? "1" : "0";
+		arcSrc = `<path
+				   d="M ${boxRadius} ${strokeWidth * 0.5} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}"
+				   ${arcAttributesSrc}/>`;
+	}
+
+	return (svgOpeningTagSrc + backdropCircleSrc + arcSrc + svgClosingTagSrc);
+}
+
+/*****************************************************************************/
+/*	Given an element with a `data-progress-percentage` attribute, injects an
+	inline icon displaying the specified progress percentage. (The icon will
+	automatically be further processed for display by the inline icon system.)
+ */
+function renderProgressPercentageIcon(progressIndicatorElement) {
+	let progressPercentage = parseInt(progressIndicatorElement.dataset.progressPercentage);
+	if (isNaN(progressPercentage))
+		return;
+	let svgSrc = arcSVGForProgressPercent(progressPercentage);
+	progressIndicatorElement.querySelector(".progress-indicator-icon")?.remove();
+	progressIndicatorElement.appendChild(newElement("SPAN", {
+		class: "progress-indicator-icon icon-special",
+		style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`
+	}));
+	progressIndicatorElement.classList.add("progress-percentage-rendered");
+}
+
+/***********************************************************************/
+/*	Render progress percentage icon for the given element, if it has not 
+	already been rendered.
+ */
+function renderProgressPercentageIconIfNeeded(progressIndicatorElement) {
+	if (isProgressPercentageIconRendered(progressIndicatorElement) == true)
+		return;
+
+	renderProgressPercentageIcon(progressIndicatorElement);
+}
+
+/***************************************************************************/
+/*	Returns true if progress percentage icon has been rendered for the given 
+	element.
+ */
+function isProgressPercentageIconRendered(progressIndicatorElement) {
+	return (progressIndicatorElement.classList.contains("progress-percentage-rendered"));
+}
+
+/*************************************************************************/
+/*	Mark the given element as not having a valid progress percentage icon.
+ */
+function invalidateProgressPercentageIconForElement(progressIndicatorElement) {
+	progressIndicatorElement.classList.remove("progress-percentage-rendered");
+}
+
+
 /**********************/
 /* REWRITE PROCESSORS */
 /**********************/
 /*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
  */
+
+/********************************************************************/
+/*	Add a “non-block” layout processor, a.k.a. a “rewrite processor”.
+ */
+function addRewriteProcessor(processorName, processor) {
+	addLayoutProcessor(processorName, processor, { blockLayout: false });
+}
 
 /*****************************************************************************/
 /*	Run rewrite processor in already-loaded main page content, and add rewrite
@@ -10,14 +104,14 @@
  */
 function processMainContentAndAddRewriteProcessor(processorName, processor) {
 	processor(document.main);
-	addLayoutProcessor(processorName, processor, { blockLayout: false });
+	addRewriteProcessor(processorName, processor);
 }
 
 /**********************************************/
 /*	Enable inline icons in the given container.
  */
-addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
-    GWLog("processInlineIconsInContainer", "layout.js", 2);
+addRewriteProcessor("processInlineIconsInContainer", (blockContainer) => {
+    GWLog("processInlineIconsInContainer", "rewrite-initial.js", 2);
 
 	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
 		if (inlineIcon.classList.contains("icon-not"))
@@ -43,7 +137,7 @@ addLayoutProcessor("processInlineIconsInContainer", (blockContainer) => {
 
 		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
 	});
-}, { blockLayout: false });
+});
 
 /**********************************************************************/
 /*	Adds recently-modified icon (white star on black circle) to a link.
@@ -104,18 +198,18 @@ function removeRecentlyModifiedIconFromLink(link) {
 /****************************************************************************/
 /*  Enable special icons for recently modified links (that are not in lists).
  */
-addLayoutProcessor("enableRecentlyModifiedLinkIcons", (blockContainer) => {
-    GWLog("enableRecentlyModifiedLinkIcons", "layout.js", 2);
+addRewriteProcessor("enableRecentlyModifiedLinkIcons", (blockContainer) => {
+    GWLog("enableRecentlyModifiedLinkIcons", "rewrite-initial.js", 2);
 
     blockContainer.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(addRecentlyModifiedIconToLink);
-}, { blockLayout: false });
+});
 
 /**************************************************************************/
 /*  Enable special list icons for list items that contain recently modified
     links.
  */
-addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
-    GWLog("enableRecentlyModifiedLinkListIcons", "layout.js", 2);
+addRewriteProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
+    GWLog("enableRecentlyModifiedLinkListIcons", "rewrite-initial.js", 2);
 
     blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
         let inList = false;
@@ -146,25 +240,25 @@ addLayoutProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
 	            removeRecentlyModifiedIconFromLink(link);
         }
     });
-}, { blockLayout: false });
+});
 
 /*************************************************************/
 /*	Add certain style classes to certain lists and list items.
  */
-addLayoutProcessor("designateListStyles", (blockContainer) => {
-    GWLog("designateListStyles", "layout.js", 2);
+addRewriteProcessor("designateListStyles", (blockContainer) => {
+    GWLog("designateListStyles", "rewrite-initial.js", 2);
 
 	blockContainer.querySelectorAll("ul > li").forEach(listItem => {
 		if (listItem.closest(".TOC") == null)
 			listItem.classList.add("dark-mode-invert");
 	});
-}, { blockLayout: false });
+});
 
 /*************************************************/
 /*	Add certain style classes to horizontal rules.
  */
-addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
-    GWLog("designateHorizontalRuleStyles", "layout.js", 2);
+addRewriteProcessor("designateHorizontalRuleStyles", (blockContainer) => {
+    GWLog("designateHorizontalRuleStyles", "rewrite-initial.js", 2);
 
 	let hrTypeClassPrefix = "horizontal-rule-";
 
@@ -196,13 +290,13 @@ addLayoutProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 		//	Type class specifies a custom image; set the CSS property.
 		hr.style.setProperty("--icon-image", `var(--GW-image-${hrTypeClass})`);
 	});
-}, { blockLayout: false });
+});
 
 /********************************************/
 /*	Wrap parenthesized inline mode selectors.
  */
-addLayoutProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => {
-    GWLog("wrapParenthesizedInlineModeSelectors", "layout.js", 2);
+addRewriteProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => {
+    GWLog("wrapParenthesizedInlineModeSelectors", "rewrite-initial.js", 2);
 
 	let inlineModeSelectorsSelector = [
 		"dark",
@@ -219,7 +313,17 @@ addLayoutProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => {
 
 		wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 	});
-}, { blockLayout: false });
+});
+
+/**********************************************************/
+/*	Inject progress indicator icons into any element with a
+	data-progress-percentage attribute.
+ */
+addRewriteProcessor("injectProgressIcons", (blockContainer) => {
+    GWLog("injectProgressIcons", "rewrite-initial.js", 1);
+
+	blockContainer.querySelectorAll("[data-progress-percentage]").forEach(renderProgressPercentageIconIfNeeded);
+}, "rewrite");
 
 
 /***************************/

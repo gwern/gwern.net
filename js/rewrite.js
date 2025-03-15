@@ -3505,16 +3505,6 @@ addContentLoadHandler(GW.contentLoadHandlers.designateOrdinals = (eventInfo) => 
     });
 }, "rewrite");
 
-/**********************************************************/
-/*	Inject progress indicator icons into any element with a
-	data-progress-percentage attribute.
- */
-addContentLoadHandler(GW.contentLoadHandlers.injectProgressIcons = (eventInfo) => {
-    GWLog("injectProgressIcons", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("[data-progress-percentage]").forEach(renderProgressPercentageIcon);
-}, "rewrite");
-
 /*********************************************************************/
 /*	Fix a minor appearance glitch in some fields in the page metadata.
  */
