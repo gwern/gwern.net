@@ -3461,15 +3461,15 @@ body.blog-page .annotation.blog-post > p.data-field {
 }
 
 body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append,
-body.blog-page .annotation.blog-post > .collapse.file-include-collapse {
+body.blog-page .annotation.blog-post > .file-includes       > .collapse.file-include-collapse {
     border: 1px solid var(--GW-aux-links-collapse-border-color);
 }
-body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded .collapse-content-wrapper,
-body.blog-page .annotation.blog-post > .collapse.file-include-collapse.expanded .collapse-content-wrapper {
+body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded      .collapse-content-wrapper,
+body.blog-page .annotation.blog-post > .file-includes       > .collapse.file-include-collapse.expanded .collapse-content-wrapper {
     padding: 0.5em 0;
 }
-body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded-not .collapse-content-wrapper,
-body.blog-page .annotation.blog-post > .collapse.file-include-collapse.expanded-not .collapse-content-wrapper {
+body.blog-page .annotation.blog-post > .annotation-abstract > .collapse.aux-links-append.expanded-not      .collapse-content-wrapper,
+body.blog-page .annotation.blog-post > .file-includes       > .collapse.file-include-collapse.expanded-not .collapse-content-wrapper {
     padding: 0.5em 0.5em 0.5em 1em;
 }
 

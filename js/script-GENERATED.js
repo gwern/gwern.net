@@ -16782,14 +16782,10 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlogPosts = (eventInfo
 addContentInjectHandler(GW.contentInjectHandlers.rectifyBlogPosts = (eventInfo) => {
     GWLog("rectifyBlogPosts", "rewrite.js", 1);
 
-	let baseLocation = baseLocationForDocument(eventInfo.document);
-	if (   baseLocation?.pathname == "/blog/"
-		|| baseLocation?.pathname == "/blog/index"
-		|| baseLocation?.pathname.startsWith("/blog/") == false)
-		return;
-
 	eventInfo.container.querySelector(".annotation.blog-post > .data-field.title")?.remove();
-}, "rewrite", (info) => (info.document == document));
+}, "rewrite", (info) => (   info.document == document
+						 && document.body.classList.contains("blog-page")       == true
+						 && document.body.classList.contains("page-blog-index") == false));
 
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.
