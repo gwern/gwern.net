@@ -16,6 +16,7 @@ extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/170391357
                                   , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
                                   , ("https://x.com/sakun135/status/1285408650052333568", "sakun135")
                                   , ("https://x.com/dseetharaman", "dseetharaman")
+                                  , ("https://x.com/TylerAlterman/status/1900285728635969841", "TylerAlterman")
                                   ]
 
 -- config testing: all unique
@@ -713,7 +714,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1459,13 +1460,17 @@ authorLinkDB = M.fromList $
     , ("Noam Brown", "https://scholar.google.com/citations?user=RLDbLcUAAAAJ")
     , ("Niklas Muennighoff", "https://muennighoff.github.io/")
     , ("nearcyan", "https://near.blog/")
-    , ("Piotr Stanczyk", "https://scholar.google.com/citations?user=fKVK0dYAAAAJ&hl=en")
+    , ("Piotr Stanczyk", "https://scholar.google.com/citations?user=fKVK0dYAAAAJ")
     , ("Nathan A. Gillespie", "https://vipbg.vcu.edu/people/nathan-gillespie/")
     , ("Matt Lakeman", "https://mattlakeman.org/")
     , ("Marian L. Hamshere", "https://profiles.cardiff.ac.uk/staff/hamshereml")
     , ("Loic Le Marchand", "https://www.uhcancercenter.org/le-marchand-loic")
     , ("Michael Hippke", "https://www.lesswrong.com/users/hippke")
     , ("Aaron Gokaslan", "https://x.com/SkyLi0n")
+    , ("Konstantin Strauch", "https://www.unimedizin-mainz.de/imbei/en/biometrie-genomische-statistik-und-bioinformatik/mitarbeiter/prof-dr-rer-nat-konstantin-strauch.html")
+    , ("Klaus Berger", "https://research.com/u/klaus-berger")
+    , ("Juha Sinisalo", "https://researchportal.helsinki.fi/en/persons/juha-sinisalo")
+    , ("John R. Attia", "https://www.newcastle.edu.au/profile/john-attia")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2715,4 +2720,4 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach", "Robert Heinlein"]
+    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"]

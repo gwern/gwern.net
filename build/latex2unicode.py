@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-03-06 17:33:08 gwern"
+# When:  Time-stamp: "2025-03-14 17:42:40 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -248,6 +248,8 @@ _n_⧸(𝜋⧸8 log _n_)<sup>1⁄2</sup>
 <em>M</em><sub><em>PBH</em></sub> &gt; 1.4 × 10<sup>17</sup> g
 - \\(&lt;n\\)
 &lt;<em>n</em>
+- $DyT($x$) = \\tanh(α$x$)$
+DyT(<em>x</em>) = tanh(α<em>x</em>)
 
 Task:
 

@@ -92,9 +92,7 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , ""
        , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
          "](" ++ url ++ "){.include-annotation .include-strict" ++
-         -- in the case of the lightest-weight blog posts, the self-blog posts, like `/blog/2025-large-files`, it is confusing to a reader click on the title and open the same page in a new tab! so we just special-case that by suppressing it if we are trying to transclude ourselves :
-         (if "/blog/" `isPrefixOf` url then " data-include-selector-not='.data-field.title' " else " ") ++
-         "data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
+         " data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
        , ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>" -- we set an ID to allow the transclusion calls in /blog/index to hide it
        ]

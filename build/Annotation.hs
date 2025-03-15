@@ -42,7 +42,7 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
       Right (l'',(title,author,dateRaw,dc,kvs,tags,abstract)) ->
         do date <- if dateRaw /= "" then return dateRaw else guessDateFromString (title ++ " : " ++ l'')
            title' <- reformatTitle title
-           print $ "guessAuthorDateFromPath: " ++ show (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
+           print $ "guessAuthorDateFromPath : " ++ show (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
            return $ Right $ guessAuthorDateFromPath (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
       Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
                            title' <- reformatTitle title
@@ -102,8 +102,8 @@ guessAuthorDateFromPath :: (Path, MetadataItem) -> (Path, MetadataItem)
 guessAuthorDateFromPath x@(l, (title,author,dateRaw,dc,kvs,tags,abstract))
  | null title || null author = let (author',date') = guessAuthorDateFromString l
                                      in (l, (title
-                                            , if null author  then author' else ""
-                                            , if null dateRaw then date'   else ""
+                                            , if null author  then author' else author
+                                            , if null dateRaw then date'   else dateRaw
                                             , dc,kvs,tags,abstract))
  | otherwise = x
 
@@ -218,7 +218,7 @@ locateDateInTokens _ [] = Nothing
 locateDateInTokens dateStr tokens =
   go 0
   where
-    needed = splitOn "-" dateStr  -- e.g. ["2020","08","05"]
+    needed = splitOn "-" dateStr  -- eg. ["2020","08","05"]
     lenNeeded = length needed
     maxI   = length tokens - lenNeeded
     go i

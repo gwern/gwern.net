@@ -5974,4 +5974,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Facet", "Facet_(psychology)")
         , ("Java", "Java_(programming_language)")
         , ("Lean", "Lean_(proof_assistant)")
+        , ("Will_Wilkinson", "https://web.archive.org/web/20250207111732/https://en.wikipedia.org/wiki/Will_Wilkinson")
         ]
