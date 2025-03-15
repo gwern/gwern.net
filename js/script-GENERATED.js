@@ -18650,136 +18650,105 @@ window.addEventListener("afterprint", GW.afterPrintHandler = (event) => {
 /*****************************************************************************************/
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 1600ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
-// let pls="a:not(.has-content):not(.prefetch-not)";let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.supports&&o.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype,s="instantAllowQueryString"in document.body.dataset,a=true,r="instantWhitelist"in document.body.dataset,c="instantMousedownShortcut"in document.body.dataset,d=1111;let l=1600,u=!1,f=!1,m=!1;if("instantIntensity"in document.body.dataset){const t=document.body.dataset.instantIntensity;if("mousedown"==t.substr(0,"mousedown".length))u=!0,"mousedown-only"==t&&(f=!0);else if("viewport"==t.substr(0,"viewport".length))navigator.connection&&(navigator.connection.saveData||navigator.connection.effectiveType&&navigator.connection.effectiveType.includes("2g"))||("viewport"==t?document.documentElement.clientWidth*document.documentElement.clientHeight<45e4&&(m=!0):"viewport-all"==t&&(m=!0));else{const e=parseInt(t);isNaN(e)||(l=e)}}if(z){const n={capture:!0,passive:!0};if(f||document.addEventListener("touchstart",function(t){e=performance.now();const n=t.target.closest(pls);if(!h(n))return;v(n.href)},n),u?c||document.addEventListener("mousedown",function(t){const e=t.target.closest(pls);if(!h(e))return;v(e.href)},n):document.addEventListener("mouseover",function(n){if(performance.now()-e<d)return;const o=n.target.closest(pls);if(!h(o))return;o.addEventListener("mouseout",p,{passive:!0}),t=setTimeout(()=>{v(o.href),t=void 0},l)},n),c&&document.addEventListener("mousedown",function(t){if(performance.now()-e<d)return;const n=t.target.closest("a");if(t.which>1||t.metaKey||t.ctrlKey)return;if(!n)return;n.addEventListener("click",function(t){1337!=t.detail&&t.preventDefault()},{capture:!0,passive:!1,once:!0});const o=new MouseEvent("click",{view:window,bubbles:!0,cancelable:!1,detail:1337});n.dispatchEvent(o)},n),m){let t;(t=window.requestIdleCallback?t=>{requestIdleCallback(t,{timeout:1500})}:t=>{t()})(()=>{const t=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){const n=e.target;t.unobserve(n),v(n.href)}})});document.querySelectorAll("a").forEach(e=>{h(e)&&t.observe(e)})})}}function p(e){e.relatedTarget&&e.target.closest("a")==e.relatedTarget.closest("a")||t&&(clearTimeout(t),t=void 0)}function h(t){if(t&&t.href&&(!r||"instant"in t.dataset)&&(a||t.origin==location.origin||"instant"in t.dataset)&&["http:","https:"].includes(t.protocol)&&("http:"!=t.protocol||"https:"!=location.protocol)&&(s||!t.search||"instant"in t.dataset)&&!(t.hash&&t.pathname+t.search==location.pathname+location.search||"noInstant"in t.dataset))return!0}function v(t){if(n.has(t))return;const e=document.createElement("link");console.log("Prefetched: "+t);e.rel="prefetch",e.href=t,document.head.appendChild(e),n.add(t)};
+const allowQueryString = false;
+const allowExternalLinks = true;
+const DELAY_TO_NOT_BE_CONSIDERED_A_TOUCH_INITIATED_ACTION = 1111;
+const delayOnHover = 1600;
+const linkPrefetchExclusionSelector = [
+	".prefetch-not",
+	".has-content"
+].join(", ");
 
-let pls = "a:not(.has-content):not(.prefetch-not)";
-let t, e;
-const n = new Set(),
-    o = document.createElement("link"),
-    z = o.relList && o.relList.supports && o.relList.supports("prefetch") && window.IntersectionObserver && "isIntersecting" in IntersectionObserverEntry.prototype,
-    s = "instantAllowQueryString" in document.body.dataset,
-    a = true,
-    r = "instantWhitelist" in document.body.dataset,
-    c = "instantMousedownShortcut" in document.body.dataset,
-    d = 1111;
-let l = 1600,
-    u = !1,
-    f = !1,
-    m = !1;
-if ("instantIntensity" in document.body.dataset) {
-    const t = document.body.dataset.instantIntensity;
-    if ("mousedown" == t.substr(0, "mousedown".length)) (u = !0), "mousedown-only" == t && (f = !0);
-    else if ("viewport" == t.substr(0, "viewport".length))
-        (navigator.connection && (navigator.connection.saveData || (navigator.connection.effectiveType && navigator.connection.effectiveType.includes("2g")))) ||
-            ("viewport" == t ? document.documentElement.clientWidth * document.documentElement.clientHeight < 45e4 && (m = !0) : "viewport-all" == t && (m = !0));
-    else {
-        const e = parseInt(t);
-        isNaN(e) || (l = e);
-    }
+let mouseoverTimer;
+let lastTouchTimestamp;
+const prefetches = new Set();
+
+const isSupported = (document.createElement("link").relList?.supports?.("prefetch"));
+if (isSupported) {
+	const eventListenersOptions = {
+		capture: true,
+		passive: true,
+	};
+
+	document.addEventListener("touchstart", (event) => {
+		/* Chrome on Android calls mouseover before touchcancel so `lastTouchTimestamp`
+		 * must be assigned on touchstart to be measured on mouseover. */
+		lastTouchTimestamp = performance.now();
+
+		const linkElement = event.target.closest("a");
+
+		if (isPreloadable(linkElement) == false)
+			return;
+
+		preload(linkElement.href);
+	}, eventListenersOptions);
+
+	document.addEventListener("mouseover", (event) => {
+		if (performance.now() - lastTouchTimestamp < DELAY_TO_NOT_BE_CONSIDERED_A_TOUCH_INITIATED_ACTION)
+			return;
+
+		const linkElement = event.target.closest("a");
+
+		if (isPreloadable(linkElement) == false)
+			return;
+
+		linkElement.addEventListener("mouseout", (event) => {
+			if (event.relatedTarget && event.target.closest("a") == event.relatedTarget.closest("a"))
+				return;
+
+			if (mouseoverTimer) {
+				clearTimeout(mouseoverTimer);
+				mouseoverTimer = undefined;
+			}
+		}, { once: true, passive: true });
+
+		mouseoverTimer = setTimeout(() => {
+			preload(linkElement.href);
+			mouseoverTimer = undefined;
+		}, delayOnHover);
+	}, eventListenersOptions);
 }
-if (z) {
-    const n = { capture: !0, passive: !0 };
-    if (
-        (f ||
-            document.addEventListener(
-                "touchstart",
-                function (t) {
-                    e = performance.now();
-                    const n = t.target.closest(pls);
-                    if (!h(n)) return;
-                    v(n.href);
-                },
-                n
-            ),
-        u
-            ? c ||
-              document.addEventListener(
-                  "mousedown",
-                  function (t) {
-                      const e = t.target.closest(pls);
-                      if (!h(e)) return;
-                      v(e.href);
-                  },
-                  n
-              )
-            : document.addEventListener(
-                  "mouseover",
-                  function (n) {
-                      if (performance.now() - e < d) return;
-                      const o = n.target.closest(pls);
-                      if (!h(o)) return;
-                      o.addEventListener("mouseout", p, { passive: !0 }),
-                          (t = setTimeout(() => {
-                              v(o.href), (t = void 0);
-                          }, l));
-                  },
-                  n
-              ),
-        c &&
-            document.addEventListener(
-                "mousedown",
-                function (t) {
-                    if (performance.now() - e < d) return;
-                    const n = t.target.closest("a");
-                    if (t.which > 1 || t.metaKey || t.ctrlKey) return;
-                    if (!n) return;
-                    n.addEventListener(
-                        "click",
-                        function (t) {
-                            1337 != t.detail && t.preventDefault();
-                        },
-                        { capture: !0, passive: !1, once: !0 }
-                    );
-                    const o = new MouseEvent("click", { view: window, bubbles: !0, cancelable: !1, detail: 1337 });
-                    n.dispatchEvent(o);
-                },
-                n
-            ),
-        m)
-    ) {
-        let t;
-        (t = window.requestIdleCallback
-            ? (t) => {
-                  requestIdleCallback(t, { timeout: 1500 });
-              }
-            : (t) => {
-                  t();
-              })(() => {
-            const t = new IntersectionObserver((e) => {
-                e.forEach((e) => {
-                    if (e.isIntersecting) {
-                        const n = e.target;
-                        t.unobserve(n), v(n.href);
-                    }
-                });
-            });
-            document.querySelectorAll("a").forEach((e) => {
-                h(e) && t.observe(e);
-            });
-        });
-    }
+
+function isPreloadable(linkElement) {
+	if ((linkElement?.href > "") == false)
+		return false;
+
+	if (   allowExternalLinks == false
+		&& linkElement.origin != location.origin)
+		return false;
+
+	if ([ "http:", "https:" ].includes(linkElement.protocol) == false)
+		return false;
+
+	if (   linkElement.protocol == "http:" 
+		&& location.protocol    == "https:")
+		return false;
+
+	if (   allowQueryString == false
+		&& linkElement.search)
+		return false;
+
+	if (   linkElement.hash 
+		&& linkElement.pathname + linkElement.search == location.pathname + location.search)
+		return false;
+
+	if (linkElement.matches(linkPrefetchExclusionSelector) == true)
+		return false;
+
+	return true;
 }
-function p(e) {
-    (e.relatedTarget && e.target.closest("a") == e.relatedTarget.closest("a")) || (t && (clearTimeout(t), (t = void 0)));
-}
-function h(t) {
-    if (
-        t &&
-        t.href &&
-        (!r || "instant" in t.dataset) &&
-        (a || t.origin == location.origin || "instant" in t.dataset) &&
-        ["http:", "https:"].includes(t.protocol) &&
-        ("http:" != t.protocol || "https:" != location.protocol) &&
-        (s || !t.search || "instant" in t.dataset) &&
-        !((t.hash && t.pathname + t.search == location.pathname + location.search) || "noInstant" in t.dataset)
-    )
-        return !0;
-}
-function v(t) {
-    if (n.has(t)) return;
-    const e = document.createElement("link");
-    console.log("Prefetched: " + t);
-    (e.rel = "prefetch"), (e.href = t), document.head.appendChild(e), n.add(t);
+
+function preload(url) {
+	if (prefetches.has(url))
+		return;
+
+	const prefetcher = document.createElement("link");
+    console.log("Prefetched: " + url);
+	prefetcher.rel = "prefetch";
+	prefetcher.href = url;
+	document.head.appendChild(prefetcher);
+
+	prefetches.add(url);
 }
 /*************************/
 /*	Configuration / state.
