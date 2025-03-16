@@ -1199,21 +1199,30 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 	//	Designate page abstract.
 	pageAbstract.classList.add("page-abstract");
 
+	//	Check if the page thumbnail has already been injected.
 	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
 		return;
 
 	//	Insert page thumbnail into page abstract.
 	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
-	if (referenceData.pageThumbnailHTML != null) {
-		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
+	if (referenceData.pageThumbnailAttributes != null) {
+		//	Construct.
+		let pageThumbnail = newElement("IMG", referenceData.pageThumbnailAttributes);
+		let pageThumbnailWrapper = newElement("SPAN", {
+			class: "image-wrapper img"
+		});
+		let pageThumbnailFigure = newElement("FIGURE", {
 			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
-		}, {
-			innerHTML: referenceData.pageThumbnailHTML
-		}), (eventInfo.context == "popFrame"
+		});
+		pageThumbnailFigure.appendChild(pageThumbnailWrapper).appendChild(pageThumbnail);
+
+		//	Inject.
+		pageAbstract.insertBefore(pageThumbnailFigure, 
+			(eventInfo.context == "popFrame"
 			 ? pageAbstract.firstElementChild
 			 : null));
-		let pageThumbnail = pageThumbnailFigure.querySelector("img");
-		wrapElement(pageThumbnail, "span.image-wrapper.img");
+
+		//	Thumbnailify, in pop-frames only.
 		if (eventInfo.context == "popFrame")
 			Images.thumbnailifyImage(pageThumbnail);
 

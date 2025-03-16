@@ -8428,7 +8428,7 @@ Content = {
                 let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
                 //  Get the page thumbnail URL and metadata.
-                let pageThumbnailHTML;
+                let pageThumbnailHTML, pageThumbnailAttributes;
                 let pageThumbnailMetaTag = contentDocument.querySelector("meta[property='og:image']");
                 if (pageThumbnailMetaTag) {
                     let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
@@ -8445,7 +8445,7 @@ Content = {
                     let pageThumbnailHeight = contentDocument.querySelector("meta[property='og:image:height']").getAttribute("content");
 
                     //  Construct and save the <img> tag.
-                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false)
+                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false) {
                         pageThumbnailHTML = `<img
                             src="${pageThumbnailURL.href}"
                             title="${pageThumbnailAltText}"
@@ -8453,6 +8453,14 @@ Content = {
                             height="${pageThumbnailHeight}"
                             style="width: ${pageThumbnailWidth}px; height: auto;"
                                 >`;
+                        pageThumbnailAttributes = {
+                        	src: pageThumbnailURL.href,
+                        	title: pageThumbnailAltText,
+                        	width: pageThumbnailWidth,
+                        	height: pageThumbnailHeight,
+                        	style: "width: ${pageThumbnailWidth}px; height: auto;"
+                        };
+                    }
 
                     //  Request the image, to cache it.
                     doAjax({ location: pageThumbnailURL.href });
@@ -8469,10 +8477,11 @@ Content = {
                 }
 
                 return {
-                    document:       contentDocument,
-                    title:          pageTitleHTML,
-                    bodyClasses:    pageBodyClasses,
-                    thumbnailHTML:  pageThumbnailHTML
+                    document:             contentDocument,
+                    title:                pageTitleHTML,
+                    bodyClasses:          pageBodyClasses,
+                    thumbnailHTML:        pageThumbnailHTML,
+                    thumbnailAttributes:  pageThumbnailAttributes
                 };
             },
 
@@ -8513,11 +8522,12 @@ Content = {
 				}
 
                 return {
-                    content:                 pageContentDocument,
-                    pageTitle:               pageContent.title,
-                    pageBodyClasses:         pageContent.bodyClasses,
-                    pageThumbnailHTML:       pageContent.thumbnailHTML,
-                    shouldLocalize:          true
+                    content:                  pageContentDocument,
+                    pageTitle:                pageContent.title,
+                    pageBodyClasses:          pageContent.bodyClasses,
+                    pageThumbnailHTML:        pageContent.thumbnailHTML,
+                    pageThumbnailAttributes:  pageContent.thumbnailAttributes,
+                    shouldLocalize:           true
                 }
             },
 
@@ -15770,21 +15780,30 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 	//	Designate page abstract.
 	pageAbstract.classList.add("page-abstract");
 
+	//	Check if the page thumbnail has already been injected.
 	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
 		return;
 
 	//	Insert page thumbnail into page abstract.
 	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
-	if (referenceData.pageThumbnailHTML != null) {
-		let pageThumbnailFigure = pageAbstract.insertBefore(newElement("FIGURE", {
+	if (referenceData.pageThumbnailAttributes != null) {
+		//	Construct.
+		let pageThumbnail = newElement("IMG", referenceData.pageThumbnailAttributes);
+		let pageThumbnailWrapper = newElement("SPAN", {
+			class: "image-wrapper img"
+		});
+		let pageThumbnailFigure = newElement("FIGURE", {
 			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
-		}, {
-			innerHTML: referenceData.pageThumbnailHTML
-		}), (eventInfo.context == "popFrame"
+		});
+		pageThumbnailFigure.appendChild(pageThumbnailWrapper).appendChild(pageThumbnail);
+
+		//	Inject.
+		pageAbstract.insertBefore(pageThumbnailFigure, 
+			(eventInfo.context == "popFrame"
 			 ? pageAbstract.firstElementChild
 			 : null));
-		let pageThumbnail = pageThumbnailFigure.querySelector("img");
-		wrapElement(pageThumbnail, "span.image-wrapper.img");
+
+		//	Thumbnailify, in pop-frames only.
 		if (eventInfo.context == "popFrame")
 			Images.thumbnailifyImage(pageThumbnail);
 

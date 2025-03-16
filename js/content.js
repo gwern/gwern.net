@@ -1929,7 +1929,7 @@ Content = {
                 let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
                 //  Get the page thumbnail URL and metadata.
-                let pageThumbnailHTML;
+                let pageThumbnailHTML, pageThumbnailAttributes;
                 let pageThumbnailMetaTag = contentDocument.querySelector("meta[property='og:image']");
                 if (pageThumbnailMetaTag) {
                     let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
@@ -1946,7 +1946,7 @@ Content = {
                     let pageThumbnailHeight = contentDocument.querySelector("meta[property='og:image:height']").getAttribute("content");
 
                     //  Construct and save the <img> tag.
-                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false)
+                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false) {
                         pageThumbnailHTML = `<img
                             src="${pageThumbnailURL.href}"
                             title="${pageThumbnailAltText}"
@@ -1954,6 +1954,14 @@ Content = {
                             height="${pageThumbnailHeight}"
                             style="width: ${pageThumbnailWidth}px; height: auto;"
                                 >`;
+                        pageThumbnailAttributes = {
+                        	src: pageThumbnailURL.href,
+                        	title: pageThumbnailAltText,
+                        	width: pageThumbnailWidth,
+                        	height: pageThumbnailHeight,
+                        	style: "width: ${pageThumbnailWidth}px; height: auto;"
+                        };
+                    }
 
                     //  Request the image, to cache it.
                     doAjax({ location: pageThumbnailURL.href });
@@ -1970,10 +1978,11 @@ Content = {
                 }
 
                 return {
-                    document:       contentDocument,
-                    title:          pageTitleHTML,
-                    bodyClasses:    pageBodyClasses,
-                    thumbnailHTML:  pageThumbnailHTML
+                    document:             contentDocument,
+                    title:                pageTitleHTML,
+                    bodyClasses:          pageBodyClasses,
+                    thumbnailHTML:        pageThumbnailHTML,
+                    thumbnailAttributes:  pageThumbnailAttributes
                 };
             },
 
@@ -2014,11 +2023,12 @@ Content = {
 				}
 
                 return {
-                    content:                 pageContentDocument,
-                    pageTitle:               pageContent.title,
-                    pageBodyClasses:         pageContent.bodyClasses,
-                    pageThumbnailHTML:       pageContent.thumbnailHTML,
-                    shouldLocalize:          true
+                    content:                  pageContentDocument,
+                    pageTitle:                pageContent.title,
+                    pageBodyClasses:          pageContent.bodyClasses,
+                    pageThumbnailHTML:        pageContent.thumbnailHTML,
+                    pageThumbnailAttributes:  pageContent.thumbnailAttributes,
+                    shouldLocalize:           true
                 }
             },
 
