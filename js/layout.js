@@ -528,6 +528,9 @@ function processLayoutOptions(options) {
 	store in element’s layout cache; and, in any case, return.
  */
 function useLayoutCache(element, action, options, f) {
+	if (element == null)
+		return null;
+
 	options = processLayoutOptions(options);
 
 	let cacheKey = action;
@@ -562,9 +565,6 @@ function useLayoutCache(element, action, options, f) {
 	Types: upOut, downOut, upIn, downIn
  */
 function isWrapper(element, wrapperType, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "isWrapper_" + wrapperType, options, (element, options) => {
 		return (   element?.matches(options.wrapperOptions[wrapperType].wrappersSelector) == true
 				&& element?.matches(options.wrapperOptions[wrapperType].blockElementsSelector) != true
@@ -576,9 +576,6 @@ function isWrapper(element, wrapperType, options) {
 /*	Returns true if element is a skipped element, false otherwise.
  */
 function isSkipped(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "isSkipped", options, (element, options) => {
 		return (element?.matches(options.skipElementsSelector) == true);
 	});
@@ -588,9 +585,6 @@ function isSkipped(element, options) {
 /*	Returns true if element is a layout block, false otherwise.
  */
 function isBlock(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "isBlock", options, (element, options) => {
 		return (element?.matches(options.blockElementsSelector) == true);
 	});
@@ -600,9 +594,6 @@ function isBlock(element, options) {
 /*	Returns true if the element is empty (accounting for metadata).
  */
 function isEmpty(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "isEmpty", options, (element, options) => {
 		return isNodeEmpty_metadataAware(element);
 	});
@@ -612,9 +603,6 @@ function isEmpty(element, options) {
 /*	Returns true if element is an always-not-empty element, false otherwise.
  */
 function isNonEmpty(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "isNonEmpty", options, (element, options) => {
 		return (element?.matches(options.nonEmptyElementsSelector) == true);
 	});
@@ -625,9 +613,6 @@ function isNonEmpty(element, options) {
 	(Might be null.)
  */
 function blockContainerOf(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "blockContainer", options, (element, options) => {
 		return element.parentElement?.closest(options.blockContainersSelector);
 	});
@@ -638,47 +623,48 @@ function blockContainerOf(element, options) {
 	in the block flow.
  */
 function sequentialBlockOf(element, direction, options) {
-	if (element == null)
+	let _sequentialBlockOf = (element, direction, options) => {
+		let elementSibling = direction == "next"
+							 ? element.nextElementSibling
+							 : element.previousElementSibling;
+		let wrapperDirection = (direction == "next" ? "down" : "up");
+		let wrapperInType = wrapperDirection + "In";
+		let wrapperOutType = wrapperDirection + "Out";
+		let terminus = (direction == "next" ? "first" : "last");
+
+		//	Skip elements that don’t participate in block flow.
+		if (isSkipped(elementSibling, options))
+			return sequentialBlockOf(elementSibling, direction, options);
+
+		//	Look inside “transparent” wrappers (that don’t affect layout).
+		if (isWrapper(elementSibling, wrapperInType, options)) {
+			let terminalBlock = terminalBlockOf(elementSibling, terminus, options);
+			if (terminalBlock)
+				return terminalBlock;
+		}
+
+		//	Skip empty elements.
+		if (   isEmpty(elementSibling, options) == true
+			&& isNonEmpty(elementSibling, options) == false)
+			return sequentialBlockOf(elementSibling, direction, options);
+
+		//	An actual block element (the base case).
+		if (isBlock(elementSibling, options))
+			return elementSibling;
+
+		/*	If we’re asked for the sequential block of the terminal child of a
+			transparent wrapper, we return the sequential block of that wrapper
+			(recursively, of course).
+		 */
+		if (isWrapper(element.parentElement, wrapperOutType, options))
+			return sequentialBlockOf(element.parentElement, direction, options);
+
 		return null;
+	};
 
-	options = processLayoutOptions(options);
-
-	let elementSibling = direction == "next"
-						 ? element.nextElementSibling
-						 : element.previousElementSibling;
-	let wrapperDirection = (direction == "next" ? "down" : "up");
-	let wrapperInType = wrapperDirection + "In";
-	let wrapperOutType = wrapperDirection + "Out";
-	let terminus = (direction == "next" ? "first" : "last");
-
-	//	Skip elements that don’t participate in block flow.
-	if (isSkipped(elementSibling, options))
-		return sequentialBlockOf(elementSibling, direction, options);
-
-	//	Look inside “transparent” wrappers (that don’t affect layout).
-	if (isWrapper(elementSibling, wrapperInType, options)) {
-		let terminalBlock = terminalBlockOf(elementSibling, terminus, options);
-		if (terminalBlock)
-			return terminalBlock;
-	}
-
-	//	Skip empty elements.
-	if (   isEmpty(elementSibling, options) == true
-		&& isNonEmpty(elementSibling, options) == false)
-		return sequentialBlockOf(elementSibling, direction, options);
-
-	//	An actual block element (the base case).
-	if (isBlock(elementSibling, options))
-		return elementSibling;
-
-	/*	If we’re asked for the sequential block of the terminal child of a
-		transparent wrapper, we return the sequential block of that wrapper
-		(recursively, of course).
-	 */
-	if (isWrapper(element.parentElement, wrapperOutType, options))
-		return sequentialBlockOf(element.parentElement, direction, options);
-
-	return null;
+	return useLayoutCache(element, "sequentialBlock_" + direction, options, (element, options) => {
+		return _sequentialBlockOf(element, direction, options);
+	});
 }
 
 /************************************************************************/
@@ -686,9 +672,6 @@ function sequentialBlockOf(element, direction, options) {
 	(Might be null.)
  */
 function previousBlockOf(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "previousBlock", options, (element, options) => {
 		return sequentialBlockOf(element, "previous", options);
 	});
@@ -699,9 +682,6 @@ function previousBlockOf(element, options) {
 	(Might be null.)
  */
 function nextBlockOf(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "nextBlock", options, (element, options) => {
 		return sequentialBlockOf(element, "next", options);
 	});
@@ -712,35 +692,39 @@ function nextBlockOf(element, options) {
 	(Might be the element itself, or null.)
  */
 function terminalBlockOf(element, terminus, options, strictDescent = false) {
-	if (element == null)
-		return null;
-
-	options = processLayoutOptions(options);
-
-	let wrapperType = (terminus == "first" ? "down" : "up") + "In";
-
-	//	Look inside wrappers (or any block, if strictDescent is specified).
-	if (   strictDescent == true
-		|| isWrapper(element, wrapperType, options)) {
-		let childBlocks = childBlocksOf(element, options);
-		for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1);
-				 i != (terminus == "first" ? childBlocks.length : -1);
-			     i += (terminus == "first" ? 1                  : -1)) {
-			let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
-			if (   terminalBlock
-				&& isSkipped(terminalBlock, options) == false
-				&& (   isEmpty(terminalBlock, options) == false
-					|| isNonEmpty(terminalBlock, options) == true))
-				return terminalBlock;
+	let _terminalBlockOf = (element, terminus, options, strictDescent) => {
+		//	Look inside wrappers (or any block, if strictDescent is specified).
+		let wrapperType = (terminus == "first" ? "down" : "up") + "In";
+		if (   strictDescent == true
+			|| isWrapper(element, wrapperType, options)) {
+			let childBlocks = childBlocksOf(element, options);
+			for (let i  = (terminus == "first" ? 0                  : childBlocks.length - 1);
+					 i != (terminus == "first" ? childBlocks.length : -1);
+					 i += (terminus == "first" ? 1                  : -1)) {
+				let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
+				if (   terminalBlock
+					&& isSkipped(terminalBlock, options) == false
+					&& (   isEmpty(terminalBlock, options) == false
+						|| isNonEmpty(terminalBlock, options) == true))
+					return terminalBlock;
+			}
 		}
+
+		//	The element itself is a layout block (only if no strictDescent).
+		if (   strictDescent == false
+			&& isBlock(element, options))
+			return element;
+
+		return null;
+	};
+
+	if (strictDescent) {
+		return _terminalBlockOf(element, terminus, options, true);
+	} else {
+		return useLayoutCache(element, "terminalBlock_" + terminus, options, (element, options) => {
+			return _terminalBlockOf(element, terminus, options, false);
+		});
 	}
-
-	//	The element itself is a layout block (only if no strictDescent).
-	if (   strictDescent == false
-		&& isBlock(element, options))
-		return element;
-
-	return null;
 }
 
 /*******************************************/
@@ -748,14 +732,11 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 	(Might be the element itself, or null.)
  */
 function lastBlockOf(element, options, strictDescent) {
-	if (element == null)
-		return null;
-
 	if (strictDescent) {
-		return terminalBlockOf(element, "last", options, true);
+		return terminalBlockOf(element, "last", options, strictDescent);
 	} else {
 		return useLayoutCache(element, "lastBlock", options, (element, options) => {
-			return terminalBlockOf(element, "last", options);
+			return terminalBlockOf(element, "last", options, strictDescent);
 		});
 	}
 }
@@ -765,14 +746,11 @@ function lastBlockOf(element, options, strictDescent) {
 	(Might be the element itself, or null.)
  */
 function firstBlockOf(element, options, strictDescent) {
-	if (element == null)
-		return null;
-
 	if (strictDescent) {
-		return terminalBlockOf(element, "first", options, true);
+		return terminalBlockOf(element, "first", options, strictDescent);
 	} else {
 		return useLayoutCache(element, "firstBlock", options, (element, options) => {
-			return terminalBlockOf(element, "first", options);
+			return terminalBlockOf(element, "first", options, strictDescent);
 		});
 	}
 }
@@ -783,12 +761,7 @@ function firstBlockOf(element, options, strictDescent) {
 	don’t count).
  */
 function childBlocksOf(element, options) {
-	if (element == null)
-		return null;
-
 	return useLayoutCache(element, "childBlocks", options, (element, options) => {
-		options = processLayoutOptions(options);
-
 		let childBlocks = [ ];
 		for (let block of element.children) {
 			if (isWrapper(block, "downIn", options)) {
