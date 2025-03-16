@@ -17183,7 +17183,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 				TOC to corresponding entries in main page TOC.
 			 */
 			annotationDoc.querySelectorAll(".TOC .link-modified-recently").forEach(recentlyModifiedTOCLinkInAnnotation => {
-				let recentlyModifiedTOCLinkInMainDocument = TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLink.id));
+				let recentlyModifiedTOCLinkInMainDocument = TOC.querySelector("#" + CSS.escape(recentlyModifiedTOCLinkInAnnotation.id));
 				recentlyModifiedTOCLinkInMainDocument.classList.add("link-modified-recently");
 				addRecentlyModifiedIconToLink(recentlyModifiedTOCLinkInMainDocument);
 			});
